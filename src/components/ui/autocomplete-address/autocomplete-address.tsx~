@@ -1,0 +1,236 @@
+import { MapPin } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import usePlacesService from 'react-google-autocomplete/lib/usePlacesAutocompleteService';
+import { z } from 'zod';
+
+import {
+  CommandDialog,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+} from '../command';
+import { Form, Input } from '../form';
+
+export type AutocompleteAddressProps = {
+  googleApiKey: string;
+  onSubmit: (address: Address) => void;
+};
+
+export function AutocompleteAddress(props: AutocompleteAddressProps) {
+  const {
+    placesService,
+    placePredictions,
+    getPlacePredictions,
+    // isPlacePredictionsLoading,
+  } = usePlacesService({
+    apiKey: props.googleApiKey,
+  });
+
+  const schema = z.object({
+    line1: z.string().min(1, 'Required'),
+  });
+
+  useEffect(() => {
+    // fetch place details for the first element in placePredictions array
+    if (placePredictions.length) {
+      placesService?.getDetails(
+        {
+          placeId: placePredictions[0].place_id,
+        },
+        (placeDetails: any) => console.log(placeDetails),
+      );
+    }
+  }, [placePredictions, placesService]);
+
+  const onSelect = (item: any) => {
+    placesService?.getDetails(
+      {
+        placeId: placePredictions[0].place_id,
+      },
+      ({ address_components }: any) => {
+        let streetNumber = address_components.find((a) =>
+          a.types.includes('street_number'),
+        ).long_name;
+        let route = address_components.find((a) =>
+          a.types.includes('route'),
+        ).long_name;
+        let line1 = `${streetNumber || ''} ${route || ''}`
+        let line2 = address_components.find((a) =>
+          a.types.includes('street_number'),
+        );
+
+        let address = {
+          line1,
+          line2,
+        };
+        props.onSubmit(address);
+      },
+    );
+  };
+
+  return (
+    <Form
+      onSubmit={(values) => {
+        console.log(values);
+      }}
+      schema={schema}
+      className="mx-auto max-w-md text-left"
+    >
+      {({ register }) => (
+        <div className="relative">
+          <Input
+            type="address"
+            placeholder="Address"
+            autoComplete="off"
+            registration={register('line1')}
+            className="h-14 rounded-xl border-white/20 bg-white/5 p-4 text-[16px] font-normal text-white caret-white placeholder:text-white placeholder:opacity-50 focus:border-white"
+            icon={<MapPin className="size-4" />}
+            onChange={(evt) => {
+              getPlacePredictions({ input: evt.target.value });
+            }}
+          />
+          {placePredictions.length > 0 && (
+            <div className="absolute top-20">
+              <CommandDialog open={true} onOpenChange={() => {}}>
+                <CommandList>
+                  {/* <CommandEmpty>No results found.</CommandEmpty> */}
+                  <CommandGroup heading="Suggestions">
+                    {placePredictions.map((item) => {
+                      return (
+                        <CommandItem
+                          key={item.id}
+                          onClick={() => {
+                            onSelect(item);
+                          }}
+                        >
+                          {item.description}
+                        </CommandItem>
+                      );
+                    })}
+                  </CommandGroup>
+                </CommandList>
+              </CommandDialog>
+            </div>
+          )}
+        </div>
+      )}
+    </Form>
+  );
+}
+
+type Address = {
+  line1: string;
+  line2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+};
+
+export type FullAddressFormProps = {
+  address?: Address;
+};
+
+export function FullAddressForm({ address }: FullAddressFormProps) {
+  const schema = z.object({
+    line1: z
+      .string()
+      .min(1, 'Required')
+      .default(address?.line1 || ''),
+    line2: z
+      .string()
+      .min(1, 'Required')
+      .default(address?.line2 || ''),
+    city: z
+      .string()
+      .min(1, 'Required')
+      .default(address?.city || ''),
+    state: z
+      .string()
+      .min(1, 'Required')
+      .default(address?.state || ''),
+    postalCode: z
+      .string()
+      .min(1, 'Required')
+      .default(address?.postalCode || ''),
+  });
+
+  return (
+    <Form
+      onSubmit={(values) => {
+        console.log(values);
+      }}
+      schema={schema}
+      className="mx-auto max-w-md text-left"
+    >
+      {({ register }) => (
+        <div className="relative">
+          <Input
+            id="line1"
+            type="text"
+            placeholder="Address"
+            autoComplete="off"
+            registration={register('line1')}
+            className="h-14 rounded-xl border-white/20 bg-white/5 p-4 text-[16px] font-normal text-white caret-white placeholder:text-white placeholder:opacity-50 focus:border-white"
+          />
+          <Input
+            id="line2"
+            type="text"
+            placeholder="Apt, Unit, etc."
+            autoComplete="off"
+            registration={register('line2')}
+            className="h-14 rounded-xl border-white/20 bg-white/5 p-4 text-[16px] font-normal text-white caret-white placeholder:text-white placeholder:opacity-50 focus:border-white"
+          />
+          <div className="grid  grid-cols-1 md:grid-cols-3 gap-x-4">
+            <Input
+              id="city"
+              type="text"
+              placeholder="City"
+              autoComplete="off"
+              registration={register('city')}
+              className="h-14 rounded-xl border-white/20 bg-white/5 p-4 text-[16px] font-normal text-white caret-white placeholder:text-white placeholder:opacity-50 focus:border-white"
+            />
+            <Input
+              id="state"
+              type="text"
+              placeholder="State"
+              autoComplete="off"
+              registration={register('state')}
+              className="h-14 rounded-xl border-white/20 bg-white/5 p-4 text-[16px] font-normal text-white caret-white placeholder:text-white placeholder:opacity-50 focus:border-white"
+            />
+            <Input
+              id="postalCode"
+              type="text"
+              placeholder="ZIP Code"
+              autoComplete="off"
+              registration={register('postalCode')}
+              className="h-14 rounded-xl border-white/20 bg-white/5 p-4 text-[16px] font-normal text-white caret-white placeholder:text-white placeholder:opacity-50 focus:border-white"
+            />
+          </div>
+        </div>
+      )}
+    </Form>
+  );
+}
+
+export type AddressFormProps = {
+  googleApiKey?: string;
+};
+
+export function AddressForm(props: AddressFormProps) {
+  const [address, setAddress] = useState<Address | undefined>();
+
+  const autocompleteOnSubmit = (address: Address) => {
+    setAddress(address);
+  };
+
+  if (props.googleApiKey === undefined || address !== undefined) {
+    return <FullAddressForm address={address} />;
+  }
+
+  return (
+    <AutocompleteAddress
+      googleApiKey={props.googleApiKey}
+      onSubmit={autocompleteOnSubmit}
+    />
+  );
+}

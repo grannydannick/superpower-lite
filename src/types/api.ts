@@ -42,3 +42,14 @@ export type Comment = Entity<{
   discussionId: string;
   author: User;
 }>;
+
+export type Questionnaire = Entity<{
+  id: string;
+}>;
+
+export type Address = Entity<{
+  line: string[];
+  city: string;
+  state: string;
+  postalCode: string;
+}>;

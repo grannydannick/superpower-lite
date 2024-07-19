@@ -16,16 +16,18 @@ const buttonVariants = cva(
         destructive:
           'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
         outline:
-          'border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground',
+          'border border-input bg-transparent text-white hover:bg-white/20',
         secondary:
           'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
+        ghost: 'text-white',
         link: 'text-primary underline-offset-4 hover:underline',
+        glass: 'bg-white bg-opacity-5 text-white hover:bg-opacity-10',
+        white: 'bg-white text-lg text-zinc-900',
       },
       size: {
         default: 'h-9 px-4 py-2',
         sm: 'h-8 rounded-md px-3 text-xs',
-        lg: 'h-10 rounded-md px-8',
+        lg: 'h-14 rounded-xl px-8 py-4',
         icon: 'size-9',
       },
     },

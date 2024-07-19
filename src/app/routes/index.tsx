@@ -32,6 +32,13 @@ export const createRouter = (queryClient: QueryClient) =>
       },
     },
     {
+      path: '/onboarding',
+      lazy: async () => {
+        const { OnboardingRoute } = await import('./app/onboarding');
+        return { Component: OnboardingRoute };
+      },
+    },
+    {
       path: '/app',
       element: (
         <ProtectedRoute>
