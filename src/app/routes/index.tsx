@@ -6,6 +6,7 @@ import { ProtectedRoute } from '@/lib/auth';
 import { discussionLoader } from './app/discussions/discussion';
 import { discussionsLoader } from './app/discussions/discussions';
 import { AppRoot } from './app/root';
+import { servicesLoader } from './app/services';
 import { usersLoader } from './app/users';
 
 export const createRouter = (queryClient: QueryClient) =>
@@ -53,6 +54,14 @@ export const createRouter = (queryClient: QueryClient) =>
         </ProtectedRoute>
       ),
       children: [
+        {
+          path: 'services',
+          lazy: async () => {
+            const { ServicesRoute } = await import('./app/services');
+            return { Component: ServicesRoute };
+          },
+          loader: servicesLoader(queryClient),
+        },
         {
           path: 'discussions',
           lazy: async () => {
