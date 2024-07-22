@@ -77,6 +77,13 @@ export const createRouter = (queryClient: QueryClient) =>
           },
         },
         {
+          path: 'data',
+          lazy: async () => {
+            const { DataRoute } = await import('./app/data');
+            return { Component: DataRoute };
+          },
+        },
+        {
           path: 'discussions',
           lazy: async () => {
             const { DiscussionsRoute } = await import(
