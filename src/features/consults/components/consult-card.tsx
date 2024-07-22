@@ -24,12 +24,14 @@ export const ConsultCard = ({ consultId }: { consultId: string }) => {
     <div className="group relative">
       <div className="flex flex-col space-y-12 rounded-[20px] bg-[#F7F7F7] p-6">
         <img
-          src={'/src/assets/practitioners/dr_jonathan_richina.png'}
-          alt={'Dr. Jonathan Richina'}
+          src={`/src/assets/practitioners/${consultQuery.data.practitioner.replaceAll('.', '').replaceAll(' ', '_').trim()}.png`}
+          alt={consultQuery.data.practitioner}
           className="size-16 rounded-[16px]"
         />
         <div>
-          <p className="line-clamp-1 text-xl leading-7">General</p>
+          <p className="line-clamp-1 text-xl leading-7">
+            {consultQuery.data.name}
+          </p>
           <p className="line-clamp-2 text-[#A1A1A1]">Next: Tomorrow, 10:00am</p>
         </div>
       </div>

@@ -70,4 +70,6 @@ export type Biomarker = Entity<{
 
 export type Consult = Entity<{
   id: string;
+  name: string;
+  practitioner: string;
 }>;
