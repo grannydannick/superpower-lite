@@ -39,7 +39,7 @@ const CheckoutOptionsSectionPlan = () => {
               <div>
                 <p>Superpower Membership</p>
                 <div className="flex flex-row items-center">
-                  <span>$599</span>
+                  <span>$499</span>
                   <Dot className="text-[#A1A1AA]" />
                   <span className="text-[#A1A1AA]">Billed annually</span>
                 </div>
@@ -104,7 +104,7 @@ const CheckoutOptionsSectionConsults = () => {
         {[
           {
             name: '1-1 Advisory Call',
-            description: 'Consultation with a longevity doctor',
+            description: 'Consultation with a longevity doctor.',
             price: 199,
           },
         ].map((service, i) => (
@@ -189,24 +189,21 @@ const BloodTestPackageCard = ({ service }: BloodTestPackageCardProps) => {
 
 const services = [
   {
-    name: 'Grail Galleri Multi-Cancer Test',
+    name: 'Grail Galleri Multi Cancer Test',
     description:
       'Detect signals of over 50 types of cancers at their earliest, most treatable stages.',
     price: 1099,
   },
   {
-    name: 'Biological Age Test',
-    description: '80+ biomarkers tested in a fully comprehensive blood panel.',
+    name: 'Full Genetic Sequencing',
+    description:
+      'Examines your DNA to identify genetic predispositions to certain conditions.',
     price: 10,
   },
   {
-    name: 'Comprehensive Genetical Panel',
-    description: '80+ biomarkers tested in a fully comprehensive blood panel.',
-    price: 10,
-  },
-  {
-    name: 'Food & Environmental Allergy Test',
-    description: '80+ biomarkers tested in a fully comprehensive blood panel.',
+    name: 'Food & Environmental Allergy Testing',
+    description:
+      'Determine your allergy and sensitivity status to over 350+ foods and common allergens.',
     price: 10,
   },
   {
@@ -242,7 +239,11 @@ const AdditionalServiceCard = ({ service }: AdditionalServiceCardProps) => {
     >
       <div className="flex w-full flex-row items-center justify-between">
         <div className="flex max-w-[300px] flex-row gap-x-4">
-          <img src={membershipAvi} alt={service.name} className="m-1 size-16" />
+          <img
+            src={`/src/assets/services/${service.name.replaceAll(' ', '_')}.png`}
+            alt={service.name}
+            className="m-1 size-16 rounded-lg object-cover"
+          />
           <div className="flex flex-col">
             <p className="line-clamp-1 text-[#71717A]">{service.name}</p>
             <span className="line-clamp-2 text-[#A5A5AE]">
