@@ -39,6 +39,13 @@ export const createRouter = (queryClient: QueryClient) =>
       },
     },
     {
+      path: '/checkout',
+      lazy: async () => {
+        const { CheckoutRoute } = await import('./app/checkout');
+        return { Component: CheckoutRoute };
+      },
+    },
+    {
       path: '/app',
       element: (
         <ProtectedRoute>

@@ -61,7 +61,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               className={cn('text-white', 'size-4 shrink-0')}
               aria-hidden="true"
             />
-            <p className="text-sm text-white xs:text-base">{item.name}</p>
+            <p className="xs:text-base text-sm text-white">{item.name}</p>
           </NavLink>
         ))}
         <DropdownMenu>
@@ -79,7 +79,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[244px] rounded-3xl border-none bg-black p-1.5 text-white outline-none xs:w-[178px]"
+            className="xs:w-[178px] w-[244px] rounded-3xl border-none bg-black p-1.5 text-white outline-none"
             side="bottom"
             sideOffset={10}
             align="end"
