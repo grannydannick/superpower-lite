@@ -19,7 +19,7 @@ export const ServicesList = () => {
   if (!servicesQuery.data) return null;
 
   return (
-    <div className="grid grid-cols-2 gap-x-3 gap-y-9 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid grid-cols-1 gap-1 sm:grid-cols-2 sm:gap-x-3 sm:gap-y-9 lg:grid-cols-3 xl:grid-cols-4">
       {servicesQuery.data.map((service: HealthcareService, i: number) => (
         <ServiceCard key={i} serviceId={service.id} />
       ))}

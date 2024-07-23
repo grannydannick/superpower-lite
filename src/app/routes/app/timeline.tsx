@@ -2,15 +2,17 @@ import { NavLink } from 'react-router-dom';
 
 export const TimelineRoute = () => {
   return (
-    <div className="space-y-20">
-      <div className="flex justify-center space-x-6">
+    <div className="space-y-12 sm:space-y-20">
+      <div className="flex space-x-6 sm:justify-center">
         <NavLink to={'/app/timeline'}>
-          <span className="text-[20px] text-zinc-900 opacity-100">
+          <span className="text-2xl text-zinc-900 opacity-100 sm:text-[20px]">
             Timeline
           </span>
         </NavLink>
         <NavLink to={'/app/services'}>
-          <span className="text-[20px] text-zinc-900 opacity-20">Services</span>
+          <span className="text-2xl text-zinc-900 opacity-20 sm:text-[20px]">
+            Services
+          </span>
         </NavLink>
       </div>
     </div>

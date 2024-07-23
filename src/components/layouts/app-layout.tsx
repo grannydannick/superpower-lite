@@ -43,7 +43,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           backgroundPosition: '-12 -12',
         }}
       >
-        <div className="container mx-auto p-16 pt-9">{children}</div>
+        <div className="container mx-auto pb-16 pt-9 sm:p-16 sm:pb-0">
+          {children}
+        </div>
       </main>
       <div className="fixed bottom-12 left-1/2 z-10 flex -translate-x-1/2 rounded-full bg-black p-1.5">
         {navigation.map((item) => (

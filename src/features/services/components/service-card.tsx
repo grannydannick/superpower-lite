@@ -22,24 +22,24 @@ export const ServiceCard = ({ serviceId }: { serviceId: string }) => {
 
   return (
     <div className="group relative">
-      <div className="flex h-full flex-col space-y-2 rounded-[20px] bg-[#F7F7F7] p-2">
-        <div className="aspect-[225/172] rounded-[20px] bg-white">
-          <img
-            src={`/src/assets/services/${serviceQuery.data.name.replaceAll(' ', '_').toLowerCase().trim()}.png`}
-            alt={serviceQuery.data.name}
-            className="rounded-[16px]"
-          />
-        </div>
-        <div className="space-y-1 p-4">
-          <p className="line-clamp-1 text-xl leading-7">
+      <div className="flex h-full items-center gap-x-3 gap-y-2 rounded-[20px] bg-[#F7F7F7] px-5 py-4 sm:flex-col sm:items-start sm:gap-x-0 sm:rounded-[24px] sm:p-2">
+        {/* <div className="aspect-[225/172] rounded-[20px] bg-white"> */}
+        <img
+          src={`/src/assets/services/${serviceQuery.data.name.replaceAll(' ', '_').toLowerCase().trim()}.png`}
+          alt={serviceQuery.data.name}
+          className="aspect-[225/172] size-9 rounded-[8px] object-cover sm:size-full sm:rounded-[20px]"
+        />
+        {/* </div> */}
+        <div className="sm:space-y-1 sm:p-4">
+          <p className="line-clamp-1 leading-5 sm:text-xl sm:leading-7">
             {serviceQuery.data.name}
           </p>
-          <p className="line-clamp-3 text-[#A1A1A1]">
+          <p className="line-clamp-1 text-sm text-[#A1A1A1] sm:line-clamp-3 sm:text-base">
             {serviceQuery.data.description}
           </p>
         </div>
       </div>
-      <div className="absolute bottom-3 right-3 opacity-0 transition-opacity group-hover:opacity-100">
+      <div className="bottom-3 right-3 hidden opacity-0 transition-opacity group-hover:opacity-100 sm:absolute">
         <Button className="rounded-full p-2.5">
           <ArrowRight className="size-4" />
         </Button>
