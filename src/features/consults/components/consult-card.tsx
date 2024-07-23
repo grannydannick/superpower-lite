@@ -37,7 +37,7 @@ export const ConsultCard = ({ consultId }: { consultId: string }) => {
           </p>
         </div>
       </div>
-      <div className="bottom-3 right-3 hidden opacity-0 transition-opacity group-hover:opacity-100 sm:absolute">
+      <div className="bottom-3 right-3 hidden opacity-0 transition-opacity group-hover:opacity-100 sm:absolute sm:block">
         <Button className="rounded-full p-2.5">
           <ArrowRight className="size-4" />
         </Button>
