@@ -1,7 +1,7 @@
 import { ArrowRight } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
+import { Skeleton } from '@/components/ui/skeleton';
 
 import { useConsult } from '../api/get-consult';
 
@@ -11,11 +11,7 @@ export const ConsultCard = ({ consultId }: { consultId: string }) => {
   });
 
   if (consultQuery.isLoading) {
-    return (
-      <div className="flex h-48 w-full items-center justify-center">
-        <Spinner size="lg" />
-      </div>
-    );
+    return <SkeletonConsultCard />;
   }
 
   if (!consultQuery.data) return null;
@@ -35,6 +31,25 @@ export const ConsultCard = ({ consultId }: { consultId: string }) => {
           <p className="line-clamp-1 text-sm text-[#A1A1A1] sm:line-clamp-2 sm:text-base">
             Next: Tomorrow, 10:00am
           </p>
+        </div>
+      </div>
+      <div className="bottom-3 right-3 hidden opacity-0 transition-opacity group-hover:opacity-100 sm:absolute sm:block">
+        <Button className="rounded-full p-2.5">
+          <ArrowRight className="size-4" />
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+const SkeletonConsultCard = () => {
+  return (
+    <div className="group relative">
+      <div className="flex flex-row items-center gap-x-3 gap-y-12 rounded-[20px] bg-zinc-50/40 px-5 py-4 sm:flex-col sm:items-start sm:p-6">
+        <Skeleton className="size-9 rounded-[8px] sm:size-16 sm:rounded-[16px]" />
+        <div className="w-full space-y-3">
+          <Skeleton className="h-4 w-1/2 sm:h-5" />
+          <Skeleton className="h-4 w-3/4 sm:h-4" />
         </div>
       </div>
       <div className="bottom-3 right-3 hidden opacity-0 transition-opacity group-hover:opacity-100 sm:absolute sm:block">
