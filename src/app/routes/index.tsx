@@ -6,7 +6,7 @@ import { ProtectedRoute } from '@/lib/auth';
 import { discussionLoader } from './app/discussions/discussion';
 import { discussionsLoader } from './app/discussions/discussions';
 import { AppRoot } from './app/root';
-import { servicesLoader } from './app/services';
+//import { servicesLoader } from './app/services';
 import { usersLoader } from './app/users';
 
 export const createRouter = (queryClient: QueryClient) =>
@@ -67,7 +67,9 @@ export const createRouter = (queryClient: QueryClient) =>
             const { ServicesRoute } = await import('./app/services');
             return { Component: ServicesRoute };
           },
-          loader: servicesLoader(queryClient),
+          //loader: () => {
+          //  servicesLoader(queryClient);
+          //},
         },
         {
           path: 'concierge',
@@ -81,6 +83,13 @@ export const createRouter = (queryClient: QueryClient) =>
           lazy: async () => {
             const { DataRoute } = await import('./app/data');
             return { Component: DataRoute };
+          },
+        },
+        {
+          path: 'report',
+          lazy: async () => {
+            const { ReportRoute } = await import('./app/report');
+            return { Component: ReportRoute };
           },
         },
         {

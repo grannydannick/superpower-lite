@@ -4,6 +4,7 @@ import { env } from '@/config/env';
 
 import { networkDelay } from '../utils';
 
+import { appointmentsHandlers } from './appointments';
 import { authHandlers } from './auth';
 import { commentsHandlers } from './comments';
 import { consultsHandlers } from './consults';
@@ -14,6 +15,7 @@ import { teamsHandlers } from './teams';
 import { usersHandlers } from './users';
 
 export const handlers = [
+  ...appointmentsHandlers,
   ...authHandlers,
   ...commentsHandlers,
   ...consultsHandlers,

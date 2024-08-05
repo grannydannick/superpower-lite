@@ -25,6 +25,10 @@ export type AuthResponse = {
   user: User;
 };
 
+export type ServiceabilityResponse = {
+  serviceable: boolean;
+};
+
 export type Team = Entity<{
   name: string;
   description: string;

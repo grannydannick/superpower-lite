@@ -1,6 +1,46 @@
 import { AddressForm } from '@/components/ui/autocomplete-address/autocomplete-address';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useGetServiceability } from '@/features/onboarding/api/get-serviceability';
+
+export const OnboardingPrimaryAddress = (props: {
+  nextStep: (() => void) | undefined;
+}) => {
+  const getServiceabilityMutation = useGetServiceability();
+
+  const onSubmit = async (address: any) => {
+    const data = { postalCode: address.postalCode };
+    const { serviceable } = await getServiceabilityMutation.mutateAsync({
+      data,
+    });
+
+    if (serviceable) {
+      props.nextStep && props.nextStep();
+    }
+  };
+
+  return (
+    <section
+      id="main"
+      className="mx-auto flex max-w-[500px] flex-col gap-y-12 text-center md:max-w-3xl"
+    >
+      <div className="space-y-12">
+        <div className="space-y-3 ">
+          <p className="text-sm text-white opacity-80 md:text-base">
+            Welcome to Superpower
+          </p>
+          <h1 className="text-3xl text-white md:text-6xl">
+            Where do you live or primarily plan to receive services?
+          </h1>
+        </div>
+        <AddressForm
+          //googleApiKey={'AIzaSyB4uyJlUrJDEcJHmHDzeS0gHa4Wcg--keU'}
+          onSubmit={onSubmit}
+        />
+      </div>
+    </section>
+  );
+};
 
 export const OnboardingContentComingSoon = (props: {
   prevStep: (() => void) | undefined;
@@ -56,39 +96,3 @@ export const OnboardingContentComingSoon = (props: {
     </div>
   </section>
 );
-
-export const OnboardingPrimaryAddress = (props: {
-  nextStep: (() => void) | undefined;
-}) => {
-  // const login = useLogin({
-  //   onSuccess,
-  // });
-  //
-
-  const onSubmit = (address: any) => {
-    console.log(address);
-    props.nextStep && props.nextStep();
-  };
-
-  return (
-    <section
-      id="main"
-      className="mx-auto flex max-w-[500px] flex-col gap-y-12 text-center md:max-w-3xl"
-    >
-      <div className="space-y-12">
-        <div className="space-y-3 ">
-          <p className="text-sm text-white opacity-80 md:text-base">
-            Welcome to Superpower
-          </p>
-          <h1 className="text-3xl text-white md:text-6xl">
-            Where do you live or primarily plan to receive services?
-          </h1>
-        </div>
-        <AddressForm
-          googleApiKey={'AIzaSyB4uyJlUrJDEcJHmHDzeS0gHa4Wcg--keU'}
-          onSubmit={onSubmit}
-        />
-      </div>
-    </section>
-  );
-};
