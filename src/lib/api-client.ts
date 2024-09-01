@@ -47,8 +47,8 @@ api.interceptors.response.use(
           formBody.set('grant_type', OAuthGrantType.RefreshToken);
           formBody.set('refresh_token', refreshToken);
 
-          const tokens: TokenResponse = await axios.post(
-            'oauth2/token',
+          const tokens = await axios.post<TokenResponse>(
+            `${env.API_URL}/oauth2/token`,
             formBody,
             {
               headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -56,28 +56,31 @@ api.interceptors.response.use(
             },
           );
 
-          const token = tokens.access_token;
+          const token = tokens.data.access_token;
 
           // Verify token has not expired
           const tokenPayload = parseJWTPayload(token);
           if (Date.now() >= (tokenPayload.exp as number) * 1000) {
             clearActiveLogin();
+            window.location.reload();
             throw new Error('Token expired');
           }
 
           setActiveLogin({
             accessToken: token,
-            refreshToken: tokens.refresh_token,
-            profile: tokens.profile,
+            refreshToken: tokens.data.refresh_token,
+            profile: tokens.data.profile,
           });
 
           originalRequest.headers.Authorization = `Bearer ${token}`;
         }
+
         return api.request(originalRequest);
       } catch (err) {
         console.log('Not authorized');
 
         clearActiveLogin();
+        window.location.reload();
       }
     }
     throw error;

@@ -50,7 +50,6 @@ export function stringify(value: any, pretty?: boolean): string {
 export const setActiveLogin = (login: LoginState) => {
   clearActiveLogin();
   setLocalStorageObject('activeLogin', login);
-  addLogin(login);
 };
 
 /**
@@ -59,17 +58,6 @@ export const setActiveLogin = (login: LoginState) => {
  */
 export const clearActiveLogin = () => {
   localStorage.removeItem('activeLogin');
-};
-
-export const addLogin = (newLogin: LoginState) => {
-  const logins = getLogins();
-
-  logins.push(newLogin);
-  setLocalStorageObject('logins', logins);
-};
-
-export const getLogins = (): LoginState[] => {
-  return getLocalStorageObject<LoginState[]>('logins') ?? [];
 };
 
 export const getActiveLogin = (): LoginState | null => {
