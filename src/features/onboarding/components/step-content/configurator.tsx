@@ -26,7 +26,7 @@ export const Configurator = () => {
       component: <SectionPackages />,
       image: (
         <img
-          src="/services/superpower_blood_panel.png"
+          src="/onboarding/superpower-blood-nobg.png"
           className="h-auto w-full max-w-[423px] object-cover"
           alt="tube"
         />
