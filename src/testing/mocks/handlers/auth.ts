@@ -45,11 +45,11 @@ export const authHandlers = [
         );
       }
 
-      const role = 'ADMIN';
+      const admin = true;
 
       db.user.create({
         ...userObject,
-        role,
+        admin,
         password: hash(userObject.password),
       });
 

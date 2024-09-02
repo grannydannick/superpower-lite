@@ -20,6 +20,8 @@ Integration testing checks how different parts of your application work together
 
 End-to-End Testing is a method that evaluates an application as a whole. These tests involve automating the complete application, including both the frontend and backend, to confirm that the entire system functions correctly. End-to-End tests simulate how a user would interact with the application.
 
+To run locally, make sure you ran `yarn playwright install --with-deps` before.
+
 [E2E Example Code](../e2e/tests/smoke.spec.ts)
 
 ## Recommended Tooling:

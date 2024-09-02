@@ -76,5 +76,7 @@ export const Authorization = ({
     canAccess = policyCheck;
   }
 
+  console.log(canAccess);
+
   return <>{canAccess ? children : forbiddenFallback}</>;
 };

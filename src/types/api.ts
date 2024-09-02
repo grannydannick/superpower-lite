@@ -116,12 +116,14 @@ export type Questionnaire = Entity<{
 
 /* HEALTHCARE SERVICE */
 export type HealthcareService = Entity<{
-  id: string;
   name: string;
-  description: string;
-  image: string;
+  description: string | undefined;
+  method: 'at_home_phlebotomy' | 'testkit';
   price: number;
-  items: [];
+  active: boolean;
+  phlebotomy: boolean;
+  image?: string;
+  items: ServiceItem[];
 }>;
 
 export type Coupon = {

@@ -12,7 +12,7 @@ export const AppRoot = () => {
       <Suspense
         fallback={
           <div className="flex size-full items-center justify-center">
-            <Spinner size="xl" />
+            <Spinner size="xl" variant="primary" />
           </div>
         }
       >

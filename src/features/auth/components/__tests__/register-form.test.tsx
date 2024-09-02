@@ -15,6 +15,11 @@ test('should register new user and call onSuccess cb which should navigate the u
     newUser.firstName,
   );
   await userEvent.type(screen.getByLabelText(/last name/i), newUser.lastName);
+  await userEvent.type(
+    screen.getByPlaceholderText(/enter phone number/i),
+    newUser.phone,
+  );
+  await userEvent.selectOptions(screen.getByLabelText(/gender/), 'MALE');
   await userEvent.type(screen.getByLabelText(/email/i), newUser.email);
   await userEvent.type(screen.getByLabelText(/password/i), newUser.password);
 

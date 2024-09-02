@@ -1,71 +1,78 @@
-import { ArrowRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
+import { Body1, Body2, H4 } from '@/components/ui/typography';
+import { HealthcareServiceDialogContent } from '@/shared/components';
+import { HealthcareService } from '@/types/api';
 
-import { useService } from '../api/get-service';
-
-export const ServiceCard = ({ serviceId }: { serviceId: string }) => {
-  const serviceQuery = useService({
-    serviceId,
-    method: null,
-  });
-
-  if (serviceQuery.isLoading) {
-    return <SkeletonServiceCard />;
-  }
-
-  if (!serviceQuery.data) return null;
-
+export const ServiceCard = ({ service }: { service: HealthcareService }) => {
   return (
-    <div className="group relative">
-      <div className="flex h-full items-center gap-x-3 gap-y-2 rounded-[20px] bg-[#F7F7F7] px-5 py-4 sm:flex-col sm:items-start sm:gap-x-0 sm:rounded-[24px] sm:p-2">
-        {/* <div className="aspect-[225/172] rounded-[20px] bg-white"> */}
-        <img
-          src={serviceQuery.data.service.image}
-          alt={serviceQuery.data.service.name}
-          className="aspect-[225/172] size-9 rounded-[8px] object-cover sm:size-full sm:rounded-[20px]"
-        />
-        {/* </div> */}
-        <div className="sm:space-y-1 sm:p-4">
-          <p className="line-clamp-1 leading-5 sm:text-xl sm:leading-7">
-            {serviceQuery.data.service.name}
-          </p>
-          <p className="line-clamp-1 text-sm text-[#A1A1A1] sm:line-clamp-3 sm:text-base">
-            {serviceQuery.data.service.description}
-          </p>
+    <>
+      <DesktopCard service={service} />
+      <MobileCard service={service} />
+    </>
+  );
+};
+
+const DesktopCard = ({ service }: { service: HealthcareService }) => {
+  return (
+    <div className="hidden h-[386px] flex-col items-start rounded-3xl border border-zinc-100 bg-zinc-100 sm:flex">
+      <img
+        src={service.image}
+        alt={service.name}
+        className="h-[190px] w-full rounded-b-2xl rounded-t-3xl object-cover"
+      />
+      <div className="flex flex-1 flex-col justify-between sm:p-5">
+        <div className="space-y-1">
+          <H4 className="line-clamp-2 text-wrap">{service.name}</H4>
+          <Body2 className="line-clamp-2 text-wrap text-zinc-500">
+            {service.description}
+          </Body2>
         </div>
-      </div>
-      <div className="bottom-3 right-3 hidden opacity-0 transition-opacity group-hover:opacity-100 sm:absolute sm:block">
-        <Button className="rounded-full p-2.5">
-          <ArrowRight className="size-4" />
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button
+              variant="white"
+              className="border border-zinc-200 px-5 py-3 hover:bg-white/30"
+            >
+              Get started
+            </Button>
+          </DialogTrigger>
+
+          <HealthcareServiceDialogContent healthcareService={service}>
+            <Button>Have you changed me?</Button>
+          </HealthcareServiceDialogContent>
+        </Dialog>
       </div>
     </div>
   );
 };
 
-const SkeletonServiceCard = () => {
+const MobileCard = ({ service }: { service: HealthcareService }) => {
   return (
-    <div className="group relative">
-      <div className="flex h-full items-center gap-x-3 gap-y-2 rounded-[20px] bg-zinc-50/40 px-5 py-4 sm:flex-col sm:items-start sm:gap-x-0 sm:rounded-[24px] sm:p-2">
-        {/* <div className="aspect-[225/172] rounded-[20px] bg-white"> */}
-        <Skeleton className="aspect-[225/172] size-9 rounded-[8px] object-cover sm:size-full sm:rounded-[20px]" />
-        {/* </div> */}
-        <div className="w-full sm:space-y-2 sm:p-4">
-          <Skeleton className="h-6 w-2/3" />
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
+    <Dialog>
+      <DialogTrigger asChild>
+        <div className="flex items-center justify-between gap-3 rounded-[20px] bg-zinc-100 px-5 py-4 sm:hidden">
+          <img
+            src={service.image}
+            alt={service.name}
+            className="size-9 rounded-lg object-cover"
+          />
+          <div>
+            <Body1 className="line-clamp-1">{service.name}</Body1>
+            <Body2 className="line-clamp-1 text-zinc-500">
+              {service.description}
+            </Body2>
+          </div>
+          <div className="flex items-center justify-center">
+            <ChevronRight className="size-4 text-zinc-500" />
           </div>
         </div>
-      </div>
-      <div className="bottom-3 right-3 hidden opacity-0 transition-opacity group-hover:opacity-100 sm:absolute sm:block">
-        <Button className="rounded-full p-2.5">
-          <ArrowRight className="size-4" />
-        </Button>
-      </div>
-    </div>
+      </DialogTrigger>
+      <HealthcareServiceDialogContent healthcareService={service}>
+        <Button>Have you changed me?</Button>
+      </HealthcareServiceDialogContent>
+    </Dialog>
   );
 };

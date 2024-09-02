@@ -4,7 +4,6 @@ import { createBrowserRouter } from 'react-router-dom';
 import { ProtectedRoute } from '@/lib/auth';
 
 import { AppRoot } from './app/root';
-//import { servicesLoader } from './app/services';
 import { usersLoader } from './app/users';
 
 export const createRouter = (queryClient: QueryClient) =>
@@ -58,9 +57,10 @@ export const createRouter = (queryClient: QueryClient) =>
             const { ServicesRoute } = await import('./app/services');
             return { Component: ServicesRoute };
           },
-          //loader: () => {
-          //  servicesLoader(queryClient);
-          //},
+          // loader: async () => {
+          //   const { servicesLoader } = await import('./app/services');
+          //   return servicesLoader(queryClient)();
+          // },
         },
         {
           path: 'onboarding',

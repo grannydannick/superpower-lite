@@ -9,9 +9,8 @@ import {
 } from '@/components/ui/accordion';
 import { DialogClose, DialogContent } from '@/components/ui/dialog';
 import { Body1, Body2, H2, H4 } from '@/components/ui/typography';
-import { REQUESTABLE_SERVICES } from '@/const';
+import { getHealthcareServicePriceLabel } from '@/features/services/const/get-service-price';
 import { HealthcareService } from '@/types/api';
-import { formatMoney } from '@/utils/format-money';
 
 import {
   findServiceDetailsByName,
@@ -63,29 +62,15 @@ export function HealthcareServiceDetails({
 }): JSX.Element {
   const serviceDetails = findServiceDetailsByName(healthcareService.name);
 
-  const renderPrice = () => {
-    if (healthcareService.items.length > 0) {
-      return 'Price determined at checkout';
-    }
-
-    if (healthcareService.price === 0) {
-      if (REQUESTABLE_SERVICES.includes(healthcareService.name)) {
-        return 'Price on request';
-      } else {
-        return 'Included in subscription';
-      }
-    } else {
-      return formatMoney(healthcareService.price);
-    }
-  };
-
   return (
     <div>
       <div className="flex flex-col justify-between gap-12 bg-[#F7F7F7] px-12 pb-16 sm:flex-row">
         <div className="flex max-w-[278px] flex-col justify-center gap-6">
           <div>
             <H2 className="text-zinc-900">{healthcareService.name}</H2>
-            <Body2 className="text-zinc-500">{renderPrice()}</Body2>
+            <Body2 className="text-zinc-500">
+              {getHealthcareServicePriceLabel(healthcareService)}
+            </Body2>
           </div>
           <Body1 className="text-zinc-500">
             {healthcareService.description}
@@ -93,13 +78,11 @@ export function HealthcareServiceDetails({
           <div className="flex flex-row items-center space-x-4">{children}</div>
         </div>
 
-        <div className="flex size-[362px] items-center justify-center rounded-2xl border  border-zinc-200 bg-white">
-          <img
-            src={healthcareService.image}
-            className="h-auto w-[222px] object-cover"
-            alt={healthcareService.name}
-          />
-        </div>
+        <img
+          src={healthcareService.image}
+          className="size-[362px] h-auto rounded-2xl border border-zinc-200  bg-white object-cover"
+          alt={healthcareService.name}
+        />
       </div>
       <Accordion type="single" collapsible className="w-full border-t">
         {serviceDetails

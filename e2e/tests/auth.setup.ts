@@ -6,10 +6,9 @@ const authFile = 'e2e/.auth/user.json';
 setup('authenticate', async ({ page }) => {
   const user = createUser();
 
-  await page.goto('/');
-  await page.getByRole('button', { name: 'Get started' }).click();
-  await page.waitForURL('/auth/login');
-  await page.getByRole('link', { name: 'Register' }).click();
+  await page.goto('/auth/register');
+
+  // TODO: add steps here to send SUPERPOWER code
 
   // registration:
   await page.getByLabel('First Name').click();

@@ -21,7 +21,7 @@ test('should login new user and call onSuccess cb which should navigate the user
     newUser.password,
   );
 
-  await userEvent.click(screen.getByRole('button', { name: /login/i }));
+  await userEvent.click(screen.getByRole('button', { name: /Login/i }));
 
   await waitFor(() => expect(onSuccess).toHaveBeenCalledTimes(1));
 });

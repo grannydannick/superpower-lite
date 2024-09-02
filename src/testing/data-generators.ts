@@ -1,9 +1,10 @@
 import {
   randUserName,
   randEmail,
-  randParagraph,
   randUuid,
   randPassword,
+  randPhoneNumber,
+  randPastDate,
 } from '@ngneat/falso';
 
 const generateUser = () => ({
@@ -12,9 +13,10 @@ const generateUser = () => ({
   lastName: randUserName({ withAccents: false }),
   email: randEmail(),
   password: randPassword(),
-  role: 'ADMIN',
-  bio: randParagraph(),
-  createdAt: Date.now(),
+  phone: randPhoneNumber(),
+  gender: 'MALE',
+  dateOfBirth: randPastDate({ years: 20 }),
+  admin: true,
 });
 
 export const createUser = <T extends Partial<ReturnType<typeof generateUser>>>(
