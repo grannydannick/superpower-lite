@@ -276,7 +276,7 @@ export const SidebarLink = ({
           exit={{ opacity: 0, width: 0 }}
           transition={{ duration: 0.3 }}
           className={cn(
-            '!m-0 inline-block whitespace-pre !p-0 text-[10px] md:text-sm text-zinc-500 transition duration-150 group-hover/sidebar:translate-x-1 group-hover/sidebar:text-zinc-900',
+            '!m-0 inline-block whitespace-pre !p-0 text-[10px] md:text-sm text-zinc-500 transition duration-150 group-hover/sidebar:translate-y-1 group-hover/sidebar:md:translate-y-0 group-hover/sidebar:md:translate-x-1 group-hover/sidebar:text-zinc-900',
             isSelected ? 'text-zinc-900' : null,
           )}
         >

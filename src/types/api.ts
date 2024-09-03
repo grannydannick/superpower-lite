@@ -335,3 +335,24 @@ export interface UserIdentityVerificationSession {
   created: number;
   url: string | null;
 }
+
+export type ConciergeNotificationType = 'concierge' | 'service' | 'plan';
+
+/* Payment Methods */
+
+export type PaymentMethod = {
+  stripePaymentMethodId: string;
+  stripeCustomerId: string;
+  billing_details: {
+    postal_code: string | null;
+  } | null;
+  card: {
+    brand: string;
+    country: string | null;
+    exp_month: number;
+    exp_year: number;
+    last4: string;
+  };
+  created: number;
+  default: boolean;
+};

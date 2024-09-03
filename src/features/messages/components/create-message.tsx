@@ -10,39 +10,30 @@ import {
   FormItem,
   FormMessage,
 } from '@/components/ui/form';
+import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 import { Body1 } from '@/components/ui/typography';
 
 import {
   CreateMessageInput,
   createMessageInputSchema,
+  useCreateMessage,
 } from '../api/create-message';
 
 export const CreateMessage = (): JSX.Element => {
-  // const { addNotification } = useNotifications();
-  // const createMessageMutation = useCreateMessage({
-  //   mutationConfig: {
-  //     onSuccess: () => {
-  //     },
-  //   },
-  // });
+  const createMessageMutation = useCreateMessage();
 
   const form = useForm<CreateMessageInput>({
     resolver: zodResolver(createMessageInputSchema),
     defaultValues: {
-      body: '',
+      text: '',
+      type: 'concierge',
     },
   });
 
-  // const sendNoteFn = async (): Promise<void> => {
-  //   await mutateAsync({
-  //     text: `Your concierge longevity clinician will respond with details about your question.${
-  //       message.length > 0 ? `\n\nAdditional Notes:\n\n${message}` : ''
-  //     }`,
-  //   });
-  //
-  //   setMessage('');
-  // };
+  function onSubmit(values: CreateMessageInput) {
+    createMessageMutation.mutate({ data: values });
+  }
 
   return (
     <div className="flex flex-col">
@@ -52,10 +43,13 @@ export const CreateMessage = (): JSX.Element => {
       </Body1>
 
       <Form {...form}>
-        <form className="mt-[71px] flex w-full flex-col gap-6">
+        <form
+          className="mt-[71px] flex w-full flex-col gap-6"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
           <FormField
             control={form.control}
-            name="body"
+            name="text"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
@@ -69,14 +63,14 @@ export const CreateMessage = (): JSX.Element => {
               </FormItem>
             )}
           />
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1 px-4 ">
+          <div className="flex flex-col-reverse items-center justify-between gap-6 md:flex-row">
+            <div className="flex items-center gap-1">
               <TimerIcon color="#71717A" className="size-4" />
-              <Body1 className="text-zinc-500">{`Response Time: < 24 hrs on weekdays`}</Body1>
+              <Body1 className="line-clamp-1 text-zinc-500">{`Response Time: < 24 hrs on weekdays`}</Body1>
             </div>
 
-            <Button form="create-message" type="submit">
-              Send Message
+            <Button className="w-full md:w-auto" type="submit">
+              {createMessageMutation.isPending ? <Spinner /> : 'Send Message'}
             </Button>
           </div>
         </form>

@@ -1,8 +1,8 @@
-import { PaymentMethod } from '@stripe/stripe-js';
 import { queryOptions, useQuery } from '@tanstack/react-query';
 
 import { api } from '@/lib/api-client';
 import { QueryConfig } from '@/lib/react-query';
+import { PaymentMethod } from '@/types/api';
 
 export const getPaymentMethods = (
   page = 1,

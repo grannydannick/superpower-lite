@@ -6,7 +6,8 @@ import { MutationConfig } from '@/lib/react-query';
 import { Message } from '@/types/api';
 
 export const createMessageInputSchema = z.object({
-  body: z.string().min(1, 'Required'),
+  text: z.string().min(1, 'At least one letter is required'),
+  type: z.enum(['concierge', 'service', 'plan']),
 });
 
 export type CreateMessageInput = z.infer<typeof createMessageInputSchema>;
@@ -16,7 +17,7 @@ export const createMessage = ({
 }: {
   data: CreateMessageInput;
 }): Promise<Message> => {
-  return api.post(`/messages`, data);
+  return api.post(`/notifications/concierge`, data);
 };
 
 type UseCreateMessageOptions = {

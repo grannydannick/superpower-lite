@@ -18,6 +18,7 @@ export interface StepperStore extends StepperProps {
   nextStep: () => void;
   prevStep: () => void;
   insertStepsAfter: (id: string, newSteps: StepItem[]) => void;
+  resetSteps: () => void;
 
   /* We are exposing nextOnboardingStep only because server only allows to update if new value is greater than old one */
   nextOnboardingStep: () => Promise<void>;
@@ -86,5 +87,6 @@ export const stepperStoreCreator = (initProps?: Partial<StepperStore>) => {
         activeStep: state.activeStep + 1,
       }));
     },
+    resetSteps: () => set(() => ({ activeStep: 0 })),
   }));
 };
