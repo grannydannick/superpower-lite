@@ -329,12 +329,11 @@ export type MultiPlatformOrder = {
 
 export type MultiPlatformOrderType = 'service' | 'product' | 'membership';
 
-export interface UserIdentityVerificationSession {
-  id: string;
+export type UserIdentityVerificationSession = Entity<{
   clientSecret: string | null;
   created: number;
   url: string | null;
-}
+}>;
 
 export type ConciergeNotificationType = 'concierge' | 'service' | 'plan';
 
@@ -392,3 +391,42 @@ export type Wearable = {
   logo: string;
   status: string;
 };
+
+/* ACTION PLAN */
+
+export type Plan = {
+  orderId: string;
+  timestamp: Date;
+  title: string;
+  description: string;
+  published: boolean;
+  goals: PlanGoal[];
+  videoFileId?: string;
+};
+
+export interface PlanGoal {
+  id: string;
+  title: string;
+  description: string;
+  goalItems: PlanGoalItem[];
+  to: Date;
+  from: Date;
+}
+
+export interface PlanGoalItem {
+  itemId: string;
+  itemType: PlanGoalItemType;
+  description?: string;
+  timestamp?: Date;
+}
+
+export type PlanGoalItemType = 'SERVICE' | 'BIOMARKER' | 'PRODUCT';
+
+/* PRODUCTS */
+
+export type Product = Entity<{
+  name: string;
+  image?: string;
+  price: string;
+  url: string;
+}>;
