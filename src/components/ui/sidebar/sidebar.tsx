@@ -23,6 +23,7 @@ import {
   MarketplaceIcon,
   MessageIcon,
   ServicesIcon,
+  LockIcon,
 } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import {
@@ -131,7 +132,7 @@ export const DesktopSidebar = () => {
     checkAccess({ allowedRoles: [ROLES.ADMIN] }) && {
       name: 'Admin',
       to: './admin/users',
-      icon: Lock,
+      icon: LockIcon,
     },
   ].filter(Boolean) as Link[];
 
@@ -245,6 +246,8 @@ export const SidebarLink = ({
   const { pathname } = useLocation();
   const isSelected = pathname === link.to;
 
+  const Icon = link.icon;
+
   return (
     <NavLink
       to={link.to}
@@ -259,7 +262,7 @@ export const SidebarLink = ({
       }
       {...props}
     >
-      <link.icon
+      <Icon
         className={cn(
           'w-5 h-5 text-zinc-400',
           isSelected ? 'text-zinc-800' : null,
