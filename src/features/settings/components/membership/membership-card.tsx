@@ -35,7 +35,7 @@ export const MembershipCard = (): JSX.Element => {
   return (
     <div
       className={cn(
-        `flex items-center justify-center w-full max-w-[400px] lg:max-w-[450px] mx-auto`,
+        `flex items-center justify-center w-full md:max-w-[400px] lg:max-w-[450px] mx-auto`,
         !isActive && !isLoading && 'opacity-50',
       )}
     >

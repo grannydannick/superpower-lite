@@ -184,7 +184,7 @@ export const MobileSidebar = () => {
     <>
       <div
         className={cn(
-          'flex justify-between md:hidden  items-center w-full p-4 fixed bottom-0 bg-white border-t border-t-zinc-100 z-[999]',
+          'flex justify-between md:hidden  items-center w-full p-4 fixed bottom-0 bg-white border-t border-t-zinc-100 z-40',
         )}
       >
         {baseLinks.map((link, idx) => (

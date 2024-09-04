@@ -9,7 +9,7 @@ export const MembershipBenefits = (props: {
       {props.benefits.map((benefit, idx) => (
         <Card
           key={idx}
-          className="flex flex-row items-center space-x-4 bg-[#F7F7F7] p-4"
+          className="flex flex-row items-center space-x-4 rounded-2xl bg-[#F7F7F7] p-4"
         >
           <img
             src={benefit.imgPath}

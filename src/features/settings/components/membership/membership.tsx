@@ -8,7 +8,7 @@ export const Membership = () => {
   return (
     <>
       <div className="mt-8 gap-y-5 md:mt-0 lg:flex lg:flex-col-reverse">
-        <div className="rounded-t-2xl bg-white py-[6%] bg-dot-zinc-400/[0.4] lg:flex lg:justify-center">
+        <div className="rounded-t-2xl bg-transparent py-[6%] md:flex md:justify-center md:bg-white md:bg-dot-zinc-400/[0.4]">
           <MembershipCard />
         </div>
         <CurrentMembership />
@@ -17,7 +17,7 @@ export const Membership = () => {
       <Card className="mt-10 md:mx-0 lg:mt-0 lg:rounded-t-none">
         <section
           id="membership-benefits"
-          className="space-y-8 px-6 py-8 md:px-14 md:py-12"
+          className="mb-4 space-y-8 px-6 py-8 md:px-14 md:py-12"
         >
           <h3 className="text-lg">
             Your Superpower

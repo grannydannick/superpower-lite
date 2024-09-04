@@ -38,7 +38,7 @@ function UpcomingOrdersListEmpty(): JSX.Element {
     <div className="flex shrink-0 items-center justify-center rounded-md py-10">
       <div className="mx-auto flex max-w-[420px] flex-col items-center justify-center text-center">
         <h3 className="mt-4 text-lg">No upcoming orders</h3>
-        <p className="mb-4 mt-2 text-sm text-secondary">
+        <p className="mb-4 mt-2 text-sm text-zinc-400">
           You have no upcoming orders.{' '}
           <a href="/services" className="text-vermillion-700">
             Request a new service.

@@ -8,13 +8,13 @@ export const Profile = () => {
     <div className="space-y-8 md:space-y-20">
       <section id="personal" className="md:space-y-8">
         <H2 className="hidden md:block">Personal Information</H2>
-        <Card className="bg-white p-[72px]">
+        <Card className="bg-transparent p-0 shadow-none md:bg-white md:p-[72px] md:shadow-sm">
           <PersonalInformationForm />
         </Card>
       </section>
       <section id="contact" className="md:space-y-8">
-        <H2 className="md:block">Contact</H2>
-        <Card className="bg-transparent p-[72px] md:bg-white">
+        <H2 className="hidden md:block">Contact</H2>
+        <Card className="bg-transparent p-0 shadow-none md:bg-white md:p-[72px] md:shadow-sm">
           <ContactForm />
         </Card>
       </section>

@@ -57,7 +57,7 @@ export const OrderDropDown = ({ multiPlatformOrder }: OrderDropDownProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" className="hidden md:block">
           <EllipsisVertical
             color="#A1A1AA"
             className="hidden size-4 text-secondary data-[state=open]:bg-muted md:block"

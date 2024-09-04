@@ -6,8 +6,8 @@ import { PaymentMethodList } from '@/features/settings/components/billing/paymen
 export const Billing = () => {
   return (
     <div className="md:space-y-8">
-      <H2>Credit Card</H2>
-      <Card className="bg-transparent p-[72px] md:bg-white">
+      <H2 className="hidden md:block">Credit Card</H2>
+      <Card className="p-4 md:bg-white md:p-[72px]">
         <PaymentMethodList />
         <div className="mt-3 flex md:mt-12 md:justify-end">
           <CreatePaymentMethod />

@@ -20,7 +20,7 @@ export const CurrentMembership = (): JSX.Element => {
         Current Membership
       </h2>
       <div className="flex flex-row gap-x-2">
-        <Card className="w-full px-5 py-4 shadow-none lg:bg-transparent">
+        <Card className="w-full rounded-2xl px-5 py-4 shadow-none lg:bg-transparent">
           <div className="flex flex-col">
             <span className="text-xs text-zinc-400 lg:text-sm">
               {isLoading ? (
@@ -49,7 +49,7 @@ export const CurrentMembership = (): JSX.Element => {
         <CancelMembershipDialog membership={superpowerMembership}>
           <Card
             className={cn(
-              `w-full px-5  shadow-none py-4 lg:bg-transparent pointer-events-none`,
+              `w-full px-5 rounded-2xl  shadow-none py-4 lg:bg-transparent pointer-events-none`,
               superpowerMembership?.status === 'active' &&
                 'cursor-pointer pointer-events-auto',
             )}

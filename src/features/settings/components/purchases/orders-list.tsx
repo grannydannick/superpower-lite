@@ -1,11 +1,11 @@
 import { format } from 'date-fns';
-import { ChevronRight, Dot } from 'lucide-react';
-import { Fragment } from 'react';
+import { ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Spinner } from '@/components/ui/spinner';
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { Body1, Body2 } from '@/components/ui/typography';
 import { useMultiPlatformOrders } from '@/features/orders/api/get-multi-platform-orders';
 import { DateHeader } from '@/features/settings/components/purchases/date-header';
@@ -74,9 +74,11 @@ function OrderBlock({
   date,
 }: OrderTableProps): JSX.Element {
   return (
-    <div>
-      <DateHeader occurrence={date} />
-      <div>
+    <Table className="border-separate border-spacing-y-3">
+      <TableBody>
+        <DateHeader occurrence={date} />
+      </TableBody>
+      <TableBody>
         {multiPlatformOrders.map((multiPlatformOrder, index) =>
           multiPlatformOrder.invoiceId ? (
             <Dialog key={index}>
@@ -91,8 +93,8 @@ function OrderBlock({
             <OrderCard multiPlatformOrder={multiPlatformOrder} key={index} />
           ),
         )}
-      </div>
-    </div>
+      </TableBody>
+    </Table>
   );
 }
 
@@ -105,9 +107,9 @@ const OrderCard = ({
   const haveInvoice =
     multiPlatformOrder.invoiceId || multiPlatformOrder.invoiceUrl;
   return (
-    <>
-      <div className="flex items-center justify-between bg-white p-3 hover:bg-white md:bg-none md:p-6">
-        <div className="flex w-1/3 items-center gap-3">
+    <TableRow className="bg-white hover:bg-white md:bg-none">
+      <TableCell className="rounded-l-2xl">
+        <div className="flex items-center gap-3">
           <img
             src={
               multiPlatformOrder.image
@@ -141,52 +143,42 @@ const OrderCard = ({
               <Body2 className="text-nowrap text-zinc-400 md:hidden">
                 {format(multiPlatformOrder.occurredAt, 'PP')}
               </Body2>
-              {multiPlatformOrder.type === 'membership' && (
-                <>
-                  <Dot className="size-4 text-[#A1A1AA] md:hidden" />
-                  <Body2 className="text-nowrap text-zinc-400 md:hidden">
-                    Yearly subscription
-                  </Body2>
-                </>
-              )}
             </div>
           </div>
         </div>
-        <div className="ml-auto grid grid-cols-2 gap-12 md:grid-cols-3">
-          <div className="flex flex-col justify-center">
-            <h3 className="hidden text-sm text-[#52525B] md:block lg:text-base">
-              {format(multiPlatformOrder.occurredAt, 'PP')}
-            </h3>
+      </TableCell>
+      <TableCell className="hidden lg:table-cell">
+        <h3 className="hidden text-sm text-[#52525B] md:block lg:text-base">
+          {format(multiPlatformOrder.occurredAt, 'PP')}
+        </h3>
 
-            <h3 className="text-sm text-[#52525B] md:hidden lg:text-base">
-              {multiPlatformOrder.price === 0
-                ? 'Included'
-                : formatMoney(multiPlatformOrder.price)}
-            </h3>
-            {multiPlatformOrder.type === 'membership' && (
-              <h3 className="hidden text-nowrap text-xs text-[#A1A1AA] md:block lg:text-sm">
-                Yearly subscription
-              </h3>
-            )}
-          </div>
-          <div className="hidden items-center justify-center lg:flex">
-            <h3 className="text-base text-[#52525B]">
-              {capitalize(multiPlatformOrder.type)}
-            </h3>
-          </div>
-          <div className="flex w-9 items-center justify-self-end">
-            <>
-              <OrderDropDown multiPlatformOrder={multiPlatformOrder} />
-              {haveInvoice && (
-                <ChevronRight
-                  color="#A1A1AA"
-                  className="block size-4 text-secondary md:hidden"
-                />
-              )}
-            </>
-          </div>
+        <h3 className="text-sm text-[#52525B] md:hidden lg:text-base">
+          {multiPlatformOrder.price === 0
+            ? 'Included'
+            : formatMoney(multiPlatformOrder.price)}
+        </h3>
+        {multiPlatformOrder.type === 'membership' && (
+          <h3 className="hidden text-nowrap text-xs text-[#A1A1AA] md:block lg:text-sm">
+            Yearly subscription
+          </h3>
+        )}
+      </TableCell>
+      <TableCell className="hidden lg:table-cell">
+        <h3 className="text-base text-[#52525B]">
+          {capitalize(multiPlatformOrder.type)}
+        </h3>
+      </TableCell>
+      <TableCell className="rounded-r-2xl">
+        <div className="flex items-center">
+          <OrderDropDown multiPlatformOrder={multiPlatformOrder} />
+          {haveInvoice && (
+            <ChevronRight
+              color="#A1A1AA"
+              className="block size-4 text-secondary md:hidden"
+            />
+          )}
         </div>
-      </div>
-    </>
+      </TableCell>
+    </TableRow>
   );
 };

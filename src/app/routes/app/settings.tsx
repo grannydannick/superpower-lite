@@ -1,10 +1,15 @@
 import { ContentLayout } from '@/components/layouts';
-import { SettingsList } from '@/features/settings/components/settings-list';
+import { SettingsListDesktop } from '@/features/settings/components/settings-list-desktop';
+import { SettingsListMobile } from '@/features/settings/components/settings-list-mobile';
+import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 
 export const SettingsRoute = () => {
-  return (
+  const { width } = useWindowDimensions();
+  return width > 768 ? (
     <ContentLayout title="Settings" bgColor="zinc">
-      <SettingsList />
+      <SettingsListDesktop />
     </ContentLayout>
+  ) : (
+    <SettingsListMobile />
   );
 };

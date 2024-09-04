@@ -43,7 +43,7 @@ export function PaymentMethodList(): JSX.Element {
     <div>
       <RadioGroup
         defaultValue="option-one"
-        className="grid-cols-1 md:grid-cols-2"
+        className="grid-cols-1 lg:grid-cols-2"
       >
         {paymentMethods.map((paymentMethod) => (
           <PaymentMethodCard
