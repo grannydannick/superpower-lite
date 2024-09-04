@@ -338,7 +338,7 @@ export interface UserIdentityVerificationSession {
 
 export type ConciergeNotificationType = 'concierge' | 'service' | 'plan';
 
-/* Payment Methods */
+/* PAYMENTS */
 
 export type PaymentMethod = {
   stripePaymentMethodId: string;
@@ -355,4 +355,40 @@ export type PaymentMethod = {
   };
   created: number;
   default: boolean;
+};
+
+/* INVOICES */
+
+export type Invoice = {
+  amount_due: number;
+  amount_paid: number;
+  created: number;
+  effective_at: number | null;
+  currency: string;
+  hosted_invoice_url?: string | null;
+  invoice_pdf?: string | null;
+  subscription_start: number | null;
+  subscription_end: number | null;
+  subtotal: number;
+  tax: number | null;
+  total: number;
+  number: string | null;
+  charged_card_last4: string | null;
+  charged_card_brand: string | null;
+  lines: InvoiceLine[];
+};
+
+export type InvoiceLine = {
+  amount: number;
+  description: string | null;
+  price: number | null;
+  quantity: number | null;
+};
+
+/* WEARABLES */
+
+export type Wearable = {
+  provider: string;
+  logo: string;
+  status: string;
 };

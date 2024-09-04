@@ -2,6 +2,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Billing } from '@/features/settings/components/billing/billing';
 import { Membership } from '@/features/settings/components/membership/membership';
 import { Profile } from '@/features/settings/components/profile/profile';
+import { OrdersList } from '@/features/settings/components/purchases/orders-list';
+import { WearablesTable } from '@/features/settings/components/wearables/wearables-table';
 
 export const SettingsList = () => {
   return (
@@ -31,6 +33,12 @@ export const SettingsList = () => {
       </TabsContent>
       <TabsContent value="membership" className="mt-16">
         <Membership />
+      </TabsContent>
+      <TabsContent value="integrations" className="mt-16">
+        <WearablesTable />
+      </TabsContent>
+      <TabsContent value="history" className="mt-16">
+        <OrdersList />
       </TabsContent>
     </Tabs>
   );

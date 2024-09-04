@@ -7,7 +7,7 @@ export const getVitalToken = (): Promise<{ linkToken: string }> => {
   return api.get(`/wearables/vital/token`);
 };
 
-export const getQuestionnaireQueryOptions = () => {
+export const getVitalTokenQueryOptions = () => {
   return queryOptions({
     queryKey: ['vitalToken'],
     queryFn: () => getVitalToken(),
@@ -15,12 +15,12 @@ export const getQuestionnaireQueryOptions = () => {
 };
 
 type UseVitalTokenOptions = {
-  queryConfig?: QueryConfig<typeof getQuestionnaireQueryOptions>;
+  queryConfig?: QueryConfig<typeof getVitalTokenQueryOptions>;
 };
 
 export const useVitalToken = ({ queryConfig }: UseVitalTokenOptions) => {
   return useQuery({
-    ...getQuestionnaireQueryOptions(),
+    ...getVitalTokenQueryOptions(),
     ...queryConfig,
   });
 };

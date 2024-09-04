@@ -1,66 +1,12 @@
-import { useVitalLink } from '@tryvital/vital-link';
 import { ChevronRight } from 'lucide-react';
-import { useCallback, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
 import { useStepper } from '@/components/ui/stepper';
 import { Body1, H1 } from '@/components/ui/typography';
-import { env } from '@/config/env';
-import { useVitalToken } from '@/features/onboarding/api/get-vital-token';
 import { EntryLayout } from '@/features/onboarding/components/layouts';
+import { VitalLinkButton } from '@/shared/components/vital-button';
 
 export const WearablesEntry = () => {
-  const { data, refetch } = useVitalToken({});
   const { nextOnboardingStep } = useStepper((s) => s);
-
-  const [isLoading, setLoading] = useState(false);
-
-  const onSuccess = useCallback(
-    (_metadata: unknown) => {
-      // Device is now connected.
-      // TODO: If we don't receive webhooks in the short term
-      // and use them to allow retrieval and disconnect of
-      // devices.
-      // Then, we need to use this as a temporary hack.
-      console.log(_metadata);
-
-      nextOnboardingStep();
-    },
-    [nextOnboardingStep],
-  );
-
-  const onExit = useCallback(
-    (_metadata: unknown) => {
-      // User has quit the link flow.
-      console.log(_metadata);
-      refetch();
-    },
-    [refetch],
-  );
-
-  const onError = useCallback(
-    (_metadata: unknown) => {
-      // Error encountered in connecting device.
-      console.log(_metadata);
-      refetch();
-    },
-    [refetch],
-  );
-
-  const config = {
-    onSuccess,
-    onExit,
-    onError,
-    env: env.VITAL_ENV || 'sandbox',
-  };
-
-  const { open, ready } = useVitalLink(config);
-
-  const handleVitalOpen = async () => {
-    setLoading(true);
-    open(data?.linkToken);
-    setLoading(false);
-  };
 
   return (
     <section
@@ -73,14 +19,13 @@ export const WearablesEntry = () => {
           + hundreds of additional data integrations
         </Body1>
       </div>
-      <Button
+      <VitalLinkButton
         className="mx-auto flex flex-row items-center justify-center gap-1 rounded-[50px] bg-white p-4 text-zinc-900 hover:bg-white/90"
-        onClick={handleVitalOpen}
-        disabled={isLoading || !ready}
+        callback={nextOnboardingStep}
       >
         Connect
         <ChevronRight className="size-4" />
-      </Button>
+      </VitalLinkButton>
       <Body1
         className="cursor-pointer text-white hover:text-white/90"
         onClick={nextOnboardingStep}
