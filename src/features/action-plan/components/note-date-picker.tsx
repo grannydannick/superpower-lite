@@ -39,7 +39,7 @@ export function ClinicianNoteDatePicker({
           variant="outline"
           disabled={!isAdmin}
           className={cn(
-            'justify-start text-left font-normal p-0 border-0 w-full disabled:opacity-1',
+            'justify-start text-left font-normal p-2 border-0 w-full disabled:opacity-1 shadow-none',
             !curDate && 'text-muted-foreground',
           )}
         >

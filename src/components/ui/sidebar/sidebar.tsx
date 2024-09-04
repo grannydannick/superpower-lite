@@ -131,7 +131,7 @@ export const DesktopSidebar = () => {
     },
     checkAccess({ allowedRoles: [ROLES.ADMIN] }) && {
       name: 'Admin',
-      to: './admin/users',
+      to: './users',
       icon: LockIcon,
     },
   ].filter(Boolean) as Link[];
@@ -176,7 +176,6 @@ export const MobileSidebar = () => {
       icon: Settings,
       name: 'Settings',
       to: './settings',
-      // to: isMobileView ? '/settings' : '/settings/profile',
     },
   ];
 

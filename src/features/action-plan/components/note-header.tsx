@@ -1,19 +1,22 @@
 import { X } from 'lucide-react';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import { usePlan } from '@/features/action-plan/stores/plan-store';
 import { useUser } from '@/lib/auth';
 
 export function ClinicianNoteHeader(): JSX.Element {
-  const { isAdmin, published } = usePlan((s) => s);
+  const { isAdmin, published, updateActionPlan } = usePlan((s) => s);
   const { data: user } = useUser();
+  const navigate = useNavigate();
+
   return (
     <div className="flex w-full justify-between p-5 md:p-7">
       <div className="flex items-center justify-center gap-[16px]">
         <Button
           className="size-[44px] rounded-full bg-white p-0 shadow-[0_32px_64px_0_rgba(212,212,212,0.5)] hover:bg-white"
-          // onClick={onClose}
+          onClick={() => navigate('/app', { replace: true })}
         >
           <X width="16px" height="16px" color="#52525B" />
         </Button>
@@ -33,7 +36,7 @@ export function ClinicianNoteHeader(): JSX.Element {
         <div className="flex gap-[12px]">
           <Button
             className="rounded-[12px] bg-white px-[24px] py-[12px] text-black shadow-[0_32px_64px_0_rgba(212,212,212,0.5)] hover:bg-white"
-            // onClick={() => onSubmit(actionPlan)}
+            onClick={() => updateActionPlan(false)}
           >
             Save
             {/*{isLoading ? (*/}

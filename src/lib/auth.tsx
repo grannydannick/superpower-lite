@@ -30,6 +30,7 @@ export const loginInputSchema = baseLoginInputSchema.merge(
   z.object({
     email: z.string().min(1, 'Required').email('Invalid email'),
     password: z.string().min(5, 'Required'),
+    authMethod: z.enum(['admin']).optional(),
   }),
 );
 
@@ -39,6 +40,13 @@ export type LoginInput = z.infer<typeof loginInputSchema>;
 const loginWithEmailAndPassword = (
   data: LoginInput,
 ): Promise<LoginAuthenticationResponse> => {
+  if (data.authMethod) {
+    return api.post('auth/admin/login', {
+      email: data.email,
+      authMethod: data.authMethod,
+    });
+  }
+
   return api.post('/auth/login', data);
 };
 

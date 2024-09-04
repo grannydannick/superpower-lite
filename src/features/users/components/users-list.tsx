@@ -1,4 +1,6 @@
 import { Spinner } from '@/components/ui/spinner';
+import { columns } from '@/features/users/components/columns';
+import { UsersDataTable } from '@/features/users/components/data-table';
 
 import { useUsers } from '../api/get-users';
 
@@ -15,5 +17,9 @@ export const UsersList = () => {
 
   if (!usersQuery.data) return null;
 
-  return <div>Don&apos;t forget to implement me when done =)</div>;
+  return (
+    <div className="py-10">
+      <UsersDataTable columns={columns} data={usersQuery.data.users} />
+    </div>
+  );
 };

@@ -115,14 +115,14 @@ const ClinicianNoteConsumer = () => {
             <Input
               type="text"
               placeholder="Title"
-              className="border-0 p-0 text-3xl placeholder:text-3xl placeholder:text-[#A1A1AA] disabled:cursor-auto disabled:bg-white disabled:opacity-10"
+              className="border-0 p-0 text-3xl shadow-none placeholder:text-3xl placeholder:text-[#A1A1AA] disabled:cursor-auto disabled:bg-white disabled:opacity-10"
               value={title}
               onChange={(e) => changeTitle(e.target.value)}
               disabled={!isAdmin}
             />
             <Textarea
               placeholder="Summary"
-              className="mt-6 border-0 p-0 placeholder:text-[#A1A1AA] disabled:cursor-auto disabled:bg-white"
+              className="mt-6 border-0 p-0 shadow-none placeholder:text-[#A1A1AA] disabled:cursor-auto disabled:bg-white"
               value={description}
               onChange={(e) => changeDescription(e.target.value)}
               disabled={!isAdmin}
@@ -151,7 +151,7 @@ const ClinicianNoteConsumer = () => {
                       <Input
                         type="text"
                         placeholder="Improve heart health"
-                        className="border-0 p-0 text-3xl placeholder:text-3xl placeholder:text-[#A1A1AA] disabled:cursor-auto disabled:bg-white"
+                        className="border-0 p-0 text-3xl shadow-none placeholder:text-3xl placeholder:text-[#A1A1AA] disabled:cursor-auto disabled:bg-white"
                         value={goal.title}
                         onChange={(e) => changeGoalTitle(e.target.value, index)}
                         disabled={!isAdmin}

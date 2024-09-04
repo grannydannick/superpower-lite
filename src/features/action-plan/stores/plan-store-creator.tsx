@@ -51,7 +51,7 @@ export interface PlanStore {
   ) => void;
 
   // async
-  updateActionPlan: (published: boolean) => Promise<void>;
+  updateActionPlan: (published?: boolean) => Promise<void>;
 }
 
 export type PlanStoreApi = ReturnType<typeof planStoreCreator>;
@@ -85,113 +85,125 @@ export const planStoreCreator = (initProps: PlanStoreProps) => {
         ],
       })),
     deleteGoal: (index) => {
-      const state = get();
-      const prevGoals = state.goals;
-
-      const updatedGoals = prevGoals.filter(
-        (_, goalIndex) => goalIndex !== index,
-      );
-
-      set({ goals: updatedGoals });
+      set((state) => ({
+        goals: state.goals.filter((_, goalIndex) => goalIndex !== index),
+      }));
     },
     changeGoalTitle: (title, index) => {
-      const state = get();
-      const prevGoals = state.goals;
-
-      prevGoals[index].title = title;
-
-      set({ goals: prevGoals });
+      set((state) => ({
+        goals: state.goals.map((goal, i) =>
+          i === index ? { ...goal, title } : goal,
+        ),
+      }));
     },
     changeGoalDescription: (description, index) => {
-      const state = get();
-      const prevGoals = state.goals;
-
-      prevGoals[index].description = description;
-
-      set({ goals: prevGoals });
+      set((state) => ({
+        goals: state.goals.map((goal, i) =>
+          i === index ? { ...goal, description } : goal,
+        ),
+      }));
     },
     changeGoalDate: (date, index) => {
-      const state = get();
-      const prevGoals = state.goals;
-
-      prevGoals[index].from = date?.from as Date;
-      prevGoals[index].to = date?.to as Date;
-
-      set({ goals: prevGoals });
+      set((state) => ({
+        goals: state.goals.map((goal, i) =>
+          i === index
+            ? { ...goal, from: date?.from as Date, to: date?.to as Date }
+            : goal,
+        ),
+      }));
     },
     deleteGoalItem: (itemId, index) => {
-      const state = get();
-      const prevGoals = state.goals;
-
-      prevGoals[index].goalItems = prevGoals[index].goalItems.filter(
-        (goalItem) => goalItem.itemId !== itemId,
-      );
-
-      set({ goals: prevGoals });
+      set((state) => ({
+        goals: state.goals.map((goal, i) =>
+          i === index
+            ? {
+                ...goal,
+                goalItems: goal.goalItems.filter(
+                  (goalItem) => goalItem.itemId !== itemId,
+                ),
+              }
+            : goal,
+        ),
+      }));
     },
     insertGoalItem: (selectedItems, type, index) => {
-      const state = get();
-      const prevGoals = state.goals;
-
       const items = selectedItems.map((selectedItem) => ({
         id: crypto.randomUUID(),
         itemId: selectedItem.id,
         itemType: type,
       }));
 
-      prevGoals[index].goalItems = [...prevGoals[index].goalItems, ...items];
-
-      set({ goals: prevGoals });
+      set((state) => ({
+        goals: state.goals.map((goal, i) =>
+          i === index
+            ? {
+                ...goal,
+                goalItems: [...goal.goalItems, ...items],
+              }
+            : goal,
+        ),
+      }));
     },
     changeGoalItemDescription: (goalItem, description, index) => {
-      const state = get();
-      const prevGoals = state.goals;
-      const prevGoalItems = prevGoals[index].goalItems;
-
-      const prevGoalItemIndex = prevGoalItems.findIndex(
-        (item) => item.itemId === goalItem.itemId,
-      );
-      prevGoalItems[prevGoalItemIndex].description = description;
-      prevGoals[index].goalItems = prevGoalItems;
-
-      set({ goals: prevGoals });
+      set((state) => ({
+        goals: state.goals.map((goal, i) =>
+          i === index
+            ? {
+                ...goal,
+                goalItems: goal.goalItems.map((item) =>
+                  item.itemId === goalItem.itemId
+                    ? { ...item, description }
+                    : item,
+                ),
+              }
+            : goal,
+        ),
+      }));
     },
     changeItemDeadline: (goalItem, deadline, index) => {
-      const state = get();
-      const prevGoals = state.goals;
-      const prevGoalItems = prevGoals[index].goalItems;
-
-      const prevGoalItemIndex = prevGoalItems.findIndex(
-        (item) => item.itemId === goalItem.itemId,
-      );
-      prevGoalItems[prevGoalItemIndex].timestamp = deadline;
-      prevGoals[index].goalItems = prevGoalItems;
-
-      set({ goals: prevGoals });
+      set((state) => ({
+        goals: state.goals.map((goal, i) =>
+          i === index
+            ? {
+                ...goal,
+                goalItems: goal.goalItems.map((item) =>
+                  item.itemId === goalItem.itemId
+                    ? { ...item, timestamp: deadline }
+                    : item,
+                ),
+              }
+            : goal,
+        ),
+      }));
     },
     updateActionPlan: async (published) => {
       const state = get();
 
-      const dto: Plan = {
+      const dto: Partial<Plan> = {
         orderId: state.orderId,
         timestamp: state.timestamp,
         title: state.title,
         description: state.description,
         goals: state.goals,
-        published: published,
+        published: published ? published : undefined,
         videoFileId: state.videoFileId,
       };
 
-      const updatedPlan = await api.put<Plan>('/plans', dto);
+      const updatedPlanData: { actionPlan: Plan } = await api.put(
+        '/plans',
+        dto,
+      );
+
+      const updatedPlan = updatedPlanData.actionPlan;
 
       set({
-        orderId: updatedPlan.data.orderId,
-        timestamp: updatedPlan.data.timestamp,
-        title: updatedPlan.data.title,
-        description: updatedPlan.data.description,
-        goals: updatedPlan.data.goals,
-        published: updatedPlan.data.published,
-        videoFileId: updatedPlan.data.videoFileId,
+        orderId: updatedPlan.orderId,
+        timestamp: updatedPlan.timestamp,
+        title: updatedPlan.title,
+        description: updatedPlan.description,
+        goals: updatedPlan.goals,
+        published: updatedPlan.published,
+        videoFileId: updatedPlan.videoFileId,
       });
     },
   }));
