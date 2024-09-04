@@ -89,7 +89,7 @@ export function CompletedOrderCard(order: Order): JSX.Element {
     <Card>
       <div className="flex items-center space-x-2 p-5 md:h-36 md:justify-center md:p-10">
         {isLoading ? (
-          <Skeleton className="size-16 rounded-lg" />
+          <Skeleton className="h-16 min-w-16 rounded-lg" />
         ) : (
           <img
             src={healthcareService?.image}
@@ -98,9 +98,11 @@ export function CompletedOrderCard(order: Order): JSX.Element {
           />
         )}
         <div className="flex flex-col">
-          <h2 className="text-lg text-primary">{order.name}</h2>
+          <h2 className="line-clamp-1 text-primary lg:text-base">
+            {order.name}
+          </h2>
           {/* <span className="text-secondary text-sm">Gut protocol</span> */}
-          <span className="text-sm text-zinc-400">
+          <span className="text-zinc-400 md:text-sm">
             <TimestampDisplay
               timestamp={new Date(order.timestamp)}
               timezone={order.timezone}

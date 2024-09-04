@@ -1,21 +1,24 @@
 import { format } from 'date-fns';
-import { CalendarIcon, Dot, Trash2 } from 'lucide-react';
+import { CalendarIcon, ChevronRight, Dot, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Body1 } from '@/components/ui/typography';
 import { useProducts } from '@/features/action-plan/api/get-products';
 import { usePlan } from '@/features/action-plan/stores/plan-store';
 import { useBiomarkers } from '@/features/biomarkers/api/get-biomarkers';
 import { BiomarkersDataTable } from '@/features/biomarkers/components/biomarkers-data-table/biomarker-data-table';
 import { useServices } from '@/features/services/api/get-services';
 import { cn } from '@/lib/utils';
+import { HealthcareServiceDialogContent } from '@/shared/components';
 import {
   Biomarker,
   HealthcareService,
@@ -26,13 +29,12 @@ import {
 export type ActionPlanItemRowProps = {
   item: PlanGoalItem;
   goalIndex?: number;
-  getStartedDisabled?: boolean;
 };
 
 export function ActionPlanItemRow(
   props: ActionPlanItemRowProps,
 ): JSX.Element | null {
-  const { item, goalIndex, getStartedDisabled = false } = props;
+  const { item, goalIndex } = props;
   const { isAdmin, deleteGoalItem } = usePlan((s) => s);
   const biomarkersQuery = useBiomarkers();
   const servicesQuery = useServices();
@@ -73,7 +75,6 @@ export function ActionPlanItemRow(
             service={service}
             goalItem={item}
             goalIndex={goalIndex}
-            getStartedDisabled={getStartedDisabled}
           />
           {isAdmin && typeof goalIndex === 'number' && (
             <div
@@ -137,12 +138,10 @@ function ActionPlanProductRow({
         className="size-[72px] rounded-[8px] bg-white object-cover object-center"
       />
       <div className="flex flex-1 flex-col gap-1">
-        <p className="text-base font-normal leading-[150%] text-[#18181B]">
-          {product.name}
-        </p>
+        <Body1>{product.name}</Body1>
         <Input
           className={cn(
-            'w-full h-auto border-none font-normal text-[#A1A1AA] text-base placeholder:text-base placeholder:text-[#A1A1AA] placeholder:italic caret-[#FC5F2B] p-0 bg-[#F7F7F7] disabled:opacity-1 disabled:cursor-auto',
+            'w-full h-auto shadow-none border-none font-normal text-zinc-400 text-base placeholder:text-base placeholder:text-[#A1A1AA] placeholder:italic caret-[#FC5F2B] p-0 bg-[#F7F7F7] disabled:opacity-1 disabled:cursor-auto',
           )}
           placeholder={
             isAdmin
@@ -166,13 +165,11 @@ interface ActionPlanServiceRowInterface {
   service: HealthcareService;
   goalItem: PlanGoalItem;
   goalIndex?: number;
-  getStartedDisabled?: boolean;
 }
 function ActionPlanServiceRow({
   service,
   goalIndex,
   goalItem,
-  // getStartedDisabled = false,
 }: ActionPlanServiceRowInterface): JSX.Element {
   const { isAdmin, changeGoalItemDescription } = usePlan((s) => s);
   return (
@@ -185,22 +182,20 @@ function ActionPlanServiceRow({
         />
         <div className="flex flex-1 flex-col gap-1">
           <div className="flex">
-            <p className="line-clamp-1 text-sm font-normal leading-[150%] text-[#18181B] md:text-base">
-              {service.name}
-            </p>
+            <Body1 className="line-clamp-1">{service.name}</Body1>
             {!isAdmin && goalItem.timestamp && (
               <>
                 <Dot color="#A1A1AA" className="hidden md:block" />
                 {goalItem.timestamp && (
-                  <p className="hidden text-base font-normal leading-[150%] text-[#A1A1AA] md:block">
+                  <Body1 className="hidden text-zinc-400 md:block">
                     By {format(new Date(goalItem.timestamp), 'PP')}
-                  </p>
+                  </Body1>
                 )}
               </>
             )}
           </div>
           <Input
-            className="h-auto w-full truncate border-none bg-[#F7F7F7] p-0 text-sm font-normal text-[#A1A1AA] caret-[#FC5F2B] placeholder:text-sm placeholder:italic placeholder:text-[#A1A1AA] disabled:cursor-auto disabled:opacity-10 md:text-base placeholder:md:text-base"
+            className="h-auto w-full truncate border-none bg-[#F7F7F7] p-0 text-sm font-normal text-zinc-400 caret-[#FC5F2B] shadow-none placeholder:text-sm placeholder:italic placeholder:text-zinc-400 disabled:cursor-auto disabled:opacity-50 md:text-base placeholder:md:text-base"
             placeholder={
               isAdmin
                 ? 'Please write short instructions'
@@ -214,28 +209,24 @@ function ActionPlanServiceRow({
               changeGoalItemDescription(goalItem, e.target.value, goalIndex)
             }
           />
-          {/*{service.active && !isEditable && !getStartedDisabled && (*/}
-          {/*  <div*/}
-          {/*    className="text-sm text-[#A1A1AA] leading-0 hover:text-[#FC5F2B] cursor-pointer whitespace-nowrap flex md:hidden gap-[3px] mt-3"*/}
-          {/*    onClick={() => onClick && onClick(service.name)}*/}
-          {/*  >*/}
-          {/*    <h5>Get Started</h5>*/}
-          {/*    <ChevronRight width={16} height={16} />*/}
-          {/*  </div>*/}
-          {/*)}*/}
         </div>
       </div>
       {isAdmin && (
         <ActionPlanItemDatePicker goalItem={goalItem} goalIndex={goalIndex} />
       )}
-      {/*{service.active && !isAdmin && !getStartedDisabled && (*/}
-      {/*  <HealthcareServiceDialog healthcareService={service}>*/}
-      {/*    <div className="leading-0 hidden cursor-pointer gap-[3px] whitespace-nowrap text-sm text-[#A1A1AA] hover:text-[#FC5F2B] md:flex">*/}
-      {/*      <h5>Get Started</h5>*/}
-      {/*      <ChevronRight width={16} height={16} />*/}
-      {/*    </div>*/}
-      {/*  </HealthcareServiceDialog>*/}
-      {/*)}*/}
+      {service.active && !isAdmin && (
+        <Dialog>
+          <DialogTrigger>
+            <div className="hidden cursor-pointer gap-[3px] whitespace-nowrap text-sm text-[#A1A1AA] hover:text-[#FC5F2B] md:flex">
+              <h5>Get Started</h5>
+              <ChevronRight width={16} height={16} />
+            </div>
+          </DialogTrigger>
+          <HealthcareServiceDialogContent healthcareService={service}>
+            <Button>Have you changed me?</Button>
+          </HealthcareServiceDialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

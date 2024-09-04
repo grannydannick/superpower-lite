@@ -173,7 +173,6 @@ const ClinicianNoteConsumer = () => {
                           key={goalItem.itemId}
                           goalIndex={index}
                           item={goalItem}
-                          getStartedDisabled={true}
                         />
                       ))}
                     </div>

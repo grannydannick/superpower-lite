@@ -20,8 +20,10 @@ export function TimestampDisplay({
   }
 
   return (
-    <span className="flex flex-row truncate">
-      <span>{moment(timestamp).tz(timezone).format('MMM D, YYYY')}</span>
+    <span className="flex">
+      <span className="line-clamp-1">
+        {moment(timestamp).tz(timezone).format('MMM D, YYYY')}
+      </span>
       {!dayOnly && (
         <>
           <svg
@@ -31,7 +33,7 @@ export function TimestampDisplay({
           >
             <circle cx={1} cy={1} r={1} />
           </svg>
-          <span className="truncate">
+          <span className="line-clamp-1">
             {moment(timestamp).tz(timezone).format('h:mm a z')}
           </span>
         </>

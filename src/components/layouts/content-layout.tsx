@@ -28,12 +28,8 @@ export const ContentLayout = ({
         )}
       >
         <div
-          // not using regular container to adjust based on 88 margin left from sidebar
-          // TODO: store side bar open state in global store to adjust width here
-
-          // currently assumes it's container - 88px by default
           className={cn(
-            'container md:max-w-[680px] lg:max-w-[936px] xl:max-w-[1192px] mx-auto px-6 py-16 space-y-6 sm:p-16 md:space-y-12',
+            'container  mx-auto px-6 py-16 space-y-6 sm:p-16 md:space-y-12',
             className,
           )}
         >

@@ -46,7 +46,7 @@ export function UpcomingOrderCard(order: Order): JSX.Element {
               className="size-[80px] rounded-lg border border-zinc-200 object-cover"
             />
           ) : (
-            <Skeleton className="size-[80px] rounded-lg" />
+            <Skeleton className="h-[80px] min-w-[80px] rounded-lg" />
           )}
           <div className="space-y-2 md:space-y-1">
             <h2 className="text-xl text-primary">{order.name}</h2>
