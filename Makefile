@@ -1,9 +1,8 @@
-# Variables
-export VERSION ?= $(shell git rev-parse --short=7 HEAD)
-export SERVICE = halfbaked-app
 export ORG = superpowerdotcom
+export SERVICE = halfbaked-app
 export ARCH ?= $(shell uname -m)
 export USER ?= $(shell whoami)
+export VERSION ?= $(shell git rev-parse --short=7 HEAD)
 
 SHELL := /bin/bash
 AWS_REGION ?= us-east-1
