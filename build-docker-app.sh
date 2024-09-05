@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+#
+
+set -e
+
+SHARED_SCRIPT_PATH="./assets/scripts/shared.sh"
+SERVICE="superpower-app"
+BUILD_ENV=$1
+
+# Load shared shell script
+if [[ ! -f ${SHARED_SCRIPT_PATH} ]]; then
+    echo "ERROR: '${SHARED_SCRIPT_PATH}' not found"
+    exit 1
+else
+    # shellcheck source=./assets/scripts/shared.sh
+    source $SHARED_SCRIPT_PATH
+fi
+
+if [[ -z $BUILD_ENV ]]; then
+    BUILD_ENV="dev"
+    warning "No BUILD_ENV passed - setting to default value: ${BUILD_ENV}"
+fi
+
+REQUIRED_VARS=(
+    "BUILD_ENV"
+    "AWS_ECR_URL"
+    "VERSION"
+)
+
+check_vars "${REQUIRED_VARS[@]}"
+
+info "Fetching Doppler secrets..."
+doppler secrets substitute -p superpower -c $BUILD_ENV packages/app/.env.tpl > packages/app/.env
+echo "REACT_APP_GITHUB_SHA=${VERSION}" >> packages/app/.env
+
+# Debugging github workflows
+debug "BUILD_ENV: ${BUILD_ENV}"
+debug "AWS_ECR_URL: ${AWS_ECR_URL}"
+debug "VERSION: ${VERSION}"
+
+debug ".env contents:"
+cat packages/app/.env
+
+unset NODE_ENV
+env $(cat packages/app/.env | xargs) yarn install --network-timeout=1000000
+env $(cat packages/app/.env | xargs) yarn run build --force --filter=@superpower/app
+info "Building Docker image..."
+info "Building Docker image..."
+if [ "${BUILD_ENV}" == "dev" ]; then
+    (eval $(minikube docker-env) && docker build -t ${SERVICE}:${VERSION} -f ./deployment/superpower/app/Dockerfile .)
+else
+    docker buildx build --push \
+        --platform=linux/amd64 \
+        -t ${AWS_ECR_URL}/${SERVICE}:makefile \
+        -t ${AWS_ECR_URL}/${SERVICE}:${VERSION} \
+        -t ${AWS_ECR_URL}/${SERVICE}:${BUILD_ENV} \
+        -f ../../../Dockerfile .
+fi
+
