@@ -126,6 +126,13 @@ export const createRouter = (queryClient: QueryClient) =>
           },
         },
         {
+          path: 'rdns',
+          lazy: async () => {
+            const { RdnsRoute } = await import('./app/rdns');
+            return { Component: RdnsRoute };
+          },
+        },
+        {
           path: 'users',
           lazy: async () => {
             const { UsersRoute } = await import('./app/users');

@@ -130,8 +130,13 @@ export const DesktopSidebar = () => {
       // to: isMobileView ? '/settings' : '/settings/profile',
     },
     checkAccess({ allowedRoles: [ROLES.ADMIN] }) && {
-      name: 'Admin',
+      name: 'Users',
       to: './users',
+      icon: LockIcon,
+    },
+    checkAccess({ allowedRoles: [ROLES.ADMIN] }) && {
+      name: 'RDNs',
+      to: './rdns',
       icon: LockIcon,
     },
   ].filter(Boolean) as Link[];

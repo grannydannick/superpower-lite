@@ -494,3 +494,12 @@ export type File = {
   deletable: boolean;
   presignedUrl?: string;
 };
+
+/* RDNS */
+export type Rdn = Entity<{
+  firstName: string;
+  lastName: string;
+  npi?: string;
+  schedulingLink: string;
+  licensed: string[];
+}>;
