@@ -26,7 +26,7 @@ export const Schedule = () => {
           <div className="flex flex-col gap-1 sm:flex-row sm:items-center">
             <Body1 className="text-[#71717A]">You can view the</Body1>
             <a
-              href="#"
+              href="https://superpower.com/biomarkers"
               target="_blank"
               rel="noreferrer"
               className="flex flex-row items-center space-x-1 text-sm text-[#FC5F2B]"
