@@ -38,7 +38,6 @@ export const PickDate = () => {
     await updateOrderMutation.mutateAsync({
       orderId: slots.blood.orderId as string,
       data: {
-        serviceId: superpowerBloodPanel?.id,
         location: { address: serviceAddress?.address },
         timezone: slots.blood.timezone ?? moment.tz.guess(),
         timestamp: slots.blood.slot

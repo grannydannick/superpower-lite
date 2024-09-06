@@ -13,6 +13,7 @@ const createEnv = () => {
     APP_MOCK_API_PORT: z.string().optional().default('8081'),
     VITAL_ENV: z.string(),
     GOOGLE_API_KEY: z.string(),
+    CALENDLY_TOKEN: z.string(),
   });
 
   const envVars = Object.entries(import.meta.env).reduce<

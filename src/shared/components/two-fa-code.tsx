@@ -18,14 +18,14 @@ import {
 } from '@/components/ui/input-otp';
 import { Spinner } from '@/components/ui/spinner';
 import { Body1, H1 } from '@/components/ui/typography';
-import { useSendOtp } from '@/features/onboarding/api/send-otp';
+import { OnboardingInput } from '@/features/onboarding/components/onboarding-input';
+import { cn } from '@/lib/utils';
 import {
+  useSendOtp,
   useVerifyOtp,
   VerifyOtpInput,
   verifyOtpInputSchema,
-} from '@/features/onboarding/api/verify-otp';
-import { OnboardingInput } from '@/features/onboarding/components/onboarding-input';
-import { cn } from '@/lib/utils';
+} from '@/shared/api';
 
 const TwoFaCode = ({
   phone,

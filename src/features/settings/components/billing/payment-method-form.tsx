@@ -3,7 +3,7 @@ import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { useAddPaymentMethod } from '@/shared/api/add-payment-method';
+import { useAddPaymentMethod } from '@/features/settings/api/add-payment-method';
 
 // TODO: Refactor this based on Onboarding approach
 export const PaymentMethodForm = ({ setClosed }: { setClosed: () => void }) => {

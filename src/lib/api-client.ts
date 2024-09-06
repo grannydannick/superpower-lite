@@ -1,8 +1,9 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
+import { toast } from 'sonner';
 
 import { env } from '@/config/env';
 import { clearActiveLogin, getActiveLogin, setActiveLogin } from '@/lib/utils';
-import { OAuthGrantType, TokenResponse } from '@/types/api';
+import { OAuthGrantType, OperationOutcome, TokenResponse } from '@/types/api';
 import { parseJWTPayload } from '@/utils/jwt';
 
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
@@ -27,6 +28,16 @@ api.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
+
+    if (error.response.status !== 401) {
+      if (error.response.data) {
+        const apiError: OperationOutcome = error.response.data;
+
+        for (const e of apiError.issue) {
+          toast.error(e.details.text);
+        }
+      }
+    }
 
     if (
       error.response.status === 401 &&

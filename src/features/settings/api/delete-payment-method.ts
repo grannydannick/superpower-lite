@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { getPaymentMethodsQueryOptions } from '@/features/settings/api/get-payment-methods';
 import { api } from '@/lib/api-client';
 import { MutationConfig } from '@/lib/react-query';
-import { getPaymentMethodsQueryOptions } from '@/shared/api/get-payment-methods';
 import { Subscription } from '@/types/api';
 
 export const deletePaymentMethod = ({

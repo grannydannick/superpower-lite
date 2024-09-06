@@ -1,4 +1,10 @@
-import { createContext, useContext, useRef, PropsWithChildren } from 'react';
+import {
+  createContext,
+  useContext,
+  useRef,
+  PropsWithChildren,
+  useEffect,
+} from 'react';
 import { shallow } from 'zustand/shallow';
 import { useStoreWithEqualityFn } from 'zustand/traditional';
 
@@ -23,6 +29,12 @@ export const OrderStoreProvider = ({
   if (!orderStoreRef.current) {
     orderStoreRef.current = orderStoreCreator(props);
   }
+
+  useEffect(() => {
+    orderStoreRef.current?.setState({
+      collectionMethod: props.collectionMethod,
+    });
+  }, [props.collectionMethod]);
 
   return (
     <OrderStoreContext.Provider value={orderStoreRef.current}>

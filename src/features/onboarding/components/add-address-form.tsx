@@ -20,12 +20,12 @@ import { Body2 } from '@/components/ui/typography';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
-import { useGetServiceability } from '@/shared/api/get-serviceability';
 import {
-  FormAddressInput,
   formAddressInputSchema,
+  FormAddressInput,
   useUpdateProfile,
-} from '@/shared/api/update-profile';
+} from '@/shared/api';
+import { useGetServiceability } from '@/shared/api/get-serviceability';
 import { Address } from '@/types/api';
 
 function FullAddressForm({

@@ -8,11 +8,10 @@ import { MutationConfig } from '@/lib/react-query';
 import { Order } from '@/types/api';
 
 export const updateOrderInputSchema = z.object({
-  serviceId: z.string().min(1, 'Required'),
-  location: locationInputSchema,
-  timestamp: z.string().min(1, 'Required'),
+  location: locationInputSchema.optional(),
+  timestamp: z.string().optional(),
   externalId: z.string().optional(),
-  timezone: z.string().min(1, 'Required'),
+  timezone: z.string().optional(),
   status: z
     .enum([
       'UPCOMING',

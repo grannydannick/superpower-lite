@@ -10,10 +10,10 @@ import {
 } from '@/components/ui/dropdown';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { Spinner } from '@/components/ui/spinner';
+import { useDeletePaymentMethod } from '@/features/settings/api/delete-payment-method';
+import { usePaymentMethods } from '@/features/settings/api/get-payment-methods';
+import { useSetDefaultPaymentMethod } from '@/features/settings/api/set-default-payment-method';
 import { cn } from '@/lib/utils';
-import { useDeletePaymentMethod } from '@/shared/api/delete-payment-method';
-import { usePaymentMethods } from '@/shared/api/get-payment-methods';
-import { useSetDefaultPaymentMethod } from '@/shared/api/set-default-payment-method';
 import { PaymentMethod } from '@/types/api';
 import { capitalize } from '@/utils/format';
 

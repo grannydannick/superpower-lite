@@ -16,7 +16,9 @@ import {
   OrderStoreProvider,
   useOrder,
 } from '@/features/orders/stores/order-store';
+import { getDefaultCollectionMethod } from '@/features/orders/utils/get-default-collection-method';
 import { getStepsFromService } from '@/features/orders/utils/get-steps-for-service';
+import { useGetSchedulingLink } from '@/features/services/api/get-scheduling-link';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { HealthcareService } from '@/types/api';
 /**
@@ -36,11 +38,22 @@ export const HealthcareServiceDialog = ({
   children: ReactNode;
   healthcareService: HealthcareService;
 }) => {
-  const steps = getStepsFromService(healthcareService);
+  const schedulingLinkQuery = useGetSchedulingLink();
+
+  const steps = getStepsFromService(
+    healthcareService,
+    schedulingLinkQuery.data?.link,
+  );
+
+  const collectionMethod = getDefaultCollectionMethod(healthcareService);
 
   return (
     <StepperStoreProvider steps={steps}>
-      <OrderStoreProvider service={healthcareService} tz={moment.tz.guess()}>
+      <OrderStoreProvider
+        service={healthcareService}
+        tz={moment.tz.guess()}
+        collectionMethod={collectionMethod}
+      >
         <HealthcareServiceDialogConsumer>
           {children}
         </HealthcareServiceDialogConsumer>

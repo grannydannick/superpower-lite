@@ -19,6 +19,7 @@ import { CUSTOM_BLOOD_PANEL, SUPERPOWER_BLOOD_PANEL } from '@/const';
 import { US_STATE_CODES } from '@/const/us-state-codes';
 import { COLLECTION_METHODS } from '@/features/orders/const/collection-methods';
 import { useOrder } from '@/features/orders/stores/order-store';
+import { getDefaultCollectionMethod } from '@/features/orders/utils/get-default-collection-method';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
@@ -30,8 +31,13 @@ import { formatAddress } from '@/utils/format';
 import { formatMoney } from '@/utils/format-money';
 
 export const PhlebotomyLocationSelect = () => {
-  const { collectionMethod, location } = useOrder((s) => s);
+  const { collectionMethod, location, updateCollectionMethod, service } =
+    useOrder((s) => s);
   const { activeStep, nextStep, steps, prevStep } = useStepper((s) => s);
+
+  useEffect(() => {
+    updateCollectionMethod(getDefaultCollectionMethod(service));
+  }, []);
 
   return (
     <div>
@@ -287,8 +293,13 @@ function CreateOrderPhlebotomyLocationSelector(): JSX.Element {
 
   const code = localStorage.getItem('superpower-code');
 
+  console.log(collectionMethod);
+
   return (
-    <RadioGroup defaultValue="option-one" className="flex flex-col sm:flex-row">
+    <RadioGroup
+      defaultValue={collectionMethod ?? 'AT_HOME'}
+      className="flex flex-col sm:flex-row"
+    >
       {/* TODO: Border and background should darken on selection */}
       {COLLECTION_METHODS.map((option, index) => {
         let interpretedMethod = option.value;

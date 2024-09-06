@@ -11,13 +11,15 @@ import {
 export interface OrderStoreProps {
   service: HealthcareService;
   tz: string;
+  collectionMethod: CollectionMethodType | null;
 }
 
 export interface OrderStore extends OrderStoreProps {
   items: ServiceItem[];
   updateItems: (item: ServiceItem) => void;
-  collectionMethod: CollectionMethodType;
-  updateCollectionMethod: (collectionMethod: CollectionMethodType) => void;
+  updateCollectionMethod: (
+    collectionMethod: CollectionMethodType | null,
+  ) => void;
   location: Location | null;
   updateLocation: (location: Location | null) => void;
   setTz: (tz: string) => void;
@@ -33,7 +35,7 @@ export type OrderStoreApi = ReturnType<typeof orderStoreCreator>;
 
 const initialState = {
   items: [],
-  collectionMethod: 'IN_LAB' as CollectionMethodType,
+  collectionMethod: null,
   location: null,
   slot: null,
   createdOrderId: null,
@@ -56,13 +58,12 @@ export const orderStoreCreator = (initProps: OrderStoreProps) => {
             : [...state.items, item],
         };
       }),
-    updateCollectionMethod: (collectionMethod: CollectionMethodType) =>
-      set({ collectionMethod }),
-    updateLocation: (location: Location | null) => set({ location }),
-    setTz: (tz: string) => set({ tz }),
+    updateCollectionMethod: (collectionMethod) => set({ collectionMethod }),
+    updateLocation: (location) => set({ location }),
+    setTz: (tz) => set({ tz }),
     updateSlot: (slot) => set({ slot }),
     updateCreatedOrderId: (orderId) => set({ createdOrderId: orderId }),
-    updateService: (service: HealthcareService) => set({ service }),
+    updateService: (service) => set({ service }),
     reset: () => set(initialState),
   }));
 };

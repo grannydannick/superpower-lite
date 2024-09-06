@@ -4,8 +4,8 @@ import { Ellipsis } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { useStepper } from '@/components/ui/stepper';
+import { useCancelMembership } from '@/features/settings/api/cancel-membership';
 import { useMembership } from '@/features/settings/stores/membership-store';
-import { useCancelMembership } from '@/shared/api/cancel-membership';
 import { useMembershipPrice } from '@/shared/api/get-subscription-price';
 import { formatMoney } from '@/utils/format-money';
 

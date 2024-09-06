@@ -1,4 +1,10 @@
-import { createContext, useContext, useRef, PropsWithChildren } from 'react';
+import {
+  createContext,
+  useContext,
+  useRef,
+  PropsWithChildren,
+  useEffect,
+} from 'react';
 import { shallow } from 'zustand/shallow';
 import { useStoreWithEqualityFn } from 'zustand/traditional';
 
@@ -23,6 +29,10 @@ export const StepperStoreProvider = ({
   if (!stepperStoreRef.current) {
     stepperStoreRef.current = stepperStoreCreator(props);
   }
+
+  useEffect(() => {
+    stepperStoreRef.current?.setState({ steps: props.steps });
+  }, [props.steps]);
 
   return (
     <StepperStoreContext.Provider value={stepperStoreRef.current}>

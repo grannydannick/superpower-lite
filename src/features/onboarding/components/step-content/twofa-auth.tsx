@@ -17,12 +17,8 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 import { useStepper } from '@/components/ui/stepper';
 import { H1 } from '@/components/ui/typography';
-import {
-  SendOtpInput,
-  sendOtpInputSchema,
-  useSendOtp,
-} from '@/features/onboarding/api/send-otp';
 import { OnboardingInput } from '@/features/onboarding/components/onboarding-input';
+import { SendOtpInput, sendOtpInputSchema, useSendOtp } from '@/shared/api';
 import { TwoFaCode } from '@/shared/components';
 
 export const TwoFaAuth = () => {

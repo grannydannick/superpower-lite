@@ -7,7 +7,7 @@ import { Body1, Body3 } from '@/components/ui/typography';
 import { env } from '@/config/env';
 import { useDebounce } from '@/hooks/use-debounce';
 import { cn } from '@/lib/utils';
-import { FormAddressInput } from '@/shared/api/update-profile';
+import { FormAddressInput } from '@/shared/api';
 
 import {
   CommandGroup,

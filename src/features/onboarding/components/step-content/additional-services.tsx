@@ -270,7 +270,6 @@ const OrderSummaryCase = ({
       await updateOrderMutation.mutateAsync({
         orderId: orderInfo?.orderId as string,
         data: {
-          serviceId: as.id,
           location: { address: orderInfo?.address as Address },
           timezone: orderInfo?.timezone as string,
 

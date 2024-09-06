@@ -4,13 +4,19 @@ import { useStepper } from '@/components/ui/stepper';
 import { Body1 } from '@/components/ui/typography';
 import { useOrder } from '@/features/orders/stores/order-store';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
-import { Address, Slot } from '@/types/api';
+import { Address, CollectionMethodType, Slot } from '@/types/api';
 
 export const PhlebotomyScheduler = () => {
   const { service, location, collectionMethod, updateSlot, setTz, slot } =
     useOrder((s) => s);
   const { width } = useWindowDimensions();
   const { activeStep, nextStep, steps, prevStep } = useStepper((s) => s);
+
+  if (!collectionMethod) {
+    throw new Error(
+      'Collection method must be defined to use PhlebotomyScheduler',
+    );
+  }
 
   const onSlotUpdate = (slot: Slot | null, tz?: string) => {
     if (slot) {
@@ -36,7 +42,7 @@ export const PhlebotomyScheduler = () => {
         </div>
         <div className="w-full rounded-xl bg-white p-4">
           <Scheduler
-            collectionMethod={collectionMethod}
+            collectionMethod={collectionMethod as CollectionMethodType}
             address={location?.address as Address}
             serviceId={service.id}
             onSlotUpdate={onSlotUpdate}
