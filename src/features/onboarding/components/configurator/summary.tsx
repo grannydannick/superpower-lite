@@ -95,7 +95,7 @@ const Summary = () => {
           className="h-auto w-[60px] object-contain sm:w-[70px]"
         />
         <a
-          href="#"
+          href="https://www.truemed.com/about"
           target="_blank"
           rel="noreferrer"
           className="flex flex-row items-center space-x-1 text-xs  text-[#FC5F2B] sm:text-sm"
