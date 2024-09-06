@@ -39,7 +39,7 @@ export const CreateMessage = (): JSX.Element => {
     <div className="flex flex-col">
       <Body1 className="text-zinc-500">
         Submit a message to your care team down below or text us instead at
-        <span className="text-vermillion-900"> +1-208-984-2571</span>
+        <span className="text-vermillion-900"> +1-415-742-2828</span>
       </Body1>
 
       <Form {...form}>
