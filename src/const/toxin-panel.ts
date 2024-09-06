@@ -1,4 +1,4 @@
-import { EnvironmentalToxinPanel } from '../types/toxin';
+import { EnvironmentalToxinPanel } from '@/types/toxin';
 
 export const ENVIRONMENTAL_TOXIN_PANEL: EnvironmentalToxinPanel[] = [
   {

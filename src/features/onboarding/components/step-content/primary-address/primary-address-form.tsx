@@ -14,10 +14,10 @@ import {
 } from '@/components/ui/form';
 import { Spinner } from '@/components/ui/spinner';
 import { useStepper } from '@/components/ui/stepper';
-import { useGetServiceability } from '@/features/onboarding/api/get-serviceability';
 import { OnboardingInput } from '@/features/onboarding/components/onboarding-input';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { useUser } from '@/lib/auth';
+import { useGetServiceability } from '@/shared/api/get-serviceability';
 import {
   FormAddressInput,
   formAddressInputSchema,

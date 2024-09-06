@@ -1,9 +1,11 @@
 import { ChevronRight } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogTrigger } from '@/components/ui/dialog';
+import { Spinner } from '@/components/ui/spinner';
 import { Body1, Body2, H4 } from '@/components/ui/typography';
-import { HealthcareServiceDialogContent } from '@/shared/components';
+import { ADVISORY_CALL } from '@/const';
+import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
+import { useGetSchedulingLink } from '@/features/services/api/get-scheduling-link';
 import { HealthcareService } from '@/types/api';
 
 export const ServiceCard = ({ service }: { service: HealthcareService }) => {
@@ -16,6 +18,37 @@ export const ServiceCard = ({ service }: { service: HealthcareService }) => {
 };
 
 const DesktopCard = ({ service }: { service: HealthcareService }) => {
+  const schedulingLinkQuery = useGetSchedulingLink();
+  const noSchedulingLink =
+    service.name === ADVISORY_CALL &&
+    (!schedulingLinkQuery.data?.link || schedulingLinkQuery.data.link === '');
+
+  const renderButton = () => {
+    if (!service.active || noSchedulingLink) {
+      return (
+        <Button
+          variant="white"
+          className="border border-zinc-200 px-5 py-3 hover:bg-white/30"
+        >
+          Request early access
+        </Button>
+      );
+    }
+
+    return (
+      <Button
+        variant="white"
+        className="border border-zinc-200 px-5 py-3 hover:bg-white/30"
+      >
+        {schedulingLinkQuery.isLoading ? (
+          <Spinner variant="primary" />
+        ) : (
+          'Get Started'
+        )}
+      </Button>
+    );
+  };
+
   return (
     <div className="hidden h-[386px] flex-col items-start rounded-3xl border border-zinc-100 bg-zinc-100 sm:flex">
       <img
@@ -30,20 +63,10 @@ const DesktopCard = ({ service }: { service: HealthcareService }) => {
             {service.description}
           </Body2>
         </div>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button
-              variant="white"
-              className="border border-zinc-200 px-5 py-3 hover:bg-white/30"
-            >
-              Get started
-            </Button>
-          </DialogTrigger>
 
-          <HealthcareServiceDialogContent healthcareService={service}>
-            <Button>Have you changed me?</Button>
-          </HealthcareServiceDialogContent>
-        </Dialog>
+        <HealthcareServiceDialog healthcareService={service}>
+          {renderButton()}
+        </HealthcareServiceDialog>
       </div>
     </div>
   );
@@ -51,28 +74,23 @@ const DesktopCard = ({ service }: { service: HealthcareService }) => {
 
 const MobileCard = ({ service }: { service: HealthcareService }) => {
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <div className="flex items-center justify-between gap-3 rounded-[20px] bg-zinc-100 px-5 py-4 sm:hidden">
-          <img
-            src={service.image}
-            alt={service.name}
-            className="size-9 rounded-lg object-cover"
-          />
-          <div>
-            <Body1 className="line-clamp-1">{service.name}</Body1>
-            <Body2 className="line-clamp-1 text-zinc-500">
-              {service.description}
-            </Body2>
-          </div>
-          <div className="flex items-center justify-center">
-            <ChevronRight className="size-4 text-zinc-500" />
-          </div>
+    <HealthcareServiceDialog healthcareService={service}>
+      <div className="flex items-center justify-between gap-3 rounded-[20px] bg-zinc-100 px-5 py-4 sm:hidden">
+        <img
+          src={service.image}
+          alt={service.name}
+          className="size-9 rounded-lg object-cover"
+        />
+        <div>
+          <Body1 className="line-clamp-1">{service.name}</Body1>
+          <Body2 className="line-clamp-1 text-zinc-500">
+            {service.description}
+          </Body2>
         </div>
-      </DialogTrigger>
-      <HealthcareServiceDialogContent healthcareService={service}>
-        <Button>Have you changed me?</Button>
-      </HealthcareServiceDialogContent>
-    </Dialog>
+        <div className="flex items-center justify-center">
+          <ChevronRight className="size-4 text-zinc-500" />
+        </div>
+      </div>
+    </HealthcareServiceDialog>
   );
 };

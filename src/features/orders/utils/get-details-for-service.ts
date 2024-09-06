@@ -1,16 +1,6 @@
-export type TestDetails = {
-  'Why is this test important?': string;
-  'Test Process'?: string;
-  'Pre-test considerations'?: string;
-  "What's measured?"?: string;
-  'Test process'?: string;
-};
+import { ServiceDetails, TestDetails } from '@/features/orders/types/service';
 
-type ServiceDetails = {
-  [serviceName: string]: TestDetails;
-};
-
-export const findServiceDetailsByName = (
+export const getDetailsForService = (
   healthcareServiceName: string,
 ): TestDetails | undefined => {
   const serviceDetails: ServiceDetails = {

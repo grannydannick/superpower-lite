@@ -17,10 +17,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { Body2 } from '@/components/ui/typography';
-import { useGetServiceability } from '@/features/onboarding/api/get-serviceability';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
+import { useGetServiceability } from '@/shared/api/get-serviceability';
 import {
   FormAddressInput,
   formAddressInputSchema,

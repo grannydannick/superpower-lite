@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogTrigger } from '@/components/ui/dialog';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
-import { HealthcareServiceDialogContent } from '@/shared/components';
+import { HealthcareServiceInfoDialogContent } from '@/shared/components';
 import { HealthcareService } from '@/types/api';
 
 export const HealthcareCardDialog = ({
@@ -25,13 +25,13 @@ export const HealthcareCardDialog = ({
         </a>
       </DialogTrigger>
 
-      <HealthcareServiceDialogContent healthcareService={healthcareService}>
+      <HealthcareServiceInfoDialogContent healthcareService={healthcareService}>
         <DialogClose>
           <Button onClick={() => updateAdditionalService(healthcareService)}>
             Add to cart
           </Button>
         </DialogClose>
-      </HealthcareServiceDialogContent>
+      </HealthcareServiceInfoDialogContent>
     </Dialog>
   );
 };

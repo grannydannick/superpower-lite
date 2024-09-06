@@ -24,7 +24,7 @@ type UsePhlebotomyLocationsOptions = {
   queryConfig?: QueryConfig<typeof getPhlebotomyLocationsQueryOptions>;
 };
 
-export const UsePhlebotomyLocations = ({
+export const usePhlebotomyLocations = ({
   postalCode,
   queryConfig,
 }: UsePhlebotomyLocationsOptions) => {

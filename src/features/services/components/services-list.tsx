@@ -1,5 +1,5 @@
 import { Spinner } from '@/components/ui/spinner';
-import { ENVIRONMENTAL_TOXIN_PANEL } from '@/features/services/const/environmental-toxin-panel';
+import { ENVIRONMENTAL_TOXIN_PANEL } from '@/const/toxin-panel';
 
 import { useServices } from '../api/get-services';
 import { customSort } from '../utils/sort';

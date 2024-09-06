@@ -23,10 +23,10 @@ import { BiomarkerTableRow } from '@/features/biomarkers/components/biomarkers-d
 import { BiomarkerDataTableToolbar } from '@/features/biomarkers/components/toolbar/biomarker-data-table-toolbar';
 import { ToolbarCategoryType } from '@/features/biomarkers/const/toolbar-options';
 import { getHealthcareServiceFromCategory } from '@/features/biomarkers/utils/get-healthcare-service-from-category';
+import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
 import { useServices } from '@/features/services/api/get-services';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
-import { HealthcareServiceDialogContent } from '@/shared/components';
 import { Biomarker } from '@/types/api';
 
 interface DataTableProps<TData, TValue> {
@@ -204,11 +204,9 @@ export function DataTable<TData, TValue>({
                     Get Tested
                   </Button>
                 </DialogTrigger>
-                <HealthcareServiceDialogContent
-                  healthcareService={healthcareService}
-                >
+                <HealthcareServiceDialog healthcareService={healthcareService}>
                   <Button onClick={() => {}}>Have you changed me?</Button>
-                </HealthcareServiceDialogContent>
+                </HealthcareServiceDialog>
               </Dialog>
             )}
             <Link to="/settings/vault">

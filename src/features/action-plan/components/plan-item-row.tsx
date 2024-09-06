@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import {
   Popover,
@@ -16,9 +15,9 @@ import { useProducts } from '@/features/action-plan/api/get-products';
 import { usePlan } from '@/features/action-plan/stores/plan-store';
 import { useBiomarkers } from '@/features/biomarkers/api/get-biomarkers';
 import { BiomarkersDataTable } from '@/features/biomarkers/components/biomarkers-data-table/biomarker-data-table';
+import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
 import { useServices } from '@/features/services/api/get-services';
 import { cn } from '@/lib/utils';
-import { HealthcareServiceDialogContent } from '@/shared/components';
 import {
   Biomarker,
   HealthcareService,
@@ -215,17 +214,12 @@ function ActionPlanServiceRow({
         <ActionPlanItemDatePicker goalItem={goalItem} goalIndex={goalIndex} />
       )}
       {service.active && !isAdmin && (
-        <Dialog>
-          <DialogTrigger>
-            <div className="hidden cursor-pointer gap-[3px] whitespace-nowrap text-sm text-[#A1A1AA] hover:text-[#FC5F2B] md:flex">
-              <h5>Get Started</h5>
-              <ChevronRight width={16} height={16} />
-            </div>
-          </DialogTrigger>
-          <HealthcareServiceDialogContent healthcareService={service}>
-            <Button>Have you changed me?</Button>
-          </HealthcareServiceDialogContent>
-        </Dialog>
+        <HealthcareServiceDialog healthcareService={service}>
+          <div className="hidden cursor-pointer gap-[3px] whitespace-nowrap text-sm text-[#A1A1AA] hover:text-[#FC5F2B] md:flex">
+            <h5>Get Started</h5>
+            <ChevronRight width={16} height={16} />
+          </div>
+        </HealthcareServiceDialog>
       )}
     </div>
   );

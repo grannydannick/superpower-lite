@@ -3,6 +3,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { useStepper } from '@/components/ui/stepper';
 import { useCreateCheckoutUrl } from '@/features/action-plan/api/create-checkout-url';
 import { useCheckout } from '@/features/action-plan/stores/checkout-store';
+import { cn } from '@/lib/utils';
 
 export const CheckoutStep = (): JSX.Element => {
   const createCheckoutUrlMutation = useCreateCheckoutUrl({
@@ -70,18 +71,34 @@ export const CheckoutStep = (): JSX.Element => {
           ))}
         </div>
       </div>
-      <div className="flex items-center justify-between gap-6 px-7 pb-4 pt-7 md:px-14 md:pb-8 md:pt-14">
-        <Button variant="outline" onClick={prevStep}>
-          Back
-        </Button>
-        <Button
-          disabled={createCheckoutUrlMutation.isPending}
-          onClick={() =>
-            createCheckoutUrlMutation.mutate({ data: selectedProducts })
-          }
-        >
-          {createCheckoutUrlMutation.isPending ? <Spinner /> : 'Place order'}
-        </Button>
+      <div
+        className={cn(
+          'flex items-center justify-between gap-6 px-7 pb-4 pt-7 md:px-14 md:pb-8 md:pt-14',
+          createCheckoutUrlMutation.isSuccess ? 'justify-end' : null,
+        )}
+      >
+        {!createCheckoutUrlMutation.isSuccess && (
+          <>
+            <Button variant="outline" onClick={prevStep}>
+              Back
+            </Button>
+            <Button
+              disabled={createCheckoutUrlMutation.isPending}
+              onClick={() =>
+                createCheckoutUrlMutation.mutate({ data: selectedProducts })
+              }
+            >
+              {createCheckoutUrlMutation.isPending ? (
+                <Spinner />
+              ) : (
+                'Place order'
+              )}
+            </Button>
+          </>
+        )}
+        {createCheckoutUrlMutation.isSuccess && (
+          <p className="text-[18px] text-zinc-400">Finish shopify checkout.</p>
+        )}
       </div>
     </>
   );

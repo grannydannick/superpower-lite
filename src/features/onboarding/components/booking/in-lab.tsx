@@ -7,11 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { useStepper } from '@/components/ui/stepper';
 import { Body1, Body2, H2, H3, H4 } from '@/components/ui/typography';
-import { UsePhlebotomyLocations } from '@/features/onboarding/api/get-phlebotomy-locations';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
+import { usePhlebotomyLocations } from '@/shared/api/get-phlebotomy-locations';
 import { PhlebotomyLocation } from '@/types/api';
 import { formatAddress } from '@/utils/format';
 
@@ -36,7 +36,7 @@ export const InLab = () => {
   );
   const debouncedZipCode = useDebounce(zipCode, 500);
 
-  const phlebotomyLocationsMutation = UsePhlebotomyLocations({
+  const phlebotomyLocationsMutation = usePhlebotomyLocations({
     postalCode: debouncedZipCode,
     queryConfig: { enabled: debouncedZipCode.length === 5 },
   });

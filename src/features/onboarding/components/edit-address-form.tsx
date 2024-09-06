@@ -14,10 +14,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { Body2 } from '@/components/ui/typography';
-import { useGetServiceability } from '@/features/onboarding/api/get-serviceability';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { cn } from '@/lib/utils';
 import { FormAddressInput, formAddressInputSchema } from '@/shared/api';
+import { useGetServiceability } from '@/shared/api/get-serviceability';
 import { CollectionMethodType } from '@/types/api';
 
 // TODO: make this component live when there is support for this on backend

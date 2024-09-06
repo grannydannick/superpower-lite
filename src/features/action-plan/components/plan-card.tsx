@@ -18,6 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Body1, Body2, H2 } from '@/components/ui/typography';
@@ -31,7 +32,7 @@ import { generateDummyPlan } from '@/features/action-plan/utils/generate-dummy-p
 import { useServices } from '@/features/services/api/get-services';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
-import { HealthcareServiceDialogContent } from '@/shared/components';
+import { HealthcareServiceInfoDialogContent } from '@/shared/components';
 import { PlanGoal, PlanGoalItem } from '@/types/api';
 
 export const PlanCard = () => {
@@ -64,7 +65,7 @@ const PlanCardFooter = ({ orderId }: { orderId?: string }) => {
   });
 
   if (!orderId) {
-    return <div className="px-[72px] pb-[72px]" />;
+    return <div className="px-6 pb-6 md:px-[72px] md:pb-[72px]" />;
   }
 
   const isAdmin = Boolean(user?.adminActor);
@@ -79,7 +80,7 @@ const PlanCardFooter = ({ orderId }: { orderId?: string }) => {
 
   if (isAdmin) {
     return (
-      <div className="flex w-full items-center justify-end space-x-4 px-[72px] pb-[72px]">
+      <div className="flex w-full items-center justify-end space-x-4 px-6 pb-6 md:px-[72px] md:pb-[72px]">
         {!specificPlan ? (
           <Button
             className="w-full"
@@ -104,7 +105,7 @@ const PlanCardFooter = ({ orderId }: { orderId?: string }) => {
   }
 
   return (
-    <div className="flex w-full items-center justify-end space-x-4 px-[72px] pb-[72px]">
+    <div className="flex w-full items-center justify-end space-x-4 px-6 pb-6 md:px-[72px] md:pb-[72px]">
       <Button variant="outline" onClick={() => navigate(`./plans/${orderId}`)}>
         See Doctor’s Note
       </Button>
@@ -121,16 +122,16 @@ const PlanCardFooter = ({ orderId }: { orderId?: string }) => {
 
 const PlanCardContent = ({ orderId }: { orderId?: string }) => {
   return (
-    <div className="px-[72px] pt-[72px]">
+    <div className="px-6 pt-6 md:px-[72px] md:pt-[72px]">
       <Tabs defaultValue="SERVICE">
-        <TabsList className="grid w-fit grid-cols-3">
-          <TabsTrigger value="PRODUCT" className="pb-0">
+        <TabsList className="flex w-full justify-start space-x-6 overflow-x-scroll rounded-none">
+          <TabsTrigger value="PRODUCT" className="pb-1">
             Products
           </TabsTrigger>
-          <TabsTrigger value="SERVICE" className="pb-0">
+          <TabsTrigger value="SERVICE" className="pb-1">
             Services
           </TabsTrigger>
-          <TabsTrigger value="LIFESTYLE" disabled className="pb-0">
+          <TabsTrigger value="LIFESTYLE" disabled className="pb-1">
             <Lock className="mr-1.5 w-4" />
             Lifestyle
           </TabsTrigger>
@@ -354,13 +355,23 @@ const Item = ({ item }: { item: PlanGoalItem }) => {
           )}
           onClick={() => window.open(product?.url, '_blank')}
         >
-          <img
-            alt={product?.name}
-            src={product?.image}
-            className="size-[72px] rounded-[8px] bg-white object-cover object-center"
-          />
+          {productsQuery.isLoading ? (
+            <Skeleton className="h-[72px] min-w-[72px]" />
+          ) : (
+            <img
+              alt={product?.name}
+              src={product?.image}
+              className="size-[72px] rounded-[8px] bg-white object-cover object-center"
+            />
+          )}
           <div className="flex flex-1 flex-col gap-1">
-            <Body1>{product?.name}</Body1>
+            <Body1>
+              {servicesQuery.isLoading ? (
+                <Skeleton className="h-[24px] min-w-[130px] bg-zinc-300" />
+              ) : (
+                product?.name
+              )}
+            </Body1>
             <Body2 className="text-zinc-400"></Body2>
           </div>
         </div>
@@ -374,19 +385,29 @@ const Item = ({ item }: { item: PlanGoalItem }) => {
       return (
         <div className="flex h-[96px] w-full items-center justify-between rounded-[20px] bg-[#F7F7F7] p-3 transition">
           <div className="flex w-full items-center space-x-6">
-            <img
-              alt={service?.name}
-              src={service?.image}
-              className="size-[72px] rounded-[8px] bg-white object-cover object-center"
-            />
+            {servicesQuery.isLoading ? (
+              <Skeleton className="h-[72px] min-w-[72px] bg-zinc-300" />
+            ) : (
+              <img
+                alt={service?.name}
+                src={service?.image}
+                className="size-[72px] rounded-[8px] bg-white object-cover object-center"
+              />
+            )}
             <div className="flex flex-1 flex-col gap-1">
               <div className="flex">
-                <Body1 className="line-clamp-1">{service?.name}</Body1>
+                <Body1 className="line-clamp-1">
+                  {servicesQuery.isLoading ? (
+                    <Skeleton className="h-[24px] min-w-[130px] bg-zinc-300" />
+                  ) : (
+                    service?.name
+                  )}
+                </Body1>
                 {item.timestamp && (
                   <>
-                    <Dot color="#A1A1AA" className="hidden md:block" />
+                    <Dot color="#A1A1AA" className="hidden lg:block" />
                     {item.timestamp && (
-                      <Body1 className="hidden text-zinc-400 md:block">
+                      <Body1 className="line-clamp-1 hidden text-zinc-400 lg:block">
                         By {format(new Date(item.timestamp), 'PP')}
                       </Body1>
                     )}
@@ -399,14 +420,14 @@ const Item = ({ item }: { item: PlanGoalItem }) => {
           {service?.active && (
             <Dialog>
               <DialogTrigger>
-                <div className="hidden cursor-pointer gap-[3px] whitespace-nowrap text-sm text-[#A1A1AA] hover:text-[#FC5F2B] md:flex">
-                  <h5>Get Started</h5>
+                <div className="flex cursor-pointer gap-[3px] whitespace-nowrap text-sm text-[#A1A1AA] hover:text-[#FC5F2B]">
+                  <h5 className="hidden lg:block">Get Started</h5>
                   <ChevronRight width={16} height={16} />
                 </div>
               </DialogTrigger>
-              <HealthcareServiceDialogContent healthcareService={service}>
+              <HealthcareServiceInfoDialogContent healthcareService={service}>
                 <Button>Have you changed me?</Button>
-              </HealthcareServiceDialogContent>
+              </HealthcareServiceInfoDialogContent>
             </Dialog>
           )}
         </div>

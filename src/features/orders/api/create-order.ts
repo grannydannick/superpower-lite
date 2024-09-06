@@ -68,7 +68,9 @@ type UseCreateOrderOptions = {
   mutationConfig?: MutationConfig<typeof createOrder>;
 };
 
-export const useCreateOrder = ({ mutationConfig }: UseCreateOrderOptions) => {
+export const useCreateOrder = ({
+  mutationConfig,
+}: UseCreateOrderOptions = {}) => {
   const queryClient = useQueryClient();
 
   const { onSuccess, ...restConfig } = mutationConfig || {};

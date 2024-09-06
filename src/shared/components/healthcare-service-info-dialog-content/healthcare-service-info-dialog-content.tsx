@@ -9,26 +9,29 @@ import {
 } from '@/components/ui/accordion';
 import { DialogClose, DialogContent } from '@/components/ui/dialog';
 import { Body1, Body2, H2, H4 } from '@/components/ui/typography';
+import { TestDetails } from '@/features/orders/types/service';
+import { getDetailsForService } from '@/features/orders/utils/get-details-for-service';
 import { getHealthcareServicePriceLabel } from '@/features/services/const/get-service-price';
 import { HealthcareService } from '@/types/api';
 
-import {
-  findServiceDetailsByName,
-  TestDetails,
-} from './utils/healthcare-service-faq';
-
-/*
- * If this dialog is supposed to just show info and then close, pass children wrapped into <DialogClose />
+/**
+ * This version of dialog should not trigger Order flow.
  *
- * Otherwise, you can pass any other component into button position with any action required
+ * If you wish to trigger order flow, please use:
+ * @param {HealthcareServiceDialog}
  *
- * P.S. make sure to wrap this into <Dialog /> with <DialogTrigger /> to call this
- * */
-export const HealthcareServiceDialogContent = ({
+ * You can pass any other component into the button position with any action required.
+ *
+ * P.S. Make sure to wrap this into <Dialog /> with <DialogTrigger /> to call this.
+ *
+ * @param {ReactNode} [children] - Optional; pass the content, usually wrapped into <DialogClose /> or another component.
+ * @param {HealthcareService} healthcareService - The healthcare service details.
+ */
+export const HealthcareServiceInfoDialogContent = ({
   children,
   healthcareService,
 }: {
-  children: ReactNode;
+  children?: ReactNode;
   healthcareService: HealthcareService;
 }) => {
   return (
@@ -41,26 +44,29 @@ export const HealthcareServiceDialogContent = ({
               <X className="size-6 cursor-pointer p-1" />
             </DialogClose>
           </div>
-          <HealthcareServiceDetails healthcareService={healthcareService}>
+          <HealthcareServiceInfoDetails healthcareService={healthcareService}>
             {children}
-          </HealthcareServiceDetails>
+          </HealthcareServiceInfoDetails>
         </div>
       </div>
     </DialogContent>
   );
 };
 
-/*
- * Primarly used with <HealthcareServiceDialogContent /> but can be called separately if no dialog is required
- * */
-export function HealthcareServiceDetails({
+/**
+ * Primarily used with <HealthcareServiceDialogContent /> but can be called separately if no dialog is required.
+ *
+ * @param {HealthcareService} healthcareService - The healthcare service details.
+ * @param {ReactNode} [children] - Optional; expected to be a button component or element that should perform some action
+ */
+export function HealthcareServiceInfoDetails({
   healthcareService,
   children,
 }: {
   healthcareService: HealthcareService;
-  children: ReactNode;
+  children?: ReactNode;
 }): JSX.Element {
-  const serviceDetails = findServiceDetailsByName(healthcareService.name);
+  const serviceDetails = getDetailsForService(healthcareService.name);
 
   return (
     <div>
@@ -75,7 +81,11 @@ export function HealthcareServiceDetails({
           <Body1 className="text-zinc-500">
             {healthcareService.description}
           </Body1>
-          <div className="flex flex-row items-center space-x-4">{children}</div>
+          {children && (
+            <div className="flex flex-row items-center space-x-4">
+              {children}
+            </div>
+          )}
         </div>
 
         <img

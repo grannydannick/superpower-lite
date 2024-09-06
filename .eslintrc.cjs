@@ -48,27 +48,47 @@ module.exports = {
           {
             zones: [
               // disables cross-feature imports:
-              // eg. src/features/discussions should not import from src/features/comments, etc.
+              // eg. src/features/onboarding should not import from src/features/home, etc.
               {
                 target: './src/features/auth',
                 from: './src/features',
                 except: ['./auth'],
               },
-              {
-                target: './src/features/comments',
-                from: './src/features',
-                except: ['./comments'],
-              },
-              {
-                target: './src/features/discussions',
-                from: './src/features',
-                except: ['./discussions'],
-              },
-              {
-                target: './src/features/teams',
-                from: './src/features',
-                except: ['./teams'],
-              },
+              // {
+              //   target: './src/features/onboarding',
+              //   from: './src/features',
+              //   except: ['./onboarding'],
+              // },
+              // {
+              //   target: './src/features/home',
+              //   from: './src/features',
+              //   except: ['./home'],
+              // },
+              // {
+              //   target: './src/features/biomarkers',
+              //   from: './src/features',
+              //   except: ['./biomarkers'],
+              // },
+              // {
+              //   target: './src/features/action-plan',
+              //   from: './src/features',
+              //   except: ['./action-plan'],
+              // },
+              // {
+              //   target: './src/features/settings',
+              //   from: './src/features',
+              //   except: ['./settings'],
+              // },
+              // {
+              //   target: './src/features/services',
+              //   from: './src/services',
+              //   except: ['./services'],
+              // },
+              // {
+              //   target: './src/features/messages',
+              //   from: './src/messages',
+              //   except: ['./messages'],
+              // },
               {
                 target: './src/features/users',
                 from: './src/features',

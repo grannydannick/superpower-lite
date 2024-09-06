@@ -19,7 +19,6 @@ export const getServiceability = ({
 }: {
   data: GetServiceabilityInput;
 }): Promise<Serviceable> => {
-  console.log(data);
   return api.post(`/phlebotomy/serviceable`, data);
 };
 
