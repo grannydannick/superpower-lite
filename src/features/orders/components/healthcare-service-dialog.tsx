@@ -121,15 +121,13 @@ const HealthcareServiceDialogConsumer = ({
       <DialogContent>
         <div className="max-h-[90vh] overflow-y-scroll rounded-xl">
           <div>
-            <div className="flex flex-row items-center justify-between bg-[#F7F7F7] px-12 pb-6 pt-12">
+            <div className="flex flex-row items-center justify-between px-12 pb-6 pt-12">
               <Body1 className="text-zinc-500">Service</Body1>
               <DialogClose>
                 <X className="size-6 cursor-pointer p-1" />
               </DialogClose>
             </div>
-            <div className="bg-[#F7F7F7] p-12">
-              {steps[activeStep]?.content ?? null}
-            </div>
+            <div className="p-12">{steps[activeStep]?.content ?? null}</div>
           </div>
         </div>
       </DialogContent>

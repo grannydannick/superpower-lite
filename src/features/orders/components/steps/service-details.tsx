@@ -25,7 +25,7 @@ export const HealthcareServiceDetails = () => {
 
   return (
     <div>
-      <div className="flex flex-col justify-between gap-12 pb-16 md:flex-row md:bg-[#F7F7F7]">
+      <div className="flex flex-col justify-between gap-12 pb-16 md:flex-row">
         <div className="flex flex-col justify-center gap-6 md:max-w-[278px]">
           <div>
             <H2 className="text-zinc-900">{service.name}</H2>
@@ -58,7 +58,7 @@ export const HealthcareServiceDetails = () => {
               <AccordionItem
                 value={serviceDetailTitle}
                 key={index}
-                className="p-12"
+                className="py-12"
               >
                 <AccordionTrigger className="p-0">
                   <H4 className="text-zinc-900">{serviceDetailTitle}</H4>

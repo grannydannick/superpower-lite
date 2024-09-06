@@ -190,6 +190,11 @@ export const MobileSidebar = () => {
       name: 'Settings',
       to: './settings',
     },
+    {
+      name: 'Invite friend',
+      to: './invite',
+      icon: PresentIcon,
+    },
   ];
 
   return (

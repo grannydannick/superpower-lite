@@ -40,7 +40,7 @@ export const PhlebotomyScheduler = () => {
               : `An appointment takes 15 minutes. We recommend booking within 2 hours of waking up to ensure the most accurate measurement of blood hormone levels.`}
           </p>
         </div>
-        <div className="w-full rounded-xl bg-white p-4">
+        <div className="w-full rounded-xl">
           <Scheduler
             collectionMethod={collectionMethod as CollectionMethodType}
             address={location?.address as Address}

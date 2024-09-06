@@ -127,7 +127,7 @@ function CreateOrderPhlebotomyAtHome(): JSX.Element {
 
     collectionMethod,
   } = useOrder((s) => s);
-  const [isServicable, setIsServicable] = useState(true);
+  const [isServicable, setIsServicable] = useState(false);
   const { data: user } = useUser();
   const [error, setError] = useState<string | null>(null);
 
@@ -176,6 +176,7 @@ function CreateOrderPhlebotomyAtHome(): JSX.Element {
 
     // refresh error if zip code changes
     setError(null);
+    updateLocation(null);
     // set is not servicable to refresh previous result
     setIsServicable(false);
 
@@ -199,10 +200,21 @@ function CreateOrderPhlebotomyAtHome(): JSX.Element {
    * isServicable is local use state to keep track of API response and fast update it
    * */
   useEffect(() => {
-    if (isAddressComplete(address) && !error && isServicable) {
+    if (
+      isAddressComplete(address) &&
+      !error &&
+      isServicable &&
+      !getPhlebotomyServiceableMutation.isPending
+    ) {
       updateLocation({ address });
     }
-  }, [address, isServicable]);
+  }, [
+    address,
+    isServicable,
+    updateLocation,
+    getPhlebotomyServiceableMutation.isPending,
+    error,
+  ]);
 
   return (
     <div className="space-y-6">
