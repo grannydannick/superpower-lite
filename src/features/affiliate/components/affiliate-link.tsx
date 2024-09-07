@@ -2,7 +2,7 @@ import { CopyIcon } from 'lucide-react';
 
 import { Card } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
-import { useAffiliateLinks } from '@/features/affiliate/api/get-affiliate-links';
+import { useAffiliateLinks } from '@/features/affiliate/api';
 import { cn } from '@/lib/utils';
 
 export function AffiliateLink(): JSX.Element {

@@ -1,9 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { getFilesQueryOptions } from '@/features/files/api/get-files';
 import { api } from '@/lib/api-client';
 import { MutationConfig } from '@/lib/react-query';
 import { File as SPFile } from '@/types/api';
+
+import { getFilesQueryOptions } from './get-files';
 
 export const createFile = ({
   data,

@@ -1,3 +1,4 @@
+import { TestDetails } from '@/components/shared/healthcare-service-info-dialog-content/types/service';
 import {
   Accordion,
   AccordionContent,
@@ -9,10 +10,9 @@ import { useStepper } from '@/components/ui/stepper';
 import { Body1, Body2, H2, H4 } from '@/components/ui/typography';
 import { ENVIRONMENTAL_TOXIN_PANEL } from '@/const/toxin-panel';
 import { useOrder } from '@/features/orders/stores/order-store';
-import { TestDetails } from '@/features/orders/types/service';
-import { getDetailsForService } from '@/features/orders/utils/get-details-for-service';
-import { getHealthcareServicePriceLabel } from '@/features/services/const/get-service-price';
 import { cn } from '@/lib/utils';
+import { getHealthcareServicePriceLabel } from '@/utils/format-money';
+import { getDetailsForService } from '@/utils/service';
 
 export const HealthcareServiceDetails = () => {
   const { service } = useOrder((s) => s);

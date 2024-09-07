@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { getWearablesQueryOptions } from '@/features/settings/api/get-wearables';
 import { api } from '@/lib/api-client';
 import { MutationConfig } from '@/lib/react-query';
+
+import { getWearablesQueryOptions } from './get-wearables';
 
 export const deleteWearable = ({ provider }: { provider: string }) => {
   return api.delete(`/wearables/${provider}`);

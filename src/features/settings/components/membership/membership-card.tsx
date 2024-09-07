@@ -2,9 +2,9 @@ import { differenceInYears, parseISO } from 'date-fns';
 import moment from 'moment';
 
 import { Body1, H2 } from '@/components/ui/typography';
+import { useSubscriptions } from '@/features/settings/api';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
-import { useSubscriptions } from '@/shared/api/get-subscriptions';
 
 export const MembershipCard = (): JSX.Element => {
   const { data: user } = useUser();

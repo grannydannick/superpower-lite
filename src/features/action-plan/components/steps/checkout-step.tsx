@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { useStepper } from '@/components/ui/stepper';
-import { useCreateCheckoutUrl } from '@/features/action-plan/api/create-checkout-url';
+import { useCreateCheckoutUrl } from '@/features/action-plan/api';
 import { useCheckout } from '@/features/action-plan/stores/checkout-store';
 import { cn } from '@/lib/utils';
 

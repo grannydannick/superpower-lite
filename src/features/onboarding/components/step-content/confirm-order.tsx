@@ -25,11 +25,13 @@ import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { getTotalPrice } from '@/features/onboarding/utils/get-total-price';
 import { useCreateOrder } from '@/features/orders/api/create-order';
 import { useServices } from '@/features/services/api/get-services';
+import {
+  useCreateSubscription,
+  useMembershipPrice,
+} from '@/features/settings/api';
 import { useAddPaymentMethod } from '@/features/settings/api/add-payment-method';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
-import { useCreateSubscription } from '@/shared/api/create-subscription';
-import { useMembershipPrice } from '@/shared/api/get-subscription-price';
 import { Address } from '@/types/api';
 import { formatMoney } from '@/utils/format-money';
 

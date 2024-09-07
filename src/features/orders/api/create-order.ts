@@ -2,9 +2,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 
 import { getOrdersQueryOptions } from '@/features/orders/api/get-orders';
+import { addressInputSchema } from '@/features/users/api';
 import { api } from '@/lib/api-client';
 import { MutationConfig } from '@/lib/react-query';
-import { addressInputSchema } from '@/shared/api';
 import { Order } from '@/types/api';
 
 export const serviceItemInputSchema = z.object({

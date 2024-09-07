@@ -1,9 +1,9 @@
 import React from 'react';
 
+import { HealthcareServiceInfoDialogContent } from '@/components/shared/healthcare-service-info-dialog-content';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogTrigger } from '@/components/ui/dialog';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
-import { HealthcareServiceInfoDialogContent } from '@/shared/components';
 import { HealthcareService } from '@/types/api';
 
 export const HealthcareCardDialog = ({

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
-import { useCreateMessage } from '@/features/messages/api/create-message';
+import { useCreateMessage } from '@/features/messages/api';
 import { useOrder } from '@/features/orders/stores/order-store';
 
 export const MessageConcierge = () => {

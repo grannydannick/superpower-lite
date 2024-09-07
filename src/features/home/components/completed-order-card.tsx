@@ -1,12 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { TimestampDisplay } from '@/components/shared/timestamp-display';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useServices } from '@/features/services/api/get-services';
 import { useUser } from '@/lib/auth';
-import { TimestampDisplay } from '@/shared/components/timestamp-display';
 import { Order } from '@/types/api';
 
 export function CompletedOrderCard(order: Order): JSX.Element {

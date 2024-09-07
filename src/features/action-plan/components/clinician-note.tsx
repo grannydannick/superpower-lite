@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
-import { usePlans } from '@/features/action-plan/api/get-plans';
+import { usePlans } from '@/features/action-plan/api';
 import { ClinicianNoteDatePicker } from '@/features/action-plan/components/note-date-picker';
 import { ClinicianNoteHeader } from '@/features/action-plan/components/note-header';
 import { ClinicianNotePopover } from '@/features/action-plan/components/note-popover';

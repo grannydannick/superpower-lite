@@ -1,12 +1,12 @@
 import React from 'react';
 
+import { AddToCalendar } from '@/components/shared/add-to-calendar-button';
 import { Button } from '@/components/ui/button';
 import { DialogClose } from '@/components/ui/dialog';
 import { Timeline } from '@/components/ui/timeline';
 import { H2 } from '@/components/ui/typography';
 import { useOrder } from '@/features/orders/stores/order-store';
-import { AddToCalendar } from '@/shared/components';
-import { getServiceTimeline } from '@/utils/timeline';
+import { getServiceTimeline } from '@/utils/service';
 
 export const Success = () => {
   const { slot, service, collectionMethod, location } = useOrder((s) => s);

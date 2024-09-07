@@ -2,7 +2,7 @@ import moment from 'moment';
 
 import { Spinner } from '@/components/ui/spinner';
 import { Body1, H4 } from '@/components/ui/typography';
-import { useBiomarkers } from '@/features/biomarkers/api/get-biomarkers';
+import { useBiomarkers } from '@/features/biomarkers/api';
 import { biomarkerStatusCount } from '@/features/biomarkers/utils/biomarkers-status-count';
 import { useUser } from '@/lib/auth';
 

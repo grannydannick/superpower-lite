@@ -2,6 +2,7 @@ import { Dot } from 'lucide-react';
 import moment from 'moment';
 import React from 'react';
 
+import { AddToCalendar } from '@/components/shared/add-to-calendar-button';
 import { Button } from '@/components/ui/button';
 import { Body1, Body2 } from '@/components/ui/typography';
 import {
@@ -10,7 +11,6 @@ import {
   TOTAL_TOXIN_TEST,
 } from '@/const';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
-import { AddToCalendar } from '@/shared/components';
 import { HealthcareService } from '@/types/api';
 
 export const AdditionalServiceCard = ({

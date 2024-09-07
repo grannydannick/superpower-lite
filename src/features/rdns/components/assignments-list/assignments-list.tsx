@@ -1,7 +1,7 @@
 import { Spinner } from '@/components/ui/spinner';
 import { columns } from '@/features/rdns/components/assignments-list/columns';
 import { AssignmentsDataTable } from '@/features/rdns/components/assignments-list/data-table';
-import { useUsers } from '@/features/users/api/get-users';
+import { useUsers } from '@/features/users/api';
 
 export const AssignmentsList = () => {
   const usersQuery = useUsers();

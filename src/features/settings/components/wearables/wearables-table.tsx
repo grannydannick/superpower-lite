@@ -12,7 +12,8 @@ import { columns } from '@/features/settings/components/wearables/desktop/column
 import { DataTable } from '@/features/settings/components/wearables/desktop/data-table';
 import { WearablesMobile } from '@/features/settings/components/wearables/wearables-mobile';
 import { WEARABLES } from '@/features/settings/const/wearables-benefits';
-import { VitalLinkButton } from '@/shared/components/vital-button';
+
+import { VitalLinkButton } from '../vital-button';
 
 export function WearablesTable() {
   const { data, isLoading } = useWearables();

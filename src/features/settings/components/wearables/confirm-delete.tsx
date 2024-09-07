@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { DialogClose, DialogContent } from '@/components/ui/dialog';
 import { Spinner } from '@/components/ui/spinner';
-import { useDeleteWearable } from '@/features/settings/api/delete-wearable';
+import { useDeleteWearable } from '@/features/settings/api';
 
 export function ConfirmDelete({ provider }: { provider: string }) {
   const { mutateAsync, isPending } = useDeleteWearable();

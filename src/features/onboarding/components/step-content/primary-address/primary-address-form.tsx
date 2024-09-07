@@ -16,13 +16,13 @@ import { Spinner } from '@/components/ui/spinner';
 import { useStepper } from '@/components/ui/stepper';
 import { OnboardingInput } from '@/features/onboarding/components/onboarding-input';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
-import { useUser } from '@/lib/auth';
+import { useGetServiceability } from '@/features/orders/api';
 import {
   FormAddressInput,
   formAddressInputSchema,
   useUpdateProfile,
-} from '@/shared/api';
-import { useGetServiceability } from '@/shared/api/get-serviceability';
+} from '@/features/users/api';
+import { useUser } from '@/lib/auth';
 import { Address } from '@/types/api';
 
 function FullPrimaryAddressForm({

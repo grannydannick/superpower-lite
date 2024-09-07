@@ -15,9 +15,9 @@ import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { Body2 } from '@/components/ui/typography';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
+import { useGetServiceability } from '@/features/orders/api';
+import { FormAddressInput, formAddressInputSchema } from '@/features/users/api';
 import { cn } from '@/lib/utils';
-import { FormAddressInput, formAddressInputSchema } from '@/shared/api';
-import { useGetServiceability } from '@/shared/api/get-serviceability';
 import { CollectionMethodType } from '@/types/api';
 
 // TODO: make this component live when there is support for this on backend

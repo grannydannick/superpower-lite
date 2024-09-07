@@ -1,7 +1,8 @@
 import { Card } from '@/components/ui/card';
 import { H2 } from '@/components/ui/typography';
-import { CreatePaymentMethod } from '@/features/settings/components/billing/create-payment-method';
-import { PaymentMethodList } from '@/features/settings/components/billing/payment-method-list';
+
+import { CreatePaymentMethod } from './create-payment-method';
+import { PaymentMethodList } from './payment-method-list';
 
 export const Billing = () => {
   return (

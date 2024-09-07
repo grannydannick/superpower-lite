@@ -4,7 +4,7 @@ import moment from 'moment';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useServices } from '@/features/services/api/get-services';
+import { useServices } from '@/features/services/api';
 import { cn } from '@/lib/utils';
 import { Order } from '@/types/api';
 

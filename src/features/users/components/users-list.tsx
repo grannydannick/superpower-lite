@@ -2,7 +2,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { columns } from '@/features/users/components/columns';
 import { UsersDataTable } from '@/features/users/components/data-table';
 
-import { useUsers } from '../api/get-users';
+import { useUsers } from '../api';
 
 export const UsersList = () => {
   const usersQuery = useUsers();

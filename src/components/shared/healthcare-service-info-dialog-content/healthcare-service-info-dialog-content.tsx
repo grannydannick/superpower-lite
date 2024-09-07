@@ -9,10 +9,11 @@ import {
 } from '@/components/ui/accordion';
 import { DialogClose, DialogContent } from '@/components/ui/dialog';
 import { Body1, Body2, H2, H4 } from '@/components/ui/typography';
-import { TestDetails } from '@/features/orders/types/service';
-import { getDetailsForService } from '@/features/orders/utils/get-details-for-service';
-import { getHealthcareServicePriceLabel } from '@/features/services/const/get-service-price';
 import { HealthcareService } from '@/types/api';
+import { getHealthcareServicePriceLabel } from '@/utils/format-money';
+import { getDetailsForService } from '@/utils/service';
+
+import { TestDetails } from '../healthcare-service-info-dialog-content/types/service';
 
 /**
  * This version of dialog should not trigger Order flow.

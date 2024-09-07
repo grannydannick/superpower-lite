@@ -5,9 +5,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
 import { useStepper } from '@/components/ui/stepper';
 import { Body1 } from '@/components/ui/typography';
-import { useCreateOrder } from '@/features/orders/api/create-order';
+import { useCreateOrder } from '@/features/orders/api';
 import { useOrder } from '@/features/orders/stores/order-store';
-import { useService } from '@/features/services/api/get-service';
+import { useService } from '@/features/services/api';
 import { OrderStatus } from '@/types/api';
 import { formatMoney } from '@/utils/format-money';
 

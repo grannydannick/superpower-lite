@@ -2,7 +2,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { api } from '@/lib/api-client';
 import { MutationConfig } from '@/lib/react-query';
-import { getSubscriptionsQueryOptions } from '@/shared/api/get-subscriptions';
+
+import { getSubscriptionsQueryOptions } from './get-subscriptions';
 
 export const cancelSubscription = (): Promise<void> => {
   return api.put(`billing/subscription/cancel`);

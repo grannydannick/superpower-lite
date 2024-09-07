@@ -9,7 +9,7 @@ export const getSchedulingLink = async (): Promise<{
   return api.get('/rdns/link');
 };
 
-export const getServicesQueryOptions = () => {
+export const getSchedylingLinkQueryOptions = () => {
   return queryOptions({
     queryKey: ['rdnLink'],
     queryFn: () => getSchedulingLink(),
@@ -17,14 +17,14 @@ export const getServicesQueryOptions = () => {
 };
 
 type UseGetSchedulingLinkOptions = {
-  queryConfig?: QueryConfig<typeof getServicesQueryOptions>;
+  queryConfig?: QueryConfig<typeof getSchedylingLinkQueryOptions>;
 };
 
 export const useGetSchedulingLink = ({
   queryConfig,
 }: UseGetSchedulingLinkOptions = {}) => {
   return useQuery({
-    ...getServicesQueryOptions(),
+    ...getSchedylingLinkQueryOptions(),
     ...queryConfig,
   });
 };

@@ -3,7 +3,7 @@ import React, { ReactNode, useCallback, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { env } from '@/config/env';
-import { useVitalToken } from '@/shared/api/get-vital-token';
+import { useVitalToken } from '@/features/settings/api';
 
 export function VitalLinkButton({
   className,

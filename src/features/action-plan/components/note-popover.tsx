@@ -183,7 +183,7 @@ export function ClinicianNotePopover({
       >
         {selectedCategory && (
           <Input
-            className="w-full border-none px-[16px] py-[12px] caret-[#FC5F2B] placeholder:text-base placeholder:text-[#E4E4E7]"
+            className="mb-2 w-full border-none px-[16px] py-[12px] caret-[#FC5F2B] shadow-none placeholder:text-base placeholder:text-[#E4E4E7]"
             placeholder="protein"
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -220,7 +220,7 @@ export function ClinicianNotePopover({
             className={`sticky bottom-[8px] w-[304px] rounded-[15px] px-[6px] py-[16px] text-base ${
               getLength() > 0
                 ? 'bg-[#18181B] hover:bg-[#18181B]'
-                : 'bg-[#E4E4E7] text-[#71717A] hover:bg-[#E4E4E7] disabled:opacity-10'
+                : 'bg-[#E4E4E7] text-[#71717A] hover:bg-[#E4E4E7] disabled:opacity-100'
             }`}
             disabled={getLength() === 0}
             onClick={addSelectedItems}
@@ -246,7 +246,7 @@ function CategoryBlock({
       className="flex w-full cursor-pointer items-center gap-[16px] p-[16px]"
       onClick={() => onClick(option.name)}
     >
-      <div className="flex size-[48px] items-center justify-center rounded-[8px] border border-black bg-[#F9F9F9]">
+      <div className="flex size-[48px] items-center justify-center rounded-[8px] border border-zinc-200 bg-zinc-50">
         {option?.icon ? (
           option.icon
         ) : (
@@ -314,7 +314,7 @@ function OptionBlock({
   return (
     <div className="flex w-full cursor-pointer items-center justify-between p-[16px]">
       <div className="flex items-center gap-[16px]">
-        <div className="flex min-h-[48px] min-w-[48px] items-center justify-center rounded-[8px] border border-black bg-[#F9F9F9]">
+        <div className="flex min-h-[48px] min-w-[48px] items-center justify-center rounded-[8px] border border-zinc-200 bg-zinc-50">
           {renderImage()}
         </div>
         <h3 className="text-base text-black">{option.item.name}</h3>

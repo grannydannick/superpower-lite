@@ -1,7 +1,7 @@
 import { ColumnFiltersState } from '@tanstack/react-table';
 
 import { Spinner } from '@/components/ui/spinner';
-import { useBiomarkers } from '@/features/biomarkers/api/get-biomarkers';
+import { useBiomarkers } from '@/features/biomarkers/api';
 import { Biomarker } from '@/types/api';
 
 import { getCols } from './columns';

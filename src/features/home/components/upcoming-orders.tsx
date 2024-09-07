@@ -1,6 +1,6 @@
 import { Spinner } from '@/components/ui/spinner';
 import { UpcomingOrderCard } from '@/features/home/components/upcoming-order-card';
-import { useOrders } from '@/features/orders/api/get-orders';
+import { useOrders } from '@/features/orders/api';
 import { Order, OrderStatus } from '@/types/api';
 
 export function UpcomingOrdersList(): JSX.Element {

@@ -18,9 +18,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { getWearablesQueryOptions } from '@/features/settings/api/get-wearables';
+import { getWearablesQueryOptions } from '@/features/settings/api';
+import { VitalLinkButton } from '@/features/settings/components/vital-button';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
-import { VitalLinkButton } from '@/shared/components/vital-button';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

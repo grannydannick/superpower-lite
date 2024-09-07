@@ -50,71 +50,16 @@ module.exports = {
               // disables cross-feature imports:
               // eg. src/features/onboarding should not import from src/features/home, etc.
 
-              // we allow orders everywhere because its core package that has order scheduling inside and can't be moved to shared
-              // we also allow biomarkers everywhere due to the same reason
-              {
-                target: './src/features/auth',
-                from: './src/features',
-                except: ['./auth'],
-              },
-              {
-                target: './src/features/onboarding',
-                from: './src/features',
-                except:
-                  [
-                    './onboarding',  './orders', './biomarkers',
-                    './services/api', './settings/api'
-                  ],
-              },
-              {
-                target: './src/features/home',
-                from: './src/features',
-                except:
-                  [
-                    './home', './orders', './biomarkers',
-                    './services/api', './messages/api'
-                  ],
-              },
-              {
-                target: './src/features/biomarkers',
-                from: './src/features',
-                except: [
-                  './biomarkers', './orders',
-                  './services/api', './messages/api'
-                ],
-              },
-              {
-                target: './src/features/action-plan',
-                from: './src/features',
-                except: [
-                  './action-plan', './orders', './biomarkers',
-                  './services/api', './messages/api'
-                ],
-              },
-              {
-                target: './src/features/settings',
-                from: './src/features',
-                except: [
-                  './settings', './orders', './biomarkers',
-                  './services/api', './messages/api'
-                ],
-              },
-              {
-                target: './src/features/services',
-                from: './src/services',
-                except: ['./services'],
-              },
-              {
-                target: './src/features/messages',
-                from: './src/messages',
-                except: ['./messages'],
-              },
-              {
-                target: './src/features/users',
-                from: './src/features',
-                except: ['./users'],
-              },
-              // enforce unidirectional codebase:
+              // We disabled that feature on 09/06/2024 NM
+              // Our codebase is largely connected by now and splitting this up will cause A LOT of pain
+
+              //  {
+              //    target: './src/features/auth',
+              //    from: './src/features',
+              //    except: ['./auth'],
+              //  },
+
+              // however, we do enforce unidirectional codebase:
 
               // e.g. src/app can import from src/features but not the other way around
               {

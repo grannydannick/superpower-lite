@@ -15,7 +15,7 @@ import { useStepper } from '@/components/ui/stepper';
 import { Body1 } from '@/components/ui/typography';
 import { ENVIRONMENTAL_TOXIN_PANEL } from '@/const/toxin-panel';
 import { useOrder } from '@/features/orders/stores/order-store';
-import { useServices } from '@/features/services/api/get-services';
+import { useServices } from '@/features/services/api';
 import { cn } from '@/lib/utils';
 import { HealthcareService } from '@/types/api';
 import { EnvironmentalToxinType } from '@/types/toxin';

@@ -1,10 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 
-import { getPaymentMethodsQueryOptions } from '@/features/settings/api/get-payment-methods';
 import { api } from '@/lib/api-client';
 import { MutationConfig } from '@/lib/react-query';
 import { Subscription } from '@/types/api';
+
+import { getPaymentMethodsQueryOptions } from './get-payment-methods';
 
 export const setDefaultPaymentMethodInputSchema = z.object({
   setDefault: z.boolean(),

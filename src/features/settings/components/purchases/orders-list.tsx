@@ -7,7 +7,7 @@ import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Spinner } from '@/components/ui/spinner';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { Body1, Body2 } from '@/components/ui/typography';
-import { useMultiPlatformOrders } from '@/features/orders/api/get-multi-platform-orders';
+import { useMultiPlatformOrders } from '@/features/orders/api';
 import { DateHeader } from '@/features/settings/components/purchases/date-header';
 import { OrderDropDown } from '@/features/settings/components/purchases/order-dropdown';
 import { OrderInvoiceDialogContent } from '@/features/settings/components/purchases/orders-invoice-dialog-content';

@@ -1,12 +1,12 @@
 import React from 'react';
 
+import { AddToCalendar } from '@/components/shared/add-to-calendar-button';
 import { Button } from '@/components/ui/button';
 import { useStepper } from '@/components/ui/stepper';
 import { Timeline } from '@/components/ui/timeline';
 import { H2 } from '@/components/ui/typography';
 import { ImageContentLayout } from '@/features/onboarding/components/layouts';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
-import { AddToCalendar } from '@/shared/components';
 
 type TimelineType = {
   title: string;

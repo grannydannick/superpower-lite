@@ -12,8 +12,9 @@ import {
   GRAIL_GALLERI_MULTI_CANCER_TEST,
   SUPERPOWER_BLOOD_PANEL,
 } from '@/const';
-import { getCalendarEvent } from '@/shared/components/add-to-calendar-button/utils/get-calendar-event';
 import { Address, CollectionMethodType, Slot } from '@/types/api';
+
+import { getCalendarEvent } from '../add-to-calendar-button/utils/get-calendar-event';
 
 export function AddToCalendar({
   slot,

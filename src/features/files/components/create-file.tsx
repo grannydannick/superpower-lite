@@ -6,7 +6,7 @@ import {
 } from 'react';
 
 import { Input } from '@/components/ui/input';
-import { useCreateFile } from '@/features/files/api/create-file';
+import { useCreateFile } from '@/features/files/api';
 
 export function CreateFile({ children }: { children: ReactNode }): JSX.Element {
   const { mutate } = useCreateFile();

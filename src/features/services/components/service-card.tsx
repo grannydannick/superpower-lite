@@ -5,7 +5,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Body1, Body2, H4 } from '@/components/ui/typography';
 import { ADVISORY_CALL } from '@/const';
 import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
-import { useGetSchedulingLink } from '@/features/services/api/get-scheduling-link';
+import { useGetSchedulingLink } from '@/features/services/api';
 import { HealthcareService } from '@/types/api';
 
 export const ServiceCard = ({ service }: { service: HealthcareService }) => {

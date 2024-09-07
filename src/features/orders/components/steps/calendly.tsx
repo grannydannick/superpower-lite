@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { CalendlyScheduler } from '@/components/shared/calendly-scheduler';
 import { Button } from '@/components/ui/button';
 import { DialogClose } from '@/components/ui/dialog';
 import { Spinner } from '@/components/ui/spinner';
@@ -10,7 +11,6 @@ import { useUpdateOrder } from '@/features/orders/api/update-order';
 import { useOrder } from '@/features/orders/stores/order-store';
 import { useGetSchedulingLink } from '@/features/services/api/get-scheduling-link';
 import { useUser } from '@/lib/auth';
-import { CalendlyScheduler } from '@/shared/components/calendly-scheduler';
 import { OrderStatus, WebAddressType } from '@/types/api';
 import { CalendlyScheduledEventInfo } from '@/types/calendly';
 

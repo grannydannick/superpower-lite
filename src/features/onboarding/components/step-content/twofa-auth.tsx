@@ -15,16 +15,18 @@ import {
   FormLabel,
 } from '@/components/ui/form';
 import { Spinner } from '@/components/ui/spinner';
-import { useStepper } from '@/components/ui/stepper';
 import { H1 } from '@/components/ui/typography';
+import {
+  SendOtpInput,
+  sendOtpInputSchema,
+  useSendOtp,
+} from '@/features/auth/api';
 import { OnboardingInput } from '@/features/onboarding/components/onboarding-input';
-import { SendOtpInput, sendOtpInputSchema, useSendOtp } from '@/shared/api';
-import { TwoFaCode } from '@/shared/components';
+import { TwoFaCode } from '@/features/onboarding/components/two-fa-code';
 
 export const TwoFaAuth = () => {
   const [showOTP, setShowOTP] = useState(false);
-  // TODO: be careful! if we uncomment this back make sure we check if its under onboarding or auth. NM 09/02/2024
-  const { nextStep } = useStepper((s) => s);
+
   const sendOTPMutation = useSendOtp({
     mutationConfig: {
       onSuccess: () => {
@@ -57,11 +59,7 @@ export const TwoFaAuth = () => {
 
   if (showOTP) {
     return (
-      <TwoFaCode
-        phone={form.watch('phone')}
-        closeOPT={() => setShowOTP(false)}
-        successHandler={() => nextStep()}
-      />
+      <TwoFaCode phone={form.watch('phone')} close={() => setShowOTP(false)} />
     );
   }
 

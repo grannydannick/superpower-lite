@@ -17,14 +17,16 @@ import { useStepper } from '@/components/ui/stepper';
 import { Body1 } from '@/components/ui/typography';
 import { CUSTOM_BLOOD_PANEL, SUPERPOWER_BLOOD_PANEL } from '@/const';
 import { US_STATE_CODES } from '@/const/us-state-codes';
+import {
+  useGetServiceability,
+  usePhlebotomyLocations,
+} from '@/features/orders/api';
 import { COLLECTION_METHODS } from '@/features/orders/const/collection-methods';
 import { useOrder } from '@/features/orders/stores/order-store';
 import { getDefaultCollectionMethod } from '@/features/orders/utils/get-default-collection-method';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
-import { usePhlebotomyLocations } from '@/shared/api/get-phlebotomy-locations';
-import { useGetServiceability } from '@/shared/api/get-serviceability';
 import { Address, PhlebotomyLocation } from '@/types/api';
 import { getLine, isAddressComplete, setLine } from '@/utils/address';
 import { formatAddress } from '@/utils/format';

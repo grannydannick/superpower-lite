@@ -21,15 +21,17 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Body1, Body2, H2 } from '@/components/ui/typography';
-import { useCreatePlan } from '@/features/action-plan/api/create-action-plan';
-import { usePlanDates } from '@/features/action-plan/api/get-plan-dates';
-import { usePlans } from '@/features/action-plan/api/get-plans';
-import { useProducts } from '@/features/action-plan/api/get-products';
+import {
+  usePlanDates,
+  usePlans,
+  useProducts,
+  useCreatePlan,
+} from '@/features/action-plan/api';
 import { ActionPlanCheckoutModal } from '@/features/action-plan/components/checkout-modal';
 import { filterGoalsByItemType } from '@/features/action-plan/utils/filter-goals-by-item-type';
 import { generateDummyPlan } from '@/features/action-plan/utils/generate-dummy-plan';
 import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
-import { useServices } from '@/features/services/api/get-services';
+import { useServices } from '@/features/services/api';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 import { PlanGoal, PlanGoalItem } from '@/types/api';

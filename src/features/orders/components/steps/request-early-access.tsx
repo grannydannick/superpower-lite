@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
+import { useCreateInteractionEvent } from '@/features/messages/api';
 import { useOrder } from '@/features/orders/stores/order-store';
-import { useCreateInteractionEvent } from '@/shared/api/create-interaction-event';
 
 export const EarlyAccessContent = (): JSX.Element => {
   const [message, setMessage] = useState('');

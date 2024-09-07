@@ -7,7 +7,7 @@ import {
   MembershipType,
   useOnboarding,
 } from '@/features/onboarding/stores/onboarding-store';
-import { useMembershipPrice } from '@/shared/api/get-subscription-price';
+import { useMembershipPrice } from '@/features/settings/api';
 import { formatMoney } from '@/utils/format-money';
 
 const metadata = [

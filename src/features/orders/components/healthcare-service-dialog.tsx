@@ -100,12 +100,6 @@ const HealthcareServiceDialogConsumer = ({
         <DrawerTrigger asChild>{children}</DrawerTrigger>
         <DrawerContent className="h-screen">
           <div className="flex items-center justify-center px-6 pb-3 pt-10">
-            {/*<Button*/}
-            {/*  variant="glass"*/}
-            {/*  className="size-12 rounded-full p-0"*/}
-            {/*>*/}
-            {/*  <ChevronLeft className="size-4" />*/}
-            {/*</Button>*/}
             <Body1>Service</Body1>
           </div>
           <div className="overflow-y-auto px-6 pb-6">

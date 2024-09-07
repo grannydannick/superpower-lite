@@ -4,9 +4,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Body1, Body3 } from '@/components/ui/typography';
+import { useUpdateProfile } from '@/features/users/api';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
-import { useUpdateProfile } from '@/shared/api';
 import { ActiveAddress } from '@/types/api';
 
 import { AddAddressDialog } from './add-address-dialog';

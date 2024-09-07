@@ -1,15 +1,39 @@
+import {
+  ADVISORY_CALL,
+  CUSTOM_BLOOD_PANEL,
+  SUPERPOWER_BLOOD_PANEL,
+} from '@/const';
 import { CollectionMethodType, HealthcareService } from '@/types/api';
 
+/**
+ * Determines the default collection method for a healthcare service.
+ *
+ * @param {HealthcareService} service - The healthcare service object that contains details such as name and phlebotomy requirements.
+ * @returns {CollectionMethodType | null} The default collection method type, or `null` if none is applicable.
+ *
+ * @example
+ * // Returns 'IN_LAB'
+ * const collectionMethod = getDefaultCollectionMethod({
+ *   name: 'Superpower Blood Panel',
+ * });
+ *
+ * // Returns null for advisory calls
+ * const collectionMethod = getDefaultCollectionMethod({
+ *   name: 'Advisory Call',
+ * });
+ */
 export const getDefaultCollectionMethod = (
   service: HealthcareService,
 ): CollectionMethodType | null => {
   const isPhlebotomy = service.phlebotomy;
   const isBloodPanel =
-    service.name === 'Superpower Blood Panel' ||
-    service.name === 'Custom Blood Panel';
+    service.name === SUPERPOWER_BLOOD_PANEL ||
+    service.name === CUSTOM_BLOOD_PANEL;
 
-  // TODO: potentially add other service that doesn't need collection methods
-  if (service.name === '1-1 Advisory Call') {
+  /*
+   * Extend with more services if needed
+   * */
+  if (service.name === ADVISORY_CALL) {
     return null;
   }
 

@@ -9,10 +9,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown';
-import { useInvoice } from '@/features/settings/api/get-invoice';
+import { useSubscriptions, useInvoice } from '@/features/settings/api';
 import { CancelMembershipDialog } from '@/features/settings/components/membership/cancel-membership-dialog';
 import { OrderInvoiceDialogContent } from '@/features/settings/components/purchases/orders-invoice-dialog-content';
-import { useSubscriptions } from '@/shared/api/get-subscriptions';
 import { MultiPlatformOrder, Subscription } from '@/types/api';
 
 interface OrderDropDownProps {

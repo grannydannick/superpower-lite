@@ -6,8 +6,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
-import { useAssignRdn } from '@/features/rdns/api/assign-rdn';
-import { useRdns } from '@/features/rdns/api/get-rdns';
+import { useAssignRdn, useRdns } from '@/features/rdns/api';
 import { Rdn } from '@/types/api';
 
 export function AssignmentCell({

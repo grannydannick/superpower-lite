@@ -22,12 +22,12 @@ import {
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { US_STATE_CODES } from '@/const/us-state-codes';
-import { useUser } from '@/lib/auth';
 import {
-  formAddressInputSchema,
   FormAddressInput,
+  formAddressInputSchema,
   useUpdateProfile,
-} from '@/shared/api';
+} from '@/features/users/api';
+import { useUser } from '@/lib/auth';
 import { Address } from '@/types/api';
 
 export function AddAddressForm(): JSX.Element {

@@ -18,14 +18,14 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { Body2 } from '@/components/ui/typography';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
+import { useGetServiceability } from '@/features/orders/api';
+import {
+  FormAddressInput,
+  formAddressInputSchema,
+  useUpdateProfile,
+} from '@/features/users/api';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
-import {
-  formAddressInputSchema,
-  FormAddressInput,
-  useUpdateProfile,
-} from '@/shared/api';
-import { useGetServiceability } from '@/shared/api/get-serviceability';
 import { Address } from '@/types/api';
 
 function FullAddressForm({

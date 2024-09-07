@@ -10,3 +10,4 @@ export * from './csv-file-icon';
 export * from './mp4-file-icon';
 export * from './pdf-file-icon';
 export * from './unknown-file-icon';
+export * from './present-icon';

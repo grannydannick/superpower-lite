@@ -4,9 +4,9 @@ import React from 'react';
 
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useSubscriptions } from '@/features/settings/api';
 import { CancelMembershipDialog } from '@/features/settings/components/membership/cancel-membership-dialog';
 import { cn } from '@/lib/utils';
-import { useSubscriptions } from '@/shared/api/get-subscriptions';
 
 export const CurrentMembership = (): JSX.Element => {
   const { data: subscriptionsData, isLoading } = useSubscriptions({});

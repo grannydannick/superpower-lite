@@ -17,31 +17,25 @@ import {
   InputOTPSlot,
 } from '@/components/ui/input-otp';
 import { Spinner } from '@/components/ui/spinner';
+import { useStepper } from '@/components/ui/stepper';
 import { Body1, H1 } from '@/components/ui/typography';
-import { OnboardingInput } from '@/features/onboarding/components/onboarding-input';
-import { cn } from '@/lib/utils';
+import { useSendOtp } from '@/features/auth/api';
 import {
-  useSendOtp,
   useVerifyOtp,
   VerifyOtpInput,
   verifyOtpInputSchema,
-} from '@/shared/api';
+} from '@/features/auth/api/verify-otp';
+import { OnboardingInput } from '@/features/onboarding/components/onboarding-input';
+import { cn } from '@/lib/utils';
 
-const TwoFaCode = ({
-  phone,
-  closeOPT,
-  successHandler,
-}: {
-  phone: string;
-  closeOPT: () => void;
-  successHandler: () => void;
-}) => {
+const TwoFaCode = ({ phone, close }: { phone: string; close: () => void }) => {
+  const { nextStep } = useStepper((s) => s);
   const verifyOTPMutation = useVerifyOtp({
     mutationConfig: {
       onSuccess: () => {
         // timeout to show user that code worked
         setTimeout(() => {
-          successHandler();
+          nextStep();
         }, 2000); // 2000 milliseconds = 2 seconds
       },
       onError: () => {
@@ -169,7 +163,7 @@ const TwoFaCode = ({
             <Button
               variant="ghost"
               className="text-base font-normal text-white hover:text-white/90"
-              onClick={closeOPT}
+              onClick={close}
             >
               Try another phone number
             </Button>

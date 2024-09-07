@@ -3,7 +3,7 @@ import { ChevronRight } from 'lucide-react';
 import { useStepper } from '@/components/ui/stepper';
 import { Body1, H1 } from '@/components/ui/typography';
 import { EntryLayout } from '@/features/onboarding/components/layouts';
-import { VitalLinkButton } from '@/shared/components/vital-button';
+import { VitalLinkButton } from '@/features/settings/components/vital-button';
 
 export const WearablesEntry = () => {
   const { nextOnboardingStep } = useStepper((s) => s);

@@ -4,7 +4,7 @@ import React from 'react';
 import { Body2, H2 } from '@/components/ui/typography';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { getTotalPrice } from '@/features/onboarding/utils/get-total-price';
-import { useMembershipPrice } from '@/shared/api/get-subscription-price';
+import { useMembershipPrice } from '@/features/settings/api';
 import { HealthcareService } from '@/types/api';
 import { formatMoney } from '@/utils/format-money';
 
