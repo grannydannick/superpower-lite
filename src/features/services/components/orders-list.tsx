@@ -70,7 +70,7 @@ export function OrdersList(): JSX.Element {
           )}
         </AnimatePresence>
 
-        {orders.length > defaultVisible && (
+        {orders.length > defaultVisible && !isLoading && (
           <CollapsibleTrigger asChild>
             {open ? (
               <Button

@@ -7,6 +7,16 @@ import { OrdersList } from '@/features/services/components/orders-list';
 import { ServicesList } from '@/features/services/components/services-list';
 
 export const servicesLoader = (queryClient: QueryClient) => async () => {
+  /**
+   * Loads the services data only when the current URL does not include '/services'.
+   * Services page is quite heavy and thus we want loading animations to happen directly in component rather then prefetch
+   *
+   * A bit hacky, any other solutions are welcome via PR =)
+   */
+  if (window.location.pathname.includes('/services')) {
+    return null;
+  }
+
   const query = getServicesQueryOptions();
 
   return (

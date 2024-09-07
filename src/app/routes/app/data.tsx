@@ -12,6 +12,16 @@ import { BiomarkersDataTable } from '@/features/biomarkers/components/biomarkers
 import { BiomarkersSummaryCard } from '@/features/biomarkers/components/biomarkers-summary-card';
 
 export const dataLoader = (queryClient: QueryClient) => async () => {
+  /**
+   * Loads biomarkers only when the current URL does not include '/data'.
+   * Biomarkers page is quite heavy and thus we want loading animations to happen directly in component rather then prefetch
+   *
+   * A bit hacky, any other solutions are welcome via PR =)
+   */
+  if (window.location.pathname.includes('/data')) {
+    return null;
+  }
+
   const query = getBiomarkersQueryOptions();
 
   return (
