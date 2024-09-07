@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Spinner } from '@/components/ui/spinner';
-import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { Body1, Body2 } from '@/components/ui/typography';
 import { useMultiPlatformOrders } from '@/features/orders/api';
 import { DateHeader } from '@/features/settings/components/purchases/date-header';
@@ -74,16 +73,16 @@ function OrderBlock({
   date,
 }: OrderTableProps): JSX.Element {
   return (
-    <Table className="border-separate border-spacing-y-3">
-      <TableBody>
+    <div className="border-separate border-spacing-y-3">
+      <div>
         <DateHeader occurrence={date} />
-      </TableBody>
-      <TableBody>
+      </div>
+      <div className="space-y-1 md:space-y-0">
         {multiPlatformOrders.map((multiPlatformOrder, index) => (
           <OrderRow multiPlatformOrder={multiPlatformOrder} key={index} />
         ))}
-      </TableBody>
-    </Table>
+      </div>
+    </div>
   );
 }
 
@@ -95,86 +94,107 @@ const OrderRow = ({
   const navigate = useNavigate();
   const haveInvoice =
     multiPlatformOrder.invoiceId || multiPlatformOrder.invoiceUrl;
+
+  const isMembership = multiPlatformOrder.type === 'membership';
+  const formattedOrderDate = new Date(
+    multiPlatformOrder.occurredAt,
+  ).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  });
+
+  const orderPrice = multiPlatformOrder.price;
+
   return (
-    <TableRow className="bg-white hover:bg-white md:bg-none">
-      <TableCell className="rounded-l-2xl">
-        <div className="flex items-center gap-3">
-          <img
-            src={
-              multiPlatformOrder.image
-                ? multiPlatformOrder.image
-                : '/settings/membership/card-2024.png'
+    <div
+      className={cn(
+        'flex items-center',
+        'py-[14px] pr-[14px] pl-5 bg-white',
+        'rounded-2xl cursor-pointer hover:bg-zinc-50',
+      )}
+    >
+      <div className="flex items-center justify-center gap-3">
+        <img
+          src={
+            multiPlatformOrder.image
+              ? multiPlatformOrder.image
+              : '/settings/membership/card-2024.png'
+          }
+          alt={multiPlatformOrder.image}
+          className="size-12 min-w-12 rounded-[8px] border border-[#E4E4E7] object-cover object-center"
+        />
+        <div className="flex flex-col">
+          <Body1
+            className={cn(
+              'text-zinc-600 line-clamp-1',
+              multiPlatformOrder.type === 'service' &&
+                'md:hover:text-vermillion-900 cursor-pointer',
+            )}
+            role="presentation"
+            onClick={() =>
+              multiPlatformOrder.type === 'service' && navigate('/app/services')
             }
-            alt={multiPlatformOrder.image}
-            className="size-12 min-w-12 rounded-[8px] border border-[#E4E4E7] object-cover object-center"
-          />
-          <div>
-            <Body1
-              className={cn(
-                'text-zinc-600 line-clamp-1',
-                multiPlatformOrder.type === 'service' &&
-                  'md:hover:text-vermillion-900 cursor-pointer',
-              )}
-              role="presentation"
-              onClick={() =>
-                multiPlatformOrder.type === 'service' &&
-                navigate('/app/services')
-              }
-            >
-              {multiPlatformOrder.name}
-            </Body1>
-            <div className="flex items-center gap-1.5">
-              <Body2 className="hidden text-zinc-400 md:block">
-                {multiPlatformOrder.price === 0
-                  ? 'Included'
-                  : formatMoney(multiPlatformOrder.price)}
-              </Body2>
-              <Body2 className="text-nowrap text-zinc-400 md:hidden">
-                {format(multiPlatformOrder.occurredAt, 'PP')}
-              </Body2>
-            </div>
+          >
+            {multiPlatformOrder.name}
+          </Body1>
+          <div className="flex items-center justify-start gap-1.5 text-xs text-zinc-400">
+            <Body2 className="text-xs text-zinc-400 md:hidden">
+              {formattedOrderDate}
+            </Body2>
+            <Body2 className="hidden text-xs text-zinc-400 md:block">
+              {orderPrice > 0 ? formatMoney(orderPrice) : 'Included'}
+            </Body2>
+
+            {isMembership && (
+              <div className="flex items-center gap-1.5 md:hidden">
+                <div className="size-0.5 rounded-full bg-zinc-400" />
+                <Body2 className="text-zinc-400">Yearly subscription</Body2>
+              </div>
+            )}
           </div>
         </div>
-      </TableCell>
-      <TableCell className="hidden lg:table-cell">
-        <h3 className="hidden text-sm text-[#52525B] md:block lg:text-base">
-          {format(multiPlatformOrder.occurredAt, 'PP')}
-        </h3>
-
-        <h3 className="text-sm text-[#52525B] md:hidden lg:text-base">
-          {multiPlatformOrder.price === 0
-            ? 'Included'
-            : formatMoney(multiPlatformOrder.price)}
-        </h3>
-        {multiPlatformOrder.type === 'membership' && (
-          <h3 className="hidden text-nowrap text-xs text-[#A1A1AA] md:block lg:text-sm">
-            Yearly subscription
-          </h3>
-        )}
-      </TableCell>
-      <TableCell className="hidden lg:table-cell">
-        <h3 className="text-base text-[#52525B]">
-          {capitalize(multiPlatformOrder.type)}
-        </h3>
-      </TableCell>
-      <TableCell className="rounded-r-2xl">
-        <div className="flex items-center">
-          <OrderDropDown multiPlatformOrder={multiPlatformOrder} />
-          {haveInvoice && (
-            <Dialog>
-              <OrderInvoiceDialogContent
-                multiPlatformOrder={multiPlatformOrder}
-              />
-              <DialogTrigger>
-                <ChevronRight
-                  color="#A1A1AA"
-                  className="block size-4 text-secondary md:hidden"
-                />
-              </DialogTrigger>
-            </Dialog>
+      </div>
+      <div className="ml-auto flex items-center justify-between space-x-4">
+        <div className="hidden min-w-[120px] flex-col items-start text-left lg:flex">
+          <Body2 className="whitespace-nowrap">
+            {format(multiPlatformOrder.occurredAt, 'PP')}
+          </Body2>
+          {isMembership && (
+            <Body2 className="hidden text-sm text-zinc-400 lg:block">
+              Yearly subscription
+            </Body2>
           )}
         </div>
-      </TableCell>
-    </TableRow>
+
+        <div className="hidden min-w-[120px] text-left text-sm lg:block">
+          {capitalize(multiPlatformOrder.type)}
+        </div>
+
+        <div className="flex min-w-[40px] items-center justify-end">
+          {haveInvoice && (
+            <div className="flex items-center">
+              {/* Show price only on mobile */}
+              <span className="mr-2 text-sm text-zinc-400 md:hidden">
+                {orderPrice > 0 ? formatMoney(orderPrice) : 'Included'}
+              </span>
+
+              <Dialog>
+                <OrderInvoiceDialogContent
+                  multiPlatformOrder={multiPlatformOrder}
+                />
+                <DialogTrigger>
+                  <ChevronRight
+                    color="#A1A1AA"
+                    className="block size-4 text-secondary md:hidden"
+                    strokeWidth={2}
+                  />
+                </DialogTrigger>
+              </Dialog>
+            </div>
+          )}
+          <OrderDropDown multiPlatformOrder={multiPlatformOrder} />
+        </div>
+      </div>
+    </div>
   );
 };
