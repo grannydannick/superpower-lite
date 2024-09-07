@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import Cookies from 'js-cookie';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 
-import { AppProvider } from '@/app/main-provider';
+import { AppProvider } from '@/app/provider';
 
 import { createUser as generateUser } from './data-generators';
 import { db } from './mocks/db';

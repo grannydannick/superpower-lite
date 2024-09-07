@@ -132,24 +132,14 @@
       transition: background-color 5000s ease-in-out 0s;
     }
 
-    /* Firefox */
-    * {
-      scrollbar-width: none;
-      scrollbar-color: lightgrey transparent;
-    }
 
-    /* Chrome, Edge, and Safari */
+    /* For Webkit-based browsers (Chrome, Safari and Opera) hide scrollbar */
     *::-webkit-scrollbar {
-      width: 10px;
-    }
-
-    /* For Webkit-based browsers (Chrome, Safari and Opera) */
-    .scrollbar-hide::-webkit-scrollbar {
       display: none;
     }
 
-    /* For IE, Edge and Firefox */
-    .scrollbar-hide {
+    /* For IE, Edge and Firefox hide scrollbar */
+    * {
       -ms-overflow-style: none; /* IE and Edge */
       scrollbar-width: none; /* Firefox */
     }
