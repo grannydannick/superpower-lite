@@ -8,13 +8,159 @@ As highlighted in this [tweet](https://twitter.com/rauchg/status/807626710350839
 
 Unit tests are the smallest tests you can write. They test individual parts of your application in isolation. They are useful for testing shared components and functions that are used throughout the entire application. They are also useful for testing complex logic in a single component. They are fast to run and easy to write.
 
-[Unit Test Example Code](../src/components/ui/dialog/confirmation-dialog/__tests__/confirmation-dialog.test.tsx)
+[Unit Test Example Code](../src/lib/stepper/__tests__/stepper.test.tsx)
 
 ### Integration Tests
 
 Integration testing checks how different parts of your application work together. It's crucial to focus on integration tests for most of your testing, as they provide significant benefits and boost confidence in your application's reliability. While unit tests are helpful for individual parts, passing them doesn't guarantee your app will function correctly if the connections between parts are flawed. Testing various features with integration tests is vital to ensure that your application works smoothly and consistently.
 
-[Integration Test Example Code](../src/app/routes/app/discussions/__tests__/discussion.test.tsx)
+```ts
+import {
+  renderApp,
+  screen,
+  userEvent,
+  waitFor,
+  createDiscussion,
+  createUser,
+  within,
+} from '@/testing/test-utils';
+
+import { DiscussionRoute } from '../discussion';
+
+const renderDiscussion = async () => {
+  const fakeUser = await createUser();
+  const fakeDiscussion = await createDiscussion({ teamId: fakeUser.teamId });
+
+  const utils = await renderApp(<DiscussionRoute />, {
+    user: fakeUser,
+    path: `/app/discussions/:discussionId`,
+    url: `/app/discussions/${fakeDiscussion.id}`,
+  });
+
+  await screen.findByText(fakeDiscussion.title);
+
+  return {
+    ...utils,
+    fakeUser,
+    fakeDiscussion,
+  };
+};
+
+test('should render discussion', async () => {
+  const { fakeDiscussion } = await renderDiscussion();
+  expect(screen.getByText(fakeDiscussion.body)).toBeInTheDocument();
+});
+
+test('should update discussion', async () => {
+  const { fakeDiscussion } = await renderDiscussion();
+
+  const titleUpdate = '-Updated';
+  const bodyUpdate = '-Updated';
+
+  await userEvent.click(
+    screen.getByRole('button', { name: /update discussion/i }),
+  );
+
+  const drawer = await screen.findByRole('dialog', {
+    name: /update discussion/i,
+  });
+
+  const titleField = within(drawer).getByText(/title/i);
+  const bodyField = within(drawer).getByText(/body/i);
+
+  const newTitle = `${fakeDiscussion.title}${titleUpdate}`;
+  const newBody = `${fakeDiscussion.body}${bodyUpdate}`;
+
+  // replacing the title with the new title
+  await userEvent.type(titleField, newTitle);
+
+  // appending updated to the body
+  await userEvent.type(bodyField, bodyUpdate);
+
+  const submitButton = within(drawer).getByRole('button', {
+    name: /submit/i,
+  });
+
+  await userEvent.click(submitButton);
+
+  await waitFor(() => expect(drawer).not.toBeInTheDocument());
+
+  expect(
+    await screen.findByRole('heading', { name: newTitle }),
+  ).toBeInTheDocument();
+  expect(await screen.findByText(newBody)).toBeInTheDocument();
+});
+
+test(
+  'should create and delete a comment on the discussion',
+  async () => {
+    await renderDiscussion();
+
+    const comment = 'Hello World';
+
+    await userEvent.click(
+      screen.getByRole('button', { name: /create comment/i }),
+    );
+
+    const drawer = await screen.findByRole('dialog', {
+      name: /create comment/i,
+    });
+
+    const bodyField = await within(drawer).findByText(/body/i);
+
+    await userEvent.type(bodyField, comment);
+
+    const submitButton = await within(drawer).findByRole('button', {
+      name: /submit/i,
+    });
+
+    await userEvent.click(submitButton);
+
+    await waitFor(() => expect(drawer).not.toBeInTheDocument());
+
+    await screen.findByText(comment);
+
+    const commentsList = await screen.findByRole('list', {
+      name: 'comments',
+    });
+
+    const commentElements =
+      await within(commentsList).findAllByRole('listitem');
+
+    const commentElement = commentElements[0];
+
+    expect(commentElement).toBeInTheDocument();
+
+    const deleteCommentButton = within(commentElement).getByRole('button', {
+      name: /delete comment/i,
+      // exact: false,
+    });
+
+    await userEvent.click(deleteCommentButton);
+
+    const confirmationDialog = await screen.findByRole('dialog', {
+      name: /delete comment/i,
+    });
+
+    const confirmationDeleteButton = await within(
+      confirmationDialog,
+    ).findByRole('button', {
+      name: /delete/i,
+    });
+
+    await userEvent.click(confirmationDeleteButton);
+
+    await screen.findByText(/comment deleted/i);
+
+    await waitFor(() => {
+      expect(within(commentsList).queryByText(comment)).not.toBeInTheDocument();
+    });
+  },
+  {
+    timeout: 20000,
+  },
+);
+```
 
 ### E2E
 
@@ -24,7 +170,7 @@ To run locally, make sure you ran `yarn playwright install --with-deps` before.
 
 [E2E Example Code](../e2e/tests/smoke.spec.ts)
 
-## Recommended Tooling:
+## Tooling:
 
 #### [Vitest](https://vitest.dev)
 

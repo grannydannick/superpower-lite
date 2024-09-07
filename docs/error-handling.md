@@ -10,8 +10,21 @@ Implement an interceptor to manage errors effectively. This interceptor can be u
 
 Utilize error boundaries in React to handle errors within specific parts of your application. Instead of having only one error boundary for the entire app, consider placing multiple error boundaries in different areas. This way, if an error occurs, it can be contained and managed locally without disrupting the entire application's functionality, ensuring a smoother user experience.
 
-[Error Boundary Example Code](../src/app/routes/app/discussions/discussion.tsx)
+```ts
+      <ContentLayout title={discussion.title}>
+        <DiscussionView discussionId={discussionId} />
+        <div className="mt-8">
+          <ErrorBoundary
+            fallback={
+              <div>Failed to load comments. Try to refresh the page.</div>
+            }
+          >
+            <Comments discussionId={discussionId} />
+          </ErrorBoundary>
+        </div>
+      </ContentLayout>
+```
 
 ### Error Tracking
 
-You should track any errors that occur in production. Although it's possible to implement your own solution, it is a better idea to use tools like [Sentry](https://sentry.io/). It will report any issue that breaks the app. You will also be able to see on which platform, browser, etc. did it occur. Make sure to upload source maps to sentry to see where in your source code did the error happen.
+We track any errors that occur in production. We use [New Relic](https://newrelic.com/). It will report any issue that breaks the app. You will also be able to see on which platform, browser, etc. did it occur.

@@ -41,7 +41,7 @@ Keep your code style consistent. For example, if you name your components using 
 
 If your component is accepting too many props you might consider splitting it into multiple components or use the composition technique via children or slots.
 
-[Composition Example Code](../src/components/ui/dialog/confirmation-dialog/confirmation-dialog.tsx)
+[Composition Example Code](../src/components/ui)
 
 #### Abstract shared components into a component library
 
@@ -55,47 +55,21 @@ It is a good idea to wrap 3rd party components as well in order to adapt them to
 
 ## Component libraries
 
-Every project requires some UI components such as modals, tabs, sidebars, menus, etc. Instead of building those from scratch, you might want to use some of the existing, battle-tested component libraries.
-
-#### Fully featured component libraries:
-
-These component libraries come with their components fully styled.
-
-- [Chakra UI](https://chakra-ui.com/) - great library with great developer experience, allows very fast prototyping with decent design defaults. Plenty of components that are very customizable and flexible with accessibility already configured out of the box.
-
-- [AntD](https://ant.design/) - another great component library that has a lot of different components. Best suitable for creating admin dashboards. However, it might be a bit difficult to change the styles in order to adapt them to a custom design.
-
-- [MUI](https://mui.com/material-ui/) - the most popular component library for React. Has a lot of different components. Can be used as a styled solution by implementing Material Design or as unstyled headless component library.
-
-- [Mantine](https://mantine.dev/) - a modern react component library with a lot of components and hooks. It is very customizable and has a lot of features out of the box.
+Every project requires some UI components such as modals, tabs, sidebars, menus, etc. Instead of building those from scratch, we use headless battle-tested component libraries mentioned below:
 
 #### Headless component libraries:
 
-These component libraries come with their components unstyled. If you have a specific design system to implement, it might be easier and better solution to go with headless components that come unstyled than to adapt a fully featured component library such as Material UI to your needs. Some good options are:
+These component libraries come with their components unstyled.
 
 - [Radix UI](https://www.radix-ui.com/)
-- [Headless UI](https://headlessui.dev/)
-- [react-aria](https://react-spectrum.adobe.com/react-aria/)
-- [Ark UI](https://ark-ui.com/)
-- [Reakit](https://reakit.io/)
+- [ShadCN UI](https://ui.shadcn.com/)
 
 ## Styling Solutions
 
-There are multiple ways to style a react application. Some good options are:
+For styling (CSS) we use:
 
 - [tailwind](https://tailwindcss.com/)
-- [vanilla-extract](https://github.com/seek-oss/vanilla-extract)
-- [Panda CSS](https://panda-css.com/)
-- [CSS modules](https://github.com/css-modules/css-modules)
-- [styled-components](https://styled-components.com/)
-- [emotion](https://emotion.sh/docs/introduction)
 
-NOTE: Keep React Server Components in mind as they require zero runtime styling solution.
-
-With the rise of headless component libraries, there is another tier of component libraries where predefined components are provided with styling solutions included, but instead of being installed as a package, they are provided as code which can be customized and styled as needed.
-
-- [ShadCN UI](https://ui.shadcn.com/)
-- [Park UI](https://park-ui.com/)
 
 ## Storybook
 

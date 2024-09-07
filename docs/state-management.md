@@ -9,36 +9,31 @@ Component state is specific to individual components and should not be shared gl
 - [useState](https://react.dev/reference/react/useState) - for simpler states that are independent
 - [useReducer](https://react.dev/reference/react/useReducer) - for more complex states where on a single action you want to update several pieces of state
 
-[Component State Example Code](../src/components/layouts/dashboard-layout.tsx)
+[Component State Example Code](../src/components/layouts/content-layout.tsx)
 
 ## Application State
 
 Application state manages global parts of an application, such as controlling global modals, notifications, and toggling color modes. To ensure optimal performance and ease of maintenance, it is advisable to localize the state as closely as possible to the components that require it. Avoid unnecessarily globalizing all state variables from the outset to maintain a structured and efficient state management architecture.
 
-Good Application State Solutions:
+We use following State Solution:
 
-- [context](https://react.dev/learn/passing-data-deeply-with-context) + [hooks](https://react.dev/reference/react-dom/hooks)
-- [redux](https://redux.js.org/) + [redux toolkit](https://redux-toolkit.js.org/)
-- [mobx](https://mobx.js.org)
+
 - [zustand](https://github.com/pmndrs/zustand)
-- [jotai](https://github.com/pmndrs/jotai)
-- [xstate](https://xstate.js.org/)
 
-[Global State Example Code](../src/components/ui/notifications/notifications-store.ts)
+[Feature State Example Code](../src/features/onboarding/stores/onboarding-store.ts)
+
+[Feature State With Initial Props Example Code](../src/features/orders/stores/order-store-creator.ts)
+
 
 ## Server Cache State
 
 The Server Cache State refers to the data retrieved from the server that is stored locally on the client-side for future use. While it is feasible to cache remote data within a state management store like Redux, there exist more optimal solutions to this practice. It is essential to consider more efficient caching mechanisms to enhance performance and optimize data retrieval processes.
 
-Good Server Cache Libraries:
+We use following Server Cache Library:
 
-- [react-query](https://tanstack.com/query) - REST + GraphQL
-- [swr](https://swr.vercel.app/) - REST + GraphQL
-- [apollo client](https://www.apollographql.com/) - GraphQL
-- [urql](https://formidable.com/open-source/urql/) - GraphQl
-- [RTK](https://redux-toolkit.js.org/rtk-query)
+- [react-query](https://tanstack.com/query) - REST
 
-[Server Cache State Example Code](../src/features/discussions/api/get-discussions.ts)
+[Server Cache State Example Code](../src/features/orders/api/get-orders.ts)
 
 ## Form State
 
@@ -48,22 +43,18 @@ Forms in React can be [controlled and uncontrolled](https://react.dev/learn/shar
 
 Depending on the application needs, they might be pretty complex with many different fields that require validation.
 
-Although it is possible to build any form using only React primitives, there are some good solutions out there that help with handling forms such as:
+Although it is possible to build any form using only React primitives, we use:
 
 - [React Hook Form](https://react-hook-form.com/)
-- [Formik](https://formik.org/)
-- [React Final Form](https://github.com/final-form/react-final-form)
 
-Create abstracted `Form` component and all the input field components that wrap the library functionality and are adapted to the application needs.
+We created abstracted `Form` component.
 
-[Form Example Code](../src/components/ui/form/form.tsx)
+[Form Example Code](../src/components/ui/form.tsx)
 
-[Input Field Example Code](../src/components/ui/form/input.tsx)
 
-You can also integrate validation libraries with the mentioned solutions to validate inputs on the client. Some good options are:
+We also integrated validation library with the mentioned solutions to validate inputs on the client:
 
 - [zod](https://github.com/colinhacks/zod)
-- [yup](https://github.com/jquense/yup)
 
 [Validation Example Code](../src/features/auth/components/register-form.tsx)
 
@@ -71,4 +62,49 @@ You can also integrate validation libraries with the mentioned solutions to vali
 
 URL state refers to the data stored and manipulated within the address bar of the browser. This state is commonly managed through URL parameters (e.g., /app/${dynamicParam}) or query parameters (e.g., /app?dynamicParam=1). By incorporating routing solutions like react-router-dom, you can effectively access and control the URL state, enabling dynamic manipulation of application parameters directly from the browser's address bar.
 
-[URL State Example Code](../src/features/discussions/components/discussion-view.tsx)
+```ts
+export const DiscussionView = ({ discussionId }: { discussionId: string }) => {
+  const discussionQuery = useDiscussion({
+    discussionId,
+  });
+
+  if (discussionQuery.isLoading) {
+    return (
+      <div className="flex h-48 w-full items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  const discussion = discussionQuery?.data?.data;
+
+  if (!discussion) return null;
+
+  return (
+    <div>
+      <span className="text-xs font-bold">
+        {formatDate(discussion.createdAt)}
+      </span>
+      {discussion.author && (
+        <span className="ml-2 text-sm font-bold">
+          by {discussion.author.firstName} {discussion.author.lastName}
+        </span>
+      )}
+      <div className="mt-6 flex flex-col space-y-16">
+        <div className="flex justify-end">
+          <UpdateDiscussion discussionId={discussionId} />
+        </div>
+        <div>
+          <div className="overflow-hidden bg-white shadow sm:rounded-lg">
+            <div className="px-4 py-5 sm:px-6">
+              <div className="mt-1 max-w-2xl text-sm text-gray-500">
+                <MDPreview value={discussion.body} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+```

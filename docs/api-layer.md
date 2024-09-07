@@ -2,7 +2,7 @@
 
 ### Use a Single Instance of the API Client
 
-When your application interacts with either RESTful or GraphQL APIs, it is beneficial to use a single instance of the API client that has been pre-configured and can be reused throughout the application. For example, you can create a single API client instance using the native fetch API or libraries such as [axios](https://github.com/axios/axios), [graphql-request](https://github.com/prisma-labs/graphql-request), or [apollo-client](https://www.apollographql.com/docs/react/) with predefined configuration settings.
+Our application interacts with either RESTful API, and use a single instance of the API client that has been pre-configured and can be reused throughout the application. To create a single API client instance we used library [axios](https://github.com/axios/axios) with predefined configuration settings.
 
 [API Client Example Code](../src/lib/api-client.ts)
 
@@ -19,5 +19,5 @@ Every API request declaration should consist of:
 
 This approach simplifies the tracking of defined endpoints available in the application. Additionally, typing the responses and inferring them further down the application enhances application type safety.
 
-[API Request Declarations - Query - Example Code](../src/features/discussions/api/get-discussions.ts)
-[API Request Declarations - Mutation - Example Code](../src/features/discussions/api/create-discussion.ts)
+[API Request Declarations - Query - Example Code](../src/features/services/api/get-services.ts)
+[API Request Declarations - Mutation - Example Code](../src/features/messages/api/create-message.ts)

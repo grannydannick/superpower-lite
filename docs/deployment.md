@@ -1,8 +1,15 @@
 # 🌐 Deployment
 
-Deploy and serve your applications and assets over a CDN for best delivery and performance. Good options for that are:
+edit the .env file with any change you want to make
 
-- [Vercel](https://vercel.com/)
-- [Netlify](https://www.netlify.com/)
-- [AWS](https://aws.amazon.com/cloudfront/)
-- [CloudFlare](https://www.cloudflare.com/en-gb/cdn/)
+1. Build the docker image and push it to ECR
+```bash
+make build/docker/app/stg
+```
+
+2. Deploy the app to EKS
+```bash
+make deploy/app/stg
+```
+
+Access the application at https://halfbaked-app.superpower-staging.com
