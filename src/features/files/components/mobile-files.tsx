@@ -5,8 +5,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
-import { CreateFile } from '@/features/files/components/create-file';
 import { FileName } from '@/features/files/components/file-name';
+import { FileUploadBanner } from '@/features/files/components/file-upload-banner';
 import { FilesSearch } from '@/features/files/components/files-search';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { File } from '@/types/api';
@@ -38,14 +38,14 @@ export function MobileFiles({ files }: MobileFilesProps): JSX.Element {
     <div className="flex flex-col justify-between md:hidden">
       <div className="flex flex-col justify-between">
         <div>
-          <CreateFile>
+          <FileUploadBanner>
             <Button className="mb-[26px] w-full space-x-2">
               <div>
                 <Upload className="size-4" />
               </div>
               <span>Upload Document</span>
             </Button>
-          </CreateFile>
+          </FileUploadBanner>
           <FilesSearch
             value={search}
             onChange={(e) => setSearch(e.target.value)}

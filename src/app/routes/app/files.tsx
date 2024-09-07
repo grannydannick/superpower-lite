@@ -1,7 +1,9 @@
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Upload } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { ContentLayout } from '@/components/layouts';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Body1, H1 } from '@/components/ui/typography';
 import { FileUploadBanner } from '@/features/files/components/file-upload-banner';
 import { FilesTable } from '@/features/files/components/files-table';
@@ -41,7 +43,26 @@ export const FilesRoute = () => {
             id="personal-information"
             className="hidden space-y-8 md:block"
           >
-            <FileUploadBanner />
+            <FileUploadBanner>
+              <Card>
+                <div className="flex flex-row items-center justify-between gap-4 p-12">
+                  <div>
+                    <h3 className="text-base text-primary lg:text-xl">
+                      Integrate your healthcare data into the Superpower
+                      ecosystem
+                    </h3>
+                  </div>
+                  <div className="flex flex-row items-center space-x-6">
+                    <Button className="space-x-2.5">
+                      <div>
+                        <Upload className="size-4" />
+                      </div>
+                      <span> Upload</span>
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            </FileUploadBanner>
           </section>
           <section id="files">
             <FilesTable />

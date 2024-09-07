@@ -1,114 +1,164 @@
-import React, { ChangeEvent, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Upload } from 'lucide-react';
+import React, { ReactNode, useRef, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { toast } from 'sonner';
 
-import { Body1 } from '@/components/ui/typography';
+import { Card } from '@/components/ui/card';
+import HyperText from '@/components/ui/hyper-text';
+import { acceptedFileTypes } from '@/const/accepted-file-types';
+import { cn } from '@/lib/utils';
 
-export type UploadWrapperProps = {
-  apiError?: string;
-  onSubmit: (file: File) => void;
-  validTypes: Record<string, string>;
-  disabled?: boolean;
-  children: React.ReactNode;
-};
+const ONE_MB = 1048576; // bytes
+const MAX_MB = 5000;
+const MAX_FILE_SIZE = ONE_MB * MAX_MB; // 5000MB
 
-export function UploadWrapper({
-  onSubmit,
-  validTypes,
-  children,
-  disabled,
-  apiError,
-}: UploadWrapperProps): JSX.Element {
-  const [error, setError] = useState<string | null>(null);
+function nameLengthValidator(file: File) {
+  const truncated = ~~(file.size / ONE_MB);
 
-  const handleFileInputChange = (
-    event: ChangeEvent<HTMLInputElement>,
-  ): void => {
-    const file = event.target.files && event.target.files[0];
-    if (file) {
-      uploadFile(file);
-    }
-  };
-
-  const uploadFile = (file: File): void => {
-    //reset error to be empty
-    setError(null);
-
-    if (!validateFileType(file)) return;
-    if (!validateFileSize(file.size)) return;
-    if (!file) {
-      setError('File Data undefined');
-      return;
-    }
-
-    onSubmit(file);
-  };
-  //
-  //TODO we maybe should set these server side and just do the validation there sending outcomes back
-  const ONE_MB = 1048576; // bytes
-  const MAX_MB = 5000;
-  const MAX_FILE_SIZE = ONE_MB * MAX_MB; // 5000MB
-
-  //TODO type
-  const fileInputRef = useRef<any | null>(null);
-
-  //TODO MP4 / MOV
-  // const validTypes: Record<string, string> = {
-  //   'video/mp4': 'MP4',
-  //   'video/mov': 'MOV',
-  // };
-
-  const validateFileType = (file: File): boolean => {
-    let validFileType = false;
-
-    for (const type of Object.keys(validTypes)) {
-      if (file.type.startsWith(type)) {
-        validFileType = true;
-        break;
-      }
-    }
-    if (!validFileType) {
-      setError(
-        `Please select a valid file type. Found MIME type ${file.type}.`,
-      );
-      return false;
-    }
-    return true;
-  };
-
-  const validateFileSize = (size: number): boolean => {
-    if (size > MAX_FILE_SIZE) {
-      const truncated = ~~(size / ONE_MB);
-      setError(`Please upload files less than 100mb. Found ${truncated} mb.`);
-      return false;
-    }
-    return true;
-  };
-
-  function handleClick(): void {
-    // Programmatically click the file input element
-    fileInputRef.current && fileInputRef.current.click();
+  if (file.name.length > MAX_FILE_SIZE) {
+    return {
+      code: 'name-too-large',
+      message: `Please upload files less than 100mb. Found ${truncated} mb.`,
+    };
   }
 
-  if (disabled) {
-    return <>{children}</>;
+  return null;
+}
+
+const mainVariant = {
+  initial: {
+    x: 0,
+    y: 0,
+  },
+  animate: {
+    x: 20,
+    y: -20,
+    opacity: 0.9,
+  },
+};
+
+const secondaryVariant = {
+  initial: {
+    opacity: 0,
+  },
+  animate: {
+    opacity: 1,
+  },
+};
+
+export const FileUpload = ({
+  onChange,
+  children,
+}: {
+  onChange: (files: File[]) => void;
+  children?: ReactNode;
+}) => {
+  const [files, setFiles] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (newFiles: File[]) => {
+    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+    onChange && onChange(newFiles);
+
+    setTimeout(() => {
+      setFiles([]);
+    }, 3000);
+  };
+
+  const handleClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const { getRootProps, isDragActive } = useDropzone({
+    multiple: false,
+    accept: acceptedFileTypes,
+    onDrop: handleFileChange,
+    onDropRejected: (error) => {
+      error.map((e) => e.errors.map((err) => toast.error(err.message)));
+    },
+    validator: nameLengthValidator,
+  });
+
+  if (children) {
+    return (
+      <div className="w-full" {...getRootProps()}>
+        {children}
+      </div>
+    );
   }
 
   return (
-    <div
-      role="presentation"
-      onClick={handleClick}
-      style={{ width: '100%', maxWidth: 1000 }}
+    <Card
+      className="w-full border border-zinc-200 bg-white"
+      {...getRootProps()}
     >
-      <div>{children}</div>
-      <input
-        ref={fileInputRef}
-        // accept={'video/*'}
-        id="dropzone-file"
-        type="file"
-        className="hidden"
-        onChange={handleFileInputChange}
-      />
-      {apiError && <Body1 className="text-pink-700">{apiError}</Body1>}
-      {error && <Body1 className="text-pink-700">{error}</Body1>}
-    </div>
+      <motion.div
+        onClick={handleClick}
+        whileHover="animate"
+        className="group/file relative block w-full cursor-pointer overflow-hidden rounded-lg p-10"
+      >
+        <input
+          ref={fileInputRef}
+          id="file-upload-handle"
+          type="file"
+          onChange={(e) => handleFileChange(Array.from(e.target.files || []))}
+          className="hidden"
+        />
+        <div className="flex flex-col items-center justify-center">
+          <p className="relative z-20 font-sans text-base font-bold text-zinc-600">
+            Upload file
+          </p>
+          <p className="relative z-20 mt-2 font-sans text-base font-normal text-zinc-400">
+            Drag or drop your files here or click to upload
+          </p>
+          <div className="relative mx-auto mt-10 w-full max-w-xl">
+            {files.length > 0 && (
+              <div className="flex justify-center">
+                <HyperText
+                  className="text-center text-secondary"
+                  text="FILE UPLOADED"
+                />
+              </div>
+            )}
+            {!files.length && (
+              <motion.div
+                layoutId="file-upload"
+                variants={mainVariant}
+                transition={{
+                  type: 'spring',
+                  stiffness: 300,
+                  damping: 20,
+                }}
+                className={cn(
+                  'relative group-hover/file:shadow-2xl z-40 bg-white flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-md',
+                  'shadow-[0px_10px_50px_rgba(0,0,0,0.1)]',
+                )}
+              >
+                {isDragActive ? (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex flex-col items-center text-neutral-600"
+                  >
+                    Drop it
+                    <Upload className="size-4 text-neutral-600 dark:text-neutral-400" />
+                  </motion.p>
+                ) : (
+                  <Upload className="size-4 text-neutral-600 dark:text-neutral-300" />
+                )}
+              </motion.div>
+            )}
+
+            {!files.length && (
+              <motion.div
+                variants={secondaryVariant}
+                className="absolute inset-0 z-30 mx-auto mt-4 flex h-32 w-full max-w-32 items-center justify-center rounded-md border border-dashed border-vermillion-900 bg-transparent opacity-0"
+              ></motion.div>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    </Card>
   );
-}
+};
