@@ -14,8 +14,14 @@ type Props = {
 };
 
 export const ImageContentLayout = (props: Props) => {
-  const { title, children, className, blockBackButton = false } = props;
-  const { prevStep } = useStepper((s) => s);
+  const { title, children, className } = props;
+
+  let { blockBackButton = false } = props;
+  const { prevStep, activeStep, steps } = useStepper((s) => s);
+
+  if (steps[activeStep].id === 'additional-booking-success') {
+    blockBackButton = true;
+  }
   return (
     <>
       <Head title={title} />

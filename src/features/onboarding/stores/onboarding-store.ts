@@ -3,7 +3,6 @@ import { persist } from 'zustand/middleware';
 
 import {
   ActiveAddress,
-  Address,
   CollectionMethodType,
   HealthcareService,
   Slot,
@@ -26,8 +25,8 @@ export type ScheduledSlots = {
     timezone: string | null;
   };
   /* Address because we DELIVER to this location */
-  microbiome: { orderId: string | null; address: Address | null };
-  toxin: { orderId: string | null; address: Address | null };
+  microbiome: { orderId: string | null; address: ActiveAddress | null };
+  toxin: { orderId: string | null; address: ActiveAddress | null };
 };
 
 type OnboardingStore = {
@@ -54,8 +53,8 @@ type OnboardingStore = {
   slots: ScheduledSlots;
   updateBloodSlot: (slot: Slot | null) => void;
   updateCancerSlot: (slot: Slot | null) => void;
-  updateMicrobiomeAddress: (address: Address | null) => void;
-  updateToxinAddress: (address: Address | null) => void;
+  updateMicrobiomeAddress: (address: ActiveAddress | null) => void;
+  updateToxinAddress: (address: ActiveAddress | null) => void;
   updateBloodOrderId: (id: string | null) => void;
   updateCancerOrderId: (id: string | null) => void;
   updateMicrobiomeOrderId: (id: string | null) => void;

@@ -37,8 +37,8 @@ export function UpcomingOrderCard(order: Order): JSX.Element {
 
   return (
     <Card>
-      <div className="flex flex-col justify-between p-6 md:flex-row md:items-center">
-        <div className="flex flex-col gap-6 md:flex-row md:items-center">
+      <div className="flex flex-col justify-between p-6 lg:flex-row lg:items-center">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
           {!isLoading ? (
             <img
               src={healthcareService?.image}
@@ -62,12 +62,12 @@ export function UpcomingOrderCard(order: Order): JSX.Element {
             </div>
           </div>
         </div>
-        <div className="mt-2 flex flex-col gap-6 md:mt-0 md:flex-row md:items-center">
-          <div className="flex flex-row text-sm text-zinc-400 md:flex-col">
+        <div className="mt-2 flex flex-col gap-6 lg:mt-0 lg:flex-row lg:items-center">
+          <div className="flex flex-row text-sm text-zinc-400 lg:flex-col">
             <>
               <span>{date.format('MMMM Do')}</span>
               <svg
-                className={`mx-1.5 w-1 fill-[#A5A5AD] md:hidden`}
+                className={`mx-1.5 w-1 fill-[#A5A5AD] lg:hidden`}
                 viewBox="0 0 2 2"
                 aria-hidden="true"
               >

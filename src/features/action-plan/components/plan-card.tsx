@@ -106,12 +106,19 @@ const PlanCardFooter = ({ orderId }: { orderId?: string }) => {
   }
 
   return (
-    <div className="flex w-full items-center justify-end space-x-4 px-6 pb-6 md:px-[72px] md:pb-[72px]">
-      <Button variant="outline" onClick={() => navigate(`./plans/${orderId}`)}>
+    <div className="flex w-full flex-col items-center justify-end gap-4 px-6 pb-6 md:px-[72px] md:pb-[72px] lg:flex-row">
+      <Button
+        className="w-full lg:w-auto"
+        variant="outline"
+        onClick={() => navigate(`./plans/${orderId}`)}
+      >
         See Doctor’s Note
       </Button>
       {products.length === 0 ? (
-        <Button onClick={() => navigate('https://products.superpower.com/')}>
+        <Button
+          className="w-full lg:w-auto"
+          onClick={() => navigate('https://products.superpower.com/')}
+        >
           Go to marketplace
         </Button>
       ) : (

@@ -16,10 +16,11 @@ import { CurrentAddressCard } from '@/features/onboarding/components/current-add
 import { EditAddressForm } from '@/features/onboarding/components/edit-address-form';
 import { ImageContentLayout } from '@/features/onboarding/components/layouts';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
+import { getCurrentAddress } from '@/features/onboarding/utils/get-current-address';
 import { getOrderInfo } from '@/features/onboarding/utils/get-order-info';
 import { useUpdateOrder } from '@/features/orders/api/update-order';
 import { useStepper } from '@/lib/stepper';
-import { ActiveAddress, Address, HealthcareService, Slot } from '@/types/api';
+import { ActiveAddress, HealthcareService, Slot } from '@/types/api';
 
 const ServiceCard = ({ service }: { service: HealthcareService }) => {
   return (
@@ -55,7 +56,7 @@ const SchedulerCase = ({
   const [slot, setSlot] = useState<Slot | null>();
   const { prevStep } = useStepper((s) => s);
 
-  const onCreate = (slot: Slot | null, timezone: string) => {
+  const onSelect = (slot: Slot | null, timezone: string) => {
     if (service.name === GRAIL_GALLERI_MULTI_CANCER_TEST) {
       setSlot(slot);
       updateCancerSlot(slot);
@@ -81,7 +82,9 @@ const SchedulerCase = ({
           <Button
             variant="ghost"
             className="p-0 text-zinc-500"
-            onClick={() => setIndex((prev) => prev + 1)}
+            onClick={() => {
+              setIndex((prev) => prev + 1);
+            }}
           >
             Skip this for now
           </Button>
@@ -100,7 +103,7 @@ const SchedulerCase = ({
           serviceId={service.id}
           address={serviceAddress?.address}
           collectionMethod={collectionMethod}
-          onSlotUpdate={onCreate}
+          onSlotUpdate={onSelect}
           displayCancellationNote
           showCreateBtn={false}
           className="max-w-none py-6"
@@ -148,17 +151,18 @@ const ConfirmAddressCase = ({
 }) => {
   const [isEditingAddress, setIsEditingAddress] = useState(false);
   const [isAddingAddress, setIsAddingAddress] = useState(false);
-  const { updateMicrobiomeAddress, updateToxinAddress, serviceAddress } =
+  const { updateMicrobiomeAddress, updateToxinAddress, slots } =
     useOnboarding();
   const { prevStep } = useStepper((s) => s);
 
-  const callback = (active: ActiveAddress) => {
-    if (service.name === TOTAL_TOXIN_TEST) {
-      updateToxinAddress(active.address);
-    }
-
-    if (service.name === GUT_MICROBIOME_ANALYSIS) {
-      updateMicrobiomeAddress(active.address);
+  const onSelect = (active: ActiveAddress) => {
+    switch (service.name) {
+      case TOTAL_TOXIN_TEST:
+        return updateToxinAddress(active);
+      case GUT_MICROBIOME_ANALYSIS:
+        return updateMicrobiomeAddress(active);
+      default:
+        return () => {};
     }
   };
 
@@ -199,7 +203,10 @@ const ConfirmAddressCase = ({
           <Button
             variant="ghost"
             className="p-0 text-zinc-500"
-            onClick={() => setIndex((prev) => prev + 1)}
+            onClick={() => {
+              service.name === TOTAL_TOXIN_TEST && updateToxinAddress(null);
+              setIndex((prev) => prev + 1);
+            }}
           >
             Skip this for now
           </Button>
@@ -210,10 +217,9 @@ const ConfirmAddressCase = ({
         <div className="space-y-2">
           <Body2 className="text-zinc-500">Confirm your shipping address</Body2>
           <AddressSelect
+            selectedAddress={getCurrentAddress(service, slots)}
+            onAddressSelect={onSelect}
             setIsAddingAddress={() => setIsAddingAddress((prev) => !prev)}
-            setIsEditingAddress={() => setIsEditingAddress((prev) => !prev)}
-            defaultValue={serviceAddress}
-            callback={callback}
           />
         </div>
       </div>
@@ -234,7 +240,12 @@ const ConfirmAddressCase = ({
         >
           Back
         </Button>
-        <Button onClick={() => setIndex((prev) => prev + 1)}>Next</Button>
+        <Button
+          onClick={() => setIndex((prev) => prev + 1)}
+          disabled={!getCurrentAddress(service, slots)}
+        >
+          Next
+        </Button>
       </div>
     </>
   );
@@ -245,7 +256,6 @@ const OrderSummaryCase = ({
 }: {
   setIndex: Dispatch<SetStateAction<number>>;
 }) => {
-  // TODO: fix multiple services booking, atm if u skip u still get here
   const updateOrderMutation = useUpdateOrder({});
   const { jump, nextOnboardingStep } = useStepper((s) => s);
   const { additionalServices, slots } = useOnboarding();
@@ -267,10 +277,14 @@ const OrderSummaryCase = ({
     for (const as of filteredServices) {
       const orderInfo = getOrderInfo(as, slots);
 
+      console.log(orderInfo);
+
       await updateOrderMutation.mutateAsync({
         orderId: orderInfo?.orderId as string,
         data: {
-          location: { address: orderInfo?.address as Address },
+          location: orderInfo?.address?.address
+            ? { address: orderInfo?.address?.address }
+            : undefined,
           timezone: orderInfo?.timezone as string,
 
           timestamp: orderInfo?.timestamp
@@ -308,8 +322,19 @@ const OrderSummaryCase = ({
         >
           Back
         </Button>
-        <Button onClick={updateBloodOrders}>
-          {updateOrderMutation.isPending ? <Spinner /> : 'Confirm appointment'}
+        <Button
+          onClick={updateBloodOrders}
+          disabled={
+            updateOrderMutation.isPending || updateOrderMutation.isError
+          }
+        >
+          {updateOrderMutation.isError ? (
+            'Failed to create appointment'
+          ) : updateOrderMutation.isPending ? (
+            <Spinner />
+          ) : (
+            'Confirm appointment'
+          )}
         </Button>
       </div>
     </>

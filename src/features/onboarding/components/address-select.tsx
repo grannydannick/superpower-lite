@@ -14,29 +14,20 @@ import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 import { ActiveAddress } from '@/types/api';
 
-/*
- * I could have made it reusable for entire app but
- * design requirment was that it doesn't open modal
- * so we are going to have two versions of this
- *
- * P.S. I don't want to have 5 function handlers passed in just to make this reusable
- *
- * callback: () => void: used to set additional fields in onboarding context
- * */
 const AddressSelect = ({
   setIsAddingAddress,
-  callback,
-  defaultValue,
+  selectedAddress,
+  onAddressSelect,
 }: {
-  setIsEditingAddress: () => void;
+  // setIsEditingAddress: () => void;
+  selectedAddress: ActiveAddress | null;
   setIsAddingAddress: () => void;
-  defaultValue?: ActiveAddress | null;
-  callback?: (address: ActiveAddress) => void;
+  onAddressSelect: (address: ActiveAddress) => void;
 }) => {
   const userQuery = useUser({});
   const updateProfileMutation = useUpdateProfile();
-  const [selected, setSelected] = useState<ActiveAddress | undefined>(
-    defaultValue ?? userQuery.data?.primaryAddress,
+  const [selected, setSelected] = useState<ActiveAddress | null>(
+    selectedAddress,
   );
 
   if (!userQuery.data) {
@@ -47,10 +38,7 @@ const AddressSelect = ({
 
   return (
     <div className="rounded-xl border border-zinc-200">
-      <RadioGroup
-        defaultValue={defaultValue?.id ?? user.primaryAddress?.id}
-        className="p-2"
-      >
+      <RadioGroup defaultValue={selectedAddress?.id} className="p-2">
         {user.activeAddresses.map((a, index) => (
           <div
             className={cn(
@@ -65,7 +53,7 @@ const AddressSelect = ({
               className="min-h-5 min-w-5 border-zinc-200"
               onClick={() => {
                 setSelected(a);
-                callback && callback(a);
+                onAddressSelect(a);
               }}
             />
             <div className="w-full">

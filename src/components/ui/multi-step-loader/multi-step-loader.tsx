@@ -47,9 +47,7 @@ const LoaderCore = ({
             transition={{ duration: 0.5 }}
           >
             <div>
-              {index > value && (
-                <Spinner className="text-zinc-900 dark:text-white" />
-              )}
+              {index > value && <Spinner variant="primary" />}
               {index <= value && (
                 <CheckFilled
                   className={cn(

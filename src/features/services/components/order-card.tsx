@@ -70,7 +70,6 @@ function OrderCardHeader({ id, name, status, timestamp }: Order): JSX.Element {
     actions.push({
       label: 'Cancel',
       onClick: async () => {
-        console.log('clicked');
         await mutateAsync({ orderId: id });
       },
     });

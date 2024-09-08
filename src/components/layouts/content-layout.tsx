@@ -23,13 +23,13 @@ export const ContentLayout = ({
       <Head title={title} />
       <div
         className={cn(
-          'w-full flex-1',
+          'w-full flex-grow',
           bgColor === 'zinc' ? 'bg-zinc-50' : null,
         )}
       >
         <div
           className={cn(
-            'container  mx-auto px-6 py-16 space-y-6 sm:p-16 md:space-y-12',
+            'container mx-auto px-6 py-16 space-y-6 sm:p-16 md:space-y-12',
             className,
           )}
         >

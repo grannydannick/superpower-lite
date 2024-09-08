@@ -31,12 +31,7 @@ function FullPrimaryAddressForm({
   googleAddres: FormAddressInput;
 }) {
   const { nextOnboardingStep } = useStepper((s) => s);
-  const {
-    updateBlocked,
-    updateServiceAddress,
-    updateMicrobiomeAddress,
-    updateToxinAddress,
-  } = useOnboarding();
+  const { updateBlocked, updateServiceAddress } = useOnboarding();
   const user = useUser();
   const primaryAddress = user.data?.primaryAddress?.address;
 
@@ -70,12 +65,10 @@ function FullPrimaryAddressForm({
       };
 
       const user = await updateProfileMutation.mutateAsync({
-        data: { activeAddress: { address } },
+        data: { primaryAddress: { address } },
       });
 
       updateServiceAddress(user.primaryAddress ?? null);
-      updateMicrobiomeAddress(user.primaryAddress?.address ?? null);
-      updateToxinAddress(user.primaryAddress?.address ?? null);
       updateBlocked(false);
       await nextOnboardingStep();
     } else {

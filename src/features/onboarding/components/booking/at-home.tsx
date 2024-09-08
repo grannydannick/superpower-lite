@@ -67,10 +67,9 @@ export const AtHome = () => {
           <div className="space-y-2">
             <Body2 className="text-zinc-500">My address</Body2>
             <AddressSelect
+              selectedAddress={serviceAddress}
+              onAddressSelect={updateServiceAddress}
               setIsAddingAddress={() => setIsAddingAddress((prev) => !prev)}
-              setIsEditingAddress={() => setIsEditingAddress((prev) => !prev)}
-              defaultValue={serviceAddress}
-              callback={(address) => updateServiceAddress(address)}
             />
           </div>
         </div>

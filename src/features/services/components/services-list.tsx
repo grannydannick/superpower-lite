@@ -1,4 +1,4 @@
-import { Spinner } from '@/components/ui/spinner';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ENVIRONMENTAL_TOXIN_PANEL } from '@/const/toxin-panel';
 
 import { useServices } from '../api/get-services';
@@ -11,8 +11,15 @@ export const ServicesList = () => {
 
   if (servicesQuery.isLoading) {
     return (
-      <div className="flex h-48 w-full items-center justify-center">
-        <Spinner size="md" variant="primary" />
+      <div className="grid grid-cols-1 gap-1 sm:gap-x-3 sm:gap-y-9 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {Array(9)
+          .fill(0)
+          .map((_, i) => (
+            <Skeleton
+              className="h-[76px] w-full rounded-[20px] md:h-[386px] md:rounded-3xl"
+              key={i}
+            />
+          ))}
       </div>
     );
   }

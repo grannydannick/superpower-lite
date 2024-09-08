@@ -8,7 +8,9 @@ import {
 import moment from 'moment';
 import React, { FormEvent, useState } from 'react';
 
+import { ConsentInfo } from '@/components/shared/consent-info';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { MultiStepLoader } from '@/components/ui/multi-step-loader';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -23,6 +25,7 @@ import { ImageContentLayout } from '@/features/onboarding/components/layouts';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { getTotalPrice } from '@/features/onboarding/utils/get-total-price';
 import { useCreateOrder } from '@/features/orders/api/create-order';
+import { getDefaultCollectionMethod } from '@/features/orders/utils/get-default-collection-method';
 import { useServices } from '@/features/services/api/get-services';
 import {
   useCreateSubscription,
@@ -118,43 +121,43 @@ export const ConfirmOrder = () => {
             </div>
           </div>
         </div>
-        <div
-          className={cn(
-            'flex items-center rounded-2xl border border-zinc-200 px-6 py-5',
-            method === 'hsa' ? 'bg-zinc-50' : null,
-          )}
-        >
-          <div className="flex w-full flex-row items-center justify-between">
-            <Body1 className="text-zinc-600">Pay with HSA/FSA</Body1>
+        {/*<div*/}
+        {/*  className={cn(*/}
+        {/*    'flex items-center rounded-2xl border border-zinc-200 px-6 py-5',*/}
+        {/*    method === 'hsa' ? 'bg-zinc-50' : null,*/}
+        {/*  )}*/}
+        {/*>*/}
+        {/*  <div className="flex w-full flex-row items-center justify-between">*/}
+        {/*    <Body1 className="text-zinc-600">Pay with HSA/FSA</Body1>*/}
 
-            <div className="flex flex-row items-center gap-x-6">
-              <RadioGroupItem
-                value="hsa"
-                className="min-h-5 min-w-5 border-zinc-200"
-              />
-            </div>
-          </div>
-        </div>
+        {/*    <div className="flex flex-row items-center gap-x-6">*/}
+        {/*      <RadioGroupItem*/}
+        {/*        value="hsa"*/}
+        {/*        className="min-h-5 min-w-5 border-zinc-200"*/}
+        {/*      />*/}
+        {/*    </div>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
       </RadioGroup>
-      {method === 'hsa' ? <HSACheckout /> : null}
-      {method === 'credit' ? <CreditCardCheckout /> : null}
+      {/*{method === 'hsa' ? <HSACheckout /> : null}*/}
+      {method === 'credit' ? <CreditCardPaymentForm /> : null}
     </section>
   );
 };
 
-const HSACheckout = () => {
-  return (
-    <div className="flex flex-col gap-8">
-      <Body1 className="text-zinc-500">
-        After clicking “Confirm”, you will be redirected to TrueMed - Pay with
-        HSA/FSA to complete your purchase securely.{' '}
-      </Body1>
-      <Button>Confirm</Button>
-    </div>
-  );
-};
+// const HSACheckout = () => {
+//   return (
+//     <div className="flex flex-col gap-8">
+//       <Body1 className="text-zinc-500">
+//         After clicking “Confirm”, you will be redirected to TrueMed - Pay with
+//         HSA/FSA to complete your purchase securely.{' '}
+//       </Body1>
+//       <Button>Confirm</Button>
+//     </div>
+//   );
+// };
 
-const CreditCardCheckout = () => {
+const CreditCardPaymentForm = () => {
   const { nextOnboardingStep } = useStepper((s) => s);
   const elements = useElements();
   const stripe = useStripe();
@@ -165,9 +168,9 @@ const CreditCardCheckout = () => {
     collectionMethod,
     additionalServices,
     updateBloodOrderId,
-    updateMicrobiomeOrderId,
-    updateToxinOrderId,
     updateCancerOrderId,
+    updateToxinOrderId,
+    updateMicrobiomeOrderId,
   } = useOnboarding();
 
   const addPaymentMethodMutation = useAddPaymentMethod({
@@ -184,6 +187,7 @@ const CreditCardCheckout = () => {
     undefined,
   );
   const [processing, setProcessing] = useState<boolean>(false);
+  const [consentGiven, setConsentGiven] = useState<boolean>(false);
 
   const handleSubmit = async (event: FormEvent) => {
     // We don't want to let default form submission happen here,
@@ -203,49 +207,49 @@ const CreditCardCheckout = () => {
 
     setProcessing(true);
 
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: 'card',
-      card: cardNumber,
-    });
-
-    if (error) {
-      setErrorMessage(error.message);
-      setProcessing(false);
-      return;
-    }
-
-    setErrorMessage(undefined);
-
-    const { success } = await addPaymentMethodMutation.mutateAsync({
-      data: { paymentMethodId: paymentMethod.id },
-    });
-
-    if (!success) {
-      setErrorMessage('Error creating payment method');
-      setProcessing(false);
-      return;
-    }
-
-    await createSubscriptionMutation.mutateAsync({
-      data: {
-        code: localStorage.getItem('superpower-code') ?? undefined,
-        referralId: (window as any)?.Rewardful?.referral,
-      },
-    });
-
-    const superpowerPanel = servicesQuery.data?.services.find(
-      (s) => s.name === SUPERPOWER_BLOOD_PANEL,
-    );
-
-    if (!superpowerPanel) {
-      setErrorMessage(
-        'Cannot find test package you requested. Contact support',
-      );
-      setProcessing(false);
-      return;
-    }
-
     try {
+      const { error, paymentMethod } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: cardNumber,
+      });
+
+      if (error) {
+        setErrorMessage(error.message);
+        setProcessing(false);
+        return;
+      }
+
+      setErrorMessage(undefined);
+
+      const { success } = await addPaymentMethodMutation.mutateAsync({
+        data: { paymentMethodId: paymentMethod.id },
+      });
+
+      if (!success) {
+        setErrorMessage('Error creating payment method');
+        setProcessing(false);
+        return;
+      }
+
+      await createSubscriptionMutation.mutateAsync({
+        data: {
+          code: localStorage.getItem('superpower-code') ?? undefined,
+          referralId: (window as any)?.Rewardful?.referral,
+        },
+      });
+
+      const superpowerPanel = servicesQuery.data?.services.find(
+        (s) => s.name === SUPERPOWER_BLOOD_PANEL,
+      );
+
+      if (!superpowerPanel) {
+        setErrorMessage(
+          'Cannot find test package you requested. Contact support',
+        );
+        setProcessing(false);
+        return;
+      }
+
       const { order } = await createOrderMutation.mutateAsync({
         data: {
           items: [],
@@ -254,7 +258,7 @@ const CreditCardCheckout = () => {
           location: {
             address: user.data?.primaryAddress?.address as Address,
           },
-          method: [collectionMethod ?? 'IN_LAB'],
+          method: collectionMethod ? [collectionMethod] : [],
           timestamp: new Date().toISOString(),
           timezone: moment.tz.guess(),
         },
@@ -263,7 +267,8 @@ const CreditCardCheckout = () => {
       updateBloodOrderId(order.id);
 
       for (const as of additionalServices) {
-        const { order } = await createOrderMutation.mutateAsync({
+        const collectionMethod = getDefaultCollectionMethod(as);
+        const response = await createOrderMutation.mutateAsync({
           data: {
             items: [],
             serviceId: as.id,
@@ -271,22 +276,17 @@ const CreditCardCheckout = () => {
             location: {
               address: user.data?.primaryAddress?.address as Address,
             },
-            // TODO: double check this guy
-            method: [
-              as.name === GRAIL_GALLERI_MULTI_CANCER_TEST
-                ? 'AT_HOME'
-                : 'PHLEBOTOMY_KIT',
-            ],
+            method: collectionMethod ? [collectionMethod] : [],
             timestamp: new Date().toISOString(),
             timezone: moment.tz.guess(),
           },
         });
 
         as.name === GRAIL_GALLERI_MULTI_CANCER_TEST &&
-          updateCancerOrderId(order.id);
+          updateCancerOrderId(response.order.id);
         as.name === GUT_MICROBIOME_ANALYSIS &&
-          updateMicrobiomeOrderId(order.id);
-        as.name === TOTAL_TOXIN_TEST && updateToxinOrderId(order.id);
+          updateMicrobiomeOrderId(response.order.id);
+        as.name === TOTAL_TOXIN_TEST && updateToxinOrderId(response.order.id);
       }
     } catch (e) {
       setProcessing(false);
@@ -319,6 +319,7 @@ const CreditCardCheckout = () => {
             options={{
               disableLink: true,
             }}
+            onFocus={() => setErrorMessage(undefined)}
             className="rounded-xl border border-input bg-white px-6 py-4 text-base placeholder:text-muted-foreground"
           />
         </div>
@@ -329,6 +330,7 @@ const CreditCardCheckout = () => {
               Expiration date
             </Label>
             <CardExpiryElement
+              onFocus={() => setErrorMessage(undefined)}
               id="cardExpiration"
               className="rounded-xl border border-input bg-white px-6 py-4 text-base placeholder:text-muted-foreground"
             />
@@ -339,10 +341,22 @@ const CreditCardCheckout = () => {
               CVC
             </Label>
             <CardCvcElement
+              onFocus={() => setErrorMessage(undefined)}
               id="cardCvc"
               className="rounded-xl border border-input bg-white px-6 py-4 text-base placeholder:text-muted-foreground"
             />
           </div>
+        </div>
+        <div className="flex items-start space-x-2">
+          <Checkbox
+            id="terms1"
+            checked={consentGiven}
+            onCheckedChange={(checked) =>
+              checked ? setConsentGiven(true) : setConsentGiven(false)
+            }
+          />
+
+          <ConsentInfo />
         </div>
         <div className="space-y-2">
           <Button
@@ -357,7 +371,8 @@ const CreditCardCheckout = () => {
               servicesQuery.isLoading ||
               !servicesQuery.data?.services ||
               !user.data ||
-              !!errorMessage
+              !!errorMessage ||
+              !consentGiven
             }
           >
             Confirm

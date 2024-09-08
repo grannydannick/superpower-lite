@@ -159,11 +159,12 @@ export const DesktopSidebar = () => {
     <>
       <motion.div
         className={cn(
-          'max-h-screen px-4 py-4 hidden md:flex md:flex-col bg-white flex-shrink-0 w-[196px] md:justify-between md:gap-10 border-r border-r-zinc-200',
+          'hidden h-dvh fixed px-4 py-4 md:flex md:flex-col bg-white flex-shrink-0 w-[196px] md:justify-between md:gap-10 border-r border-r-zinc-200',
         )}
         animate={{
           width: open ? '196px' : '88px',
         }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       >
         <div className="flex overflow-y-auto overflow-x-hidden md:flex-col">
           {open ? <Logo /> : <LogoIcon />}

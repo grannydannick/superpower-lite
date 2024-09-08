@@ -49,7 +49,7 @@ export const AdditionalServiceCard = ({
       case GUT_MICROBIOME_ANALYSIS:
         return (
           <div className="flex items-center gap-1.5">
-            <Body2 className="text-zinc-500">{`Ships to ${slots?.microbiome.address?.line.join(' ')}`}</Body2>
+            <Body2 className="text-zinc-500">{`Ships to ${slots?.microbiome.address?.address?.line.join(' ')}`}</Body2>
             <Dot className="text-zinc-500" />
             <Body2 className="text-zinc-500">
               Arriving in 2-3 business days
@@ -59,7 +59,7 @@ export const AdditionalServiceCard = ({
       case TOTAL_TOXIN_TEST:
         return (
           <div className="flex items-center gap-1.5">
-            <Body2 className="text-zinc-500">{`Ships to ${slots?.toxin.address?.line.join(' ')}`}</Body2>
+            <Body2 className="text-zinc-500">{`Ships to ${slots?.toxin.address?.address.line.join(' ')}`}</Body2>
             <Dot className="text-zinc-500" />
             <Body2 className="text-zinc-500">
               Arriving in 2-3 business days
