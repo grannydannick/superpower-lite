@@ -16,7 +16,7 @@ export const FilesRoute = () => {
       <div
         className="hidden cursor-pointer items-center gap-2 md:flex"
         role="presentation"
-        onClick={() => navigate('/app/data')}
+        onClick={() => navigate('/data')}
       >
         <ChevronLeft className="text-zinc-400" />
         <Body1 className="text-zinc-500">Back to Data</Body1>
@@ -25,7 +25,7 @@ export const FilesRoute = () => {
       <div
         role="presentation"
         className="flex size-[44px] cursor-pointer items-center justify-center rounded-full bg-white shadow-[0px_32px_64px_0px_rgba(212,212,212,0.25)] md:hidden"
-        onClick={() => navigate('/app/data')}
+        onClick={() => navigate('/data')}
       >
         <ChevronLeft width={16} height={16} color="black" />
       </div>

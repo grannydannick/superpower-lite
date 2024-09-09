@@ -7,7 +7,7 @@ export const PlanRoute = () => {
   const navigate = useNavigate();
 
   if (!orderId) {
-    navigate('/app', { replace: true });
+    navigate('/', { replace: true });
   }
 
   return <ClinicianNote orderId={orderId} />;

@@ -14,7 +14,7 @@ export function ConfirmDelete({ fileId }: { fileId: string }) {
     mutationConfig: {
       onSuccess: () => {
         // redirect if called on mobile page
-        width <= 768 && navigate('/app/vault');
+        width <= 768 && navigate('/vault');
 
         /**
          * @description

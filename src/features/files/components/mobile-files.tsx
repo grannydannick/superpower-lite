@@ -67,7 +67,7 @@ export function MobileFiles({ files }: MobileFilesProps): JSX.Element {
                 value={file.id}
                 className="flex cursor-pointer items-center rounded-2xl bg-white px-5 py-6"
                 key={file.id}
-                onClick={() => navigate(`/app/vault/${file.id}`)}
+                onClick={() => navigate(`/vault/${file.id}`)}
               >
                 <FileName file={file} />
                 <div className="ml-auto flex items-center gap-1.5">

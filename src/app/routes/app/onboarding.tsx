@@ -15,7 +15,7 @@ export const OnboardingRoute = () => {
     if (!user) return;
 
     if (!user?.onboarding) {
-      navigate('/app', {
+      navigate('/', {
         replace: true,
       });
     }

@@ -27,7 +27,7 @@ export function MobileFileRoute(): JSX.Element {
         <div
           role="presentation"
           className="flex size-[44px] cursor-pointer items-center justify-center rounded-full bg-white shadow-[0px_32px_64px_0px_rgba(212,212,212,0.25)]"
-          onClick={() => navigate('/app/vault')}
+          onClick={() => navigate('/vault')}
         >
           <ChevronLeft width={16} height={16} color="black" />
         </div>

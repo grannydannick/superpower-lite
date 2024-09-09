@@ -127,7 +127,7 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   if (!userQuery.data) {
     return (
       <Navigate
-        to={`/auth/login?redirectTo=${encodeURIComponent(location.pathname)}`}
+        to={`/login?redirectTo=${encodeURIComponent(location.pathname)}`}
         replace
       />
     );
@@ -141,7 +141,7 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       !location.pathname.includes('onboarding');
 
     if (needsOnboarding) {
-      return <Navigate to={`/app/onboarding`} replace />;
+      return <Navigate to={`/onboarding`} replace />;
     }
   }
 

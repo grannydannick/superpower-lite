@@ -10,35 +10,28 @@ import { usersLoader } from './routes/app/users';
 export const createRouter = (queryClient: QueryClient) =>
   createBrowserRouter([
     {
-      path: '/',
-      lazy: async () => {
-        const { LandingRoute } = await import('./routes/landing');
-        return { Component: LandingRoute };
-      },
-    },
-    {
-      path: '/auth/register',
+      path: '/register',
       lazy: async () => {
         const { RegisterRoute } = await import('./routes/auth/register');
         return { Component: RegisterRoute };
       },
     },
     {
-      path: '/auth/login',
+      path: '/login',
       lazy: async () => {
         const { LoginRoute } = await import('./routes/auth/login');
         return { Component: LoginRoute };
       },
     },
     {
-      path: '/auth/logout',
+      path: '/logout',
       lazy: async () => {
         const { LogoutRoute } = await import('./routes/auth/logout');
         return { Component: LogoutRoute };
       },
     },
     {
-      path: '/app',
+      path: '/',
       element: (
         <ProtectedRoute>
           <AppRoot />

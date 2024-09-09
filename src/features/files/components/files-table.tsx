@@ -21,8 +21,6 @@ export function FilesTable(): JSX.Element {
 
   if (!files) return <></>;
 
-  console.log(files);
-
   return (
     <>
       {/*Mobile*/}

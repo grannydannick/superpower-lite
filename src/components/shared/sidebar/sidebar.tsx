@@ -248,7 +248,7 @@ export const MobileSidebar = () => {
                 </DropdownMenuItem>
               ))}
               <NavLink
-                to="/auth/logout"
+                to="/logout"
                 className="flex cursor-pointer items-center gap-3 rounded-[18px] p-4 transition duration-200 ease-in-out hover:bg-[#252525]"
               >
                 <LogOut width={12} height={12} color="white" />
@@ -361,7 +361,7 @@ export const LogoutButton = () => {
   const { open } = useSidebar();
   return (
     <Link
-      to="/auth/logout"
+      to="/logout"
       className={cn(
         'flex items-center gap-2 group/sidebar p-4 cursor-pointer hover:bg-zinc-100',
         open ? 'justify-start rounded-[52px]' : 'justify-center rounded-full',

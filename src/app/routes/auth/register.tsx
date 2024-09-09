@@ -17,7 +17,7 @@ export const RegisterRoute = () => {
       {couponValidated ? (
         <RegisterForm
           onSuccess={() =>
-            navigate(`${redirectTo ? `${redirectTo}` : '/app'}`, {
+            navigate(`${redirectTo ? `${redirectTo}` : '/'}`, {
               replace: true,
             })
           }

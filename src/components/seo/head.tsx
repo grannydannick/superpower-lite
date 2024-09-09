@@ -11,8 +11,8 @@ export const Head = ({ title = '', description = '' }: HeadProps = {}) => {
   return (
     <Helmet
       helmetData={helmetData}
-      title={title ? `${title} | Bulletproof React` : undefined}
-      defaultTitle="Bulletproof React"
+      title={title ? `${title} | Superpower Health` : undefined}
+      defaultTitle="Superpower Health"
     >
       <meta name="description" content={description} />
     </Helmet>

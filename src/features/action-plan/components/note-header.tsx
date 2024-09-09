@@ -19,7 +19,7 @@ export function ClinicianNoteHeader(): JSX.Element {
       <div className="flex items-center justify-center gap-[16px]">
         <Button
           className="size-[44px] rounded-full bg-white p-0 shadow-[0_32px_64px_0_rgba(212,212,212,0.5)] hover:bg-white"
-          onClick={() => navigate('/app', { replace: true })}
+          onClick={() => navigate('/', { replace: true })}
         >
           <X width="16px" height="16px" color="#52525B" />
         </Button>

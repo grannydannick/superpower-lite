@@ -143,6 +143,16 @@
       -ms-overflow-style: none; /* IE and Edge */
       scrollbar-width: none; /* Firefox */
     }
+
+    ::-moz-selection { /* Code for Firefox */
+      color: white;
+      background: #FC5F2B;
+    }
+
+    ::selection {
+      color: white;
+      background: #FC5F2B;
+    }
   }
 
   body {

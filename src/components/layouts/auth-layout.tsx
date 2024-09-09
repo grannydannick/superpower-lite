@@ -33,7 +33,7 @@ export const AuthLayout = ({ children, title }: LayoutProps) => {
 
   useEffect(() => {
     if (user.data) {
-      navigate('/app', {
+      navigate('/', {
         replace: true,
       });
     }
@@ -45,7 +45,7 @@ export const AuthLayout = ({ children, title }: LayoutProps) => {
       <div className="flex min-h-screen w-full flex-col items-center justify-between p-8 md:py-12">
         <AuthStepLayoutHeader />
         {children}
-        {location.pathname === '/auth/login' ? (
+        {location.pathname === '/login' ? (
           <div className="flex flex-col items-center justify-center gap-2">
             <Body2 className="text-zinc-500">Forgot password</Body2>
             <div className="flex items-center gap-0.5">
@@ -61,11 +61,11 @@ export const AuthLayout = ({ children, title }: LayoutProps) => {
             </div>
           </div>
         ) : null}
-        {location.pathname === '/auth/register' ? (
+        {location.pathname === '/register' ? (
           <div className="flex items-center gap-0.5">
             <Body2 className="text-zinc-500">Don’t have an account?</Body2>
             <Link
-              to="/auth/login"
+              to="/login"
               replace={false}
               className="cursor-pointer text-sm text-[#FC5F2B]"
             >

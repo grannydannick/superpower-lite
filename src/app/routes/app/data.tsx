@@ -40,7 +40,7 @@ export const DataRoute = () => {
         <Button
           variant="outline"
           className="gap-2.5 bg-white px-4 py-[18px]"
-          onClick={() => navigate('/app/vault')}
+          onClick={() => navigate('/vault')}
         >
           <Database className="size-[14px] text-zinc-400" />
           <Body1 className="text-zinc-500">Health records</Body1>

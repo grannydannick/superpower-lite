@@ -132,7 +132,7 @@ const OrderRow = ({
             )}
             role="presentation"
             onClick={() =>
-              multiPlatformOrder.type === 'service' && navigate('/app/services')
+              multiPlatformOrder.type === 'service' && navigate('/services')
             }
           >
             {multiPlatformOrder.name}

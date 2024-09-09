@@ -16,7 +16,7 @@ export const TypeformIntegration = () => {
 
     await refetch();
     localStorage.removeItem('onboarding');
-    navigate('/app', {
+    navigate('/', {
       replace: true,
     });
 
