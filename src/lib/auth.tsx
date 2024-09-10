@@ -1,7 +1,9 @@
+import { useMutation } from '@tanstack/react-query';
 import { configureAuth } from 'react-query-auth';
 import { Navigate, useLocation } from 'react-router-dom';
 import { z } from 'zod';
 
+import { MutationConfig } from '@/lib/react-query';
 import { clearActiveLogin, setActiveLogin } from '@/lib/utils';
 import {
   LoginAuthenticationResponse,
@@ -117,7 +119,84 @@ const authConfig = {
   logoutFn: logout,
 };
 
-export const { useUser, useLogin, useLogout, useRegister, AuthLoader } =
+export const resetPasswordInputSchema = z.object({
+  email: z.string().email().min(1),
+});
+
+export type ResetPasswordInput = z.infer<typeof resetPasswordInputSchema>;
+
+export const resetPassword = ({
+  data,
+}: {
+  data: ResetPasswordInput;
+}): Promise<void> => {
+  return api.post('/auth/resetpassword', data);
+};
+
+type UseResetPasswordOptions = {
+  mutationConfig?: MutationConfig<typeof resetPassword>;
+};
+
+export const useResetPassword = ({
+  mutationConfig,
+}: UseResetPasswordOptions = {}) => {
+  const { onSuccess, ...restConfig } = mutationConfig || {};
+
+  return useMutation({
+    onSuccess: (...args) => {
+      onSuccess?.(...args);
+    },
+    ...restConfig,
+    mutationFn: resetPassword,
+  });
+};
+
+export const setPasswordInputSchema = z
+  .object({
+    password: z.string().min(8),
+    confirmPassword: z.string().min(8),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
+export type SetPasswordInput = z.infer<typeof setPasswordInputSchema>;
+
+export const setPassword = ({
+  data,
+  id,
+  secret,
+}: {
+  data: SetPasswordInput;
+  id: string;
+  secret: string;
+}): Promise<void> => {
+  return api.post('auth/setpassword', {
+    id,
+    secret,
+    password: data.password,
+  });
+};
+
+type UseSetPasswordOptions = {
+  mutationConfig?: MutationConfig<typeof setPassword>;
+};
+
+export const useSetPassword = ({
+  mutationConfig,
+}: UseSetPasswordOptions = {}) => {
+  const { onSuccess, ...restConfig } = mutationConfig || {};
+
+  return useMutation({
+    onSuccess: (...args) => {
+      onSuccess?.(...args);
+    },
+    ...restConfig,
+    mutationFn: setPassword,
+  });
+};
+
+export const { useUser, useLogin, useLogout, useRegister } =
   configureAuth(authConfig);
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -127,7 +206,7 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   if (!userQuery.data) {
     return (
       <Navigate
-        to={`/login?redirectTo=${encodeURIComponent(location.pathname)}`}
+        to={`/signin?redirectTo=${encodeURIComponent(location.pathname)}`}
         replace
       />
     );

@@ -6,6 +6,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Head } from '@/components/seo';
 import { Body2 } from '@/components/ui/typography';
 import { useUser } from '@/lib/auth';
+import { cn } from '@/lib/utils';
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -42,12 +43,21 @@ export const AuthLayout = ({ children, title }: LayoutProps) => {
   return (
     <>
       <Head title={title} />
-      <div className="flex min-h-screen w-full flex-col items-center justify-between p-8 md:py-12">
+      <div
+        className={cn(
+          'flex min-h-screen w-full flex-col items-center justify-between p-8 md:py-12',
+        )}
+      >
         <AuthStepLayoutHeader />
         {children}
-        {location.pathname === '/login' ? (
+        {location.pathname === '/signin' ? (
           <div className="flex flex-col items-center justify-center gap-2">
-            <Body2 className="text-zinc-500">Forgot password</Body2>
+            <Link
+              to="/resetpassword"
+              className="text-sm text-zinc-500 hover:text-zinc-800"
+            >
+              Forgot password
+            </Link>
             <div className="flex items-center gap-0.5">
               <Body2 className="text-zinc-500">Don’t have an account?</Body2>
               <a
@@ -65,7 +75,7 @@ export const AuthLayout = ({ children, title }: LayoutProps) => {
           <div className="flex items-center gap-0.5">
             <Body2 className="text-zinc-500">Don’t have an account?</Body2>
             <Link
-              to="/login"
+              to="/signin"
               replace={false}
               className="cursor-pointer text-sm text-[#FC5F2B]"
             >
@@ -73,6 +83,7 @@ export const AuthLayout = ({ children, title }: LayoutProps) => {
             </Link>
           </div>
         ) : null}
+        {location.pathname.includes('password') && <div />}
       </div>
     </>
   );

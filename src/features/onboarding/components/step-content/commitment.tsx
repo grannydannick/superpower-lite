@@ -22,24 +22,24 @@ export const Commitment = () => {
           </Body1>
           <div className="space-y-6">
             <div className="flex flex-row gap-x-4">
-              <p className="text-white opacity-60">1</p>
-              <p className="text-white">
-                Commit to truly putting your health first, always.
-              </p>
+              <Body1 className="text-white opacity-60">1</Body1>
+              <Body1 className="text-white">
+                I commit to truly putting my health first, always.
+              </Body1>
             </div>
             <div className="flex flex-row gap-x-4">
-              <p className="text-white opacity-60">2</p>
-              <p className="text-white">
-                Realize that optimal health is a daily journey, not a
+              <Body1 className="text-white opacity-60">2</Body1>
+              <Body1 className="text-white">
+                I realize that optimal health is a daily journey, not a
                 destination.
-              </p>
+              </Body1>
             </div>
             <div className="flex flex-row gap-x-4">
-              <p className="text-white opacity-60">3</p>
-              <p className="text-white">
-                Understand that your health is the foundation to success in your
-                career, business, and personal life.
-              </p>
+              <Body1 className="text-white opacity-60">3</Body1>
+              <Body1 className="text-white">
+                I believe that if I superpower my health, I can superpower my
+                life.
+              </Body1>
             </div>
           </div>
         </div>

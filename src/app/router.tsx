@@ -17,7 +17,7 @@ export const createRouter = (queryClient: QueryClient) =>
       },
     },
     {
-      path: '/login',
+      path: '/signin',
       lazy: async () => {
         const { LoginRoute } = await import('./routes/auth/login');
         return { Component: LoginRoute };
@@ -28,6 +28,22 @@ export const createRouter = (queryClient: QueryClient) =>
       lazy: async () => {
         const { LogoutRoute } = await import('./routes/auth/logout');
         return { Component: LogoutRoute };
+      },
+    },
+    {
+      path: '/resetpassword',
+      lazy: async () => {
+        const { ResetPasswordRoute } = await import(
+          './routes/auth/reset-password'
+        );
+        return { Component: ResetPasswordRoute };
+      },
+    },
+    {
+      path: '/setpassword/:id/:secret',
+      lazy: async () => {
+        const { SetPasswordRoute } = await import('./routes/auth/set-password');
+        return { Component: SetPasswordRoute };
       },
     },
     {

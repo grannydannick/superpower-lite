@@ -16,3 +16,6 @@ export const VO2_MAX_TEST = 'VO2 Max Test';
 export const FULL_BODY_MRI = 'Full Body MRI';
 export const CONTINUOUS_GLUCOSE_MONITOR = 'Continuous Glucose Monitor';
 export const CUSTOM_BLOOD_PANEL = 'Custom Blood Panel';
+export const MYCOTOXINS_TEST = 'Mycotoxins';
+export const ENVIRONMENTAL_TOXIN_TEST = 'Environmental Toxin';
+export const HEAVY_METALS_TEST = 'Heavy Metals';

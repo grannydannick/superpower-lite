@@ -1,6 +1,6 @@
 import { OnboardingLayout } from '@/components/layouts/onboarding-layout';
 import { Button } from '@/components/ui/button';
-import { H1 } from '@/components/ui/typography';
+import { Body1, H1, H3 } from '@/components/ui/typography';
 import { useStepper } from '@/lib/stepper';
 
 export const Mission = () => {
@@ -9,7 +9,7 @@ export const Mission = () => {
   return (
     <section
       id="main"
-      className="mx-auto flex max-w-[500px] flex-col gap-y-12 py-20 font-light"
+      className="mx-auto flex max-w-[500px] flex-col gap-y-12 py-20"
     >
       <div className="flex flex-col space-y-12">
         <div className="space-y-12">
@@ -18,37 +18,30 @@ export const Mission = () => {
             <H1 className="text-white">Live longer</H1>
           </div>
           <div className="space-y-1">
-            <p className="text-white opacity-60">Our Mission</p>
-            <p className="text-lg text-white md:text-2xl">
-              Our mission is to help you become the healthiest version of
-              yourself, and unleash your inner Superpower – for life.
-            </p>
+            <Body1 className="text-white opacity-60">Our Mission</Body1>
+            <H3 className="text-white">
+              We built Superpower for people who want more. We believe that if
+              you improve your health, you can improve every other aspect of
+              your life.
+            </H3>
           </div>
-          <div className="space-y-1">
-            <p className="text-white opacity-60">
-              &quot;Fighting back...&quot;
-            </p>
-            <p className="text-lg text-white md:text-2xl">
-              Healthcare is broken. From poor food quality, to inescapable
-              environmental toxins, to a modern lifestyle at odds with our
-              biology, it has never been harder to be healthy.
-            </p>
-          </div>
-          <div className="space-y-1">
-            <p className="text-white opacity-60">A New Paradigm</p>
-            <p className="text-lg text-white md:text-2xl">
-              Superpower is a new approach to living. We believe in health as a
-              lifestyle. Being healthy isn&apos;t solved by a magic pill or
-              quick fix, but by the choices we make everyday.
-            </p>
-          </div>
-          <div className="space-y-1">
-            <p className="text-white opacity-60">Lifelong Partnership</p>
-            <p className="text-lg text-white md:text-2xl">
-              We make sure you&apos;re guided by experts long-term. Your health
-              is personal, but you don&apos;t have to go at it alone.
-            </p>
-          </div>
+
+          <H3 className="text-white">
+            But mainstream medicine hasn’t helped many of us do that. It ignores
+            red flags, reacts too late, and misses the full picture.
+          </H3>
+
+          <H3 className="text-white">
+            Our vision of the future is a completely different system – where
+            proactive health is the norm. Where it’s easy to slow aging and
+            prevent disease. Where our food and environments are default healthy
+            and toxin free. Where everyone is able to reach their peak
+            potential.
+          </H3>
+
+          <H3 className="text-white">
+            It&apos;s time to unleash your inner Superpower.
+          </H3>
         </div>
         <Button
           onClick={() => {

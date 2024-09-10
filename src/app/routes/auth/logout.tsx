@@ -12,7 +12,7 @@ export const LogoutRoute = () => {
 
   useEffect(() => {
     logout.mutate({});
-    navigate('/login');
+    navigate('/signin');
 
     // kill access / refresh tokens so user wont be refetched immidiately
     clearActiveLogin();

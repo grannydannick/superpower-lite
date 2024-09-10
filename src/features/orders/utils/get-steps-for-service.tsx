@@ -3,6 +3,7 @@ import {
   CONTINUOUS_GLUCOSE_MONITOR,
   CUSTOM_BLOOD_PANEL,
   DEXA_SCAN,
+  ENVIRONMENTAL_TOXIN_TEST,
   ENVIRONMENTAL_TOXINS,
   FOOD_ENVIRENMENTAL_ALLERGY,
   FULL_BODY_MRI,
@@ -10,9 +11,12 @@ import {
   GRAIL_GALLERI_MULTI_CANCER_TEST,
   GUT_MICROBIOME_ANALYSIS,
   HEART_CALCIUM_SCAN,
+  HEAVY_METALS_TEST,
   INTESTINAL_PERMEABILITY_PANEL,
+  MYCOTOXINS_TEST,
   PFAS_CHEMICALS,
   SUPERPOWER_BLOOD_PANEL,
+  TOTAL_TOXIN_TEST,
   VO2_MAX_TEST,
 } from '@/const';
 import { Calendly } from '@/features/orders/components/steps/calendly';
@@ -40,6 +44,7 @@ export const getStepsFromService = (
   healthcareService: HealthcareService,
   dataLink?: string,
 ): StepItem[] => {
+  // !!!TODO: write dynamic function to check if service is active or not and push appropriate steps
   switch (healthcareService.name) {
     case SUPERPOWER_BLOOD_PANEL:
       return [
@@ -82,7 +87,6 @@ export const getStepsFromService = (
         { id: 'info', content: <HealthcareServiceDetails /> },
         { id: 'concierge', content: <MessageConcierge /> },
       ];
-    // TODO: write dynamic function to check if service is active or not and push appropriate steps
     case PFAS_CHEMICALS:
     case INTESTINAL_PERMEABILITY_PANEL:
     case FOOD_ENVIRENMENTAL_ALLERGY:
@@ -100,7 +104,18 @@ export const getStepsFromService = (
 
       return [{ id: 'early-access', content: <EarlyAccessContent /> }];
     }
+    // if separate toxin test is recommended via action plan
+    case TOTAL_TOXIN_TEST:
+    case ENVIRONMENTAL_TOXIN_TEST:
+    case MYCOTOXINS_TEST:
+    case HEAVY_METALS_TEST:
+      return [
+        { id: 'info', content: <HealthcareServiceDetails /> },
+        { id: 'summary', content: <OrderSummary /> },
+        { id: 'success', content: <Success /> },
+      ];
+
     default:
-      return [];
+      return [{ id: 'early-access', content: <EarlyAccessContent /> }];
   }
 };
