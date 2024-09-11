@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { OneLineLoader } from './one-line-loader';
 
 const meta: Meta<typeof OneLineLoader> = {};
+
 export default meta;
 
 type Story = StoryObj<typeof OneLineLoader>;
