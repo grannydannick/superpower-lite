@@ -56,12 +56,21 @@ push/docker/app: build/docker/app
 	docker push $(ECR_URL)/$(ECR_REPO):$(DOCKER_TAG)
 
 # Kubernetes commands
-deploy/app:
+deploy/app/stg:
 	@echo "Deploying $(APP_NAME) to Kubernetes..."
+	aws eks update-kubeconfig --name staging-cluster --region $(AWS_REGION) && \
 	sed -e 's|__AWS_ECR_URL__|$(ECR_URL)|g' \
 		-e 's|__SERVICE__|$(ECR_REPO)|g' \
 		-e 's|__VERSION__|$(DOCKER_TAG)|g' \
 		deployment/$(APP_NAME)/deploy.app.yaml | kubectl apply -f -
+
+deploy/story/stg:
+	@echo "Deploying $(APP_NAME) to Kubernetes..."
+	aws eks update-kubeconfig --name staging-cluster --region $(AWS_REGION) && \
+	sed -e 's|__AWS_ECR_URL__|$(ECR_URL)|g' \
+		-e 's|__SERVICE__|$(ECR_REPO)|g' \
+		-e 's|__VERSION__|$(DOCKER_TAG)|g' \
+		deployment/$(APP_NAME)/deploy.app.story.yaml | kubectl apply -f -
 
 # Combined commands
 build/push/deploy/app: build/docker/app push/docker/app deploy/app
