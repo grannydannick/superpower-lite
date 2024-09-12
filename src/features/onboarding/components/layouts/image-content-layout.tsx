@@ -25,10 +25,10 @@ export const ImageContentLayout = (props: Props) => {
   return (
     <>
       <Head title={title} />
-      <div className="flex min-h-screen w-full flex-col overflow-y-auto lg:flex-row">
+      <div className="flex w-full flex-col overflow-y-auto lg:flex-row">
         <div
           className={cn(
-            'min-h-[210px] lg:sticky lg:top-0 lg:min-h-screen w-full lg:max-w-[556px] bg-spine-2 bg-no-repeat bg-cover flex px-6 flex-col items-start justify-center',
+            'min-h-[210px] lg:min-h-screen lg:w-1/3 !bg-spine-2 bg-no-repeat bg-cover flex px-6 flex-col items-start justify-center',
             className,
           )}
         >
@@ -45,7 +45,7 @@ export const ImageContentLayout = (props: Props) => {
           ) : null}
         </div>
 
-        <div className="flex flex-1 flex-col py-6 lg:py-12">
+        <div className="flex w-full flex-col items-center py-6 lg:w-2/3 lg:py-12">
           <section
             id="header"
             className="flex w-full items-center justify-between px-8 lg:px-14"

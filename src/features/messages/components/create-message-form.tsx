@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TimerIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -21,7 +22,12 @@ import {
 } from '../api/create-message';
 
 export const CreateMessageForm = (): JSX.Element => {
-  const createMessageMutation = useCreateMessage();
+  const createMessageMutation = useCreateMessage({
+    mutationConfig: {
+      onSuccess: () =>
+        toast.success('Message sent. We will get back in <24 hrs on weekdays.'),
+    },
+  });
 
   const form = useForm<CreateMessageInput>({
     resolver: zodResolver(createMessageInputSchema),
@@ -63,7 +69,11 @@ export const CreateMessageForm = (): JSX.Element => {
             <Body1 className="line-clamp-1 text-zinc-500">{`Response Time: < 24 hrs on weekdays`}</Body1>
           </div>
 
-          <Button className="w-full md:w-auto" type="submit">
+          <Button
+            className="w-full md:w-auto"
+            type="submit"
+            disabled={createMessageMutation.isPending}
+          >
             {createMessageMutation.isPending ? <Spinner /> : 'Send Message'}
           </Button>
         </div>

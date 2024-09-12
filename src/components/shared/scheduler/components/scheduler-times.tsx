@@ -20,7 +20,7 @@ export function SchedulerTimes(): JSX.Element {
 
   return (
     <>
-      {timeSlots.length > 0 ? (
+      {timeSlots.length > 0 && !loading ? (
         <div className="mb-2 flex items-center gap-2 text-sm text-zinc-400 md:text-base">
           {moment(timeSlots[0]?.start).tz(tz).format('MMMM Do')}
           <DotIcon className="size-3" color="#71717A" />
@@ -29,20 +29,24 @@ export function SchedulerTimes(): JSX.Element {
           </h5>
         </div>
       ) : null}
+      {loading ? (
+        <Skeleton className="mb-2 h-5 w-full max-w-[230px] md:h-6" />
+      ) : null}
       <div className="items-center text-center">
         <div
           className={cn(
             'p-2 rounded-2xl space-y-2 max-h-[270px] overflow-y-scroll',
-            timeSlots.length > 0 ? 'border border-[#E4E4E7]' : '',
+            timeSlots.length > 0 || loading ? 'border border-[#E4E4E7]' : '',
           )}
         >
           {loading &&
-            Array(3)
+            Array(5)
               .fill(0)
               .map((_, i) => <Skeleton className="h-14 w-full" key={i} />)}
-          {timeSlots.map((slot: Slot) => {
-            return <SchedulerTimeSlot key={slot.start} timeSlot={slot} />;
-          })}
+          {!loading &&
+            timeSlots.map((slot: Slot) => {
+              return <SchedulerTimeSlot key={slot.start} timeSlot={slot} />;
+            })}
         </div>
       </div>
     </>

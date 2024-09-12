@@ -65,16 +65,15 @@ function SchedulerConsumer({
   displayCancellationNote?: boolean;
   showCreateBtn?: boolean;
 }): JSX.Element {
-  const { selectedSlot, slots, onSlotUpdate, fetchSlots, tz } = useScheduler(
-    (s) => s,
-  );
+  const { selectedSlot, slots, onSlotUpdate, fetchSlots, tz, startRange } =
+    useScheduler((s) => s);
 
   useEffect(() => {
     fetchSlots();
-  }, []);
+  }, [startRange]);
 
   return (
-    <div className={cn('max-w-[800px] space-y-10', className)}>
+    <div className={cn('max-w-[800px] w-full space-y-10', className)}>
       <div className="flex flex-col justify-end">
         <div className="mb-2">
           <SchedulerHeading />

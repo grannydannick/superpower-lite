@@ -12,7 +12,15 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
+import { US_STATE_CODES } from '@/const';
 import { OnboardingInput } from '@/features/onboarding/components/onboarding-input';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { useGetServiceability } from '@/features/orders/api';
@@ -122,14 +130,26 @@ function FullPrimaryAddressForm({
             control={form.control}
             name="state"
             render={({ field }) => (
-              <FormItem className="space-y-0">
+              <FormItem className="space-y-3">
                 <FormLabel className="text-white">State</FormLabel>
                 <FormControl>
-                  <OnboardingInput
-                    autoComplete="off"
-                    placeholder="State"
-                    {...field}
-                  />
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="h-14 rounded-xl border-white/20 bg-white/5 p-4 text-[16px] font-normal text-white transition-colors focus:border-white focus:ring-0 focus:ring-offset-0 focus-visible:outline-none">
+                        <SelectValue placeholder="State" asChild={false} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="text-zinc-600">
+                      {US_STATE_CODES.map((state) => (
+                        <SelectItem value={state} key={state}>
+                          {state}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormMessage className="pt-2" />
               </FormItem>

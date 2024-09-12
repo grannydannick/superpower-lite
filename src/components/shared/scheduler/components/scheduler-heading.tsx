@@ -22,7 +22,7 @@ export function SchedulerHeading(): JSX.Element {
     loading,
   } = useScheduler((s) => s);
 
-  const handleClick = (numDays: number): void => {
+  const handleClick = async (numDays: number) => {
     if (!startRange) return;
 
     const newStartRange = startRange.clone().add(numDays, 'days').tz(tz);

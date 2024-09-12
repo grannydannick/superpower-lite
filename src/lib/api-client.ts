@@ -31,7 +31,6 @@ api.interceptors.response.use(
 
     if (error.response.status !== 401) {
       if (error.response.data) {
-        console.log(error.response.data);
         const apiError = error.response.data;
 
         /**

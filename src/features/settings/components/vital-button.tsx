@@ -14,7 +14,7 @@ export function VitalLinkButton({
   callback?: () => void;
   children: ReactNode;
 }): JSX.Element {
-  const { data, refetch } = useVitalToken({});
+  const { data, refetch, isError } = useVitalToken({});
 
   const [isLoading, setLoading] = useState(false);
 
@@ -69,7 +69,7 @@ export function VitalLinkButton({
     <Button
       type="button"
       onClick={handleVitalOpen}
-      disabled={isLoading || !ready}
+      disabled={isLoading || !ready || isError}
       className={className}
     >
       {children}

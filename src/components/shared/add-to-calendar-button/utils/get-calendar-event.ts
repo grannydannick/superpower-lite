@@ -1,10 +1,12 @@
 import { CalendarEvent } from 'calendar-link';
+import { format } from 'date-fns';
 
 import {
   GRAIL_GALLERI_MULTI_CANCER_TEST,
   SUPERPOWER_BLOOD_PANEL,
 } from '@/const';
 import { Address, CollectionMethodType, Slot } from '@/types/api';
+import { formatAddress } from '@/utils/format';
 
 export const getCalendarEvent = ({
   slot,
@@ -27,7 +29,21 @@ export const getCalendarEvent = ({
         (1000 * 60 * 60),
       'hour',
     ],
-    description: 'Add description here',
+    description: `This test is sent by Superpower, made available by Grail Labs.
+    
+Your blood draw for the Grail Galleri Multi Cancer Detection Test  is scheduled at ${formatAddress(address)} on ${format(new Date(slot.start), 'EEEE, MMMM do, yyyy, h:mm a')}
+Your results will be uploaded to your dashboard once complete.
+    
+What to expect:
+🧪 The report will be ready in ~14 days, after your samples are received at the lab.
+🩸 The blood draw will only take ~10 min! Please remember to have your phone at hand prior to the appointment for reminders and updates.
+    
+What to do:
+✅No fasting or preparation is required for this test.
+🩺 Your phlebotomist will collect, prepare, and ship your sample for you.
+What to have ready:
+    
+01 – Please remember to have your test kit with you: Once your phlebotomist arrives, they'll guide you through the test's sample collection.`,
     location: `${address?.line.join(' ')}, ${address?.city}, ${address?.state}, ${address?.postalCode}`,
   };
 

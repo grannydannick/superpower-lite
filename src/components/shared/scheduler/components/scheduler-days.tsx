@@ -30,7 +30,7 @@ export function SchedulerDays(): JSX.Element {
     }
   }, [slots]);
 
-  const renderDays = numDays && startRange && slots.length > 0;
+  const renderDays = numDays && startRange && slots.length > 0 && !loading;
 
   if (slots.length === 0 && !loading) {
     return <Body1 className="text-center">No slots found.</Body1>;
@@ -43,7 +43,7 @@ export function SchedulerDays(): JSX.Element {
           .fill(0)
           .map((_, indx) => (
             <Skeleton
-              className="h-[60px] w-full rounded-2xl sm:h-[200px]"
+              className="h-[60px] w-full min-w-fit rounded-2xl sm:h-[200px]"
               key={indx}
             />
           ))}
