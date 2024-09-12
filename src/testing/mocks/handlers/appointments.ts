@@ -11,11 +11,14 @@ type AppointmentsServiceabilityBody = {
 export const appointmentsHandlers = [
   http.post(
     `${env.API_URL}/appointments/serviceability`,
-    async ({ request, cookies }) => {
+    async ({ request }) => {
       await networkDelay();
 
+      const authHeader = request.headers.get('Authorization');
+      const token = authHeader?.split(' ')[1];
+
       try {
-        const { error } = requireAuth(cookies);
+        const { error } = await requireAuth(token);
         if (error) {
           return HttpResponse.json({ message: error }, { status: 401 });
         }

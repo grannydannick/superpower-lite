@@ -15,6 +15,12 @@ beforeEach(() => {
     disconnect: vi.fn(),
   }));
 
+  // required mocks to open Shadcn Select component
+
+  window.HTMLElement.prototype.scrollIntoView = vi.fn();
+  window.HTMLElement.prototype.hasPointerCapture = vi.fn();
+  window.HTMLElement.prototype.releasePointerCapture = vi.fn();
+
   vi.stubGlobal('ResizeObserver', ResizeObserverMock);
 
   window.btoa = (str: string) => Buffer.from(str, 'binary').toString('base64');

@@ -238,6 +238,7 @@ const verifyTokens = async (tokens: TokenResponse) => {
 
   // Verify token has not expired
   const tokenPayload = parseJWTPayload(token);
+
   if (Date.now() >= (tokenPayload.exp as number) * 1000) {
     clearActiveLogin();
     throw new Error('Token expired');

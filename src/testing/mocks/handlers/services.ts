@@ -2,16 +2,18 @@ import { HttpResponse, http } from 'msw';
 
 import { env } from '@/config/env';
 
-// import { db } from '../db';
 import { services } from '../data/services';
 import { requireAuth, networkDelay } from '../utils';
 
 export const servicesHandlers = [
-  http.get(`${env.API_URL}/services`, async ({ cookies }) => {
+  http.get(`${env.API_URL}/services`, async ({ request }) => {
     await networkDelay();
 
+    const authHeader = request.headers.get('Authorization');
+    const token = authHeader?.split(' ')[1];
+
     try {
-      const { error } = requireAuth(cookies);
+      const { error } = await requireAuth(token);
       if (error) {
         return HttpResponse.json({ message: error }, { status: 401 });
       }
@@ -19,7 +21,7 @@ export const servicesHandlers = [
       // const result = db.healthcareService.findMany({});
       // return HttpResponse.json(result);
 
-      return HttpResponse.json(services);
+      return HttpResponse.json({ services });
     } catch (error: any) {
       return HttpResponse.json(
         { message: error?.message || 'Server Error' },
@@ -30,11 +32,14 @@ export const servicesHandlers = [
 
   http.get(
     `${env.API_URL}/services/:serviceId`,
-    async ({ params, cookies }) => {
+    async ({ params, request }) => {
       await networkDelay();
 
+      const authHeader = request.headers.get('Authorization');
+      const token = authHeader?.split(' ')[1];
+
       try {
-        const { error } = requireAuth(cookies);
+        const { error } = await requireAuth(token);
         if (error) {
           return HttpResponse.json({ message: error }, { status: 401 });
         }

@@ -13,6 +13,11 @@ const models = {
     password: String,
     admin: Boolean,
   },
+  login: {
+    id: primaryKey(nanoid),
+    userId: String,
+    revoked: Boolean,
+  },
   otpCode: {
     id: primaryKey(nanoid),
     userId: String,

@@ -4,19 +4,15 @@ import { http, HttpResponse } from 'msw';
 import { env } from '@/config/env';
 import { networkDelay, requireAuth } from '@/testing/mocks/utils';
 
-// type AvailabilityBody = {
-//   serviceId: string;
-//   address: Address;
-//   start: string;
-//   collectionMethod: CollectionMethodType;
-// };
-
 export const phlebotomyHandlers = [
-  http.post(`${env.API_URL}/phlebotomy/availability`, async ({ cookies }) => {
+  http.post(`${env.API_URL}/phlebotomy/availability`, async ({ request }) => {
     await networkDelay();
 
+    const authHeader = request.headers.get('Authorization');
+    const token = authHeader?.split(' ')[1];
+
     try {
-      const { error } = requireAuth(cookies);
+      const { error } = await requireAuth(token);
       if (error) {
         return HttpResponse.json({ message: error }, { status: 401 });
       }

@@ -31,6 +31,7 @@ api.interceptors.response.use(
 
     if (error.response.status !== 401) {
       if (error.response.data) {
+        console.log(error.response.data);
         const apiError = error.response.data;
 
         /**
@@ -44,7 +45,7 @@ api.interceptors.response.use(
           /**
            * Regular JS error that has message field inside
            */
-          toast.error(apiError.message);
+          toast.error(apiError.message ?? 'An unknown error occurred.');
         }
       } else {
         toast.error('An unknown error occurred.');

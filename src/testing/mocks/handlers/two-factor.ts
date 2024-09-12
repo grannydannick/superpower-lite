@@ -12,11 +12,14 @@ type VerifyOtpBody = {
 };
 
 export const twoFactorHandlers = [
-  http.post(`${env.API_URL}/send-otp`, async ({ cookies }) => {
+  http.post(`${env.API_URL}/send-otp`, async ({ request }) => {
     await networkDelay();
 
+    const authHeader = request.headers.get('Authorization');
+    const token = authHeader?.split(' ')[1];
+
     try {
-      const { user, error } = requireAuth(cookies);
+      const { error, user } = await requireAuth(token);
       if (error) {
         return HttpResponse.json({ message: error }, { status: 401 });
       }
@@ -35,11 +38,13 @@ export const twoFactorHandlers = [
     }
   }),
 
-  http.post(`${env.API_URL}/verify-otp`, async ({ request, cookies }) => {
+  http.post(`${env.API_URL}/verify-otp`, async ({ request }) => {
     await networkDelay();
+    const authHeader = request.headers.get('Authorization');
+    const token = authHeader?.split(' ')[1];
 
     try {
-      const { user, error } = requireAuth(cookies);
+      const { error, user } = await requireAuth(token);
       if (error) {
         return HttpResponse.json({ message: error }, { status: 401 });
       }

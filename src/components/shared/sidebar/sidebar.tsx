@@ -367,6 +367,7 @@ export const LogoutButton = () => {
         open ? 'justify-start rounded-[52px]' : 'justify-center rounded-full',
       )}
       role="presentation"
+      data-testid="logout-btn-desktop"
     >
       <LogIn className="size-5 text-zinc-400" />
 

@@ -4,25 +4,34 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import Cookies from 'js-cookie';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 
 import { AppProvider } from '@/app/provider';
+import { stringify } from '@/lib/utils';
 
 import { createUser as generateUser } from './data-generators';
 import { db } from './mocks/db';
-import { AUTH_COOKIE, authenticate, hash } from './mocks/utils';
+import { authenticate, getAuthTokens, hash } from './mocks/utils';
 
-export const createUser = async (userProperties?: any) => {
+export const createUser = (userProperties?: any) => {
   const user = generateUser(userProperties) as any;
-  await db.user.create({ ...user, password: hash(user.password) });
+  db.user.create({ ...user, password: hash(user.password) });
   return user;
 };
 
-export const loginAsUser = async (user: any) => {
-  const authUser = await authenticate(user);
-  Cookies.set(AUTH_COOKIE, authUser.jwt);
-  return authUser;
+export const loginAsUser = async (incomingUser: any) => {
+  const { login, user } = await authenticate(incomingUser);
+  const { accessToken, refreshToken } = await getAuthTokens({ ...login });
+
+  localStorage.setItem(
+    'activeLogin',
+    stringify({
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+      profile: user.id,
+    }),
+  );
+  return user;
 };
 
 export const waitForLoadingToFinish = () =>

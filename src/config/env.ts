@@ -2,7 +2,7 @@ import * as z from 'zod';
 
 const createEnv = () => {
   const EnvSchema = z.object({
-    API_URL: z.string().default('http://localhost:3001'),
+    API_URL: z.string(),
     STRIPE_PUBLISHABLE_KEY: z.string(),
     ENABLE_API_MOCKING: z
       .string()
@@ -10,7 +10,7 @@ const createEnv = () => {
       .transform((s) => s === 'true')
       .optional(),
     APP_URL: z.string().optional().default('http://localhost:3000'),
-    APP_MOCK_API_PORT: z.string().optional().default('8081'),
+    APP_MOCK_API_PORT: z.string().optional().default('8080'),
     VITAL_ENV: z.string(),
     GOOGLE_API_KEY: z.string(),
     CALENDLY_TOKEN: z.string(),

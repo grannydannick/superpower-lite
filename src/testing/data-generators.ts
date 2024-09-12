@@ -13,7 +13,7 @@ const generateUser = () => ({
   lastName: randUserName({ withAccents: false }),
   email: randEmail(),
   password: randPassword(),
-  phone: randPhoneNumber(),
+  phone: randPhoneNumber({ countryCode: 'US' }),
   gender: 'MALE',
   dateOfBirth: randPastDate({ years: 20 }),
   admin: true,

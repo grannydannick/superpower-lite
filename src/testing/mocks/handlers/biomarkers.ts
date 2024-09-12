@@ -2,32 +2,26 @@ import { HttpResponse, http } from 'msw';
 
 import { env } from '@/config/env';
 
-import { db, persistDb } from '../db';
+import { biomarkers } from '../data/biomarkers';
 import { requireAuth, networkDelay } from '../utils';
 
-type MessageBody = {
-  body: string;
-};
-
-export const messagesHandlers = [
-  http.post(`${env.API_URL}/messages`, async ({ request }) => {
+export const biomarkersHandlers = [
+  http.get(`${env.API_URL}/biomarkers`, async ({ request }) => {
     await networkDelay();
 
     const authHeader = request.headers.get('Authorization');
     const token = authHeader?.split(' ')[1];
 
     try {
-      const { error, user } = await requireAuth(token);
+      const { error } = await requireAuth(token);
       if (error) {
         return HttpResponse.json({ message: error }, { status: 401 });
       }
-      const data = (await request.json()) as MessageBody;
-      const result = db.message.create({
-        ...data,
-        userId: user?.id,
-      });
-      await persistDb('message');
-      return HttpResponse.json(result);
+
+      // const result = db.healthcareService.findMany({});
+      // return HttpResponse.json(result);
+
+      return HttpResponse.json({ biomarkers });
     } catch (error: any) {
       return HttpResponse.json(
         { message: error?.message || 'Server Error' },

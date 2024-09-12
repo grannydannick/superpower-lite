@@ -18,11 +18,14 @@ type ProfileBody = {
 };
 
 export const usersHandlers = [
-  http.get(`${env.API_URL}/users`, async ({ cookies }) => {
+  http.get(`${env.API_URL}/users`, async ({ request }) => {
     await networkDelay();
 
+    const authHeader = request.headers.get('Authorization');
+    const token = authHeader?.split(' ')[1];
+
     try {
-      const { error } = requireAuth(cookies);
+      const { error } = await requireAuth(token);
       if (error) {
         return HttpResponse.json({ message: error }, { status: 401 });
       }
@@ -37,11 +40,14 @@ export const usersHandlers = [
     }
   }),
 
-  http.patch(`${env.API_URL}/users/profile`, async ({ request, cookies }) => {
+  http.patch(`${env.API_URL}/users/profile`, async ({ request }) => {
     await networkDelay();
 
+    const authHeader = request.headers.get('Authorization');
+    const token = authHeader?.split(' ')[1];
+
     try {
-      const { user, error } = requireAuth(cookies);
+      const { error, user } = await requireAuth(token);
       if (error) {
         return HttpResponse.json({ message: error }, { status: 401 });
       }
@@ -64,11 +70,13 @@ export const usersHandlers = [
     }
   }),
 
-  http.delete(`${env.API_URL}/users/:userId`, async ({ cookies, params }) => {
+  http.delete(`${env.API_URL}/users/:userId`, async ({ request, params }) => {
     await networkDelay();
+    const authHeader = request.headers.get('Authorization');
+    const token = authHeader?.split(' ')[1];
 
     try {
-      const { user, error } = requireAuth(cookies);
+      const { error, user } = await requireAuth(token);
       if (error) {
         return HttpResponse.json({ message: error }, { status: 401 });
       }

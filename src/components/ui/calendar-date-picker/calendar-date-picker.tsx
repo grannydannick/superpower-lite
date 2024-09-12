@@ -402,6 +402,7 @@ export const CalendarDatePicker = React.forwardRef<
           <PopoverTrigger asChild>
             <Button
               id="date"
+              data-testid="date"
               ref={ref}
               {...props}
               className={cn(
@@ -599,7 +600,10 @@ export const CalendarDatePicker = React.forwardRef<
                           monthFrom ? months[monthFrom.getMonth()] : undefined
                         }
                       >
-                        <SelectTrigger className="w-[122px] rounded-md px-3 py-2 !text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:ring-0 focus:ring-offset-0">
+                        <SelectTrigger
+                          data-testid="date-month-picker"
+                          className="w-[122px] rounded-md px-3 py-2 !text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:ring-0 focus:ring-offset-0"
+                        >
                           <SelectValue placeholder="Month" />
                         </SelectTrigger>
                         <SelectContent>
@@ -621,7 +625,10 @@ export const CalendarDatePicker = React.forwardRef<
                         }}
                         value={yearFrom ? yearFrom.toString() : undefined}
                       >
-                        <SelectTrigger className="w-[122px] rounded-md px-3 py-2 !text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:ring-0 focus:ring-offset-0">
+                        <SelectTrigger
+                          data-testid="date-year-picker"
+                          className="w-[122px] rounded-md px-3 py-2 !text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:ring-0 focus:ring-offset-0"
+                        >
                           <SelectValue placeholder="Year" />
                         </SelectTrigger>
                         <SelectContent>
