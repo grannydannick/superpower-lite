@@ -1,5 +1,5 @@
 export ORG = superpowerdotcom
-export SERVICE = halfbaked-app
+export SERVICE = superpower-app
 export ARCH ?= $(shell uname -m)
 export USER ?= $(shell whoami)
 export VERSION ?= $(shell git rev-parse --short=7 HEAD)
@@ -8,9 +8,9 @@ SHELL := /bin/bash
 AWS_REGION ?= us-east-1
 AWS_ACCOUNT_ID ?= $(shell command -v aws >/dev/null 2>&1 || { echo "ERROR: 'aws' CLI tool is not installed." >&2; exit 1; }; aws sts get-caller-identity --query Account --output text)
 AWS_REGISTRY_ID ?= $(shell command -v aws >/dev/null 2>&1 || { echo "ERROR: 'aws' CLI tool is not installed." >&2; exit 1; }; aws ecr describe-registry --region us-east-1 --query registryId --output text)
-APP_NAME := halfbaked-app
-ECR_REPO := halfbaked-app
-K8S_NAMESPACE := halfbaked
+APP_NAME := app
+ECR_REPO := app
+K8S_NAMESPACE := superpower
 DOCKER_TAG := $(shell git rev-parse --short HEAD)
 AWS_REGION := us-east-1
 AWS_ACCOUNT_ID := $(shell aws sts get-caller-identity --query Account --output text)
@@ -62,7 +62,7 @@ deploy/app/stg:
 	sed -e 's|__AWS_ECR_URL__|$(ECR_URL)|g' \
 		-e 's|__SERVICE__|$(ECR_REPO)|g' \
 		-e 's|__VERSION__|$(DOCKER_TAG)|g' \
-		deployment/$(APP_NAME)/deploy.app.yaml | kubectl apply -f -
+		deployment/halfbaked-app/deploy.app.yaml | kubectl apply -f -
 
 deploy/story/stg:
 	@echo "Deploying $(APP_NAME) to Kubernetes..."
@@ -74,9 +74,7 @@ deploy/story/stg:
 
 ### Deploy (PRD)
 
-.PHONY: deploy/app/prd
-deploy/app/prd: description = Deploy app to AWS Cloudfront
-deploy/app/prd: prereq
+deploy/app/prd:
 	@bash $(SHARED_SCRIPT) info "Creating deployment notification in Slack ..."
 	@TARGET=$@ bash $(SHARED_SCRIPT) notify $(PRD_DEPLOYMENT_MSG)
 	@bash $(SHARED_SCRIPT) info "Deploying app to cloudfront ..."
