@@ -4,7 +4,7 @@
 set -e
 
 SHARED_SCRIPT_PATH="./assets/scripts/shared.sh"
-SERVICE="halfbaked-app"
+SERVICE="superpower-app"
 BUILD_ENV=$1
 
 # Load shared shell script
