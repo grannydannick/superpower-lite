@@ -199,7 +199,7 @@ const ExpandableCard = ({ parentRef, isExpanded, setIsExpanded }: Props) => {
           </div>
           <Button
             className="rounded-[12px] border border-zinc-500 bg-zinc-700 px-6 py-4"
-            disabled={annualTotal === 0}
+            disabled={membershipQuery.isLoading}
             onClick={async (e) => {
               e.stopPropagation();
 
