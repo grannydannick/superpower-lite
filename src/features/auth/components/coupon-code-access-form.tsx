@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -28,15 +29,8 @@ interface CouponCodeAccessFormProps {
 export function CouponCodeAccessForm({
   codeValidated,
 }: CouponCodeAccessFormProps): JSX.Element {
-  const providedCode =
-    window.location.href
-      .split('accessCode=')[1]
-      ?.split('&')[0]
-      ?.toUpperCase() || (window as any).Rewardful?.coupon?.id?.toUpperCase();
-
-  const [accessCode, setAccessCode] = useState<string | undefined>(
-    providedCode,
-  );
+  const [searchParams] = useSearchParams();
+  const [accessCode, setAccessCode] = useState<string | undefined>(undefined);
 
   const accessCodeQuery = useValidateCode({
     accessCode: accessCode ?? '',
@@ -51,12 +45,26 @@ export function CouponCodeAccessForm({
   });
 
   useEffect(() => {
+    const rewardfulCoupon = (window as any).Rewardful?.coupon?.id;
+
+    // give priority to rewardfulCoupon
+    if (rewardfulCoupon) {
+      setAccessCode(rewardfulCoupon);
+      return;
+    }
+
+    // otherwise check for access code
+    const code = searchParams.get('accessCode');
+
+    if (code) {
+      setAccessCode(code.toUpperCase());
+      localStorage.setItem('superpower-code', code.toUpperCase());
+    }
+  }, []);
+
+  useEffect(() => {
     if (accessCodeQuery.isSuccess) {
       codeValidated();
-      localStorage.setItem(
-        'superpower-code',
-        accessCode?.toUpperCase() as string,
-      );
     }
   }, [accessCodeQuery.isSuccess, codeValidated]);
 
