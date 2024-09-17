@@ -31,6 +31,7 @@ export function CouponCodeAccessForm({
 }: CouponCodeAccessFormProps): JSX.Element {
   const [searchParams] = useSearchParams();
   const [accessCode, setAccessCode] = useState<string | undefined>(undefined);
+  const [isRewardful, setIsRewardful] = useState<boolean>(false);
 
   const accessCodeQuery = useValidateCode({
     accessCode: accessCode ?? '',
@@ -50,6 +51,7 @@ export function CouponCodeAccessForm({
     // give priority to rewardfulCoupon
     if (rewardfulCoupon) {
       setAccessCode(rewardfulCoupon);
+      setIsRewardful(true);
       return;
     }
 
@@ -58,13 +60,27 @@ export function CouponCodeAccessForm({
 
     if (code) {
       setAccessCode(code.toUpperCase());
-      localStorage.setItem('superpower-code', code.toUpperCase());
     }
   }, []);
 
   useEffect(() => {
+    // should be always present but just as an extra check
+    if (!accessCode) {
+      return;
+    }
+
     if (accessCodeQuery.isSuccess) {
       codeValidated();
+      /*
+       * upper casing for OUR coupon codes needs to happen on the FE so that on the backend
+       * we can verify we don't uppercase all coupon codes
+       *
+       * rewardfulCoupon doesn't require uppercasing
+       * */
+      localStorage.setItem(
+        'superpower-code',
+        isRewardful ? accessCode : accessCode.toUpperCase(),
+      );
     }
   }, [accessCodeQuery.isSuccess, codeValidated]);
 
