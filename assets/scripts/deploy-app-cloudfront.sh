@@ -142,13 +142,13 @@ aws s3 cp dist/ "s3://${APP_BUCKET}/" \
   --exclude "*" \
   --include "*.webmanifest"
 
-aws s3 cp dist/service-worker.js "s3://${APP_BUCKET}/" \
-  --content-type "application/javascript" \
-  --cache-control "no-cache"
-
-aws s3 cp dist/service-worker.js.map "s3://${APP_BUCKET}/" \
-  --content-type "application/json" \
-  --cache-control "no-cache"
+# aws s3 cp dist/service-worker.js "s3://${APP_BUCKET}/" \
+#   --content-type "application/javascript" \
+#   --cache-control "no-cache"
+#
+# aws s3 cp dist/service-worker.js.map "s3://${APP_BUCKET}/" \
+#   --content-type "application/json" \
+#   --cache-control "no-cache"
 
 aws cloudfront create-invalidation --distribution-id "${AWS_DISTRIBUTION_ID}" --paths '/*'
 
