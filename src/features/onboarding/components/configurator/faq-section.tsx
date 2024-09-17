@@ -51,11 +51,7 @@ We see Superpower like a gym membership for those committed to prevention and pe
   },
   {
     display: 'Which tests are included in my membership?',
-    description: `The Superpower Baseline includes two lab panels.
-
-The first lab panel includes over 60 biomarkers.
-
-The second lab panel is a follow-up test with over 35 biomarkers.
+    description: `The first lab panel includes over 60 biomarkers.
 
 Additional tests can be ordered at any time from the Superpower app. We have brought together the best tests into one platform. Many of these are hard to access anywhere else.`,
   },
