@@ -152,4 +152,4 @@ aws s3 cp dist/ "s3://${APP_BUCKET}/" \
 
 aws cloudfront create-invalidation --distribution-id "${AWS_DISTRIBUTION_ID}" --paths '/*'
 
-popd
+# popd
