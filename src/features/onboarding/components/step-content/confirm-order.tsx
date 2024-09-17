@@ -14,6 +14,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { OneLineLoader } from '@/components/ui/one-line-loader/one-line-loader';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, Body2, H2 } from '@/components/ui/typography';
 import {
@@ -48,41 +49,68 @@ export const ConfirmOrder = () => {
     queryConfig: {},
   });
 
-  const total = getTotalPrice(
-    collectionMethod ?? 'IN_LAB',
-    additionalServices,
-    membershipQuery.data?.total,
-  );
+  const membershipPrice = membershipQuery.data?.total ?? 0;
+
+  const showAdditionalItems =
+    collectionMethod === 'AT_HOME' || additionalServices.length > 0;
+
+  const total = getTotalPrice(collectionMethod ?? 'IN_LAB', additionalServices);
 
   const { prevStep } = useStepper((s) => s);
   const [method, setMethod] = React.useState<string>('credit');
   return (
     <section id="main" className="flex flex-col gap-8">
       <H2 className="text-zinc-900">Confirm Order</H2>
-      <div className="flex w-full items-center  justify-between rounded-[16px] bg-[#F7F7F7] px-6 py-5">
-        <div>
-          <Body1 className="text-zinc-900">
-            {membershipQuery.isLoading ? (
-              <Skeleton className="h-6 w-[130px]" />
-            ) : (
-              `${formatMoney(total / 12)} / month`
-            )}
-          </Body1>
-          <Body2 className="text-zinc-900 opacity-50">
-            {membershipQuery.isLoading ? (
-              <Skeleton className="h-5 w-[130px]" />
-            ) : (
-              `${formatMoney(total)} / year, billed annually`
-            )}
-          </Body2>
+      <div className="flex w-full flex-col rounded-[16px] bg-[#F7F7F7]">
+        <div className="flex items-center  justify-between px-6 py-5">
+          <div>
+            <Body1 className="text-zinc-900">
+              {membershipQuery.isLoading ? (
+                <Skeleton className="h-6 w-[130px]" />
+              ) : (
+                `${formatMoney(membershipPrice / 12)} / month`
+              )}
+            </Body1>
+            <Body2 className="text-zinc-900 opacity-50">
+              {membershipQuery.isLoading ? (
+                <Skeleton className="h-5 w-[130px]" />
+              ) : (
+                `${formatMoney(membershipPrice)} / year, billed annually`
+              )}
+            </Body2>
+          </div>
+          <Button
+            className="p-0 text-sm text-zinc-400"
+            variant="ghost"
+            onClick={prevStep}
+          >
+            Edit Plan
+          </Button>
         </div>
-        <Button
-          className="p-0 text-sm text-zinc-400"
-          variant="ghost"
-          onClick={prevStep}
-        >
-          Edit Plan
-        </Button>
+        {showAdditionalItems ? (
+          <div>
+            <Separator />
+            <div className="flex flex-col rounded-b-2xl px-6 py-5">
+              {collectionMethod === 'AT_HOME' && (
+                <Body1 className="line-clamp-1 text-zinc-900">
+                  1 x At-home collection
+                </Body1>
+              )}
+              {additionalServices.map((as, index) => (
+                <Body1 className="line-clamp-1 text-zinc-900" key={index}>
+                  1 x {as.name}
+                </Body1>
+              ))}
+              <Body2 className="text-zinc-900 opacity-50">
+                {membershipQuery.isLoading ? (
+                  <Skeleton className="h-5 w-[130px]" />
+                ) : (
+                  `${formatMoney(total)}, billed once`
+                )}
+              </Body2>
+            </div>
+          </div>
+        ) : null}
       </div>
       <H2 className="text-zinc-900">Payment</H2>
       <RadioGroup value={method} onValueChange={(value) => setMethod(value)}>

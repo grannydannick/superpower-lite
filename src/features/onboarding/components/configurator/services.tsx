@@ -30,6 +30,10 @@ const AdditionalServiceCard = ({ service }: AdditionalServiceCardProps) => {
     method: service.name === GRAIL_GALLERI_MULTI_CANCER_TEST ? 'AT_HOME' : null,
   });
 
+  if (!serviceQuery.data) {
+    return;
+  }
+
   return (
     <div
       className={cn(
@@ -58,10 +62,10 @@ const AdditionalServiceCard = ({ service }: AdditionalServiceCardProps) => {
         </div>
         <div className="flex flex-row items-center gap-x-2 sm:gap-x-6">
           <Body2 className="text-nowrap text-zinc-500">
-            {serviceQuery.data ? (
-              `+ ${formatMoney(serviceQuery.data.service.price)}`
-            ) : (
+            {serviceQuery.isLoading ? (
               <Skeleton className="h-5 w-10" />
+            ) : (
+              `+ ${formatMoney(serviceQuery.data.service.price)}`
             )}
           </Body2>
 

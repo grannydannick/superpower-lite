@@ -1,21 +1,30 @@
-import { ArrowUpRight } from 'lucide-react';
-import React from 'react';
-
 import { Body2, H2 } from '@/components/ui/typography';
+import { GRAIL_GALLERI_MULTI_CANCER_TEST } from '@/const';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
-import { getTotalPrice } from '@/features/onboarding/utils/get-total-price';
+import { useService } from '@/features/services/api';
 import { useMembershipPrice } from '@/features/settings/api';
 import { HealthcareService } from '@/types/api';
 import { formatMoney } from '@/utils/format-money';
 
 const ServiceLine = ({ service }: { service: HealthcareService }) => {
+  const serviceQuery = useService({
+    serviceId: service.id,
+    method: service.name === GRAIL_GALLERI_MULTI_CANCER_TEST ? 'AT_HOME' : null,
+  });
+
+  if (!serviceQuery.data) {
+    return;
+  }
+
   return (
     <div className="flex justify-between">
       <div className="flex gap-1">
         <Body2 className="text-zinc-900">{service.name}</Body2>
         {/*<Body2 className="text-zinc-400">(Annual)</Body2>*/}
       </div>
-      <Body2 className="text-zinc-400">{formatMoney(service.price)}</Body2>
+      <Body2 className="text-zinc-400">
+        {formatMoney(serviceQuery.data?.service.price)}
+      </Body2>
     </div>
   );
 };
@@ -30,11 +39,7 @@ const Summary = () => {
     queryConfig: {},
   });
 
-  const total = getTotalPrice(
-    collectionMethod ?? 'IN_LAB',
-    additionalServices,
-    membershipQuery.data?.total,
-  );
+  const annualTotal = membershipQuery.data?.total ?? 0;
 
   return (
     <section id="summary" className="w-full max-w-[500px] space-y-6">
@@ -80,32 +85,32 @@ const Summary = () => {
         <div className="flex justify-between p-6">
           <Body2 className="text-zinc-900">Annual Total</Body2>
           <div className="flex flex-col items-end">
-            <Body2 className="text-zinc-900">{formatMoney(total)}</Body2>
+            <Body2 className="text-zinc-900">{formatMoney(annualTotal)}</Body2>
             <Body2 className="text-zinc-400">
-              {formatMoney(total / 12)}/mo
+              {formatMoney(annualTotal / 12)}/mo
             </Body2>
           </div>
         </div>
       </div>
-      <div className="flex flex-row items-center gap-1">
-        <Body2 className="text-xs text-zinc-500 sm:text-sm">
-          HSA/FSA eligible with
-        </Body2>
-        <img
-          src="/onboarding/truemed.png"
-          alt="truemed"
-          className="h-auto w-[60px] object-contain sm:w-[70px]"
-        />
-        <a
-          href="https://www.truemed.com/about"
-          target="_blank"
-          rel="noreferrer"
-          className="flex flex-row items-center space-x-1 text-xs  text-[#FC5F2B] sm:text-sm"
-        >
-          <span>Learn more</span>
-          <ArrowUpRight className="size-4" />
-        </a>
-      </div>
+      {/*<div className="flex flex-row items-center gap-1">*/}
+      {/*  <Body2 className="text-xs text-zinc-500 sm:text-sm">*/}
+      {/*    HSA/FSA eligible with*/}
+      {/*  </Body2>*/}
+      {/*  <img*/}
+      {/*    src="/onboarding/truemed.png"*/}
+      {/*    alt="truemed"*/}
+      {/*    className="h-auto w-[60px] object-contain sm:w-[70px]"*/}
+      {/*  />*/}
+      {/*  <a*/}
+      {/*    href="https://www.truemed.com/about"*/}
+      {/*    target="_blank"*/}
+      {/*    rel="noreferrer"*/}
+      {/*    className="flex flex-row items-center space-x-1 text-xs  text-[#FC5F2B] sm:text-sm"*/}
+      {/*  >*/}
+      {/*    <span>Learn more</span>*/}
+      {/*    <ArrowUpRight className="size-4" />*/}
+      {/*  </a>*/}
+      {/*</div>*/}
     </section>
   );
 };

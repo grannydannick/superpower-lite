@@ -13,7 +13,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, Body2, Body3, H3, H4 } from '@/components/ui/typography';
 import { GRAIL_GALLERI_MULTI_CANCER_TEST } from '@/const';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
-import { getTotalPrice } from '@/features/onboarding/utils/get-total-price';
 import { useService } from '@/features/services/api';
 import { useMembershipPrice } from '@/features/settings/api';
 import { useOutsideClick } from '@/hooks/use-outside-click';
@@ -59,11 +58,7 @@ const ExpandableCard = ({ parentRef, isExpanded, setIsExpanded }: Props) => {
 
   const { collectionMethod, additionalServices } = useOnboarding();
 
-  const total = getTotalPrice(
-    collectionMethod ?? 'IN_LAB',
-    additionalServices,
-    membershipQuery.data?.total,
-  );
+  const annualTotal = membershipQuery.data?.total ?? 0;
 
   const { nextOnboardingStep } = useStepper((s) => s);
 
@@ -165,9 +160,11 @@ const ExpandableCard = ({ parentRef, isExpanded, setIsExpanded }: Props) => {
               <div className="flex w-full justify-between">
                 <Body1 className="text-white">Annual Total</Body1>
                 <div className="flex flex-col items-end">
-                  <Body1 className="text-white">{formatMoney(total)}</Body1>
+                  <Body1 className="text-white">
+                    {formatMoney(annualTotal)}
+                  </Body1>
                   <Body2 className="text-zinc-400">
-                    {formatMoney(total)}/mo
+                    {formatMoney(annualTotal)}/mo
                   </Body2>
                 </div>
               </div>
@@ -183,7 +180,9 @@ const ExpandableCard = ({ parentRef, isExpanded, setIsExpanded }: Props) => {
           <div>
             <div className="flex gap-2">
               <H4 className="text-white">My plan</H4>
-              <H4 className="text-zinc-400">{formatMoney(total / 12)}/mo</H4>
+              <H4 className="text-zinc-400">
+                {formatMoney(annualTotal / 12)}/mo
+              </H4>
             </div>
             <button
               type="button"
@@ -200,7 +199,7 @@ const ExpandableCard = ({ parentRef, isExpanded, setIsExpanded }: Props) => {
           </div>
           <Button
             className="rounded-[12px] border border-zinc-500 bg-zinc-700 px-6 py-4"
-            disabled={total === 0}
+            disabled={annualTotal === 0}
             onClick={async (e) => {
               e.stopPropagation();
 
