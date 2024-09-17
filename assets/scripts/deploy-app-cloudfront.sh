@@ -111,6 +111,13 @@ aws s3 cp dist/ "s3://${APP_BUCKET}/" \
 
 aws s3 cp dist/ "s3://${APP_BUCKET}/" \
   --recursive \
+  --content-type "image/webp" \
+  --cache-control "public, max-age=31536000" \
+  --exclude "*" \
+  --include "*.webp"
+
+aws s3 cp dist/ "s3://${APP_BUCKET}/" \
+  --recursive \
   --content-type "image/svg+xml" \
   --cache-control "public, max-age=31536000" \
   --exclude "*" \

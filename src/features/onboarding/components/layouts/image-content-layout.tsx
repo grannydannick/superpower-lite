@@ -45,7 +45,7 @@ export const ImageContentLayout = (props: Props) => {
           ) : null}
         </div>
 
-        <div className="flex w-full flex-col items-center py-6 lg:w-2/3 lg:py-12">
+        <div className="flex w-full flex-col py-6 lg:w-2/3 lg:py-12">
           <section
             id="header"
             className="flex w-full items-center justify-between px-8 lg:px-14"

@@ -6,6 +6,36 @@ import { steps } from '@/features/onboarding/components/steps';
 import { useUser } from '@/lib/auth';
 import { StepperStoreProvider, useStepper } from '@/lib/stepper';
 import { cn } from '@/lib/utils';
+import { preloadImage } from '@/utils/preload-image';
+
+export const onboardingLoader = () => async () => {
+  /**
+   * This hack is to "preload" all of the images used in onboarding
+   *
+   * If we are not using this, images are loaded dynamically and create weird "flicker" effect
+   * which this loader hopefully should fix
+   *
+   */
+  const preloadedImages = [
+    '/onboarding/bg-female-hands.webp',
+    '/onboarding/bg-female-looking-up.webp',
+    '/onboarding/bg-female-spine.webp',
+    '/onboarding/bg-female-spotlight.webp',
+    '/onboarding/bg-female-stretching.webp',
+    '/onboarding/bg-male.webp',
+    '/onboarding/bg-male-large.webp',
+    '/onboarding/bg-spine.webp',
+    '/onboarding/bg-spine-2.webp',
+    '/onboarding/bg-watch.webp',
+  ];
+
+  const imagesPromiseList: Promise<any>[] = [];
+  for (const i of preloadedImages) {
+    imagesPromiseList.push(preloadImage(i));
+  }
+
+  return Promise.all(imagesPromiseList);
+};
 
 export const OnboardingRoute = () => {
   const { data: user } = useUser({});
@@ -39,35 +69,8 @@ const Step = () => {
 
   const currentStep = steps[activeStep];
 
-  /**
-   * This hack is to override default preloaded image background for steps that doesn't need it
-   *
-   * The default image background preload was done to avoid weird white flickering of screen
-   * when image on background changes, and it takes a couple of miliseconds to display it
-   *
-   * bg-spine in this case acts as a fallback
-   */
-  const bgWgiteSteps = [
-    'configurator',
-    'confirm-order',
-    'identity',
-    'schedule',
-    'booking',
-    'pick-date',
-    'booking-success',
-    'additional-services',
-    'additional-booking-success',
-  ];
-
   return (
-    <div
-      className={cn(
-        'bg-spine',
-        bgWgiteSteps.includes(currentStep.id)
-          ? 'bg-white min-h-screen w-full'
-          : null,
-      )}
-    >
+    <div className={cn('bg-white min-h-screen w-full')}>
       {currentStep?.content ?? null}
     </div>
   );

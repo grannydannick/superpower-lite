@@ -103,7 +103,7 @@ function FullPrimaryAddressForm({
                   {...field}
                 />
               </FormControl>
-              <FormMessage className="pt-2" />
+              <FormMessage className="pt-2 text-pink-50" />
             </FormItem>
           )}
         />
@@ -122,7 +122,7 @@ function FullPrimaryAddressForm({
                     {...field}
                   />
                 </FormControl>
-                <FormMessage className="pt-2" />
+                <FormMessage className="pt-2 text-pink-50" />
               </FormItem>
             )}
           />
@@ -151,7 +151,7 @@ function FullPrimaryAddressForm({
                     </SelectContent>
                   </Select>
                 </FormControl>
-                <FormMessage className="pt-2" />
+                <FormMessage className="pt-2 text-pink-50" />
               </FormItem>
             )}
           />
@@ -170,7 +170,7 @@ function FullPrimaryAddressForm({
                   {...field}
                 />
               </FormControl>
-              <FormMessage className="pt-2" />
+              <FormMessage className="pt-2 text-pink-50" />
             </FormItem>
           )}
         />

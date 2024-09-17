@@ -120,6 +120,12 @@ export const createRouter = (queryClient: QueryClient) =>
             const { OnboardingRoute } = await import('./routes/app/onboarding');
             return { Component: OnboardingRoute };
           },
+          loader: async () => {
+            const { onboardingLoader } = await import(
+              './routes/app/onboarding'
+            );
+            return onboardingLoader()();
+          },
         },
         {
           path: 'concierge',
