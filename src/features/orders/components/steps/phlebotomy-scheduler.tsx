@@ -46,7 +46,7 @@ export const PhlebotomyScheduler = () => {
             address={location?.address as Address}
             serviceId={service.id}
             onSlotUpdate={onSlotUpdate}
-            displayCancellationNote
+            displayCancellationNote={collectionMethod !== 'IN_LAB'}
             showCreateBtn={false}
             numDays={width > 600 ? 5 : 4}
           />
