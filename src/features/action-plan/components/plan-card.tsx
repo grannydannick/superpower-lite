@@ -130,9 +130,9 @@ const PlanCardFooter = ({ orderId }: { orderId?: string }) => {
 
 const PlanCardContent = ({ orderId }: { orderId?: string }) => {
   return (
-    <div className="px-6 pt-6 md:px-[72px] md:pt-[72px]">
+    <div className="relative px-6 pt-6 md:px-[72px] md:pt-[70px]">
       <Tabs defaultValue="SERVICE">
-        <TabsList className="flex w-full justify-start space-x-6 overflow-x-scroll rounded-none">
+        <TabsList className="flex w-fit items-center space-x-6 overflow-x-scroll rounded-none">
           <TabsTrigger value="PRODUCT" className="pb-1">
             Products
           </TabsTrigger>
@@ -144,7 +144,7 @@ const PlanCardContent = ({ orderId }: { orderId?: string }) => {
             Lifestyle
           </TabsTrigger>
         </TabsList>
-        <hr />
+        <hr className="absolute right-0 top-16 w-full md:top-28" />
         <ServicesTab orderId={orderId} />
         <ProductsTab orderId={orderId} />
       </Tabs>

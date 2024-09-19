@@ -2,7 +2,6 @@ import { QueryClient } from '@tanstack/react-query';
 
 import { ContentLayout } from '@/components/layouts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { H3 } from '@/components/ui/typography';
 import { getServicesQueryOptions } from '@/features/services/api/get-services';
 import { FinishScheduleList } from '@/features/services/components/finish-schedule-list';
 import { OrdersList } from '@/features/services/components/orders-list';
@@ -30,22 +29,21 @@ export const servicesLoader = (queryClient: QueryClient) => async () => {
 export const ServicesRoute = () => {
   return (
     <ContentLayout title="Services">
-      {/* ORDERS */}
       <section id="orders" className="space-y-6">
-        <H3>Your orders</H3>
-        <OrdersList />
-      </section>
-      <section id="orders" className="space-y-6">
-        <Tabs defaultValue="all">
-          <TabsList className="grid w-fit grid-cols-2">
+        <Tabs defaultValue="all" className="overflow-auto">
+          <TabsList className="flex w-fit items-center justify-start overflow-x-auto">
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="schedule">To be scheduled</TabsTrigger>
+            <TabsTrigger value="orders">Your orders</TabsTrigger>
           </TabsList>
           <TabsContent value="all" className="py-6 md:py-[72px]">
             <ServicesList />
           </TabsContent>
           <TabsContent value="schedule" className="py-6 md:py-[72px]">
             <FinishScheduleList />
+          </TabsContent>
+          <TabsContent value="orders" className="py-6 md:py-[72px]">
+            <OrdersList />
           </TabsContent>
         </Tabs>
       </section>

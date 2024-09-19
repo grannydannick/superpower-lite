@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { TimestampDisplay } from '@/components/shared/timestamp-display';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Body1, Body2 } from '@/components/ui/typography';
 import { useCancelOrder } from '@/features/orders/api/cancel-order';
 import { useServices } from '@/features/services/api';
 import { OrderStatusBadge } from '@/features/services/components/order-status-badge';
@@ -28,18 +29,26 @@ export function OrderCard(order: Order) {
   return (
     <Card
       className={cn(
-        'bg-zinc-50 p-4',
+        'bg-zinc-100 p-5',
         order.status.toUpperCase() === OrderStatus.cancelled
           ? 'grayscale opacity-50'
           : '',
       )}
     >
-      <div className="flex flex-row space-x-4">
-        <div className="hidden sm:block">
+      <div className="flex flex-col gap-4 md:flex-row">
+        <div className="flex items-center justify-between">
           <OrderCardFeatureImage imagePath={service.image} />
+          <div className="block md:hidden">
+            <OrderCardBadge {...order} />
+          </div>
         </div>
-        <div className="flex w-full min-w-0 flex-col justify-between gap-4">
-          <OrderCardHeader {...order} />
+        <div className="flex w-full flex-col justify-between">
+          <div className="flex justify-between">
+            <Body1 className="line-clamp-1">{service.name}</Body1>
+            <div className="hidden md:block">
+              <OrderCardBadge {...order} />
+            </div>
+          </div>
           <OrderCardDetails {...order} />
         </div>
       </div>
@@ -47,7 +56,7 @@ export function OrderCard(order: Order) {
   );
 }
 
-function OrderCardHeader({ id, name, status, timestamp }: Order): JSX.Element {
+function OrderCardBadge({ id, name, status, timestamp }: Order): JSX.Element {
   const { data: user } = useUser();
   const { mutateAsync } = useCancelOrder({
     mutationConfig: {
@@ -68,7 +77,7 @@ function OrderCardHeader({ id, name, status, timestamp }: Order): JSX.Element {
     Boolean(user?.adminActor)
   ) {
     actions.push({
-      label: 'Cancel',
+      label: 'Cancel appointment',
       onClick: async () => {
         await mutateAsync({ orderId: id });
       },
@@ -76,14 +85,11 @@ function OrderCardHeader({ id, name, status, timestamp }: Order): JSX.Element {
   }
 
   return (
-    <div className="flex flex-row justify-between space-y-0 text-sm sm:flex-col sm:space-y-1 lg:flex-row lg:space-y-0">
-      <h2 className="line-clamp-1 text-xl text-primary">{name}</h2>
-      <OrderStatusBadge
-        className="select-none"
-        variant={status.toLowerCase() as any}
-        actions={actions}
-      />
-    </div>
+    <OrderStatusBadge
+      className="w-fit select-none"
+      variant={status.toLowerCase() as any}
+      actions={actions}
+    />
   );
 }
 
@@ -93,13 +99,13 @@ function OrderCardDetails({
   location,
 }: Order): JSX.Element {
   return (
-    <div className="flex flex-col justify-between space-y-0 text-base sm:space-y-1 lg:space-y-0">
-      <span className="truncate text-primary">
+    <div className="flex flex-col gap-0.5">
+      <Body2 className="text-zinc-500">
         <TimestampDisplay timestamp={new Date(timestamp)} timezone={timezone} />
-      </span>
-      <span className="truncate text-secondary">
+      </Body2>
+      <Body2 className="line-clamp-1 text-zinc-400">
         {location.address?.line.join(', ')}
-      </span>
+      </Body2>
     </div>
   );
 }
@@ -110,16 +116,14 @@ export function OrderCardFeatureImage({
   imagePath: string | undefined;
 }): JSX.Element {
   if (!imagePath) {
-    return (
-      <Skeleton className="aspect-square size-[114px] w-full rounded-lg" />
-    );
+    return <Skeleton className="aspect-square h-12 min-w-12 rounded-lg" />;
   }
 
   return (
     <img
       alt="Order"
       src={imagePath}
-      className="aspect-square size-[114px] h-full rounded-xl border border-zinc-200 object-cover"
+      className="aspect-square h-12 min-w-12 rounded-xl object-cover"
     />
   );
 }

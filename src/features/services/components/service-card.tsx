@@ -36,6 +36,10 @@ const DesktopCard = ({
     (!schedulingLinkQuery.data?.link || schedulingLinkQuery.data.link === '');
 
   const renderButton = () => {
+    if (draftOrderId) {
+      return <Button className="px-5 py-3">Schedule</Button>;
+    }
+
     if (!service.active || noSchedulingLink) {
       return (
         <Button
