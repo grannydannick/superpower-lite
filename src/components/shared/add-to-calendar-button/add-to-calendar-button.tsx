@@ -12,6 +12,7 @@ import {
   GRAIL_GALLERI_MULTI_CANCER_TEST,
   SUPERPOWER_BLOOD_PANEL,
 } from '@/const';
+import { cn } from '@/lib/utils';
 import { Address, CollectionMethodType, Slot } from '@/types/api';
 
 import { getCalendarEvent } from '../add-to-calendar-button/utils/get-calendar-event';
@@ -21,6 +22,7 @@ export function AddToCalendar({
   address,
   collectionMethod,
   service,
+  className,
 }: {
   slot: Slot;
   address: Address;
@@ -28,13 +30,19 @@ export function AddToCalendar({
   service:
     | typeof SUPERPOWER_BLOOD_PANEL
     | typeof GRAIL_GALLERI_MULTI_CANCER_TEST;
+  className?: string;
 }) {
   const event = getCalendarEvent({ slot, address, collectionMethod, service });
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <div className="flex w-full max-w-[244px] cursor-pointer items-center justify-between rounded-xl border border-zinc-200 px-[18px] py-4">
+        <div
+          className={cn(
+            'flex w-full max-w-[244px] cursor-pointer items-center justify-between rounded-xl border border-zinc-200 px-[18px] py-4',
+            className,
+          )}
+        >
           <Body1 className="text-zinc-900">Add to calendar</Body1>
           <ChevronDown size={24} color="#A1A1AA" />
         </div>

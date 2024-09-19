@@ -1,5 +1,8 @@
+import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Body1, Body2, H2 } from '@/components/ui/typography';
 import { useOrder } from '@/features/orders/stores/order-store';
@@ -9,11 +12,12 @@ import { getLegalDisclaimerForService } from '@/utils/service';
 export const Disclaimer = () => {
   const { activeStep, steps, nextStep } = useStepper((s) => s);
   const service = useOrder((s) => s.service);
+  const [checked, setChecked] = useState<boolean>(false);
 
   const disclaimer = getLegalDisclaimerForService(service.name);
   return (
     <>
-      <div className="space-y-8 md:space-y-12">
+      <div className="space-y-8 p-6 md:space-y-12 md:p-14">
         <div className="space-y-4">
           <H2 className="text-2xl md:text-3xl">Disclaimer</H2>
           <ScrollArea className="md:max-h-[220px] md:overflow-y-scroll md:rounded-[20px] md:border md:border-zinc-200">
@@ -23,26 +27,30 @@ export const Disclaimer = () => {
           </ScrollArea>
         </div>
         <div className="flex items-start justify-start gap-4">
-          <Checkbox />
-          <Body2 className="leading-normal text-zinc-500">
+          <Checkbox
+            id="legal"
+            checked={checked}
+            onCheckedChange={() => setChecked((prev) => !prev)}
+          />
+          <Label className="leading-normal text-zinc-500" htmlFor="legal">
             By continuing, I acknowledge my understanding and acceptance of the
             above information.
-          </Body2>
+          </Label>
         </div>
       </div>
-      {/*Mobile button*/}
-      <div className="py-3 pb-[38px] pt-8 md:hidden">
-        <Button className="w-full" onClick={nextStep}>
-          Next
-        </Button>
-      </div>
-
-      {/*Desktop button*/}
-      <div className="mt-12 hidden items-center justify-between md:flex">
-        <Body1 className="text-zinc-500">
+      <div className="flex items-center px-6 pb-12 md:justify-between md:px-14">
+        <Body1 className="hidden text-zinc-400 md:block">
           Step {activeStep + 1} of {steps.length}
         </Body1>
-        <Button onClick={nextStep}>Next</Button>
+        <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
+          <Button
+            onClick={nextStep}
+            disabled={!checked}
+            className="w-full md:w-auto"
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </>
   );

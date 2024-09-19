@@ -69,8 +69,8 @@ export function ToxinsSelect(): JSX.Element {
     .sort((a, b) => sortOrder.indexOf(a.name) - sortOrder.indexOf(b.name));
 
   return (
-    <div>
-      <div className="flex flex-col-reverse gap-y-6 space-x-0 sm:flex-row sm:space-x-4">
+    <>
+      <div className="flex flex-col-reverse gap-6 p-6 sm:flex-row md:p-14">
         <div className="flex flex-col justify-between space-y-4">
           <div className="flex flex-col items-start">
             <h1 className="pb-2 text-[32px] text-primary">
@@ -89,20 +89,28 @@ export function ToxinsSelect(): JSX.Element {
           />
         </div>
       </div>
-      <div className="flex items-center justify-between pt-12">
-        <Body1 className="text-zinc-400">
+      <div className="flex items-center px-6 pb-12 md:justify-between md:px-14">
+        <Body1 className="hidden text-zinc-400 md:block">
           Step {activeStep + 1} of {steps.length}
         </Body1>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={prevStep}>
+        <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
+          <Button
+            variant="outline"
+            className="w-full md:w-auto"
+            onClick={prevStep}
+          >
             Back
           </Button>
-          <Button onClick={nextStep} disabled={!location}>
+          <Button
+            onClick={nextStep}
+            disabled={!location}
+            className="w-full md:w-auto"
+          >
             Next
           </Button>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

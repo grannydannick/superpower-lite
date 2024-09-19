@@ -37,7 +37,6 @@ export function BiomarkerCard({
   return (
     <>
       <BiomarkerCardHeader
-        className="sticky top-0 z-20"
         name={name}
         status={status}
         result={sortedBiomarkerValues[0]}
@@ -54,7 +53,7 @@ export function BiomarkerCard({
         importance={importance}
       />
       <BiomarkerCardFooter
-        containerClassName="sticky w-full bottom-0 flex flex-col flex-1 justify-end"
+        containerClassName="sticky bottom-0"
         className="text-zinc-500"
         source={biomarker.metadata.source}
       />

@@ -13,12 +13,14 @@ export const Success = () => {
   const timeline = getServiceTimeline(service);
 
   return (
-    <div className="space-y-16">
-      <H2 className="text-zinc-900">
-        Thank you, we look forward to seeing you shortly.
-      </H2>
-      <Timeline timeline={timeline} />
-      <div className="flex w-full justify-end gap-3 py-12">
+    <>
+      <div className="space-y-8 p-6 md:p-14">
+        <H2 className="text-zinc-900">
+          Thank you, we look forward to seeing you shortly.
+        </H2>
+        <Timeline timeline={timeline} />
+      </div>
+      <div className="flex w-full flex-col gap-3 px-6 pb-12 md:flex-row md:justify-end md:px-14">
         {location?.address && collectionMethod && slot && (
           <AddToCalendar
             address={location.address}
@@ -28,12 +30,13 @@ export const Success = () => {
               'Grail Galleri Multi Cancer Test'
             }
             collectionMethod={collectionMethod}
+            className="max-w-none"
           />
         )}
         <DialogClose>
-          <Button>Done</Button>
+          <Button className="w-full md:w-auto">Done</Button>
         </DialogClose>
       </div>
-    </div>
+    </>
   );
 };

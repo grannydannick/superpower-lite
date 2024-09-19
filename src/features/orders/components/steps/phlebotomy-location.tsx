@@ -5,17 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
-import { Body1 } from '@/components/ui/typography';
+import { Body1, Body2, Body3, H2, H3 } from '@/components/ui/typography';
 import { CUSTOM_BLOOD_PANEL, SUPERPOWER_BLOOD_PANEL } from '@/const';
-import { US_STATE_CODES } from '@/const/us-state-codes';
 import {
   useGetServiceability,
   usePhlebotomyLocations,
@@ -27,47 +19,62 @@ import { useDebounce } from '@/hooks/use-debounce';
 import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
 import { cn } from '@/lib/utils';
-import { Address, PhlebotomyLocation } from '@/types/api';
-import { getLine, isAddressComplete, setLine } from '@/utils/address';
+import { PhlebotomyLocation } from '@/types/api';
 import { formatAddress } from '@/utils/format';
 import { formatMoney } from '@/utils/format-money';
 
 export const PhlebotomyLocationSelect = () => {
-  const { collectionMethod, location, updateCollectionMethod, service } =
-    useOrder((s) => s);
+  const {
+    collectionMethod,
+    location,
+    updateCollectionMethod,
+    service,
+    updateLocation,
+  } = useOrder((s) => s);
   const { activeStep, nextStep, steps, prevStep } = useStepper((s) => s);
 
   useEffect(() => {
     updateCollectionMethod(getDefaultCollectionMethod(service));
+    updateLocation(null);
   }, []);
 
   return (
-    <div>
-      <div className="space-y-16">
-        <div className="space-y-4">
-          <h3 className="text-3xl">Select a service type</h3>
-          <CreateOrderPhlebotomyLocationSelector />
+    <>
+      <div className="p-6 md:p-14">
+        <div className="space-y-16">
+          <div className="space-y-4">
+            <H2>Select a service type</H2>
+            <CreateOrderPhlebotomyLocationSelector />
+          </div>
+          {collectionMethod === 'IN_LAB' ? (
+            <CreateOrderPhlebotomyInLab />
+          ) : (
+            <CreateOrderPhlebotomyAtHome />
+          )}
         </div>
-        {collectionMethod === 'IN_LAB' ? (
-          <CreateOrderPhlebotomyInLab />
-        ) : (
-          <CreateOrderPhlebotomyAtHome />
-        )}
       </div>
-      <div className="flex items-center justify-between pt-12">
-        <Body1 className="text-zinc-400">
+      <div className="flex items-center px-6 pb-12 md:justify-between md:px-14">
+        <Body1 className="hidden text-zinc-400 md:block">
           Step {activeStep + 1} of {steps.length}
         </Body1>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={prevStep}>
+        <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
+          <Button
+            variant="outline"
+            className="w-full md:w-auto"
+            onClick={prevStep}
+          >
             Back
           </Button>
-          <Button onClick={nextStep} disabled={!location}>
+          <Button
+            onClick={nextStep}
+            disabled={!location}
+            className="w-full md:w-auto"
+          >
             Next
           </Button>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -93,21 +100,21 @@ function CreateOrderPhlebotomyInLab(): JSX.Element {
   return (
     <div className="space-y-6">
       <div className="space-y-3">
-        <h3 className="text-3xl">Nearby Labs</h3>
-        <p className="text-zinc-500">
+        <H2>Nearby Labs</H2>
+        <Body1 className="text-zinc-500">
           Please enter your zip code and we will find a partner laboratory
           closest to you.
-        </p>
+        </Body1>
       </div>
       <form className="space-y-2">
-        <Label className="flex flex-row items-center gap-1 text-zinc-500">
-          <span>My zip code</span>
+        <div className="flex items-center gap-1">
+          <Body2 className="text-zinc-500">My zip code</Body2>
           {phlebotomyLocationsMutation.isLoading && (
             <span>
               <Spinner size="xs" variant="primary" />
             </span>
           )}
-        </Label>
+        </div>
         <Input
           maxLength={5}
           value={zipCode}
@@ -123,185 +130,93 @@ function CreateOrderPhlebotomyInLab(): JSX.Element {
 }
 
 function CreateOrderPhlebotomyAtHome(): JSX.Element {
-  const {
-    updateLocation,
-    location,
-
-    collectionMethod,
-  } = useOrder((s) => s);
-  const [isServicable, setIsServicable] = useState(false);
+  const { updateLocation, collectionMethod } = useOrder((s) => s);
   const { data: user } = useUser();
-  const [error, setError] = useState<string | null>(null);
 
-  /*
-   * Either use address we already have in context OR use profile address
-   * */
-  const [address, setAddress] = useState<Address>({
-    line: location?.address?.line
-      ? location?.address?.line
-      : user?.primaryAddress?.address.line ?? [],
-    city: location?.address?.city
-      ? location?.address?.city
-      : user?.primaryAddress?.address.city ?? '',
-    state: location?.address?.state
-      ? location?.address?.state
-      : user?.primaryAddress?.address.state ?? '',
-    postalCode: location?.address?.postalCode
-      ? location?.address?.postalCode
-      : user?.primaryAddress?.address.postalCode ?? '',
-  });
-
-  const debouncedZipCode = useDebounce(address.postalCode, 500);
-
-  const getPhlebotomyServiceableMutation = useGetServiceability();
+  const { data, mutateAsync, isPending } = useGetServiceability();
+  const isServiceable = data?.serviceable;
 
   useEffect(() => {
     const checkServiceable = async (): Promise<void> => {
-      if (debouncedZipCode.length === 5) {
-        const response = await getPhlebotomyServiceableMutation.mutateAsync({
+      if (user?.primaryAddress) {
+        const { postalCode } = user.primaryAddress.address;
+
+        const response = await mutateAsync({
           data: {
-            zipCode: debouncedZipCode,
+            zipCode: postalCode,
             collectionMethod: collectionMethod || 'AT_HOME',
           },
         });
 
-        if (!response.serviceable) {
-          setError('ZIP Code is not servicable');
-        } else {
-          updateLocation({ address });
-          setIsServicable(true);
+        if (response.serviceable) {
+          updateLocation({ address: user.primaryAddress.address });
         }
-      } else {
-        updateLocation(null);
       }
     };
 
-    // refresh error if zip code changes
-    setError(null);
-    updateLocation(null);
-    // set is not servicable to refresh previous result
-    setIsServicable(false);
-
     checkServiceable();
-  }, [debouncedZipCode]);
+  }, []);
 
-  /*
-   * Refresh states if user removed previous zipcode
-   * */
-  useEffect(() => {
-    if (address.postalCode.length !== 5) {
-      setIsServicable(false);
-      updateLocation(null);
-    }
-  }, [address.postalCode.length]);
+  if (!user?.primaryAddress) {
+    return (
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <H2>Place of service</H2>
+        </div>
+        <div className="flex flex-col gap-3 rounded-2xl border border-zinc-200 px-8 py-6">
+          <Body2 className="text-zinc-500">
+            No primary address found, add one in settings.
+          </Body2>
+        </div>
+      </div>
+    );
+  }
 
-  /*
-   * Before allowing user to proceed make sure address is complete,
-   * there is no error and address is servicable
-   *
-   * isServicable is local use state to keep track of API response and fast update it
-   * */
-  useEffect(() => {
-    if (
-      isAddressComplete(address) &&
-      !error &&
-      isServicable &&
-      !getPhlebotomyServiceableMutation.isPending
-    ) {
-      updateLocation({ address });
-    }
-  }, [
-    address,
-    isServicable,
-    updateLocation,
-    getPhlebotomyServiceableMutation.isPending,
-    error,
-  ]);
+  const { line, city, postalCode, state } = user.primaryAddress.address;
 
   return (
     <div className="space-y-6">
       <div className="space-y-3">
-        <h3 className="text-3xl">Place of service</h3>
-        <p className="text-zinc-500">
-          Please select or enter your the address a phlebotomist will visit to
-          complete your service.
-        </p>
+        <H2>Place of service</H2>
       </div>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Input
-          className="mr-4 flex-1"
-          name="line1"
-          placeholder="Line 1"
-          defaultValue={getLine(address, 0)}
-          onChange={(e) =>
-            setAddress((prev) => ({
-              ...prev,
-              line: setLine(prev, 0, e.target.value),
-            }))
-          }
-        />
-        <Input
-          className="flex-1"
-          name="line2"
-          placeholder="Line 2"
-          defaultValue={getLine(address, 1)}
-          onChange={(e) =>
-            setAddress((prev) => ({
-              ...prev,
-              line: setLine(prev, 1, e.target.value),
-            }))
-          }
-        />
-      </div>
-      <div className="space-y-2">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <Input
-            name="postalCode"
-            placeholder="Postal Code"
-            maxLength={5}
-            defaultValue={address.postalCode}
-            onChange={(e) =>
-              setAddress((prev) => ({ ...prev, postalCode: e.target.value }))
-            }
-          />
-          <Input
-            name="city"
-            placeholder="City"
-            defaultValue={address.city}
-            disabled={false}
-            onChange={(e) =>
-              setAddress((prev) => ({ ...prev, city: e.target.value }))
-            }
-          />
-          <div>
-            <Select
-              value={address.state}
-              onValueChange={(val) =>
-                setAddress((prev) => ({ ...prev, state: val }))
-              }
-            >
-              <SelectTrigger className="bg-white">
-                <SelectValue placeholder="State" />
-              </SelectTrigger>
-              <SelectContent style={{ zIndex: 51 }}>
-                {US_STATE_CODES.map((state) => (
-                  <SelectItem value={state} key={state}>
-                    {state}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+
+      <div
+        className={cn(
+          'flex flex-col gap-3 rounded-2xl border border-zinc-200 px-8 py-6',
+          !isPending && !isServiceable ? 'border-pink-700 bg-pink-50' : null,
+        )}
+      >
+        <Body2
+          className={cn(
+            'text-zinc-500',
+            !isPending && !isServiceable ? 'text-pink-700' : null,
+          )}
+        >
+          My Address
+        </Body2>
+        <div>
+          <Body1>
+            {user?.firstName} {user?.lastName}
+          </Body1>
+          <Body1>{line.join(' ')}</Body1>
+          <Body1>{city}</Body1>
+          <Body1>
+            {state} {postalCode}, US
+          </Body1>
         </div>
-        {error && <Body1 className="text-pink-700">{error}</Body1>}
       </div>
+
+      {!isServiceable && !isPending ? (
+        <Body2 className="text-pink-700">
+          Sorry, we’re unable to service your area right now. please go back and
+          try a different address.
+        </Body2>
+      ) : null}
     </div>
   );
 }
 
 function CreateOrderPhlebotomyLocationSelector(): JSX.Element {
-  // Set default provider to not complete step
-
   const { collectionMethod, service, updateCollectionMethod, updateLocation } =
     useOrder((s) => s);
 
@@ -328,7 +243,7 @@ function CreateOrderPhlebotomyLocationSelector(): JSX.Element {
             className={cn(
               'flex space-x-4 border-2 rounded-3xl p-6 flex-1 bg-white',
               interpretedMethod === collectionMethod
-                ? 'border-zinc-500'
+                ? 'border-zinc-500 bg-zinc-50'
                 : 'border-zinc-200 hover:bg-zinc-50',
               option.value === 'IN_LAB' &&
                 service.name !== SUPERPOWER_BLOOD_PANEL &&
@@ -361,23 +276,21 @@ function CreateOrderPhlebotomyLocationSelector(): JSX.Element {
               className="mt-0.5 min-w-5"
             />
             <Label htmlFor={option.value} className="w-full">
-              <div className="flex h-[140px] flex-col justify-between sm:h-[200px]">
+              <div className="flex h-[140px] flex-col justify-between sm:h-[172px]">
                 <div className="space-y-3">
-                  <h4 className="text-2xl text-primary">{option.name}</h4>
-                  <p className="leading-normal text-zinc-500">
-                    {option.description}
-                  </p>
+                  <H3>{option.name}</H3>
+                  <Body1 className="text-zinc-500">{option.description}</Body1>
                   {option.cancelationText && (
                     <p className="text-xs leading-normal text-zinc-500">
                       {option.cancelationText}
                     </p>
                   )}
                 </div>
-                <span className="text-zinc-500">
+                <Body1 className="text-zinc-500">
                   {option.price === 0 || code === 'SPPROMO'
                     ? 'Included'
                     : `+${formatMoney(option.price)}`}
-                </span>
+                </Body1>
               </div>
             </Label>
           </div>
@@ -404,88 +317,45 @@ function LocationList({
 
   return (
     <div className="max-h-[240px] overflow-y-scroll rounded-2xl border border-zinc-200 bg-white p-2">
-      <div className="flex flex-col">
+      <RadioGroup className="flex flex-col">
         {locations?.map((option, index) => (
           <button
             key={index}
             className={cn(
-              'rounded-lg p-4 text-left transition-all hover:bg-accent',
-              // selected && formatAddress(selected?.address) === formatAddress(item.address) && 'bg-muted'
+              'rounded-lg py-4 px-6 text-left transition-all hover:bg-accent',
+              formatAddress(location?.address) === formatAddress(option.address)
+                ? 'bg-accent'
+                : null,
             )}
             onClick={() => {
               updateLocation(option);
             }}
           >
-            <div className="flex items-center gap-4">
-              <RadioIcon
-                checked={
-                  !!location &&
-                  formatAddress(location?.address) ===
-                    formatAddress(option.address)
-                }
+            <Label
+              htmlFor={`item-${index}`}
+              className="flex cursor-pointer items-center gap-4 "
+            >
+              <RadioGroupItem
+                value={formatAddress(option.address)}
+                id={`item-${index}`}
               />
-              <div className="flex flex-col items-start">
-                <h3 className="text-[#52525B]">
+              <div className="flex flex-col items-start gap-1">
+                <Body1 className="text-[#52525B]">
                   {formatAddress(option.address)}
-                </h3>
-                <div className="flex flex-row items-center text-[#A1A1AA]">
-                  <MapPin className="mr-1 size-4" />
-                  <p className="text-sm">
+                </Body1>
+                <div className="flex flex-row items-center gap-px">
+                  <MapPin className="h-4 min-w-4 text-zinc-400" />
+                  <Body3 className="text-zinc-400">
                     {option.name
                       ? `${option.name} ( ${option.distance} mile${option.distance > 1 ? 's' : ''} )`
                       : `${option.distance} mile${option.distance > 1 ? 's' : ''}`}
-                  </p>
+                  </Body3>
                 </div>
               </div>
-            </div>
+            </Label>
           </button>
         ))}
-      </div>
+      </RadioGroup>
     </div>
-  );
-}
-
-export interface RadioIconProps {
-  checked?: boolean;
-}
-
-export function RadioIcon({ checked = false }: RadioIconProps): JSX.Element {
-  return checked ? <RadioChecked /> : <RadioEmpty />;
-}
-
-function RadioEmpty(): JSX.Element {
-  return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <rect x="0.5" y="0.5" width="23" height="23" rx="11.5" stroke="#E4E4E7" />
-    </svg>
-  );
-}
-
-function RadioChecked(): JSX.Element {
-  return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <rect
-        x="1"
-        y="1"
-        width="22"
-        height="22"
-        rx="11"
-        stroke="#18181B"
-        strokeWidth="2"
-      />
-      <rect x="4" y="4" width="16" height="16" rx="8" fill="#18181B" />
-    </svg>
   );
 }

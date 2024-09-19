@@ -3,12 +3,15 @@ import moment from 'moment';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
-import { Body1 } from '@/components/ui/typography';
+import { Body1, Body2, H2 } from '@/components/ui/typography';
 import { useCreateOrder, useUpdateOrder } from '@/features/orders/api';
 import { useOrder } from '@/features/orders/stores/order-store';
 import { useService } from '@/features/services/api';
+import { usePaymentMethods } from '@/features/settings/api';
 import { useStepper } from '@/lib/stepper';
+import { cn } from '@/lib/utils';
 import { OrderStatus } from '@/types/api';
+import { capitalize } from '@/utils/format';
 import { formatMoney } from '@/utils/format-money';
 
 export function OrderSummary(): JSX.Element {
@@ -23,6 +26,7 @@ export function OrderSummary(): JSX.Element {
     updateCreatedOrderId,
   } = useOrder((s) => s);
   const { activeStep, nextStep, steps, prevStep } = useStepper((s) => s);
+  const paymentMethodsQuery = usePaymentMethods();
 
   const createOrderMutation = useCreateOrder();
   const updateOrderMutation = useUpdateOrder();
@@ -60,6 +64,9 @@ export function OrderSummary(): JSX.Element {
     }
   };
 
+  const defaultPaymentMethod = paymentMethodsQuery.data?.paymentMethods.find(
+    (pm) => pm.default,
+  );
   /*
    * If we initially called dialog with `draftOrderId` then
    * we will just update existing order
@@ -83,25 +90,40 @@ export function OrderSummary(): JSX.Element {
 
   return (
     <>
-      <div className="space-y-16">
-        <div className="space-y-4">
-          <h3 className="text-3xl">Booking Summary</h3>
+      <div className="p-6 md:p-14">
+        <div className="md:space-y-8">
+          <H2>Order Summary</H2>
           <CreateOrderSummaryItem />
         </div>
+        <div
+          className={cn(
+            'flex flex-col gap-3 rounded-2xl border border-zinc-200 px-8 py-6 md:mt-12',
+          )}
+        >
+          <Body2 className={cn('text-zinc-500')}>Payment method</Body2>
+          <div>
+            <Body1>{capitalize(defaultPaymentMethod?.card.brand ?? '')}</Body1>
+            <Body1>****{defaultPaymentMethod?.card.last4}</Body1>
+          </div>
+        </div>
       </div>
-      <div className="flex items-center justify-between pt-12">
-        <Body1 className="text-zinc-400">
+      <div className="flex items-center px-6 pb-12 md:justify-between md:px-14">
+        <Body1 className="hidden text-zinc-400 md:block">
           Step {activeStep + 1} of {steps.length}
         </Body1>
-        <div className="flex items-center gap-2">
+        <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
           <Button
             variant="outline"
+            className="w-full md:w-auto"
             onClick={prevStep}
             disabled={isMutationLoading}
           >
             Back
           </Button>
-          <Button onClick={draftOrderId ? updateOrderFn : createOrderFn}>
+          <Button
+            onClick={draftOrderId ? updateOrderFn : createOrderFn}
+            className="w-full md:w-auto"
+          >
             {isMutationLoading ? <Spinner /> : 'Confirm'}
           </Button>
         </div>
@@ -111,9 +133,7 @@ export function OrderSummary(): JSX.Element {
 }
 
 function CreateOrderSummaryItem(): JSX.Element {
-  const { service, items, slot, collectionMethod, tz, draftOrderId } = useOrder(
-    (s) => s,
-  );
+  const { service, items, slot, collectionMethod, tz } = useOrder((s) => s);
 
   if (service === null) throw Error('There was a problem creating the order.');
 
@@ -129,7 +149,7 @@ function CreateOrderSummaryItem(): JSX.Element {
 
   return (
     <div className="flex flex-col items-start justify-between space-y-4 py-3 sm:flex-row sm:items-center sm:space-y-0">
-      <div className="flex flex-row items-center space-x-4">
+      <div className="flex w-full flex-col gap-4 rounded-2xl border border-zinc-200 p-6 md:flex-row md:items-center md:border-none md:p-0">
         {isLoading ? (
           <Skeleton className="h-12 min-w-12" />
         ) : (
@@ -161,18 +181,35 @@ function CreateOrderSummaryItem(): JSX.Element {
             )}
           </p>
         </div>
-      </div>
-      <div>
-        <div className="text-primary">
-          {isLoading ? (
-            <Spinner size="xs" variant="primary" />
-          ) : basePrice === 0 || draftOrderId ? (
-            'Included'
-          ) : (
-            formatMoney(basePrice)
-          )}
+        <div className="flex gap-2 md:hidden">
+          Total: <Price basePrice={basePrice} isLoading={isLoading} />
         </div>
+      </div>
+      <div className="hidden text-nowrap md:block">
+        <Price basePrice={basePrice} isLoading={isLoading} />
       </div>
     </div>
   );
 }
+
+const Price = ({
+  basePrice,
+  isLoading,
+}: {
+  basePrice: number;
+  isLoading: boolean;
+}) => {
+  const { draftOrderId } = useOrder((s) => s);
+
+  return (
+    <div className="text-primary">
+      {isLoading ? (
+        <Spinner size="xs" variant="primary" />
+      ) : basePrice === 0 || draftOrderId ? (
+        'Included in subscription'
+      ) : (
+        formatMoney(basePrice)
+      )}
+    </div>
+  );
+};

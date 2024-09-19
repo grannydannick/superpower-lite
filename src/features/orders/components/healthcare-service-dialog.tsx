@@ -9,8 +9,13 @@ import {
   DialogContent,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
-import { Body1 } from '@/components/ui/typography';
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+import { Body1, Body2 } from '@/components/ui/typography';
 import {
   OrderStoreProvider,
   useOrder,
@@ -100,17 +105,26 @@ const HealthcareServiceDialogConsumer = ({
 
   if (width <= 768) {
     return (
-      <Drawer onOpenChange={handleOpenChange}>
-        <DrawerTrigger asChild>{children}</DrawerTrigger>
-        <DrawerContent className="inset-x-0 bottom-0 h-full max-h-[96%] outline-none">
-          <div className="flex items-center justify-center px-6 pb-3 pt-10">
-            <Body1>Service</Body1>
+      <Sheet onOpenChange={handleOpenChange}>
+        <SheetTrigger asChild>{children}</SheetTrigger>
+        <SheetContent
+          side="bottom"
+          className="flex max-h-full flex-col rounded-t-[10px]"
+        >
+          <div className="flex items-center justify-between px-4 pt-16 md:pb-4">
+            <SheetClose>
+              <div className="flex h-[44px] min-w-[44px] items-center justify-center rounded-full bg-[#F7F7F7]">
+                <X className="h-4 min-w-4" />
+              </div>
+            </SheetClose>
+            <Body2>Book a service</Body2>
+            <div className="min-w-[44px]" />
           </div>
-          <div className="overflow-y-auto px-6 pb-6">
+          <div className="overflow-auto">
             {steps[activeStep]?.content ?? null}
           </div>
-        </DrawerContent>
-      </Drawer>
+        </SheetContent>
+      </Sheet>
     );
   }
   return (
@@ -119,13 +133,13 @@ const HealthcareServiceDialogConsumer = ({
       <DialogContent>
         <div className="max-h-[90vh] overflow-y-scroll rounded-xl">
           <div>
-            <div className="flex flex-row items-center justify-between px-12 pb-6 pt-12">
-              <Body1 className="text-zinc-500">Service</Body1>
+            <div className="flex flex-row items-center justify-between px-14 pb-6 pt-12">
+              <Body1 className="text-zinc-500">Book a service</Body1>
               <DialogClose>
                 <X className="size-6 cursor-pointer p-1" />
               </DialogClose>
             </div>
-            <div className="p-12">{steps[activeStep]?.content ?? null}</div>
+            <div>{steps[activeStep]?.content ?? null}</div>
           </div>
         </div>
       </DialogContent>

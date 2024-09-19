@@ -4,7 +4,7 @@ import { CalendlyScheduler } from '@/components/shared/calendly-scheduler';
 import { Button } from '@/components/ui/button';
 import { DialogClose } from '@/components/ui/dialog';
 import { Spinner } from '@/components/ui/spinner';
-import { Body1 } from '@/components/ui/typography';
+import { Body1, H2 } from '@/components/ui/typography';
 import { env } from '@/config/env';
 import { fetchCalendlyEvent } from '@/features/orders/api/get-calendly-event';
 import { useUpdateOrder } from '@/features/orders/api/update-order';
@@ -45,9 +45,9 @@ export function Calendly(): JSX.Element {
 
   return (
     <>
-      <div className="space-y-16">
+      <div className="space-y-4 p-6 md:p-14">
         <div className="space-y-4">
-          <h3 className="text-3xl">When are you free?</h3>
+          <H2>When are you free?</H2>
           <CalendlyScheduler
             token={env.CALENDLY_TOKEN}
             url={getSchedulingLinkQuery.data.link}
@@ -105,11 +105,11 @@ export function Calendly(): JSX.Element {
           />
         </div>
       </div>
-      <div className="flex items-center justify-between pt-12">
+      <div className="flex items-center justify-between px-6 pb-12 md:px-14">
         <Body1 className="text-pink-700">{error}</Body1>
-        <div className="flex items-center gap-2">
-          <DialogClose>
-            <Button disabled={!success || loading}>
+        <div className="flex w-full items-center gap-2">
+          <DialogClose asChild>
+            <Button disabled={!success || loading} className="w-full md:w-auto">
               {loading ? <Spinner /> : 'Done'}
             </Button>
           </DialogClose>

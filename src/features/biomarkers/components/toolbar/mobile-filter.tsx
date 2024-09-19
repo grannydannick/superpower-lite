@@ -1,16 +1,17 @@
 import { Column } from '@tanstack/react-table';
-import { Check, Circle, SlidersHorizontal } from 'lucide-react';
+import { Check, Circle, SlidersHorizontal, X } from 'lucide-react';
 import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
-  Drawer,
-  DrawerTrigger,
-  DrawerContent,
-  DrawerHeader,
-  DrawerFooter,
-  DrawerClose,
-} from '@/components/ui/drawer';
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetHeader,
+  SheetFooter,
+  SheetClose,
+} from '@/components/ui/sheet';
+import { Body2 } from '@/components/ui/typography';
 import {
   CATEGORY_OPTIONS,
   STATUS_OPTIONS,
@@ -34,8 +35,8 @@ export function MobileFilter<TData, TValue>({
   const allRangesStatusOption = STATUS_OPTIONS.find((o) => o.value === '');
 
   return (
-    <Drawer>
-      <DrawerTrigger>
+    <Sheet>
+      <SheetTrigger>
         <Button
           variant="outline"
           size="sm"
@@ -50,15 +51,20 @@ export function MobileFilter<TData, TValue>({
           )}
           <SlidersHorizontal className="size-4" />
         </Button>
-      </DrawerTrigger>
-      <DrawerContent className="inset-x-0 bottom-0 h-full max-h-[96%] rounded-none bg-white">
-        <DrawerHeader>
-          <div className="mb-4 mt-8 text-center">
-            <h2>Biomarker Filters</h2>
+      </SheetTrigger>
+      <SheetContent className="flex max-h-full flex-col rounded-t-[10px]">
+        <SheetHeader>
+          <div className="flex items-center justify-between border-b border-b-zinc-200 px-4 pb-4 pt-8">
+            <SheetClose>
+              <div className="flex h-[44px] min-w-[44px] items-center justify-center rounded-full bg-[#F7F7F7]">
+                <X className="h-4 min-w-4" />
+              </div>
+            </SheetClose>
+            <Body2>Biomarker Filters</Body2>
+            <div className="min-w-[44px]" />
           </div>
-          <hr className="border-slate-100" />
-        </DrawerHeader>
-        <div className="overflow-y-auto bg-white px-6 pb-8">
+        </SheetHeader>
+        <div className="overflow-y-auto px-6 pb-8">
           <div className="mb-4 flex flex-row items-center justify-between">
             <div className="text-3xl">Ranges</div>
             <div>
@@ -175,21 +181,21 @@ export function MobileFilter<TData, TValue>({
             })}
           </div>
         </div>
-        <DrawerFooter
-          className="bg-white"
+        <SheetFooter
+          className="p-4"
           style={{
             boxShadow:
               '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 13px 10px rgb(0 0 0 / 0.1)',
           }}
         >
-          <DrawerClose>
-            <Button variant="default" className="w-full bg-black text-white">
+          <SheetClose>
+            <Button variant="default" className="w-full">
               Filter Biomarkers
             </Button>
-          </DrawerClose>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+          </SheetClose>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   );
 }
 

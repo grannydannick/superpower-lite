@@ -34,7 +34,7 @@ type UsePaymentMethodsOptions = {
 export const usePaymentMethods = ({
   queryConfig,
   page,
-}: UsePaymentMethodsOptions) => {
+}: UsePaymentMethodsOptions = {}) => {
   return useQuery({
     ...getPaymentMethodsQueryOptions({ page }),
     ...queryConfig,

@@ -16,18 +16,23 @@ import { getDetailsForService } from '@/utils/service';
 
 export const HealthcareServiceDetails = () => {
   const { service, draftOrderId } = useOrder((s) => s);
-  const { activeStep, nextStep, steps, prevStep } = useStepper((s) => s);
+  const { nextStep, prevStep, activeStep, steps } = useStepper((s) => s);
   const serviceDetails = getDetailsForService(service.name);
 
-  const buttonsBottom = Boolean(
+  const alternativeButtonPosition = Boolean(
     ENVIRONMENTAL_TOXIN_PANEL.find((p) => p.name === service.name),
   );
 
   return (
     <div>
-      <div className="flex flex-col justify-between gap-12 pb-16 md:flex-row">
-        <div className="flex flex-col justify-center gap-6 md:max-w-[278px]">
-          <div>
+      <div className="flex flex-col justify-between gap-12 px-6 py-12 md:flex-row md:px-14 md:pb-16">
+        <div className="flex flex-col justify-center gap-4 md:max-w-[278px]">
+          <img
+            src={service.image}
+            className="block size-[70px] rounded-2xl border border-zinc-200 bg-white  object-cover md:hidden"
+            alt={service.name}
+          />
+          <div className="max-w-[220px] space-y-4 md:max-w-none">
             <H2 className="text-zinc-900">{service.name}</H2>
             <Body2 className="text-zinc-500">
               {draftOrderId
@@ -36,12 +41,16 @@ export const HealthcareServiceDetails = () => {
             </Body2>
           </div>
           <Body1 className="text-zinc-500">{service.description}</Body1>
-          {!buttonsBottom && <Button onClick={nextStep}>Continue</Button>}
+          {!alternativeButtonPosition && (
+            <Button onClick={nextStep} className="hidden md:inline-flex">
+              Continue
+            </Button>
+          )}
         </div>
 
         <img
           src={service.image}
-          className="h-[362px] w-full rounded-2xl border border-zinc-200 bg-white  object-cover md:size-[362px]"
+          className="hidden h-[362px] w-full rounded-2xl border border-zinc-200  bg-white object-cover md:block md:size-[362px]"
           alt={service.name}
         />
       </div>
@@ -60,7 +69,7 @@ export const HealthcareServiceDetails = () => {
               <AccordionItem
                 value={serviceDetailTitle}
                 key={index}
-                className="py-12"
+                className="p-8 md:p-14"
               >
                 <AccordionTrigger className="p-0">
                   <H4 className="text-zinc-900">{serviceDetailTitle}</H4>
@@ -74,19 +83,31 @@ export const HealthcareServiceDetails = () => {
             ))
           : null}
       </Accordion>
-      {buttonsBottom && (
-        <div className="flex items-center justify-between pt-12">
-          <Body1 className="text-zinc-400">
-            Step {activeStep + 1} of {steps.length}
-          </Body1>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={prevStep}>
+
+      <div
+        className={cn(
+          'flex items-center md:justify-between px-6 md:px-14 pb-12 pt-8 md:pt-14',
+          !alternativeButtonPosition ? 'md:hidden' : null,
+        )}
+      >
+        <Body1 className="hidden text-zinc-400 md:block">
+          Step {activeStep + 1} of {steps.length}
+        </Body1>
+        <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
+          {alternativeButtonPosition ? (
+            <Button
+              className="w-full md:w-auto"
+              variant="outline"
+              onClick={prevStep}
+            >
               Back
             </Button>
-            <Button onClick={nextStep}>Next</Button>
-          </div>
+          ) : null}
+          <Button className="w-full md:w-auto" onClick={nextStep}>
+            Next
+          </Button>
         </div>
-      )}
+      </div>
     </div>
   );
 };
