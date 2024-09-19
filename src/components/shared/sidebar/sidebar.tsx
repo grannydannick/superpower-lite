@@ -215,6 +215,8 @@ export const MobileSidebar = () => {
     } else {
       // Navigate internally using react-router's navigate function
       navigate(url);
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -288,12 +290,21 @@ export const SidebarLink = ({
 
   const Icon = link.icon;
 
+  const scrollToTop = () => {
+    if (link.to.startsWith('https')) {
+      return;
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <NavLink
       to={link.to}
       target={link.to.includes('https') ? '_blank' : undefined}
       rel={link.to.includes('https') ? 'noopener noreferrer' : undefined}
       end
+      onClick={scrollToTop}
       className={({ isActive }) =>
         [
           isActive ? 'bg-zinc-100' : null,
