@@ -2,6 +2,7 @@ import { QueryClient, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
+import { MainErrorFallback } from '@/components/errors/main';
 import { ProtectedRoute } from '@/lib/auth';
 
 import { AppRoot } from './routes/app/root';
@@ -78,6 +79,7 @@ export const createRouter = (queryClient: QueryClient) =>
             const { servicesLoader } = await import('./routes/app/services');
             return servicesLoader(queryClient)();
           },
+          errorElement: <MainErrorFallback />,
         },
         {
           path: 'invite',
@@ -126,6 +128,7 @@ export const createRouter = (queryClient: QueryClient) =>
             );
             return onboardingLoader()();
           },
+          errorElement: <MainErrorFallback />,
         },
         {
           path: 'concierge',
@@ -144,6 +147,7 @@ export const createRouter = (queryClient: QueryClient) =>
             const { dataLoader } = await import('./routes/app/data');
             return dataLoader(queryClient)();
           },
+          errorElement: <MainErrorFallback />,
         },
         {
           path: 'report',
@@ -166,6 +170,7 @@ export const createRouter = (queryClient: QueryClient) =>
             return { Component: UsersRoute };
           },
           loader: usersLoader(queryClient),
+          errorElement: <MainErrorFallback />,
         },
         {
           path: 'profile',
