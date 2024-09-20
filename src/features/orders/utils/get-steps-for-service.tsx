@@ -38,11 +38,13 @@ import { HealthcareService } from '@/types/api';
  *
  * @param {HealthcareService} healthcareService - The healthcare service for which to retrieve steps.
  * @param dataLink tells us if there is assigned RDN to this user
+ * @param draftOrderId tells us if service was already booked and we need to drop some steps
  * @returns {StepItem[]} An array of steps required for the given healthcare service.
  */
 export const getStepsFromService = (
   healthcareService: HealthcareService,
   dataLink?: string,
+  draftOrderId?: string,
 ): StepItem[] => {
   // !!!TODO: write dynamic function to check if service is active or not and push appropriate steps
   switch (healthcareService.name) {
@@ -93,7 +95,18 @@ export const getStepsFromService = (
     case CUSTOM_BLOOD_PANEL:
       return [{ id: 'early-access', content: <EarlyAccessContent /> }];
     case ADVISORY_CALL: {
-      if (dataLink && dataLink !== '') {
+      const haveRdn = dataLink && dataLink !== '';
+
+      // If user have assigned RDN and draftOrderId was passed (finish order)
+      if (haveRdn && draftOrderId) {
+        return [
+          { id: 'calendly', content: <Calendly /> },
+          { id: 'success', content: <Success /> },
+        ];
+      }
+
+      // If user has assigned RDN and draftOrderId was not passed (fresh order)
+      if (haveRdn) {
         return [
           { id: 'info', content: <HealthcareServiceDetails /> },
           { id: 'summary', content: <OrderSummary /> },
@@ -102,6 +115,7 @@ export const getStepsFromService = (
         ];
       }
 
+      // If user doesnt have RDN assigned
       return [{ id: 'early-access', content: <EarlyAccessContent /> }];
     }
     // if separate toxin test is recommended via action plan

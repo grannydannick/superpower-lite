@@ -15,6 +15,14 @@ export interface OrderStoreProps {
   draftOrderId: string | null;
 }
 
+/*
+ * NB:
+ * @param {string} draftOrderId - Draft order id that we only PASS into order store (for example if we already created order before)
+ * @param {string} createdOrderId - Can be updated as we set it on summary step after successful booking
+ *
+ * `draftOrderId` typically corresponds to id of order of status `DRAFT`
+ * `createdOrderId` typically corresponds to id of order of status `PENDING`
+ * */
 export interface OrderStore extends OrderStoreProps {
   items: ServiceItem[];
   updateItems: (item: ServiceItem) => void;

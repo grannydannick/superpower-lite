@@ -35,7 +35,7 @@ import { HealthcareService } from '@/types/api';
  *
  * @param {ReactNode} children - A button to trigger the dialog for scheduling services.
  * @param {HealthcareService} healthcareService - The healthcare service being scheduled.
- * @param {string} draftOrderId - Draft order id if we want to finish booking order
+ * @param {string} draftOrderId - Draft order id if we want to finish booking order that we already created before
  */
 export const HealthcareServiceDialog = ({
   children,
@@ -51,6 +51,7 @@ export const HealthcareServiceDialog = ({
   const steps = getStepsFromService(
     healthcareService,
     schedulingLinkQuery.data?.link,
+    draftOrderId,
   );
 
   const collectionMethod = getDefaultCollectionMethod(healthcareService);
