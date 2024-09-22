@@ -137,6 +137,98 @@ It's best practice to measure IgE and IgG antibodies together as they independen
 3. Continue taking any nutritional supplements and medications unless advised differently by your healthcare provider.
     `,
     },
+    'Total Toxins': {
+      "What's measured?": `This test is a highly comprehensive test that measures your mycotoxins, heavy metals and environmental toxins which all elevate oxidative stress and increase demand on the body's detoxification pathways.
+
+Mycotoxins are toxic compounds produced by certain types of fungi. These fungi can grow on various agricultural products e.g. grains, nuts, spices, dried fruits, apples, and coffee beans. You will get a complete picture of your mycotoxins sub grouped into Aflatoxins, Trichothecenes and Other Mycotoxins.
+
+The Environmental Toxins test measures levels of environmental toxins in the body and various key markers such as your exposure to pesticides, herbicides, plastics, preservatives and other volatile organic compounds.
+
+The Heavy Metals panel tests for exposure to harmful heavy metals and elements such as arsenic, lead, mercury and more that can be found in all regions of the United States  such as the air, soil, and water sources.
+
+The heavy metals measured in the test include: Beryllium, Aluminum, Nickel, Arsenic, Palladium, Cadmium, Antimony, Tin, Tellurium, Cesium, Barium, Gadolinium, Tungsten, Platinum, Mercury, Lead, Thallium, Bismuth, Thorium, Uranium`,
+      'Why is this test important?': `Many toxins bioaccumulate (build up) and persist in the body for decades, breaking down slowly or not at all, leaving you susceptible to other toxic build-ups or susceptibility to infections through impaired detoxification, compromised immunity, and increased oxidative stress.
+
+The Total Tox Burden is a simple and quick test that provides complete insight into the levels of heavy metals, mold toxins, and environmental toxins in your body.
+
+Knowing your toxic burden is the first step to creating a personalized detox and wellness plan to achieve better health.`,
+      'Test process': `1. Follow our simple instructions to perform this urine test at home.
+      
+2. Before testing: There is no need to fast. However, fasting for 12 hours may increase the number of mycotoxins excreted in urine, so your clinician may recommend fasting for 12 hours prior to testing.
+
+It is recommended for best test performance to collect the first-morning urine upon awakening, prior to eating or drinking.
+
+Your clinician may ask you to discontinue medications or dietary supplements. Speak to your care team to learn more.
+
+Avoid foods high in iodine (seafood, dairy, and seaweed) and selenium (Brazil nuts) as they may cause falsely lowered heavy metal results.
+
+3. Send the sample to our labs for analysis and work with your care provider to understand the results`,
+      'Pre-test considerations': `Urine test is required. There are no fasting requirements associated with this test. Connect with your membership advisor if you have any questions or concerns ahead of testing.`,
+    },
+
+    'Heavy Metals': {
+      "What's measured?": `The Heavy Metals panel tests for exposure to harmful heavy metals and elements such as arsenic, lead, mercury and more.
+
+Heavy metals can be found in all regions of the United States and can accumulate in air, soil, drinking and groundwater sources.
+
+Those who are immunocompromised, have impaired liver function, or have reduced antioxidants and mineral activity can benefit from this panel.
+
+The heavy metals measured in the test include: Beryllium, Aluminum, Nickel, Arsenic, Palladium, Cadmium, Antimony, Tin, Tellurium, Cesium, Barium, Gadolinium, Tungsten, Platinum, Mercury, Lead, Thallium, Bismuth, Thorium, Uranium`,
+      'Why is this test important?': `Heavy metal toxicity is thought to affect over 1 million people annually, including children.
+
+It is often underrepresented as a root cause of illness and disease in humans and can affect virtually all body systems.
+
+The World Health Organization considers 13 heavy metals to be of significance to human and environmental health, but there are additional metals and metalloids that may be significant causes of disease and chronic illness in humans.
+
+Heavy metal exposure may also be the root cause of neurological disorders, gastrointestinal disorders, autoimmune disease, and disorders associated with increased oxidative stress and cellular dysfunction.`,
+      'Test process': `
+1. Follow our simple instructions to perform this urine test at home
+2. Before testing, there is no need to fast, however your clinician may ask you to discontinue medications or dietary supplements. Speak to your care team to learn more.
+3. Send the test to our labs for analysis and speak to your care team to understand the results.`,
+      'Pre-test considerations': `Urine test is required. There are no fasting requirements associated with this test.
+Connect with your membership advisor if you have any questions or concerns ahead of testing`,
+    },
+    'Environmental Toxin': {
+      "What's measured?": `The Environmental Toxins panel measures levels of environmental toxins in the body. Environmental toxins or toxicants are substances that are man-made or that occur naturally in the environment and can cause acute or chronic toxic overload when absorbed, inhaled, or ingested.
+
+This test will measure various key markers such as your exposure to pesticides, herbicides, plastics, preservatives and other volatile organic compounds.`,
+      'Why is this test important?': `The average America is exposed to over 700,000 toxins a day and over 80,000 chemicals.
+
+Toxic overload can manifest in a variety of biological organs, tissue, and cellular-level systems and can be difficult to diagnose.
+
+Environmental toxins wreak havoc on the body and can cause chronic inflammation and various serious diseases including cancer.
+
+Testing for environmental toxins can help patients uncover the root causes of toxicity and chronic illness from environmental sources and create personalized wellness solutions to begin healing.`,
+      'Test process': `1. Follow our simple instructions to perform this urine test at home
+2. Before testing, there is no need to fast, however your clinician may ask you to discontinue medications or dietary supplements. Speak to your care team to learn more.
+3. Send the test to our labs for analysis and speak to your care team to understand the results`,
+      'Pre-test considerations': `Urine test is required. There are no fasting requirements associated with this test.
+Connect with your membership advisor if you have any questions or concerns ahead of testing.`,
+    },
+    Mycotoxins: {
+      "What's measured?": `Mycotoxins are toxic compounds produced by certain types of fungi. These fungi can grow on various agricultural products such as grains, nuts, spices, dried fruits, apples, and coffee beans.
+
+The Mycotoxin test is used to identify and quantify the level of a large set of mycotixins from both and environmental molds and give you a complete picture of your levels of mycotoxins from your urine. The results are provided in 3 tables subgrouping the mycotoxins into Aflatoxins, Trichothecenes and Other Mycotoxins.`,
+      'Why is this test important?': `According to the World Health Organization and Food and Agricultural Organization, 25% of the world’s agricultural products are contaminated with mycotoxins.
+
+Symptoms of mycotoxin toxicity are often general and vague, and thus difficult to diagnose, leaving you at risk of long-term health damage.
+
+High exposure to mycotoxins can lead to severe health risks, including liver and kidney damage, immune suppression, gastrointestinal issues, respiratory problems, hormonal disruption, neurological effects, and an increased risk of cancer.
+
+A panel test is crucial for identifying exposure to toxic compounds and early detection can prevent serious long-term effects like cancer and organ damage.
+
+If you were diagnosed with or suspect toxic burden, impaired immunity, autoimmune disease, or exposure to mold, this panel may also benefit you.`,
+      'Test process': `
+1. Follow our simple instructions to perform this urine test at home.
+2. Before testing, there is no need to fast. However, fasting for 12 hours may increase the number of mycotoxins excreted in urine, so your clinician may recommend fasting for 12 hours prior to testing.
+
+It is recommended for best test performance to collect the first-morning urine upon awakening, prior to eating or drinking.
+
+Your clinician may ask you to discontinue medications or dietary supplements. Speak to your care team to learn more.
+3. Send the test to our labs for analysis and speak to your care team to understand the results.`,
+      'Pre-test considerations': `Urine test is required. There are no fasting requirements associated with this test.
+Connect with your membership advisor if you have any questions or concerns ahead of testing.`,
+    },
     'Environmental Toxins': {
       'Why is this test important?': `Toxic overload can manifest in a variety of biological organs, tissue, and cellular-level systems. Testing for environmental toxins can help uncover the root causes of toxicity and chronic illness from environmental sources and create personalized wellness solutions to begin healing.`,
       'Test process': `1. Order your test kit -- we'll deliver it directly to your house or confirmed in 3-5 days
