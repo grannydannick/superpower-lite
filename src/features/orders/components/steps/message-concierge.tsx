@@ -17,6 +17,7 @@ export const MessageConcierge = () => {
       data: {
         text: message,
         type: 'service',
+        serviceName: service.name,
       },
     });
   };

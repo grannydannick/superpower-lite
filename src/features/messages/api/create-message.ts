@@ -8,6 +8,7 @@ import { Message } from '@/types/api';
 export const createMessageInputSchema = z.object({
   text: z.string().min(1, 'At least one letter is required'),
   type: z.enum(['concierge', 'service', 'plan']),
+  serviceName: z.string().optional(),
 });
 
 export type CreateMessageInput = z.infer<typeof createMessageInputSchema>;
