@@ -24,7 +24,7 @@ export const columns: ColumnDef<Rdn>[] = [
   },
   {
     accessorKey: 'schedulingLink',
-    header: 'Scheduling Link',
+    header: 'Scheduling link',
     cell: ({ row }) => {
       return (
         <a href={row.original.schedulingLink} className="text-orange-600">

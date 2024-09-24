@@ -1,13 +1,13 @@
 {
-	"folders": [
-		{
-			"path": "."
-		},
-		{
-			"path": "../superpower"
-		}
-	],
-	"settings": {
-		"makefile.configureOnOpen": true
-	}
+  "folders": [
+    {
+      "path": ".",
+    },
+    {
+      "path": "../superpower",
+    },
+  ],
+  "settings": {
+    "makefile.configureOnOpen": true,
+  },
 }

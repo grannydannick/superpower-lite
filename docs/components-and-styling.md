@@ -70,7 +70,6 @@ For styling (CSS) we use:
 
 - [tailwind](https://tailwindcss.com/)
 
-
 ## Storybook
 
 [Storybook](https://storybook.js.org/) is a great tool for developing and testing components in isolation. Think of it as a catalogue of all the components your application is using. Very useful for developing and discoverability of components.

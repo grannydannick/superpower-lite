@@ -26,4 +26,3 @@
 - [🚄 Performance](docs/performance.md)
 - [🌐 Deployment](docs/deployment.md)
 - [📚 Additional Resources](docs/additional-resources.md)
-

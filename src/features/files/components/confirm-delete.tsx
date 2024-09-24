@@ -24,7 +24,7 @@ export function ConfirmDelete({ fileId }: { fileId: string }) {
          *    If the file is opened in a PDF viewer, we need to close the PDF viewer after the file is deleted.
          *    Otherwise, the user could still see the file in the viewer, despite its deletion.
          *
-         * 2. **Dropdown and Dialog Closure without Refresh**:
+         * 2. **dropdown and Dialog Closure without Refresh**:
          *    When this action is called without a screen refresh, the screen may freeze.
          *    This happens because the `DropdownMenuItem` is closed along with the dialog,
          *    but remains mounted in the DOM, which prevents scrolling on the page.

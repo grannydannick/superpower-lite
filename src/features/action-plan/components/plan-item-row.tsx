@@ -12,27 +12,23 @@ import {
 } from '@/components/ui/popover';
 import { Body1 } from '@/components/ui/typography';
 import { useProducts } from '@/features/action-plan/api/get-products';
+import { ActionPlanBiomarkerRow } from '@/features/action-plan/components/data-view';
+import { ACTION_PLAN_INPUT_STYLE } from '@/features/action-plan/const/action-plan-input';
 import { usePlan } from '@/features/action-plan/stores/plan-store';
 import { useBiomarkers } from '@/features/biomarkers/api/get-biomarkers';
-import { BiomarkersDataTable } from '@/features/biomarkers/components/biomarkers-data-table/biomarker-data-table';
 import { useServices } from '@/features/services/api/get-services';
 import { cn } from '@/lib/utils';
-import {
-  Biomarker,
-  HealthcareService,
-  PlanGoalItem,
-  Product,
-} from '@/types/api';
+import { HealthcareService, PlanGoalItem, Product } from '@/types/api';
 
 export type ActionPlanItemRowProps = {
   item: PlanGoalItem;
-  goalIndex?: number;
+  goalId?: string;
 };
 
 export function ActionPlanItemRow(
   props: ActionPlanItemRowProps,
 ): JSX.Element | null {
-  const { item, goalIndex } = props;
+  const { item, goalId } = props;
   const { isAdmin, deleteGoalItem } = usePlan((s) => s);
   const biomarkersQuery = useBiomarkers();
   const servicesQuery = useServices();
@@ -43,21 +39,20 @@ export function ActionPlanItemRow(
       const product = productsQuery.data?.products.find(
         (product) => product.id === item.itemId,
       );
-
       return product ? (
         <div className="flex w-full items-center justify-center gap-4">
           <ActionPlanProductRow
             product={product}
             goalItem={item}
-            goalIndex={goalIndex}
+            goalId={goalId}
           />
-          {isAdmin && typeof goalIndex === 'number' && (
+          {isAdmin && typeof goalId === 'string' && (
             <div
               role="presentation"
-              className="cursor-pointer shadow-2xl shadow-zinc-900"
-              onClick={() => deleteGoalItem(product.id, goalIndex)}
+              className="flex h-10 min-w-10 cursor-pointer items-center justify-center rounded-full shadow-md"
+              onClick={() => deleteGoalItem(goalId, product.id)}
             >
-              <Trash2 width={20} height={20} color="#B90090" />
+              <Trash2 width={20} height={20} className="text-pink-700" />
             </div>
           )}
         </div>
@@ -72,15 +67,15 @@ export function ActionPlanItemRow(
           <ActionPlanServiceRow
             service={service}
             goalItem={item}
-            goalIndex={goalIndex}
+            goalId={goalId}
           />
-          {isAdmin && typeof goalIndex === 'number' && (
+          {isAdmin && typeof goalId === 'string' && (
             <div
               role="presentation"
-              className="cursor-pointer shadow-2xl shadow-zinc-900"
-              onClick={() => deleteGoalItem(service.id, goalIndex)}
+              className="flex h-10 min-w-10 cursor-pointer items-center justify-center rounded-full shadow-md"
+              onClick={() => deleteGoalItem(goalId, service.id)}
             >
-              <Trash2 width={20} height={20} color="#B90090" />
+              <Trash2 width={20} height={20} className="text-pink-700" />
             </div>
           )}
         </div>
@@ -91,15 +86,15 @@ export function ActionPlanItemRow(
         (biomarker) => biomarker.id === item.itemId,
       );
       return biomarker ? (
-        <div className="flex w-full items-center justify-center gap-4">
-          <ActionPlanBiomarkerRow item={biomarker} />
-          {isAdmin && typeof goalIndex === 'number' && (
+        <div className="flex w-full flex-1 items-center justify-center gap-4">
+          <ActionPlanBiomarkerRow biomarker={biomarker} />
+          {isAdmin && typeof goalId === 'string' && (
             <div
               role="presentation"
-              className="cursor-pointer shadow-2xl shadow-zinc-900"
-              onClick={() => deleteGoalItem(biomarker.id, goalIndex)}
+              className="flex h-10 min-w-10 cursor-pointer items-center justify-center rounded-full shadow-md"
+              onClick={() => deleteGoalItem(goalId, biomarker.id)}
             >
-              <Trash2 width={20} height={20} color="#B90090" />
+              <Trash2 width={20} height={20} className="text-pink-700" />
             </div>
           )}
         </div>
@@ -113,19 +108,20 @@ export function ActionPlanItemRow(
 interface ActionPlanProductRowInterface {
   product: Product;
   goalItem: PlanGoalItem;
-  goalIndex?: number;
+  goalId?: string;
 }
+
 function ActionPlanProductRow({
   product,
   goalItem,
-  goalIndex,
+  goalId,
 }: ActionPlanProductRowInterface): JSX.Element {
   const { isAdmin, changeGoalItemDescription } = usePlan((s) => s);
   return (
     <div
       role="presentation"
       className={cn(
-        `flex flex-row space-x-6 items-center bg-[#F7F7F7] transition rounded-[20px] p-3 h-[96px] w-full`,
+        `flex flex-row space-x-6 items-center bg-zinc-50 transition rounded-[20px] p-3 h-[96px] w-full`,
         !isAdmin ? 'cursor-pointer' : '',
       )}
       onClick={() => !isAdmin && window.open(product.url, '_blank')}
@@ -139,19 +135,20 @@ function ActionPlanProductRow({
         <Body1>{product.name}</Body1>
         <Input
           className={cn(
-            'w-full h-auto shadow-none border-none font-normal text-zinc-400 text-base placeholder:text-base placeholder:text-[#A1A1AA] placeholder:italic caret-[#FC5F2B] p-0 bg-[#F7F7F7] disabled:opacity-100 disabled:cursor-auto',
+            ACTION_PLAN_INPUT_STYLE,
+            'placeholder:italic text-base placeholder:text-base text-zinc-500 bg-zinc-50 disabled:bg-zinc-50',
           )}
           placeholder={
-            isAdmin
-              ? 'Please write short instructions'
-              : 'Clinician will add note here.'
+            !isAdmin
+              ? 'Clinician will add note here.'
+              : 'Please write short instructions'
           }
           maxLength={75}
           disabled={!isAdmin}
           value={goalItem.description}
           onChange={(e) =>
-            typeof goalIndex === 'number' &&
-            changeGoalItemDescription(goalItem, e.target.value, goalIndex)
+            typeof goalId === 'string' &&
+            changeGoalItemDescription(goalId, goalItem, e.target.value)
           }
         />
       </div>
@@ -162,16 +159,17 @@ function ActionPlanProductRow({
 interface ActionPlanServiceRowInterface {
   service: HealthcareService;
   goalItem: PlanGoalItem;
-  goalIndex?: number;
+  goalId?: string;
 }
+
 function ActionPlanServiceRow({
   service,
-  goalIndex,
+  goalId,
   goalItem,
 }: ActionPlanServiceRowInterface): JSX.Element {
   const { isAdmin, changeGoalItemDescription } = usePlan((s) => s);
   return (
-    <div className="flex h-[96px] w-full items-center justify-between rounded-[20px] bg-[#F7F7F7] p-3 transition">
+    <div className="flex h-[96px] w-full items-center justify-between rounded-[20px] bg-zinc-50 p-3 transition">
       <div className="flex w-full items-center space-x-6">
         <img
           alt={service.name}
@@ -193,48 +191,40 @@ function ActionPlanServiceRow({
             )}
           </div>
           <Input
-            className="h-auto w-full truncate border-none bg-[#F7F7F7] p-0 text-sm font-normal text-zinc-400 caret-[#FC5F2B] shadow-none placeholder:text-sm placeholder:italic placeholder:text-zinc-400 disabled:cursor-auto disabled:opacity-100 md:text-base placeholder:md:text-base"
+            className={cn(
+              ACTION_PLAN_INPUT_STYLE,
+              'placeholder:italic text-base placeholder:text-base text-zinc-500 bg-zinc-50 disabled:bg-zinc-50',
+            )}
             placeholder={
-              isAdmin
-                ? 'Please write short instructions'
-                : 'Clinician will add note here.'
+              !isAdmin
+                ? 'Clinician will add note here.'
+                : 'Please write short instructions'
             }
             maxLength={75}
             disabled={!isAdmin}
             value={goalItem.description}
             onChange={(e) =>
-              typeof goalIndex === 'number' &&
-              changeGoalItemDescription(goalItem, e.target.value, goalIndex)
+              typeof goalId === 'string' &&
+              changeGoalItemDescription(goalId, goalItem, e.target.value)
             }
           />
         </div>
       </div>
       {isAdmin && (
-        <ActionPlanItemDatePicker goalItem={goalItem} goalIndex={goalIndex} />
+        <ActionPlanItemDatePicker goalItem={goalItem} goalId={goalId} />
       )}
     </div>
   );
 }
 
-export function ActionPlanBiomarkerRow({ item }: { item: Biomarker }) {
-  return (
-    <BiomarkersDataTable
-      biomarkers={[item]}
-      disableHeader={true}
-      disableToolbar={true}
-      cellClassName="bg-[#F7F7F7]"
-    />
-  );
-}
-
 interface ActionPlanItemDatePickerInterface {
   goalItem: PlanGoalItem;
-  goalIndex?: number;
+  goalId?: string;
 }
 
 function ActionPlanItemDatePicker({
   goalItem,
-  goalIndex,
+  goalId,
 }: ActionPlanItemDatePickerInterface) {
   const [date, setDate] = useState<Date>();
   const { isAdmin, changeItemDeadline } = usePlan((s) => s);
@@ -246,8 +236,8 @@ function ActionPlanItemDatePicker({
   }, []);
 
   useEffect(() => {
-    if (date && typeof goalIndex === 'number') {
-      changeItemDeadline(goalItem, date, goalIndex);
+    if (date && typeof goalId === 'string') {
+      changeItemDeadline(goalId, goalItem, date);
     }
   }, [date]);
 
@@ -257,7 +247,7 @@ function ActionPlanItemDatePicker({
         <Button
           variant={'outline'}
           className={cn(
-            'justify-start text-left font-normal bg-[#F7F7F7] ml-8 h-[52px] p-3 w-auto whitespace-nowrap disabled:opacity-1',
+            'justify-start text-left font-normal bg-zinc-50 ml-8 h-[52px] p-3 w-auto whitespace-nowrap disabled:opacity-1 text-sm',
             !date && 'text-muted-foreground',
           )}
           disabled={!isAdmin}

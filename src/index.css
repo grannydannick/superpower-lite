@@ -25,7 +25,7 @@
     /*Default border color*/
     /*#e4e4e7 => zinc-200*/
     --border: 240 6% 90%;
-    /*Border color for inputs such as <Input />, <Select />, <Textarea />*/
+    /*Border color for inputs such as <Input />, <Select />, <textarea />*/
     /*#e4e4e7 => zinc-200*/
     --input: 240 6% 90%;
 
@@ -33,13 +33,13 @@
     --card: 0 0% 100%;
     --card-foreground: 222.2 47.4% 11.2%;
 
-    /*Primary colors for <Button />*/
+    /*Primary colors for <button />*/
     /*#18181b => zinc-900*/
-    --primary: 	240 6% 10%;
+    --primary: 240 6% 10%;
     /*#ffffff => white */
     --primary-foreground: 0 0% 100%;
 
-    /*Secondary colors for <Button />*/
+    /*Secondary colors for <button />*/
     /*#71717a => zinc-500 */
     --secondary: 240 4% 46%;
     /*#ffffff => white */
@@ -51,7 +51,7 @@
     /*#3f3f46=> zinc-700*/
     --accent-foreground: 240 5% 26%;
 
-    /*Used for destructive actions such as <Button variant="destructive">*/
+    /*Used for destructive actions such as <button variant="destructive">*/
     /*#B90090*/
     --destructive: 313 100% 36%;
     /*#ffffff => white */
@@ -102,37 +102,34 @@
 @layer base {
   @font-face {
     font-family: 'nbinternationalproreg';
-    src: local("nbinternationalproreg-webfont"),
-    url('./assets/fonts/NBInternationalPro/nbinternationalproreg-webfont.ttf') format('truetype');
+    src:
+      local('nbinternationalproreg-webfont'),
+      url('./assets/fonts/NBInternationalPro/nbinternationalproreg-webfont.ttf')
+        format('truetype');
   }
 
   @font-face {
     font-family: 'nbinternationalpromono';
-    src: local("nbinternationalpromono-webfont"),
-    url('./assets/fonts/NBInternationalPro/nbinternationalpromono-webfont.ttf') format('truetype');
+    src:
+      local('nbinternationalpromono-webfont'),
+      url('./assets/fonts/NBInternationalPro/nbinternationalpromono-webfont.ttf')
+        format('truetype');
   }
 
   @font-face {
     font-family: 'nbinternationalproboo';
-    src: local("nbinternationalproboo-webfont"),
-    url('./assets/fonts/NBInternationalPro/nbinternationalproboo-webfont.ttf') format('truetype');
+    src:
+      local('nbinternationalproboo-webfont'),
+      url('./assets/fonts/NBInternationalPro/nbinternationalproboo-webfont.ttf')
+        format('truetype');
   }
 
   * {
     @apply border-border;
   }
 
-  /* hack to remove weird bg on input */
+  /* disable scrollbars for inner content (still enable global scroll bars) */
   :root {
-    input:-webkit-autofill,
-    input:-webkit-autofill:hover,
-    input:-webkit-autofill:focus,
-    input:-webkit-autofill:active{
-      -webkit-background-clip: text;
-      transition: background-color 5000s ease-in-out 0s;
-    }
-
-
     /* For Webkit-based browsers (Chrome, Safari and Opera) hide scrollbar */
     *::-webkit-scrollbar {
       display: none;
@@ -143,20 +140,31 @@
       -ms-overflow-style: none; /* IE and Edge */
       scrollbar-width: none; /* Firefox */
     }
+  }
 
-    ::-moz-selection { /* Code for Firefox */
-      color: white;
-      background: #FC5F2B;
-    }
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-background-clip: text;
+    transition: background-color 5000s ease-in-out 0s;
+  }
 
-    ::selection {
-      color: white;
-      background: #FC5F2B;
-    }
+  ::-moz-selection {
+    /* Code for Firefox */
+    color: white;
+    background: #FDBA74;
+  }
+
+  ::selection {
+    color: white;
+    background: #FDBA74;
   }
 
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
   }
 }

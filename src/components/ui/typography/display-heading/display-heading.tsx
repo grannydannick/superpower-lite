@@ -3,7 +3,7 @@ import React, { forwardRef } from 'react';
 import { cn } from '@/lib/utils';
 
 /**
- * Display Heading Component
+ * Display heading Component
  *
  * This component renders a paragraph element (`<h1>`) with the following styles:
  *
@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
  * - Line Height: 144px (112.5% of font size)
  * - Letter Spacing: -3.84px
  *
- * These styles align with the "Product Headings/Display Heading" design specifications.
+ * These styles align with the "Product Headings/Display heading" design specifications.
  *
  * Additional classes can be passed via the `className` prop to override or extend the default styling.
  *

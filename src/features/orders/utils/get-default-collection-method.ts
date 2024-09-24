@@ -14,7 +14,7 @@ import { CollectionMethodType, HealthcareService } from '@/types/api';
  * @example
  * // Returns 'IN_LAB'
  * const collectionMethod = getDefaultCollectionMethod({
- *   name: 'Superpower Blood Panel',
+ *   name: 'Superpower Blood panel',
  * });
  *
  * // Returns null for advisory calls

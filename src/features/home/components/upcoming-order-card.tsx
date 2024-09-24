@@ -124,7 +124,7 @@ export function UpcomingOrderCard(order: Order): JSX.Element {
 //   return (
 //     <Dialog>
 //       <DialogTrigger asChild>
-//         <Button className="w-full text-sm md:w-auto">Check In</Button>
+//         <button className="w-full text-sm md:w-auto">Check In</button>
 //       </DialogTrigger>
 //       <DialogContent className="size-auto items-center justify-center">
 //         <div

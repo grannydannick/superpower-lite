@@ -17,13 +17,11 @@ Application state manages global parts of an application, such as controlling gl
 
 We use following State Solution:
 
-
 - [zustand](https://github.com/pmndrs/zustand)
 
 [Feature State Example Code](../src/features/onboarding/stores/onboarding-store.ts)
 
 [Feature State With Initial Props Example Code](../src/features/orders/stores/order-store-creator.ts)
-
 
 ## Server Cache State
 
@@ -50,7 +48,6 @@ Although it is possible to build any form using only React primitives, we use:
 We created abstracted `Form` component.
 
 [Form Example Code](../src/components/ui/form.tsx)
-
 
 We also integrated validation library with the mentioned solutions to validate inputs on the client:
 

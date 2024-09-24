@@ -59,7 +59,6 @@ NOTE: You don't need all of these folders for every feature. Only include the on
 
 In the past, it was recommended to use barrel files to export all the files from a feature. However, it can cause issues for Vite to do tree shaking and can lead to performance issues. Therefore, it is recommended to import the files directly.
 
-
 We also enforce unidirectional codebase architecture. This means that the code should flow in one direction, from shared parts of the code to the application (shared -> features -> app). This is a good practice to follow as it makes the codebase more predictable and easier to understand.
 
 ![Unidirectional Codebase](./assets/unidirectional-codebase.png)

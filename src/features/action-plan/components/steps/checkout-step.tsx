@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+import { Body1, Body2, H2 } from '@/components/ui/typography';
 import { useCreateCheckoutUrl } from '@/features/action-plan/api';
 import { useCheckout } from '@/features/action-plan/stores/checkout-store';
 import { useStepper } from '@/lib/stepper';
@@ -31,55 +32,49 @@ export const CheckoutStep = (): JSX.Element => {
 
   return (
     <>
-      <div className="flex flex-col px-4 py-3 md:px-8 md:py-6">
+      <div className="px-6 py-2.5 md:hidden">
+        <H2>Checkout</H2>
+      </div>
+      <div className="flex flex-col p-6 md:px-8">
         {selectedProducts.map((selectedProduct, index) => (
           <div
-            className="flex w-full items-center justify-between px-2 py-3 md:px-6"
+            className="flex w-full items-center justify-between md:px-6 md:py-3"
             key={index}
           >
             <div className="flex items-center gap-4">
               <img
                 alt={selectedProduct.name}
                 src={selectedProduct.image}
-                className="size-10 rounded-[8px] border-2 border-solid border-[#E4E4E7] bg-white object-cover object-center"
+                className="size-10 rounded-[8px] border border-solid border-[#E4E4E7] bg-white object-cover object-center"
               />
-              <h4 className="text-[14px] leading-[142%] text-[#18181B]">
-                {selectedProduct.name}
-              </h4>
+              <Body1>{selectedProduct.name}</Body1>
             </div>
-            <h4 className="text-[14px] leading-[142%] text-[#FC5F2B]">
-              ${selectedProduct.price}
-            </h4>
+            <Body2>${selectedProduct.price}</Body2>
           </div>
         ))}
       </div>
-      <div className="grid w-full grid-cols-2 px-10 md:px-14">
+      <div className="w-full px-6 md:grid md:grid-cols-2 md:px-14">
         <div className="flex flex-col gap-6" style={{ gridColumn: 2 }}>
           {checkoutInfo.map((ci, index) => (
             <div className="flex justify-between gap-5 md:gap-20" key={index}>
-              <h4
-                className={`text-sm leading-[150%] md:text-[18px] ${ci.text}`}
-              >
-                {ci.title}:
-              </h4>
-              <h4
-                className={`text-sm leading-[150%] md:text-[18px] ${ci.text}`}
-              >
-                ${ci.data.toFixed(2)}
-              </h4>
+              <Body1 className={`${ci.text}`}>{ci.title}:</Body1>
+              <Body1 className={`${ci.text}`}>${ci.data.toFixed(2)}</Body1>
             </div>
           ))}
         </div>
       </div>
       <div
         className={cn(
-          'flex items-center justify-between gap-6 px-7 pb-4 pt-7 md:px-14 md:pb-8 md:pt-14',
-          createCheckoutUrlMutation.isSuccess ? 'justify-end' : null,
+          'flex w-full flex-col-reverse items-center gap-2 md:gap-6 px-6 py-14 md:px-14 md:w-auto md:flex-row md:justify-end',
         )}
       >
         {!createCheckoutUrlMutation.isSuccess && (
           <>
-            <Button variant="outline" onClick={prevStep}>
+            <Button
+              variant="outline"
+              onClick={prevStep}
+              className="w-full md:w-auto"
+            >
               Back
             </Button>
             <Button
@@ -87,12 +82,9 @@ export const CheckoutStep = (): JSX.Element => {
               onClick={() =>
                 createCheckoutUrlMutation.mutate({ data: selectedProducts })
               }
+              className="w-full md:w-auto"
             >
-              {createCheckoutUrlMutation.isPending ? (
-                <Spinner />
-              ) : (
-                'Place order'
-              )}
+              {createCheckoutUrlMutation.isPending ? <Spinner /> : 'Order'}
             </Button>
           </>
         )}

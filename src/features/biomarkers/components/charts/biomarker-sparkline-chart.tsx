@@ -7,11 +7,17 @@ import { Biomarker } from '@/types/api';
 export interface BiomarkerSparklineChartProps {
   biomarker: Biomarker;
   className?: string;
+  height?: number;
+  markerRadius?: number;
+  markerLineWidth?: number;
 }
 
 export function BiomarkerSparklineChart({
   biomarker,
   className,
+  height,
+  markerRadius,
+  markerLineWidth,
 }: BiomarkerSparklineChartProps): JSX.Element {
   return (
     <div
@@ -22,6 +28,10 @@ export function BiomarkerSparklineChart({
         unit={biomarker.unit}
         ranges={biomarker.range}
         status={biomarker.status}
+        className={className}
+        height={height}
+        markerRadius={markerRadius}
+        markerLineWidth={markerLineWidth}
       />
     </div>
   );

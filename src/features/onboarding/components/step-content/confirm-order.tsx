@@ -159,7 +159,7 @@ export const ConfirmOrder = () => {
 //         After clicking “Confirm”, you will be redirected to TrueMed - Pay with
 //         HSA/FSA to complete your purchase securely.{' '}
 //       </Body1>
-//       <Button>Confirm</Button>
+//       <button>Confirm</button>
 //     </div>
 //   );
 // };

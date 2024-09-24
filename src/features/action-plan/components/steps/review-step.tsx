@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Body1, Body2, H2 } from '@/components/ui/typography';
 import { useProducts } from '@/features/action-plan/api';
 import { useCheckout } from '@/features/action-plan/stores/checkout-store';
 import { useStepper } from '@/lib/stepper';
@@ -19,20 +20,21 @@ export const ReviewStep = (): JSX.Element => {
 
   return (
     <>
-      <div className="flex flex-col gap-3 px-4 py-0 md:gap-6 md:px-8 md:py-6">
+      <div className="px-6 py-2.5 md:hidden">
+        <H2>Checkout</H2>
+      </div>
+      <div className="flex flex-col gap-6 p-6">
         {goals.map((goal, index) => {
-          // Filter goalItems to include only those with itemType 'PRODUCT'
           const productGoalItems = goal.goalItems.filter(
             (goalItem) => goalItem.itemType === 'PRODUCT',
           );
 
-          // Proceed to render only if there are productGoalItems
           if (productGoalItems.length > 0) {
             return (
-              <div className="flex flex-col gap-1" key={index}>
-                <h4 className="mb-2 text-[16px] font-light text-[#A1A1AA]">
+              <div className="flex flex-col gap-4" key={index}>
+                <Body1 className="px-6 text-zinc-500">
                   {goal.title.length ? goal.title : `Goal ${index + 1}`}
-                </h4>
+                </Body1>
                 {productGoalItems.map((goalItem, index) => (
                   <ActionPlanProductCheckoutOptionRow
                     key={index}
@@ -54,14 +56,18 @@ export const ReviewStep = (): JSX.Element => {
           return null;
         })}
       </div>
-      <div className="flex items-center justify-end gap-6 px-7 pb-4 pt-7 md:px-14 md:pb-8 md:pt-14">
-        <div>
-          <p className="text-[16px] text-zinc-500">
-            {selectedProducts.length} items
-          </p>
-          <p className="text-[16px] text-zinc-500">${total}</p>
+      <div className="flex w-full flex-col-reverse items-center gap-6 px-6 pb-14 pt-4 md:w-auto md:flex-row md:justify-end md:px-14 md:pt-0">
+        <div className="flex flex-col items-center md:items-end">
+          <Body1 className="text-zinc-500">
+            Subtotal ({selectedProducts.length} items)
+          </Body1>
+          <Body1>${total}</Body1>
         </div>
-        <Button onClick={nextStep} disabled={selectedProducts.length === 0}>
+        <Button
+          onClick={nextStep}
+          disabled={selectedProducts.length === 0}
+          className="w-full md:w-auto"
+        >
           Go to checkout
         </Button>
       </div>
@@ -88,27 +94,23 @@ const ActionPlanProductCheckoutOptionRow = ({
 
   return (
     <div
-      className={`flex cursor-pointer flex-col justify-between rounded-lg hover:bg-[#F4F4F4] ${
-        checked ? 'bg-[#F7F7F7]' : 'border-transparent'
+      className={`flex cursor-pointer flex-col justify-between rounded-2xl hover:bg-zinc-50 ${
+        checked ? 'bg-zinc-50' : 'border-transparent'
       }`}
       role="presentation"
       onClick={onItemClick}
     >
-      <div className="flex items-center gap-3 rounded-2xl p-3 md:gap-5 md:p-6">
+      <div className="flex items-center gap-5 rounded-2xl p-3 md:gap-5 md:p-6">
         <img
           alt={item.name}
           src={item.image}
-          className="size-[64px] rounded-[12px] border-2 border-solid border-[#E4E4E7] bg-white object-cover object-center"
+          className="size-[64px] rounded-[12px] border-2 border-solid border-zinc-200 bg-white object-cover object-center"
         />
         <div className="flex w-full items-center justify-between">
-          <div className="flex flex-col gap-3">
-            <h4 className="text-base leading-[150%] text-[#18181B]">
-              {item.name}
-            </h4>
+          <div className="flex flex-col gap-1">
+            <Body1>{item.name}</Body1>
             <div>
-              <h4 className="text-base leading-[133%] text-[#FC5F2B]">
-                ${item.price}
-              </h4>
+              <Body2>${item.price}</Body2>
             </div>
           </div>
           <Checkbox checked={checked} className="size-5" />

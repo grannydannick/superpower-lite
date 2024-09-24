@@ -146,6 +146,7 @@ export type Coupon = {
 
 /* BIOMARKERS */
 export type Biomarker = Entity<{
+  id?: string;
   name: string;
   description: string;
   importance: string;
@@ -161,7 +162,8 @@ export type Biomarker = Entity<{
 export interface BiomarkerResult {
   quantity: Quantity;
   timestamp: string;
-  status: BiomarkerStatus;
+  status?: BiomarkerStatus;
+  biomarkerId?: string;
 }
 
 export interface BiomarkerMetadata {
@@ -192,6 +194,7 @@ export interface Range {
   low?: Quantity;
   high?: Quantity;
   status: BiomarkerStatus;
+  comparator?: string;
 }
 
 export interface Quantity {
@@ -416,15 +419,18 @@ export type Plan = {
   orderId: string;
   timestamp: Date;
   title: string;
+  type: ActionPlanType;
   description: string;
   published: boolean;
   goals: PlanGoal[];
   videoFileId?: string;
+  annualReport?: AnnualReport;
 };
 
 export interface PlanGoal {
   id: string;
   title: string;
+  type: PlanGoalType;
   description: string;
   goalItems: PlanGoalItem[];
   to: Date;
@@ -445,6 +451,75 @@ export type PlanDate = {
 };
 
 export type PlanGoalItemType = 'SERVICE' | 'BIOMARKER' | 'PRODUCT';
+
+export type ActionPlanType = 'DEFAULT' | 'ANNUAL_REPORT';
+
+export type PlanGoalType =
+  | 'DEFAULT'
+  | 'ANNUAL_REPORT_PRIMARY'
+  | 'ANNUAL_REPORT_SECONDARY'
+  | 'ANNUAL_REPORT_PROTOCOLS';
+
+export type AnnualReportBlockType =
+  | 'PREVENTION'
+  | 'ENVIRONMENTAL'
+  | 'NUTRITION'
+  | 'LOOK_AND_FEEL';
+
+export type AnnualReportBlockGroupItemType = 'BIOMARKER' | 'SELF_EVALUATION';
+
+export type AnnualReportBlockGroupItemRefType = 'TEXT_LINK' | 'BUTTON_LINK';
+export type AnnualReportBlockGroupItemStatusType =
+  | 'OPTIMAL'
+  | 'NORMAL'
+  | 'OUT_OF_RANGE';
+
+export interface BlockGroupItemRef {
+  id: string;
+  type: AnnualReportBlockGroupItemRefType;
+  text: string;
+  value: string;
+}
+
+export interface BlockGroupItem {
+  id: string;
+  type: AnnualReportBlockGroupItemType;
+  biomarkerId: string | null;
+  selfEvalId: string | null;
+  name: string;
+  range: string | null;
+  status: AnnualReportBlockGroupItemStatusType | null;
+  value: string | null;
+  ref: BlockGroupItemRef[];
+}
+
+export interface BlockGroup {
+  id: string;
+  name: string;
+  description: string;
+  hover: string;
+  score: string;
+  scoreCustom: string;
+  scoreCustomSetBy: string;
+  scoreCustomSetAt: string;
+  blockGroupItem: BlockGroupItem[];
+}
+
+export interface Block {
+  id: string;
+  type: AnnualReportBlockType;
+  title: string;
+  subtitle: string;
+  subtitleValue: string;
+  blockGroup: BlockGroup[];
+}
+
+export interface AnnualReport {
+  id: string;
+  title: string;
+  description: string;
+  block: Block[];
+}
 
 /* PRODUCTS */
 

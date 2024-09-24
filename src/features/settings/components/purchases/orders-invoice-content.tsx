@@ -157,9 +157,9 @@ export const OrderInvoiceContent = ({
       </Table>
       <div className="flex justify-between pt-12">
         <div />
-        {/*<Button variant="outline">Cancel membership</Button>*/}
+        {/*<button variant="outline">Cancel membership</button>*/}
         <div className="flex gap-4">
-          {/*<Button variant="outline">Get help</Button>*/}
+          {/*<button variant="outline">Get help</button>*/}
           {invoice?.invoice_pdf && (
             <Button onClick={() => window.open(invoice.invoice_pdf as string)}>
               Download PDF

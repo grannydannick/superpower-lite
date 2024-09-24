@@ -361,6 +361,7 @@ export class SparklineChartLegendBuilder {
     if (this.highBound()) {
       legend.push(
         <div
+          key="high-bound"
           style={{
             height: `20%`,
             backgroundColor: STATUS_PLOTLINE_COLORS.HIGH,
@@ -373,6 +374,7 @@ export class SparklineChartLegendBuilder {
     if (this.normalUpperBound()) {
       legend.push(
         <div
+          key="normal-upper-bound"
           style={{
             height: `20%`,
             backgroundColor: STATUS_PLOTLINE_COLORS.NORMAL,
@@ -392,6 +394,7 @@ export class SparklineChartLegendBuilder {
     ) {
       legend.push(
         <div
+          key="optimal-bound-large"
           style={{
             height: `80%`,
             backgroundColor: STATUS_PLOTLINE_COLORS.OPTIMAL,
@@ -406,6 +409,7 @@ export class SparklineChartLegendBuilder {
     ) {
       legend.push(
         <div
+          key="optimal-bound-medium"
           style={{
             height: `60%`,
             backgroundColor: STATUS_PLOTLINE_COLORS.OPTIMAL,
@@ -416,6 +420,7 @@ export class SparklineChartLegendBuilder {
     } else {
       legend.push(
         <div
+          key="optimal-bound-small"
           style={{
             height: `20%`,
             backgroundColor: STATUS_PLOTLINE_COLORS.OPTIMAL,
@@ -428,6 +433,7 @@ export class SparklineChartLegendBuilder {
     if (this.normalLowerBound()) {
       legend.push(
         <div
+          key="normal-lower-bound"
           style={{
             height: `20%`,
             backgroundColor: STATUS_PLOTLINE_COLORS.NORMAL,
@@ -440,6 +446,7 @@ export class SparklineChartLegendBuilder {
     if (this.lowBound()) {
       legend.push(
         <div
+          key="low-bound"
           style={{
             height: `20%`,
             backgroundColor: STATUS_PLOTLINE_COLORS.LOW,

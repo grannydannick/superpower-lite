@@ -36,7 +36,7 @@ const DemoMultiStepLoader = () => {
   const [loading, setLoading] = useState(false);
   return (
     <div className="flex h-[60vh] w-full items-center justify-center">
-      {/* Core Loader Modal */}
+      {/* Core loader Modal */}
       <MultiStepLoader
         loadingStates={loadingStates}
         loading={loading}

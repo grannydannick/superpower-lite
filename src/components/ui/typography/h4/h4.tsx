@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
  * - Line Height: 28px (140% of font size)
  * - Letter Spacing: -0.2px
  *
- * These styles align with the "Product Headings/Heading 4" design specifications.
+ * These styles align with the "Product Headings/heading 4" design specifications.
  *
  * Additional classes can be passed via the `className` prop to override or extend the default styling.
  *

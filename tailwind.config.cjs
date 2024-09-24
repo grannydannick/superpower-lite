@@ -1,10 +1,8 @@
-const defaultTheme = require("tailwindcss/defaultTheme")
+const defaultTheme = require('tailwindcss/defaultTheme');
 const {
   default: flattenColorPalette,
-} = require("tailwindcss/lib/util/flattenColorPalette");
-const svgToDataUri = require("mini-svg-data-uri");
-
-const colors = require("tailwindcss/colors");
+} = require('tailwindcss/lib/util/flattenColorPalette');
+const svgToDataUri = require('mini-svg-data-uri');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -32,16 +30,16 @@ module.exports = {
       backgroundImage: {
         'female-hands': "url('/onboarding/bg-female-hands.webp')",
         'female-spotlight': "url('/onboarding/bg-female-spotlight.webp')",
-        'male': "url('/onboarding/bg-male.webp')",
+        male: "url('/onboarding/bg-male.webp')",
         'male-large': "url('/onboarding/bg-male-large.webp')",
-        'spine': "url('/onboarding/bg-spine.webp')",
+        spine: "url('/onboarding/bg-spine.webp')",
         'spine-2': "url('/onboarding/bg-spine-2.webp')",
         'female-looking-up': "url('/onboarding/bg-female-looking-up.webp')",
         'membership-card': "url('/shared/membership-card.png')",
         'female-spine': "url('/onboarding/bg-female-spine.webp')",
         'female-stretching': "url('/onboarding/bg-female-stretching.webp')",
-        "watch": "url('/onboarding/bg-watch.webp')",
-        "hand-pillow": "url('/onboarding/bg-hand-pillow.webp')",
+        watch: "url('/onboarding/bg-watch.webp')",
+        'hand-pillow': "url('/onboarding/bg-hand-pillow.webp')",
       },
       colors: {
         border: 'hsl(var(--border))',
@@ -78,35 +76,35 @@ module.exports = {
           foreground: 'hsl(var(--card-foreground))',
         },
         vermillion: {
-          50: "#FFF6EA", /* Tag background */
-          100: "#FFEDD5",
-          300: "#FED7AA",
-          500: "#FDBA74",
-          700: "#F7861E",
-          900: "#FC5F2B" /* Accent text colour */
+          50: '#FFF6EA' /* Tag background */,
+          100: '#FFEDD5',
+          300: '#FED7AA',
+          500: '#FDBA74',
+          700: '#F7861E',
+          900: '#FC5F2B' /* Accent text colour */,
         },
         green: {
-          50: "#E9F9F3",
-          100: "#A7F3D0",
-          300: "#00FCA1",
-          500: "#11C182", /* Data points */
-          700: "#26936B"  /* Data graph text */
+          50: '#E9F9F3',
+          100: '#A7F3D0',
+          300: '#00FCA1',
+          500: '#11C182' /* Data points */,
+          700: '#26936B' /* Data graph text */,
         },
         yellow: {
-          50: "#E8FC00",
-          100: "#F7FF9D",
-          300: "#E8FC00",
-          500: "#D7DB0E", /* Data points */
-          700: "#938700", /* Data graph text */
+          50: '#E8FC00',
+          100: '#F7FF9D',
+          300: '#E8FC00',
+          500: '#D7DB0E' /* Data points */,
+          700: '#938700' /* Data graph text */,
         },
         pink: {
-          50: "#FBF2F9", /* Error backgrounds */
-          100: "#FFDDF8",
-          300: "#FFBEF1",
-          500: "#FF68DE", /* Data points */
-          700: "#B90090", /* Error text, background */
-          900: "#84004B"
-        }
+          50: '#FBF2F9' /* Error backgrounds */,
+          100: '#FFDDF8',
+          300: '#FFBEF1',
+          500: '#FF68DE' /* Data points */,
+          700: '#B90090' /* Error text, background */,
+          900: '#84004B',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -115,10 +113,10 @@ module.exports = {
       },
       fontFamily: {
         // we use proboo because it looks closer to design versions
-        sans: ["nbinternationalproboo", ...defaultTheme.fontFamily.sans],
-        mono: ["nbinternationalpromono", ...defaultTheme.fontFamily.mono],
+        sans: ['nbinternationalproboo', ...defaultTheme.fontFamily.sans],
+        mono: ['nbinternationalpromono', ...defaultTheme.fontFamily.mono],
         // proreg is secondary font that looks bolder
-        proreg: ["nbinternationalproreg", ...defaultTheme.fontFamily.sans]
+        proreg: ['nbinternationalproreg', ...defaultTheme.fontFamily.sans],
       },
       keyframes: {
         'accordion-down': {
@@ -137,17 +135,17 @@ module.exports = {
           from: { height: 'var(--radix-collapsible-content-height)' },
           to: { height: '0' },
         },
-        "caret-blink": {
-          "0%,70%,100%": { opacity: "1" },
-          "20%,50%": { opacity: "0" },
+        'caret-blink': {
+          '0%,70%,100%': { opacity: '1' },
+          '20%,50%': { opacity: '0' },
         },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        "collapsible-down": "collapsible-down 0.2s ease-out",
-        "collapsible-up": "collapsible-up 0.2s ease-out",
-        "caret-blink": "caret-blink 1.25s ease-out infinite",
+        'collapsible-down': 'collapsible-down 0.2s ease-out',
+        'collapsible-up': 'collapsible-up 0.2s ease-out',
+        'caret-blink': 'caret-blink 1.25s ease-out infinite',
       },
       screens: {
         xs: '475px',
@@ -158,39 +156,43 @@ module.exports = {
         '2xl': '1280px',
       },
       letterSpacing: {
-        "display-heading": "-3.84px"
+        'display-heading': '-3.84px',
       },
       fontSize: {
-        "9xl": ["128px", "144px"],
-        "6xl": ["64px", "72px"],
-        "3xl": ["32px", "40px"]
-      }
+        '9xl': ['128px', '144px'],
+        '6xl': ['64px', '72px'],
+        '3xl': ['32px', '40px'],
+      },
     },
   },
   plugins: [
     require('tailwindcss-animate'),
     require('tailwind-scrollbar'),
+    require('@tailwindcss/typography'),
     addVariablesForColors,
     function ({ matchUtilities, theme }) {
       matchUtilities(
         {
-          "bg-grid": (value) => ({
+          'bg-grid': (value) => ({
             backgroundImage: `url("${svgToDataUri(
-              `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="${value}"><path d="M0 .5H31.5V32"/></svg>`
+              `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="${value}"><path d="M0 .5H31.5V32"/></svg>`,
             )}")`,
           }),
-          "bg-grid-small": (value) => ({
+          'bg-grid-small': (value) => ({
             backgroundImage: `url("${svgToDataUri(
-              `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="8" height="8" fill="none" stroke="${value}"><path d="M0 .5H31.5V32"/></svg>`
+              `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="8" height="8" fill="none" stroke="${value}"><path d="M0 .5H31.5V32"/></svg>`,
             )}")`,
           }),
-          "bg-dot": (value) => ({
+          'bg-dot': (value) => ({
             backgroundImage: `url("${svgToDataUri(
-              `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16" fill="none"><circle fill="${value}" id="pattern-circle" cx="10" cy="10" r="1.6257413380501518"></circle></svg>`
+              `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16" fill="none"><circle fill="${value}" id="pattern-circle" cx="10" cy="10" r="1.6257413380501518"></circle></svg>`,
             )}")`,
           }),
         },
-        { values: flattenColorPalette(theme("backgroundColor")), type: "color" }
+        {
+          values: flattenColorPalette(theme('backgroundColor')),
+          type: 'color',
+        },
       );
     },
   ],
@@ -198,12 +200,12 @@ module.exports = {
 
 // This plugin adds each Tailwind color as a global CSS variable, e.g. var(--gray-200).
 function addVariablesForColors({ addBase, theme }) {
-  let allColors = flattenColorPalette(theme("colors"));
+  let allColors = flattenColorPalette(theme('colors'));
   let newVars = Object.fromEntries(
-    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+    Object.entries(allColors).map(([key, val]) => [`--${key}`, val]),
   );
 
   addBase({
-    ":root": newVars,
+    ':root': newVars,
   });
 }

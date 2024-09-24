@@ -37,6 +37,5 @@ yarn-error.log*
 
 # local
 mocked-db.json
-.npmrc
 
 .idea

@@ -1,0 +1,28 @@
+/* CSS for bold coloring and highlighting issue*/
+
+
+.tiptap {
+
+    ol, ul, p {
+        @apply text-base;
+    }
+
+    ol {
+        li {
+            @apply my-0.5;
+        }
+    }
+
+    h3 {
+        @apply text-2xl mb-8;
+    }
+
+}
+
+span[style] > strong {
+    color: inherit;
+}
+
+mark[style] > strong {
+    color: inherit;
+}

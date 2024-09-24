@@ -4,21 +4,20 @@ import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+import { Switch } from '@/components/ui/switch';
 import { usePlan } from '@/features/action-plan/stores/plan-store';
 import { useUser } from '@/lib/auth';
 
-export function ClinicianNoteHeader(): JSX.Element {
-  const { isAdmin, published, updateActionPlan, isUpdating } = usePlan(
-    (s) => s,
-  );
+export function ClinicianNoteHeader(): React.ReactNode {
+  const { isAdmin, published, updateActionPlan, isUpdating, updateIsAdmin } =
+    usePlan((s) => s);
   const { data: user } = useUser();
   const navigate = useNavigate();
-
   return (
     <div className="flex w-full justify-between p-5 md:p-7">
-      <div className="flex items-center justify-center gap-[16px]">
+      <div className="flex items-center justify-center gap-4">
         <Button
-          className="size-[44px] rounded-full bg-white p-0 shadow-[0_32px_64px_0_rgba(212,212,212,0.5)] hover:bg-white"
+          className="size-[44px] rounded-full bg-white p-0 shadow-xl hover:bg-white"
           onClick={() => navigate('/', { replace: true })}
         >
           <X width="16px" height="16px" color="#52525B" />
@@ -27,29 +26,26 @@ export function ClinicianNoteHeader(): JSX.Element {
           <h1 className="text-sm">
             For: {user?.firstName} {user?.lastName}
           </h1>
-          {/*<p className="text-xs text-[#A1A1AA]">*/}
-          {/*  Saved{' '}*/}
-          {/*  {formatDistance(new Date(savedTime), new Date(), {*/}
-          {/*    addSuffix: true,*/}
-          {/*  })}*/}
-          {/*</p>*/}
         </div>
       </div>
-      {isAdmin ? (
-        <div className="flex gap-[12px]">
+      {user?.adminActor ? (
+        <div className="flex items-center gap-3">
           <Button
-            className="rounded-[12px] bg-white px-[24px] py-[12px] text-black shadow-[0_32px_64px_0_rgba(212,212,212,0.5)] hover:bg-white"
+            className="rounded-[12px] bg-white px-6 py-3 text-black shadow-md hover:bg-white"
             onClick={() => updateActionPlan()}
           >
             {isUpdating ? <Spinner variant="primary" /> : 'Save'}
           </Button>
-          {/*<div className="bg-white py-[12px] px-[16px] h-[40px] shadow-[0_32px_64px_0_rgba(212,212,212,0.5)] hover:bg-white rounded-[12px] text-black flex gap-[10px]">*/}
-          {/*  <p className="text-sm">Preview</p>*/}
-          {/*  <Switch />*/}
-          {/*</div>*/}
+          <div className="flex items-center gap-2 rounded-[12px] bg-white px-4 py-3 shadow-md">
+            <p className="text-sm">Preview</p>
+            <Switch
+              checked={!isAdmin}
+              onCheckedChange={() => updateIsAdmin(!isAdmin)}
+            />
+          </div>
           {!published && (
             <Button
-              className="rounded-[12px] bg-black px-[24px]  py-[12px] text-white shadow-[0_32px_64px_0_rgba(212,212,212,0.5)]"
+              className="rounded-[12px] bg-black px-6 py-3 text-white shadow-md"
               onClick={() => updateActionPlan(true)}
             >
               {isUpdating ? <Spinner variant="primary" /> : 'Publish'}

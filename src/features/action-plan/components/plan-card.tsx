@@ -122,7 +122,9 @@ const PlanCardFooter = ({ orderId }: { orderId?: string }) => {
           Go to marketplace
         </Button>
       ) : (
-        <ActionPlanCheckoutModal actionPlan={specificPlan} />
+        <ActionPlanCheckoutModal goals={specificPlan.goals}>
+          <Button className="w-full md:w-auto">Get Products</Button>
+        </ActionPlanCheckoutModal>
       )}
     </div>
   );

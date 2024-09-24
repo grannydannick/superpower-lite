@@ -4,16 +4,6 @@ import React from 'react';
 
 import { SparklineChartLegendBuilder } from './sparkline-chart-builder';
 
-// NOTE
-// This should probably be reworked using styled mode in HighCharts instead of setting everything in the options.
-// We're not doing that now because time is limited.
-
-/*
- * This component is real mess and needs to be reengineered from zero
- *
- * We are still using it because we don't have a lot of time for refactor
- * */
-
 export function SparkLineChartGraph(props: any): JSX.Element {
   const builder = new SparklineChartLegendBuilder(
     props.ranges,
@@ -28,28 +18,40 @@ export function SparkLineChartGraph(props: any): JSX.Element {
   const max = builder.max();
   const data = builder.buildData();
 
+  const height = props.height || 80; // Default height
+
+  // Original default values (replace these with the correct defaults)
+  const defaultMarkerRadius = 12;
+  const defaultMarkerLineWidth = 3;
+
+  // Allow overriding defaults via props
+  const markerRadius =
+    props.markerRadius !== undefined ? props.markerRadius : defaultMarkerRadius;
+  const markerLineWidth =
+    props.markerLineWidth !== undefined
+      ? props.markerLineWidth
+      : defaultMarkerLineWidth;
+
   const options: Highcharts.Options = {
     chart: {
       backgroundColor: undefined,
       borderWidth: 0,
       borderColor: 'white',
-      height: 80,
+      height: height,
       width: null,
       margin: [0, 0, 0, 0],
       spacing: [0, 0, 0, 0],
       events: {
         load(): void {
           // eslint-disable-next-line @typescript-eslint/no-this-alias
-          const chart = this,
-            series = chart.series[0];
+          const chart = this;
+          const series = chart.series[0];
           if (series.data.length > 0) {
             const point = series.data.slice(-4)[0];
 
-            // Get the position of the point
             const x = chart.plotLeft + chart.xAxis[0].toPixels(point.x, true),
               y = chart.plotTop + chart.yAxis[0].toPixels(point.y ?? 0, true);
 
-            // Draw a horizontal line from the y-axis to the single point
             chart.renderer
               .path(['M', chart.plotLeft, y, 'L', x, y] as any)
               .attr({
@@ -107,7 +109,6 @@ export function SparkLineChartGraph(props: any): JSX.Element {
       shared: true,
       useHTML: true,
       borderRadius: 10,
-
       backgroundColor: 'transparent',
       borderColor: 'transparent',
       shadow: false,
@@ -131,15 +132,14 @@ export function SparkLineChartGraph(props: any): JSX.Element {
           },
         },
         marker: {
-          radius: 6,
+          radius: markerRadius / 2, // Custom or default marker radius
           symbol: 'circle',
           lineColor: 'white',
-          lineWidth: 2,
+          lineWidth: markerLineWidth, // Custom or default marker line width
         },
       },
     },
     series: [
-      // Split the data in to two series so we can draw a dotted line between the first two datapoints.
       {
         data: data.slice(Math.max(data.length - 4, 0), data.length),
         type: 'line',

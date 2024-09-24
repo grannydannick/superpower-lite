@@ -9,6 +9,7 @@ export interface CheckoutStoreProps {
 export interface CheckoutStore extends CheckoutStoreProps {
   selectedProducts: Product[];
   updateSelectedProducts: (product: Product) => void;
+  reset: () => void;
 }
 
 export type CheckoutStoreApi = ReturnType<typeof checkoutStoreCreator>;
@@ -47,5 +48,6 @@ export const checkoutStoreCreator = (
         };
       });
     },
+    reset: () => set(DEFAULT_PROPS),
   }));
 };

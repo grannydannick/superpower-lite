@@ -15,19 +15,19 @@ import { cn } from '@/lib/utils';
 
 interface ClinicianNoteDatePickerInterface {
   date: DateRange;
-  goalIndex: number;
+  goalId: string;
 }
 
 export function ClinicianNoteDatePicker({
   date,
-  goalIndex,
+  goalId,
 }: ClinicianNoteDatePickerInterface): JSX.Element {
   const [curDate, setCurDate] = useState<DateRange | undefined>(date);
   const { isAdmin, changeGoalDate } = usePlan((s) => s);
 
   useEffect(() => {
     if (curDate?.from && curDate.to) {
-      changeGoalDate(curDate, goalIndex);
+      changeGoalDate(curDate, goalId);
     }
   }, [curDate]);
 

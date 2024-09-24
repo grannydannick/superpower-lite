@@ -29,12 +29,12 @@ export function WearablesMobile({
     <div className="mt-12 flex flex-col justify-between md:hidden">
       {/*
               <CreateFile>
-                <Button className="w-full mb-[26px] space-x-2">
+                <button className="w-full mb-[26px] space-x-2">
                   <div>
                     <Upload className="h-4 w-4" />
                   </div>
-                  <span>Upload Document</span>
-                </Button>
+                  <span>Upload document</span>
+                </button>
               </CreateFile>
           */}
       <WearablesSearch

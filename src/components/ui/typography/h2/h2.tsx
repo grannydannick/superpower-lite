@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
  * - Line Height: 40px (125% of font size)
  * - Letter Spacing: -0.64px
  *
- * These styles align with the "Product Headings/Heading 2" design specifications.
+ * These styles align with the "Product Headings/heading 2" design specifications.
  *
  * Additional classes can be passed via the `className` prop to override or extend the default styling.
  *
@@ -33,7 +33,7 @@ const H2 = forwardRef<
       {...props}
       ref={ref}
       className={cn(
-        'text-3xl tracking-[-0.64px] text-zinc-900 font-normal',
+        'text-2xl md:text-3xl tracking-[-0.64px] text-zinc-900 font-normal',
         props.className,
       )}
     >

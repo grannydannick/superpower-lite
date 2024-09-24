@@ -1,0 +1,3 @@
+.ProseMirror-selectednode iframe {
+    @apply transition-[outline] duration-150 outline-2 outline-zinc-200;
+}
