@@ -14,10 +14,6 @@ export const ActionPlanBiomarkerRow = ({
 }: {
   biomarker: Biomarker;
 }) => {
-  if (biomarker.value.length === 0) {
-    return null;
-  }
-
   const latestMetric =
     biomarker.value.length > 0
       ? biomarker.value.reduce((latest, current) => {
@@ -102,7 +98,7 @@ export const ActionPlanBiomarkerRow = ({
               <p className="truncate text-sm text-zinc-900">{biomarker.name}</p>
             </div>
             <div className="ml-[18px] flex gap-1 text-left text-sm">
-              <p className="text-zinc-900">{latestMetric}</p>
+              <p className="text-zinc-900">{latestMetric ?? '0'}</p>
               <p className="text-zinc-400">{biomarker.unit}</p>
             </div>
           </div>

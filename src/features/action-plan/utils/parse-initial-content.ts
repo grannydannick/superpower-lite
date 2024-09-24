@@ -21,7 +21,10 @@ export const parseInitialContent = (initialContent: string) => {
           ...block,
           content: block.content.map((child) =>
             child.type === 'text'
-              ? { ...child, text: initialContent || 'Default fallback text' }
+              ? {
+                  ...child,
+                  text: initialContent || "Start writing patient's notes here",
+                }
               : child,
           ),
         };
