@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  release:
+    name: Release
+    if: ${{ !contains(github.event.head_commit.message, 'norelease') }}
+    environment: production
+    runs-on: ubuntu-latest-m
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Run build, unit tests, lint, type checks
+        run: make test
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Login to AWS ECR
+        run: make util/login-aws-ecr
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Build & push docker app image (for staging)
+        run: make build/docker/app/stg
+      - name: Create tag
+        uses: mathieudutour/github-tag-action@v6.1
+        id: create_tag
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          fetch_all_tags: true

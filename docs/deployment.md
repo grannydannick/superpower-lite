@@ -14,4 +14,4 @@ make build/docker/app/stg
 make deploy/app/stg
 ```
 
-Access the application at https://halfbaked-app.superpower-staging.com
+Access the application at https://api.superpower-staging.com
