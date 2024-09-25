@@ -74,9 +74,9 @@ deploy/app/stg: check-doppler-token check-doppler-secrets
 	@echo "Deploying $(SERVICE) to Kubernetes..."
 	aws eks update-kubeconfig --name staging-cluster --region $(AWS_REGION) && \
 	doppler secrets substitute -p $(SERVICE) -c stg $(DEPLOYMENT_DIR)/deploy.app.yaml | \
-	sed 's|__AWS_ECR_URL__|$(AWS_ECR_URL)|g' \
-		's|__SERVICE__|$(SERVICE)|g' \
-		's|__VERSION__|$(VERSION)|g' \
+	sed 's|__AWS_ECR_URL__|$(AWS_ECR_URL)|g' | \
+	sed 's|__SERVICE__|$(SERVICE)|g' | \
+	sed 's|__VERSION__|$(VERSION)|g' | \
 	kubectl apply -f -
 
 .PHONY: deploy/story/stg
@@ -85,9 +85,9 @@ deploy/story/stg: check-doppler-token check-doppler-secrets
 	@echo "Deploying $(SERVICE) to Kubernetes..."
 	aws eks update-kubeconfig --name staging-cluster --region $(AWS_REGION) && \
 	doppler secrets substitute -p $(SERVICE) -c stg $(DEPLOYMENT_DIR)/deploy.story.yaml | \
-	sed -e 's|__AWS_ECR_URL__|$(AWS_ECR_URL)|g' \
-		-e 's|__SERVICE__|$(SERVICE)|g' \
-		-e 's|__VERSION__|$(VERSION)|g' | \
+	sed 's|__AWS_ECR_URL__|$(AWS_ECR_URL)|g' | \
+	sed 's|__SERVICE__|$(SERVICE)|g' | \
+	sed 's|__VERSION__|$(VERSION)|g' | \
 	kubectl apply -f -
 
 .PHONY: deploy/app/prd

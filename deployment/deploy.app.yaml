@@ -18,11 +18,6 @@ spec:
         image: __AWS_ECR_URL__/superpower-app:__VERSION__
         ports:
         - containerPort: 3000
-        env:
-          - name: VITE_API_URL
-            value: https://api.superpower-staging.com
-          - name: NODE_ENV
-            value: staging
 
 ---
 

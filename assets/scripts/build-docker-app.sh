@@ -30,7 +30,7 @@ REQUIRED_VARS=(
 check_vars "${REQUIRED_VARS[@]}"
 
 info "Fetching Doppler secrets..."
-#doppler secrets substitute -p superpower -c $BUILD_ENV packages/app/.env.tpl > packages/app/.env
+doppler secrets download -p superpower-app -c stg --no-file --format=env > .env
 
 # Debugging github workflows
 debug "BUILD_ENV: ${BUILD_ENV}"
