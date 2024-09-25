@@ -5,7 +5,6 @@ import { PlanGoalItem } from '@/types/api';
 export const PlanItemList = ({ item }: { item: PlanGoalItem }) => {
   const servicesQuery = useServices();
   const productsQuery = useProducts();
-
   switch (item.itemType) {
     case 'PRODUCT': {
       const product = productsQuery.data?.products.find(
@@ -15,7 +14,13 @@ export const PlanItemList = ({ item }: { item: PlanGoalItem }) => {
       return product ? (
         <li className="text-base text-vermillion-900">
           <span className="text-zinc-600">
-            {product.name} {item.description ? `- ${item.description}` : null}
+            <a
+              href={product.url}
+              className="cursor-pointer text-vermillion-900 hover:text-vermillion-500"
+            >
+              {product.name}
+            </a>
+            <span> {item.description ? `- ${item.description}` : null}</span>
           </span>
         </li>
       ) : null;
@@ -24,6 +29,7 @@ export const PlanItemList = ({ item }: { item: PlanGoalItem }) => {
       const service = servicesQuery.data?.services.find(
         (service) => service.id === item.itemId,
       );
+
       return service ? (
         <li className="text-base text-vermillion-900">
           <span className="text-zinc-600">
