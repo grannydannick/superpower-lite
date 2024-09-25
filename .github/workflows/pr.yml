@@ -15,18 +15,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
-      - name: Run build, unit tests, lint, type checks
+      - name: Run build, unit & e2e tests, lint, type checks
         run: make test
-  test/e2e:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-      - name: Run Playwright tests
-        run: yarn test-e2e
       - uses: actions/upload-artifact@v4
         if: always()
         with:

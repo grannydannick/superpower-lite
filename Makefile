@@ -120,26 +120,33 @@ test/type-check: util/install
 test/unit: description = Run unit tests
 test/unit: util/install
 	@echo "Running unit tests..."
-	@trap 'mv -f .env.bak .env' EXIT SIGINT SIGTERM; \
-	cp .env .env.bak && cp .env.example .env && \
-	yarn test --run
+	@bash -c 'if [ -f .env ]; then \
+	    trap "mv -f .env.bak .env; echo Restored .env from backup" EXIT SIGINT SIGTERM; \
+	    cp .env .env.bak; \
+	fi && \
+	cp .env.example .env && \
+	yarn test --run'
 
 .PHONY: test/e2e
 test/e2e: description = Run end-to-end tests
 test/e2e: util/install
 	@echo "Running end-to-end tests..."
-	@trap 'mv -f .env.bak .env' EXIT SIGINT SIGTERM; \
-	cp .env .env.bak && cp .env.example-e2e .env && \
+	@bash -c 'if [ -f .env ]; then \
+	    trap "mv -f .env.bak .env; echo Restored .env from backup" EXIT SIGINT SIGTERM; \
+	    cp .env .env.bak; \
+	fi && \
+	cp .env.example-e2e .env && \
 	yarn playwright install --with-deps && \
-	yarn test-e2e
+	yarn test-e2e'
 
 ### Utility
 
 .PHONY: util/login-aws-ecr
 util/login-aws-ecr: description = Login to AWS ECR
 util/login-aws-ecr:
-	@echo "Logging into AWS ECR..."
-	aws ecr get-login-password --region $(AWS_REGION) | docker login --username AWS --password-stdin $(ECR_URL)
+	@bash $(SHARED_SCRIPT) info "Running $@ ..."
+	aws ecr get-login-password --region us-east-1 | \
+	docker login --username AWS --password-stdin $(AWS_ECR_URL)
 
 .PHONY: util/k8s/context/dev
 util/k8s/context/dev: description = Set K8S context to minikube
