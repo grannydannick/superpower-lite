@@ -12,7 +12,6 @@ export function SchedulerHeading(): JSX.Element {
   const {
     updateSelectedDay,
     tz,
-    slots,
     updateStartRange,
     startRange,
     numDays,
@@ -47,22 +46,19 @@ export function SchedulerHeading(): JSX.Element {
               <Spinner variant="primary" />
             </span>
           ) : null}
-          {slots.length ? (
-            <>
-              <RangeSelectButton
-                icon={<ChevronLeft className="size-4" />}
-                onClick={() => {
-                  numDays && handleClick(-numDays);
-                }}
-              />
-              <RangeSelectButton
-                icon={<ChevronRight className="size-4" />}
-                onClick={() => {
-                  numDays && handleClick(numDays);
-                }}
-              />
-            </>
-          ) : null}
+
+          <RangeSelectButton
+            icon={<ChevronLeft className="size-4" />}
+            onClick={() => {
+              numDays && handleClick(-numDays);
+            }}
+          />
+          <RangeSelectButton
+            icon={<ChevronRight className="size-4" />}
+            onClick={() => {
+              numDays && handleClick(numDays);
+            }}
+          />
         </div>
       </div>
     </div>

@@ -83,7 +83,7 @@ export const schedulerStoreCreator = (initProps: SchedulerProps) => {
     selectedSlot: undefined,
     updateSelectedSlot: (slot) =>
       set((state) => ({ ...state, selectedSlot: slot })),
-    startRange: undefined,
+    startRange: moment().tz(moment.tz.guess()),
     updateStartRange: (date) =>
       set((state) => ({ ...state, startRange: date })),
   }));
