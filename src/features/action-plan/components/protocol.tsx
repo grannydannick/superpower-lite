@@ -31,7 +31,7 @@ export const Protocol = ({ className }: { className?: string }) => {
         if (isAdmin) {
           return (
             <ActionPlanGoal
-              key={goal.id}
+              key={idx}
               goal={goal}
               goalIndex={idx}
               className="mt-8"

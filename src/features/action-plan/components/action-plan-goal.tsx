@@ -103,8 +103,8 @@ export function ActionPlanGoal({
         {renderEditor()}
 
         <div className="flex flex-col gap-1">
-          {goal.goalItems.map((goalItem) => (
-            <div key={goalItem.itemId}>
+          {goal.goalItems.map((goalItem, idx) => (
+            <div key={idx}>
               <ActionPlanItemRow goalId={goal.id} item={goalItem} />
             </div>
           ))}

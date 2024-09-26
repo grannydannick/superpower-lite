@@ -39,8 +39,8 @@ export const PlanItemList = ({ item }: { item: PlanGoalItem }) => {
           <span className="text-zinc-600">
             <HealthcareServiceDialog healthcareService={service}>
               <span className="text-vermillion-900 hover:text-vermillion-500">
-                {service.name}
-              </span>{' '}
+                {service.name}&nbsp;
+              </span>
             </HealthcareServiceDialog>
             {item.description ? `- ${item.description}` : null}
           </span>
