@@ -28,6 +28,7 @@ import {
   useCreatePlan,
 } from '@/features/action-plan/api';
 import { ActionPlanCheckoutModal } from '@/features/action-plan/components/checkout-modal';
+import { PlanStoreProvider } from '@/features/action-plan/stores/plan-store';
 import { filterGoalsByItemType } from '@/features/action-plan/utils/filter-goals-by-item-type';
 import { generateDummyPlan } from '@/features/action-plan/utils/generate-dummy-plan';
 import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
@@ -38,6 +39,11 @@ import { PlanGoal, PlanGoalItem } from '@/types/api';
 
 export const PlanCard = () => {
   const [orderId, setOrderId] = useState<string | undefined>(undefined);
+  const [tab, setTab] = useState('PRODUCT');
+
+  const onTabChange = (value: string) => {
+    setTab(value);
+  };
 
   return (
     <div className="space-y-4 md:space-y-8">
@@ -46,14 +52,24 @@ export const PlanCard = () => {
         <ActionPlanDatePicker setOrderId={(orderId) => setOrderId(orderId)} />
       </div>
       <Card className="w-full space-y-12">
-        <PlanCardContent orderId={orderId} />
-        <PlanCardFooter orderId={orderId} />
+        <PlanCardContent
+          orderId={orderId}
+          tab={tab}
+          onTabChange={onTabChange}
+        />
+        <PlanCardFooter orderId={orderId} tab={tab} />
       </Card>
     </div>
   );
 };
 
-const PlanCardFooter = ({ orderId }: { orderId?: string }) => {
+const PlanCardFooter = ({
+  orderId,
+  tab,
+}: {
+  orderId?: string;
+  tab: string;
+}) => {
   const { data: plansData } = usePlans({});
   const { data: user } = useUser();
   const navigate = useNavigate();
@@ -114,26 +130,38 @@ const PlanCardFooter = ({ orderId }: { orderId?: string }) => {
       >
         See Doctor’s Note
       </Button>
-      {products.length === 0 ? (
-        <Button
-          className="w-full lg:w-auto"
-          onClick={() => navigate('https://products.superpower.com/')}
-        >
-          Go to marketplace
-        </Button>
-      ) : (
-        <ActionPlanCheckoutModal>
-          <Button className="w-full md:w-auto">Get Products</Button>
-        </ActionPlanCheckoutModal>
-      )}
+      {tab === 'PRODUCT' ? (
+        products.length === 0 ? (
+          <Button
+            className="w-full lg:w-auto"
+            onClick={() => navigate('https://products.superpower.com/')}
+          >
+            Go to marketplace
+          </Button>
+        ) : (
+          <PlanStoreProvider initialPlan={specificPlan} isAdmin={false}>
+            <ActionPlanCheckoutModal>
+              <Button className="w-full md:w-auto">Get Products</Button>
+            </ActionPlanCheckoutModal>
+          </PlanStoreProvider>
+        )
+      ) : null}
     </div>
   );
 };
 
-const PlanCardContent = ({ orderId }: { orderId?: string }) => {
+const PlanCardContent = ({
+  orderId,
+  tab,
+  onTabChange,
+}: {
+  orderId?: string;
+  tab: string;
+  onTabChange: (value: string) => void;
+}) => {
   return (
     <div className="relative px-6 pt-6 md:px-[72px] md:pt-[70px]">
-      <Tabs defaultValue="SERVICE">
+      <Tabs value={tab} onValueChange={onTabChange}>
         <TabsList className="flex w-fit items-center space-x-6 overflow-x-scroll rounded-none">
           <TabsTrigger value="PRODUCT" className="pb-1">
             Products
