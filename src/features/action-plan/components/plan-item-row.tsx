@@ -11,6 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Body1 } from '@/components/ui/typography';
 import { useProducts } from '@/features/action-plan/api/get-products';
 import { ActionPlanBiomarkerRow } from '@/features/action-plan/components/data-view';
@@ -35,6 +36,14 @@ export function ActionPlanItemRow(
   const biomarkersQuery = useBiomarkers();
   const servicesQuery = useServices();
   const productsQuery = useProducts();
+
+  if (
+    biomarkersQuery.isLoading ||
+    servicesQuery.isLoading ||
+    productsQuery.isLoading
+  ) {
+    return <Skeleton className="h-[96px] w-full rounded-[20px]" />;
+  }
 
   switch (props.item.itemType) {
     case 'PRODUCT': {
@@ -145,7 +154,7 @@ function ActionPlanProductRow({
         <Input
           className={cn(
             ACTION_PLAN_INPUT_STYLE,
-            'placeholder:italic text-base placeholder:text-base text-zinc-500 bg-zinc-50 disabled:bg-zinc-50',
+            'placeholder:italic italic text-base placeholder:text-base text-zinc-500 bg-zinc-50 disabled:bg-zinc-50',
           )}
           placeholder={
             !isAdmin
@@ -248,7 +257,7 @@ function ActionPlanItemDatePicker({
 
   useEffect(() => {
     if (date) {
-      changeItemDeadline(goalId, goalItem, date);
+      changeItemDeadline(goalId, goalItem, date.toISOString());
     }
   }, [date]);
 

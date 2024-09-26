@@ -1,8 +1,12 @@
-import { DateRange } from 'react-day-picker';
+import { toast } from 'sonner';
 import { createStore } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
-import { api } from '@/lib/api-client';
+import {
+  updatePlan,
+  UpdatePlanInput,
+  updatePlanInputSchema,
+} from '@/features/action-plan/api/update-action-plan';
 import {
   ActionPlanType,
   AnnualReport,
@@ -25,13 +29,12 @@ export interface PlanStore {
   isAdmin: boolean;
   isUpdating: boolean;
   orderId: string;
-  timestamp: Date;
+  timestamp: string;
   title: string;
   type: ActionPlanType;
   description: string;
   published: boolean;
   goals: PlanGoal[];
-  videoFileId?: string;
   annualReport?: AnnualReport;
 
   changeTitle: (title: string) => void;
@@ -42,7 +45,6 @@ export interface PlanStore {
   changeAnnualReportTitle: (title: string) => void;
   changeGoalDescription: (description: string, goalId: string) => void; // Updated to use goalId
   changeAnnualReportDescription: (description: string) => void;
-  changeGoalDate: (date: DateRange | undefined, goalId: string) => void; // Updated to use goalId
   deleteGoalItem: (goalId: string, itemId: string) => void; // Updated to use goalId
   insertGoalItem: (
     selectedItems: Biomarker[] | HealthcareService[] | Product[],
@@ -57,7 +59,7 @@ export interface PlanStore {
   changeItemDeadline: (
     goalId: string, // Updated to use goalId
     goalItem: PlanGoalItem,
-    deadline: Date,
+    deadline: string,
   ) => void;
   updateIsAdmin: (isAdmin: boolean) => void;
 
@@ -81,7 +83,6 @@ export const planStoreCreator = (initProps: PlanStoreProps) => {
         description: initialPlan.description,
         published: initialPlan.published,
         goals: initialPlan.goals,
-        videoFileId: initialPlan.videoFileId,
         isUpdating: false,
         annualReport: initialPlan.annualReport,
 
@@ -148,8 +149,8 @@ export const planStoreCreator = (initProps: PlanStoreProps) => {
                 title: '',
                 description: '',
                 type: goalType,
-                from: new Date(),
-                to: new Date(),
+                from: new Date().toISOString(),
+                to: new Date().toISOString(),
                 goalItems: [],
               },
             ],
@@ -161,19 +162,6 @@ export const planStoreCreator = (initProps: PlanStoreProps) => {
         deleteGoal: (goalId) => {
           set((state) => ({
             goals: state.goals.filter((goal) => goal.id !== goalId), // Filter by goalId
-          }));
-
-          get().updateActionPlan();
-        },
-
-        changeGoalDate: (date, goalId) => {
-          set((state) => ({
-            goals: state.goals.map(
-              (goal) =>
-                goal.id === goalId
-                  ? { ...goal, from: date?.from as Date, to: date?.to as Date }
-                  : goal, // Update by goalId
-            ),
           }));
 
           get().updateActionPlan();
@@ -243,21 +231,30 @@ export const planStoreCreator = (initProps: PlanStoreProps) => {
           const state = get();
           set({ isUpdating: true });
 
-          const dto: Partial<Plan> = {
+          const dto: UpdatePlanInput = {
             orderId: state.orderId,
             type: state.type,
-            timestamp: state.timestamp,
             title: state.title,
             description: state.description,
             goals: state.goals,
             published: published ? published : state.published,
-            videoFileId: state.videoFileId,
             annualReport: state.annualReport,
           };
-          const updatedPlanData: { actionPlan: Plan } = await api.put(
-            '/plans',
-            dto,
-          );
+
+          const result = updatePlanInputSchema.safeParse(dto);
+
+          if (!result.success) {
+            for (const error of result.error.errors) {
+              toast.error(error.message);
+            }
+
+            set({ isUpdating: false });
+            return;
+          }
+
+          const updatedPlanData: { actionPlan: Plan } = await updatePlan({
+            data: dto,
+          });
 
           const updatedPlan = updatedPlanData.actionPlan;
 
@@ -268,11 +265,12 @@ export const planStoreCreator = (initProps: PlanStoreProps) => {
             description: updatedPlan.description,
             goals: updatedPlan.goals,
             published: updatedPlan.published,
-            videoFileId: updatedPlan.videoFileId,
             annualReport: state.annualReport,
           });
 
-          set({ isUpdating: false });
+          setTimeout(() => {
+            set({ isUpdating: false });
+          }, 1000); // this is HACK to prevent fast animation
         },
       }),
       { name: 'ActionPlanStore' }, // Store name for Redux DevTools

@@ -417,7 +417,7 @@ export type Wearable = {
 
 export type Plan = {
   orderId: string;
-  timestamp: Date;
+  timestamp: string;
   title: string;
   type: ActionPlanType;
   description: string;
@@ -433,19 +433,19 @@ export interface PlanGoal {
   type: PlanGoalType;
   description: string;
   goalItems: PlanGoalItem[];
-  to: Date;
-  from: Date;
+  to: string;
+  from: string;
 }
 
 export interface PlanGoalItem {
   itemId: string;
   itemType: PlanGoalItemType;
   description?: string;
-  timestamp?: Date;
+  timestamp?: string;
 }
 
 export type PlanDate = {
-  timestamp: Date;
+  timestamp: string;
   orderId: string;
   actionPlanId?: string;
 };
