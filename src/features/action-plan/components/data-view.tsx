@@ -105,12 +105,12 @@ export const ActionPlanBiomarkerRow = ({
         </div>
 
         <div className="flex w-1/2 items-center justify-between">
-          <div className="inline-block rounded-[19px] bg-white px-2 py-1 text-center text-sm text-zinc-400">
+          <div className="hidden rounded-[19px] bg-white px-2 py-1 text-center text-sm text-zinc-400 sm:inline-block">
             {rangeDisplay}
           </div>
           <BiomarkerSparklineChart
             biomarker={biomarker}
-            className="size-full h-[44px] w-[120px]"
+            className="ml-auto size-full h-[44px] w-[120px] sm:ml-0"
             height={44}
             markerRadius={8}
             markerLineWidth={1}
