@@ -30,6 +30,7 @@ export interface PlanStore {
   isUpdating: boolean;
   orderId: string;
   timestamp: string;
+  updatedAt: string;
   title: string;
   type: ActionPlanType;
   description: string;
@@ -83,6 +84,7 @@ export const planStoreCreator = (initProps: PlanStoreProps) => {
         description: initialPlan.description,
         published: initialPlan.published,
         goals: initialPlan.goals,
+        updatedAt: initialPlan.updatedAt,
         isUpdating: false,
         annualReport: initialPlan.annualReport,
 
@@ -265,7 +267,8 @@ export const planStoreCreator = (initProps: PlanStoreProps) => {
             description: updatedPlan.description,
             goals: updatedPlan.goals,
             published: updatedPlan.published,
-            annualReport: state.annualReport,
+            annualReport: updatedPlan.annualReport,
+            updatedAt: updatedPlan.updatedAt,
           });
 
           setTimeout(() => {

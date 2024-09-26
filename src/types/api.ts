@@ -425,6 +425,7 @@ export type Plan = {
   goals: PlanGoal[];
   videoFileId?: string;
   annualReport?: AnnualReport;
+  updatedAt: string;
 };
 
 export interface PlanGoal {

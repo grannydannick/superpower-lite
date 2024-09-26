@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -5,14 +6,20 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
-import { Body1 } from '@/components/ui/typography';
+import { Body2 } from '@/components/ui/typography';
 import { usePlan } from '@/features/action-plan/stores/plan-store';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 
 export function ClinicianNoteHeader(): React.ReactNode {
-  const { isAdmin, published, updateActionPlan, isUpdating, updateIsAdmin } =
-    usePlan((s) => s);
+  const {
+    isAdmin,
+    published,
+    updateActionPlan,
+    isUpdating,
+    updateIsAdmin,
+    updatedAt,
+  } = usePlan((s) => s);
   const { data: user } = useUser();
   const navigate = useNavigate();
   const [isBlurred, setIsBlurred] = useState(false);
@@ -35,7 +42,7 @@ export function ClinicianNoteHeader(): React.ReactNode {
     <div
       className={cn(
         'sticky z-10 left-0 top-0 flex w-full justify-between p-5 md:p-7 transition duration-300',
-        isBlurred ? 'backdrop-blur-lg' : null,
+        isBlurred ? 'bg-opacity-40 bg-white backdrop-blur rounded-b-2xl' : null,
       )}
     >
       <div className="flex items-center justify-center gap-4">
@@ -53,11 +60,15 @@ export function ClinicianNoteHeader(): React.ReactNode {
       </div>
       {user?.adminActor ? (
         <div className="flex items-center gap-4">
-          {isUpdating && (
+          {isUpdating ? (
             <div className="flex items-center gap-2">
               <Spinner variant="primary" />
-              <Body1>Saving...</Body1>
+              <Body2>Saving...</Body2>
             </div>
+          ) : (
+            <Body2 className="hidden sm:block">
+              Last updated: {format(new Date(updatedAt), 'h:mm a')}
+            </Body2>
           )}
           <div className="flex items-center gap-2 rounded-[12px] bg-white px-4 py-3 shadow-md">
             <p className="text-sm">Preview</p>
@@ -68,7 +79,7 @@ export function ClinicianNoteHeader(): React.ReactNode {
           </div>
           {!published && (
             <Button
-              className="rounded-[12px] bg-black px-6 py-3 text-white shadow-md"
+              className="min-w-[103px] rounded-[12px] bg-black px-6 py-3 text-white shadow-md"
               onClick={() => updateActionPlan(true)}
             >
               {isUpdating ? <Spinner variant="primary" /> : 'Publish'}
