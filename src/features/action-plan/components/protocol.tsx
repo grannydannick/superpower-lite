@@ -12,6 +12,12 @@ export const Protocol = ({ className }: { className?: string }) => {
     s.goals.filter((goal) => goal.type === 'ANNUAL_REPORT_PROTOCOLS'),
   );
 
+  const hasEmptyGoalItems = goals.every((goal) => goal.goalItems.length === 0);
+
+  if (!isAdmin && hasEmptyGoalItems) {
+    return null;
+  }
+
   return (
     <div className={cn(className)}>
       <div className="space-y-4">

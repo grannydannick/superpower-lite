@@ -19,14 +19,12 @@ const PLAN_STYLE = 'space-y-8 rounded-3xl bg-white p-8 shadow-md md:p-12';
 
 export function ActionPlanComponent() {
   const {
-    goals,
     timestamp,
     title,
     type,
     description,
     isAdmin,
     changeTitle,
-    addGoal,
     changeDescription,
     updateActionPlan,
   } = usePlan((s) => s);
@@ -61,27 +59,40 @@ export function ActionPlanComponent() {
           onUpdate={(content) => changeDescription(content)}
         />
       </div>
-      <div className={cn(PLAN_STYLE, goals.length > 0 ? 'py-16' : null)}>
-        {goals
-          .filter((g) => g.type === 'DEFAULT')
-          .map((goal, index) => (
-            <ActionPlanGoal key={index} goal={goal} goalIndex={index} />
-          ))}
-        {isAdmin && (
-          <div className="my-6">
-            <Button
-              variant="ghost"
-              className="px-0 text-zinc-400"
-              onClick={() => addGoal('DEFAULT')}
-            >
-              + Add goal
-            </Button>
-          </div>
-        )}
-      </div>
+
+      <ActionPlanGoals />
       <Protocol className={PLAN_STYLE} />
       <ConsultationCard className={PLAN_STYLE} />
       <RecommendedItems className={PLAN_STYLE} />
     </div>
   );
 }
+
+const ActionPlanGoals = () => {
+  const { goals, isAdmin, addGoal } = usePlan((s) => s);
+
+  const defaultGoals = goals.filter((g) => g.type === 'DEFAULT');
+
+  if (!isAdmin && !defaultGoals.length) {
+    return null;
+  }
+
+  return (
+    <div className={cn(PLAN_STYLE, goals.length > 0 ? 'py-16' : null)}>
+      {defaultGoals.map((goal, index) => (
+        <ActionPlanGoal key={index} goal={goal} goalIndex={index} />
+      ))}
+      {isAdmin && (
+        <div className="my-6">
+          <Button
+            variant="ghost"
+            className="px-0 text-zinc-400"
+            onClick={() => addGoal('DEFAULT')}
+          >
+            + Add goal
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+};
