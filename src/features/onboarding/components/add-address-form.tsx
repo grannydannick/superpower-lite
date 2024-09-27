@@ -15,8 +15,16 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { Body2 } from '@/components/ui/typography';
+import { US_STATE_CODES } from '@/const';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { useGetServiceability } from '@/features/orders/api';
 import {
@@ -34,10 +42,9 @@ function FullAddressForm({
   setIsAdding: () => void;
   googleAddress: FormAddressInput;
 }) {
-  console.log(googleAddress);
-
   const { updateBlocked, isBlocked, collectionMethod } = useOnboarding();
   const getServiceabilityMutation = useGetServiceability();
+  const [asDefault, setAsDefault] = useState(false);
 
   const form = useForm<FormAddressInput>({
     resolver: zodResolver(formAddressInputSchema),
@@ -68,7 +75,9 @@ function FullAddressForm({
       };
 
       await updateProfileMutation.mutateAsync({
-        data: { activeAddress: { address } },
+        data: asDefault
+          ? { primaryAddress: { address } }
+          : { activeAddress: { address } },
       });
 
       updateBlocked(false);
@@ -115,7 +124,23 @@ function FullAddressForm({
               <FormItem>
                 <FormLabel className="text-zinc-600">State</FormLabel>
                 <FormControl>
-                  <Input autoComplete="off" placeholder="State" {...field} />
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="rounded-xl bg-white px-6 py-4 text-base font-normal">
+                        <SelectValue placeholder="State" asChild={false} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="text-zinc-600">
+                      {US_STATE_CODES.map((state) => (
+                        <SelectItem value={state} key={state}>
+                          {state}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -158,7 +183,7 @@ function FullAddressForm({
           <div className="flex cursor-pointer items-center gap-1.5">
             <Checkbox
               id="default"
-              // onChange={() => setAsDefault((prev) => !prev)}
+              onCheckedChange={() => setAsDefault((prev) => !prev)}
             />
             <Label
               htmlFor="default"

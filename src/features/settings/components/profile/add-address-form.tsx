@@ -53,7 +53,9 @@ export function AddAddressForm(): JSX.Element {
     };
 
     await mutateAsync({
-      data: { activeAddress: { address } },
+      data: user?.primaryAddress
+        ? { activeAddress: { address } }
+        : { primaryAddress: { address } },
     });
   }
 

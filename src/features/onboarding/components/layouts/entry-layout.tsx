@@ -115,7 +115,7 @@ export const EntryLayout = (props: Props) => {
           ) : null}
 
           {displayBottomBlock && (
-            <div className="absolute bottom-0 left-0 flex w-full justify-center bg-white/5 p-4">
+            <div className="fixed bottom-0 left-0 flex w-full justify-center bg-white/5 p-4">
               <Body3 className="text-center text-white">
                 {bottomBlockTxt ??
                   ` Your answers will only be viewed by your medical team and will

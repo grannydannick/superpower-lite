@@ -166,8 +166,8 @@ export const AddressAutocomplete = ({
                           setSelected(option.place_id);
                         }}
                         className={cn(
-                          'flex w-full py-4 px-[28px] flex-col items-start cursor-pointer data-[disabled]:opacity-100 hover:bg-[#F7F7F7] hover:rounded-[10px] data-[disabled]:pointer-events-auto',
-                          isSelected ? 'bg-[#F7F7F7] rounded-[10px]' : null,
+                          'flex w-full py-4 px-[28px] flex-col items-start cursor-pointer data-[disabled]:opacity-100 hover:bg-zinc-50 hover:rounded-[10px] data-[disabled]:pointer-events-auto',
+                          isSelected ? 'bg-zinc-50 rounded-[10px]' : null,
                         )}
                       >
                         <Body1>{option.structured_formatting.main_text}</Body1>

@@ -1,4 +1,5 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 import { Scheduler } from '@/components/shared/scheduler';
 import { Button } from '@/components/ui/button';
@@ -11,16 +12,16 @@ import {
 } from '@/const';
 import { AddAddressForm } from '@/features/onboarding/components/add-address-form';
 import { AdditionalServiceCard } from '@/features/onboarding/components/additional-service-card';
-import { AddressSelect } from '@/features/onboarding/components/address-select';
 import { CurrentAddressCard } from '@/features/onboarding/components/current-address-card';
 import { EditAddressForm } from '@/features/onboarding/components/edit-address-form';
 import { ImageContentLayout } from '@/features/onboarding/components/layouts';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
-import { getCurrentAddress } from '@/features/onboarding/utils/get-current-address';
 import { getOrderInfo } from '@/features/onboarding/utils/get-order-info';
 import { useUpdateOrder } from '@/features/orders/api/update-order';
+import { AddressSelect } from '@/features/users/components/address-select';
+import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
-import { ActiveAddress, HealthcareService, Slot } from '@/types/api';
+import { HealthcareService, Slot } from '@/types/api';
 
 const ServiceCard = ({ service }: { service: HealthcareService }) => {
   return (
@@ -153,19 +154,19 @@ const ConfirmAddressCase = ({
 }) => {
   const [isEditingAddress, setIsEditingAddress] = useState(false);
   const [isAddingAddress, setIsAddingAddress] = useState(false);
-  const { updateMicrobiomeAddress, updateToxinAddress, slots } =
-    useOnboarding();
+  const { updateToxinAddress } = useOnboarding();
   const { prevStep } = useStepper((s) => s);
+  const { data: user } = useUser();
 
-  const onSelect = (active: ActiveAddress) => {
-    switch (service.name) {
-      case TOTAL_TOXIN_TEST:
-        return updateToxinAddress(active);
-      case GUT_MICROBIOME_ANALYSIS:
-        return updateMicrobiomeAddress(active);
-      default:
-        return () => {};
+  const next = () => {
+    if (!user?.primaryAddress) {
+      toast.warning('No primary address added.');
+      return;
     }
+
+    service.name === TOTAL_TOXIN_TEST &&
+      updateToxinAddress(user?.primaryAddress);
+    setIndex((prev) => prev + 1);
   };
 
   if (isEditingAddress) {
@@ -219,9 +220,7 @@ const ConfirmAddressCase = ({
         <div className="space-y-2">
           <Body2 className="text-zinc-500">Confirm your shipping address</Body2>
           <AddressSelect
-            selectedAddress={getCurrentAddress(service, slots)}
-            onAddressSelect={onSelect}
-            setIsAddingAddress={() => setIsAddingAddress((prev) => !prev)}
+            onAddressAdd={() => setIsAddingAddress((prev) => !prev)}
           />
         </div>
       </div>
@@ -242,12 +241,7 @@ const ConfirmAddressCase = ({
         >
           Back
         </Button>
-        <Button
-          onClick={() => setIndex((prev) => prev + 1)}
-          disabled={!getCurrentAddress(service, slots)}
-        >
-          Next
-        </Button>
+        <Button onClick={next}>Next</Button>
       </div>
     </>
   );

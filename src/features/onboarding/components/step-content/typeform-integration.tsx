@@ -33,7 +33,7 @@ export const TypeformIntegration = () => {
     <section id="main">
       <Widget
         id="VVOeB9wb"
-        className="h-[80dvh] w-[80dvw] pt-24"
+        className="h-dvh w-full pt-24 sm:h-[80dvh] md:w-[80dvw]"
         opacity={0}
         enableSandbox={isDev}
         fullScreen

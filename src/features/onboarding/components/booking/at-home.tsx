@@ -1,12 +1,14 @@
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import { Body1, Body2, Body3, H2, H3 } from '@/components/ui/typography';
+import { Body1, Body3, H2, H3 } from '@/components/ui/typography';
 import { AddAddressForm } from '@/features/onboarding/components/add-address-form';
-import { AddressSelect } from '@/features/onboarding/components/address-select';
 import { CurrentAddressCard } from '@/features/onboarding/components/current-address-card';
 import { EditAddressForm } from '@/features/onboarding/components/edit-address-form';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
+import { AddressSelect } from '@/features/users/components/address-select';
+import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
 
 const AtHomeServiceCard = () => {
@@ -27,10 +29,20 @@ const AtHomeServiceCard = () => {
 
 export const AtHome = () => {
   const { nextOnboardingStep, prevStep } = useStepper((s) => s);
+  const { data: user } = useUser();
+  const { updateServiceAddress } = useOnboarding();
   const [isEditingAddress, setIsEditingAddress] = useState(false);
   const [isAddingAddress, setIsAddingAddress] = useState(false);
 
-  const { updateServiceAddress, serviceAddress } = useOnboarding();
+  const next = () => {
+    if (!user?.primaryAddress) {
+      toast.warning('No primary address added.');
+      return;
+    }
+
+    updateServiceAddress(user?.primaryAddress);
+    nextOnboardingStep();
+  };
 
   if (isEditingAddress) {
     return (
@@ -64,21 +76,17 @@ export const AtHome = () => {
         </div>
         <div className="space-y-4">
           <H2 className="text-zinc-900">Place of service</H2>
-          <div className="space-y-2">
-            <Body2 className="text-zinc-500">My address</Body2>
-            <AddressSelect
-              selectedAddress={serviceAddress}
-              onAddressSelect={updateServiceAddress}
-              setIsAddingAddress={() => setIsAddingAddress((prev) => !prev)}
-            />
-          </div>
+
+          <AddressSelect
+            onAddressAdd={() => setIsAddingAddress((prev) => !prev)}
+          />
         </div>
         <div className="flex items-center justify-end">
           <div className="space-x-4">
             <Button variant="outline" onClick={prevStep}>
               Back
             </Button>
-            <Button onClick={nextOnboardingStep}>Next</Button>
+            <Button onClick={next}>Next</Button>
           </div>
         </div>
       </>
