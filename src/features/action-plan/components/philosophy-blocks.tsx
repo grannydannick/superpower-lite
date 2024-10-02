@@ -1,7 +1,7 @@
 import { ArrowRight } from 'lucide-react';
 import { ReactNode } from 'react';
 
-import { AnnualReportBiomarkersTable } from '@/features/action-plan/components/biomarkers/biomarker-table';
+import { AnnualReportBiomarkersTable } from '@/features/action-plan/components/biomarkers/annual-report-biomarkers-table';
 import { BlockAccordion } from '@/features/action-plan/components/block-accordion';
 import { cn } from '@/lib/utils';
 import { Block, BlockGroup, BlockGroupItem } from '@/types/api';

@@ -18,11 +18,7 @@ interface ActionPlanGoalProps {
   className?: string;
 }
 
-export function ActionPlanGoal({
-  goal,
-  goalIndex,
-  className,
-}: ActionPlanGoalProps) {
+export function ActionPlanGoal({ goal, className }: ActionPlanGoalProps) {
   const {
     isAdmin,
     changeGoalTitle,
@@ -36,20 +32,6 @@ export function ActionPlanGoal({
     changeGoalDescription: state.changeGoalDescription,
     updateActionPlan: state.updateActionPlan,
   }));
-
-  const getGoalTitle = () => {
-    switch (goal.type) {
-      case 'ANNUAL_REPORT_PRIMARY':
-      case 'DEFAULT':
-        return (
-          <h4 className="whitespace-nowrap text-xl text-zinc-900">
-            Goal {goalIndex + 1}:
-          </h4>
-        );
-      default:
-        return null;
-    }
-  };
 
   const renderEditor = () => {
     switch (goal.type) {
@@ -81,7 +63,6 @@ export function ActionPlanGoal({
     <div id={String(goal.id)} className={cn('flex w-full', className)}>
       <div className="w-full">
         <div className="flex items-center gap-4">
-          {getGoalTitle()}
           <Input
             placeholder="Goal title"
             className={cn(ACTION_PLAN_INPUT_STYLE, getInputClassName())}

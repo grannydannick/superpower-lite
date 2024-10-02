@@ -1,6 +1,6 @@
-import { Column } from '@tanstack/react-table';
+import { Table } from '@tanstack/react-table';
 import { Circle, ChevronDown } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -8,87 +8,82 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { STATUS_OPTIONS } from '@/features/biomarkers/const/toolbar-options';
+import { Body2, Body3 } from '@/components/ui/typography';
+import { STATUS_FILTER_NAME } from '@/features/biomarkers/const/filters';
+import { STATUS_OPTIONS } from '@/features/biomarkers/const/status-options';
+import { StatusFilterOptionType } from '@/features/biomarkers/types/filters';
+import { getCurrentStatus } from '@/features/biomarkers/utils/get-current-status';
 import { cn } from '@/lib/utils';
 
-interface DataTableFacetedFilter<TData, TValue> {
-  column?: Column<TData, TValue>;
+interface DataTableFacetedFilter<TData> {
+  table: Table<TData>;
   title?: React.ReactNode;
 }
 
-export function StatusFilter<TData, TValue>({
-  column,
-}: DataTableFacetedFilter<TData, TValue>): JSX.Element {
-  const selectedValues = new Set(column?.getFilterValue() as string[]);
-  // Intentionally set as empty string
-  const allRangesStatusOption = STATUS_OPTIONS.find((o) => o.value === '');
+export function StatusFilter<TData>({
+  table,
+  title,
+}: DataTableFacetedFilter<TData>): JSX.Element {
+  const [status, setStatus] = useState<StatusFilterOptionType>('All Ranges');
+  const [open, setOpen] = useState<boolean>(false);
 
-  const title = 'Status';
+  // Intentionally set as empty string
+  const defaultTitle = title ? title : STATUS_FILTER_NAME;
 
   return (
     <>
-      <Popover>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             size="sm"
             className={cn(
-              'bg-white rounded-lg py-2 px-3 text-sm text-zinc-500 flex items-center gap-x-1.5 light',
-              selectedValues.size === 0
-                ? 'border-0'
-                : `border-${STATUS_OPTIONS.find((o) => selectedValues.has(o.value))?.color}`,
+              'bg-white rounded-lg py-2 px-3 text-sm text-zinc-500 hidden md:flex items-center gap-1.5',
+              status === 'All Ranges' ? 'border-0' : '',
             )}
           >
             <div
               className={cn(
-                `h-4 w-4 rounded-full border border-${
-                  STATUS_OPTIONS.find(
-                    (o) =>
-                      selectedValues.has(o.value) ||
-                      (selectedValues.size === 0 &&
-                        o.value === allRangesStatusOption?.value),
-                  )?.color
-                } flex items-center justify-center`,
+                `h-4 w-4 rounded-full border flex items-center justify-center`,
+                getCurrentStatus(status).border,
               )}
             >
               <Circle
-                className={cn(
-                  `h-3 w-3 fill-${
-                    STATUS_OPTIONS.find(
-                      (o) =>
-                        selectedValues.has(o.value) ||
-                        (selectedValues.size === 0 &&
-                          o.value === allRangesStatusOption?.value),
-                    )?.color
-                  }`,
-                )}
+                className={cn(getCurrentStatus(status).fill)}
                 strokeWidth={0}
+                height={14}
+                width={14}
               />
             </div>
-            <p className="hidden whitespace-nowrap sm:block">
-              {selectedValues.size === 0
-                ? title
-                : STATUS_OPTIONS.find((o) => selectedValues.has(o.value))
-                    ?.label}
-            </p>
-            <ChevronDown className="size-4" />
+            <Body2 className="whitespace-nowrap">
+              {status === 'All Ranges'
+                ? defaultTitle
+                : getCurrentStatus(status).label}
+            </Body2>
+            <ChevronDown
+              className={cn(
+                'size-4 min-w-4 transition-transform duration-200',
+                open && 'rotate-180',
+              )}
+            />
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="rounded-xl border-0 bg-white p-4 text-sm shadow"
+          className="rounded-lg border-0 bg-white p-4 shadow-lg"
           align="end"
           side="bottom"
         >
-          <div className="flex flex-col gap-y-4">
+          <div className="flex flex-col gap-4">
             <div className="flex flex-row items-center justify-between">
-              <div>Ranges</div>
+              <Body2 className="text-zinc-700">Ranges</Body2>
               <div>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-auto p-0 text-sm text-gray-400 hover:bg-transparent"
+                  className="p-0 text-sm text-zinc-400 hover:bg-transparent"
                   onClick={() => {
-                    column?.setFilterValue(undefined);
+                    table.getColumn('status')?.setFilterValue(undefined);
+                    setStatus('All Ranges');
                   }}
                 >
                   Restore default
@@ -96,45 +91,45 @@ export function StatusFilter<TData, TValue>({
               </div>
             </div>
             <div className="grid grid-cols-1 gap-y-1">
-              {STATUS_OPTIONS.map((option) => {
-                const isSelected =
-                  selectedValues.has(option.value) ||
-                  (selectedValues.size === 0 &&
-                    option.value === allRangesStatusOption?.value);
+              {Object.values(STATUS_OPTIONS).map((option, indx) => {
+                const isSelected = option.label === status;
+
                 return (
                   <div
-                    key={option.value}
+                    key={indx}
                     role="presentation"
                     onClick={() => {
-                      if (option.value !== allRangesStatusOption?.value) {
-                        const filterValues = [option.value];
-                        column?.setFilterValue(
-                          filterValues.length ? filterValues : undefined,
-                        );
+                      setStatus(option.label as StatusFilterOptionType);
+                      if (option.label === 'All Ranges') {
+                        table.getColumn('status')?.setFilterValue(undefined);
                       } else {
-                        column?.setFilterValue(undefined);
+                        table
+                          .getColumn('status')
+                          ?.setFilterValue(option.filters);
                       }
                     }}
-                    className="my-1 ml-1 mr-2 flex w-full cursor-pointer flex-row gap-x-2 rounded-lg p-1.5 hover:bg-slate-50"
+                    className="flex w-full cursor-pointer gap-2 rounded-lg p-2 hover:bg-slate-50"
                   >
                     <div
                       className={cn(
-                        `h-4 w-4 rounded-full border border-${option.color} mt-[1px] flex items-center justify-center`,
+                        `h-4 w-4 rounded-full border flex items-center justify-center`,
+                        option.border,
                         isSelected
                           ? `text-primary-foreground`
                           : '[&_svg]:invisible',
                       )}
                     >
                       <Circle
-                        className={cn(`h-3 w-3 fill-${option.color}`)}
-                        strokeWidth={0}
+                        className={cn(option.fill)}
+                        height={14}
+                        width={14}
                       />
                     </div>
-                    <div className="flex flex-col gap-y-1.5 text-gray-500">
-                      <span className="text-sm">{option.label}</span>
-                      <span className="text-xs text-gray-400">
+                    <div className="flex flex-col gap-1">
+                      <Body2 className="text-zinc-500">{option.label}</Body2>
+                      <Body3 className="text-zinc-500">
                         {option.description}
-                      </span>
+                      </Body3>
                     </div>
                   </div>
                 );
@@ -143,9 +138,6 @@ export function StatusFilter<TData, TValue>({
           </div>
         </PopoverContent>
       </Popover>
-      {/* Hack to include in tailwind compile */}
-      {/* eslint-disable-next-line tailwindcss/no-contradicting-classname */}
-      <div className="hidden border-fuchsia-400 border-green-400 border-yellow-300 border-zinc-300 fill-fuchsia-400 fill-green-400 fill-yellow-300 fill-zinc-300"></div>
     </>
   );
 }

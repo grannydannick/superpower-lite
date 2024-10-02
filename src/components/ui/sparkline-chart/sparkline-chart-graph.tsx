@@ -1,22 +1,26 @@
 import Highcharts from 'highcharts';
 import { HighchartsReact } from 'highcharts-react-official';
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 
 import { SparklineChartLegendBuilder } from './sparkline-chart-builder';
 
-export function SparkLineChartGraph(props: any): JSX.Element {
-  const builder = new SparklineChartLegendBuilder(
-    props.ranges,
-    props.data,
-    props.unit,
-    props.status,
+export const SparkLineChartGraph = memo((props: any) => {
+  const builder = useMemo(
+    () =>
+      new SparklineChartLegendBuilder(
+        props.ranges,
+        props.data,
+        props.unit,
+        props.status,
+      ),
+    [props.ranges, props.data, props.unit, props.status],
   );
 
-  const zones = builder.buildZones();
-  const plotBands = builder.buildPlotBands();
-  const min = builder.min();
-  const max = builder.max();
-  const data = builder.buildData();
+  const zones = useMemo(() => builder.buildZones(), [builder]);
+  const plotBands = useMemo(() => builder.buildPlotBands(), [builder]);
+  const min = useMemo(() => builder.min(), [builder]);
+  const max = useMemo(() => builder.max(), [builder]);
+  const data = useMemo(() => builder.buildData(), [builder]);
 
   const height = props.height || 80; // Default height
 
@@ -32,128 +36,132 @@ export function SparkLineChartGraph(props: any): JSX.Element {
       ? props.markerLineWidth
       : defaultMarkerLineWidth;
 
-  const options: Highcharts.Options = {
-    chart: {
-      backgroundColor: undefined,
-      borderWidth: 0,
-      borderColor: 'white',
-      height: height,
-      width: null,
-      margin: [0, 0, 0, 0],
-      spacing: [0, 0, 0, 0],
-      events: {
-        load(): void {
-          // eslint-disable-next-line @typescript-eslint/no-this-alias
-          const chart = this;
-          const series = chart.series[0];
-          if (series.data.length > 0) {
-            const point = series.data.slice(-4)[0];
+  const options: Highcharts.Options = useMemo(() => {
+    return {
+      chart: {
+        backgroundColor: undefined,
+        borderWidth: 0,
+        borderColor: 'white',
+        height: height,
+        width: null,
+        margin: [0, 0, 0, 0],
+        spacing: [0, 0, 0, 0],
+        events: {
+          load(): void {
+            // eslint-disable-next-line @typescript-eslint/no-this-alias
+            const chart = this;
+            const series = chart.series[0];
+            if (series.data.length > 0) {
+              const point = series.data.slice(-4)[0];
 
-            const x = chart.plotLeft + chart.xAxis[0].toPixels(point.x, true),
-              y = chart.plotTop + chart.yAxis[0].toPixels(point.y ?? 0, true);
+              const x = chart.plotLeft + chart.xAxis[0].toPixels(point.x, true),
+                y = chart.plotTop + chart.yAxis[0].toPixels(point.y ?? 0, true);
 
-            chart.renderer
-              .path(['M', chart.plotLeft, y, 'L', x, y] as any)
-              .attr({
-                stroke: point.color,
-                'stroke-width': 2,
-                'stroke-dasharray': '0 3 0',
-                zIndex: 10,
-              })
-              .add();
-          }
+              chart.renderer
+                .path(['M', chart.plotLeft, y, 'L', x, y] as any)
+                .attr({
+                  stroke: point.color,
+                  'stroke-width': 2,
+                  'stroke-dasharray': '0 3 0',
+                  zIndex: 10,
+                })
+                .add();
+            }
+          },
         },
       },
-    },
-    title: {
-      text: undefined,
-    },
-    credits: {
-      enabled: false,
-    },
-    xAxis: {
-      tickPixelInterval: 20,
-      type: 'category',
-      tickmarkPlacement: 'on',
-      labels: {
+      title: {
+        text: undefined,
+      },
+      credits: {
         enabled: false,
       },
-      title: {
-        text: null,
+      xAxis: {
+        tickPixelInterval: 20,
+        type: 'category',
+        tickmarkPlacement: 'on',
+        labels: {
+          enabled: false,
+        },
+        title: {
+          text: null,
+        },
+        tickPositions: [],
+        ordinal: false,
       },
-      tickPositions: [],
-      ordinal: false,
-    },
-    yAxis: {
-      min: min,
-      max: max,
-      labels: {
+      yAxis: {
+        min: min,
+        max: max,
+        labels: {
+          enabled: false,
+          format: '{value:.2f}',
+        },
+        gridLineWidth: 0,
+        plotBands: plotBands,
+        title: {
+          text: null,
+        },
+        alignTicks: false,
+        startOnTick: false,
+        endOnTick: false,
+      },
+      legend: {
         enabled: false,
-        format: '{value:.2f}',
       },
-      gridLineWidth: 0,
-      plotBands: plotBands,
-      title: {
-        text: null,
-      },
-      alignTicks: false,
-      startOnTick: false,
-      endOnTick: false,
-    },
-    legend: {
-      enabled: false,
-    },
-    tooltip: {
-      hideDelay: 0,
-      outside: true,
-      shared: true,
-      useHTML: true,
-      borderRadius: 10,
-      backgroundColor: 'transparent',
-      borderColor: 'transparent',
-      shadow: false,
-      headerFormat: undefined,
-      formatter: function () {
-        return `<div class="shadow bg-white flex flex-row gap-x-2 items-center py-2 px-4 rounded-md"><span class="block" style="height: 10px; width: 10px; border-radius: 100%; background-color: ${
-          this.point.color
-        };"></span><div><b>${(this.point as any).value}</b><span style="color: gray;">${
-          ' ' + (this.point as any).unit
-        }<span class="ml-3">${(this.point as any).dateFormatted}</span></div></div>`;
-      },
-    },
-    plotOptions: {
-      series: {
-        animation: false,
-        lineWidth: 0,
+      tooltip: {
+        hideDelay: 0,
+        outside: true,
+        shared: true,
+        useHTML: true,
+        borderRadius: 10,
+        backgroundColor: 'transparent',
+        borderColor: 'transparent',
         shadow: false,
-        states: {
-          hover: {
-            lineWidth: 1,
-          },
-        },
-        marker: {
-          radius: markerRadius / 2, // Custom or default marker radius
-          symbol: 'circle',
-          lineColor: 'white',
-          lineWidth: markerLineWidth, // Custom or default marker line width
+        headerFormat: undefined,
+        formatter: function () {
+          return `<div class="shadow bg-white flex flex-row gap-x-2 items-center py-2 px-4 rounded-md"><span class="block" style="height: 10px; width: 10px; border-radius: 100%; background-color: ${
+            this.point.color
+          };"></span><div><b>${(this.point as any).value}</b><span style="color: gray;">${
+            ' ' + (this.point as any).unit
+          }<span class="ml-3">${(this.point as any).dateFormatted}</span></div></div>`;
         },
       },
-    },
-    series: [
-      {
-        data: data.slice(Math.max(data.length - 4, 0), data.length),
-        type: 'line',
-        zones: zones,
-        lineWidth: 2,
-        states: {
-          hover: {
-            enabled: false,
+      plotOptions: {
+        series: {
+          animation: false,
+          lineWidth: 0,
+          shadow: false,
+          states: {
+            hover: {
+              lineWidth: 1,
+            },
+          },
+          marker: {
+            radius: markerRadius / 2, // Custom or default marker radius
+            symbol: 'circle',
+            lineColor: 'white',
+            lineWidth: markerLineWidth, // Custom or default marker line width
           },
         },
-        threshold: null,
       },
-    ],
-  };
+      series: [
+        {
+          data: data.slice(Math.max(data.length - 4, 0), data.length),
+          type: 'line',
+          zones: zones,
+          lineWidth: 2,
+          states: {
+            hover: {
+              enabled: false,
+            },
+          },
+          threshold: null,
+        },
+      ],
+    };
+  }, [data, zones, plotBands, min, max]);
 
   return <HighchartsReact highcharts={Highcharts} options={options} />;
-}
+});
+
+SparkLineChartGraph.displayName = 'SparkLineChartGraph';

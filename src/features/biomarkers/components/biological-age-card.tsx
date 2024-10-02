@@ -26,7 +26,6 @@ export const BiologicalAgeCard = (): JSX.Element => {
     biomarkersQuery.data.biomarkers,
     dateOfBirth,
   );
-  // if (biologicalAge) biologicalAge = Math.round(biologicalAge * 100) / 100;
 
   const ageDifference = biologicalAge
     ? Math.round((yearsSinceDate(user.dateOfBirth) - biologicalAge) * 10) / 10.0

@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 import { SparklineChartLegendBuilder } from './sparkline-chart-builder';
 
 export interface SparklineChartLegendProps {
@@ -8,8 +10,10 @@ export interface SparklineChartLegendProps {
   data: any;
 }
 
-export const SparkLineChartLegend = (props: SparklineChartLegendProps) => {
+export const SparkLineChartLegend = memo((props: SparklineChartLegendProps) => {
   const builder = new SparklineChartLegendBuilder(props.ranges, props.data);
 
   return builder.buildLegend();
-};
+});
+
+SparkLineChartLegend.displayName = 'SparkLineChartLegend';

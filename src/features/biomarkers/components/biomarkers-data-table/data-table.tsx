@@ -7,20 +7,25 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
+  VisibilityState,
 } from '@tanstack/react-table';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { Table, TableBody, TableHeader } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { BiomarkerTableCell } from '@/features/biomarkers/components/biomarkers-data-table/biomarker-table-cell';
 import { BiomarkerTableDialogRow } from '@/features/biomarkers/components/biomarkers-data-table/biomarker-table-dialog-row';
-import { BiomarkerTableHead } from '@/features/biomarkers/components/biomarkers-data-table/biomarker-table-head';
-import { BiomarkerTableHeaderRow } from '@/features/biomarkers/components/biomarkers-data-table/biomarker-table-header-row';
 import { BiomarkerTableRow } from '@/features/biomarkers/components/biomarkers-data-table/biomarker-table-row';
 import { BiomarkerDataTableToolbar } from '@/features/biomarkers/components/toolbar/biomarker-data-table-toolbar';
-import { ToolbarCategoryType } from '@/features/biomarkers/const/toolbar-options';
+import { ToolbarCategoryType } from '@/features/biomarkers/types/filters';
 import { getHealthcareServiceFromCategory } from '@/features/biomarkers/utils/get-healthcare-service-from-category';
 import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
 import { useServices } from '@/features/services/api/get-services';
@@ -33,9 +38,9 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   loading: boolean;
   columnFilters?: ColumnFiltersState;
+  columnVisibility?: VisibilityState;
   disableToolbar?: boolean;
   disableHeader?: boolean;
-  groupByCategory?: boolean;
   cellClassName?: string;
 }
 
@@ -44,16 +49,26 @@ export function DataTable<TData, TValue>({
   data,
   loading,
   columnFilters = [],
+  columnVisibility,
   disableToolbar = false,
   disableHeader = false,
-  groupByCategory = false,
   cellClassName = '',
 }: DataTableProps<TData, TValue>): JSX.Element {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filters, onColumnFiltersChange] =
     useState<ColumnFiltersState>(columnFilters);
-  const healthcareServices = useServices({});
   const { width } = useWindowDimensions();
+
+  const visibility = columnVisibility
+    ? columnVisibility
+    : {
+        category: false,
+        status: width > 1280,
+        range: width > 1024,
+        value: width > 1024,
+      };
+
+  const healthcareServices = useServices({});
 
   const table = useReactTable({
     data,
@@ -61,12 +76,7 @@ export function DataTable<TData, TValue>({
     state: {
       sorting,
       columnFilters: filters,
-      columnVisibility: {
-        category: false,
-        status: width > 1280,
-        range: width > 1024,
-        value: width > 768,
-      },
+      columnVisibility: visibility,
     },
     onSortingChange: setSorting,
     getFilteredRowModel: getFilteredRowModel(),
@@ -75,11 +85,6 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const categories = [
-    ...new Set(
-      table.getRowModel().rows.map((r) => (r.original as Biomarker).category),
-    ),
-  ];
   const [currentCategory, setCurrentCategory] =
     useState<ToolbarCategoryType>('Blood');
 
@@ -88,85 +93,47 @@ export function DataTable<TData, TValue>({
       service.name === getHealthcareServiceFromCategory(currentCategory),
   );
 
-  return (
-    <>
-      {!disableToolbar && (
-        <div className="mb-20 mt-5">
-          <BiomarkerDataTableToolbar
-            table={table}
-            setCurrentCategory={setCurrentCategory}
-            currentCategory={currentCategory}
-          />
-        </div>
-      )}
-
-      {currentCategory === 'Blood' ? (
-        <Table className={`border-separate border-spacing-y-3`}>
-          {disableHeader ? (
-            <></>
-          ) : table.getRowModel().rows.length > 0 ? (
-            <TableHeader className={cn(disableHeader ? 'hidden' : '')}>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <BiomarkerTableHeaderRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <BiomarkerTableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                      </BiomarkerTableHead>
-                    );
-                  })}
-                </BiomarkerTableHeaderRow>
-              ))}
-            </TableHeader>
-          ) : (
-            <div className="text-center text-base text-slate-400">
-              No data based on the current filters you selected.
-            </div>
-          )}
-          {groupByCategory ? (
-            <>
-              {categories.map((c: string): JSX.Element => {
-                return (
-                  <>
-                    <h2
-                      className={cn(
-                        'text-3xl mt-6 [&>*:first-child]:mt-0 text-slate-400',
-                      )}
+  const getTabContent = () => {
+    switch (currentCategory) {
+      case 'Blood':
+        return (
+          <Table className="border-separate border-spacing-y-3">
+            {!disableHeader ? (
+              table.getRowModel().rows.length > 0 ? (
+                <TableHeader
+                  className={cn(
+                    disableHeader ? 'hidden' : 'hidden md:table-header-group',
+                  )}
+                >
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow
+                      className="hover:bg-transparent"
+                      key={headerGroup.id}
                     >
-                      {c}
-                    </h2>
-                    <TableBody>
-                      {table
-                        .getRowModel()
-                        .rows.filter(
-                          (r) => (r.original as Biomarker).category === c,
-                        )
-                        .map((row) => (
-                          <BiomarkerTableRow key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                              <BiomarkerTableCell
-                                key={cell.id}
-                                className={cellClassName}
-                              >
-                                {flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext(),
+                      {headerGroup.headers.map((header) => {
+                        return (
+                          <TableHead
+                            key={header.id}
+                            className="h-2 text-nowrap"
+                          >
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext(),
                                 )}
-                              </BiomarkerTableCell>
-                            ))}
-                          </BiomarkerTableRow>
-                        ))}
-                    </TableBody>
-                  </>
-                );
-              })}
-            </>
-          ) : (
+                          </TableHead>
+                        );
+                      })}
+                    </TableRow>
+                  ))}
+                </TableHeader>
+              ) : (
+                <div className="text-center text-base text-slate-400">
+                  No data based on the current filters you selected.
+                </div>
+              )
+            ) : null}
             <TableBody>
               {table.getRowModel().rows.map((row) => (
                 <BiomarkerTableDialogRow
@@ -189,31 +156,47 @@ export function DataTable<TData, TValue>({
                 </BiomarkerTableDialogRow>
               ))}
             </TableBody>
-          )}
-        </Table>
-      ) : (
-        <div className="w-full rounded-3xl bg-white px-8 py-16 text-center">
-          <div className="text-xl">
-            Looks like we don&apos;t have your {currentCategory} data.
-          </div>
-          <div className="flex w-full flex-col items-center justify-center gap-3 pt-12">
-            {healthcareService && (
-              <HealthcareServiceDialog healthcareService={healthcareService}>
-                <Button variant="default" className="w-full max-w-[400px]">
-                  Get Tested
+          </Table>
+        );
+      default:
+        return (
+          <div className="w-full rounded-3xl bg-white px-8 py-16 text-center">
+            <div className="text-xl">
+              Looks like we don&apos;t have your {currentCategory} data.
+            </div>
+            <div className="flex w-full flex-col items-center justify-center gap-3 pt-12">
+              {healthcareService && (
+                <HealthcareServiceDialog healthcareService={healthcareService}>
+                  <Button variant="default" className="w-full max-w-[400px]">
+                    Get Tested
+                  </Button>
+                </HealthcareServiceDialog>
+              )}
+              <Link to="/vault" className="w-full max-w-[400px]">
+                <Button variant="outline" className="w-full">
+                  Upload Lab Report
                 </Button>
-              </HealthcareServiceDialog>
-            )}
-            <Link to="/vault" className="w-full max-w-[400px]">
-              <Button variant="outline" className="w-full">
-                Upload Lab Report
-              </Button>
-            </Link>
+              </Link>
+            </div>
           </div>
+        );
+    }
+  };
+
+  return (
+    <div className="space-y-8">
+      {!disableToolbar ? (
+        <div>
+          <BiomarkerDataTableToolbar
+            table={table}
+            setCurrentCategory={setCurrentCategory}
+            currentCategory={currentCategory}
+          />
         </div>
-      )}
-      {loading && <ResultsLoading loading={loading} />}
-    </>
+      ) : null}
+      {getTabContent()}
+      {loading ? <ResultsLoading loading={loading} /> : null}
+    </div>
   );
 }
 

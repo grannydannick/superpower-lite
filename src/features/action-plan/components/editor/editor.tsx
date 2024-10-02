@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/editor';
 import { handleCommandNavigation } from '@/components/ui/editor/extensions';
 import { Separator } from '@/components/ui/separator';
+import { ACTION_PLAN_EDITOR_SAVE_DELAY } from '@/features/action-plan/const/delay';
 import { usePlan } from '@/features/action-plan/stores/plan-store';
 import { cn } from '@/lib/utils';
 
@@ -53,7 +54,7 @@ export const BlockEditor = ({
     const json = editor.getJSON();
     onUpdate(JSON.stringify(json));
     await updateActionPlan();
-  }, 2500);
+  }, ACTION_PLAN_EDITOR_SAVE_DELAY);
 
   return (
     <EditorRoot>

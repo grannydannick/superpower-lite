@@ -66,7 +66,6 @@ export const BiomarkersSummaryCard = (): JSX.Element => {
     },
   ];
 
-  // I find this to be easier and more javascript way to get the total
   const totalBiomarkerCount = statuses.reduce(
     (acc, status) => acc + status.num,
     0,

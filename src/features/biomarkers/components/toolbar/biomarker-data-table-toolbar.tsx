@@ -2,7 +2,7 @@ import { Table } from '@tanstack/react-table';
 import { X } from 'lucide-react';
 import React from 'react';
 
-import { ToolbarCategoryType } from '@/features/biomarkers/const/toolbar-options';
+import { ToolbarCategoryType } from '@/features/biomarkers/types/filters';
 
 import CategoryBar from './category-bar';
 import CategoryFilter from './category-filter';
@@ -39,8 +39,8 @@ export function BiomarkerDataTableToolbar<TData>({
             <SearchBar table={table} />
             {isBloodCategory && (
               <div className="hidden flex-row items-center gap-x-3 md:flex">
-                <StatusFilter column={table.getColumn('status')} />
-                <CategoryFilter column={table.getColumn('category')} />
+                <StatusFilter table={table} />
+                <CategoryFilter table={table} />
               </div>
             )}
             <div className="md:hidden">
@@ -52,12 +52,7 @@ export function BiomarkerDataTableToolbar<TData>({
                   <X className="size-5 cursor-pointer text-[#A1A1AA]" />
                 </div>
               ) : (
-                isBloodCategory && (
-                  <MobileFilter
-                    statusColumn={table.getColumn('status')}
-                    categoryColumn={table.getColumn('category')}
-                  />
-                )
+                isBloodCategory && <MobileFilter table={table} />
               )}
             </div>
           </div>

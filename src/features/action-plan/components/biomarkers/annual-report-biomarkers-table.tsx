@@ -29,13 +29,6 @@ const statusStyles: Record<
   },
 };
 
-/*
- * NM & UZ Sept 22, 2024
- *
- * Marking this as TECH debt until we implement new approach for data page & tables that can be reusable
- *
- * Should reuse biomarkers/components/biomarker-data-table/biomarker-data-table.tsx
- * */
 const FlexTable = ({
   biomarkers,
   title,

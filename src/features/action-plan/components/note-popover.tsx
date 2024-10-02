@@ -9,12 +9,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Body2, Body3 } from '@/components/ui/typography';
+import { Body1, Body2, Body3 } from '@/components/ui/typography';
 import { useProducts } from '@/features/action-plan/api/get-products';
 import { ACTION_PLAN_INPUT_STYLE } from '@/features/action-plan/const/action-plan-input';
 import { usePlan } from '@/features/action-plan/stores/plan-store';
 import { useBiomarkers } from '@/features/biomarkers/api/get-biomarkers';
-import { STATUS_OPTIONS } from '@/features/biomarkers/const/toolbar-options';
+import { STATUS_OPTIONS } from '@/features/biomarkers/const/status-options';
 import { useServices } from '@/features/services/api/get-services';
 import { cn } from '@/lib/utils';
 import { Biomarker, HealthcareService, PlanGoal, Product } from '@/types/api';
@@ -24,7 +24,6 @@ interface PopoverOption {
   icon?: JSX.Element;
   image?: string;
 }
-
 const options: PopoverOption[] = [
   {
     name: 'Biomarker',
@@ -395,23 +394,12 @@ function OptionBlock({
   }
 
   function renderBiomarker(biomarker: Biomarker) {
-    const statusOption = STATUS_OPTIONS.find(
-      (option) =>
-        option.value === biomarker.status.toLowerCase() ||
-        option.value.includes(biomarker.status.toLowerCase()),
+    const statusOption = Object.values(STATUS_OPTIONS).find((option) =>
+      option.filters?.includes(biomarker.status),
     );
 
-    // Map status to Tailwind color classes
-    const statusColorClasses: Record<string, string> = {
-      'green-400': 'bg-green-400',
-      'yellow-300': 'bg-yellow-300',
-      'fuchsia-400': 'bg-fuchsia-400',
-    };
-
     // Determine the correct color class for the biomarker status
-    const statusColor = statusOption
-      ? statusColorClasses[statusOption.color]
-      : 'bg-gray-300'; // Default color if status is not found
+    const statusColor = statusOption ? statusOption.background : 'bg-zinc-300';
 
     // Determine the text label for the biomarker status
     const statusText = statusOption ? statusOption.label : 'Unknown';
@@ -420,10 +408,10 @@ function OptionBlock({
       <div className="flex items-center gap-[16px]">
         {renderImage()}
         <div>
-          <p className="text-base">{biomarker.name}</p>
+          <Body1>{biomarker.name}</Body1>
           <div className="flex items-center gap-2">
-            <div className={`size-2 ${statusColor} rounded-full`} />
-            <p className="text-xs text-zinc-400">{statusText}</p>
+            <div className={`size-2 min-w-2 ${statusColor} rounded-full`} />
+            <Body3 className="text-zinc-400">{statusText}</Body3>
           </div>
         </div>
       </div>
@@ -433,7 +421,7 @@ function OptionBlock({
   return (
     <div
       role="presentation"
-      className="flex w-full cursor-pointer items-center justify-between p-4 hover:rounded-2xl hover:bg-[#F7F7F7]"
+      className="flex w-full cursor-pointer items-center justify-between p-4 hover:rounded-2xl hover:bg-zinc-50"
       onClick={() => onSelect(option.item)}
     >
       {option.type === 'BIOMARKER' ? (
@@ -441,7 +429,7 @@ function OptionBlock({
       ) : (
         <div className="flex items-center gap-[16px]">
           {renderImage()}
-          <h3 className="text-base text-black">{option.item.name}</h3>
+          <Body1>{option.item.name}</Body1>
         </div>
       )}
       <Checkbox checked={checked} />

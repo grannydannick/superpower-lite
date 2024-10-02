@@ -24,7 +24,7 @@ function SearchBar<TData>(props: { table: Table<TData> }) {
           bg-transparent
           px-0
           py-1.5
-          text-sm
+          text-base
           leading-[20px]
           text-zinc-500
           caret-vermillion-700

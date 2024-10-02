@@ -1,4 +1,4 @@
-import { ColumnFiltersState } from '@tanstack/react-table';
+import { ColumnFiltersState, VisibilityState } from '@tanstack/react-table';
 
 import { Spinner } from '@/components/ui/spinner';
 import { useBiomarkers } from '@/features/biomarkers/api';
@@ -9,8 +9,8 @@ import { DataTable } from './data-table';
 
 interface BiomarkerDataTableProps {
   biomarkers?: Biomarker[];
-  onFavorite?: (id: string) => Promise<void>;
   columnFilters?: ColumnFiltersState;
+  columnVisibility?: VisibilityState;
   disableHeader?: boolean;
   disableToolbar?: boolean;
   cellClassName?: string;

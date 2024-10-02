@@ -1,10 +1,8 @@
 import cn from 'classnames';
 
 import { Button } from '@/components/ui/button';
-import {
-  TOOLBAR_CATEGORIES,
-  ToolbarCategoryType,
-} from '@/features/biomarkers/const/toolbar-options';
+import { TOOLBAR_CATEGORIES } from '@/features/biomarkers/const/toolbar-options';
+import { ToolbarCategoryType } from '@/features/biomarkers/types/filters';
 
 type CategoryBarProps = {
   currentCategory: string | undefined;

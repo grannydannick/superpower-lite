@@ -1,23 +1,13 @@
-import React from 'react';
-
 import { STATUS_TO_COLOR } from '@/features/biomarkers/const/status-to-color';
+import { BiomarkerStatus } from '@/types/api';
 import { capitalize } from '@/utils/format';
 
-export type StatusOption =
-  | 'Optimal'
-  | 'Normal'
-  | 'High'
-  | 'Low'
-  | 'Pending'
-  | 'Out of Range'
-  | 'n/a';
-
 export interface StatusBadgeProps {
-  readonly status: StatusOption;
-  readonly badge?: boolean;
+  status: BiomarkerStatus;
+  badge?: boolean;
 }
 
-export function StatusBadge(props: StatusBadgeProps): JSX.Element {
+export const BiomarkerStatusBadge = (props: StatusBadgeProps) => {
   const { badge = true, status } = props;
 
   let displayStatus = capitalize(status.toLowerCase());
@@ -48,4 +38,4 @@ export function StatusBadge(props: StatusBadgeProps): JSX.Element {
       <span className="text-nowrap lg:text-base">{displayStatus}</span>
     </div>
   );
-}
+};

@@ -8,6 +8,10 @@ import {
   updatePlanInputSchema,
 } from '@/features/action-plan/api/update-action-plan';
 import {
+  ACTION_PLAN_EDITOR_SAVE_DELAY,
+  ACTION_PLAN_SAVE_DELAY,
+} from '@/features/action-plan/const/delay';
+import {
   ActionPlanType,
   AnnualReport,
   Biomarker,
@@ -66,6 +70,8 @@ export interface PlanStore {
 
   // async
   updateActionPlan: (published?: boolean) => Promise<void>;
+  // internal helper function to save all progress before exiting
+  _makeFinalUpdate: () => Promise<void>;
 }
 
 export type PlanStoreApi = ReturnType<typeof planStoreCreator>;
@@ -273,7 +279,16 @@ export const planStoreCreator = (initProps: PlanStoreProps) => {
 
           setTimeout(() => {
             set({ isUpdating: false });
-          }, 1000); // this is HACK to prevent fast animation
+          }, ACTION_PLAN_SAVE_DELAY); // this is HACK to prevent fast animation
+        },
+        //internal
+        _makeFinalUpdate: async () => {
+          set({ isUpdating: true });
+          await new Promise((resolve) =>
+            // + 200 here to give extra time just in case (not needed)
+            setTimeout(resolve, ACTION_PLAN_EDITOR_SAVE_DELAY + 200),
+          );
+          set({ isUpdating: false });
         },
       }),
       { name: 'ActionPlanStore' }, // Store name for Redux DevTools

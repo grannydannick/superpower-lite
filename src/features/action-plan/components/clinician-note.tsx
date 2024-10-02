@@ -2,7 +2,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { usePlans } from '@/features/action-plan/api/get-plans';
 import { ActionPlanComponent } from '@/features/action-plan/components/action-plan';
 import { AnnualReportComponent } from '@/features/action-plan/components/annual-report';
-import { BiomarkerDataView } from '@/features/action-plan/components/biomarker-data-view';
+import { BiomarkerDataView } from '@/features/action-plan/components/biomarkers/biomarker-data-view';
 import { ClinicianNoteHeader } from '@/features/action-plan/components/note-header';
 import { PlanStoreProvider } from '@/features/action-plan/stores/plan-store';
 import { useUser } from '@/lib/auth';

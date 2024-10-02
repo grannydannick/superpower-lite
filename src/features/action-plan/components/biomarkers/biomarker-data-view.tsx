@@ -1,13 +1,12 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import { usePlan } from '@/features/action-plan/stores/plan-store';
 import { useBiomarkers } from '@/features/biomarkers/api/get-biomarkers';
-import { useUser } from '@/lib/auth';
 
-import { ActionPlanDataView } from './data-view';
+import { columns } from './columns';
+import { DataTable } from './data-table';
 
 export const BiomarkerDataView = () => {
   const biomarkersQuery = useBiomarkers();
-  const { data: user } = useUser();
   const isAdmin = usePlan((s) => s.isAdmin);
 
   if (!isAdmin) {
@@ -20,14 +19,7 @@ export const BiomarkerDataView = () => {
     );
   }
 
-  if (!biomarkersQuery.data || !user) return <></>;
+  if (!biomarkersQuery.data) return <></>;
 
-  const patientName = `${user.firstName} ${user.lastName}`;
-
-  return (
-    <ActionPlanDataView
-      patientName={patientName}
-      biomarkers={biomarkersQuery.data.biomarkers}
-    />
-  );
+  return <DataTable data={biomarkersQuery.data.biomarkers} columns={columns} />;
 };

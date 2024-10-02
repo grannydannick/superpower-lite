@@ -2,10 +2,7 @@ import { X } from 'lucide-react';
 import React from 'react';
 
 import { DialogClose } from '@/components/ui/dialog';
-import {
-  StatusBadge,
-  StatusOption,
-} from '@/features/biomarkers/components/status-badge';
+import { BiomarkerStatusBadge } from '@/features/biomarkers/components/status-badge';
 import { STATUS_TO_BG } from '@/features/biomarkers/const/status-to-bg';
 import { cn } from '@/lib/utils';
 import { BiomarkerResult, BiomarkerStatus } from '@/types/api';
@@ -42,7 +39,7 @@ export function BiomarkerCardHeader({
               background: STATUS_TO_BG[status.toUpperCase()],
             }}
           >
-            <StatusBadge status={status as StatusOption} />
+            <BiomarkerStatusBadge status={status} />
             {result !== null ? (
               <BiomarkerValue result={result} unit={unit} />
             ) : null}

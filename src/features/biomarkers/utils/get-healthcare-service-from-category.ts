@@ -1,4 +1,4 @@
-import { ToolbarCategoryType } from '@/features/biomarkers/const/toolbar-options';
+import { ToolbarCategoryType } from '@/features/biomarkers/types/filters';
 
 export const getHealthcareServiceFromCategory = (
   category: ToolbarCategoryType,

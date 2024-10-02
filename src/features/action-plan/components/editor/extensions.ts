@@ -1,7 +1,5 @@
-import { InputRule } from '@tiptap/core';
 import { Color } from '@tiptap/extension-color';
 import Highlight from '@tiptap/extension-highlight';
-import { HorizontalRule } from '@tiptap/extension-horizontal-rule';
 import TiptapLink from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import { TextStyle } from '@tiptap/extension-text-style';
@@ -17,6 +15,11 @@ import { Mathematics, Twitter } from '@/components/ui/editor';
 const starterKit = StarterKit.configure({
   heading: {
     levels: [1, 2, 3],
+  },
+  horizontalRule: {
+    HTMLAttributes: {
+      class: 'mt-4 mb-6 border-t border-zinc-300',
+    },
   },
   blockquote: {
     HTMLAttributes: {
@@ -53,32 +56,6 @@ const tiptapLink = TiptapLink.configure({
   HTMLAttributes: {
     class:
       'text-muted-foreground underline underline-offset-[3px] hover:text-primary transition-colors cursor-pointer',
-  },
-});
-
-const horizontalRule = HorizontalRule.extend({
-  addInputRules() {
-    return [
-      new InputRule({
-        find: /^(?:---|—-|___\s|\*\*\*\s)$/u,
-        handler: ({ state, range }) => {
-          const attributes = {};
-
-          const { tr } = state;
-          const start = range.from;
-          const end = range.to;
-
-          tr.insert(start - 1, this.type.create(attributes)).delete(
-            tr.mapping.map(start),
-            tr.mapping.map(end),
-          );
-        },
-      }),
-    ];
-  },
-}).configure({
-  HTMLAttributes: {
-    class: 'mt-4 mb-6 border-t border-zinc-300',
   },
 });
 
@@ -123,7 +100,6 @@ export const defaultExtensions = [
   starterKit,
   placeholder,
   tiptapLink,
-  horizontalRule,
   youtube,
   twitter,
   mathematics,

@@ -1,24 +1,38 @@
 import 'moment-timezone';
 import { ColumnDef } from '@tanstack/react-table';
-import { Circle } from 'lucide-react';
+import { ChevronDown, Circle } from 'lucide-react';
 
+import { Button } from '@/components/ui/button';
+import { Body1 } from '@/components/ui/typography';
 import { BiomarkerSparklineChart } from '@/features/biomarkers/components/charts/biomarker-sparkline-chart';
-import { StatusBadge } from '@/features/biomarkers/components/status-badge';
+import { BiomarkerRange } from '@/features/biomarkers/components/range';
+import { BiomarkerStatusBadge } from '@/features/biomarkers/components/status-badge';
+import { BiomarkerValueUnit } from '@/features/biomarkers/components/value-unit';
 import { STATUS_TO_COLOR } from '@/features/biomarkers/const/status-to-color';
 import { mostRecent } from '@/features/biomarkers/utils/most-recent-biomarker';
 import { cn } from '@/lib/utils';
-import { Biomarker, BiomarkerResult } from '@/types/api';
-
-import { getOptimalRange } from '../../utils/get-optimal-range';
-
-import { DataTableColumnHeader } from './data-table-column-header';
+import { Biomarker } from '@/types/api';
 
 export const getCols = (): ColumnDef<Biomarker>[] => [
   {
     accessorKey: 'name',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Name" />
-    ),
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="gap-2 p-0 text-zinc-400"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Name
+          <ChevronDown
+            className={cn(
+              'transition-transform duration-200',
+              column.getIsSorted() === 'desc' && 'rotate-180',
+            )}
+          />
+        </Button>
+      );
+    },
     cell: ({ row }) => {
       const name: string = row.getValue('name');
       const category: string = row.original.category;
@@ -26,105 +40,76 @@ export const getCols = (): ColumnDef<Biomarker>[] => [
       const result = mostRecent(row.original.value);
 
       return (
-        <div className="flex flex-row gap-x-2.5 pl-4">
-          <Circle
-            className={`mt-1 block size-3 md:hidden`}
-            style={{ fill: STATUS_TO_COLOR[status.toLowerCase()] }}
-            strokeWidth={0}
-          />
-          <div className="flex w-full flex-col justify-between">
-            <p className={cn('lg:text-base w-full light line-clamp-1')}>
-              {name}
-            </p>
-            <p className="hidden w-full truncate text-gray-400 md:block lg:text-base">
-              {category}
-            </p>
-            <p className="block w-full truncate text-gray-400 md:hidden lg:text-base">
-              <ValueUnit result={result} baseUnit={row.original.unit} />
-            </p>
+        <div className="flex flex-col">
+          <div className="flex items-center gap-2.5">
+            <Circle
+              className="block size-2 min-w-2 md:hidden"
+              style={{ fill: STATUS_TO_COLOR[status.toLowerCase()] }}
+              strokeWidth={0}
+            />
+            <Body1 className="line-clamp-1">{name}</Body1>
+          </div>
+          <Body1 className="hidden text-zinc-400 md:block">{category}</Body1>
+          <div className="px-[18px] md:hidden">
+            <BiomarkerValueUnit result={result} baseUnit={row.original.unit} />
           </div>
         </div>
       );
-    },
-    filterFn: (row, id, value): boolean => {
-      const rowValue = (row.getValue(id) as string).toLowerCase();
-
-      if (Array.isArray(value)) {
-        value = value.map((v: string) => v.toLowerCase());
-        return value.includes(rowValue);
-      }
-
-      value = (value as string).toLowerCase();
-      return rowValue.includes(value);
     },
   },
   {
     // Filter only
     accessorKey: 'category',
     filterFn: (row, id, value) => {
-      return value.includes((row.getValue(id) as string).toLowerCase());
+      return value.includes(row.getValue(id));
     },
   },
   {
     accessorKey: 'status',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
-    ),
-    cell: ({ row }) => {
+    header: ({ column }) => {
       return (
-        <div className="pl-4">
-          <StatusBadge status={row.getValue('status')} />
-        </div>
+        <Button
+          variant="ghost"
+          className="gap-2 p-0 text-zinc-400"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Status
+          <ChevronDown
+            className={cn(
+              'transition-transform duration-200',
+              column.getIsSorted() === 'desc' && 'rotate-180',
+            )}
+          />
+        </Button>
       );
     },
+    cell: ({ row }) => {
+      return <BiomarkerStatusBadge status={row.original.status} />;
+    },
     filterFn: (row, id, value) => {
-      const filterVals = value[0]?.split(' ') || [];
-
-      return filterVals.includes((row.getValue(id) as string).toLowerCase());
+      return value.includes(row.getValue(id));
     },
   },
   {
     accessorKey: 'value',
-    header: 'Value',
+    header: () => <Body1 className="text-zinc-400">Value</Body1>,
     cell: ({ row }) => {
       const result = mostRecent(row.original.value);
 
       return (
-        <div className="pl-4">
-          <div>
-            <ValueUnit result={result} baseUnit={row.original.unit} />
-          </div>
-        </div>
+        <BiomarkerValueUnit result={result} baseUnit={row.original.unit} />
       );
     },
   },
   {
     accessorKey: 'range',
-    header: 'Optimal Range',
+    header: () => <Body1 className="text-zinc-400">Optimal range</Body1>,
     cell: ({ row }) => {
-      return (
-        <div className="pl-4">
-          <span
-            className={`text-nowrap rounded-full px-5 py-3 text-center text-gray-500 ${
-              row.getValue('status') === 'OPTIMAL'
-                ? 'bg-green-50'
-                : 'bg-slate-50'
-            }`}
-          >
-            {getOptimalRange(row)}
-          </span>
-        </div>
-      );
+      return <BiomarkerRange biomarker={row.original} />;
     },
   },
   {
-    header: ({ column }) => (
-      <DataTableColumnHeader
-        column={column}
-        title="History"
-        className="xl:pl-[55px]"
-      />
-    ),
+    header: () => <Body1 className="text-zinc-400 xl:pl-[55px]">History</Body1>,
     id: 'sparkline',
     cell: ({ row }) => {
       return (
@@ -135,34 +120,3 @@ export const getCols = (): ColumnDef<Biomarker>[] => [
     },
   },
 ];
-
-interface ValueUnitProps {
-  result?: BiomarkerResult;
-  baseUnit: string;
-}
-
-export function ValueUnit({ result, baseUnit }: ValueUnitProps): JSX.Element {
-  const value =
-    result?.quantity.value !== undefined ? result?.quantity.value : '-';
-  const unit = result?.quantity.unit || baseUnit || '';
-  let comparator = '';
-  if (result?.quantity.comparator === 'LESS_THAN') {
-    comparator = '<';
-  } else if (result?.quantity.comparator === 'LESS_THAN_EQUALS') {
-    comparator = '<=';
-  } else if (result?.quantity.comparator === 'GREATER_THAN') {
-    comparator = '>';
-  } else if (result?.quantity.comparator === 'GREATER_THAN_EQUALS') {
-    comparator = '>=';
-  }
-
-  return (
-    <div className="space-x-1 truncate text-sm lg:text-base">
-      <span className="text-black">
-        {comparator}
-        {value}
-      </span>
-      <span className="text-gray-400">{unit}</span>
-    </div>
-  );
-}

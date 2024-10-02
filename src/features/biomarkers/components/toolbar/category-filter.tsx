@@ -1,70 +1,79 @@
-import { Column } from '@tanstack/react-table';
-import { Check, ChevronDown } from 'lucide-react';
-import React from 'react';
+import { Table } from '@tanstack/react-table';
+import { ChevronDown } from 'lucide-react';
+import React, { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Body2 } from '@/components/ui/typography';
+import { CATEGORY_FILTER_NAME } from '@/features/biomarkers/const/filters';
 import { CATEGORY_OPTIONS } from '@/features/biomarkers/const/toolbar-options';
 import { cn } from '@/lib/utils';
 
-interface DataTableFacetedFilter<TData, TValue> {
-  column?: Column<TData, TValue>;
+interface DataTableFacetedFilter<TData> {
+  table: Table<TData>;
   title?: React.ReactNode;
 }
 
-export function CategoryFilter<TData, TValue>({
-  column,
-}: DataTableFacetedFilter<TData, TValue>): JSX.Element {
-  const selectedValues = new Set(column?.getFilterValue() as string[]);
+export function CategoryFilter<TData>({
+  table,
+  title,
+}: DataTableFacetedFilter<TData>): JSX.Element {
+  const [filters, setFilters] = useState<string[]>([]);
+  const [open, setOpen] = useState<boolean>(false);
 
-  const title = 'Category';
+  const defaultTitle = title ? title : CATEGORY_FILTER_NAME;
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
           size="sm"
           className={cn(
-            'bg-white rounded-lg py-2 px-3 text-sm text-zinc-500 flex items-center gap-x-1.5 light',
-            selectedValues.size > 0 ? 'border-vermillion-700' : 'border-none',
+            'bg-white rounded-lg py-2 px-3 text-sm text-zinc-500 hidden md:flex items-center gap-1.5',
+            filters.length ? 'border-vermillion-900' : 'border-none',
           )}
         >
-          <p className="hidden whitespace-nowrap sm:block">
-            {selectedValues.size > 0 ? (
-              <div className="flex flex-row items-center gap-x-1.5">
-                <span className="size-4 rounded-full bg-vermillion-700 text-center text-xs text-white">
-                  {selectedValues.size}
-                </span>
-                <span>Categories</span>
+          {filters.length > 0 ? (
+            <div className="flex flex-row items-center gap-x-1.5">
+              <div className="size-4 min-w-4 rounded-full bg-vermillion-700 text-center text-xs text-white">
+                {filters.length}
               </div>
-            ) : (
-              title
+              <Body2 className="text-zinc-500">Categories</Body2>
+            </div>
+          ) : (
+            defaultTitle
+          )}
+          <ChevronDown
+            className={cn(
+              'size-4 min-w-4 transition-transform duration-200',
+              open && 'rotate-180',
             )}
-          </p>
-          <ChevronDown className="size-4" />
+          />
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="min-w-[456px] rounded-xl border-0 bg-white p-4 text-sm shadow"
+        className="min-w-[456px] rounded-lg border-0 bg-white p-4 shadow-lg"
         align="end"
         side="bottom"
       >
-        <div className="flex flex-col gap-y-4">
+        <div className="flex flex-col gap-4">
           <div className="flex flex-row items-center justify-between">
-            <div>Categories</div>
+            <Body2 className="text-zinc-700">Categories</Body2>
             <div>
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-auto p-0 text-sm text-gray-400 hover:bg-transparent"
+                className="p-0 text-sm text-zinc-400 hover:bg-transparent"
                 onClick={() => {
-                  selectedValues.clear();
-                  column?.setFilterValue(undefined);
+                  setFilters([]);
+                  table.getColumn('category')?.setFilterValue(undefined);
                 }}
               >
                 Clear Selection
@@ -73,35 +82,38 @@ export function CategoryFilter<TData, TValue>({
           </div>
           <div className="grid gap-x-6 gap-y-2.5 md:grid-cols-2">
             {CATEGORY_OPTIONS.map((option) => {
-              const isSelected = selectedValues.has(option.value);
               return (
                 <div
-                  key={option.value}
-                  role="presentation"
-                  onClick={() => {
-                    if (isSelected) {
-                      selectedValues.delete(option.value);
-                    } else {
-                      selectedValues.add(option.value);
-                    }
-                    const filterValues = Array.from(selectedValues);
-                    column?.setFilterValue(
-                      filterValues.length ? filterValues : undefined,
-                    );
-                  }}
-                  className="my-1 ml-1 mr-2 flex w-full max-w-[200px] cursor-pointer flex-row items-center gap-x-2 truncate"
+                  key={option.id}
+                  className="flex w-full items-center gap-2 p-2"
                 >
-                  <div
+                  <Checkbox
+                    id={option.id}
+                    checked={filters.includes(option.label)}
+                    onCheckedChange={(checked) =>
+                      setFilters((prev) => {
+                        const updated = checked
+                          ? [...prev, option.label]
+                          : prev.filter((value) => value !== option.label);
+
+                        table
+                          .getColumn('category')
+                          ?.setFilterValue(
+                            updated.length ? updated : undefined,
+                          );
+                        return updated;
+                      })
+                    }
                     className={cn(
-                      'flex h-5 w-5 items-center justify-center rounded-sm bg-[#F8FAFC]',
-                      isSelected
-                        ? 'text-primary-foreground bg-vermillion-100 text-vermillion-700'
-                        : '[&_svg]:invisible',
+                      'flex h-5 w-5 items-center justify-center rounded-sm bg-zinc-100 border-0 data-[state=checked]:bg-vermillion-100 data-[state=checked]:text-vermillion-900',
                     )}
+                  />
+                  <Label
+                    className="line-clamp-1 text-nowrap text-sm text-zinc-500"
+                    htmlFor={option.id}
                   >
-                    <Check className={cn('h-4 w-4')} />
-                  </div>
-                  <span className="text-gray-500">{option.label}</span>
+                    {option.label}
+                  </Label>
                 </div>
               );
             })}

@@ -21,6 +21,7 @@ export function ClinicianNoteHeader(): React.ReactNode {
     isUpdating,
     updateIsAdmin,
     updatedAt,
+    _makeFinalUpdate,
   } = usePlan((s) => s);
   const { data: user } = useUser();
   const navigate = useNavigate();
@@ -48,9 +49,9 @@ export function ClinicianNoteHeader(): React.ReactNode {
      */
     if (user?.adminActor) {
       /**
-       * Always save plan before closing
+       * Give enough time for all debounces to finish before closing to properly save content
        */
-      await updateActionPlan();
+      await _makeFinalUpdate();
       /**
        *  We invalidate here because action plan store doesn't use React Query,
        *  therefore by the time we come back from editing our RTK cache might still be present
