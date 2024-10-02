@@ -61,7 +61,7 @@ export function ActionPlanItemRow(
             <div
               role="presentation"
               className="flex h-10 min-w-10 cursor-pointer items-center justify-center rounded-full shadow-md"
-              onClick={() => deleteGoalItem(goalId, product.id)}
+              onClick={() => deleteGoalItem(goalId, item.id)}
             >
               <Trash2 width={20} height={20} className="text-pink-700" />
             </div>
@@ -84,7 +84,7 @@ export function ActionPlanItemRow(
             <div
               role="presentation"
               className="flex h-10 min-w-10 cursor-pointer items-center justify-center rounded-full shadow-md"
-              onClick={() => deleteGoalItem(goalId, service.id)}
+              onClick={() => deleteGoalItem(goalId, item.id)}
             >
               <Trash2 width={20} height={20} className="text-pink-700" />
             </div>
@@ -103,7 +103,7 @@ export function ActionPlanItemRow(
             <div
               role="presentation"
               className="flex h-10 min-w-10 cursor-pointer items-center justify-center rounded-full shadow-md"
-              onClick={() => deleteGoalItem(goalId, biomarker.id)}
+              onClick={() => deleteGoalItem(goalId, item.id)}
             >
               <Trash2 width={20} height={20} className="text-pink-700" />
             </div>
@@ -255,11 +255,13 @@ function ActionPlanItemDatePicker({
     }
   }, []);
 
-  useEffect(() => {
+  const updateDeadline = (date?: Date) => {
+    setDate(date);
+
     if (date) {
       changeItemDeadline(goalId, goalItem, date.toISOString());
     }
-  }, [date]);
+  };
 
   return (
     <Popover>
@@ -284,7 +286,7 @@ function ActionPlanItemDatePicker({
         <Calendar
           mode="single"
           selected={date}
-          onSelect={setDate}
+          onSelect={(date) => updateDeadline(date)}
           initialFocus
         />
       </PopoverContent>

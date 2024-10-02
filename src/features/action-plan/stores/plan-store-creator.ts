@@ -1,16 +1,15 @@
 import { toast } from 'sonner';
+import { v4 as uuidv4 } from 'uuid';
 import { createStore } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
 
 import {
   updatePlan,
   UpdatePlanInput,
   updatePlanInputSchema,
 } from '@/features/action-plan/api/update-action-plan';
-import {
-  ACTION_PLAN_EDITOR_SAVE_DELAY,
-  ACTION_PLAN_SAVE_DELAY,
-} from '@/features/action-plan/const/delay';
+import { ACTION_PLAN_EDITOR_SAVE_DELAY } from '@/features/action-plan/const/delay';
 import {
   ActionPlanType,
   AnnualReport,
@@ -50,7 +49,7 @@ export interface PlanStore {
   changeAnnualReportTitle: (title: string) => void;
   changeGoalDescription: (description: string, goalId: string) => void; // Updated to use goalId
   changeAnnualReportDescription: (description: string) => void;
-  deleteGoalItem: (goalId: string, itemId: string) => void; // Updated to use goalId
+  deleteGoalItem: (goalId: string, goalItemId: string) => void; // Updated to use goalId
   insertGoalItem: (
     selectedItems: Biomarker[] | HealthcareService[] | Product[],
     type: PlanGoalItemType,
@@ -81,7 +80,7 @@ export const planStoreCreator = (initProps: PlanStoreProps) => {
 
   return createStore<PlanStore>()(
     devtools(
-      (set, get) => ({
+      immer((set, get) => ({
         isAdmin,
         type: initialPlan.type,
         orderId: initialPlan.orderId,
@@ -94,147 +93,226 @@ export const planStoreCreator = (initProps: PlanStoreProps) => {
         isUpdating: false,
         annualReport: initialPlan.annualReport,
 
-        /*
-         * Following functions handle server updates via useDebounce hook
-         * to prevent updates on every letter change
-         * */
-        changeTitle: (title) => set(() => ({ title })),
+        /**
+         * Handles the change of the plan's title.
+         * Uses immer to simplify state updates.
+         */
+        changeTitle: (title) =>
+          set((state) => {
+            state.title = title;
+          }),
+
+        /**
+         * Handles the change of the annual report's title.
+         * Safely accesses annualReport using a type guard.
+         */
         changeAnnualReportTitle: (title) =>
-          set((state) => ({
-            annualReport: {
-              ...state.annualReport!,
-              title,
-            },
-          })),
-        changeDescription: (description) => set(() => ({ description })),
-        changeAnnualReportDescription: (description) =>
-          set((state) => ({
-            annualReport: {
-              ...state.annualReport!,
-              description,
-            },
-          })),
-        changeGoalTitle: (title, goalId) =>
-          set((state) => ({
-            goals: state.goals.map(
-              (goal) => (goal.id === goalId ? { ...goal, title } : goal), // Update goal by goalId
-            ),
-          })),
-        changeGoalDescription: (content, goalId) =>
-          set((state) => ({
-            goals: state.goals.map(
-              (goal) =>
-                goal.id === goalId ? { ...goal, description: content } : goal, // Update by goalId
-            ),
-          })),
-        changeGoalItemDescription: (goalId, goalItem, description) =>
-          set((state) => ({
-            goals: state.goals.map((goal) =>
-              goal.id === goalId
-                ? {
-                    ...goal,
-                    goalItems: goal.goalItems.map(
-                      (item) =>
-                        item.itemId === goalItem.itemId
-                          ? { ...item, description }
-                          : item, // Update item by itemId within the specified goalId
-                    ),
-                  }
-                : goal,
-            ),
-          })),
+          set((state) => {
+            if (state.annualReport) {
+              state.annualReport.title = title;
+            }
+          }),
 
-        /*
-         * Following functions handle updates directly inside because once action done we can't perform
-         * the same action immediately (relatively ~500ms)
-         * */
-        addGoal: (goalType = 'DEFAULT') => {
-          set((state) => ({
-            goals: [
-              ...state.goals,
-              {
-                id: crypto.randomUUID(), // Goal ID remains unique
-                title: '',
-                description: '',
-                type: goalType,
-                from: new Date().toISOString(),
-                to: new Date().toISOString(),
-                goalItems: [],
-              },
-            ],
-          }));
+        /**
+         * Handles the change of the plan's description.
+         */
+        changeDescription: (description) =>
+          set((state) => {
+            state.description = description;
+          }),
 
-          get().updateActionPlan();
-        },
+        /**
+         * Handles the change of the annual report's description.
+         */
+        changeAnnualReportDescription: (description: string) =>
+          set((state) => {
+            if (state.annualReport) {
+              state.annualReport.description = description;
+            }
+          }),
 
-        deleteGoal: (goalId) => {
-          set((state) => ({
-            goals: state.goals.filter((goal) => goal.id !== goalId), // Filter by goalId
-          }));
+        /**
+         * Updates the title of a goal identified by goalId.
+         * @param title - New title for the goal.
+         * @param goalId - ID of the goal to be updated.
+         */
+        changeGoalTitle: (title: string, goalId: string) =>
+          set((state) => {
+            const goal = state.goals.find((g) => g.id === goalId);
+            if (goal) {
+              goal.title = title;
+            }
+          }),
 
-          get().updateActionPlan();
-        },
+        /**
+         * Updates the description of a goal identified by goalId.
+         * @param description - New description for the goal.
+         * @param goalId - ID of the goal to be updated.
+         */
+        changeGoalDescription: (description: string, goalId: string) =>
+          set((state) => {
+            const goal = state.goals.find((g) => g.id === goalId);
+            if (goal) {
+              goal.description = description;
+            }
+          }),
 
-        deleteGoalItem: (goalId, itemId) => {
-          set((state) => ({
-            goals: state.goals.map((goal) =>
-              goal.id === goalId
-                ? {
-                    ...goal,
-                    goalItems: goal.goalItems.filter(
-                      (goalItem) => goalItem.itemId !== itemId,
-                    ), // Filter by itemId within the specified goalId
-                  }
-                : goal,
-            ),
-          }));
+        /**
+         * Updates the description of a goal item within a specific goal.
+         * @param goalId - ID of the goal containing the item.
+         * @param goalItem - The goal item to be updated.
+         * @param description - New description for the goal item.
+         */
+        changeGoalItemDescription: (
+          goalId: string,
+          goalItem: PlanGoalItem,
+          description: string,
+        ) =>
+          set((state) => {
+            const goal = state.goals.find((g) => g.id === goalId);
+            if (goal) {
+              const item = goal.goalItems.find(
+                (i) => i.itemId === goalItem.itemId,
+              );
+              if (item) {
+                item.description = description;
+              }
+            }
+          }),
 
-          get().updateActionPlan();
-        },
-
-        insertGoalItem: (selectedItems, type, goalId) => {
-          const items = selectedItems.map((selectedItem) => ({
-            id: crypto.randomUUID(),
-            itemId: selectedItem.id,
-            itemType: type,
-          }));
-
-          set((state) => ({
-            goals: state.goals.map((goal) =>
-              goal.id === goalId
-                ? {
-                    ...goal,
-                    goalItems: [...goal.goalItems, ...items], // Insert items into goal by goalId
-                  }
-                : goal,
-            ),
-          }));
+        /**
+         * Adds a new goal to the plan.
+         * @param goalType - Type of the goal to be added.
+         */
+        addGoal: (goalType: PlanGoalType = 'DEFAULT') => {
+          set((state) => {
+            state.goals.push({
+              id: uuidv4(),
+              title: '',
+              description: '',
+              type: goalType,
+              from: new Date().toISOString(),
+              to: new Date().toISOString(),
+              goalItems: [],
+            });
+          });
 
           get().updateActionPlan();
         },
 
-        changeItemDeadline: (goalId, goalItem, deadline) => {
-          set((state) => ({
-            goals: state.goals.map((goal) =>
-              goal.id === goalId
-                ? {
-                    ...goal,
-                    goalItems: goal.goalItems.map(
-                      (item) =>
-                        item.itemId === goalItem.itemId
-                          ? { ...item, timestamp: deadline }
-                          : item, // Update deadline by itemId within the goalId
-                    ),
-                  }
-                : goal,
-            ),
-          }));
+        /**
+         * Deletes a goal from the plan.
+         * @param goalId - ID of the goal to be deleted.
+         */
+        deleteGoal: (goalId: string) => {
+          set((state) => {
+            state.goals = state.goals.filter((goal) => goal.id !== goalId);
+          });
+
           get().updateActionPlan();
         },
 
-        updateIsAdmin: (isAdmin) => set({ isAdmin }),
+        /**
+         * Deletes a goal item from a specific goal.
+         * @param goalId - ID of the goal containing the item.
+         * @param goalItemId - ID of the goal item to be deleted.
+         */
+        deleteGoalItem: (goalId: string, goalItemId: string) => {
+          set((state) => {
+            const goal = state.goals.find((g) => g.id === goalId);
+            if (goal) {
+              goal.goalItems = goal.goalItems.filter(
+                (item) => item.id !== goalItemId,
+              );
+            }
+          });
 
-        // async
+          get().updateActionPlan();
+        },
+
+        /**
+         * Inserts new goal items into a specific goal.
+         * @param selectedItems - Items to be inserted.
+         * @param type - Type of the goal items.
+         * @param goalId - ID of the goal where items will be inserted.
+         */
+        insertGoalItem: (
+          selectedItems: Biomarker[] | HealthcareService[] | Product[],
+          type: PlanGoalItemType,
+          goalId: string,
+        ) => {
+          set((state) => {
+            const goal = state.goals.find((g) => g.id === goalId);
+            if (goal) {
+              const existingItemIds = new Set(
+                goal.goalItems.map((item) => item.itemId),
+              );
+
+              const duplicates = selectedItems.filter((selectedItem) =>
+                existingItemIds.has(selectedItem.id),
+              );
+
+              if (duplicates.length > 0) {
+                // means that duplicates found
+                toast.warning(
+                  'One or more items are already added to this goal.',
+                );
+                return;
+              }
+
+              const items = selectedItems.map((selectedItem) => ({
+                id: uuidv4(),
+                itemId: selectedItem.id,
+                itemType: type,
+              }));
+
+              // Add new items to the goal's goalItems
+              goal.goalItems.push(...items);
+            }
+          });
+
+          get().updateActionPlan();
+        },
+
+        /**
+         * Changes the deadline of a goal item within a specific goal.
+         * @param goalId - ID of the goal containing the item.
+         * @param goalItem - The goal item to be updated.
+         * @param deadline - New deadline for the goal item.
+         */
+        changeItemDeadline: (
+          goalId: string,
+          goalItem: PlanGoalItem,
+          deadline: string,
+        ) => {
+          set((state) => {
+            const goal = state.goals.find((g) => g.id === goalId);
+            if (goal) {
+              const item = goal.goalItems.find(
+                (i) => i.itemId === goalItem.itemId,
+              );
+              if (item) {
+                item.timestamp = deadline;
+              }
+            }
+          });
+
+          get().updateActionPlan();
+        },
+
+        /**
+         * Updates the admin status.
+         * @param isAdmin - New admin status.
+         */
+        updateIsAdmin: (isAdmin: boolean) =>
+          set((state) => {
+            state.isAdmin = isAdmin;
+          }),
+
+        /**
+         * Asynchronously updates the action plan on server to save progress.
+         * @param published - Optional published status.
+         */
         updateActionPlan: async (published) => {
           const state = get();
           set({ isUpdating: true });
@@ -245,7 +323,7 @@ export const planStoreCreator = (initProps: PlanStoreProps) => {
             title: state.title,
             description: state.description,
             goals: state.goals,
-            published: published ? published : state.published,
+            published: published ?? state.published,
             annualReport: state.annualReport,
           };
 
@@ -260,37 +338,34 @@ export const planStoreCreator = (initProps: PlanStoreProps) => {
             return;
           }
 
-          const updatedPlanData: { actionPlan: Plan } = await updatePlan({
-            data: dto,
-          });
+          try {
+            const response = await updatePlan({
+              data: dto,
+            });
 
-          const updatedPlan = updatedPlanData.actionPlan;
-
-          set({
-            orderId: updatedPlan.orderId,
-            timestamp: updatedPlan.timestamp,
-            title: updatedPlan.title,
-            description: updatedPlan.description,
-            goals: updatedPlan.goals,
-            published: updatedPlan.published,
-            annualReport: updatedPlan.annualReport,
-            updatedAt: updatedPlan.updatedAt,
-          });
-
-          setTimeout(() => {
+            set((state) => {
+              state.published = response.actionPlan.published;
+              state.updatedAt = response.actionPlan.updatedAt;
+            });
+          } catch (e) {
+            toast.error('Failed to update action plan...Try again later.');
+          } finally {
             set({ isUpdating: false });
-          }, ACTION_PLAN_SAVE_DELAY); // this is HACK to prevent fast animation
+          }
         },
-        //internal
+
+        /**
+         * Internal helper function to save all progress before exiting.
+         * Ensures that any pending updates are finalized.
+         */
         _makeFinalUpdate: async () => {
           set({ isUpdating: true });
           await new Promise((resolve) =>
-            // + 200 here to give extra time just in case (not needed)
             setTimeout(resolve, ACTION_PLAN_EDITOR_SAVE_DELAY + 200),
           );
           set({ isUpdating: false });
         },
-      }),
+      })),
       { name: 'ActionPlanStore' }, // Store name for Redux DevTools
     ),
   );

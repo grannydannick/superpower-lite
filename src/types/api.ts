@@ -415,7 +415,7 @@ export type Wearable = {
 
 /* ACTION PLAN */
 
-export type Plan = {
+export type Plan = Entity<{
   orderId: string;
   timestamp: string;
   title: string;
@@ -426,24 +426,23 @@ export type Plan = {
   videoFileId?: string;
   annualReport?: AnnualReport;
   updatedAt: string;
-};
+}>;
 
-export interface PlanGoal {
-  id: string;
+export type PlanGoal = Entity<{
   title: string;
   type: PlanGoalType;
   description: string;
   goalItems: PlanGoalItem[];
   to: string;
   from: string;
-}
+}>;
 
-export interface PlanGoalItem {
+export type PlanGoalItem = Entity<{
   itemId: string;
   itemType: PlanGoalItemType;
   description?: string;
   timestamp?: string;
-}
+}>;
 
 export type PlanDate = {
   timestamp: string;
@@ -475,15 +474,13 @@ export type AnnualReportBlockGroupItemStatusType =
   | 'NORMAL'
   | 'OUT_OF_RANGE';
 
-export interface BlockGroupItemRef {
-  id: string;
+export type BlockGroupItemRef = Entity<{
   type: AnnualReportBlockGroupItemRefType;
   text: string;
   value: string;
-}
+}>;
 
-export interface BlockGroupItem {
-  id: string;
+export type BlockGroupItem = Entity<{
   type: AnnualReportBlockGroupItemType;
   biomarkerId: string | null;
   selfEvalId: string | null;
@@ -492,10 +489,9 @@ export interface BlockGroupItem {
   status: AnnualReportBlockGroupItemStatusType | null;
   value: string | null;
   ref: BlockGroupItemRef[];
-}
+}>;
 
-export interface BlockGroup {
-  id: string;
+export type BlockGroup = Entity<{
   name: string;
   description: string;
   hover: string;
@@ -504,23 +500,21 @@ export interface BlockGroup {
   scoreCustomSetBy: string;
   scoreCustomSetAt: string;
   blockGroupItem: BlockGroupItem[];
-}
+}>;
 
-export interface Block {
-  id: string;
+export type Block = Entity<{
   type: AnnualReportBlockType;
   title: string;
   subtitle: string;
   subtitleValue: string;
   blockGroup: BlockGroup[];
-}
+}>;
 
-export interface AnnualReport {
-  id: string;
+export type AnnualReport = Entity<{
   title: string;
   description: string;
   block: Block[];
-}
+}>;
 
 /* PRODUCTS */
 

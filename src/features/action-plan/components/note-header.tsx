@@ -1,7 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { X } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
@@ -9,15 +8,16 @@ import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
 import { Body2 } from '@/components/ui/typography';
 import { getPlansQueryOptions } from '@/features/action-plan/api';
+import { PublishAlertDialog } from '@/features/action-plan/components/publish-alert-dialog';
+import { useShowBg } from '@/features/action-plan/hooks/use-show-bg';
 import { usePlan } from '@/features/action-plan/stores/plan-store';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 
-export function ClinicianNoteHeader(): React.ReactNode {
+export const ClinicianNoteHeader = () => {
   const {
     isAdmin,
     published,
-    updateActionPlan,
     isUpdating,
     updateIsAdmin,
     updatedAt,
@@ -25,21 +25,7 @@ export function ClinicianNoteHeader(): React.ReactNode {
   } = usePlan((s) => s);
   const { data: user } = useUser();
   const navigate = useNavigate();
-  const [isBlurred, setIsBlurred] = useState(false);
-
-  // Scroll event listener to toggle blur effect
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      setIsBlurred(scrollTop > 50); // Adjust the scroll value threshold as needed
-    };
-
-    window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+  const isBlurred = useShowBg();
 
   const queryClient = useQueryClient();
 
@@ -104,16 +90,9 @@ export function ClinicianNoteHeader(): React.ReactNode {
               onCheckedChange={() => updateIsAdmin(!isAdmin)}
             />
           </div>
-          {!published && (
-            <Button
-              className="min-w-[103px] rounded-[12px] bg-black px-6 py-3 text-white shadow-md"
-              onClick={() => updateActionPlan(true)}
-            >
-              {isUpdating ? <Spinner variant="primary" /> : 'Publish'}
-            </Button>
-          )}
+          {!published && <PublishAlertDialog />}
         </div>
       ) : null}
     </div>
   );
-}
+};

@@ -19,19 +19,12 @@ interface ActionPlanGoalProps {
 }
 
 export function ActionPlanGoal({ goal, className }: ActionPlanGoalProps) {
-  const {
-    isAdmin,
-    changeGoalTitle,
-    deleteGoal,
-    changeGoalDescription,
-    updateActionPlan,
-  } = usePlan((state) => ({
-    isAdmin: state.isAdmin,
-    changeGoalTitle: state.changeGoalTitle,
-    deleteGoal: state.deleteGoal,
-    changeGoalDescription: state.changeGoalDescription,
-    updateActionPlan: state.updateActionPlan,
-  }));
+  const isAdmin = usePlan((s) => s.isAdmin);
+
+  const deleteGoal = usePlan((s) => s.deleteGoal);
+  const changeGoalDescription = usePlan((s) => s.changeGoalDescription);
+  const changeGoalTitle = usePlan((s) => s.changeGoalTitle);
+  const updateActionPlan = usePlan((s) => s.updateActionPlan);
 
   const renderEditor = () => {
     switch (goal.type) {
@@ -60,7 +53,7 @@ export function ActionPlanGoal({ goal, className }: ActionPlanGoalProps) {
   }, ACTION_PLAN_SAVE_DELAY);
 
   return (
-    <div id={String(goal.id)} className={cn('flex w-full', className)}>
+    <div className={cn('flex w-full', className)}>
       <div className="w-full">
         <div className="flex items-center gap-4">
           <Input
@@ -84,10 +77,12 @@ export function ActionPlanGoal({ goal, className }: ActionPlanGoalProps) {
         {renderEditor()}
 
         <div className="flex flex-col gap-1">
-          {goal.goalItems.map((goalItem, idx) => (
-            <div key={idx}>
-              <ActionPlanItemRow goalId={goal.id} item={goalItem} />
-            </div>
+          {goal.goalItems.map((goalItem) => (
+            <ActionPlanItemRow
+              goalId={goal.id}
+              item={goalItem}
+              key={goalItem.id}
+            />
           ))}
         </div>
 

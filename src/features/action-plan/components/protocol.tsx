@@ -12,9 +12,7 @@ export const Protocol = ({ className }: { className?: string }) => {
     s.goals.filter((goal) => goal.type === 'ANNUAL_REPORT_PROTOCOLS'),
   );
 
-  const hasEmptyGoalItems = goals.every((goal) => goal.goalItems.length === 0);
-
-  if (!isAdmin && hasEmptyGoalItems) {
+  if (!isAdmin && !goals.length) {
     return null;
   }
 

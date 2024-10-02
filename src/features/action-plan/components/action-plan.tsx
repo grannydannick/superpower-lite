@@ -79,7 +79,9 @@ export function ActionPlanComponent() {
 }
 
 const ActionPlanGoals = () => {
-  const { goals, isAdmin, addGoal } = usePlan((s) => s);
+  const goals = usePlan((s) => s.goals);
+  const isAdmin = usePlan((s) => s.isAdmin);
+  const addGoal = usePlan((s) => s.addGoal);
 
   const defaultGoals = goals.filter((g) => g.type === 'DEFAULT');
 
@@ -90,7 +92,7 @@ const ActionPlanGoals = () => {
   return (
     <div className={cn(PLAN_STYLE, goals.length > 0 ? 'py-16' : null)}>
       {defaultGoals.map((goal, index) => (
-        <ActionPlanGoal key={index} goal={goal} goalIndex={index} />
+        <ActionPlanGoal key={goal.id} goal={goal} goalIndex={index} />
       ))}
       {isAdmin && (
         <div className="my-6">
