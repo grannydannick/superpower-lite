@@ -13,14 +13,22 @@ spec:
       labels:
         app: superpower-app
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: eks.amazonaws.com/nodegroup
+                    operator: In
+                    values:
+                      - arm-workers
       containers:
-      - name: superpower-app
-        image: __AWS_ECR_URL__/superpower-app:__VERSION__
-        ports:
-        - containerPort: 3000
+        - name: superpower-app
+          image: __AWS_ECR_URL__/superpower-app:__VERSION__
+          ports:
+            - containerPort: 3000
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -28,9 +36,9 @@ metadata:
   namespace: superpower
   annotations:
     external-dns.alpha.kubernetes.io/hostname: app.superpower-staging.com
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:us-east-1:554179259394:certificate/dc505934-95e6-49a0-b9fd-df2092b3c050"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: 'arn:aws:acm:us-east-1:554179259394:certificate/dc505934-95e6-49a0-b9fd-df2092b3c050'
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
-    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: '443'
 spec:
   selector:
     app: superpower-app

@@ -49,7 +49,7 @@ if [ "${BUILD_ENV}" == "dev" ]; then
     (eval $(minikube docker-env) && docker build -t ${SERVICE}:${VERSION} -f ./deployment/superpower/app/Dockerfile .)
 else
     docker buildx build --push \
-        --platform=linux/amd64 \
+        --platform=linux/arm64 \
         -t ${AWS_ECR_URL}/${SERVICE}:makefile \
         -t ${AWS_ECR_URL}/${SERVICE}:${VERSION} \
         -t ${AWS_ECR_URL}/${SERVICE}:${BUILD_ENV} \

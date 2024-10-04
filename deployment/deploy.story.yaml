@@ -13,6 +13,15 @@ spec:
       labels:
         app: story
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: eks.amazonaws.com/nodegroup
+                    operator: In
+                    values:
+                      - arm-workers
       containers:
         - name: story
           image: __AWS_ECR_URL__/__SERVICE__:__VERSION__
