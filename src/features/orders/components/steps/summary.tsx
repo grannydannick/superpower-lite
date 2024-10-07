@@ -1,8 +1,10 @@
+import { TriangleAlert } from 'lucide-react';
 import moment from 'moment';
 import { ReactNode } from 'react';
 import { toast } from 'sonner';
 
 import { DotIcon } from '@/components/icons/dot';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
@@ -10,6 +12,7 @@ import { Body1, Body2, H2 } from '@/components/ui/typography';
 import {
   CreateOrderInput,
   useCreateOrder,
+  useOrders,
   useUpdateOrder,
 } from '@/features/orders/api';
 import { useOrder } from '@/features/orders/stores/order-store';
@@ -36,12 +39,20 @@ export function OrderSummary(): ReactNode {
   } = useOrder((s) => s);
   const { activeStep, nextStep, steps, prevStep } = useStepper((s) => s);
   const paymentMethodsQuery = usePaymentMethods();
+  const ordersQuery = useOrders();
 
   const createOrderMutation = useCreateOrder();
   const updateOrderMutation = useUpdateOrder();
 
+  const existingDraftOrder = ordersQuery.data?.orders
+    .filter((o) => o.status === OrderStatus.draft)
+    .find((o) => o.serviceId === service.id);
+
   const isMutationLoading =
-    createOrderMutation.isPending || updateOrderMutation.isPending;
+    createOrderMutation.isPending ||
+    updateOrderMutation.isPending ||
+    ordersQuery.isLoading ||
+    paymentMethodsQuery.isLoading;
 
   /*
    * If user books new service (draftOrderId was not initialized)
@@ -112,6 +123,16 @@ export function OrderSummary(): ReactNode {
   return (
     <>
       <div className="p-6 md:p-14">
+        {existingDraftOrder && (
+          <Alert className="mb-12" variant="destructive">
+            <TriangleAlert className="size-4" />
+            <AlertTitle>Heads up!</AlertTitle>
+            <AlertDescription>
+              You have already purchased {service.name}. To complete your
+              booking, please click on the “To be Scheduled” tab.
+            </AlertDescription>
+          </Alert>
+        )}
         <div className="md:space-y-8">
           <H2>Order Summary</H2>
           <CreateOrderSummaryItem />
