@@ -144,6 +144,7 @@ export function OrderSummary(): ReactNode {
           <Button
             onClick={draftOrder ? updateOrderFn : createOrderFn}
             className="w-full md:w-auto"
+            disabled={isMutationLoading}
           >
             {isMutationLoading ? <Spinner /> : 'Confirm'}
           </Button>
