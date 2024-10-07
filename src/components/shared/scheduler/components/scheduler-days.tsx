@@ -33,7 +33,11 @@ export function SchedulerDays(): JSX.Element {
   const renderDays = numDays && startRange && slots.length > 0 && !loading;
 
   if (slots.length === 0 && !loading) {
-    return <Body1 className="text-center">No slots found.</Body1>;
+    return (
+      <div className="mb-8 flex items-center justify-center sm:h-[200px]">
+        <Body1 className="text-center text-zinc-500">No slots found.</Body1>
+      </div>
+    );
   }
 
   return (

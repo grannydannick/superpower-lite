@@ -4,6 +4,7 @@ import React from 'react';
 import 'moment-timezone';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import { Body1 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 import { Slot } from '@/types/api';
 
@@ -12,7 +13,7 @@ import { useScheduler } from '../stores/scheduler';
 import { SchedulerTimeSlot } from './scheduler-time-slot';
 
 export function SchedulerTimes(): JSX.Element {
-  const { selectedDay, slots, tz, loading } = useScheduler((s) => s);
+  const { selectedDay, slots, loading, startRange } = useScheduler((s) => s);
 
   const timeSlots = slots.filter((a: Slot) =>
     selectedDay?.isSame(moment(a.start), 'day'),
@@ -20,12 +21,12 @@ export function SchedulerTimes(): JSX.Element {
 
   return (
     <>
-      {timeSlots.length > 0 && !loading ? (
+      {startRange && !loading ? (
         <div className="mb-2 flex items-center gap-2 text-sm text-zinc-400 md:text-base">
-          {moment(timeSlots[0]?.start).tz(tz).format('MMMM Do')}
+          {moment(startRange).format('MMMM Do')}
           <DotIcon className="size-3" color="#71717A" />
           <h5 className="mr-1 tracking-wider">
-            {fullAbbr(moment(timeSlots[0]?.start).tz(tz).format('zz'))}
+            {startRange ? getFullTimezoneName(startRange.format('zz')) : null}
           </h5>
         </div>
       ) : null}
@@ -36,7 +37,7 @@ export function SchedulerTimes(): JSX.Element {
         <div
           className={cn(
             'p-2 rounded-2xl space-y-2 max-h-[270px] overflow-y-scroll',
-            timeSlots.length > 0 || loading ? 'border border-[#E4E4E7]' : '',
+            startRange || loading ? 'border border-zinc-200' : '',
           )}
         >
           {loading &&
@@ -47,13 +48,18 @@ export function SchedulerTimes(): JSX.Element {
             timeSlots.map((slot: Slot) => {
               return <SchedulerTimeSlot key={slot.start} timeSlot={slot} />;
             })}
+          {!loading && !timeSlots.length ? (
+            <div className="py-10">
+              <Body1 className="text-zinc-500">No times found.</Body1>
+            </div>
+          ) : null}
         </div>
       </div>
     </>
   );
 }
 
-const abbrs: Record<string, string> = {
+const TIMEZONE_ABBREVIATIONS: Record<string, string> = {
   EST: 'Eastern Standard Time',
   EDT: 'Eastern Daylight Time',
   CST: 'Central Standard Time',
@@ -64,6 +70,7 @@ const abbrs: Record<string, string> = {
   PDT: 'Pacific Daylight Time',
 };
 
-function fullAbbr(abbr: string): string {
-  return abbrs[abbr] || abbr;
-}
+// Utility function to get the full timezone name
+const getFullTimezoneName = (abbr: string): string => {
+  return TIMEZONE_ABBREVIATIONS[abbr] || abbr;
+};

@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import React from 'react';
+import moment from 'moment';
 import 'moment-timezone';
+import { toast } from 'sonner';
 
 import { Spinner } from '@/components/ui/spinner';
 
@@ -26,7 +27,17 @@ export function SchedulerHeading(): JSX.Element {
 
     const newStartRange = startRange.clone().add(numDays, 'days').tz(tz);
 
-    updateStartRange(newStartRange);
+    // Get the current date in the specified timezone, set to start of the day
+    const currentDate = moment().tz(tz);
+
+    // Compare the newStartRange with the current date
+    if (newStartRange.isBefore(currentDate)) {
+      toast.warning("Slots can't be in the past.");
+      //  Automatically adjust the newStartRange to the current date
+      updateStartRange(currentDate);
+    } else {
+      updateStartRange(newStartRange);
+    }
     updateSelectedDay(undefined);
     updateSelectedSlot(undefined);
 
@@ -49,12 +60,14 @@ export function SchedulerHeading(): JSX.Element {
 
           <RangeSelectButton
             icon={<ChevronLeft className="size-4" />}
+            disabled={loading}
             onClick={() => {
               numDays && handleClick(-numDays);
             }}
           />
           <RangeSelectButton
             icon={<ChevronRight className="size-4" />}
+            disabled={loading}
             onClick={() => {
               numDays && handleClick(numDays);
             }}
