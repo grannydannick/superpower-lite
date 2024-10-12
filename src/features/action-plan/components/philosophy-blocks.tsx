@@ -79,15 +79,10 @@ export const BlockGroupComponent = ({
 
   return (
     <div className={cn('health-grade-card p-5', className)}>
-      <div className="flex gap-4">
-        <div className=" flex gap-4">
+      <div className="flex flex-col gap-4">
+        <div className=" flex items-center gap-4">
           <HealthGradeComponent grade={healthGrade} />
-          <div className="flex flex-col">
-            <p className="text-zinc-900">{blockGroup.name}</p>
-            <p className="max-w-[278px] pt-1 text-sm text-zinc-500 md:w-[250px]">
-              {blockGroup.description || 'No description available'}
-            </p>
-          </div>
+          <p className="text-zinc-900">{blockGroup.name}</p>
         </div>
         {children}
       </div>

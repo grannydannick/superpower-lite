@@ -42,7 +42,7 @@ const FlexTable = ({
 
   const displayedBiomarkers = showAll ? biomarkers : biomarkers.slice(0, 5);
   return (
-    <div className={cn('flex flex-col', 'max-w-[275px] w-full', className)}>
+    <div className={cn('flex flex-col w-full', className)}>
       <h2 className="mb-4 text-left text-xs text-zinc-500">{title}</h2>
       <div className="flex flex-col space-y-2">
         {displayedBiomarkers.map((biomarker, idx) => {
