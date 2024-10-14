@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { Slot } from '@/types/api';
 
 import { useScheduler } from '../stores/scheduler';
+import { getFullTimezoneName } from '../utils/get-full-timezone-name';
 
 import { SchedulerTimeSlot } from './scheduler-time-slot';
 
@@ -26,7 +27,8 @@ export function SchedulerTimes(): JSX.Element {
           {moment(startRange).format('MMMM Do')}
           <DotIcon className="size-3" color="#71717A" />
           <h5 className="mr-1 tracking-wider">
-            {startRange ? getFullTimezoneName(startRange.format('zz')) : null}
+            {/*For Pacific Daylight Time, 'z' would output 'PDT'.*/}
+            {startRange ? getFullTimezoneName(startRange.format('z')) : null}
           </h5>
         </div>
       ) : null}
@@ -58,19 +60,3 @@ export function SchedulerTimes(): JSX.Element {
     </>
   );
 }
-
-const TIMEZONE_ABBREVIATIONS: Record<string, string> = {
-  EST: 'Eastern Standard Time',
-  EDT: 'Eastern Daylight Time',
-  CST: 'Central Standard Time',
-  CDT: 'Central Daylight Time',
-  MST: 'Mountain Standard Time',
-  MDT: 'Mountain Daylight Time',
-  PST: 'Pacific Standard Time',
-  PDT: 'Pacific Daylight Time',
-};
-
-// Utility function to get the full timezone name
-const getFullTimezoneName = (abbr: string): string => {
-  return TIMEZONE_ABBREVIATIONS[abbr] || abbr;
-};
