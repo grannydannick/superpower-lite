@@ -35,7 +35,7 @@ export const ContentLayout = ({
       <div
         className={cn(
           contentLayoutVariants({ variant }),
-          'max-w-[1108px] mx-auto',
+          'container mx-auto',
           className,
         )}
         {...rest}

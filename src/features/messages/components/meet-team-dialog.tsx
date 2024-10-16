@@ -78,7 +78,7 @@ export const MeetTeamDialog = () => {
       <DesktopTrigger />
 
       <SheetContent side="right" className="w-[584px] sm:max-w-none">
-        <SheetHeader className="flex-row items-center justify-between space-y-0 px-6 pt-6">
+        <SheetHeader className="flex-row items-center justify-between space-y-0 px-14 pt-6">
           <Body1 className="text-zinc-400">Meet your team</Body1>
           <SheetClose>
             <X className="size-[18px] min-w-[18px] text-zinc-400" />

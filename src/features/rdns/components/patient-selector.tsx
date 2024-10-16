@@ -23,7 +23,15 @@ export const PatientSelector = () => {
   const [open, setOpen] = useState(false);
   const [filterVal, setFilterVal] = useState('');
 
-  const hiddenPaths = ['plans'];
+  const hiddenPaths = [
+    'plans',
+    'upcoming',
+    'members',
+    'settings',
+    'concierge',
+    'invite',
+  ];
+
   const shouldHide = hiddenPaths.some((path) => pathname.includes(path));
 
   const {

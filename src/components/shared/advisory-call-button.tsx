@@ -1,14 +1,14 @@
-import { ClockIcon } from 'lucide-react';
+import { ClockIcon, VideoIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { READY_NUM_HOURS_BEFORE_ADVISORY } from '@/const';
 import { cn } from '@/lib/utils';
-import { Order } from '@/types/api';
+import { Order, OrderStatus } from '@/types/api';
 
 export const AdvisoryCallButton = ({ order }: { order: Order }) => {
   const webAddress = order.location.webAddress;
 
-  if (!webAddress) {
+  if (!webAddress || order.status === OrderStatus.completed) {
     return;
   }
 
@@ -28,15 +28,14 @@ export const AdvisoryCallButton = ({ order }: { order: Order }) => {
       disabled={!isLinkReady}
       className={cn(
         !isLinkReady && 'bg-zinc-100 text-zinc-400 disabled:opacity-100',
-        'text-sm',
+        'text-sm gap-2',
       )}
       variant={isLinkReady ? 'outline' : 'default'}
       onClick={onClickLinkReady}
     >
-      {isLinkReady ? null : (
-        <ClockIcon color="#A1A1AA" size={16} className="mr-2" />
-      )}
+      {isLinkReady ? null : <ClockIcon color="#A1A1AA" size={16} />}
       {isAppointmentSoon ? 'Launch' : 'Upcoming'}
+      {isAppointmentSoon ? <VideoIcon /> : null}
     </Button>
   );
 };
