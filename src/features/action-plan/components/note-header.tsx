@@ -11,7 +11,7 @@ import { getPlansQueryOptions } from '@/features/action-plan/api';
 import { PublishAlertDialog } from '@/features/action-plan/components/publish-alert-dialog';
 import { useShowBg } from '@/features/action-plan/hooks/use-show-bg';
 import { usePlan } from '@/features/action-plan/stores/plan-store';
-import { useUser } from '@/lib/auth';
+import { useCurrentPatient } from '@/features/rdns/hooks/use-current-patient';
 import { cn } from '@/lib/utils';
 
 export const ClinicianNoteHeader = () => {
@@ -23,8 +23,8 @@ export const ClinicianNoteHeader = () => {
     updatedAt,
     _makeFinalUpdate,
   } = usePlan((s) => s);
-  const { data: user } = useUser();
   const navigate = useNavigate();
+  const { hasAllowedRole, fullPatientName } = useCurrentPatient();
   const isBlurred = useShowBg();
 
   const queryClient = useQueryClient();
@@ -33,7 +33,7 @@ export const ClinicianNoteHeader = () => {
     /**
      * We don't use isAdmin because we can overwrite it with "Preview"
      */
-    if (user?.adminActor) {
+    if (hasAllowedRole) {
       /**
        * Give enough time for all debounces to finish before closing to properly save content
        */
@@ -66,12 +66,10 @@ export const ClinicianNoteHeader = () => {
           <X width="16px" height="16px" color="#52525B" />
         </Button>
         <div>
-          <h1 className="text-sm">
-            For: {user?.firstName} {user?.lastName}
-          </h1>
+          <h1 className="text-sm">For: {fullPatientName}</h1>
         </div>
       </div>
-      {user?.adminActor ? (
+      {hasAllowedRole ? (
         <div className="flex items-center gap-4">
           {isUpdating ? (
             <div className="flex items-center gap-2">

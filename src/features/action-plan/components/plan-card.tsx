@@ -32,14 +32,19 @@ import { PlanStoreProvider } from '@/features/action-plan/stores/plan-store';
 import { filterGoalsByItemType } from '@/features/action-plan/utils/filter-goals-by-item-type';
 import { generateDummyPlan } from '@/features/action-plan/utils/generate-dummy-plan';
 import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
+import { useCurrentPatient } from '@/features/rdns/hooks/use-current-patient';
 import { useServices } from '@/features/services/api';
-import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 import { PlanGoal, PlanGoalItem } from '@/types/api';
 
 export const PlanCard = () => {
   const [orderId, setOrderId] = useState<string | undefined>(undefined);
   const [tab, setTab] = useState('PRODUCT');
+  const { selectedPatient } = useCurrentPatient();
+
+  useEffect(() => {
+    setOrderId(undefined);
+  }, [selectedPatient]);
 
   const onTabChange = (value: string) => {
     setTab(value);
@@ -71,7 +76,7 @@ const PlanCardFooter = ({
   tab: string;
 }) => {
   const { data: plansData } = usePlans({});
-  const { data: user } = useUser();
+  const { hasAllowedRole } = useCurrentPatient();
   const navigate = useNavigate();
   const createPlanMutation = useCreatePlan({
     mutationConfig: {
@@ -85,7 +90,6 @@ const PlanCardFooter = ({
     return <div className="px-6 pb-6 md:px-[72px] md:pb-[72px]" />;
   }
 
-  const isAdmin = Boolean(user?.adminActor);
   const plans = plansData?.actionPlans;
   const dummyPlan = generateDummyPlan(orderId);
 
@@ -95,7 +99,7 @@ const PlanCardFooter = ({
     ? filterGoalsByItemType('PRODUCT', specificPlan)
     : [];
 
-  if (isAdmin) {
+  if (hasAllowedRole) {
     return (
       <div className="flex w-full items-center justify-end space-x-4 px-6 pb-6 md:px-[72px] md:pb-[72px]">
         {!specificPlan ? (
@@ -268,7 +272,7 @@ const ActionPlanDatePicker = ({
 
 const ProductsTab = ({ orderId }: { orderId?: string }) => {
   const { data: plansData } = usePlans({});
-  const { data: user } = useUser();
+  const { hasAllowedRole } = useCurrentPatient();
   const plans = plansData?.actionPlans;
 
   if (!plans) return null;
@@ -276,7 +280,7 @@ const ProductsTab = ({ orderId }: { orderId?: string }) => {
   const specificPlan = plans.find((p) => p.orderId === orderId);
 
   if (!specificPlan || !specificPlan.published)
-    return !user?.adminActor ? (
+    return !hasAllowedRole ? (
       <TabsContent value="PRODUCT" className="pt-8">
         <h3 className="font-[16px] text-[#18181B]">
           Your action plan will be available once your clinician has reviewed
@@ -317,7 +321,7 @@ const ProductsTab = ({ orderId }: { orderId?: string }) => {
 
 const ServicesTab = ({ orderId }: { orderId?: string }) => {
   const { data: plansData } = usePlans({});
-  const { data: user } = useUser();
+  const { hasAllowedRole } = useCurrentPatient();
   const plans = plansData?.actionPlans;
 
   if (!plans) return null;
@@ -325,7 +329,7 @@ const ServicesTab = ({ orderId }: { orderId?: string }) => {
   const specificPlan = plans.find((p) => p.orderId === orderId);
 
   if (!specificPlan || !specificPlan.published)
-    return !user?.adminActor ? (
+    return !hasAllowedRole ? (
       <TabsContent value="SERVICE" className="pt-8">
         <h3 className="font-[16px] text-[#18181B]">
           Your action plan will be available once your clinician has reviewed

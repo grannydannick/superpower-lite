@@ -58,6 +58,7 @@ export const setActiveLogin = (login: LoginState) => {
  */
 export const clearActiveLogin = () => {
   localStorage.removeItem('activeLogin');
+  localStorage.removeItem('patient');
 };
 
 export const getActiveLogin = (): LoginState | null => {

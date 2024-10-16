@@ -20,7 +20,7 @@ export const PublishAlertDialog = () => {
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger>
+      <AlertDialogTrigger asChild>
         <Button className="min-w-[103px] rounded-[12px] bg-black px-6 py-3 text-white shadow-md">
           Publish
         </Button>

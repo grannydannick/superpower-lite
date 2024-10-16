@@ -43,7 +43,10 @@ export const columns: ColumnDef<AdminUser>[] = [
     header: 'RDN',
     cell: ({ row }) => {
       return (
-        <AssignmentCell rdnId={row.original.rdnId} userId={row.original.id} />
+        <AssignmentCell
+          rdnId={row.original.rdnUserAssignment?.rdn.id}
+          userId={row.original.id}
+        />
       );
     },
   },

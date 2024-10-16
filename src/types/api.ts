@@ -17,7 +17,10 @@ export type UserIdentity = {
   verifiedAt: Date;
 };
 
+export type UserRole = 'MEMBER' | 'SUPER_ADMIN' | 'RDN_CLINICIAN';
+
 interface BaseUser {
+  id: string;
   firstName: string;
   lastName: string;
   createdAt: string;
@@ -28,13 +31,12 @@ interface BaseUser {
 }
 
 export interface AdminUser extends BaseUser {
-  id: string;
   stripeCustomerId: string;
   _count: {
     observations: number;
     serviceRequests: number;
   };
-  rdnId: string;
+  rdnUserAssignment?: RdnUserAssignment;
 }
 
 export interface User extends BaseUser {
@@ -47,6 +49,8 @@ export interface User extends BaseUser {
   activeAddresses: ActiveAddress[];
   adminActor?: AdminActor;
   userIdentity?: UserIdentity;
+  role: UserRole[];
+  rdn?: Rdn;
 }
 
 export type ActiveAddress = Entity<{
@@ -281,6 +285,19 @@ export interface InformedConsent {
   agreedAt: string;
 }
 
+export type OrderWithUserInfo = Order & {
+  firstName: string;
+  lastName: string;
+  userId: string;
+};
+
+export type Annotation = Entity<{
+  serviceRequestId: string;
+  text: string;
+  authorId: string; // RDN's user ID
+  time: string;
+}>;
+
 export type Order = Entity<{
   serviceId: string;
   serviceItemIds: string[];
@@ -291,13 +308,13 @@ export type Order = Entity<{
   timezone: string;
   report: boolean;
   method: CollectionMethodType[];
-  advisorCall?: string;
   createdAt: string;
   externalId?: string;
   fileId?: string;
   amount: number;
   invoiceId?: string;
   consent?: InformedConsent;
+  note: Annotation[];
 }>;
 
 export type ServiceItem = Entity<{
@@ -577,9 +594,15 @@ export type File = {
 
 /* RDNS */
 export type Rdn = Entity<{
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   npi?: string;
   schedulingLink: string;
   licensed: string[];
 }>;
+
+export type RdnUserAssignment = {
+  createdAt: string;
+  updatedAt: string;
+  rdn: Rdn;
+};

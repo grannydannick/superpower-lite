@@ -47,11 +47,9 @@ export const authHandlers = [
         );
       }
 
-      const admin = true;
-
       db.user.create({
         ...userObject,
-        admin,
+        role: ['SUPER_ADMIN', 'MEMBER'],
         password: hash(userObject.password),
       });
 

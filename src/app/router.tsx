@@ -6,7 +6,6 @@ import { MainErrorFallback } from '@/components/errors/main';
 import { ProtectedRoute } from '@/lib/auth';
 
 import { AppRoot } from './routes/app/root';
-import { usersLoader } from './routes/app/users';
 
 export const createRouter = (queryClient: QueryClient) =>
   createBrowserRouter([
@@ -157,12 +156,25 @@ export const createRouter = (queryClient: QueryClient) =>
           },
         },
         {
+          path: 'members',
+          lazy: async () => {
+            const { MembersRoute } = await import('./routes/app/members');
+            return { Component: MembersRoute };
+          },
+        },
+        {
+          path: 'upcoming',
+          lazy: async () => {
+            const { UpcomingRoute } = await import('./routes/app/upcoming');
+            return { Component: UpcomingRoute };
+          },
+        },
+        {
           path: 'users',
           lazy: async () => {
             const { UsersRoute } = await import('./routes/app/users');
             return { Component: UsersRoute };
           },
-          loader: usersLoader(queryClient),
           errorElement: <MainErrorFallback />,
         },
       ],

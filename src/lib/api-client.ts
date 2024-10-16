@@ -2,14 +2,25 @@ import axios, { InternalAxiosRequestConfig } from 'axios';
 import { toast } from 'sonner';
 
 import { env } from '@/config/env';
-import { clearActiveLogin, getActiveLogin, setActiveLogin } from '@/lib/utils';
-import { OAuthGrantType, TokenResponse } from '@/types/api';
+import {
+  clearActiveLogin,
+  getActiveLogin,
+  getLocalStorageObject,
+  setActiveLogin,
+} from '@/lib/utils';
+import { OAuthGrantType, TokenResponse, User } from '@/types/api';
 import { parseJWTPayload } from '@/utils/jwt';
 
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   if (config.headers) {
     config.headers.Accept = 'application/json';
     config.headers.Authorization = `Bearer ${getActiveLogin()?.accessToken}`;
+
+    const selectedPatient: User | undefined = getLocalStorageObject('patient');
+
+    if (selectedPatient) {
+      config.headers['x-impersonate-user-id'] = selectedPatient.id;
+    }
   }
 
   config.withCredentials = true;

@@ -1,0 +1,42 @@
+import { ClockIcon } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { READY_NUM_HOURS_BEFORE_ADVISORY } from '@/const';
+import { cn } from '@/lib/utils';
+import { Order } from '@/types/api';
+
+export const AdvisoryCallButton = ({ order }: { order: Order }) => {
+  const webAddress = order.location.webAddress;
+
+  if (!webAddress) {
+    return;
+  }
+
+  const isAppointmentSoon =
+    new Date(order.timestamp).getTime() - Date.now() <
+    1000 * 60 * 60 * READY_NUM_HOURS_BEFORE_ADVISORY;
+
+  const isLinkReady = webAddress.url && isAppointmentSoon;
+
+  const onClickLinkReady = () => {
+    if (!isLinkReady) return;
+    window.open(webAddress.url, '_top', 'noreferrer');
+  };
+
+  return (
+    <Button
+      disabled={!isLinkReady}
+      className={cn(
+        !isLinkReady && 'bg-zinc-100 text-zinc-400 disabled:opacity-100',
+        'text-sm',
+      )}
+      variant={isLinkReady ? 'outline' : 'default'}
+      onClick={onClickLinkReady}
+    >
+      {isLinkReady ? null : (
+        <ClockIcon color="#A1A1AA" size={16} className="mr-2" />
+      )}
+      {isAppointmentSoon ? 'Launch' : 'Upcoming'}
+    </Button>
+  );
+};

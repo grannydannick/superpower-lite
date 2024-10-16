@@ -9,7 +9,7 @@ export const RdnsRoute = () => {
     <ContentLayout title="Admin - RDNs">
       <Authorization
         forbiddenFallback={<div>Only admin can view this.</div>}
-        allowedRoles={[ROLES.ADMIN]}
+        allowedRoles={[ROLES.SUPER_ADMIN]}
       >
         <section className="space-y-10">
           <CreateRdnForm />

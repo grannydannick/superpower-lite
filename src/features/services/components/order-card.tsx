@@ -12,7 +12,7 @@ import {
 import { useCancelOrder } from '@/features/orders/api/cancel-order';
 import { useServices } from '@/features/services/api';
 import { OrderStatusBadge } from '@/features/services/components/order-status-badge';
-import { useUser } from '@/lib/auth';
+import { useAuthorization } from '@/lib/authorization';
 import { cn } from '@/lib/utils';
 import { Order, OrderStatus } from '@/types/api';
 
@@ -62,12 +62,14 @@ export function OrderCard(order: Order) {
 }
 
 function OrderCardBadge({ id, name, status, timestamp }: Order): JSX.Element {
-  const { data: user } = useUser();
+  const { checkAccess } = useAuthorization();
   const { mutateAsync } = useCancelOrder({
     mutationConfig: {
       onSuccess: () => toast.warning('Cancelled order!'),
     },
   });
+
+  const isAdmin = checkAccess({ allowedRoles: ['SUPER_ADMIN'] });
 
   const actions: { label: string; onClick: () => void }[] = [];
   if (
@@ -77,7 +79,7 @@ function OrderCardBadge({ id, name, status, timestamp }: Order): JSX.Element {
       status.toUpperCase() === OrderStatus.upcoming &&
       new Date(timestamp).getTime() >
         new Date().getTime() - 24 * 60 * 60 * 1000) ||
-    Boolean(user?.adminActor)
+    isAdmin
   ) {
     actions.push({
       label: 'Cancel appointment',

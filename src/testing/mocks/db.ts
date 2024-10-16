@@ -11,7 +11,7 @@ const models = {
     dateOfBirth: String,
     gender: String,
     password: String,
-    admin: Boolean,
+    role: Array,
   },
   login: {
     id: primaryKey(nanoid),

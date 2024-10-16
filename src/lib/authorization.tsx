@@ -3,11 +3,17 @@ import * as React from 'react';
 import { useUser } from './auth';
 
 export enum ROLES {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
+  SUPER_ADMIN = 'SUPER_ADMIN',
+  MEMBER = 'MEMBER',
+  RDN_CLINICIAN = 'RDN_CLINICIAN',
 }
 
 type RoleTypes = keyof typeof ROLES;
+
+// policyCheck={POLICIES['comment:delete'](
+//     user.data as User,
+//     comment,
+//   )}
 
 // export const POLICIES = {
 //   'comment:delete': (user: User, comment: Comment) => {
@@ -33,7 +39,7 @@ export const useAuthorization = () => {
   const checkAccess = React.useCallback(
     ({ allowedRoles }: { allowedRoles: RoleTypes[] }) => {
       if (allowedRoles && allowedRoles.length > 0 && user.data) {
-        return allowedRoles?.includes(user.data.admin ? 'ADMIN' : 'USER');
+        return user.data.role.some((role) => allowedRoles.includes(role));
       }
 
       return true;
@@ -41,7 +47,7 @@ export const useAuthorization = () => {
     [user.data],
   );
 
-  return { checkAccess, role: user.data.admin ? 'ADMIN' : 'USER' };
+  return { checkAccess, role: user.data.role };
 };
 
 type AuthorizationProps = {
@@ -75,8 +81,6 @@ export const Authorization = ({
   if (typeof policyCheck !== 'undefined') {
     canAccess = policyCheck;
   }
-
-  console.log(canAccess);
 
   return <>{canAccess ? children : forbiddenFallback}</>;
 };

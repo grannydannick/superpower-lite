@@ -5,15 +5,15 @@ import { AnnualReportComponent } from '@/features/action-plan/components/annual-
 import { BiomarkerDataView } from '@/features/action-plan/components/biomarkers/biomarker-data-view';
 import { ClinicianNoteHeader } from '@/features/action-plan/components/note-header';
 import { PlanStoreProvider } from '@/features/action-plan/stores/plan-store';
-import { useUser } from '@/lib/auth';
+import { useCurrentPatient } from '@/features/rdns/hooks/use-current-patient';
 
 interface ClinicianNoteProps {
   orderId: string | undefined;
 }
 
 export const ClinicianNote = ({ orderId }: ClinicianNoteProps) => {
-  const { data: user } = useUser();
   const getPlansQuery = usePlans({});
+  const { hasAllowedRole } = useCurrentPatient();
 
   if (getPlansQuery.isLoading) {
     return (
@@ -32,10 +32,7 @@ export const ClinicianNote = ({ orderId }: ClinicianNoteProps) => {
   if (!specificPlan) return <></>;
 
   return (
-    <PlanStoreProvider
-      initialPlan={specificPlan}
-      isAdmin={Boolean(user?.adminActor)}
-    >
+    <PlanStoreProvider initialPlan={specificPlan} isAdmin={hasAllowedRole}>
       <ClinicianNoteLayout />
     </PlanStoreProvider>
   );

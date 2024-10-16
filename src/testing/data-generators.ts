@@ -16,7 +16,7 @@ const generateUser = () => ({
   phone: randPhoneNumber({ countryCode: 'US' }),
   gender: 'MALE',
   dateOfBirth: randPastDate({ years: 20 }),
-  admin: true,
+  role: ['SUPER_ADMIN', 'MEMBER'],
 });
 
 export const createUser = <T extends Partial<ReturnType<typeof generateUser>>>(

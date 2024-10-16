@@ -15,12 +15,13 @@ import {
 import { useCreateFile, useDownloadFile } from '@/features/files/api';
 import { downloadBlob } from '@/features/files/utils/download-blob';
 import { useServices } from '@/features/services/api/get-services';
-import { useUser } from '@/lib/auth';
+import { useAuthorization } from '@/lib/authorization';
 import { Order } from '@/types/api';
 
 export function CompletedOrderCard(order: Order): JSX.Element {
   const navigate = useNavigate();
   const { data, isLoading } = useServices({});
+  const { checkAccess } = useAuthorization();
   const { mutate: createFile } = useCreateFile({
     mutationConfig: {
       onSuccess: () => {
@@ -35,7 +36,6 @@ export function CompletedOrderCard(order: Order): JSX.Element {
       },
     },
   });
-  const { data: user } = useUser();
 
   const healthcareService = data?.services.find(
     (s) => s.id === order.serviceId,
@@ -45,7 +45,7 @@ export function CompletedOrderCard(order: Order): JSX.Element {
   const isBloodDraw = SERVICES_WITH_ADDRESS.includes(order.name);
   const isOneOnOne = order.name === ADVISORY_CALL;
 
-  const isAdmin = Boolean(user?.adminActor);
+  const isAdmin = checkAccess({ allowedRoles: ['SUPER_ADMIN'] });
   const hasFile = Boolean(order.fileId);
 
   const renderButton = (): JSX.Element => {

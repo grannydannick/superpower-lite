@@ -10,7 +10,7 @@ test('should view protected resource if user role is matching', async () => {
   const protectedResource = 'This is very confidential data';
 
   await renderApp(
-    <Authorization allowedRoles={[ROLES.ADMIN]}>
+    <Authorization allowedRoles={[ROLES.SUPER_ADMIN]}>
       {protectedResource}
     </Authorization>,
     {
@@ -23,7 +23,7 @@ test('should view protected resource if user role is matching', async () => {
 
 test('should not view protected resource if user role does not match and show fallback message instead', async () => {
   const user = await createUser({
-    admin: false,
+    role: ['MEMBER'],
   });
 
   const protectedResource = 'This is very confidential data';
@@ -32,7 +32,7 @@ test('should not view protected resource if user role does not match and show fa
   await renderApp(
     <Authorization
       forbiddenFallback={<div>{forbiddenMessage}</div>}
-      allowedRoles={[ROLES.ADMIN]}
+      allowedRoles={[ROLES.SUPER_ADMIN]}
     >
       {protectedResource}
     </Authorization>,

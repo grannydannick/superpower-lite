@@ -33,7 +33,11 @@ export const ContentLayout = ({
     <>
       <Head title={title} />
       <div
-        className={cn(contentLayoutVariants({ variant }), className)}
+        className={cn(
+          contentLayoutVariants({ variant }),
+          'max-w-[1108px] mx-auto',
+          className,
+        )}
         {...rest}
       >
         {children}

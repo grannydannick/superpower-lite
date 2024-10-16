@@ -8,11 +8,10 @@ import { Rdn } from '@/types/api';
 import { getRdnsQueryOptions } from './get-rdns';
 
 export const createRdnInputSchema = z.object({
-  firstName: z.string(),
-  lastName: z.string(),
-  licensed: z.array(z.string()),
+  licensed: z.string().min(1),
   npi: z.string().optional(),
   schedulingLink: z.string(),
+  userId: z.string().min(1),
 });
 
 export type CreateRdnInput = z.infer<typeof createRdnInputSchema>;
@@ -22,7 +21,11 @@ export const createRdn = ({
 }: {
   data: CreateRdnInput;
 }): Promise<{ rdn: Rdn }> => {
-  return api.post('/admin/rdns', data);
+  const request = {
+    ...data,
+    licensed: data.licensed.split(',').map((l) => l.trim().toUpperCase()),
+  };
+  return api.post('/admin/rdns', request);
 };
 
 type UseCreateRdnOptions = {

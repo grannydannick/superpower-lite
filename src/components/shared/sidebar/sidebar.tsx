@@ -1,11 +1,13 @@
 import { motion } from 'framer-motion';
 import {
+  CalendarCheck,
   ChevronsLeft,
   ChevronsRight,
   Ellipsis,
   LogIn,
   LogOut,
   LucideIcon,
+  PersonStanding,
   Settings,
 } from 'lucide-react';
 import React, {
@@ -39,6 +41,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown';
+import { Separator } from '@/components/ui/separator';
 import { ROLES, useAuthorization } from '@/lib/authorization';
 import { cn } from '@/lib/utils';
 
@@ -124,6 +127,29 @@ export const DesktopSidebar = () => {
   const { open } = useSidebar();
   const { checkAccess } = useAuthorization();
 
+  const protectedLinks: Link[] = [
+    checkAccess({ allowedRoles: [ROLES.RDN_CLINICIAN] }) && {
+      name: 'Upcoming',
+      to: './upcoming',
+      icon: CalendarCheck,
+    },
+    checkAccess({ allowedRoles: [ROLES.RDN_CLINICIAN] }) && {
+      name: 'Your members',
+      to: './members',
+      icon: PersonStanding,
+    },
+    checkAccess({ allowedRoles: [ROLES.SUPER_ADMIN] }) && {
+      name: 'Users',
+      to: './users',
+      icon: LockIcon,
+    },
+    checkAccess({ allowedRoles: [ROLES.SUPER_ADMIN] }) && {
+      name: 'RDNs',
+      to: './rdns',
+      icon: LockIcon,
+    },
+  ].filter(Boolean) as Link[];
+
   const desktopLinks: Link[] = [
     ...baseLinks,
     {
@@ -136,17 +162,7 @@ export const DesktopSidebar = () => {
       name: 'Settings',
       to: './settings',
     },
-    checkAccess({ allowedRoles: [ROLES.ADMIN] }) && {
-      name: 'Users',
-      to: './users',
-      icon: LockIcon,
-    },
-    checkAccess({ allowedRoles: [ROLES.ADMIN] }) && {
-      name: 'RDNs',
-      to: './rdns',
-      icon: LockIcon,
-    },
-  ].filter(Boolean) as Link[];
+  ];
 
   const invite: Link = {
     name: 'Invite friend',
@@ -161,14 +177,17 @@ export const DesktopSidebar = () => {
           'hidden h-dvh fixed px-4 py-4 md:flex md:flex-col bg-white flex-shrink-0 w-[196px] md:justify-between md:gap-10 border-r border-r-zinc-200',
           open ? 'w-[196px]' : 'w-[88px]',
         )}
-        // animate={{
-        //   width: open ? '196px' : '88px',
-        // }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       >
         <div className="flex overflow-y-auto overflow-x-hidden md:flex-col">
           {open ? <Logo /> : <LogoIcon />}
           <div className="flex w-full justify-between gap-2 md:mt-8 md:flex-col">
+            <div className={cn(!protectedLinks.length ? 'hidden' : null)}>
+              {protectedLinks.map((link, idx) => (
+                <SidebarLink key={idx} link={link} />
+              ))}
+              <Separator className="my-2.5" />
+            </div>
             {desktopLinks.map((link, idx) => (
               <SidebarLink key={idx} link={link} />
             ))}
@@ -176,7 +195,8 @@ export const DesktopSidebar = () => {
         </div>
         <div>
           <CollapseButton />
-          <div className="space-y-2.5 border-t border-t-zinc-200 py-5">
+          <Separator className="my-2.5" />
+          <div className="space-y-2.5 py-5">
             <SidebarLink link={invite} />
             <LogoutButton />
           </div>
@@ -347,7 +367,7 @@ export const CollapseButton = () => {
   return (
     <div
       className={cn(
-        'flex items-center gap-2 group/sidebar p-4 cursor-pointer hover:bg-zinc-100 mb-2.5',
+        'flex items-center gap-2 group/sidebar p-4 cursor-pointer hover:bg-zinc-100',
         open ? 'justify-start rounded-[52px]' : 'justify-center rounded-full',
       )}
       role="presentation"
