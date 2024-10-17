@@ -29,9 +29,16 @@ export const ReviewStep = (): JSX.Element => {
         {goals
           .filter((g) => g.type === 'ANNUAL_REPORT_PROTOCOLS')
           .map((goal, index) => {
-            const productGoalItems = goal.goalItems.filter(
-              (goalItem) => goalItem.itemType === 'PRODUCT',
-            );
+            const productGoalItems = goal.goalItems
+              .filter((goalItem) => goalItem.itemType === 'PRODUCT')
+              /**
+               * Semi weird hack to fix display of old products that are no longer available on marketplace in action plans
+               */
+              .filter((productGoalItem) =>
+                products.some(
+                  (product) => product.id === productGoalItem.itemId,
+                ),
+              );
 
             if (productGoalItems.length > 0) {
               return (
@@ -89,7 +96,8 @@ const ActionPlanProductCheckoutOptionRow = ({
   const [checked, setChecked] = useState(initiallyChecked);
   const { updateSelectedProducts } = useCheckout((s) => s);
 
-  if (!item) return <></>;
+  if (!item) return null;
+
   const onItemClick = (): void => {
     setChecked((prev) => !prev);
 

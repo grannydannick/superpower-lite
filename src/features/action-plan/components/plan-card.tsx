@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { ChevronDownIcon, ChevronRight, Dot, Lock } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
@@ -23,11 +23,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Body1, Body2, H2 } from '@/components/ui/typography';
 import {
   useCreatePlan,
-  usePlanDates,
   usePlans,
   useProducts,
 } from '@/features/action-plan/api';
 import { ActionPlanCheckoutModal } from '@/features/action-plan/components/checkout-modal';
+import { useActionPlanDatePicker } from '@/features/action-plan/hooks/use-plan-dates';
 import { PlanStoreProvider } from '@/features/action-plan/stores/plan-store';
 import { filterGoalsByItemType } from '@/features/action-plan/utils/filter-goals-by-item-type';
 import { generateDummyPlan } from '@/features/action-plan/utils/generate-dummy-plan';
@@ -40,11 +40,6 @@ import { PlanGoal, PlanGoalItem } from '@/types/api';
 export const PlanCard = () => {
   const [orderId, setOrderId] = useState<string | undefined>(undefined);
   const [tab, setTab] = useState('PRODUCT');
-  const { selectedPatient } = useCurrentPatient();
-
-  useEffect(() => {
-    setOrderId(undefined);
-  }, [selectedPatient]);
 
   const onTabChange = (value: string) => {
     setTab(value);
@@ -193,23 +188,12 @@ const PlanCardContent = ({
 const ActionPlanDatePicker = ({
   setOrderId,
 }: {
-  setOrderId: (orderId: string) => void;
+  setOrderId: (orderId?: string) => void;
 }) => {
   const [open, setOpen] = useState(false);
-  const [currentDate, setCurrentDate] = useState<Date | null>(null);
-
-  const { data: planDatesData } = usePlanDates();
-  const planDates = planDatesData?.availableDates;
-
-  useEffect(() => {
-    if (!planDates) return;
-
-    // Only set the initial date if planDates is not empty
-    if (planDates.length > 0) {
-      setCurrentDate(new Date(planDates[0].timestamp));
-      setOrderId(planDates[0].orderId);
-    }
-  }, [planDates]);
+  const { currentDate, setCurrentDate, planDates } = useActionPlanDatePicker({
+    setOrderId,
+  });
 
   // Render a disabled button if there are no plan dates
   if (planDates?.length === 0) return <h1>No dates available</h1>;
@@ -370,15 +354,33 @@ const ServicesTab = ({ orderId }: { orderId?: string }) => {
 };
 
 const ActionPlanGoalContainer = ({ goalItem }: { goalItem: PlanGoal }) => {
+  const productsQuery = useProducts();
+
+  /**
+   * Semi weird hack to fix display of old products that are no longer available on marketplace in action plans
+   */
+  const filteredGoalItems = goalItem.goalItems.filter((item) => {
+    if (item.itemType === 'PRODUCT') {
+      return productsQuery.data?.products.some(
+        (product) => product.id === item.itemId,
+      );
+    }
+    return true;
+  });
+
+  if (!filteredGoalItems.length) {
+    return null;
+  }
+
   return (
     <div className="w-full break-words">
       <h4 className="text-[#A1A1AA]">
         {goalItem.title}{' '}
-        <span className="hidden md:inline">({goalItem.goalItems.length})</span>
+        <span className="hidden md:inline">({filteredGoalItems.length})</span>
       </h4>
       <div className="mt-5 space-y-2">
-        {goalItem.goalItems.map(
-          (item, indx): JSX.Element => (
+        {filteredGoalItems.map(
+          (item, indx): ReactNode => (
             <Item item={item} key={indx} />
           ),
         )}
