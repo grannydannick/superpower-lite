@@ -11,6 +11,15 @@ export const ActionCell = ({ patient }: { patient: User }) => {
   return (
     <div className="flex w-full justify-end gap-2">
       <Button
+        variant="outline"
+        onClick={() => {
+          setPatient(patient);
+          navigate('/', { state: { scrollTo: 'actions' } });
+        }}
+      >
+        Plans
+      </Button>
+      <Button
         onClick={() => {
           setPatient(patient);
           navigate('/data');

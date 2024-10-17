@@ -4,6 +4,7 @@ import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { MenuDropdown } from '@/features/settings/components/wearables/menu-dropdown';
+import { cn } from '@/lib/utils';
 import { Wearable } from '@/types/api';
 import { capitalize } from '@/utils/format';
 
@@ -19,9 +20,10 @@ export const columns: ColumnDef<Wearable>[] = [
         >
           Integration
           <ChevronDown
-            className={`ml-0.5 size-4 transition-transform duration-300 ease-in-out${
-              column.getIsSorted() === 'asc' ? 'rotate-180' : ''
-            }`}
+            className={cn(
+              `ml-0.5 size-4 transition-transform duration-300 ease-in-out`,
+              column.getIsSorted() === 'asc' ? 'rotate-180' : '',
+            )}
           />
         </Button>
       );

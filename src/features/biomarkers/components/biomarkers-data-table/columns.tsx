@@ -27,7 +27,7 @@ export const getCols = (): ColumnDef<Biomarker>[] => [
           <ChevronDown
             className={cn(
               'transition-transform duration-200',
-              column.getIsSorted() === 'desc' && 'rotate-180',
+              column.getIsSorted() === 'asc' ? 'rotate-180' : null,
             )}
           />
         </Button>

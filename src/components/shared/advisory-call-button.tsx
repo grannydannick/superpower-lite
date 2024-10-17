@@ -20,7 +20,7 @@ export const AdvisoryCallButton = ({ order }: { order: Order }) => {
 
   const onClickLinkReady = () => {
     if (!isLinkReady) return;
-    window.open(webAddress.url, '_top', 'noreferrer');
+    window.open(webAddress.url, '_blank', 'noreferrer');
   };
 
   return (

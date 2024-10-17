@@ -4,6 +4,8 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -29,6 +31,7 @@ export function UpcomingCallsTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const table = useReactTable({
     data,
@@ -37,7 +40,10 @@ export function UpcomingCallsTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
     state: {
+      sorting,
       columnFilters,
       columnVisibility,
     },
