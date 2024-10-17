@@ -80,6 +80,7 @@ export const getStepsFromService = (
     case GUT_MICROBIOME_ANALYSIS:
       return [
         { id: 'info', content: <HealthcareServiceDetails /> },
+        { id: 'informed-consent', content: <InformedConsent /> },
         { id: 'summary', content: <OrderSummary /> },
         { id: 'success', content: <Success /> },
       ];

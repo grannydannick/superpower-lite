@@ -3,11 +3,11 @@ import {
   TestDetails,
 } from '@/components/shared/healthcare-service-info-dialog-content/types/service';
 import {
+  AGREEMENT_COPIES,
   ENVIRONMENTAL_TOXINS,
-  GRAIL_GALLERI_CONSENT_AGREEMENT_COPY,
   GRAIL_GALLERI_MULTI_CANCER_TEST,
+  GUT_MICROBIOME_ANALYSIS,
   LEGAL_DESCLAIMERS,
-  REGULAR_CONSENT_AGREEMENT_COPY,
 } from '@/const';
 import { HealthcareService } from '@/types/api';
 import { TimelineType } from '@/types/timeline';
@@ -457,7 +457,7 @@ A DEXA scan provides an in-depth body fat analysis including segmental fat mass,
  * If the service does not have a specific disclaimer, the disclaimer for environmental toxins is used by default.
  *
  * @param service - The healthcare service for which to retrieve the legal disclaimer.
- * @returns {string} The corresponding legal disclaimer for the given healthcare service.
+ * @returns {JSX.Element} The corresponding legal disclaimer for the given healthcare service.
  *
  * The function includes a default case where the disclaimer for "environmental toxins" is returned.
  * This default is applied when the healthcare service does not have a predefined legal disclaimer or falls under unspecified services.
@@ -474,22 +474,28 @@ A DEXA scan provides an in-depth body fat analysis including segmental fat mass,
  *   name: 'Unspecified Service'
  * });
  */
-export const getInformedConsentForService = (service: string): string => {
+export const getInformedConsentForService = (service: string): JSX.Element => {
   switch (service) {
     case GRAIL_GALLERI_MULTI_CANCER_TEST:
       return LEGAL_DESCLAIMERS.grail;
     case ENVIRONMENTAL_TOXINS:
-      return LEGAL_DESCLAIMERS.environmentalToxins;
+      return LEGAL_DESCLAIMERS.toxins;
+    case GUT_MICROBIOME_ANALYSIS:
+      return LEGAL_DESCLAIMERS.gut;
     default:
-      return LEGAL_DESCLAIMERS.environmentalToxins;
+      return LEGAL_DESCLAIMERS.toxins;
   }
 };
 
-export const getDefaultAgreementCopyForService = (service: string): string => {
+export const getDefaultAgreementCopyForService = (
+  service: string,
+): JSX.Element => {
   switch (service) {
     case GRAIL_GALLERI_MULTI_CANCER_TEST:
-      return GRAIL_GALLERI_CONSENT_AGREEMENT_COPY;
+      return AGREEMENT_COPIES.grail;
+    case GUT_MICROBIOME_ANALYSIS:
+      return AGREEMENT_COPIES.gut;
     default:
-      return REGULAR_CONSENT_AGREEMENT_COPY;
+      return AGREEMENT_COPIES.regular;
   }
 };
