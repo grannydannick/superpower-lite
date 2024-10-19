@@ -32,7 +32,7 @@ export const BiologicalAgeCard = (): JSX.Element => {
   );
 
   const ageDifference = biologicalAge
-    ? Math.round((yearsSinceDate(user.dateOfBirth) - biologicalAge) * 10) / 10.0
+    ? Math.round((yearsSinceDate(dateOfBirth) - biologicalAge) * 10) / 10.0
     : null;
 
   return (
