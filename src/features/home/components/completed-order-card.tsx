@@ -21,7 +21,7 @@ import { Order } from '@/types/api';
 export function CompletedOrderCard(order: Order): JSX.Element {
   const navigate = useNavigate();
   const { data, isLoading } = useServices({});
-  const { checkAccess } = useAuthorization();
+  const { checkAdminActorAccess } = useAuthorization();
   const { mutate: createFile } = useCreateFile({
     mutationConfig: {
       onSuccess: () => {
@@ -45,7 +45,7 @@ export function CompletedOrderCard(order: Order): JSX.Element {
   const isBloodDraw = SERVICES_WITH_ADDRESS.includes(order.name);
   const isOneOnOne = order.name === ADVISORY_CALL;
 
-  const isAdmin = checkAccess({ allowedRoles: ['SUPER_ADMIN'] });
+  const isAdmin = checkAdminActorAccess();
   const hasFile = Boolean(order.fileId);
 
   const renderButton = (): JSX.Element => {

@@ -36,6 +36,16 @@ export const useAuthorization = () => {
     throw Error('User does not exist!');
   }
 
+  /**
+   * This is used when we need to make sure its admin actor acting on behalf of user
+   */
+  const checkAdminActorAccess = React.useCallback(() => {
+    return !!user.data.adminActor;
+  }, [user.data]);
+
+  /**
+   * This is used to make sure user has role (e.g. MEMBER can't see RDN pages)
+   */
   const checkAccess = React.useCallback(
     ({ allowedRoles }: { allowedRoles: RoleTypes[] }) => {
       if (allowedRoles && allowedRoles.length > 0 && user.data) {
@@ -47,7 +57,7 @@ export const useAuthorization = () => {
     [user.data],
   );
 
-  return { checkAccess, role: user.data.role };
+  return { checkAccess, checkAdminActorAccess, role: user.data.role };
 };
 
 type AuthorizationProps = {

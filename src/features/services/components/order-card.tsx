@@ -62,14 +62,14 @@ export function OrderCard(order: Order) {
 }
 
 function OrderCardBadge({ id, name, status, timestamp }: Order): JSX.Element {
-  const { checkAccess } = useAuthorization();
+  const { checkAdminActorAccess } = useAuthorization();
   const { mutateAsync } = useCancelOrder({
     mutationConfig: {
       onSuccess: () => toast.warning('Cancelled order!'),
     },
   });
 
-  const isAdmin = checkAccess({ allowedRoles: ['SUPER_ADMIN'] });
+  const isAdmin = checkAdminActorAccess();
 
   const actions: { label: string; onClick: () => void }[] = [];
   if (
