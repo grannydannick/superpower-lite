@@ -8,6 +8,7 @@
 #
 # Once the image is pushed, it will show up when running `make deploy/*/stg`.
 #
+name: Staging
 
 on:
   workflow_dispatch:
