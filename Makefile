@@ -81,37 +81,15 @@ deploy/app/stg: prereq
 	python3 $(DEPLOY_SCRIPT) -r superpower-app -t deploy/hidden
 
 .PHONY: deploy/story/stg
-deploy/worker/stg: description = Deploy story to staging
-deploy/worker/stg: prereq
+deploy/story/stg: description = Deploy story to staging
+deploy/story/stg: prereq
 	K8S_CLUSTER=staging-cluster \
 	DOPPLER_PROJECT=superpower-app \
 	DOPPLER_CONFIG=stg \
 	DEPLOY_ENV=STG \
-	DEPLOY_CONFIG=deployment/superpower/deploy.story.yaml \
-	KSP_SERVICE=worker \
+	DEPLOY_CONFIG=deployment/deploy.story.yaml \
+	KSP_SERVICE=story \
 	python3 $(DEPLOY_SCRIPT) -r superpower-app -t deploy/hidden
-
-#.PHONY: deploy/app/stg
-#deploy/app/stg: description = Deploy app to stg (staging)
-#deploy/app/stg: check-doppler-token check-doppler-secrets
-#	@echo "Deploying $(SERVICE) to Kubernetes..."
-#	aws eks update-kubeconfig --name staging-cluster --region $(AWS_REGION) && \
-#	doppler secrets substitute -p $(SERVICE) -c stg $(DEPLOYMENT_DIR)/deploy.app.yaml | \
-#	sed 's|__AWS_ECR_URL__|$(AWS_ECR_URL)|g' | \
-#	sed 's|__SERVICE__|$(SERVICE)|g' | \
-#	sed 's|__VERSION__|$(VERSION)|g' | \
-#	kubectl apply -f -
-
-.PHONY: deploy/story/stg
-deploy/story/stg: description = Deploy story to stg (staging)
-deploy/story/stg: check-doppler-token check-doppler-secrets
-	@echo "Deploying $(SERVICE) to Kubernetes..."
-	aws eks update-kubeconfig --name staging-cluster --region $(AWS_REGION) && \
-	doppler secrets substitute -p $(SERVICE) -c stg $(DEPLOYMENT_DIR)/deploy.story.yaml | \
-	sed 's|__AWS_ECR_URL__|$(AWS_ECR_URL)|g' | \
-	sed 's|__SERVICE__|$(SERVICE)|g' | \
-	sed 's|__VERSION__|$(VERSION)|g' | \
-	kubectl apply -f -
 
 .PHONY: deploy/app/prd
 deploy/app/prd: description = Deploy app to prd (production)

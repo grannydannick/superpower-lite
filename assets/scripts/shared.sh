@@ -26,10 +26,6 @@ DEPLOYMENT_MSG=$(cat << 'EOF'
 				},
 				{
 					"type": "mrkdwn",
-					"text": "Makefile Target: *__TARGET__*"
-				},
-				{
-					"type": "mrkdwn",
 					"text": "User: *__USER__*"
 				}
 			]
@@ -111,7 +107,7 @@ check_vars() {
 
 notify() {
     # Verify that vars required for notification are set
-    vars=("SERVICE" "ORG" "VERSION" "TARGET")
+    vars=("SERVICE" "ORG" "VERSION")
 
     check_vars "${vars[@]}"
 
@@ -130,7 +126,6 @@ notify() {
         sed "s|__ORG__|${ORG}|g" | \
         sed "s|__SERVICE__|${SERVICE}|g" | \
         sed "s|__VERSION__|${VERSION}|g" | \
-        sed "s|__TARGET__|${TARGET}|g" | \
         sed "s|__USER__|${USER}|g" | \
         sed "s|__MESSAGE__|$1|g" |
         jq -cRr .)
