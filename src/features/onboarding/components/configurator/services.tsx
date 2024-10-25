@@ -3,7 +3,11 @@ import React from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, Body2, H2 } from '@/components/ui/typography';
-import { GRAIL_GALLERI_MULTI_CANCER_TEST, TOTAL_TOXIN_TEST } from '@/const';
+import {
+  GRAIL_GALLERI_MULTI_CANCER_TEST,
+  TOTAL_TOXIN_TEST,
+  GUT_MICROBIOME_ANALYSIS,
+} from '@/const';
 import { InformedConsent } from '@/features/onboarding/components/informed-consent';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { useService } from '@/features/services/api/get-service';
@@ -88,7 +92,7 @@ const SectionServices = () => {
   services = services?.filter(
     (service) =>
       service.name === GRAIL_GALLERI_MULTI_CANCER_TEST ||
-      // service.name === GUT_MICROBIOME_ANALYSIS ||
+      service.name === GUT_MICROBIOME_ANALYSIS ||
       service.name === TOTAL_TOXIN_TEST,
   );
 

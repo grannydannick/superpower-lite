@@ -154,7 +154,7 @@ const ConfirmAddressCase = ({
 }) => {
   const [isEditingAddress, setIsEditingAddress] = useState(false);
   const [isAddingAddress, setIsAddingAddress] = useState(false);
-  const { updateToxinAddress } = useOnboarding();
+  const { updateToxinAddress, updateMicrobiomeAddress } = useOnboarding();
   const { prevStep } = useStepper((s) => s);
   const { data: user } = useUser();
 
@@ -166,6 +166,8 @@ const ConfirmAddressCase = ({
 
     service.name === TOTAL_TOXIN_TEST &&
       updateToxinAddress(user?.primaryAddress);
+    service.name === GUT_MICROBIOME_ANALYSIS &&
+      updateMicrobiomeAddress(user?.primaryAddress);
     setIndex((prev) => prev + 1);
   };
 
