@@ -12,13 +12,13 @@ import {
 } from '@/const';
 import { AddAddressForm } from '@/features/onboarding/components/add-address-form';
 import { AdditionalServiceCard } from '@/features/onboarding/components/additional-service-card';
-import { CurrentAddressCard } from '@/features/onboarding/components/current-address-card';
 import { EditAddressForm } from '@/features/onboarding/components/edit-address-form';
 import { ImageContentLayout } from '@/features/onboarding/components/layouts';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { getOrderInfo } from '@/features/onboarding/utils/get-order-info';
 import { useUpdateOrder } from '@/features/orders/api/update-order';
 import { AddressSelect } from '@/features/users/components/address-select';
+import { CurrentAddressCard } from '@/features/users/components/current-address-card';
 import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
 import { HealthcareService, OrderStatus, Slot } from '@/types/api';

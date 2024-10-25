@@ -11,6 +11,7 @@ import {
 import { LocationList } from '@/features/orders/components/locations-list';
 import { useOrder } from '@/features/orders/stores/order-store';
 import { AddAddressForm } from '@/features/settings/components/profile/add-address-form';
+import { CurrentAddressCard } from '@/features/users/components/current-address-card';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
@@ -140,41 +141,28 @@ function CreateOrderPhlebotomyAtHome(): JSX.Element {
 
   useEffect(() => {
     const checkServiceable = async (): Promise<void> => {
-      if (user?.primaryAddress) {
-        const { postalCode } = user.primaryAddress.address;
+      if (!user?.primaryAddress) {
+        return;
+      }
 
-        const response = await mutateAsync({
-          data: {
-            zipCode: postalCode,
-            collectionMethod: collectionMethod || 'AT_HOME',
-          },
-        });
+      const { postalCode } = user.primaryAddress.address;
 
-        if (response.serviceable) {
-          updateLocation({ address: user.primaryAddress.address });
-        }
+      const response = await mutateAsync({
+        data: {
+          zipCode: postalCode,
+          collectionMethod: collectionMethod || 'AT_HOME',
+        },
+      });
+
+      if (response.serviceable) {
+        updateLocation({ address: user.primaryAddress.address });
+      } else {
+        updateLocation(null);
       }
     };
 
     checkServiceable();
-  }, [collectionMethod]);
-
-  if (!user?.primaryAddress) {
-    return (
-      <div className="space-y-6">
-        <div className="space-y-3">
-          <H2>Place of service</H2>
-        </div>
-        <div className="flex flex-col gap-3 rounded-2xl border border-zinc-200 px-8 py-6">
-          <Body2 className="text-zinc-500">
-            No primary address found, add one in settings.
-          </Body2>
-        </div>
-      </div>
-    );
-  }
-
-  const { line, city, postalCode, state } = user.primaryAddress.address;
+  }, [collectionMethod, user?.primaryAddress]);
 
   return (
     <div className="space-y-6">
@@ -182,31 +170,11 @@ function CreateOrderPhlebotomyAtHome(): JSX.Element {
         <H2>Place of service</H2>
       </div>
 
-      <div
+      <CurrentAddressCard
         className={cn(
-          'flex flex-col gap-3 rounded-2xl border border-zinc-200 px-8 py-6',
           !isPending && !isServiceable ? 'border-pink-700 bg-pink-50' : null,
         )}
-      >
-        <Body2
-          className={cn(
-            'text-zinc-500',
-            !isPending && !isServiceable ? 'text-pink-700' : null,
-          )}
-        >
-          My Address
-        </Body2>
-        <div>
-          <Body1>
-            {user?.firstName} {user?.lastName}
-          </Body1>
-          <Body1>{line.join(' ')}</Body1>
-          <Body1>{city}</Body1>
-          <Body1>
-            {state} {postalCode}, US
-          </Body1>
-        </div>
-      </div>
+      />
 
       {!isServiceable && !isPending ? (
         <Body2 className="text-pink-700">

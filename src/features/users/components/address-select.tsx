@@ -1,4 +1,5 @@
 import { MoreVertical, Plus } from 'lucide-react';
+import { ReactNode } from 'react';
 
 import { DotIcon } from '@/components/icons/dot';
 import { Button } from '@/components/ui/button';
@@ -17,8 +18,10 @@ import { cn } from '@/lib/utils';
 
 export const AddressSelect = ({
   onAddressAdd,
+  closeBtn,
 }: {
   onAddressAdd?: () => void;
+  closeBtn?: ReactNode;
 }) => {
   const { data: user } = useUser();
   const { mutateAsync } = useUpdateProfile();
@@ -31,7 +34,14 @@ export const AddressSelect = ({
 
   return (
     <div className="space-y-2">
-      <Label className="text-sm text-zinc-500">Active addresses</Label>
+      {closeBtn ? (
+        <div className="flex items-center justify-between">
+          <Label className="text-sm text-zinc-500">Active addresses</Label>
+          {closeBtn}
+        </div>
+      ) : (
+        <Label className="text-sm text-zinc-500">Active addresses</Label>
+      )}
       <div className="rounded-xl border border-zinc-200 bg-white md:bg-transparent">
         {activeAddresses.length > 0 && (
           <div className="p-2">

@@ -11,7 +11,7 @@ import {
 } from '@/utils/service';
 
 export const InformedConsent = () => {
-  const { activeStep, steps, nextStep } = useStepper((s) => s);
+  const { activeStep, steps, nextStep, prevStep } = useStepper((s) => s);
   const service = useOrder((s) => s.service);
   const updateInformedConsent = useOrder((s) => s.updateInformedConsent);
   const informedConsent = useOrder((s) => s.informedConsent);
@@ -46,6 +46,13 @@ export const InformedConsent = () => {
           Step {activeStep + 1} of {steps.length}
         </Body1>
         <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
+          <Button
+            variant="outline"
+            className="w-full md:w-auto"
+            onClick={prevStep}
+          >
+            Back
+          </Button>
           <Button
             onClick={nextStep}
             disabled={!informedConsent}

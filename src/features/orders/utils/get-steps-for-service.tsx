@@ -20,6 +20,7 @@ import {
   VO2_MAX_TEST,
 } from '@/const';
 import { Calendly } from '@/features/orders/components/steps/calendly';
+import { ConfirmAddress } from '@/features/orders/components/steps/confirm-address';
 import { InformedConsent } from '@/features/orders/components/steps/informed-consent';
 import { MessageConcierge } from '@/features/orders/components/steps/message-concierge';
 import { PhlebotomyLocationSelect } from '@/features/orders/components/steps/phlebotomy-location';
@@ -73,6 +74,7 @@ export const getStepsFromService = (
         { id: 'toxin-select', content: <ToxinsSelect /> },
         { id: 'info', content: <HealthcareServiceDetails /> },
         { id: 'informed-consent', content: <InformedConsent /> },
+        { id: 'confirm-address', content: <ConfirmAddress /> },
         { id: 'summary', content: <OrderSummary /> },
         { id: 'success', content: <Success /> },
       ];
@@ -81,6 +83,7 @@ export const getStepsFromService = (
       return [
         { id: 'info', content: <HealthcareServiceDetails /> },
         { id: 'informed-consent', content: <InformedConsent /> },
+        { id: 'confirm-address', content: <ConfirmAddress /> },
         { id: 'summary', content: <OrderSummary /> },
         { id: 'success', content: <Success /> },
       ];
@@ -129,6 +132,7 @@ export const getStepsFromService = (
     case HEAVY_METALS_TEST:
       return [
         { id: 'info', content: <HealthcareServiceDetails /> },
+        { id: 'confirm-address', content: <ConfirmAddress /> },
         { id: 'summary', content: <OrderSummary /> },
         { id: 'success', content: <Success /> },
       ];
