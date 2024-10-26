@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Body2 } from '@/components/ui/typography';
 import { ActionPlanGoal } from '@/features/action-plan/components/action-plan-goal';
 import { BlockEditor } from '@/features/action-plan/components/editor/editor';
-import { HealthScore } from '@/features/action-plan/components/health-score';
+// import { HealthScore } from '@/features/action-plan/components/health-score';
 import { Protocol } from '@/features/action-plan/components/protocol';
 import { RecommendedItems } from '@/features/action-plan/components/recommended-items';
 import { ACTION_PLAN_INPUT_STYLE } from '@/features/action-plan/const/action-plan-input';
@@ -71,7 +71,7 @@ export function ActionPlanComponent() {
         />
       </div>
 
-      <HealthScore className={PLAN_STYLE} />
+      {/*<HealthScore className={PLAN_STYLE} />*/}
       <ActionPlanGoals />
       <Protocol className={PLAN_STYLE} />
       <ConsultationCard className={PLAN_STYLE} />
