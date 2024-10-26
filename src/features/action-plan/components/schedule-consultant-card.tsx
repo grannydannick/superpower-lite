@@ -1,7 +1,6 @@
 import { ChevronDown } from 'lucide-react';
 import { ReactNode, useState } from 'react';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Collapsible,
@@ -32,18 +31,18 @@ export const ScheduleConsultDoctorCard: ({
         src="/action-plan/female-doctor.png"
         alt="Doctor"
       />
-      <div className="flex grow flex-col">
+      <div className="flex grow flex-col justify-center">
         <div className="flex gap-3">
           <Body1 className="line-clamp-1">Longevity Clinician Consult</Body1>
-          <Badge
-            className="max-h-6 bg-zinc-200 text-xs text-black"
-            variant="default"
-          >
-            Included
-          </Badge>
+          {/*<Badge*/}
+          {/*  className="max-h-6 bg-zinc-200 text-xs text-black"*/}
+          {/*  variant="default"*/}
+          {/*>*/}
+          {/*  Included*/}
+          {/*</Badge>*/}
         </div>
         <p className="mt-1 text-xs text-zinc-400">
-          Included with your Superpower Membership
+          Get expert advice & health planning from the Superpower medical team.
         </p>
       </div>
     </div>
@@ -68,7 +67,7 @@ export const ConsultationCard: ({
       className={cn(className)}
     >
       <div className="flex w-full items-center justify-between">
-        <H2>Schedule free online consult</H2>
+        <H2>Schedule your next consult</H2>
         <CollapsibleTrigger asChild>
           <Button variant="ghost" size="sm">
             <ChevronDown
