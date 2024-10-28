@@ -1,10 +1,10 @@
 import moment from 'moment';
 
-// import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Body1, Body2, H3, H4 } from '@/components/ui/typography';
 import { useBiomarkers } from '@/features/biomarkers/api';
-// import { ScoreDialog } from '@/features/biomarkers/components/score-dialog/score-dialog';
+import { ScoreDialog } from '@/features/biomarkers/components/score-dialog/score-dialog';
 import { biomarkerStatusCount } from '@/features/biomarkers/utils/biomarkers-status-count';
 import { useUser } from '@/lib/auth';
 
@@ -99,14 +99,14 @@ export const BiomarkersSummaryCard = () => {
       </div>
       <div className="flex w-full items-end justify-between">
         <BiomarkersList />
-        {/*<ScoreDialog>*/}
-        {/*  <Button*/}
-        {/*    className="border border-zinc-700 bg-zinc-800 px-4 py-3"*/}
-        {/*    disabled*/}
-        {/*  >*/}
-        {/*    Score Report*/}
-        {/*  </Button>*/}
-        {/*</ScoreDialog>*/}
+        <ScoreDialog>
+          <Button
+            className="border border-zinc-700 bg-zinc-800 px-4 py-3"
+            disabled
+          >
+            Score Report
+          </Button>
+        </ScoreDialog>
       </div>
     </div>
   );

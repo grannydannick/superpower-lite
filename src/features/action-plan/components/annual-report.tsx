@@ -3,7 +3,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { Input } from '@/components/ui/input';
 import { CoreMonitoredIssues } from '@/features/action-plan/components/core-monitored-issues';
 import { BlockEditor } from '@/features/action-plan/components/editor/editor';
-// import { HealthScore } from '@/features/action-plan/components/health-score';
+import { HealthScore } from '@/features/action-plan/components/health-score';
 import { PhilosophyBlocks } from '@/features/action-plan/components/philosophy-blocks';
 import { Protocol } from '@/features/action-plan/components/protocol';
 import { RecommendedItems } from '@/features/action-plan/components/recommended-items';
@@ -55,7 +55,7 @@ export const AnnualReportComponent = () => {
 
         <PhilosophyBlocks philosophyBlocks={annualReportBlocks} />
       </div>
-      {/*<HealthScore className={REPORT_STYLE} />*/}
+      <HealthScore className={REPORT_STYLE} />
       <CoreMonitoredIssues className={REPORT_STYLE} />
       <SecondaryIssues className={REPORT_STYLE} />
       <Protocol className={REPORT_STYLE} />
