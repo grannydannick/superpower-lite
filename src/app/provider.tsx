@@ -8,6 +8,7 @@ import { Toaster } from 'sonner';
 import { MainErrorFallback } from '@/components/errors/main';
 import { Spinner } from '@/components/ui/spinner';
 import { useUser } from '@/lib/auth';
+import { NewRelicProvider } from '@/lib/newrelic';
 import { queryConfig } from '@/lib/react-query';
 import { StripeProvider } from '@/lib/stripe';
 
@@ -48,13 +49,15 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       <ErrorBoundary FallbackComponent={MainErrorFallback}>
         <HelmetProvider>
           <QueryClientProvider client={queryClient}>
-            <StripeProvider>
-              {import.meta.env.DEV && (
-                <ReactQueryDevtools buttonPosition="top-right" />
-              )}
-              <Toaster richColors />
-              <AuthLoader>{children}</AuthLoader>
-            </StripeProvider>
+            <NewRelicProvider>
+              <StripeProvider>
+                {import.meta.env.DEV && (
+                  <ReactQueryDevtools buttonPosition="top-right" />
+                )}
+                <Toaster richColors />
+                <AuthLoader>{children}</AuthLoader>
+              </StripeProvider>
+            </NewRelicProvider>
           </QueryClientProvider>
         </HelmetProvider>
       </ErrorBoundary>
