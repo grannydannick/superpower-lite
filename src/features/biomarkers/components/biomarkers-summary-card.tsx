@@ -100,10 +100,7 @@ export const BiomarkersSummaryCard = () => {
       <div className="flex w-full items-end justify-between">
         <BiomarkersList />
         <ScoreDialog>
-          <Button
-            className="border border-zinc-700 bg-zinc-800 px-4 py-3"
-            disabled
-          >
+          <Button className="border border-zinc-700 bg-zinc-800 px-4 py-3">
             Score Report
           </Button>
         </ScoreDialog>
