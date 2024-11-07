@@ -8,6 +8,10 @@ import { capitalize } from '@/utils/format';
 
 export const columns: ColumnDef<User>[] = [
   {
+    accessorKey: 'id',
+    header: 'Id',
+  },
+  {
     accessorKey: 'name',
     header: 'Name',
     cell: ({ row }) => {
@@ -24,7 +28,7 @@ export const columns: ColumnDef<User>[] = [
           </Body1>
 
           <Body1 className="text-zinc-400">
-            {gender} {age}
+            {gender} - {row.original.dateOfBirth.split('T')[0]} ({age})
           </Body1>
         </div>
       );
