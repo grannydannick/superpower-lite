@@ -22,18 +22,20 @@ import {
 } from '../api/create-message';
 
 export const CreateMessageForm = (): JSX.Element => {
-  const createMessageMutation = useCreateMessage({
-    mutationConfig: {
-      onSuccess: () =>
-        toast.success('Message sent. We will get back in <24 hrs on weekdays.'),
-    },
-  });
-
   const form = useForm<CreateMessageInput>({
     resolver: zodResolver(createMessageInputSchema),
     defaultValues: {
       text: '',
       type: 'concierge',
+    },
+  });
+
+  const createMessageMutation = useCreateMessage({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success('Message sent. We will get back in <24 hrs on weekdays.');
+        form.reset();
+      },
     },
   });
 
