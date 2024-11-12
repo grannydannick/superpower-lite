@@ -55,11 +55,11 @@ export function StatusFilter<TData>({
                 width={14}
               />
             </div>
-            <Body2 className="whitespace-nowrap">
+            <p className="whitespace-nowrap text-sm font-normal">
               {status === 'All Ranges'
                 ? defaultTitle
                 : getCurrentStatus(status).label}
-            </Body2>
+            </p>
             <ChevronDown
               className={cn(
                 'size-4 min-w-4 transition-transform duration-200',
