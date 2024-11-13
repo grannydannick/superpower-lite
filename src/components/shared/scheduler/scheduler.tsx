@@ -80,7 +80,7 @@ function SchedulerConsumer({
         </div>
         <SchedulerDays />
         <SchedulerTimes />
-        {displayCancellationNote && slots.length > 0 && (
+        {displayCancellationNote && slots.length > 0 ? (
           <div className="mt-6">
             <Body1 className="text-zinc-500">
               Rescheduling or cancelling less than 24 hours in advance of your
@@ -88,7 +88,7 @@ function SchedulerConsumer({
               to our Terms of Service for more details.
             </Body1>
           </div>
-        )}
+        ) : null}
         {showCreateBtn && onSlotUpdate && (
           <div className="mt-6 flex justify-end">
             <Button

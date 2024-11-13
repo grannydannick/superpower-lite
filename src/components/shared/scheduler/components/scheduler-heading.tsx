@@ -4,6 +4,8 @@ import 'moment-timezone';
 import { toast } from 'sonner';
 
 import { Spinner } from '@/components/ui/spinner';
+import { TextShimmer } from '@/components/ui/text-shimmer';
+import { Body1 } from '@/components/ui/typography';
 
 import { useScheduler } from '../stores/scheduler';
 
@@ -46,17 +48,19 @@ export function SchedulerHeading(): JSX.Element {
   };
 
   return (
-    <div className="flex justify-between text-[#71717A]">
-      <h5 className="flex flex-row items-center justify-start space-x-2 tracking-wider">
-        <span>{startRange?.tz(tz).format('MMMM')}</span>
-      </h5>
-      <div className="flex flex-row items-center">
+    <div className="flex items-center justify-between gap-2">
+      {loading ? (
+        <TextShimmer className="text-sm sm:text-base" duration={1}>
+          Hang tight, it might take a little time to fetch the locations.
+        </TextShimmer>
+      ) : (
+        <Body1 className="text-sm sm:text-base">
+          {startRange?.tz(tz).format('MMMM')}
+        </Body1>
+      )}
+      <div className="flex items-center">
         <div className="flex flex-row items-center">
-          {loading ? (
-            <span className="flex size-6 items-center">
-              <Spinner variant="primary" />
-            </span>
-          ) : null}
+          {loading ? <Spinner variant="primary" size="xs" /> : null}
 
           <RangeSelectButton
             icon={<ChevronLeft className="size-4" />}
