@@ -23,13 +23,15 @@ export function SchedulerTimes(): JSX.Element {
   return (
     <>
       {startRange && !loading ? (
-        <div className="mb-2 flex items-center gap-2 text-sm text-zinc-400 sm:text-base">
-          {moment(startRange).format('MMMM Do')}
-          <DotIcon className="size-3" color="#71717A" />
-          <h5 className="mr-1">
+        <div className="mb-2 flex items-center gap-2">
+          <Body1 className="text-sm text-zinc-500 sm:text-base">
+            {selectedDay?.format('MMMM Do') ?? 'Month'}
+          </Body1>
+          <DotIcon className="size-5" color="#71717A" />
+          <Body1 className="text-sm text-zinc-500 sm:text-base">
             {/*For Pacific Daylight Time, 'z' would output 'PDT'.*/}
             {startRange ? getFullTimezoneName(startRange.format('z')) : null}
-          </h5>
+          </Body1>
         </div>
       ) : null}
       {loading ? (
@@ -50,7 +52,7 @@ export function SchedulerTimes(): JSX.Element {
             return <SchedulerTimeSlot key={slot.start} timeSlot={slot} />;
           })}
         {!loading && !timeSlots.length ? (
-          <div className="py-10">
+          <div className="flex items-center justify-center py-10">
             <Body1 className="text-zinc-500">No times found.</Body1>
           </div>
         ) : null}

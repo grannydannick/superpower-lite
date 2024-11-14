@@ -50,11 +50,14 @@ export function SchedulerHeading(): JSX.Element {
   return (
     <div className="flex items-center justify-between gap-2">
       {loading ? (
-        <TextShimmer className="text-sm sm:text-base" duration={1}>
+        <TextShimmer
+          className="text-sm [--base-color:theme(colors.zinc.600)] [--base-gradient-color:theme(colors.zinc.200)] sm:text-base"
+          duration={1.2}
+        >
           Hang tight, it might take a little time to fetch the locations.
         </TextShimmer>
       ) : (
-        <Body1 className="text-sm sm:text-base">
+        <Body1 className="text-sm text-zinc-600 sm:text-base">
           {startRange?.tz(tz).format('MMMM')}
         </Body1>
       )}
