@@ -16,12 +16,20 @@ export const UpcomingCallsList = () => {
 
   if (!upcomingCallsQuery.data) return null;
 
+  // Removing all orders in the past.
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const sortedOrders = [...upcomingCallsQuery.data.orders]
+    .filter((order) => new Date(order.timestamp).getTime() >= today.getTime())
+    .sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+    );
+
   return (
     <div className="py-10">
-      <UpcomingCallsTable
-        columns={columns}
-        data={upcomingCallsQuery.data.orders}
-      />
+      <UpcomingCallsTable columns={columns} data={sortedOrders} />
     </div>
   );
 };

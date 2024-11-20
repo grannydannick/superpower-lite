@@ -13,8 +13,9 @@ export const AdvisoryCallButton = ({ order }: { order: Order }) => {
   }
 
   const isAppointmentSoon =
+    new Date(order.timestamp).getTime() > Date.now() &&
     new Date(order.timestamp).getTime() - Date.now() <
-    1000 * 60 * 60 * READY_NUM_HOURS_BEFORE_ADVISORY;
+      1000 * 60 * 60 * READY_NUM_HOURS_BEFORE_ADVISORY;
 
   const isLinkReady = webAddress.url && isAppointmentSoon;
 
