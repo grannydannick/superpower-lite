@@ -1,82 +1,44 @@
-import { cn } from '@/lib/utils';
+import { ring2 } from 'ldrs';
+
+/**
+ * If we don't have that, components that are using Spinner fail due to: Invalid string length
+ * For now we will disable register for testing and will investigate later.
+ */
+if (!import.meta.env.TEST) {
+  ring2.register();
+}
 
 const sizes = {
-  xs: 'h-4 w-4',
-  sm: 'h-6 w-6',
-  md: 'h-8 w-8',
-  lg: 'h-16 w-16',
-  xl: 'h-24 w-24',
+  xs: 16,
+  sm: 24,
+  md: 32,
+  lg: 64,
+  xl: 96,
 };
 
 const variants = {
-  light: {
-    outer: 'white',
-    inner: '#E4E4E7',
-  }, // TODO: change me
-  primary: {
-    outer: '#E4E4E7',
-    inner: '#18181B',
-  },
+  light: 'white',
+  primary: '#18181B',
 };
 
 export type SpinnerProps = {
   size?: keyof typeof sizes;
   variant?: keyof typeof variants;
-  className?: string;
 };
 
-export const Spinner = ({
-  size = 'sm',
-  variant = 'light',
-  className = '',
-}: SpinnerProps) => {
+export const Spinner = ({ size = 'sm', variant = 'light' }: SpinnerProps) => {
   return (
     <>
-      <svg
-        aria-hidden="true"
-        className={cn('animate-spin', sizes[size], className)}
-        viewBox="0 0 27 28"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M25.6667 14C25.6667 15.5759 25.3563 17.1363 24.7532 18.5922C24.1502 20.0481 23.2663 21.371 22.152 22.4853C21.0377 23.5996 19.7148 24.4835 18.2589 25.0866C16.803 25.6896 15.2425 26 13.6667 26C12.0908 26 10.5304 25.6896 9.07448 25.0866C7.61858 24.4835 6.29571 23.5996 5.1814 22.4853C4.0671 21.371 3.18319 20.0481 2.58013 18.5922C1.97708 17.1363 1.66669 15.5759 1.66669 14C1.66669 12.4241 1.97708 10.8637 2.58013 9.40779C3.18319 7.95189 4.06711 6.62902 5.18141 5.51471C6.29571 4.40041 7.61858 3.5165 9.07449 2.91344C10.5304 2.31039 12.0908 2 13.6667 2C15.2426 2 16.803 2.31039 18.2589 2.91345C19.7148 3.51651 21.0377 4.40042 22.152 5.51472C23.2663 6.62903 24.1502 7.9519 24.7532 9.4078C25.3563 10.8637 25.6667 12.4241 25.6667 14L25.6667 14Z"
-          stroke={variants[variant].outer}
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M13.6667 2C15.2425 2 16.803 2.31039 18.2589 2.91345C19.7148 3.5165 21.0377 4.40042 22.152 5.51472C23.2663 6.62902 24.1502 7.95189 24.7532 9.4078C25.3563 10.8637 25.6667 12.4241 25.6667 14"
-          stroke={variants[variant].inner}
-          strokeWidth="2.5"
-          strokeLinejoin="round"
-        />
-      </svg>
+      <l-ring-2
+        size={sizes[size]}
+        stroke="3"
+        stroke-length="0.25"
+        bg-opacity="0.1"
+        speed="0.8"
+        color={variants[variant]}
+      ></l-ring-2>
 
       <span className="sr-only">Loading</span>
     </>
   );
 };
-
-// <svg
-//   xmlns="http://www.w3.org/2000/svg"
-//   width="27"
-//   height="28"
-//   viewBox="0 0 27 28"
-//   fill="none"
-// >
-//   <path
-//     d="M25.6667 14C25.6667 15.5759 25.3563 17.1363 24.7532 18.5922C24.1502 20.0481 23.2663 21.371 22.152 22.4853C21.0377 23.5996 19.7148 24.4835 18.2589 25.0866C16.803 25.6896 15.2425 26 13.6667 26C12.0908 26 10.5304 25.6896 9.07448 25.0866C7.61858 24.4835 6.29571 23.5996 5.1814 22.4853C4.0671 21.371 3.18319 20.0481 2.58013 18.5922C1.97708 17.1363 1.66669 15.5759 1.66669 14C1.66669 12.4241 1.97708 10.8637 2.58013 9.40779C3.18319 7.95189 4.06711 6.62902 5.18141 5.51471C6.29571 4.40041 7.61858 3.5165 9.07449 2.91344C10.5304 2.31039 12.0908 2 13.6667 2C15.2426 2 16.803 2.31039 18.2589 2.91345C19.7148 3.51651 21.0377 4.40042 22.152 5.51472C23.2663 6.62903 24.1502 7.9519 24.7532 9.4078C25.3563 10.8637 25.6667 12.4241 25.6667 14L25.6667 14Z"
-//     stroke="#E4E4E7"
-//     strokeWidth="2.5"
-//     strokeLinecap="round"
-//     strokeLinejoin="round"
-//   />
-//   <path
-//     d="M13.6667 2C15.2425 2 16.803 2.31039 18.2589 2.91345C19.7148 3.5165 21.0377 4.40042 22.152 5.51472C23.2663 6.62902 24.1502 7.95189 24.7532 9.4078C25.3563 10.8637 25.6667 12.4241 25.6667 14"
-//     stroke="#18181B"
-//     strokeWidth="2.5"
-//     strokeLinejoin="round"
-//   />
-// </svg>;

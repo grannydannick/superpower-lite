@@ -100,8 +100,8 @@ export function CouponCodeAccessForm({
   return (
     <div className="w-full max-w-[400px] space-y-8">
       <div className="space-y-3 text-center">
-        <H1 className="text-zinc-900">Welcome</H1>
-        <H4 className="text-zinc-600">Please enter your access code</H4>
+        <H1 className="text-zinc-900">Welcome to Superpower</H1>
+        <H4 className="text-zinc-500">Your new era of personal health</H4>
       </div>
 
       <Form {...form}>
@@ -122,13 +122,7 @@ export function CouponCodeAccessForm({
                 )}
               />
             </div>
-            <Button>
-              {accessCodeQuery.isLoading ? (
-                <Spinner className="size-6" variant="light" />
-              ) : (
-                'Next'
-              )}
-            </Button>
+            <Button>{accessCodeQuery.isLoading ? <Spinner /> : 'Next'}</Button>
           </div>
         </form>
       </Form>

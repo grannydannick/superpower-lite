@@ -51,9 +51,9 @@ export const DataRoute = () => {
         id="summary"
         className="flex flex-col gap-5 pt-6 xl:flex-row xl:pb-16"
       >
-        <ScoreCard />
-        <BiologicalAgeCard />
-        <BiomarkersSummaryCard />
+        <ScoreCard variant="biomarkers" />
+        <BiologicalAgeCard variant="biomarkers" />
+        <BiomarkersSummaryCard variant="biomarkers" />
       </section>
       <section id="data">
         <BiomarkersDataTable />

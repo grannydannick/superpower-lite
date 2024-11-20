@@ -62,7 +62,7 @@ export function OrdersList(): JSX.Element {
           <CollapsibleTrigger asChild>
             <Button
               variant="ghost"
-              size="sm"
+              size="small"
               className="mx-auto mt-5 flex flex-row items-center space-x-2 text-secondary"
             >
               <Body1>

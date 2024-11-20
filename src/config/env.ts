@@ -15,6 +15,8 @@ const createEnv = () => {
     GOOGLE_API_KEY: z.string(),
     CALENDLY_TOKEN: z.string(),
     TYPEFORM_FORM_ID: z.string(),
+    BRIDGE_PUBLISHABLE_KEY: z.string(),
+    BRIDGE_ENDPOINT: z.string(),
     NEW_RELIC_INFO_LICENSE_KEY: z.string(),
     NEW_RELIC_INFO_APPLICATION_ID: z.string(),
     NEW_RELIC_LOADER_ACCOUNT_ID: z.string(),

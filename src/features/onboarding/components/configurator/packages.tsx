@@ -1,4 +1,3 @@
-import { ArrowUpRight } from 'lucide-react';
 import React from 'react';
 
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -84,21 +83,22 @@ const BloodTestPackageCard: React.FC<BloodTestPackageCardProps> = ({
 const SectionPackages = () => {
   const { bloodPackage, updateBloodPackage } = useOnboarding();
   return (
-    <section id="package" className="w-full max-w-[500px] space-y-6">
+    <section id="package" className="w-full space-y-6">
       <div className="space-y-2">
-        <H2 className="text-[#1E1E1E]">Annual blood test package</H2>
+        <H2 className="text-[#1E1E1E]">Customize your membership</H2>
         <p className="text-base text-zinc-500">
           Choose the blood test package would like as part of your membership.
         </p>
-        <a
-          href="https://superpower.com/biomarkers"
-          target="blank"
-          rel="noreferrer"
-          className="flex flex-row items-center space-x-1 text-[#FC5F2B]"
-        >
-          <span>Compare and view tests</span>
-          <ArrowUpRight className="size-4" />
-        </a>
+        {/*TODO: uncomment when advanced panel is back*/}
+        {/*<a*/}
+        {/*  href="https://superpower.com/biomarkers"*/}
+        {/*  target="blank"*/}
+        {/*  rel="noreferrer"*/}
+        {/*  className="flex flex-row items-center space-x-1 text-[#FC5F2B]"*/}
+        {/*>*/}
+        {/*  <span>Compare and view tests</span>*/}
+        {/*  <ArrowUpRight className="size-4" />*/}
+        {/*</a>*/}
       </div>
       <div className="space-y-2">
         <RadioGroup value={bloodPackage ?? 'BASELINE'}>

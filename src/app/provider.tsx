@@ -1,12 +1,14 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'sonner';
 
 import { MainErrorFallback } from '@/components/errors/main';
-import { Spinner } from '@/components/ui/spinner';
+import { SuperpowerLoadingLogo } from '@/components/icons/superpower-logo';
+import { TextShimmer } from '@/components/ui/text-shimmer';
 import { useUser } from '@/lib/auth';
 import { NewRelicProvider } from '@/lib/newrelic';
 import { queryConfig } from '@/lib/react-query';
@@ -18,11 +20,30 @@ type AppProviderProps = {
 
 function AuthLoader({ children }: { children: React.ReactNode }) {
   const { isFetched } = useUser();
+  const [isDelayed, setIsDelayed] = useState<boolean>(false);
 
-  if (!isFetched) {
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+
+    if (isFetched) {
+      // artificial timeout to make UI look better
+      timer = setTimeout(() => {
+        setIsDelayed(true);
+      }, 1000);
+    }
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [isFetched]);
+
+  if (!isFetched || !isDelayed) {
     return (
       <div className="flex h-screen w-screen items-center justify-center">
-        <Spinner size="xl" variant="primary" />
+        <SuperpowerLoadingLogo />
+        <span className="sr-only">Loading</span>
       </div>
     );
   }
@@ -42,7 +63,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
     <React.Suspense
       fallback={
         <div className="flex h-screen w-screen items-center justify-center">
-          <Spinner size="xl" variant="primary" />
+          <TextShimmer>Superpower</TextShimmer>
         </div>
       }
     >

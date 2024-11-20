@@ -3,12 +3,9 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { steps } from '@/features/onboarding/components/steps';
-import { EVENT_SPECIAL_CODE } from '@/features/onboarding/const/special-code';
-import { useSyncOnboardingStorage } from '@/features/onboarding/hooks/use-sync-onboarding-storage';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { useUser } from '@/lib/auth';
 import { StepperStoreProvider, useStepper } from '@/lib/stepper';
-import { cn } from '@/lib/utils';
 import { preloadImage } from '@/utils/preload-image';
 
 export const onboardingLoader = () => async () => {
@@ -20,16 +17,10 @@ export const onboardingLoader = () => async () => {
    *
    */
   const preloadedImages = [
-    '/onboarding/bg-female-hands.webp',
-    '/onboarding/bg-female-looking-up.webp',
-    '/onboarding/bg-female-spine.webp',
-    '/onboarding/bg-female-spotlight.webp',
-    '/onboarding/bg-female-stretching.webp',
+    '/onboarding/bg-female-face.webp',
     '/onboarding/bg-male.webp',
-    '/onboarding/bg-male-large.webp',
     '/onboarding/bg-spine.webp',
-    '/onboarding/bg-spine-2.webp',
-    '/onboarding/bg-watch.webp',
+    '/onboarding/bg-female-hands.webp',
   ];
 
   const imagesPromiseList: Promise<any>[] = [];
@@ -43,15 +34,11 @@ export const onboardingLoader = () => async () => {
 export const OnboardingRoute = () => {
   const { data: user } = useUser({});
   const navigate = useNavigate();
-  const updateCollectionMethod = useOnboarding((s) => s.updateCollectionMethod);
+  const setProcessing = useOnboarding((s) => s.setProcessing);
 
   /**
-   * We introduce this to try to fix the bug where we dont update local storage
-   *
-   * This will fetch most recent draft order and update local storage with ID and collection method
+   * This gets triggered on final step or if user already has onboarding completed
    */
-  useSyncOnboardingStorage();
-
   useEffect(() => {
     if (!user) return;
 
@@ -63,15 +50,11 @@ export const OnboardingRoute = () => {
   }, [user?.onboarding]);
 
   /**
-   * In case we have event here, we want to owerwrite current collection method
+   * Update processing on initial page load / refresh to prevent any side effects
    */
   useEffect(() => {
-    const accessCode = localStorage.getItem('superpower-code');
-
-    if (accessCode === EVENT_SPECIAL_CODE) {
-      updateCollectionMethod('EVENT');
-    }
-  }, [updateCollectionMethod]);
+    setProcessing(false);
+  }, []);
 
   return (
     <AnimatePresence>
@@ -81,7 +64,6 @@ export const OnboardingRoute = () => {
       >
         <Step />
       </StepperStoreProvider>
-      ,
     </AnimatePresence>
   );
 };
@@ -91,9 +73,5 @@ const Step = () => {
 
   const currentStep = steps[activeStep];
 
-  return (
-    <div className={cn('bg-white min-h-screen w-full')}>
-      {currentStep?.content ?? null}
-    </div>
-  );
+  return currentStep?.content ?? null;
 };

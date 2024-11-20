@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
+import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
 import { configureAuth } from 'react-query-auth';
 import { Navigate, useLocation } from 'react-router-dom';
 import { z } from 'zod';
@@ -57,25 +58,35 @@ export const registerInputSchema = z.object({
   firstName: z.string().min(1, 'First name is required.'),
   lastName: z.string().min(1, 'Last name is required.'),
   email: z.string().email('Invalid email address.'),
-  phone: z.string().min(1, 'Phone number is required.').max(12),
-  dateOfBirth: z
-    .object({
-      from: z.date(),
-      to: z.date(),
-    })
-    .refine((data: { from: Date; to: Date }) => {
-      const today = new Date();
-      const birthDate = new Date(data.from);
-      // Calculate the user's age.
-      let age = today.getFullYear() - birthDate.getFullYear();
-      // Check if the user has already had their birthday this year.
-      const m = today.getMonth() - birthDate.getMonth();
-      // If the user hasn't had their birthday yet, subtract one year.
-      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-      return age >= 18;
-    }, 'You must be at least 18 years old to register.'),
+  phone: z
+    .string()
+    .min(1, 'Phone number is required.')
+    .refine(
+      (value) => {
+        // Check if the phone number is valid
+        if (!isValidPhoneNumber(value)) return false;
+
+        // Parse the phone number to get its country
+        const phoneNumber = parsePhoneNumber(value);
+        return phoneNumber && phoneNumber.country === 'US';
+      },
+      {
+        message: 'Invalid US phone number.',
+      },
+    ),
+  dateOfBirth: z.date().refine((data) => {
+    const today = new Date();
+    const birthDate = new Date(data);
+    // Calculate the user's age.
+    let age = today.getFullYear() - birthDate.getFullYear();
+    // Check if the user has already had their birthday this year.
+    const m = today.getMonth() - birthDate.getMonth();
+    // If the user hasn't had their birthday yet, subtract one year.
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age >= 18;
+  }, 'You must be at least 18 years old to register.'),
   gender: z.enum(['MALE', 'FEMALE']),
   password: z.string().min(6, 'Password must be at least 6 characters long.'),
 });
@@ -87,7 +98,7 @@ const registerWithEmailAndPassword = (
 ): Promise<LoginAuthenticationResponse> => {
   const registerData = {
     ...data,
-    dateOfBirth: data.dateOfBirth.from.toISOString(),
+    dateOfBirth: data.dateOfBirth.toISOString(),
   };
   return api.post('/auth/newuser', registerData);
 };

@@ -1,10 +1,10 @@
-import { test as setup, expect } from '@playwright/test';
+import { test as setup } from '@playwright/test';
 import { createUser } from '../../src/testing/data-generators';
 
 const authFile = 'e2e/.auth/user.json';
 
 setup('authenticate', async ({ page }) => {
-  const user = createUser();
+  const user = createUser({ phone: '+13128383697' });
 
   await page.goto('/register');
 
@@ -17,12 +17,18 @@ setup('authenticate', async ({ page }) => {
   await page.getByLabel('First Name').fill(user.firstName);
   await page.getByLabel('Last Name').click();
   await page.getByLabel('Last Name').fill(user.lastName);
-  await page.getByPlaceholder(/enter phone number/i).click();
-  await page.getByPlaceholder(/enter phone number/i).fill(user.phone);
 
-  await page.getByTestId(/date/i).click();
-  await page.getByTestId(/date-year-picker/i).click();
-  await page.getByText(/1990/i).click();
+  await page.getByTestId('months').focus();
+  await page.keyboard.type('5');
+
+  await page.getByTestId('days').focus();
+  await page.keyboard.type('20');
+
+  await page.getByTestId('years').focus();
+  await page.keyboard.type('1990');
+
+  await page.getByLabel(/phone/i).click();
+  await page.getByLabel(/phone/i).fill(user.phone);
 
   await page.getByText(/Select biological sex/i).click();
   const maleOption = page.getByRole('option', { name: 'Male' }).nth(0);
@@ -46,6 +52,6 @@ setup('authenticate', async ({ page }) => {
   await page.getByPlaceholder('Password').fill(user.password);
   await page.getByRole('button', { name: 'Login' }).click();
   await page.waitForURL('/');
-
+  //
   await page.context().storageState({ path: authFile });
 });

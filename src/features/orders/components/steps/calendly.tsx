@@ -6,28 +6,35 @@ import { DialogClose } from '@/components/ui/dialog';
 import { Spinner } from '@/components/ui/spinner';
 import { Body1, H2 } from '@/components/ui/typography';
 import { env } from '@/config/env';
+import { useOrders } from '@/features/orders/api';
 import { fetchCalendlyEvent } from '@/features/orders/api/get-calendly-event';
 import { useUpdateOrder } from '@/features/orders/api/update-order';
 import { useOrder } from '@/features/orders/stores/order-store';
 import { useGetSchedulingLink } from '@/features/services/api/get-scheduling-link';
 import { useUser } from '@/lib/auth';
+import { cn } from '@/lib/utils';
 import { OrderStatus, WebAddressType } from '@/types/api';
 import { CalendlyScheduledEventInfo } from '@/types/calendly';
 
 export function Calendly(): JSX.Element {
   const { data: user } = useUser();
-  const { service, createdOrderId, draftOrder } = useOrder((s) => s);
+  const { service, createdOrderId } = useOrder((s) => s);
   const updateOrderMutation = useUpdateOrder();
+  const ordersQuery = useOrders();
+  const getSchedulingLinkQuery = useGetSchedulingLink();
+
   const [success, setSuccess] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const getSchedulingLinkQuery = useGetSchedulingLink();
+  const existingDraftOrder = ordersQuery.data?.orders
+    .filter((o) => o.status === OrderStatus.draft)
+    .find((o) => o.serviceId === service.id);
 
   /*
    * User either went through order flow or finishes previous booking
    * */
-  const previousOrderId = createdOrderId ?? draftOrder?.id;
+  const previousOrderId = createdOrderId ?? existingDraftOrder?.id;
 
   if (getSchedulingLinkQuery.isLoading) {
     return (
@@ -80,10 +87,14 @@ export function Calendly(): JSX.Element {
               }
 
               if (service === null)
-                throw Error('There was a problem creating the order.');
+                throw Error(
+                  'There was a problem creating the order. Contact concierge.',
+                );
 
               if (previousOrderId === null || !previousOrderId)
-                throw Error('Initial order was not created for this.');
+                throw Error(
+                  'Initial order was not created for this. Contact concierge.',
+                );
 
               const result = await updateOrderMutation.mutateAsync({
                 orderId: previousOrderId,
@@ -110,15 +121,19 @@ export function Calendly(): JSX.Element {
           />
         </div>
       </div>
-      <div className="flex items-center justify-between px-6 pb-12 md:px-14">
+      <div
+        className={cn(
+          'flex items-center px-6 pb-12 md:px-14',
+          error ? 'justify-between' : 'justify-end',
+        )}
+      >
         <Body1 className="text-pink-700">{error}</Body1>
-        <div className="flex w-full items-center gap-2">
-          <DialogClose asChild>
-            <Button disabled={!success || loading} className="w-full md:w-auto">
-              {loading ? <Spinner /> : 'Done'}
-            </Button>
-          </DialogClose>
-        </div>
+
+        <DialogClose asChild>
+          <Button disabled={!success || loading} className="w-full md:w-auto">
+            {loading ? <Spinner /> : 'Done'}
+          </Button>
+        </DialogClose>
       </div>
     </>
   );

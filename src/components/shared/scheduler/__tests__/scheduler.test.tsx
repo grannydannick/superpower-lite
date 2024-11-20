@@ -15,9 +15,6 @@ test('One slot', async () => {
         postalCode: '12345',
         line: ['test'],
       }}
-      onSlotUpdate={(appt: unknown): void => {
-        console.log(`${appt}`);
-      }}
     />,
   );
 

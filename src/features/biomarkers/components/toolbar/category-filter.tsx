@@ -34,7 +34,7 @@ export function CategoryFilter<TData>({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          size="sm"
+          size="small"
           className={cn(
             'bg-white rounded-lg py-2 px-3 text-sm text-zinc-500 hidden md:flex items-center gap-1.5',
             filters.length ? 'border-vermillion-900' : 'border-none',
@@ -69,7 +69,7 @@ export function CategoryFilter<TData>({
             <div>
               <Button
                 variant="ghost"
-                size="sm"
+                size="small"
                 className="p-0 text-sm text-zinc-400 hover:bg-transparent"
                 onClick={() => {
                   setFilters([]);

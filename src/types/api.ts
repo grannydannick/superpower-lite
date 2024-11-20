@@ -41,8 +41,8 @@ export interface AdminUser extends BaseUser {
 
 export interface User extends BaseUser {
   gender: string;
-  onboarding?: Questionnaire;
-  initialResults?: Questionnaire;
+  onboarding: Questionnaire;
+  subscribed: boolean;
   admin: boolean;
   carePlan?: string;
   authMethod: 'admin' | 'password';
@@ -123,10 +123,15 @@ export type OperationOutcome = {
 
 /* QUESTIONNAIRE */
 
-export type QuestionnaireStatus = 'INCOMPLETE' | 'COMPLETE';
+export type QuestionnaireStatus = 'INCOMPLETE' | 'COMPLETE' | 'ACTIVE';
+export type QuestionnaireName =
+  | 'Identity'
+  | 'Intake'
+  | 'Wearable'
+  | 'Insurance';
 
 export type Questionnaire = Entity<{
-  readonly name: string;
+  readonly name: QuestionnaireName;
   readonly status: QuestionnaireStatus;
   readonly progress: number;
 }>;
@@ -355,6 +360,7 @@ export type Address = {
   city: string;
   state: string;
   postalCode: string;
+  text?: string;
 };
 
 export type WebAddressType = 'ZOOM';
@@ -364,11 +370,11 @@ export type WebAddressDTO = {
   type: WebAddressType;
 };
 
-export type PhlebotomyLocation = Entity<{
+export type PhlebotomyLocation = {
   name: string;
   distance: number;
   address: Address;
-}>;
+};
 
 export type Serviceable = {
   serviceable: boolean;
@@ -627,3 +633,20 @@ export type RdnUserAssignment = {
   updatedAt: string;
   rdn: Rdn;
 };
+
+/* TIMELINE */
+export type TimelineItemType = 'PLAN' | 'ORDER' | 'QUESTIONNAIRE';
+export type TimelineItemStatus =
+  | 'DONE'
+  | 'DISABLED'
+  | 'CURRENT'
+  | 'DEFAULT'
+  | 'ACTION_REQUIRED';
+
+export type TimelineItem = Entity<{
+  type: TimelineItemType;
+  name: string;
+  description?: string;
+  status: TimelineItemStatus;
+  id: string;
+}>;

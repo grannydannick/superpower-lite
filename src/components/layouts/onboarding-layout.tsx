@@ -1,60 +1,98 @@
 import { ChevronLeft } from 'lucide-react';
 import * as React from 'react';
 
+import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { Head } from '@/components/seo';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { useStepper } from '@/lib/stepper';
 import { cn } from '@/lib/utils';
-
-const OnboardingStepLayoutHeader = () => {
-  const { prevStep, activeStep } = useStepper((s) => s);
-  return (
-    <section id="header" className="flex w-full items-center justify-between">
-      {activeStep !== 0 ? (
-        <Button
-          variant="glass"
-          // z-999999 here to make it work with the typeform integration
-          className="z-[999999] size-12 rounded-full p-0"
-          onClick={() => {
-            prevStep();
-          }}
-        >
-          <ChevronLeft className="size-4" />
-        </Button>
-      ) : (
-        <div className="size-12" />
-      )}
-      <div className="w-[114px]">
-        <img className="w-auto" src="/logo.svg" alt="logo" />
-      </div>
-      <div className="size-12" />
-    </section>
-  );
-};
 
 type Props = {
   className?: string;
   title: string;
   children: JSX.Element;
+  blockBackButton?: boolean;
+  showAvailableStates?: boolean;
 };
 
 export const OnboardingLayout = (props: Props) => {
+  const { title, children, className, showAvailableStates = false } = props;
+
+  let { blockBackButton = false } = props;
+  const { prevStep, activeStep, steps } = useStepper((s) => s);
+
+  if (['mission'].includes(steps[activeStep].id)) {
+    blockBackButton = true;
+  }
+
   return (
     <>
-      <Head title={props.title} />
-      <div className="flex min-h-screen w-full flex-col p-8 md:p-6">
+      <Head title={title} />
+      <div className="flex min-h-dvh w-full flex-col p-8 md:p-16">
         <div
           className={cn(
-            'fixed left-0 top-0 z-0 h-screen w-full bg-spine bg-cover',
-            props.className,
+            'fixed left-0 top-0 z-0 h-full w-full bg-male bg-cover',
+            className,
           )}
         />
-        <div className="z-10 flex w-full flex-1 flex-col">
-          <OnboardingStepLayoutHeader />
-          <div className="flex w-full flex-1 flex-col items-center justify-center">
-            {props.children}
+        <div className="z-10 flex w-full flex-1 flex-col justify-between">
+          <div className="flex w-full items-center justify-between">
+            {activeStep !== 0 && !blockBackButton ? (
+              <Button
+                variant="glass"
+                className="size-12 rounded-full p-0"
+                onClick={() => {
+                  prevStep();
+                }}
+              >
+                <ChevronLeft className="size-4" />
+              </Button>
+            ) : (
+              <div className="size-12" />
+            )}
+            <SuperpowerLogo fill="white" />
+            <div className="size-12" />
           </div>
-          <section id="footer"></section>
+
+          {children}
+
+          {showAvailableStates ? (
+            <section
+              id="footer"
+              className="flex w-full items-center justify-center"
+            >
+              <Accordion
+                type="single"
+                collapsible
+                className="w-full max-w-[480px] rounded-xl border border-white/20 bg-white/5 p-5"
+              >
+                <AccordionItem value="item-1" className="border-b-0 text-white">
+                  <AccordionTrigger className="p-0">
+                    Which states offer Superpower?
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-2 pb-0 pt-4">
+                    <div>
+                      Superpower is currently available to residents in
+                      California, Florida, Texas, Nevada, Colorado, New York and
+                      New Jersey.
+                    </div>
+                    <div>
+                      We are expanding quickly with plans to be available for
+                      residents in every state across the US in 2025.
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </section>
+          ) : (
+            <div />
+          )}
         </div>
       </div>
     </>

@@ -16,7 +16,6 @@ export const CreateOrderPhlebotomyLocationSelector = () => {
     updateCollectionMethod,
     updateLocation,
     updateSlot,
-    draftOrder,
   } = useOrder((s) => s);
 
   const handleOptionClick = (optionValue: CollectionMethodType) => {
@@ -25,10 +24,7 @@ export const CreateOrderPhlebotomyLocationSelector = () => {
     updateSlot(null);
   };
 
-  const options = useMemo(
-    () => getCollectionMethods(service, draftOrder),
-    [service, draftOrder],
-  );
+  const options = useMemo(() => getCollectionMethods(service), [service]);
 
   return (
     <RadioGroup
@@ -54,17 +50,15 @@ export const CreateOrderPhlebotomyLocationSelector = () => {
           />
           <Label htmlFor={option.value} className="w-full">
             <div className="flex h-[140px] flex-col justify-between sm:h-[172px]">
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 <H3>{option.name}</H3>
-                <Body1 className="text-zinc-500">{option.description}</Body1>
-                {option.cancelationText && (
-                  <p className="text-xs leading-normal text-zinc-500">
-                    {option.cancelationText}
-                  </p>
-                )}
+                <Body1 className="text-sm text-zinc-500 sm:text-base">
+                  {option.description}&nbsp;
+                  {option.cancelationText}
+                </Body1>
               </div>
-              <Body1 className="text-zinc-500">
-                {option.price === 0 || draftOrder
+              <Body1 className="text-sm  text-zinc-500 sm:text-base">
+                {option.price === 0
                   ? 'Included'
                   : `+${formatMoney(option.price)}`}
               </Body1>

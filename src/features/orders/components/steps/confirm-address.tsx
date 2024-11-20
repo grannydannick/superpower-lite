@@ -1,12 +1,13 @@
 import { Button } from '@/components/ui/button';
-import { Body1, H2 } from '@/components/ui/typography';
+import { H2 } from '@/components/ui/typography';
+import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
 import { useOrder } from '@/features/orders/stores/order-store';
 import { CurrentAddressCard } from '@/features/users/components/current-address-card';
 import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
 
 export const ConfirmAddress = () => {
-  const { activeStep, steps, nextStep, prevStep } = useStepper((s) => s);
+  const nextStep = useStepper((s) => s.nextStep);
   const updateLocation = useOrder((s) => s.updateLocation);
   const { data: user } = useUser();
 
@@ -27,18 +28,8 @@ export const ConfirmAddress = () => {
           <CurrentAddressCard />
         </div>
       </div>
-      <div className="flex items-center px-6 pb-12 md:justify-between md:px-14">
-        <Body1 className="hidden text-zinc-400 md:block">
-          Step {activeStep + 1} of {steps.length}
-        </Body1>
-        <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
-          <Button
-            variant="outline"
-            className="w-full md:w-auto"
-            onClick={prevStep}
-          >
-            Back
-          </Button>
+      <HealthcareServiceFooter
+        nextBtn={
           <Button
             onClick={setLocation}
             disabled={!user?.primaryAddress}
@@ -46,8 +37,8 @@ export const ConfirmAddress = () => {
           >
             Next
           </Button>
-        </div>
-      </div>
+        }
+      />
     </>
   );
 };

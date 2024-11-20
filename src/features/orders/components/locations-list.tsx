@@ -31,7 +31,7 @@ export const LocationList = ({
       >
         {locations?.map((option, index) => (
           <Label
-            key={option.id}
+            key={index}
             className={cn(
               'rounded-lg py-4 px-6 text-left transition-all hover:bg-accent flex cursor-pointer items-center gap-4',
               formatAddress(location?.address) === formatAddress(option.address)

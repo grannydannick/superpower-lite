@@ -27,9 +27,9 @@ export const ScheduleConsultDoctorCard: ({
       )}
     >
       <img
-        className="size-12"
-        src="/action-plan/female-doctor.png"
-        alt="Doctor"
+        className="size-12 rounded-lg"
+        src="/services/1-1_advisory_call.png"
+        alt="consult"
       />
       <div className="flex grow flex-col justify-center">
         <div className="flex gap-3">
@@ -69,7 +69,7 @@ export const ConsultationCard: ({
       <div className="flex w-full items-center justify-between">
         <H2>Schedule your next consult</H2>
         <CollapsibleTrigger asChild>
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="small">
             <ChevronDown
               className={cn(
                 'size-6 text-zinc-900 transition-transform duration-200',

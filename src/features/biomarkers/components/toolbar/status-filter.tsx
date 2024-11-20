@@ -36,7 +36,7 @@ export function StatusFilter<TData>({
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            size="sm"
+            size="small"
             className={cn(
               'bg-white rounded-lg py-2 px-3 text-sm text-zinc-500 hidden md:flex items-center gap-1.5',
               status === 'All Ranges' ? 'border-0' : '',
@@ -79,7 +79,7 @@ export function StatusFilter<TData>({
               <div>
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="small"
                   className="p-0 text-sm text-zinc-400 hover:bg-transparent"
                   onClick={() => {
                     table.getColumn('status')?.setFilterValue(undefined);

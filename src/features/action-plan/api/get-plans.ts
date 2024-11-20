@@ -28,7 +28,7 @@ type UsePlansOptions = {
   queryConfig?: QueryConfig<typeof getPlansQueryOptions>;
 };
 
-export const usePlans = ({ queryConfig, page }: UsePlansOptions) => {
+export const usePlans = ({ queryConfig, page }: UsePlansOptions = {}) => {
   return useQuery({
     ...getPlansQueryOptions({ page }),
     ...queryConfig,

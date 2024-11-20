@@ -7,8 +7,20 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { DialogClose, DialogContent } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import { Body1, Body2, H2, H4 } from '@/components/ui/typography';
+import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { HealthcareService } from '@/types/api';
 import { getHealthcareServicePriceLabel } from '@/utils/format-money';
 import { getDetailsForService } from '@/utils/service';
@@ -21,36 +33,76 @@ import { TestDetails } from '../healthcare-service-info-dialog-content/types/ser
  * If you wish to trigger order flow, please use:
  * @param {HealthcareServiceDialog}
  *
- * You can pass any other component into the button position with any action required.
+ * ### Example:
  *
- * P.S. Make sure to wrap this into <Dialog /> with <DialogTrigger /> to call this.
+ * ```jsx
+ * <HealthcareServiceInfoDialog
+ *   openBtn={<Button>View Details</Button>}
+ *   closeBtn={<Button>Dismiss</Button>}
+ *   healthcareService={serviceData}
+ * />
+ * ```
  *
- * @param {ReactNode} [children] - Optional; pass the content, usually wrapped into <DialogClose /> or another component.
- * @param {HealthcareService} healthcareService - The healthcare service details.
+ * @component
+ *
+ * @param {ReactNode} openBtn - Element that triggers the opening of the dialog.
+ * @param {ReactNode} closeBtn - Element that triggers the closing of the dialog.
+ * @param {HealthcareService} healthcareService - Details of the healthcare service to display.
  */
-export const HealthcareServiceInfoDialogContent = ({
-  children,
+export const HealthcareServiceInfoDialog = ({
+  openBtn,
+  closeBtn,
   healthcareService,
 }: {
-  children?: ReactNode;
+  openBtn: ReactNode;
+  closeBtn: ReactNode;
   healthcareService: HealthcareService;
 }) => {
-  return (
-    <DialogContent>
-      <div className="max-h-[90vh] overflow-y-scroll rounded-xl">
-        <div>
-          <div className="flex flex-row items-center justify-between bg-zinc-50 px-12 pb-6 pt-12">
-            <Body1 className="text-zinc-500">Service</Body1>
-            <DialogClose>
-              <X className="size-6 cursor-pointer p-1" />
-            </DialogClose>
+  const { width } = useWindowDimensions();
+
+  if (width <= 768) {
+    return (
+      <Sheet>
+        <SheetTrigger asChild>{openBtn}</SheetTrigger>
+        <SheetContent className="flex max-h-full flex-col rounded-t-[10px]">
+          <div className="flex items-center justify-between px-4 pt-16 md:pb-4">
+            <SheetClose>
+              <div className="flex h-[44px] min-w-[44px] items-center justify-center rounded-full bg-zinc-100">
+                <X className="h-4 min-w-4" />
+              </div>
+            </SheetClose>
+            <Body2>Book a service</Body2>
+            <div className="min-w-[44px]" />
           </div>
-          <HealthcareServiceInfoDetails healthcareService={healthcareService}>
-            {children}
-          </HealthcareServiceInfoDetails>
+          <div className="overflow-auto">
+            <HealthcareServiceInfoDetails healthcareService={healthcareService}>
+              {closeBtn}
+            </HealthcareServiceInfoDetails>
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>{openBtn}</DialogTrigger>
+      <DialogContent>
+        <div className="max-h-[90vh] overflow-y-scroll rounded-xl">
+          <div>
+            <div className="flex flex-row items-center justify-between px-14 pb-6 pt-12">
+              <Body1 className="text-zinc-500">Service</Body1>
+              <DialogClose>
+                <X className="size-6 cursor-pointer p-1" />
+              </DialogClose>
+            </div>
+            <HealthcareServiceInfoDetails healthcareService={healthcareService}>
+              {closeBtn}
+            </HealthcareServiceInfoDetails>
+          </div>
         </div>
-      </div>
-    </DialogContent>
+      </DialogContent>
+    </Dialog>
   );
 };
 
@@ -71,8 +123,13 @@ export function HealthcareServiceInfoDetails({
 
   return (
     <div>
-      <div className="flex flex-col justify-between gap-12 bg-zinc-50 px-12 pb-16 sm:flex-row">
-        <div className="flex max-w-[278px] flex-col justify-center gap-6">
+      <div className="flex flex-col justify-between gap-12 px-6 py-12 md:flex-row md:px-14 md:pb-16">
+        <div className="flex max-w-[278px] flex-col justify-center gap-4">
+          <img
+            src={healthcareService.image}
+            className="block size-[70px] rounded-2xl border border-zinc-200 bg-white  object-cover md:hidden"
+            alt={healthcareService.name}
+          />
           <div>
             <H2 className="text-zinc-900">{healthcareService.name}</H2>
             <Body2 className="text-zinc-500">
@@ -83,15 +140,18 @@ export function HealthcareServiceInfoDetails({
             {healthcareService.description}
           </Body1>
           {children && (
-            <div className="flex flex-row items-center space-x-4">
+            <DialogClose
+              className="flex flex-row items-center space-x-4"
+              asChild
+            >
               {children}
-            </div>
+            </DialogClose>
           )}
         </div>
 
         <img
           src={healthcareService.image}
-          className="size-[362px] h-auto rounded-2xl border border-zinc-200  bg-white object-cover"
+          className="hidden h-[362px] w-full rounded-2xl border border-zinc-200  bg-white object-cover md:block md:size-[362px]"
           alt={healthcareService.name}
         />
       </div>

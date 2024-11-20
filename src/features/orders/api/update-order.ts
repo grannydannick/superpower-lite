@@ -1,8 +1,10 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { z } from 'zod';
 
-import { locationInputSchema } from '@/features/orders/api/create-order';
-import { getOrdersQueryOptions } from '@/features/orders/api/get-orders';
+import {
+  consentInputSchema,
+  locationInputSchema,
+} from '@/features/orders/api/create-order';
 import { api } from '@/lib/api-client';
 import { MutationConfig } from '@/lib/react-query';
 import { Order } from '@/types/api';
@@ -12,6 +14,8 @@ export const updateOrderInputSchema = z.object({
   timestamp: z.string().optional(),
   externalId: z.string().optional(),
   timezone: z.string().optional(),
+  informedConsent: consentInputSchema.optional(),
+  method: z.enum(['AT_HOME', 'IN_LAB', 'PHLEBOTOMY_KIT', 'EVENT']).optional(),
   status: z
     .enum([
       'UPCOMING',
@@ -44,15 +48,10 @@ type UseUpdateOrderOptions = {
 export const useUpdateOrder = ({
   mutationConfig,
 }: UseUpdateOrderOptions = {}) => {
-  const queryClient = useQueryClient();
-
   const { onSuccess, ...restConfig } = mutationConfig || {};
 
   return useMutation({
     onSuccess: (...args) => {
-      queryClient.invalidateQueries({
-        queryKey: getOrdersQueryOptions().queryKey,
-      });
       onSuccess?.(...args);
     },
     ...restConfig,

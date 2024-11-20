@@ -34,7 +34,7 @@ export function BiomarkerDataTableToolbar<TData>({
             setCurrentCategory={setCurrentCategory}
           />
         </div>
-        <div className="relative z-[5] h-14 w-full rounded-b-2xl bg-[rgb(255_255_255_/_0.69)] px-4 shadow-sm">
+        <div className="relative h-14 w-full rounded-b-2xl bg-[rgb(255_255_255_/_0.69)] px-4 shadow-sm">
           <div className="mx-auto flex h-full max-w-[100rem] items-center">
             <SearchBar table={table} />
             {isBloodCategory && (

@@ -74,6 +74,7 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
                     <AuthInput
                       border="bottom"
                       placeholder="Password"
+                      autoComplete="current-password"
                       icon={<Lock className="size-4 text-zinc-400" />}
                       type="password"
                       {...field}

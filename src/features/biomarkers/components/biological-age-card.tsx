@@ -4,9 +4,14 @@ import { useBiomarkers } from '@/features/biomarkers/api';
 import { calculateDNAmAge } from '@/features/biomarkers/utils/calculate-dnam-age';
 import { useCurrentPatient } from '@/features/rdns/hooks/use-current-patient';
 import { useUser } from '@/lib/auth';
+import { cn } from '@/lib/utils';
 import { yearsSinceDate } from '@/utils/format';
 
-export const BiologicalAgeCard = (): JSX.Element => {
+export const BiologicalAgeCard = ({
+  variant,
+}: {
+  variant?: 'home' | 'biomarkers';
+}) => {
   const biomarkersQuery = useBiomarkers();
   const { data: user } = useUser();
   const { selectedPatient } = useCurrentPatient();
@@ -37,7 +42,10 @@ export const BiologicalAgeCard = (): JSX.Element => {
 
   return (
     <div
-      className="flex h-[276px] w-full flex-col items-center justify-between rounded-3xl p-6"
+      className={cn(
+        'flex w-full flex-col justify-between rounded-3xl bg-primary p-5',
+        variant === 'biomarkers' ? 'items-center h-[276px]' : 'h-[188px]',
+      )}
       style={{
         backgroundImage: 'url("/cards/age-card.webp")',
         backgroundSize: 'cover',
@@ -46,16 +54,17 @@ export const BiologicalAgeCard = (): JSX.Element => {
     >
       <H4 className="text-white">Biological Age</H4>
 
-      <div className="flex flex-col items-center">
-        <H1 className="text-6xl text-white">{biologicalAge || '--'}</H1>
-        <Body2 className="text-white">years old</Body2>
-      </div>
+      <H1 className="text-white">{biologicalAge || '--'}</H1>
 
-      <Body2 className="text-white">
-        {ageDifference !== null ? Math.abs(ageDifference) : '--'} years{' '}
-        {ageDifference && ageDifference > 0 ? 'younger' : 'older'} than your
-        actual age
-      </Body2>
+      {ageDifference !== null ? (
+        <Body2 className="text-white">
+          {Math.abs(ageDifference)} years{' '}
+          {ageDifference && ageDifference > 0 ? 'younger' : 'older'} than your
+          actual age
+        </Body2>
+      ) : (
+        <Body2 className="text-white">Awaiting lab results</Body2>
+      )}
     </div>
   );
 };

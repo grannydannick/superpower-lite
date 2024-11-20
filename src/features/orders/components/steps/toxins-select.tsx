@@ -11,7 +11,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Body1 } from '@/components/ui/typography';
 import {
   ENVIRONMENTAL_TOXIN_TEST,
   HEAVY_METALS_TEST,
@@ -19,6 +18,7 @@ import {
   TOTAL_TOXIN_TEST,
 } from '@/const';
 import { ENVIRONMENTAL_TOXIN_PANEL } from '@/const/toxin-panel';
+import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
 import { useOrder } from '@/features/orders/stores/order-store';
 import { useServices } from '@/features/services/api';
 import { useStepper } from '@/lib/stepper';
@@ -37,7 +37,7 @@ export function ToxinsSelect(): ReactNode {
   const [selectedToxin, setSelectedToxin] = useState<EnvironmentalToxinType>(
     isEnvironmental ? (service.name as EnvironmentalToxinType) : 'Total Toxins',
   );
-  const { activeStep, nextStep, steps, prevStep } = useStepper((s) => s);
+  const { nextStep } = useStepper((s) => s);
   const { data: servicesData, isLoading: servicesLoading } = useServices();
   const updateService = useOrder((s) => s.updateService);
 
@@ -95,18 +95,8 @@ export function ToxinsSelect(): ReactNode {
           />
         </div>
       </div>
-      <div className="flex items-center px-6 pb-12 md:justify-between md:px-14">
-        <Body1 className="hidden text-zinc-400 md:block">
-          Step {activeStep + 1} of {steps.length}
-        </Body1>
-        <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
-          <Button
-            variant="outline"
-            className="w-full md:w-auto"
-            onClick={prevStep}
-          >
-            Back
-          </Button>
+      <HealthcareServiceFooter
+        nextBtn={
           <Button
             onClick={nextStep}
             disabled={!location}
@@ -114,8 +104,8 @@ export function ToxinsSelect(): ReactNode {
           >
             Next
           </Button>
-        </div>
-      </div>
+        }
+      />
     </>
   );
 }

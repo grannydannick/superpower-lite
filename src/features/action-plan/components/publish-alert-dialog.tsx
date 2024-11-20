@@ -11,12 +11,12 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 import { Body2, H2 } from '@/components/ui/typography';
 import { usePlan } from '@/features/action-plan/stores/plan-store';
-import { useUser } from '@/lib/auth';
+import { useCurrentPatient } from '@/features/rdns/hooks/use-current-patient';
 
 export const PublishAlertDialog = () => {
   const isUpdating = usePlan((s) => s.isUpdating);
   const updateActionPlan = usePlan((s) => s.updateActionPlan);
-  const { data: user } = useUser();
+  const { selectedPatient } = useCurrentPatient();
 
   return (
     <AlertDialog>
@@ -29,8 +29,10 @@ export const PublishAlertDialog = () => {
         <AlertDialogHeader className="items-center justify-center pb-10 pt-4">
           <H2>Publish action plan</H2>
           <Body2 className="w-[373px] text-center text-zinc-500">
-            Once your action plan has been published {user?.firstName}&nbsp;
-            {user?.lastName} will be notified. This action cannot be undone.
+            Once your action plan has been published{' '}
+            {selectedPatient?.firstName}&nbsp;
+            {selectedPatient?.lastName} will be notified. This action cannot be
+            undone.
           </Body2>
         </AlertDialogHeader>
         <AlertDialogFooter className="w-full gap-2 sm:flex-col sm:space-x-0">

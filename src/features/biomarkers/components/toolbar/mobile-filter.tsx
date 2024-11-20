@@ -34,7 +34,7 @@ export function MobileFilter<TData>({
       <SheetTrigger>
         <Button
           variant="outline"
-          size="sm"
+          size="small"
           className={cn(
             'bg-white rounded-lg py-2 px-3 text-sm text-zinc-500 flex items-center gap-1',
           )}
@@ -64,7 +64,7 @@ export function MobileFilter<TData>({
               <div>
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="small"
                   className="h-auto p-0 text-sm text-gray-400 hover:bg-transparent"
                   onClick={() => {
                     setStatus('All Ranges');
@@ -127,7 +127,7 @@ export function MobileFilter<TData>({
               <div>
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="small"
                   className="h-auto p-0 text-sm text-gray-400 hover:bg-transparent"
                   onClick={() => {
                     setCategoryFilters([]);

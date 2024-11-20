@@ -38,12 +38,6 @@ export const OrderStoreProvider = ({
 
   useEffect(() => {
     orderStoreRef.current?.setState({
-      draftOrder: props.draftOrder,
-    });
-  }, [props.draftOrder]);
-
-  useEffect(() => {
-    orderStoreRef.current?.setState({
       service: props.service,
     });
   }, [props.service]);

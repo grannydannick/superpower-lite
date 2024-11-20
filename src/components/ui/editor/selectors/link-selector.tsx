@@ -47,7 +47,7 @@ export const LinkSelector = ({ open, onOpenChange }: LinkSelectorProps) => {
     <Popover modal={true} open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
         <Button
-          size="sm"
+          size="small"
           variant="ghost"
           className="gap-2 rounded-none border-none"
         >
@@ -84,7 +84,7 @@ export const LinkSelector = ({ open, onOpenChange }: LinkSelectorProps) => {
           />
           {editor.getAttributes('link').href ? (
             <Button
-              size="sm"
+              size="small"
               variant="outline"
               type="button"
               className="flex h-8 items-center rounded-sm p-1 text-red-600 transition-all hover:bg-red-100 dark:hover:bg-red-800"
@@ -100,7 +100,7 @@ export const LinkSelector = ({ open, onOpenChange }: LinkSelectorProps) => {
               <Trash className="size-4" />
             </Button>
           ) : (
-            <Button size="sm" className="h-8">
+            <Button size="small" className="h-8">
               <Check className="size-4" />
             </Button>
           )}

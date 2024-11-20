@@ -2,6 +2,7 @@ import { X } from 'lucide-react';
 import { ReactNode } from 'react';
 import * as React from 'react';
 
+import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import {
   Sheet,
@@ -25,7 +26,11 @@ export const ScoreDialog = ({ children }: { children: ReactNode }) => {
   const latestScore = getLatestHealthScoreQuery.data.healthScoreResult;
 
   if (!latestScore) {
-    return null;
+    return (
+      <Button disabled className="border border-zinc-700 bg-zinc-800 px-4 py-3">
+        Coming soon
+      </Button>
+    );
   }
 
   if (width <= 768) {

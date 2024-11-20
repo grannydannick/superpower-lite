@@ -5,15 +5,19 @@ import { Button } from '@/components/ui/button';
 import { env } from '@/config/env';
 import { useVitalToken } from '@/features/settings/api';
 
-export function VitalLinkButton({
+export const VitalLinkButton = ({
   className,
   callback,
   children,
+  size,
+  variant = 'default',
 }: {
   className?: string;
   callback?: () => void;
+  variant?: 'default' | 'outline';
+  size?: 'default' | 'medium' | 'small' | 'icon';
   children: ReactNode;
-}): JSX.Element {
+}) => {
   const { data, refetch, isError } = useVitalToken({});
 
   const [isLoading, setLoading] = useState(false);
@@ -68,6 +72,8 @@ export function VitalLinkButton({
   return (
     <Button
       type="button"
+      variant={variant}
+      size={size}
       onClick={handleVitalOpen}
       disabled={isLoading || !ready || isError}
       className={className}
@@ -75,4 +81,4 @@ export function VitalLinkButton({
       {children}
     </Button>
   );
-}
+};

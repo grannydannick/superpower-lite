@@ -23,7 +23,7 @@ export const BenefitsStep = (): JSX.Element => {
   if (isLoading) {
     return (
       <div className="flex w-full items-center justify-center">
-        <Spinner className="size-10" variant="primary" />
+        <Spinner size="lg" variant="primary" />
       </div>
     );
   }

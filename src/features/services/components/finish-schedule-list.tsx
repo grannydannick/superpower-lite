@@ -56,7 +56,7 @@ export const FinishScheduleList = () => {
           <ServiceCard
             key={draftOrder.id}
             service={service}
-            draftOrderId={draftOrder.id}
+            draftOrder={draftOrder}
           />
         );
       })}

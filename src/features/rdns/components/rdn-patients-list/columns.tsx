@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { differenceInYears, parseISO } from 'date-fns';
 
-import { Body1, Body2 } from '@/components/ui/typography';
+import { Body2 } from '@/components/ui/typography';
 import { ActionCell } from '@/features/rdns/components/rdn-patients-list/action-cell';
 import { User } from '@/types/api';
 import { capitalize } from '@/utils/format';
@@ -23,13 +23,13 @@ export const columns: ColumnDef<User>[] = [
       const gender = capitalize(row.original.gender.toLowerCase());
       return (
         <div>
-          <Body1>
+          <Body2>
             {row.original.firstName} {row.original.lastName}
-          </Body1>
+          </Body2>
 
-          <Body1 className="text-zinc-400">
+          <Body2 className="text-zinc-400">
             {gender} - {row.original.dateOfBirth.split('T')[0]} ({age})
-          </Body1>
+          </Body2>
         </div>
       );
     },

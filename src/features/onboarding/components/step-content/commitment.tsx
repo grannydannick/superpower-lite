@@ -4,12 +4,14 @@ import { OnboardingLayout } from '@/components/layouts/onboarding-layout';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Body1, H1 } from '@/components/ui/typography';
+import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
 
 import { SignatureBlock } from '../signature-block';
 
 export const Commitment = () => {
   const { nextOnboardingStep, updatingStep } = useStepper((s) => s);
+  const { data: user } = useUser();
 
   const [enableNext, setEnableNext] = useState(false);
 
@@ -48,13 +50,19 @@ export const Commitment = () => {
           <SignatureBlock setNext={setEnableNext} />
         </div>
         <Button
-          onClick={() => nextOnboardingStep()}
-          disabled={!enableNext || updatingStep}
+          onClick={() =>
+            user ? nextOnboardingStep(user.onboarding.id) : undefined
+          }
+          disabled={!enableNext || updatingStep || !user}
           type="submit"
           className="w-full"
           variant="white"
         >
-          {updatingStep ? <Spinner variant="primary" /> : 'Next'}
+          {updatingStep ? (
+            <Spinner variant="primary" />
+          ) : (
+            'I’m committed to my health'
+          )}
         </Button>
       </div>
     </section>

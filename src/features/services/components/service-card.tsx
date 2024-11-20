@@ -6,29 +6,29 @@ import { Body1, Body2, H4 } from '@/components/ui/typography';
 import { ADVISORY_CALL } from '@/const';
 import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
 import { useGetSchedulingLink } from '@/features/services/api';
-import { HealthcareService } from '@/types/api';
+import { HealthcareService, Order } from '@/types/api';
 
 export const ServiceCard = ({
   service,
-  draftOrderId,
+  draftOrder,
 }: {
   service: HealthcareService;
-  draftOrderId?: string;
+  draftOrder?: Order;
 }) => {
   return (
     <>
-      <DesktopCard service={service} draftOrderId={draftOrderId} />
-      <MobileCard service={service} draftOrderId={draftOrderId} />
+      <DesktopCard service={service} draftOrder={draftOrder} />
+      <MobileCard service={service} />
     </>
   );
 };
 
 const DesktopCard = ({
   service,
-  draftOrderId,
+  draftOrder,
 }: {
   service: HealthcareService;
-  draftOrderId?: string;
+  draftOrder?: Order;
 }) => {
   const schedulingLinkQuery = useGetSchedulingLink();
   const noSchedulingLink =
@@ -36,7 +36,7 @@ const DesktopCard = ({
     (!schedulingLinkQuery.data?.link || schedulingLinkQuery.data.link === '');
 
   const renderButton = () => {
-    if (draftOrderId) {
+    if (draftOrder) {
       return <Button className="px-5 py-3">Schedule</Button>;
     }
 
@@ -80,10 +80,7 @@ const DesktopCard = ({
           </Body2>
         </div>
 
-        <HealthcareServiceDialog
-          healthcareService={service}
-          draftOrderId={draftOrderId}
-        >
+        <HealthcareServiceDialog healthcareService={service}>
           {renderButton()}
         </HealthcareServiceDialog>
       </div>
@@ -91,18 +88,9 @@ const DesktopCard = ({
   );
 };
 
-const MobileCard = ({
-  service,
-  draftOrderId,
-}: {
-  service: HealthcareService;
-  draftOrderId?: string;
-}) => {
+const MobileCard = ({ service }: { service: HealthcareService }) => {
   return (
-    <HealthcareServiceDialog
-      healthcareService={service}
-      draftOrderId={draftOrderId}
-    >
+    <HealthcareServiceDialog healthcareService={service}>
       <div className="flex items-center justify-between gap-3 rounded-[20px] bg-zinc-100 px-5 py-4 sm:hidden">
         <img
           src={service.image}

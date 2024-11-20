@@ -66,7 +66,7 @@ export const useStepper = <T,>(
   const stepperStoreContext = useContext(StepperStoreContext);
 
   if (stepperStoreContext === undefined) {
-    throw new Error('useStepper must be used within MembershipStoreProvider');
+    throw new Error('useStepper must be used within StepperStoreProvider');
   }
 
   return useStoreWithEqualityFn(stepperStoreContext, selector, shallow);

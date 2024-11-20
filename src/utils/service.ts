@@ -2,6 +2,7 @@ import {
   ServiceDetails,
   TestDetails,
 } from '@/components/shared/healthcare-service-info-dialog-content/types/service';
+import { AnimatedTimelineType } from '@/components/ui/animated-timeline';
 import {
   AGREEMENT_COPIES,
   ENVIRONMENTAL_TOXINS,
@@ -10,12 +11,11 @@ import {
   LEGAL_DESCLAIMERS,
 } from '@/const';
 import { CollectionMethodType, HealthcareService } from '@/types/api';
-import { TimelineType } from '@/types/timeline';
 
 export const getServiceTimeline = (
   healthcareService: HealthcareService | null,
   collectionMethod: CollectionMethodType | null,
-): TimelineType[] => {
+): AnimatedTimelineType[] => {
   if (!healthcareService) return [];
 
   if (healthcareService.phlebotomy) {

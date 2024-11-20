@@ -1,10 +1,10 @@
 import { createStore } from 'zustand';
+import { devtools } from 'zustand/middleware';
 
 import {
   CollectionMethodType,
   HealthcareService,
   Location,
-  Order,
   ServiceItem,
   Slot,
 } from '@/types/api';
@@ -13,15 +13,13 @@ export interface OrderStoreProps {
   service: HealthcareService;
   tz: string;
   collectionMethod: CollectionMethodType | null;
-  draftOrder: Order | null;
+  onSubmit: (() => void) | null;
 }
 
 /**
  * NB:
- * @param {Order} draftOrder - Draft order that we only PASS into order store (for example if we already created order before)
  * @param {string} createdOrderId - Can be updated as we set it on summary step after successful booking
  *
- * `draftOrder` typically corresponds to order of status `DRAFT`
  * `createdOrderId` typically corresponds to id of order of status `PENDING`
  */
 export interface OrderStore extends OrderStoreProps {
@@ -57,32 +55,39 @@ const initialState = {
 };
 
 export const orderStoreCreator = (initProps: OrderStoreProps) => {
-  return createStore<OrderStore>()((set) => ({
-    ...initProps,
-    ...initialState,
+  return createStore<OrderStore>()(
+    devtools(
+      (set) => ({
+        ...initProps,
+        ...initialState,
 
-    updateItems: (item: ServiceItem) =>
-      set((state) => {
-        const isItemInArray = state.items.some(
-          (existingItem) => existingItem.id === item.id,
-        );
+        updateItems: (item: ServiceItem) =>
+          set((state) => {
+            const isItemInArray = state.items.some(
+              (existingItem) => existingItem.id === item.id,
+            );
 
-        return {
-          items: isItemInArray
-            ? state.items.filter((existingItem) => existingItem.id !== item.id)
-            : [...state.items, item],
-        };
+            return {
+              items: isItemInArray
+                ? state.items.filter(
+                    (existingItem) => existingItem.id !== item.id,
+                  )
+                : [...state.items, item],
+            };
+          }),
+        updateCollectionMethod: (collectionMethod) => set({ collectionMethod }),
+        updateLocation: (location) => set({ location }),
+        setTz: (tz) => set({ tz }),
+        updateSlot: (slot) => set({ slot }),
+        updateCreatedOrderId: (orderId) => set({ createdOrderId: orderId }),
+        updateService: (service) => set({ service }),
+        reset: () => set(initialState),
+
+        // Update consent and set the agreedAt date when consent is given
+        updateInformedConsent: (informedConsent: boolean) =>
+          set({ informedConsent }),
       }),
-    updateCollectionMethod: (collectionMethod) => set({ collectionMethod }),
-    updateLocation: (location) => set({ location }),
-    setTz: (tz) => set({ tz }),
-    updateSlot: (slot) => set({ slot }),
-    updateCreatedOrderId: (orderId) => set({ createdOrderId: orderId }),
-    updateService: (service) => set({ service }),
-    reset: () => set(initialState),
-
-    // Update consent and set the agreedAt date when consent is given
-    updateInformedConsent: (informedConsent: boolean) =>
-      set({ informedConsent }),
-  }));
+      { name: 'OrderStore' },
+    ),
+  );
 };

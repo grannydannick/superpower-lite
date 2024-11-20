@@ -8,6 +8,7 @@ import {
   useGetServiceability,
   usePhlebotomyLocations,
 } from '@/features/orders/api';
+import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
 import { LocationList } from '@/features/orders/components/locations-list';
 import { useOrder } from '@/features/orders/stores/order-store';
 import { AddAddressForm } from '@/features/settings/components/profile/add-address-form';
@@ -27,7 +28,7 @@ import { CreateOrderPhlebotomyLocationSelector } from '../phlebotomy-location-se
  */
 export const PhlebotomyLocationSelect = () => {
   const { collectionMethod, location } = useOrder((s) => s);
-  const { activeStep, nextStep, steps, prevStep } = useStepper((s) => s);
+  const nextStep = useStepper((s) => s.nextStep);
   const { data: user } = useUser();
 
   return (
@@ -55,18 +56,8 @@ export const PhlebotomyLocationSelect = () => {
         )}
       </div>
       {user?.primaryAddress ? (
-        <div className="flex items-center px-6 pb-12 md:justify-between md:px-14">
-          <Body1 className="hidden text-zinc-400 md:block">
-            Step {activeStep + 1} of {steps.length}
-          </Body1>
-          <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
-            <Button
-              variant="outline"
-              className="w-full md:w-auto"
-              onClick={prevStep}
-            >
-              Back
-            </Button>
+        <HealthcareServiceFooter
+          nextBtn={
             <Button
               onClick={nextStep}
               disabled={!location}
@@ -74,8 +65,8 @@ export const PhlebotomyLocationSelect = () => {
             >
               Next
             </Button>
-          </div>
-        </div>
+          }
+        />
       ) : null}
     </>
   );

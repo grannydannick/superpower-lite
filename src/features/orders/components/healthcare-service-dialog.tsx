@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { X } from 'lucide-react';
 import moment from 'moment-timezone';
 import { ReactNode } from 'react';
@@ -15,14 +16,17 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Body1, Body2 } from '@/components/ui/typography';
-import { useOrders } from '@/features/orders/api';
+import { getTimelineQueryOptions } from '@/features/home/api/get-timeline';
+import { getOrdersQueryOptions } from '@/features/orders/api';
 import {
   OrderStoreProvider,
   useOrder,
 } from '@/features/orders/stores/order-store';
 import { getDefaultCollectionMethod } from '@/features/orders/utils/get-default-collection-method';
-import { getDraftCollectionMethod } from '@/features/orders/utils/get-draft-collection-method';
-import { getStepsFromService } from '@/features/orders/utils/get-steps-for-service';
+import {
+  getStepsFromService,
+  StepID,
+} from '@/features/orders/utils/get-steps-for-service';
 import { useGetSchedulingLink } from '@/features/services/api/get-scheduling-link';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { StepperStoreProvider, useStepper } from '@/lib/stepper';
@@ -36,35 +40,34 @@ import { HealthcareService } from '@/types/api';
  * `children` is expected to be a button that triggers this dialog from anywhere.
  *
  * @param {ReactNode} children - A button to trigger the dialog for scheduling services.
- * @param {HealthcareService} healthcareService - The healthcare service being scheduled.
- * @param {string} draftOrderId - Draft order id if we want to finish booking order that we already created before
+ * @param healthcareService - The healthcare service being scheduled. If not provided, then won't render inside the modal
+ * @param draftOrder - Draft order if we want to finish booking order that we already created before
+ * @param excludeSteps - Steps that we want to exclude. It's important to check if step is required and can be skipped.
+ * @param onSubmit - Called when user clicks "Close" button on success screen
  */
 export const HealthcareServiceDialog = ({
-  children,
   healthcareService,
-  draftOrderId,
+  excludeSteps,
+  onSubmit,
+  children,
 }: {
-  children: ReactNode;
   healthcareService: HealthcareService;
-  draftOrderId?: string;
+  excludeSteps?: StepID[];
+  onSubmit?: () => void;
+  children?: ReactNode;
 }) => {
   const schedulingLinkQuery = useGetSchedulingLink();
-  const { data } = useOrders();
 
-  const draftOrder = data?.orders.find((order) => order.id === draftOrderId);
-  const draftOrderCollectionMethod = getDraftCollectionMethod(
-    draftOrder?.method,
-  );
-
-  const steps = getStepsFromService(
+  let steps = getStepsFromService(
     healthcareService,
     schedulingLinkQuery.data?.link,
-    draftOrder?.id,
   );
 
-  const collectionMethod = draftOrderCollectionMethod
-    ? draftOrderCollectionMethod
-    : getDefaultCollectionMethod(healthcareService);
+  if (excludeSteps) {
+    steps = steps.filter((step) => !excludeSteps.includes(step.id));
+  }
+
+  const collectionMethod = getDefaultCollectionMethod(healthcareService);
 
   return (
     <StepperStoreProvider steps={steps}>
@@ -72,7 +75,7 @@ export const HealthcareServiceDialog = ({
         service={healthcareService}
         tz={moment.tz.guess()}
         collectionMethod={collectionMethod}
-        draftOrder={draftOrder ? draftOrder : null}
+        onSubmit={onSubmit ? onSubmit : null}
       >
         <HealthcareServiceDialogConsumer>
           {children}
@@ -88,14 +91,15 @@ export const HealthcareServiceDialog = ({
  *
  * `children` is expected to be a button that triggers the dialog, wrapped inside <DialogTrigger />.
  *
- * @param {ReactNode} children - A button or element used to trigger the dialog for scheduling services.
+ * @param {ReactNode} children - A button or element used to trigger the dialog for scheduling services. If not provided, then won't render inside the modal
  */
 const HealthcareServiceDialogConsumer = ({
   children,
 }: {
-  children: ReactNode;
+  children?: ReactNode;
 }) => {
   const { steps, activeStep, resetSteps } = useStepper((s) => s);
+  const queryClient = useQueryClient();
   const reset = useOrder((s) => s.reset);
   const { width } = useWindowDimensions();
 
@@ -107,12 +111,33 @@ const HealthcareServiceDialogConsumer = ({
    */
   const handleOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
+      /**
+       * Refreshing list of orders after we are done (doesn't matter if regular close)
+       */
+      queryClient.invalidateQueries({
+        queryKey: getOrdersQueryOptions().queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: getTimelineQueryOptions().queryKey,
+      });
+
       setTimeout(() => {
         reset();
         resetSteps();
       }, 500); // 500 ms = 0.5 seconds delay
     }
   };
+
+  /**
+   * If children (that always should be a button) is not passed, we directly call the content of modal
+   *
+   * We still wrap into <Dialog /> simply because we have places where we call <DialogClose> that should be wrapped inside of Dialog
+   * Moreover, it doesn't impact anything since Dialog is just a provider:
+   * https://github.com/radix-ui/primitives/blob/74b182b401c8ca0fa5b66a5a9a47f507bb3d5adc/packages/react/dialog/src/Dialog.tsx#L50
+   */
+  if (!children) {
+    return <Dialog>{steps[activeStep]?.content ?? null}</Dialog>;
+  }
 
   if (width <= 768) {
     return (

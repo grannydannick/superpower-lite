@@ -2,7 +2,8 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Body1, Body2, H2 } from '@/components/ui/typography';
+import { Body2, H2 } from '@/components/ui/typography';
+import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
 import { useOrder } from '@/features/orders/stores/order-store';
 import { useStepper } from '@/lib/stepper';
 import {
@@ -11,7 +12,7 @@ import {
 } from '@/utils/service';
 
 export const InformedConsent = () => {
-  const { activeStep, steps, nextStep, prevStep } = useStepper((s) => s);
+  const { nextStep } = useStepper((s) => s);
   const service = useOrder((s) => s.service);
   const updateInformedConsent = useOrder((s) => s.updateInformedConsent);
   const informedConsent = useOrder((s) => s.informedConsent);
@@ -41,18 +42,8 @@ export const InformedConsent = () => {
           </Label>
         </div>
       </div>
-      <div className="flex items-center px-6 pb-12 md:justify-between md:px-14">
-        <Body1 className="hidden text-zinc-400 md:block">
-          Step {activeStep + 1} of {steps.length}
-        </Body1>
-        <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
-          <Button
-            variant="outline"
-            className="w-full md:w-auto"
-            onClick={prevStep}
-          >
-            Back
-          </Button>
+      <HealthcareServiceFooter
+        nextBtn={
           <Button
             onClick={nextStep}
             disabled={!informedConsent}
@@ -60,8 +51,8 @@ export const InformedConsent = () => {
           >
             Next
           </Button>
-        </div>
-      </div>
+        }
+      />
     </>
   );
 };

@@ -21,9 +21,9 @@ export interface StepperStore extends StepperProps {
   jump: (id: string) => void;
 
   /* We can only use nextOnboardingStep for onboarding*/
-  nextOnboardingStep: () => Promise<void>;
+  nextOnboardingStep: (questionnaireId: string) => Promise<void>;
   /* We can only use jumpOnboarding for onboarding */
-  jumpOnboarding: (id: string) => Promise<void>;
+  jumpOnboarding: (stepId: string, questionnaireId: string) => Promise<void>;
   /* Updating step is a loading state for step update call */
   updatingStep: boolean;
 }
@@ -63,11 +63,11 @@ export const stepperStoreCreator = (initProps?: Partial<StepperStore>) => {
 
       set({ activeStep: stepIndex });
     },
-    nextOnboardingStep: async () => {
+    nextOnboardingStep: async (questionnaireId) => {
       set({ updatingStep: true });
       const state = get();
       const activeStep = state.activeStep;
-      await api.put<boolean>(`users/onboarding`, {
+      await api.put<boolean>(`users/questionnaire/${questionnaireId}`, {
         progress: activeStep + 1,
       });
       set((state) => ({
@@ -75,16 +75,16 @@ export const stepperStoreCreator = (initProps?: Partial<StepperStore>) => {
         activeStep: state.activeStep + 1,
       }));
     },
-    jumpOnboarding: async (id) => {
+    jumpOnboarding: async (stepId, questionnaireId) => {
       const steps = get().steps;
 
-      const stepIndex = steps.findIndex((step) => step.id === id);
+      const stepIndex = steps.findIndex((step) => step.id === stepId);
 
       if (stepIndex === -1) {
         throw new Error('Step ID was not found.');
       }
 
-      await api.put<boolean>(`users/onboarding`, {
+      await api.put<boolean>(`users/questionnaire/${questionnaireId}`, {
         progress: stepIndex,
       });
 

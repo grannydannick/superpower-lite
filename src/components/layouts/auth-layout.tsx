@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { Link, useLocation } from 'react-router-dom';
 
+import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { Head } from '@/components/seo';
 import { Body2 } from '@/components/ui/typography';
 import { useUser } from '@/lib/auth';
@@ -18,9 +19,7 @@ const AuthStepLayoutHeader = () => {
   return (
     <section id="header" className="flex w-full items-center justify-between">
       <div className="size-12" />
-      <div className="w-[114px]">
-        <img className="w-auto" src="/logo-dark.svg" alt="logo" />
-      </div>
+      <SuperpowerLogo />
       <div className="size-12" />
     </section>
   );
@@ -72,7 +71,7 @@ export const AuthLayout = ({ children, title }: LayoutProps) => {
         ) : null}
         {location.pathname === '/register' ? (
           <div className="flex items-center gap-0.5">
-            <Body2 className="text-zinc-500">Already have an account?</Body2>
+            <Body2 className="text-zinc-500">Already a member?</Body2>
             <Link
               to="/signin"
               replace={false}

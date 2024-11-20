@@ -53,7 +53,7 @@ export const TextButtons = () => {
           }}
           className={'flex items-center justify-center'}
         >
-          <Button size="sm" className="rounded-none" variant="ghost">
+          <Button size="small" className="rounded-none" variant="ghost">
             <item.icon
               className={cn('h-4 w-4', {
                 'text-blue-500': item.isActive(editor),

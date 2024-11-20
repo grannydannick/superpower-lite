@@ -47,7 +47,10 @@ export function AddToCalendar({
           <ChevronDown size={24} color="#A1A1AA" />
         </div>
       </PopoverTrigger>
-      <PopoverContent className="z-[99999] rounded-xl border border-zinc-200 p-0">
+      <PopoverContent
+        className="z-[99999] rounded-xl border border-zinc-200 p-0"
+        align="end"
+      >
         <div className="flex flex-col p-2">
           <Body3 className="p-2 pb-3 text-zinc-400">
             Invites are sent by default, if you didn&apos;t get one you can add

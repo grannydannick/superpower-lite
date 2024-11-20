@@ -2,12 +2,13 @@ import moment from 'moment';
 
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { Body1, Body2, H3, H4 } from '@/components/ui/typography';
+import { Body1, Body2, H4 } from '@/components/ui/typography';
 import { SUPERPOWER_BLOOD_PANEL } from '@/const';
 import { useBiomarkers } from '@/features/biomarkers/api';
 import { ScoreDialog } from '@/features/biomarkers/components/score-dialog/score-dialog';
 import { biomarkerStatusCount } from '@/features/biomarkers/utils/biomarkers-status-count';
 import { useOrders } from '@/features/orders/api';
+import { cn } from '@/lib/utils';
 import { OrderStatus } from '@/types/api';
 
 export const BiomarkersList = () => {
@@ -33,8 +34,6 @@ export const BiomarkersList = () => {
     'HIGH',
     'LOW',
   ]);
-  const numLimited =
-    biomarkers.data.biomarkers.length - numInRange - numNormal - numOutOfRange;
 
   /*
    * https://tailwindcss.com/docs/content-configuration#dynamic-class-names
@@ -60,21 +59,16 @@ export const BiomarkersList = () => {
       text: `text-pink-500`,
       label: 'Out of range',
     },
-    {
-      num: numLimited,
-      text: `text-zinc-400`,
-      label: 'Limited data',
-    },
   ];
 
   return (
     <div className="flex flex-col">
       {statuses.map((status, index) => (
         <div
-          className="grid grid-cols-[1.5rem,1fr] items-baseline gap-2"
+          className="grid grid-cols-[1.2rem,1fr] items-baseline gap-2"
           key={index}
         >
-          <H3 className={`${status.text}`}>{status.num}</H3>
+          <H4 className={cn(status.text)}>{status.num}</H4>
           <Body2 className="line-clamp-1 text-zinc-400">{status.label}</Body2>
         </div>
       ))}
@@ -82,7 +76,11 @@ export const BiomarkersList = () => {
   );
 };
 
-export const BiomarkersSummaryCard = () => {
+export const BiomarkersSummaryCard = ({
+  variant = 'home',
+}: {
+  variant?: 'home' | 'biomarkers';
+}) => {
   const { data } = useOrders();
 
   const orders = data?.orders.filter(
@@ -94,9 +92,14 @@ export const BiomarkersSummaryCard = () => {
   const mostRecentOrder = orders?.[0];
 
   return (
-    <div className="flex h-[276px] w-full flex-col items-center justify-between rounded-3xl bg-primary p-6">
-      <div className="flex flex-col items-center">
-        <H4 className="text-white">Results Summary</H4>
+    <div
+      className={cn(
+        'flex w-full flex-col justify-between rounded-3xl bg-primary p-5',
+        variant === 'biomarkers' ? 'items-center h-[276px]' : 'h-[188px]',
+      )}
+    >
+      <div className="flex flex-col">
+        <H4 className="text-white">Results</H4>
         {mostRecentOrder ? (
           <Body1 className="text-zinc-400">
             As of {moment(mostRecentOrder.timestamp).format('DD MMM')}

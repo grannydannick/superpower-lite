@@ -1,126 +1,45 @@
-import { useMotionValueEvent, useScroll, motion } from 'framer-motion';
-import React, { useRef, useState } from 'react';
+import { useEffect } from 'react';
 
-import { ConfiguratorForm } from '@/features/onboarding/components/configurator/configurator-form';
+import { SuperpowerLogo } from '@/components/icons/superpower-logo';
+import { ConfiguratorSections } from '@/features/onboarding/components/configurator/configurator-sections';
 import { FaqSection } from '@/features/onboarding/components/configurator/faq-section';
-import { SectionLocations } from '@/features/onboarding/components/configurator/locations';
-import { SectionMembership } from '@/features/onboarding/components/configurator/membership';
-import { SectionPackages } from '@/features/onboarding/components/configurator/packages';
-import { SectionServices } from '@/features/onboarding/components/configurator/services';
 import { ConfiguratorLayout } from '@/features/onboarding/components/layouts';
-import { useWindowDimensions } from '@/hooks/use-window-dimensions';
+import { useUser } from '@/lib/auth';
+import { useStepper } from '@/lib/stepper';
 import { cn } from '@/lib/utils';
 
 export const Configurator = () => {
-  const content = [
-    {
-      component: <SectionMembership />,
-      image: (
-        <img
-          src="/onboarding/dashboard.png"
-          className="h-auto w-full max-w-[400px] object-cover"
-          alt="dashboard"
-        />
-      ),
-    },
-    {
-      component: <SectionPackages />,
-      image: (
-        <img
-          src="/onboarding/superpower-blood-nobg.png"
-          className="h-auto w-full max-w-[423px] object-cover"
-          alt="tube"
-        />
-      ),
-    },
-    {
-      component: <SectionLocations />,
-      image: (
-        <img
-          src="/onboarding/test-kit.png"
-          className="h-auto w-full max-w-[300px] object-cover mix-blend-darken"
-          alt="dashboard"
-        />
-      ),
-    },
-    {
-      component: <SectionServices />,
-      image: (
-        <img
-          src="/onboarding/dashboard.png"
-          className="h-auto w-full max-w-[400px] object-cover"
-          alt="dashboard"
-        />
-      ),
-    },
-  ];
+  const { data: user } = useUser();
+  const { nextOnboardingStep } = useStepper((s) => s);
 
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [activeCard, setActiveCard] = React.useState(0);
-  // wrapper ref is responsible for entire layout
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  // faw ref is responsible for the left div in layout
-  const faqRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    container: wrapperRef,
-    offset: ['start start', 'end start'],
-  });
-  const cardLength = content.length;
-  const { height } = useWindowDimensions();
-
-  /* NB: if amount of section increases u need to adjust cardsBreakpoints (or come up with smarter way :=D */
-  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    const divideBy = height > 1100 ? 2 : 1.5;
-
-    const cardsBreakpoints = content.map(
-      (_, index) => index / cardLength / divideBy,
-    );
-
-    const closestBreakpointIndex = cardsBreakpoints.reduce(
-      (acc, breakpoint, index) => {
-        const distance = Math.abs(latest - breakpoint);
-
-        if (distance < Math.abs(latest - cardsBreakpoints[acc])) {
-          return index;
-        }
-        return acc;
-      },
-      0,
-    );
-    setActiveCard(closestBreakpointIndex);
-  });
+  /**
+   * If user already paid but something happened
+   * we advance user to resolve weird UI state
+   */
+  useEffect(() => {
+    if (user && user.subscribed) {
+      console.warn('User already subscribed, advancing step...');
+      nextOnboardingStep(user.onboarding.id);
+    }
+  }, []);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.4 }}
-      className="relative flex h-screen justify-center overflow-y-auto text-white"
-      ref={wrapperRef}
-    >
+    <>
       <div
         className={cn(
-          'hidden lg:flex flex-col items-center  justify-between h-screen sticky top-0 w-full bg-zinc-50 p-8',
+          'flex flex-col gap-6 items-center justify-between flex-1 bg-zinc-50 p-8',
         )}
-        ref={faqRef}
       >
+        <SuperpowerLogo />
         <img
-          src="/logo-dark.svg"
-          alt="logo"
-          className="h-auto w-[114px] object-cover"
+          src="/onboarding/dashboard.png"
+          className="h-[156px] w-full max-w-[240px] object-cover lg:h-auto lg:max-w-[423px]"
+          alt="dashboard"
         />
-        <div className="bg-zinc-50">{content[activeCard].image ?? null}</div>
-        <FaqSection faqRef={faqRef} />
+        <FaqSection />
       </div>
-      <ConfiguratorForm
-        parentRef={wrapperRef}
-        isExpanded={isExpanded}
-        setIsExpanded={setIsExpanded}
-        activeCard={activeCard}
-        content={content}
-      />
-    </motion.div>
+      <ConfiguratorSections />
+    </>
   );
 };
 

@@ -5,23 +5,23 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Button } from '@/components/ui/button';
 import { Body1, Body2, H2, H4 } from '@/components/ui/typography';
-import { ENVIRONMENTAL_TOXIN_PANEL } from '@/const/toxin-panel';
+import { useOrders } from '@/features/orders/api';
+import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
 import { useOrder } from '@/features/orders/stores/order-store';
-import { useStepper } from '@/lib/stepper';
 import { cn } from '@/lib/utils';
+import { OrderStatus } from '@/types/api';
 import { getHealthcareServicePriceLabel } from '@/utils/format-money';
 import { getDetailsForService } from '@/utils/service';
 
 export const HealthcareServiceDetails = () => {
-  const { service, draftOrder } = useOrder((s) => s);
-  const { nextStep, prevStep, activeStep, steps } = useStepper((s) => s);
+  const { service } = useOrder((s) => s);
+  const ordersQuery = useOrders();
   const serviceDetails = getDetailsForService(service.name);
 
-  const alternativeButtonPosition = Boolean(
-    ENVIRONMENTAL_TOXIN_PANEL.find((p) => p.name === service.name),
-  );
+  const existingDraftOrder = ordersQuery.data?.orders
+    .filter((o) => o.status === OrderStatus.draft)
+    .find((o) => o.serviceId === service.id);
 
   return (
     <div>
@@ -35,17 +35,12 @@ export const HealthcareServiceDetails = () => {
           <div className="max-w-[220px] space-y-4 md:max-w-none">
             <H2 className="text-zinc-900">{service.name}</H2>
             <Body2 className="text-zinc-500">
-              {draftOrder
+              {existingDraftOrder
                 ? 'Included'
                 : getHealthcareServicePriceLabel(service)}
             </Body2>
           </div>
           <Body1 className="text-zinc-500">{service.description}</Body1>
-          {!alternativeButtonPosition && (
-            <Button onClick={nextStep} className="hidden md:inline-flex">
-              Continue
-            </Button>
-          )}
         </div>
 
         <img
@@ -84,30 +79,7 @@ export const HealthcareServiceDetails = () => {
           : null}
       </Accordion>
 
-      <div
-        className={cn(
-          'flex items-center md:justify-between px-6 md:px-14 pb-12 pt-8 md:pt-14',
-          !alternativeButtonPosition ? 'md:hidden' : null,
-        )}
-      >
-        <Body1 className="hidden text-zinc-400 md:block">
-          Step {activeStep + 1} of {steps.length}
-        </Body1>
-        <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
-          {alternativeButtonPosition ? (
-            <Button
-              className="w-full md:w-auto"
-              variant="outline"
-              onClick={prevStep}
-            >
-              Back
-            </Button>
-          ) : null}
-          <Button className="w-full md:w-auto" onClick={nextStep}>
-            Next
-          </Button>
-        </div>
-      </div>
+      <HealthcareServiceFooter className="pt-14" />
     </div>
   );
 };

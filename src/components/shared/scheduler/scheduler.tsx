@@ -73,7 +73,7 @@ function SchedulerConsumer({
   }, [startRange]);
 
   return (
-    <div className={cn('max-w-[800px] w-full space-y-10', className)}>
+    <div className={cn('w-full space-y-10', className)}>
       <div className="flex flex-col justify-end">
         <div className="mb-2">
           <SchedulerHeading />

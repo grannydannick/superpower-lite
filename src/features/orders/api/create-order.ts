@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 
+import { getTimelineQueryOptions } from '@/features/home/api/get-timeline';
 import { getOrdersQueryOptions } from '@/features/orders/api/get-orders';
 import { getServicesQueryOptions } from '@/features/services/api';
 import { addressInputSchema } from '@/features/users/api';
@@ -88,6 +89,9 @@ export const useCreateOrder = ({
       });
       queryClient.invalidateQueries({
         queryKey: getServicesQueryOptions().queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: getTimelineQueryOptions().queryKey,
       });
       onSuccess?.(...args);
     },

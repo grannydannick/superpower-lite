@@ -1,53 +1,24 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
-import React, {
-  Dispatch,
-  RefObject,
-  SetStateAction,
-  useEffect,
-  useRef,
-} from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Body1, Body2, Body3, H3, H4 } from '@/components/ui/typography';
-import { GRAIL_GALLERI_MULTI_CANCER_TEST } from '@/const';
+import { TextShimmer } from '@/components/ui/text-shimmer';
+import { Body1, Body2, H3, H4 } from '@/components/ui/typography';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
-import { useService } from '@/features/services/api';
+import { getDiscountedPrice } from '@/features/onboarding/utils/get-discounted-price';
 import { useMembershipPrice } from '@/features/settings/api';
 import { useOutsideClick } from '@/hooks/use-outside-click';
-import { useStepper } from '@/lib/stepper';
 import { cn } from '@/lib/utils';
-import { HealthcareService } from '@/types/api';
 import { formatMoney } from '@/utils/format-money';
 
 type Props = {
-  parentRef: RefObject<HTMLDivElement>;
   isExpanded: boolean;
   setIsExpanded: Dispatch<SetStateAction<boolean>>;
 };
 
-const ServiceLine = ({ service }: { service: HealthcareService }) => {
-  const serviceQuery = useService({
-    serviceId: service.id,
-    method: service.name === GRAIL_GALLERI_MULTI_CANCER_TEST ? 'AT_HOME' : null,
-  });
-
-  return (
-    <div className="flex w-full items-center justify-between">
-      <Body1 className="text-white">{service.name}</Body1>
-      <Body1 className="text-zinc-400">
-        {serviceQuery.data ? (
-          formatMoney(serviceQuery.data.service.price)
-        ) : (
-          <Skeleton className="h-6 w-10" />
-        )}
-      </Body1>
-    </div>
-  );
-};
-
-const ExpandableCard = ({ parentRef, isExpanded, setIsExpanded }: Props) => {
+const ExpandableCard = ({ isExpanded, setIsExpanded }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
   const code = localStorage.getItem('superpower-code');
 
@@ -56,23 +27,17 @@ const ExpandableCard = ({ parentRef, isExpanded, setIsExpanded }: Props) => {
     queryConfig: {},
   });
 
-  const { collectionMethod, additionalServices } = useOnboarding();
+  const { processing, consentGiven } = useOnboarding();
 
   const annualTotal = membershipQuery.data?.total ?? 0;
 
-  const { nextOnboardingStep } = useStepper((s) => s);
+  const discount = getDiscountedPrice(membershipQuery.data);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') {
         setIsExpanded(false);
       }
-    }
-
-    if (isExpanded) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
     }
 
     window.addEventListener('keydown', onKeyDown);
@@ -90,7 +55,6 @@ const ExpandableCard = ({ parentRef, isExpanded, setIsExpanded }: Props) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="absolute inset-0 z-10 w-full bg-white/70"
-            style={{ height: parentRef.current?.scrollHeight ?? 0 }}
           />
         )}
       </AnimatePresence>
@@ -100,8 +64,7 @@ const ExpandableCard = ({ parentRef, isExpanded, setIsExpanded }: Props) => {
         animate={{
           height: isExpanded ? 294 : 92,
         }}
-        onClick={() => setIsExpanded(true)}
-        className="fixed bottom-0 z-50 mb-9 flex flex-col overflow-y-auto rounded-3xl border border-zinc-200 bg-zinc-900 shadow-[0_10px_100px_0px_rgba(24,24,27,0.15)] scrollbar-none"
+        className="fixed bottom-7 z-50 flex w-[calc(100%-32px)] max-w-[535px] flex-col overflow-y-auto rounded-3xl border border-zinc-200 bg-zinc-900 shadow-2xl md:bottom-10 md:w-full"
       >
         {isExpanded ? (
           <motion.div
@@ -139,22 +102,18 @@ const ExpandableCard = ({ parentRef, isExpanded, setIsExpanded }: Props) => {
                   )}
                 </Body1>
               </div>
-              {collectionMethod === 'AT_HOME' ? (
+              {discount ? (
                 <div className="flex w-full items-center justify-between">
-                  <Body1 className="text-white">At-home collection</Body1>
-                  {/*we probably SHOULD create endpoint to expose at-home price to make this dynamic*/}
-                  <Body1 className="text-zinc-400">{formatMoney(7900)}</Body1>
+                  <Body1 className="text-white">Applied discount</Body1>
+                  <Body1 className="text-zinc-400">
+                    {membershipQuery.isLoading ? (
+                      <Skeleton className="h-5 w-10" />
+                    ) : (
+                      discount
+                    )}
+                  </Body1>
                 </div>
               ) : null}
-              {/*{bloodPackage === 'ADVANCED' ? (*/}
-              {/*  <div className="flex w-full items-center justify-between">*/}
-              {/*    <Body1 className="text-white">Advanced blood package</Body1>*/}
-              {/*    <Body1 className="text-zinc-400">{get advanced panel service price here}</Body1>*/}
-              {/*  </div>*/}
-              {/*) : null}*/}
-              {additionalServices.map((as, index) => (
-                <ServiceLine service={as} key={index} />
-              ))}
             </div>
             <div className="flex flex-col border-b border-b-zinc-700 px-6 py-4">
               <div className="flex w-full justify-between">
@@ -164,7 +123,7 @@ const ExpandableCard = ({ parentRef, isExpanded, setIsExpanded }: Props) => {
                     {formatMoney(annualTotal)}
                   </Body1>
                   <Body2 className="text-zinc-400">
-                    {formatMoney(annualTotal)}/mo
+                    {formatMoney(annualTotal / 12)}/mo
                   </Body2>
                 </div>
               </div>
@@ -173,14 +132,18 @@ const ExpandableCard = ({ parentRef, isExpanded, setIsExpanded }: Props) => {
         ) : null}
         <div
           className={cn(
-            'flex items-center justify-between px-6 py-4 w-[355px] md:w-[435px] xl:w-[535px]',
+            'flex items-center justify-between px-6 py-4 w-full',
             isExpanded && 'rounded-t-none',
           )}
         >
           <div>
-            <div className="flex gap-2">
-              <H4 className="text-white">My plan</H4>
-              <H4 className="text-zinc-400">
+            <div className="flex items-center gap-2">
+              <Body1 className="text-white sm:hidden">
+                {formatMoney(annualTotal / 12)}/mo
+              </Body1>
+
+              <H4 className="hidden text-white sm:block">My membership</H4>
+              <H4 className="hidden text-zinc-400 sm:block">
                 {formatMoney(annualTotal / 12)}/mo
               </H4>
             </div>
@@ -192,21 +155,30 @@ const ExpandableCard = ({ parentRef, isExpanded, setIsExpanded }: Props) => {
                 setIsExpanded((prev) => !prev);
               }}
             >
-              <Body3 className="cursor-pointer text-zinc-400 hover:text-[#FC5F2B]">
+              <Body2 className="cursor-pointer text-zinc-400 hover:text-[#FC5F2B]">
                 View Details
-              </Body3>
+              </Body2>
             </button>
           </div>
           <Button
             className="rounded-[12px] border border-zinc-500 bg-zinc-700 px-6 py-4"
-            disabled={membershipQuery.isLoading}
+            disabled={membershipQuery.isLoading || processing || !consentGiven}
+            type="submit"
+            form="billingForm"
             onClick={async (e) => {
               e.stopPropagation();
-
-              await nextOnboardingStep();
             }}
           >
-            Checkout
+            {processing ? (
+              <TextShimmer
+                className="line-clamp-1 text-base [--base-color:white] [--base-gradient-color:#a1a1aa]"
+                duration={1}
+              >
+                Confirming…
+              </TextShimmer>
+            ) : (
+              'Checkout'
+            )}
           </Button>
         </div>
       </motion.div>

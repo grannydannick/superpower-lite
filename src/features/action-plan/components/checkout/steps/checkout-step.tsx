@@ -44,7 +44,8 @@ export const CheckoutStep = (): JSX.Element => {
       </div>
       <div
         className={cn(
-          'flex w-full flex-col-reverse items-center p-5 border-t border-t-zinc-200 md:w-auto md:flex-row md:justify-between gap-2',
+          'flex w-full flex-col-reverse items-center p-5 border-t border-t-zinc-200 md:w-auto md:flex-row gap-2',
+          totals.totalSavings > 0 ? 'md:justify-between' : 'md:justify-end',
         )}
       >
         {!createCheckoutUrlMutation.isSuccess && (

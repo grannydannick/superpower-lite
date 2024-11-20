@@ -3,7 +3,7 @@ import { H1 } from '@/components/ui/typography';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 
 export const ContentComingSoon = () => {
-  const { updateBlocked } = useOnboarding();
+  const { setIsZipBlocked } = useOnboarding();
 
   return (
     <section
@@ -27,7 +27,7 @@ export const ContentComingSoon = () => {
         <Button
           variant="ghost"
           className="text-white hover:text-white/90"
-          onClick={() => updateBlocked(false)}
+          onClick={() => setIsZipBlocked(false)}
         >
           Try another zip code
         </Button>

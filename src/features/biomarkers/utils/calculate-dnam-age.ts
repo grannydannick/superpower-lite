@@ -23,7 +23,7 @@ export function calculateDNAmAge(
     const value = mostRecent(biomarker?.value || []);
 
     if (!biomarker || !value) {
-      console.error('Missing biomarker for calculation of bioage: ' + name);
+      console.warn('Missing biomarker for calculation of bioage: ' + name);
       return null;
     } else {
       coreObservations.set(name, calc(value.quantity.value));

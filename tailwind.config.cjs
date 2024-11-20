@@ -28,18 +28,11 @@ module.exports = {
     },
     extend: {
       backgroundImage: {
-        'female-hands': "url('/onboarding/bg-female-hands.webp')",
-        'female-spotlight': "url('/onboarding/bg-female-spotlight.webp')",
         male: "url('/onboarding/bg-male.webp')",
-        'male-large': "url('/onboarding/bg-male-large.webp')",
+        'female-face': "url('/onboarding/bg-female-face.webp')",
         spine: "url('/onboarding/bg-spine.webp')",
-        'spine-2': "url('/onboarding/bg-spine-2.webp')",
-        'female-looking-up': "url('/onboarding/bg-female-looking-up.webp')",
+        'female-hands': "url('/onboarding/bg-female-hands.webp')",
         'membership-card': "url('/shared/membership-card.png')",
-        'female-spine': "url('/onboarding/bg-female-spine.webp')",
-        'female-stretching': "url('/onboarding/bg-female-stretching.webp')",
-        watch: "url('/onboarding/bg-watch.webp')",
-        'hand-pillow': "url('/onboarding/bg-hand-pillow.webp')",
       },
       colors: {
         border: 'hsl(var(--border))',
@@ -139,6 +132,10 @@ module.exports = {
           '0%,70%,100%': { opacity: '1' },
           '20%,50%': { opacity: '0' },
         },
+        'superpower-logo': {
+          '0%, 100%': { fill: '#a1a1aa' },   // zinc-400
+          '50%': { fill: '#52525b' },        // zinc-600
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -146,6 +143,7 @@ module.exports = {
         'collapsible-down': 'collapsible-down 0.2s ease-out',
         'collapsible-up': 'collapsible-up 0.2s ease-out',
         'caret-blink': 'caret-blink 1.25s ease-out infinite',
+        'superpower-logo': 'superpower-logo 2s ease-out infinite'
       },
       screens: {
         xs: '475px',

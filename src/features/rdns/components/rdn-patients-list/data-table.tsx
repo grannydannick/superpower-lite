@@ -7,8 +7,9 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   Table,
@@ -18,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useCurrentPatient } from '@/features/rdns/hooks/use-current-patient';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -30,6 +32,7 @@ export function RdnMembersDataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const { selectedPatient, removePatient } = useCurrentPatient();
 
   const table = useReactTable({
     data,
@@ -44,16 +47,30 @@ export function RdnMembersDataTable<TData, TValue>({
     },
   });
 
+  useEffect(() => {
+    if (selectedPatient) {
+      table.getColumn('id')?.setFilterValue(selectedPatient.id);
+    } else {
+      table.getColumn('id')?.setFilterValue('');
+    }
+  }, [selectedPatient]);
+
   return (
     <div className="space-y-4">
-      <Input
-        placeholder="Filter by email..."
-        value={table.getColumn('email')?.getFilterValue() as string}
-        onChange={(event) =>
-          table.getColumn('email')?.setFilterValue(event.target.value)
-        }
-        className="max-w-sm"
-      />
+      <div className="flex items-center justify-between">
+        <Input
+          placeholder="Filter by email..."
+          value={table.getColumn('email')?.getFilterValue() as string}
+          onChange={(event) =>
+            table.getColumn('email')?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+
+        {selectedPatient ? (
+          <Button onClick={removePatient}>Clear Patient</Button>
+        ) : null}
+      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
