@@ -56,6 +56,16 @@ export const BlockEditor = ({
     await updateActionPlan();
   }, ACTION_PLAN_EDITOR_SAVE_DELAY);
 
+  // If no content, do not render to resolve spacing issues.
+  if (
+    !isAdmin &&
+    content?.content.length === 1 &&
+    (content?.content[0]?.content?.length === undefined ||
+      content?.content[0]?.content?.length === 0)
+  ) {
+    return <div className="h-4"></div>;
+  }
+
   return (
     <EditorRoot>
       <EditorContent

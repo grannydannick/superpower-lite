@@ -5,16 +5,21 @@ import { H2 } from '@/components/ui/typography';
 import { ActionPlanGoal } from '@/features/action-plan/components/action-plan-goal';
 import { usePlan } from '@/features/action-plan/stores/plan-store';
 import { cn } from '@/lib/utils';
+import { PlanGoalType } from '@/types/api';
 
 export const CoreMonitoredIssues: ({
+  title,
   className,
+  goalType,
 }: {
+  title: string;
   className?: string;
-}) => ReactNode = ({ className }) => {
+  goalType: PlanGoalType;
+}) => ReactNode = ({ title, className, goalType }) => {
   const isAdmin = usePlan((s) => s.isAdmin);
   const addGoal = usePlan((s) => s.addGoal);
   const goals = usePlan((s) =>
-    s.goals.filter((goal) => goal.type === 'ANNUAL_REPORT_PRIMARY'),
+    s.goals.filter((goal) => goal.type === goalType),
   );
 
   if (!isAdmin && !goals.length) {
@@ -23,7 +28,7 @@ export const CoreMonitoredIssues: ({
 
   return (
     <div className={cn(className)}>
-      <H2 className="text-2xl md:text-2xl">Core monitored issues</H2>
+      <H2>{title}</H2>
       {goals.map((goal, idx) => (
         <ActionPlanGoal
           key={goal.id}
@@ -37,7 +42,7 @@ export const CoreMonitoredIssues: ({
           <Button
             variant="ghost"
             className="px-0 text-zinc-400"
-            onClick={() => addGoal('ANNUAL_REPORT_PRIMARY')}
+            onClick={() => addGoal(goalType)}
           >
             + Add goal
           </Button>

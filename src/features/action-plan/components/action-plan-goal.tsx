@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { PlanGoal } from '@/types/api';
 
 import { ClinicianNotePopover } from './note-popover';
+import { PlanItemList } from './plan-item-list';
 import { ActionPlanItemRow } from './plan-item-row';
 
 interface ActionPlanGoalProps {
@@ -28,8 +29,8 @@ export function ActionPlanGoal({ goal, className }: ActionPlanGoalProps) {
 
   const renderEditor = () => {
     switch (goal.type) {
-      case 'ANNUAL_REPORT_PROTOCOLS':
-        return null;
+      // case 'ANNUAL_REPORT_PROTOCOLS':
+      //   return null;
       default:
         return (
           <BlockEditor
@@ -41,9 +42,9 @@ export function ActionPlanGoal({ goal, className }: ActionPlanGoalProps) {
   };
 
   const getInputClassName = () => {
-    if (goal.type === 'ANNUAL_REPORT_PROTOCOLS') {
-      return 'text-base placeholder:text-base';
-    }
+    // if (goal.type === 'ANNUAL_REPORT_PROTOCOLS') {
+    //   return 'text-base placeholder:text-base';
+    // }
     return 'text-xl placeholder:text-2xl';
   };
 
@@ -76,15 +77,23 @@ export function ActionPlanGoal({ goal, className }: ActionPlanGoalProps) {
 
         {renderEditor()}
 
-        <div className="flex flex-col gap-1">
-          {goal.goalItems.map((goalItem) => (
-            <ActionPlanItemRow
-              goalId={goal.id}
-              item={goalItem}
-              key={goalItem.id}
-            />
-          ))}
-        </div>
+        {goal.type === 'ANNUAL_REPORT_PROTOCOLS' && !isAdmin ? (
+          <ul className="ml-5 list-outside list-disc">
+            {goal.goalItems.map((goalItem, idx) => (
+              <PlanItemList item={goalItem} key={idx} />
+            ))}
+          </ul>
+        ) : (
+          <div className="flex flex-col gap-1">
+            {goal.goalItems.map((goalItem) => (
+              <ActionPlanItemRow
+                goalId={goal.id}
+                item={goalItem}
+                key={goalItem.id}
+              />
+            ))}
+          </div>
+        )}
 
         {isAdmin && (
           <div className="my-10">
