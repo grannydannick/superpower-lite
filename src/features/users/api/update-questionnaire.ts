@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 
 import { getTimelineQueryOptions } from '@/features/home/api/get-timeline';
+import { getQuestionnairesQueryOptions } from '@/features/users/api/get-questionnaires';
 import { api } from '@/lib/api-client';
 import { MutationConfig } from '@/lib/react-query';
 import { Questionnaire } from '@/types/api';
@@ -39,6 +40,9 @@ export const useUpdateQuestionnaire = ({
     onSuccess: (data, ...args) => {
       queryClient.invalidateQueries({
         queryKey: getTimelineQueryOptions().queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: getQuestionnairesQueryOptions().queryKey,
       });
       onSuccess?.(data, ...args);
     },

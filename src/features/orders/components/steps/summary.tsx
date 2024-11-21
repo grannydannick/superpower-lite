@@ -20,6 +20,7 @@ import { HealthcareServiceFooter } from '@/features/orders/components/healthcare
 import { useOrder } from '@/features/orders/stores/order-store';
 import { getDraftOrderUpsell } from '@/features/orders/utils/get-draft-order-upsell';
 import { useService } from '@/features/services/api';
+import { useQuestionnaires } from '@/features/users/api/get-questionnaires';
 import { DefaultPaymentMethod } from '@/features/users/components/default-payment-method';
 import { useStepper } from '@/lib/stepper';
 import { OrderStatus } from '@/types/api';
@@ -38,6 +39,7 @@ export function OrderSummary(): ReactNode {
   } = useOrder((s) => s);
   const { nextStep, prevStep } = useStepper((s) => s);
   const ordersQuery = useOrders();
+  const questionnairesQuery = useQuestionnaires();
 
   const serviceQuery = useService({
     serviceId: service.id,
@@ -48,6 +50,10 @@ export function OrderSummary(): ReactNode {
   const existingDraftOrder = ordersQuery.data?.orders
     .filter((o) => o.status === OrderStatus.draft)
     .find((o) => o.serviceId === service.id);
+
+  const typeformQuestionnaire = questionnairesQuery.data?.questionnaires.find(
+    (q) => q.name === 'Intake',
+  );
 
   const price = existingDraftOrder
     ? getDraftOrderUpsell(
@@ -73,6 +79,14 @@ export function OrderSummary(): ReactNode {
   const createOrderFn = async (): Promise<void> => {
     if (service === null)
       throw Error('There was a problem creating the order.');
+
+    if (
+      service.name === ADVISORY_CALL &&
+      typeformQuestionnaire?.status === 'INCOMPLETE'
+    ) {
+      toast.warning('You need to complete Intake before booking Advisory Call');
+      return;
+    }
 
     const data: CreateOrderInput = {
       serviceId: service.id,
@@ -106,6 +120,14 @@ export function OrderSummary(): ReactNode {
   const updateOrderFn = async (): Promise<void> => {
     if (!existingDraftOrder) {
       toast.warning('No orderId found for previous order. Contact support.');
+      return;
+    }
+
+    if (
+      service.name === ADVISORY_CALL &&
+      typeformQuestionnaire?.status === 'INCOMPLETE'
+    ) {
+      toast.warning('You need to complete Intake before booking Advisory Call');
       return;
     }
 

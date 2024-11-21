@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, H2 } from '@/components/ui/typography';
+import { ADVISORY_CALL } from '@/const';
 import { ImageContentLayout } from '@/features/onboarding/components/layouts';
 import { useOrders } from '@/features/orders/api';
 import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
@@ -49,7 +50,10 @@ const UpsellBooking = () => {
   const { data } = useOrders();
   const nextOnboardingStep = useStepper((s) => s.nextOnboardingStep);
 
-  const draftOrders = data?.orders.filter((o) => o.status === 'DRAFT') ?? [];
+  const draftOrders =
+    data?.orders.filter(
+      (o) => o.status === 'DRAFT' && o.name !== ADVISORY_CALL,
+    ) ?? [];
 
   return (
     <div className="space-y-8 p-6 md:p-14">
