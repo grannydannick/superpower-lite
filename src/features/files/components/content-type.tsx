@@ -18,8 +18,6 @@ export function ContentType({
       return <span>JPEG</span>;
     case 'image/png':
       return <span>PNG</span>;
-    case 'application/zip':
-      return <span>ZIP</span>;
     default:
       return <>{contentType}</>;
   }

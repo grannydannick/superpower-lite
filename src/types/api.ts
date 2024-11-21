@@ -666,14 +666,10 @@ export type CheckoutLineItem = {
 /* FILES */
 export type FileContentType =
   | 'application/pdf'
-  | 'application/zip'
   | 'text/csv'
   | 'image/jpeg'
   | 'image/png'
-  | 'video/mp4'
-  | 'video/mov'
-  | 'application/vnd.md-excel'
-  | 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+  | 'video/mp4';
 
 export type File = {
   id: string;
