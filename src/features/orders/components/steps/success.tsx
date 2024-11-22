@@ -8,15 +8,18 @@ import {
   GRAIL_GALLERI_MULTI_CANCER_TEST,
   SUPERPOWER_BLOOD_PANEL,
 } from '@/const';
+import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
 import { useOrder } from '@/features/orders/stores/order-store';
+import { useStepper } from '@/lib/stepper';
 import { getServiceTimeline } from '@/utils/service';
 import { AnimatedTimeline } from 'src/components/ui/animated-timeline';
 
 export const Success = () => {
-  const { slot, service, collectionMethod, location, onSubmit } = useOrder(
-    (s) => s,
-  );
-  const steps = getServiceTimeline(service, collectionMethod);
+  const { slot, service, collectionMethod, location } = useOrder((s) => s);
+  const { nextStep, activeStep, steps } = useStepper((s) => s);
+  const timelineSteps = getServiceTimeline(service, collectionMethod);
+
+  const isLastStep = activeStep === steps.length - 1;
 
   const renderCalendarButton = () => {
     if (!location?.address) {
@@ -52,19 +55,22 @@ export const Success = () => {
         <H2 className="text-zinc-900">
           Thank you, we look forward to seeing you shortly.
         </H2>
-        <AnimatedTimeline timeline={steps} />
+        <AnimatedTimeline timeline={timelineSteps} />
       </div>
-      <div className="flex w-full flex-col gap-3 px-6 pb-12 md:w-auto md:flex-row md:justify-end md:px-14">
-        {renderCalendarButton()}
-        <DialogClose>
-          <Button
-            className="w-full md:w-auto"
-            onClick={onSubmit ? onSubmit : undefined}
-          >
-            Done
-          </Button>
-        </DialogClose>
-      </div>
+      <HealthcareServiceFooter
+        prevBtn={renderCalendarButton()}
+        nextBtn={
+          isLastStep ? (
+            <DialogClose>
+              <Button className="w-full md:w-auto">Done</Button>
+            </DialogClose>
+          ) : (
+            <Button onClick={nextStep} className="w-full md:w-auto">
+              Next
+            </Button>
+          )
+        }
+      />
     </>
   );
 };

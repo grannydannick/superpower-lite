@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { DotIcon } from '@/components/icons/dot';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
 import { Body1, Body2, H2 } from '@/components/ui/typography';
 import { ADVISORY_CALL } from '@/const';
@@ -67,9 +68,12 @@ export function OrderSummary(): ReactNode {
   const updateOrderMutation = useUpdateOrder();
 
   const isMutationLoading =
-    createOrderMutation.isPending ||
-    updateOrderMutation.isPending ||
-    ordersQuery.isLoading;
+    createOrderMutation.isPending || updateOrderMutation.isPending;
+
+  const isQueryLoading =
+    serviceQuery.isLoading ||
+    ordersQuery.isLoading ||
+    questionnairesQuery.isLoading;
 
   /*
    * If user books new service (draftOrderId was not initialized)
@@ -177,6 +181,9 @@ export function OrderSummary(): ReactNode {
             <CreateOrderSummaryItem basePrice={price} />
           ) : null}
         </div>
+        {isQueryLoading ? (
+          <Skeleton className="h-[130px] w-full rounded-2xl" />
+        ) : null}
         {price && price > 0 ? <DefaultPaymentMethod /> : null}
       </div>
       <HealthcareServiceFooter
@@ -194,7 +201,9 @@ export function OrderSummary(): ReactNode {
           <Button
             onClick={existingDraftOrder ? updateOrderFn : createOrderFn}
             className="w-full md:w-auto"
-            disabled={isMutationLoading || price === undefined}
+            disabled={
+              isMutationLoading || price === undefined || isQueryLoading
+            }
           >
             {isMutationLoading ? <Spinner /> : 'Confirm'}
           </Button>

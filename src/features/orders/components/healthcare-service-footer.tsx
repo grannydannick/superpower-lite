@@ -11,10 +11,21 @@ export const HealthcareServiceFooter = ({
   prevBtn,
 }: {
   className?: string;
-  prevBtn?: ReactNode;
-  nextBtn?: ReactNode;
+  prevBtn?: ReactNode | null;
+  nextBtn?: ReactNode | null;
 }) => {
   const { activeStep, steps, prevStep, nextStep } = useStepper((s) => s);
+
+  const renderButton = (
+    btn: ReactNode | null | undefined,
+    defaultButton: ReactNode,
+  ) => {
+    if (btn === undefined) {
+      return defaultButton;
+    }
+    return btn; // This includes the case when btn is null (renders nothing) or a ReactNode
+  };
+
   return (
     <div
       className={cn(
@@ -26,28 +37,26 @@ export const HealthcareServiceFooter = ({
         Step {activeStep + 1} of {steps.length}
       </Body1>
       <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
-        {activeStep - 1 >= 0 ? (
-          prevBtn ? (
-            prevBtn
-          ) : (
-            <Button
-              variant="outline"
-              className="w-full md:w-auto"
-              onClick={prevStep}
-            >
-              Back
-            </Button>
-          )
-        ) : null}
-        {activeStep + 1 < steps.length ? (
-          nextBtn ? (
-            nextBtn
-          ) : (
+        {activeStep - 1 >= 0
+          ? renderButton(
+              prevBtn,
+              <Button
+                variant="outline"
+                className="w-full md:w-auto"
+                onClick={prevStep}
+              >
+                Back
+              </Button>,
+            )
+          : null}
+        {renderButton(
+          nextBtn,
+          activeStep + 1 < steps.length ? (
             <Button onClick={nextStep} className="w-full md:w-auto">
               Next
             </Button>
-          )
-        ) : null}
+          ) : null,
+        )}
       </div>
     </div>
   );

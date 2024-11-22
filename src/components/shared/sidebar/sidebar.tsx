@@ -11,11 +11,11 @@ import {
   Settings,
 } from 'lucide-react';
 import React, {
-  useState,
   createContext,
-  useContext,
   FC,
   SVGProps,
+  useContext,
+  useState,
 } from 'react';
 import {
   Link,
@@ -28,10 +28,10 @@ import {
 import {
   DataIcon,
   HomeIcon,
+  LockIcon,
   MarketplaceIcon,
   MessageIcon,
   ServicesIcon,
-  LockIcon,
 } from '@/components/icons';
 import { PresentIcon } from '@/components/icons/present-icon';
 import { Button } from '@/components/ui/button';

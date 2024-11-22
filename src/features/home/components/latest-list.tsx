@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 
+import { AffiliateInviteCard } from '@/features/affiliate/components/affiliate-invite-card';
 import { BiologicalAgeCard } from '@/features/biomarkers/components/biological-age-card';
 import { ScoreCard } from '@/features/biomarkers/components/score-card';
 import { CompleteOnboardingCard } from '@/features/home/components/complete-onboarding-card';
@@ -14,6 +15,9 @@ export const LatestList = () => {
     },
     {
       content: <BiologicalAgeCard />,
+    },
+    {
+      content: <AffiliateInviteCard />,
     },
   ];
 

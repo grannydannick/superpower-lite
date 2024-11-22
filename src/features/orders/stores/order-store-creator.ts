@@ -13,7 +13,6 @@ export interface OrderStoreProps {
   service: HealthcareService;
   tz: string;
   collectionMethod: CollectionMethodType | null;
-  onSubmit: (() => void) | null;
 }
 
 /**
@@ -28,6 +27,7 @@ export interface OrderStore extends OrderStoreProps {
   updateCollectionMethod: (
     collectionMethod: CollectionMethodType | null,
   ) => void;
+
   location: Location | null;
   updateLocation: (location: Location | null) => void;
   setTz: (tz: string) => void;

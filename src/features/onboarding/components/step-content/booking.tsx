@@ -2,7 +2,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { SUPERPOWER_BLOOD_PANEL } from '@/const';
 import { ImageContentLayout } from '@/features/onboarding/components/layouts';
 import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
-import { StepID } from '@/features/orders/utils/get-steps-for-service';
+import { StepID } from '@/features/orders/types/step-id';
 import { useServices } from '@/features/services/api';
 import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
@@ -20,7 +20,7 @@ const Booking = ({ bloodPanel }: { bloodPanel?: HealthcareService }) => {
   return (
     <HealthcareServiceDialog
       healthcareService={bloodPanel}
-      excludeSteps={[StepID.INFO]}
+      excludeSteps={[StepID.INFO, StepID.REFERRAL]}
       onSubmit={() =>
         user?.onboarding ? nextOnboardingStep(user.onboarding.id) : undefined
       }

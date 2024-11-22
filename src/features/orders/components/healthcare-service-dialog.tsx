@@ -22,11 +22,9 @@ import {
   OrderStoreProvider,
   useOrder,
 } from '@/features/orders/stores/order-store';
+import { StepID } from '@/features/orders/types/step-id';
 import { getDefaultCollectionMethod } from '@/features/orders/utils/get-default-collection-method';
-import {
-  getStepsFromService,
-  StepID,
-} from '@/features/orders/utils/get-steps-for-service';
+import { getStepsFromService } from '@/features/orders/utils/get-steps-for-service';
 import { useGetSchedulingLink } from '@/features/services/api/get-scheduling-link';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { StepperStoreProvider, useStepper } from '@/lib/stepper';
@@ -75,9 +73,8 @@ export const HealthcareServiceDialog = ({
         service={healthcareService}
         tz={moment.tz.guess()}
         collectionMethod={collectionMethod}
-        onSubmit={onSubmit ? onSubmit : null}
       >
-        <HealthcareServiceDialogConsumer>
+        <HealthcareServiceDialogConsumer onSubmit={onSubmit}>
           {children}
         </HealthcareServiceDialogConsumer>
       </OrderStoreProvider>
@@ -95,8 +92,10 @@ export const HealthcareServiceDialog = ({
  */
 const HealthcareServiceDialogConsumer = ({
   children,
+  onSubmit,
 }: {
   children?: ReactNode;
+  onSubmit?: () => void;
 }) => {
   const { steps, activeStep, resetSteps } = useStepper((s) => s);
   const queryClient = useQueryClient();
@@ -111,6 +110,14 @@ const HealthcareServiceDialogConsumer = ({
    */
   const handleOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
+      if (onSubmit) {
+        /**
+         * This will be triggered on last step when we close dialog
+         */
+        if (activeStep === steps.length - 1) {
+          onSubmit();
+        }
+      }
       /**
        * Refreshing list of orders after we are done (doesn't matter if regular close)
        */
@@ -136,7 +143,11 @@ const HealthcareServiceDialogConsumer = ({
    * https://github.com/radix-ui/primitives/blob/74b182b401c8ca0fa5b66a5a9a47f507bb3d5adc/packages/react/dialog/src/Dialog.tsx#L50
    */
   if (!children) {
-    return <Dialog>{steps[activeStep]?.content ?? null}</Dialog>;
+    return (
+      <Dialog onOpenChange={handleOpenChange}>
+        {steps[activeStep]?.content ?? null}
+      </Dialog>
+    );
   }
 
   if (width <= 768) {

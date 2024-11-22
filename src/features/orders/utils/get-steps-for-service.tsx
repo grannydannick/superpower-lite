@@ -17,37 +17,29 @@ import {
   TOTAL_TOXIN_TEST,
   VO2_MAX_TEST,
 } from '@/const';
-import { Calendly } from '@/features/orders/components/steps/calendly';
-import { ConfirmAddress } from '@/features/orders/components/steps/confirm-address';
-import { InformedConsent } from '@/features/orders/components/steps/informed-consent';
-import { MessageConcierge } from '@/features/orders/components/steps/message-concierge';
-import { PhlebotomyLocationSelect } from '@/features/orders/components/steps/phlebotomy-location';
-import { PhlebotomyScheduler } from '@/features/orders/components/steps/phlebotomy-scheduler';
-import { EarlyAccessContent } from '@/features/orders/components/steps/request-early-access';
-import { HealthcareServiceDetails } from '@/features/orders/components/steps/service-details';
-import { Success } from '@/features/orders/components/steps/success';
-import { OrderSummary } from '@/features/orders/components/steps/summary';
-import { ToxinsSelect } from '@/features/orders/components/steps/toxins-select';
 import { HealthcareService } from '@/types/api';
+
+import {
+  ConfirmAddress,
+  EarlyAccessContent,
+  InviteFriend,
+  Success,
+  OrderSummary,
+  Calendly,
+  InformedConsent,
+  HealthcareServiceDetails,
+  PhlebotomyLocationSelect,
+  PhlebotomyScheduler,
+  ToxinsSelect,
+  MessageConcierge,
+} from '../components/steps';
+import { StepID } from '../types/step-id';
 
 interface TypedStepItem {
   id: StepID;
   content: ReactNode;
 }
 
-export enum StepID {
-  INFO = 'info',
-  PHLEBOTOMY = 'phlebotomy',
-  SCHEDULER = 'scheduler',
-  SUMMARY = 'summary',
-  SUCCESS = 'success',
-  INFORMED_CONSENT = 'informed-consent',
-  CONFIRM_ADDRESS = 'confirm-address',
-  CONCIERGE = 'concierge',
-  EARLY_ACCESS = 'early-access',
-  TOXIN_SELECT = 'toxin-select',
-  CALENDLY = 'calendly',
-}
 /**
  * Retrieves the steps required for scheduling based on the healthcare service provided.
  * This function returns an array of steps (`StepItem[]`) specific to the given healthcare service.
@@ -73,6 +65,7 @@ export const getStepsFromService = (
         { id: StepID.SCHEDULER, content: <PhlebotomyScheduler /> },
         { id: StepID.SUMMARY, content: <OrderSummary /> },
         { id: StepID.SUCCESS, content: <Success /> },
+        { id: StepID.REFERRAL, content: <InviteFriend /> },
       ];
     case GRAIL_GALLERI_MULTI_CANCER_TEST:
       return [
@@ -82,6 +75,7 @@ export const getStepsFromService = (
         { id: StepID.SCHEDULER, content: <PhlebotomyScheduler /> },
         { id: StepID.SUMMARY, content: <OrderSummary /> },
         { id: StepID.SUCCESS, content: <Success /> },
+        { id: StepID.REFERRAL, content: <InviteFriend /> },
       ];
     case ENVIRONMENTAL_TOXINS:
       return [
@@ -91,6 +85,7 @@ export const getStepsFromService = (
         { id: StepID.CONFIRM_ADDRESS, content: <ConfirmAddress /> },
         { id: StepID.SUMMARY, content: <OrderSummary /> },
         { id: StepID.SUCCESS, content: <Success /> },
+        { id: StepID.REFERRAL, content: <InviteFriend /> },
       ];
     case CONTINUOUS_GLUCOSE_MONITOR:
     case GUT_MICROBIOME_ANALYSIS:
@@ -100,6 +95,7 @@ export const getStepsFromService = (
         { id: StepID.CONFIRM_ADDRESS, content: <ConfirmAddress /> },
         { id: StepID.SUMMARY, content: <OrderSummary /> },
         { id: StepID.SUCCESS, content: <Success /> },
+        { id: StepID.REFERRAL, content: <InviteFriend /> },
       ];
     case FULL_BODY_MRI:
     case VO2_MAX_TEST:
@@ -113,6 +109,15 @@ export const getStepsFromService = (
     case ADVISORY_CALL: {
       const haveRdn = dataLink && dataLink !== '';
 
+      // If user have assigned RDN and draftOrderId was passed (finish order)
+      if (haveRdn) {
+        return [
+          { id: StepID.CALENDLY, content: <Calendly /> },
+          { id: StepID.SUCCESS, content: <Success /> },
+          { id: StepID.REFERRAL, content: <InviteFriend /> },
+        ];
+      }
+
       // If user has assigned RDN and draftOrderId was not passed (fresh order)
       if (haveRdn) {
         return [
@@ -120,6 +125,7 @@ export const getStepsFromService = (
           { id: StepID.SUMMARY, content: <OrderSummary /> },
           { id: StepID.CALENDLY, content: <Calendly /> },
           { id: StepID.SUCCESS, content: <Success /> },
+          { id: StepID.REFERRAL, content: <InviteFriend /> },
         ];
       }
 
@@ -136,6 +142,7 @@ export const getStepsFromService = (
         { id: StepID.CONFIRM_ADDRESS, content: <ConfirmAddress /> },
         { id: StepID.SUMMARY, content: <OrderSummary /> },
         { id: StepID.SUCCESS, content: <Success /> },
+        { id: StepID.REFERRAL, content: <InviteFriend /> },
       ];
 
     default:
