@@ -16,7 +16,7 @@ export const AffiliateInviteCard = () => {
   };
 
   return (
-    <div className="flex h-[188px] w-full flex-col justify-between rounded-3xl bg-zinc-100 p-5 md:hidden">
+    <div className="flex h-[188px] w-full flex-col justify-between rounded-3xl bg-zinc-100 p-5">
       <div className="flex flex-col">
         <H4 className="text-primary">Invite a friend to join</H4>
         <Body2 className="text-zinc-400">
