@@ -22,7 +22,7 @@ export const ImageContentLayout = (props: Props) => {
       <div className="flex h-dvh w-full flex-col bg-white lg:flex-row">
         <div
           className={cn(
-            'min-h-[210px] w-full lg:max-w-[556px] bg-female-face bg-no-repeat bg-cover p-8 flex flex-col gap-10 items-center',
+            'min-h-[210px] w-full lg:max-w-[556px] bg-female-face bg-no-repeat bg-cover p-8 flex flex-col gap-8 items-center',
             className,
           )}
         >

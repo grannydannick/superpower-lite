@@ -166,7 +166,7 @@ export function OrderSummary(): ReactNode {
     <>
       <div className="p-6 md:p-14">
         {price !== undefined && price === 0 ? (
-          <Alert className="mb-12" variant="success">
+          <Alert className="mb-8" variant="success">
             <Check className="size-4" />
             <AlertTitle>Heads up!</AlertTitle>
             <AlertDescription>
