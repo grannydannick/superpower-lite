@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { yearsSinceDate } from '@/utils/format';
 
 export const BiologicalAgeCard = ({
-  variant,
+  variant = 'home',
 }: {
   variant?: 'home' | 'biomarkers';
 }) => {

@@ -2,9 +2,14 @@ import { SuperpowerScoreLogo } from '@/components/shared/score-logo';
 import { Spinner } from '@/components/ui/spinner';
 import { Body2, H1, H4 } from '@/components/ui/typography';
 import { useLatestHealthScore } from '@/features/biomarkers/api/get-latest-healthscore';
+import { ScoreChart } from '@/features/biomarkers/components/charts/score-chart';
 import { cn } from '@/lib/utils';
 
-export const ScoreCard = ({ variant }: { variant?: 'home' | 'biomarkers' }) => {
+export const ScoreCard = ({
+  variant = 'home',
+}: {
+  variant?: 'home' | 'biomarkers';
+}) => {
   const getLatestHealthScoreQuery = useLatestHealthScore();
 
   if (getLatestHealthScoreQuery.isLoading) {
@@ -34,10 +39,23 @@ export const ScoreCard = ({ variant }: { variant?: 'home' | 'biomarkers' }) => {
       }}
     >
       <SuperpowerScoreLogo />
-      <div className="flex items-end gap-1">
-        <H1 className="text-white">{latestScore?.finalScore || '--'}</H1>
-        {latestScore?.finalScore ? <H4 className="text-white">/ 100</H4> : null}
-      </div>
+      {variant === 'home' ? (
+        <div className="flex items-end gap-1">
+          <H1 className="text-5xl text-white">
+            {latestScore?.finalScore || '--'}
+          </H1>
+          {latestScore?.finalScore ? (
+            <H4 className="text-white">/ 100</H4>
+          ) : null}
+        </div>
+      ) : null}
+      {variant === 'biomarkers' ? (
+        latestScore?.finalScore ? (
+          <ScoreChart value={latestScore.finalScore} />
+        ) : (
+          <H1 className="text-5xl text-white">--</H1>
+        )
+      ) : null}
       {latestScore?.finalScoreStatus ? (
         <Body2 className="text-white">{latestScore?.finalScoreStatus}</Body2>
       ) : (
