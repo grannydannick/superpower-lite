@@ -93,7 +93,7 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
                 name="dateOfBirth"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Date of birth</FormLabel>
+                    <FormLabel>Date of Birth</FormLabel>
                     <FormControl>
                       <DatetimePicker
                         {...field}

@@ -5,8 +5,6 @@ import { cn } from '@/lib/utils';
 
 import { Input } from './input';
 
-const timePickerInputBase =
-  'p-0 inline  h-fit shadow-none border-none outline-none select-none content-box caret-transparent rounded-sm w-full text-center focus:bg-foreground/20 focus-visible:ring-0 focus-visible:outline-none';
 const timePickerSeparatorBase = 'text-xs text-zinc-400';
 
 type DateFormat = 'days' | 'months' | 'years';
@@ -85,10 +83,13 @@ const DatetimeGrid = forwardRef<
                   ? group.map((unit, j) => (
                       <React.Fragment key={unit}>
                         <Input
-                          className={cn(timePickerInputBase, 'min-w-8', {
-                            'min-w-12': unit === 'years',
-                            'bg-foreground/15': unit === 'am/pm',
-                          })}
+                          className={cn(
+                            'p-0 inline  h-fit shadow-none border-none outline-none select-none content-box focus-visible:bg-zinc-100 rounded-sm w-full text-center focus-visible:ring-0 focus-visible:outline-none min-w-8',
+                            {
+                              'min-w-12': unit === 'years',
+                              'bg-foreground/15': unit === 'am/pm',
+                            },
+                          )}
                           {...timescape.getInputProps(unit)}
                           placeholder={placeholders[unit]}
                           data-testid={TEST_IDS[unit]}
