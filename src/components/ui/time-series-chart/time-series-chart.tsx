@@ -116,6 +116,14 @@ export function TimeSeriesChart({
     marker: pt.placeholder ? { fillColor: '#c6c6c6' } : undefined,
   }));
 
+  let mainSeriesData = seriesData;
+  let lastSegmentData: ChartPoint[] = [];
+  if (showsFuturePoint) {
+    // Create two series: one for all points except the last segment, and one for the last segment
+    mainSeriesData = seriesData.slice(0, -1);
+    lastSegmentData = seriesData.slice(-2);
+  }
+
   const options: Highcharts.Options = {
     chart: {
       backgroundColor: undefined,
@@ -289,6 +297,12 @@ export function TimeSeriesChart({
           padding: 14,
           // You can customize data label properties here
           formatter: function (this) {
+            if (
+              showsFuturePoint &&
+              this.key?.toString() === (seriesData.length - 1).toString()
+            )
+              return '';
+
             return `<span>${this.y?.toString().split('.')[0]}</span><span style="color: grey;">.${
               this.y?.toString().split('.')[1] || '0'
             }</span>`;
@@ -310,8 +324,39 @@ export function TimeSeriesChart({
       enabled: false,
     },
     series: [
+      // Last segment series in grey (with all hover effects disabled)
       {
-        data: seriesData,
+        data: showsFuturePoint ? lastSegmentData : [],
+        color: '#C6C6C6',
+        lineWidth: 3,
+        enableMouseTracking: false,
+        stickyTracking: false,
+        states: {
+          hover: {
+            enabled: false,
+          },
+          inactive: {
+            opacity: 1,
+          },
+        },
+        marker: {
+          states: {
+            hover: {
+              enabled: false,
+            },
+            select: {
+              enabled: false,
+            },
+          },
+        },
+        threshold: null,
+        type: 'line',
+        zIndex: 1,
+      },
+      // Main series with colored zones
+      {
+        data: mainSeriesData,
+        zIndex: 2,
         zones: [
           {
             value: softMin,
