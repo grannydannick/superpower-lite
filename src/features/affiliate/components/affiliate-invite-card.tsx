@@ -20,8 +20,7 @@ export const AffiliateInviteCard = () => {
       <div className="flex flex-col">
         <H4 className="text-primary">Invite a friend to join</H4>
         <Body2 className="text-zinc-400">
-          Earn $100 for each friend or family member you invite that joins
-          Superpower.
+          Invite friends or family members to bypass the Superpower waitlist.
         </Body2>
       </div>
 

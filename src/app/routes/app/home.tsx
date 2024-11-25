@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { ContentLayout } from '@/components/layouts';
 import { Button } from '@/components/ui/button';
 import { Body1, H1, H3 } from '@/components/ui/typography';
-import { AffiliateBanner } from '@/features/affiliate/components/affiliate-banner';
+// import { AffiliateBanner } from '@/features/affiliate/components/affiliate-banner';
 import { ForYouList } from '@/features/home/components/for-you-list';
 import { LatestList } from '@/features/home/components/latest-list';
 import { TimelineList } from '@/features/home/components/timeline-list';
@@ -16,7 +16,7 @@ export const HomeRoute = () => {
 
   return (
     <ContentLayout title="Home">
-      <AffiliateBanner />
+      {/* <AffiliateBanner /> */}
       <div>
         <Body1>{user?.firstName}’s</Body1>
         <H1>Roadmap</H1>
