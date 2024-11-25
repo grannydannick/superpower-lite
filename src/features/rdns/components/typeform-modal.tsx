@@ -170,7 +170,8 @@ export const TypeformModal = ({
                         Patient Name:
                       </span>
                       <p className="font-bold text-zinc-800">
-                        {patient.firstName} {patient.lastName}
+                        {patient.firstName} {patient.lastName} (
+                        {patient.gender.charAt(0)})
                       </p>
                     </div>
                     <div className="mb-2 flex">
