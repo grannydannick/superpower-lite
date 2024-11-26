@@ -17,12 +17,11 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { H3, H4, Body2 } from '@/components/ui/typography';
+import { useCurrentPatient } from '@/features/rdns/hooks/use-current-patient';
 import { sortTypeformAnswers } from '@/lib/utils';
-import { FormResponse, TypeformWebhook, User } from '@/types/api';
+import { FormResponse } from '@/types/api';
 
 interface TypeformModalProps {
-  typeforms: TypeformWebhook[] | undefined;
-  patient: User;
   children: ReactNode;
 }
 
@@ -53,20 +52,16 @@ const QAItem = ({
   </div>
 );
 
-export const TypeformModal = ({
-  typeforms,
-  children,
-  patient,
-}: TypeformModalProps) => {
+export const TypeformModal = ({ children }: TypeformModalProps) => {
+  const { selectedPatient: patient, typeforms } = useCurrentPatient();
+
   const [selectedFormId, setSelectedFormId] = useState<string | undefined>(
     typeforms && typeforms[0]?.formId,
   );
 
-  if (!typeforms || typeforms.length === 0) {
-    return null;
-  }
-
-  const selectedForm = typeforms.find((form) => form.formId === selectedFormId);
+  const selectedForm = typeforms?.find(
+    (form) => form.formId === selectedFormId,
+  );
 
   // TODO: move the association of question to answers to the backend ~ MG 2024-11-13
   const displayAnswers = (formResponse: FormResponse) => {
@@ -140,7 +135,7 @@ export const TypeformModal = ({
                 <SelectValue placeholder="Select Form" />
               </SelectTrigger>
               <SelectContent>
-                {typeforms.map((form) => (
+                {typeforms?.map((form) => (
                   <SelectItem key={form.formId} value={form.formId}>
                     {form.formResponse.definition.title}
                   </SelectItem>
@@ -170,8 +165,8 @@ export const TypeformModal = ({
                         Patient Name:
                       </span>
                       <p className="font-bold text-zinc-800">
-                        {patient.firstName} {patient.lastName} (
-                        {patient.gender.charAt(0)})
+                        {patient?.firstName} {patient?.lastName} (
+                        {patient?.gender.charAt(0)})
                       </p>
                     </div>
                     <div className="mb-2 flex">
@@ -179,9 +174,9 @@ export const TypeformModal = ({
                         Patient DOB:
                       </span>
                       <p className="font-bold text-zinc-800">
-                        {moment(patient.dateOfBirth).format('MMMM D, YYYY')}{' '}
+                        {moment(patient?.dateOfBirth).format('MMMM D, YYYY')}{' '}
                         <span className="text-sm text-zinc-600">
-                          (Age: {moment().diff(patient.dateOfBirth, 'years')})
+                          (Age: {moment().diff(patient?.dateOfBirth, 'years')})
                         </span>
                       </p>
                     </div>
@@ -189,13 +184,15 @@ export const TypeformModal = ({
                       <span className="w-auto pr-2 font-bold text-zinc-800">
                         Patient Email:
                       </span>
-                      <p className="font-bold text-zinc-800">{patient.email}</p>
+                      <p className="font-bold text-zinc-800">
+                        {patient?.email}
+                      </p>
                     </div>
                     <div className="mb-2 flex">
                       <span className="w-auto pr-2 font-bold text-zinc-800">
                         Patient ID:
                       </span>
-                      <p className="font-bold text-zinc-800">{patient.id}</p>
+                      <p className="font-bold text-zinc-800">{patient?.id}</p>
                     </div>
                     <div className="mb-2 flex">
                       <span className="w-auto pr-2 font-bold text-zinc-800">

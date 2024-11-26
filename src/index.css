@@ -140,8 +140,7 @@
     @apply border-border;
   }
 
-  /* disable scrollbars for inner content (still enable global scroll bars) */
-  :root {
+  /*:root {*/
     /* For Webkit-based browsers (Chrome, Safari and Opera) hide scrollbar */
     *::-webkit-scrollbar {
       display: none;
@@ -152,7 +151,7 @@
       -ms-overflow-style: none; /* IE and Edge */
       scrollbar-width: none; /* Firefox */
     }
-  }
+  /*}*/
 
   input:-webkit-autofill,
   input:-webkit-autofill:hover,

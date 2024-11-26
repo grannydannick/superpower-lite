@@ -22,16 +22,9 @@ export const PatientSelector = () => {
   const [open, setOpen] = useState(false);
   const [filterVal, setFilterVal] = useState('');
 
-  const hiddenPaths = [
-    'plans',
-    'upcoming',
-    'members',
-    'settings',
-    'concierge',
-    'invite',
-  ];
+  const allowedPath = ['data'];
 
-  const shouldHide = hiddenPaths.some((path) => pathname.includes(path));
+  const shouldShow = allowedPath.some((path) => pathname.includes(path));
 
   const { hasAllowedRole, selectedPatient, setPatient, removePatient } =
     useCurrentPatient(() => setOpen(false));
@@ -44,16 +37,16 @@ export const PatientSelector = () => {
 
   const formatPatient = (p: User | undefined) => {
     if (!p) {
-      return '';
+      return <Body1 className="text-zinc-500">Select member</Body1>;
     }
 
-    const birthDate = moment(p.dateOfBirth.split('T')[0]).format('MMM D, YYYY');
+    const birthDate = moment(p.dateOfBirth).format('MMM D, YYYY');
     const gender = p.gender.charAt(0);
 
     return (
       <>
         <Body1 className="text-zinc-500">
-          {p.firstName} {p.lastName}{' '}
+          {p.firstName} {p.lastName}&nbsp;
           <span className="text-zinc-400">
             ({gender}) - {birthDate}
           </span>
@@ -76,17 +69,12 @@ export const PatientSelector = () => {
     <div
       className={cn(
         'sticky top-10 z-50 items-center justify-center',
-        shouldHide ? 'hidden' : 'sm:flex hidden',
+        shouldShow ? 'sm:flex hidden' : 'hidden',
       )}
     >
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <div
-            className={cn(
-              'flex w-full items-center gap-2 max-w-[400px]',
-              selectedPatient ? 'max-w-[600px]' : null,
-            )}
-          >
+          <div className={cn('flex w-fit items-center gap-2')}>
             <Button
               variant="outline"
               className={cn(
@@ -112,7 +100,7 @@ export const PatientSelector = () => {
             ) : null}
           </div>
         </PopoverTrigger>
-        <PopoverContent className="w-auto rounded-xl border border-zinc-50 p-0 shadow-xl sm:w-[460px]">
+        <PopoverContent className="w-auto rounded-xl border border-zinc-50 p-0 shadow-xl">
           <div className="flex items-center gap-1 px-6 py-3">
             <Input
               className="rounded-none border-0 p-0 caret-vermillion-900 shadow-none focus-visible:bg-white focus-visible:ring-0"
@@ -129,21 +117,25 @@ export const PatientSelector = () => {
             </Button>
           </div>
           <div className="max-h-[200px] overflow-y-auto p-2">
-            {filteredUsers?.map((p) => {
-              return (
-                <div
-                  role="presentation"
-                  key={p.id}
-                  onClick={() => setPatient(p)}
-                  className={cn(
-                    'flex cursor-pointer items-center gap-2 rounded-lg px-4 py-3 hover:bg-zinc-100',
-                    selectedPatient?.id === p.id ? 'bg-zinc-100' : null,
-                  )}
-                >
-                  {formatPatient(p)}
-                </div>
-              );
-            })}
+            {filteredUsers && filteredUsers.length ? (
+              filteredUsers.map((p) => {
+                return (
+                  <div
+                    role="presentation"
+                    key={p.id}
+                    onClick={() => setPatient(p)}
+                    className={cn(
+                      'flex cursor-pointer items-center gap-2 rounded-lg px-4 py-3 hover:bg-zinc-100',
+                      selectedPatient?.id === p.id ? 'bg-zinc-100' : null,
+                    )}
+                  >
+                    {formatPatient(p)}
+                  </div>
+                );
+              })
+            ) : (
+              <div className="rounded-lg px-4 py-3">Nothing found.</div>
+            )}
           </div>
         </PopoverContent>
       </Popover>

@@ -7,9 +7,8 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   Table,
@@ -19,7 +18,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useCurrentPatient } from '@/features/rdns/hooks/use-current-patient';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -32,7 +30,7 @@ export function RdnMembersDataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const { selectedPatient, removePatient } = useCurrentPatient();
+  const [globalFilter, setGlobalFilter] = useState('');
 
   const table = useReactTable({
     data,
@@ -41,35 +39,42 @@ export function RdnMembersDataTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: (row, columnIds, filterValue) => {
+      const search = filterValue.toLowerCase();
+
+      const columnsToSearch = ['id', 'name', 'email'];
+
+      return columnsToSearch.some((id) => {
+        let cellValue: string;
+
+        if (id === 'name') {
+          // semi hacky, need to better type TData, TValue here
+          cellValue =
+            `${(row.original as any).firstName} ${(row.original as any).lastName}`.toLowerCase();
+        } else {
+          cellValue = String(row.getValue(id)).toLowerCase();
+        }
+
+        return cellValue.includes(search);
+      });
+    },
     state: {
       columnFilters,
       columnVisibility,
+      globalFilter,
     },
   });
-
-  useEffect(() => {
-    if (selectedPatient) {
-      table.getColumn('id')?.setFilterValue(selectedPatient.id);
-    } else {
-      table.getColumn('id')?.setFilterValue('');
-    }
-  }, [selectedPatient]);
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <Input
-          placeholder="Filter by email..."
-          value={table.getColumn('email')?.getFilterValue() as string}
-          onChange={(event) =>
-            table.getColumn('email')?.setFilterValue(event.target.value)
-          }
+          placeholder="Search..."
+          value={globalFilter}
+          onChange={(e) => table.setGlobalFilter(String(e.target.value))}
           className="max-w-sm"
         />
-
-        {selectedPatient ? (
-          <Button onClick={removePatient}>Clear Patient</Button>
-        ) : null}
       </div>
       <div className="rounded-md border">
         <Table>

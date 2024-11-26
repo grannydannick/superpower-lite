@@ -2,12 +2,13 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { usePatientStore } from '@/features/rdns/stores/patient-store';
 import { ROLES, useAuthorization } from '@/lib/authorization';
-import { User } from '@/types/api';
+import { TypeformWebhook, User } from '@/types/api';
 
 type UseCurrentPatientProps = {
   fullPatientName: string;
   hasAllowedRole: boolean;
   selectedPatient: User | undefined;
+  typeforms: TypeformWebhook[] | undefined;
   setPatient: (patient: User) => void;
   removePatient: () => void;
 };
@@ -36,12 +37,19 @@ export const useCurrentPatient = (
     ? `${selectedPatient.firstName} ${selectedPatient.lastName}`
     : 'Select member';
 
+  const typeforms = selectedPatient ? selectedPatient.typeforms : [];
+
   /**
    * Handler for selecting a patient.
    *
    * @param {User} patient - The patient object to select.
    */
   const setPatient = (patient: User) => {
+    if (patient.id === selectedPatient?.id) {
+      console.warn('This patient is already selected');
+      return;
+    }
+
     setPatientInStore(patient);
     queryClient.refetchQueries();
 
@@ -59,6 +67,7 @@ export const useCurrentPatient = (
     fullPatientName,
     hasAllowedRole,
     selectedPatient,
+    typeforms,
     setPatient,
     removePatient,
   };
