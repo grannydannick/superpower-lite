@@ -10,6 +10,7 @@ export const orderBiomarkerCards = (biomarkers: Biomarker[]): Biomarker[] => {
     'Biological Age',
     'Pace of Aging',
     'Cholesterol, Total', // Cardiometabolic,
+    'Creatine Kinase (CK)', // Cardiometabolic,
     'LDL Cholesterol', // Cardiometabolic,
     'VLDL Cholesterol', // Cardiometabolic,
     'HDL Cholesterol', // Cardiometabolic,
@@ -27,6 +28,7 @@ export const orderBiomarkerCards = (biomarkers: Biomarker[]): Biomarker[] => {
     'HDL-P', // Cardiometabolic,
     'IGF-1', // Cardiometabolic,
     'Insulin Resistance Score', // Cardiometabolic,
+    'Insulin-like Growth Factor 1 (IGF-1)', // Cardiometabolic,
     'Iodine, Serum or Plasma', // Cardiometabolic,
     'Large HDL Particle Percentile', // Cardiometabolic,
     'Large VLDL Particle Percentile', // Cardiometabolic,
@@ -126,6 +128,7 @@ export const orderBiomarkerCards = (biomarkers: Biomarker[]): Biomarker[] => {
     'Carbon Dioxide, Total', // Liver and Kidney Health,
     'Calcium', // Liver and Kidney Health,
     'Uric Acid', // Liver and Kidney Health,
+    'y-Glutamyl Transferase (GGT)', // Liver and Kidney Health,
 
     'Thyroid-Stimulating Hormone (TSH)', // Hormones,
     'Thyroglobulin Antibodies (TgAb)', // Hormones,

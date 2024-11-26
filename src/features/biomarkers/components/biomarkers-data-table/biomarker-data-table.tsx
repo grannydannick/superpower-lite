@@ -1,4 +1,5 @@
 import { ColumnFiltersState, VisibilityState } from '@tanstack/react-table';
+import React from 'react';
 
 import { Spinner } from '@/components/ui/spinner';
 import { useBiomarkers } from '@/features/biomarkers/api';
@@ -18,7 +19,7 @@ interface BiomarkerDataTableProps {
 
 export function BiomarkersDataTable(
   props: BiomarkerDataTableProps,
-): JSX.Element {
+): React.ReactNode {
   const { data: biomarkersData, isLoading } = useBiomarkers();
 
   if (isLoading) {
