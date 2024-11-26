@@ -54,7 +54,7 @@ export const BiologicalAgeCard = ({
     >
       <H4 className="text-white">Biological Age</H4>
 
-      <H1 className="text-white">{biologicalAge || '--'}</H1>
+      <H1 className="text-6xl text-white">{biologicalAge || '--'}</H1>
 
       {ageDifference !== null ? (
         <Body2 className="text-white">
