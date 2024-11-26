@@ -18,7 +18,12 @@ export const customSort = (
 };
 
 export const healthcareServicesOrder = [
+  '1-1 Advisory Call',
   'Superpower Blood Panel',
   'Custom Blood Panel',
-  '1-1 Advisory Call',
+  'Gut Microbiome Analysis',
+  'Environmental Toxins',
+  'Grail Galleri Multi Cancer Test',
+  'Continuous Glucose Monitor',
+  'Full Body MRI',
 ];
