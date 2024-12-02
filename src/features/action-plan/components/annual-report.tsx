@@ -11,6 +11,8 @@ import { ACTION_PLAN_INPUT_STYLE } from '@/features/action-plan/const/action-pla
 import { ACTION_PLAN_SAVE_DELAY } from '@/features/action-plan/const/delay';
 import { usePlan } from '@/features/action-plan/stores/plan-store';
 
+import { Header } from './header';
+
 const REPORT_STYLE = 'space-y-8 rounded-3xl bg-white p-8 shadow-md md:p-12';
 
 export const AnnualReportComponent = () => {
@@ -34,7 +36,8 @@ export const AnnualReportComponent = () => {
   }
 
   return (
-    <div className="mb-10 w-full max-w-[768px] space-y-2.5">
+    <div className="mb-10 w-full max-w-screen-md space-y-2.5">
+      <Header />
       <div className={REPORT_STYLE}>
         <Input
           type="text"

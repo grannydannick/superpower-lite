@@ -43,7 +43,7 @@ export function ActionPlanComponent() {
   const relatedOrder = ordersQuery.data?.orders.find((o) => o.id === orderId);
 
   return (
-    <div className="mb-10 w-full max-w-[768px] space-y-2.5">
+    <div className="mb-10 w-full max-w-screen-md space-y-2.5">
       <div className={PLAN_STYLE}>
         <div className="space-y-3">
           <Body2 className="text-zinc-400">
