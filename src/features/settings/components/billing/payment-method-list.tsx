@@ -87,11 +87,11 @@ export function PaymentMethodCard({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[160px]">
-                <SetDefaultMenuItem
+                <SetDefaultPaymentMethodMenuItem
                   paymentMethodId={paymentMethod.stripePaymentMethodId}
                   setDefault={!defaultMethod}
                 />
-                <DeleteMenuItem {...paymentMethod} />
+                <DeletePaymentMethodMenuItem {...paymentMethod} />
               </DropdownMenuContent>
             </DropdownMenu>
           )}
@@ -110,7 +110,7 @@ export function PaymentMethodCard({
   );
 }
 
-function SetDefaultMenuItem({
+export function SetDefaultPaymentMethodMenuItem({
   paymentMethodId,
   setDefault,
 }: {
@@ -130,7 +130,9 @@ function SetDefaultMenuItem({
   );
 }
 
-function DeleteMenuItem({ stripePaymentMethodId }: PaymentMethod): JSX.Element {
+export function DeletePaymentMethodMenuItem({
+  stripePaymentMethodId,
+}: PaymentMethod): JSX.Element {
   const { mutate } = useDeletePaymentMethod();
 
   const onClick = async (): Promise<void> => {

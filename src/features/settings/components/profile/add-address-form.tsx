@@ -66,6 +66,14 @@ interface AddAddressFormProps {
    * Useful for editing existing address information.
    */
   defaultValues?: FormAddressInput;
+
+  /**
+   * Optional flag used to disable cancel button,
+   * useful for dialogs where the user has no address yet
+   * and we should not show this button since the dialog
+   * has a "Back" button
+   */
+  hideCancelButton?: boolean;
 }
 
 /**
@@ -88,6 +96,7 @@ export const AddAddressForm = ({
   formFooter,
   theme = 'default',
   defaultValues,
+  hideCancelButton,
 }: AddAddressFormProps): ReactNode => {
   const { data: user } = useUser();
   const { mutateAsync, isPending, isSuccess } = useUpdateProfile();
@@ -136,12 +145,64 @@ export const AddAddressForm = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onFormSubmit ? onFormSubmit : onSubmit)}
-        className="space-y-1"
+        className="space-y-5"
       >
-        <div className="flex flex-col gap-4">
+        <FormField
+          control={form.control}
+          name="line1"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel
+                className={cn(
+                  theme === 'default' ? 'text-zinc-600' : 'text-white',
+                )}
+              >
+                Address Line 1
+              </FormLabel>
+              <FormControl>
+                <Input
+                  autoComplete="off"
+                  placeholder="Street address"
+                  {...field}
+                  variant={theme}
+                />
+              </FormControl>
+              <FormMessage
+                className={cn(theme === 'glass' ? 'text-pink-300' : null)}
+              />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="line2"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel
+                className={cn(
+                  theme === 'default' ? 'text-zinc-600' : 'text-white',
+                )}
+              >
+                Address Line 2
+              </FormLabel>
+              <FormControl>
+                <Input
+                  autoComplete="off"
+                  placeholder="Apartment, suite, etc. (optional)"
+                  {...field}
+                  variant={theme}
+                />
+              </FormControl>
+              <FormMessage
+                className={cn(theme === 'glass' ? 'text-pink-300' : null)}
+              />
+            </FormItem>
+          )}
+        />
+        <div className="grid grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-3">
           <FormField
             control={form.control}
-            name="line1"
+            name="city"
             render={({ field }) => (
               <FormItem>
                 <FormLabel
@@ -149,12 +210,12 @@ export const AddAddressForm = ({
                     theme === 'default' ? 'text-zinc-600' : 'text-white',
                   )}
                 >
-                  Address Line 1
+                  City
                 </FormLabel>
                 <FormControl>
                   <Input
                     autoComplete="off"
-                    placeholder="Street address"
+                    placeholder="City"
                     {...field}
                     variant={theme}
                   />
@@ -167,7 +228,7 @@ export const AddAddressForm = ({
           />
           <FormField
             control={form.control}
-            name="line2"
+            name="state"
             render={({ field }) => (
               <FormItem>
                 <FormLabel
@@ -175,136 +236,56 @@ export const AddAddressForm = ({
                     theme === 'default' ? 'text-zinc-600' : 'text-white',
                   )}
                 >
-                  Address Line 2
+                  State
+                </FormLabel>
+                <FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger
+                        className={cn(
+                          theme === 'glass'
+                            ? 'border-white/20 bg-white/5 text-white focus:border-white focus:ring-0 focus:ring-offset-0'
+                            : null,
+                        )}
+                      >
+                        <SelectValue placeholder="State" asChild={false} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="text-zinc-600">
+                      {US_STATE_CODES.map((state) => (
+                        <SelectItem value={state} key={state}>
+                          {state}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage
+                  className={cn(theme === 'glass' ? 'text-pink-300' : null)}
+                />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="postalCode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel
+                  className={cn(
+                    theme === 'default' ? 'text-zinc-600' : 'text-white',
+                  )}
+                >
+                  ZIP Code
                 </FormLabel>
                 <FormControl>
                   <Input
                     autoComplete="off"
-                    placeholder="Apartment, suite, etc. (optional)"
-                    {...field}
-                    variant={theme}
-                  />
-                </FormControl>
-                <FormMessage
-                  className={cn(theme === 'glass' ? 'text-pink-300' : null)}
-                />
-              </FormItem>
-            )}
-          />
-          <div className="grid grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-3">
-            <FormField
-              control={form.control}
-              name="city"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel
-                    className={cn(
-                      theme === 'default' ? 'text-zinc-600' : 'text-white',
-                    )}
-                  >
-                    City
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      autoComplete="off"
-                      placeholder="City"
-                      {...field}
-                      variant={theme}
-                    />
-                  </FormControl>
-                  <FormMessage
-                    className={cn(theme === 'glass' ? 'text-pink-300' : null)}
-                  />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="state"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel
-                    className={cn(
-                      theme === 'default' ? 'text-zinc-600' : 'text-white',
-                    )}
-                  >
-                    State
-                  </FormLabel>
-                  <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger
-                          className={cn(
-                            theme === 'glass'
-                              ? 'border-white/20 bg-white/5 text-white focus:border-white focus:ring-0 focus:ring-offset-0'
-                              : null,
-                          )}
-                        >
-                          <SelectValue placeholder="State" asChild={false} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="text-zinc-600">
-                        {US_STATE_CODES.map((state) => (
-                          <SelectItem value={state} key={state}>
-                            {state}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage
-                    className={cn(theme === 'glass' ? 'text-pink-300' : null)}
-                  />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="postalCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel
-                    className={cn(
-                      theme === 'default' ? 'text-zinc-600' : 'text-white',
-                    )}
-                  >
-                    ZIP Code
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      autoComplete="off"
-                      placeholder="ZIP Code"
-                      maxLength={5}
-                      variant={theme}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage
-                    className={cn(theme === 'glass' ? 'text-pink-300' : null)}
-                  />
-                </FormItem>
-              )}
-            />
-          </div>
-          <FormField
-            control={form.control}
-            name="text"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel
-                  className={cn(
-                    theme === 'default' ? 'text-zinc-600' : 'text-white',
-                  )}
-                >
-                  Additional instructions
-                </FormLabel>
-                <FormControl>
-                  <Textarea
-                    autoComplete="off"
-                    placeholder="Up long driveway. Buzz code is..."
+                    placeholder="ZIP Code"
+                    maxLength={5}
                     variant={theme}
                     {...field}
                   />
@@ -315,25 +296,53 @@ export const AddAddressForm = ({
               </FormItem>
             )}
           />
-          {formFooter ? (
-            formFooter
-          ) : (
-            <div className="flex w-full flex-col gap-4 pt-6 md:flex-row md:justify-end">
+        </div>
+        <FormField
+          control={form.control}
+          name="text"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel
+                className={cn(
+                  theme === 'default' ? 'text-zinc-600' : 'text-white',
+                )}
+              >
+                Additional instructions
+              </FormLabel>
+              <FormControl>
+                <Textarea
+                  autoComplete="off"
+                  placeholder="Up long driveway. Buzz code is..."
+                  variant={theme}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage
+                className={cn(theme === 'glass' ? 'text-pink-300' : null)}
+              />
+            </FormItem>
+          )}
+        />
+        {formFooter ? (
+          formFooter
+        ) : (
+          <div className="flex w-full flex-col gap-4 pt-6 md:flex-row md:justify-end">
+            {!hideCancelButton ? (
               <DialogClose asChild>
-                {!isSuccess && (
+                {!isSuccess ? (
                   <Button type="button" variant="outline">
                     Cancel
                   </Button>
-                )}
+                ) : null}
               </DialogClose>
-              {!isSuccess && (
-                <Button type="submit" className="w-auto">
-                  {isPending ? <Spinner /> : 'Add address'}
-                </Button>
-              )}
-            </div>
-          )}
-        </div>
+            ) : null}
+            {!isSuccess ? (
+              <Button type="submit" className="w-auto">
+                {isPending ? <Spinner /> : 'Add address'}
+              </Button>
+            ) : null}
+          </div>
+        )}
       </form>
     </Form>
   );

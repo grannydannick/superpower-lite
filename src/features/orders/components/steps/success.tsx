@@ -61,7 +61,7 @@ export const Success = () => {
         prevBtn={renderCalendarButton()}
         nextBtn={
           isLastStep ? (
-            <DialogClose>
+            <DialogClose asChild>
               <Button className="w-full md:w-auto">Done</Button>
             </DialogClose>
           ) : (

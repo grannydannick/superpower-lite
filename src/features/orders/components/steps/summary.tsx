@@ -1,6 +1,6 @@
 import { Check } from 'lucide-react';
 import moment from 'moment';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { toast } from 'sonner';
 
 import { DotIcon } from '@/components/icons/dot';
@@ -21,8 +21,10 @@ import { HealthcareServiceFooter } from '@/features/orders/components/healthcare
 import { useOrder } from '@/features/orders/stores/order-store';
 import { getDraftOrderUpsell } from '@/features/orders/utils/get-draft-order-upsell';
 import { useService } from '@/features/services/api';
+import { usePaymentMethods } from '@/features/settings/api';
+import { CreatePaymentMethodForm } from '@/features/settings/components/billing/create-payment-method-form';
 import { useQuestionnaires } from '@/features/users/api/get-questionnaires';
-import { DefaultPaymentMethod } from '@/features/users/components/default-payment-method';
+import { CurrentPaymentMethodCard } from '@/features/users/components/current-payment-method-card';
 import { useStepper } from '@/lib/stepper';
 import { OrderStatus } from '@/types/api';
 import { formatMoney } from '@/utils/format-money';
@@ -41,12 +43,17 @@ export function OrderSummary(): ReactNode {
   const { nextStep, prevStep } = useStepper((s) => s);
   const ordersQuery = useOrders();
   const questionnairesQuery = useQuestionnaires();
+  const paymentMethodsQuery = usePaymentMethods();
 
   const serviceQuery = useService({
     serviceId: service.id,
     method: collectionMethod,
     items,
   });
+
+  const defaultPaymentMethod = paymentMethodsQuery.data?.paymentMethods.find(
+    (pm) => pm.default,
+  );
 
   const existingDraftOrder = ordersQuery.data?.orders
     .filter((o) => o.status === OrderStatus.draft)
@@ -73,7 +80,8 @@ export function OrderSummary(): ReactNode {
   const isQueryLoading =
     serviceQuery.isLoading ||
     ordersQuery.isLoading ||
-    questionnairesQuery.isLoading;
+    questionnairesQuery.isLoading ||
+    paymentMethodsQuery.isLoading;
 
   /*
    * If user books new service (draftOrderId was not initialized)
@@ -164,51 +172,65 @@ export function OrderSummary(): ReactNode {
 
   return (
     <>
-      <div className="p-6 md:p-14">
-        {price !== undefined && price === 0 ? (
-          <Alert className="mb-8" variant="success">
-            <Check className="size-4" />
-            <AlertTitle>Heads up!</AlertTitle>
-            <AlertDescription>
-              We found a free {service.name} that is included with your
-              membership.
-            </AlertDescription>
-          </Alert>
-        ) : null}
-        <div className="md:space-y-8">
-          <H2>Order Summary</H2>
-          {price !== undefined ? (
-            <CreateOrderSummaryItem basePrice={price} />
-          ) : null}
-        </div>
+      <div className="space-y-4 p-6 md:space-y-8 md:p-14">
+        <H2>Order Summary</H2>
         {isQueryLoading ? (
-          <Skeleton className="h-[130px] w-full rounded-2xl" />
+          <>
+            <Skeleton className="h-12 w-full rounded-2xl" />
+            <Skeleton className="h-[130px] w-full rounded-2xl" />
+          </>
         ) : null}
-        {price && price > 0 ? <DefaultPaymentMethod /> : null}
+        {defaultPaymentMethod && !isQueryLoading ? (
+          <>
+            {price !== undefined && price === 0 ? (
+              <Alert className="mb-8" variant="success">
+                <Check className="size-4" />
+                <AlertTitle>Heads up!</AlertTitle>
+                <AlertDescription>
+                  We found a free {service.name} that is included with your
+                  membership.
+                </AlertDescription>
+              </Alert>
+            ) : null}
+
+            {price !== undefined ? (
+              <CreateOrderSummaryItem basePrice={price} />
+            ) : null}
+            {price && price > 0 ? <CurrentPaymentMethodCard /> : null}
+          </>
+        ) : null}
+        {!defaultPaymentMethod && !isQueryLoading ? (
+          <div className="space-y-4">
+            <H2>We do not have your payment method!</H2>
+            <CreatePaymentMethodForm />
+          </div>
+        ) : null}
       </div>
-      <HealthcareServiceFooter
-        prevBtn={
-          <Button
-            variant="outline"
-            className="w-full md:w-auto"
-            onClick={prevStep}
-            disabled={isMutationLoading}
-          >
-            Back
-          </Button>
-        }
-        nextBtn={
-          <Button
-            onClick={existingDraftOrder ? updateOrderFn : createOrderFn}
-            className="w-full md:w-auto"
-            disabled={
-              isMutationLoading || price === undefined || isQueryLoading
-            }
-          >
-            {isMutationLoading ? <Spinner /> : 'Confirm'}
-          </Button>
-        }
-      />
+      {defaultPaymentMethod ? (
+        <HealthcareServiceFooter
+          prevBtn={
+            <Button
+              variant="outline"
+              className="w-full md:w-auto"
+              onClick={prevStep}
+              disabled={isMutationLoading}
+            >
+              Back
+            </Button>
+          }
+          nextBtn={
+            <Button
+              onClick={existingDraftOrder ? updateOrderFn : createOrderFn}
+              className="w-full md:w-auto"
+              disabled={
+                isMutationLoading || price === undefined || isQueryLoading
+              }
+            >
+              {isMutationLoading ? <Spinner /> : 'Confirm'}
+            </Button>
+          }
+        />
+      ) : null}
     </>
   );
 }

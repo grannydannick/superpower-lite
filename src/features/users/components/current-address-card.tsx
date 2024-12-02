@@ -7,21 +7,15 @@ import { AddressSelect } from '@/features/users/components/address-select';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 
-export const CurrentAddressCard = ({ className }: { className?: string }) => {
+interface CurrentAddressCardProps {
+  className?: string;
+}
+
+export const CurrentAddressCard = ({ className }: CurrentAddressCardProps) => {
   const { data: user } = useUser();
   const [isEditing, setIsEditing] = useState(false);
 
   const address = user?.primaryAddress?.address;
-
-  if (!user?.primaryAddress) {
-    return (
-      <div className="w-full space-y-3 rounded-2xl border border-zinc-200 px-8 py-6">
-        <Body2 className="text-zinc-500">
-          No primary address found, add one in settings.
-        </Body2>
-      </div>
-    );
-  }
 
   if (isEditing) {
     return (

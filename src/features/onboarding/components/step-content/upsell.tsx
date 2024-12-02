@@ -18,7 +18,7 @@ import { CreateOrderInput } from '@/features/orders/api';
 import { useCreateBulkOrders } from '@/features/orders/api/create-bulk-orders';
 import { getDefaultCollectionMethod } from '@/features/orders/utils/get-default-collection-method';
 import { useService, useServices } from '@/features/services/api';
-import { DefaultPaymentMethod } from '@/features/users/components/default-payment-method';
+import { CurrentPaymentMethodCard } from '@/features/users/components/current-payment-method-card';
 import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
 import { cn } from '@/lib/utils';
@@ -245,7 +245,7 @@ const UpsellCheckout = ({
           </div>
         ))}
       </div>
-      <DefaultPaymentMethod
+      <CurrentPaymentMethodCard
         error={
           error
             ? 'There was an issue with your payment method. Please try again'
