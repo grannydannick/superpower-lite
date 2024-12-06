@@ -8,25 +8,24 @@ import { TextShimmer } from '@/components/ui/text-shimmer';
 import { Body1, Body2, H3, H4 } from '@/components/ui/typography';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { getDiscountedPrice } from '@/features/onboarding/utils/get-discounted-price';
-import { useMembershipPrice } from '@/features/settings/api';
+import { useAvailableSubscriptions } from '@/features/settings/api/get-available-subscriptions';
 import { useOutsideClick } from '@/hooks/use-outside-click';
 import { formatMoney } from '@/utils/format-money';
 
 const ExpandableCard = () => {
   const ref = useRef<HTMLDivElement>(null);
   const [isExpanded, setIsExpanded] = useState(false);
-  const code = localStorage.getItem('superpower-code');
+  const { processing, consentGiven, membershipType } = useOnboarding();
 
-  const membershipQuery = useMembershipPrice({
-    code: code ?? undefined,
-    queryConfig: {},
-  });
+  const availableSubscriptionsQuery = useAvailableSubscriptions();
 
-  const { processing, consentGiven } = useOnboarding();
+  const selectedSubscription = availableSubscriptionsQuery.data?.find(
+    (as) => as.type === membershipType,
+  );
 
-  const annualTotal = membershipQuery.data?.total ?? 0;
+  const annualTotal = selectedSubscription?.total ?? 0;
 
-  const discount = getDiscountedPrice(membershipQuery.data);
+  const discount = getDiscountedPrice(selectedSubscription);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -95,10 +94,10 @@ const ExpandableCard = () => {
                 <div className="flex w-full items-center justify-between">
                   <Body1 className="text-white">Superpower Membership</Body1>
                   <Body1 className="text-zinc-400">
-                    {membershipQuery.isLoading ? (
+                    {availableSubscriptionsQuery.isLoading ? (
                       <Skeleton className="h-5 w-10" />
                     ) : (
-                      formatMoney(membershipQuery.data?.total ?? 0)
+                      formatMoney(selectedSubscription?.subtotal ?? 0)
                     )}
                   </Body1>
                 </div>
@@ -106,7 +105,7 @@ const ExpandableCard = () => {
                   <div className="flex w-full items-center justify-between">
                     <Body1 className="text-white">Applied discount</Body1>
                     <Body1 className="text-zinc-400">
-                      {membershipQuery.isLoading ? (
+                      {availableSubscriptionsQuery.isLoading ? (
                         <Skeleton className="h-5 w-10" />
                       ) : (
                         discount
@@ -140,7 +139,7 @@ const ExpandableCard = () => {
 
               <H4 className="hidden text-white sm:block">My membership</H4>
               <H4 className="hidden text-zinc-400 sm:block">
-                {formatMoney(annualTotal / 12)}/mo
+                {formatMoney(annualTotal)}/yr
               </H4>
             </div>
             <button
@@ -158,7 +157,11 @@ const ExpandableCard = () => {
           </div>
           <Button
             className="rounded-lg border border-zinc-500 bg-zinc-700 px-6 py-4"
-            disabled={membershipQuery.isLoading || processing || !consentGiven}
+            disabled={
+              availableSubscriptionsQuery.isLoading ||
+              processing ||
+              !consentGiven
+            }
             type="submit"
             form="billingForm"
             onClick={async (e) => {

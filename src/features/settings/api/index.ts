@@ -6,7 +6,7 @@ export * from './delete-wearable';
 export * from './get-invoice';
 export * from './get-invoices';
 export * from './get-payment-methods';
-export * from './get-subscription-price';
+export * from './get-available-subscriptions';
 export * from './get-subscriptions';
 export * from './get-vital-token';
 export * from './get-wearables';

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type BloodPackageType = 'BASELINE' | 'ADVANCED';
+import { SubscriptionType } from '@/types/api';
 
 type OnboardingStore = {
   isZipBlocked: boolean;
@@ -10,8 +10,8 @@ type OnboardingStore = {
   setProcessing: (processing: boolean) => void;
   consentGiven: boolean;
   setConsentGiven: (consentGiven: boolean) => void;
-  bloodPackage: BloodPackageType | null;
-  updateBloodPackage: (bloodPackage: BloodPackageType) => void;
+  membershipType: SubscriptionType;
+  updateMembershipType: (membershipType: SubscriptionType) => void;
 };
 
 export const useOnboarding = create<OnboardingStore>()(
@@ -23,8 +23,8 @@ export const useOnboarding = create<OnboardingStore>()(
       setProcessing: (processing) => set({ processing }),
       consentGiven: false,
       setConsentGiven: (consentGiven) => set({ consentGiven }),
-      bloodPackage: 'BASELINE',
-      updateBloodPackage: (bloodPackage) => set({ bloodPackage }),
+      membershipType: 'baseline',
+      updateMembershipType: (membershipType) => set({ membershipType }),
     }),
     { name: 'onboarding' },
   ),

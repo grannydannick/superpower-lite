@@ -51,7 +51,7 @@ export interface User extends BaseUser {
   userIdentity?: UserIdentity;
   role: UserRole[];
   rdn?: Rdn;
-  typeforms?: TypeformWebhook[]; // weird I know, but we do not have a typeform DTO at the moment.
+  typeforms?: TypeformWebhook[];
 }
 
 export interface TypeformWebhook {
@@ -347,14 +347,19 @@ export type Subscription = {
   status: SubscriptionStatus;
   canceled_at: number | null;
   name: SubscriptionName | null;
+  type: SubscriptionType | null;
   latest_invoice?: string;
   payment_intent?: string | null;
 };
 
-export type SubscriptionPrice = {
-  // prices: Stripe.Price[];
-  total: number;
+export type SubscriptionType = 'baseline' | 'advanced';
+
+export type AvailableSubscription = {
   coupon?: Coupon;
+  description: string;
+  total: number;
+  subtotal: number;
+  type: SubscriptionType;
 };
 
 /* ORDERS */

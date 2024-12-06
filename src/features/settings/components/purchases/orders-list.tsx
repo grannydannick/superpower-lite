@@ -147,7 +147,7 @@ const OrderRowCard = ({
           src={
             multiPlatformOrder.image
               ? multiPlatformOrder.image
-              : '/settings/membership/card-2024.png'
+              : '/settings/membership/baseline.webp'
           }
           alt={multiPlatformOrder.image}
           className="size-12 min-w-12 rounded-[8px] border border-[#E4E4E7] object-cover object-center"

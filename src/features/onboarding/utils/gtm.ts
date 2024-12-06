@@ -1,7 +1,6 @@
-import { SubscriptionPrice } from '@/types/api';
 import { RewardfulWindow } from '@/types/window';
 
-export const trackSubscription = (price: SubscriptionPrice | undefined) => {
+export const trackSubscription = (price: number | undefined) => {
   try {
     const win = window as RewardfulWindow;
     const accessCode = localStorage.getItem('superpower-code');
@@ -9,7 +8,7 @@ export const trackSubscription = (price: SubscriptionPrice | undefined) => {
     if (win.dataLayer) {
       win.dataLayer.push({
         event: 'subscription',
-        value: price?.total ?? 49900,
+        value: price ?? 49900,
         referralId: win.Rewardful?.referral || null,
         rewardfulCode: win.Rewardful?.coupon || null,
         accessCode: accessCode || null,

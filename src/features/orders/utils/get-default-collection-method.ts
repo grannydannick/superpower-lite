@@ -1,4 +1,5 @@
 import {
+  ADVANCED_BLOOD_PANEL,
   ADVISORY_CALL,
   CUSTOM_BLOOD_PANEL,
   GUT_MICROBIOME_ANALYSIS,
@@ -29,7 +30,8 @@ export const getDefaultCollectionMethod = (
   const isPhlebotomy = service.phlebotomy;
   const isBloodPanel =
     service.name === SUPERPOWER_BLOOD_PANEL ||
-    service.name === CUSTOM_BLOOD_PANEL;
+    service.name === CUSTOM_BLOOD_PANEL ||
+    service.name == ADVANCED_BLOOD_PANEL;
 
   /*
    * Extend with more services if needed

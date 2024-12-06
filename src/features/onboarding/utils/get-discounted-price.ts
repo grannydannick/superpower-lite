@@ -1,6 +1,6 @@
-import { SubscriptionPrice } from '@/types/api';
+import { AvailableSubscription } from '@/types/api';
 
-export const getDiscountedPrice = (price?: SubscriptionPrice) => {
+export const getDiscountedPrice = (price?: AvailableSubscription) => {
   if (!price) return null;
 
   if (!price.coupon) return null;

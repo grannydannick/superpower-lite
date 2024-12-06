@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 
 import {
+  ADVANCED_BLOOD_PANEL,
   ADVISORY_CALL,
   CONTINUOUS_GLUCOSE_MONITOR,
   DEXA_SCAN,
@@ -65,6 +66,14 @@ export const getStepsFromService = (
         { id: StepID.SUMMARY, content: <OrderSummary /> },
         { id: StepID.SUCCESS, content: <Success /> },
         // { id: StepID.REFERRAL, content: <InviteFriend /> },
+      ];
+    case ADVANCED_BLOOD_PANEL:
+      return [
+        { id: StepID.INFO, content: <HealthcareServiceDetails /> },
+        { id: StepID.PHLEBOTOMY, content: <PhlebotomyLocationSelect /> },
+        { id: StepID.SCHEDULER, content: <PhlebotomyScheduler /> },
+        { id: StepID.SUMMARY, content: <OrderSummary /> },
+        { id: StepID.SUCCESS, content: <Success /> },
       ];
     case GRAIL_GALLERI_MULTI_CANCER_TEST:
       return [

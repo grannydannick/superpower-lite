@@ -31,7 +31,7 @@ type useSubscriptionsOptions = {
 export const useSubscriptions = ({
   queryConfig,
   page,
-}: useSubscriptionsOptions) => {
+}: useSubscriptionsOptions = {}) => {
   return useQuery({
     ...getSubscriptionsQueryOptions({ page }),
     ...queryConfig,

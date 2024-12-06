@@ -8,6 +8,7 @@ import { Subscription } from '@/types/api';
 export const createSubscriptionInputSchema = z.object({
   code: z.string().optional(),
   referralId: z.string().optional(),
+  membershipType: z.enum(['advanced', 'baseline']),
 });
 
 export type CreateSubscriptionInput = z.infer<

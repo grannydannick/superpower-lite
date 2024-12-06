@@ -19,5 +19,6 @@ export const CUSTOM_BLOOD_PANEL = 'Custom Blood Panel';
 export const MYCOTOXINS_TEST = 'Mycotoxins';
 export const ENVIRONMENTAL_TOXIN_TEST = 'Environmental Toxin';
 export const HEAVY_METALS_TEST = 'Heavy Metals';
+export const ADVANCED_BLOOD_PANEL = 'Advanced Blood Panel';
 
 export const READY_NUM_HOURS_BEFORE_ADVISORY = 2;

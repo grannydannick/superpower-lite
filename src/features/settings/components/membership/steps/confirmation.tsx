@@ -3,16 +3,14 @@ import { Ellipsis } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { useMembershipPrice } from '@/features/settings/api';
 import { useCancelMembership } from '@/features/settings/api/cancel-membership';
 import { useMembership } from '@/features/settings/stores/membership-store';
 import { useStepper } from '@/lib/stepper';
-import { formatMoney } from '@/utils/format-money';
 
 export const ConfirmationStep = (): JSX.Element => {
-  const { data: subscriptionPriceData } = useMembershipPrice({});
   const { nextStep } = useStepper((s) => s);
   const { daysRemaining, startDate, endDate } = useMembership((s) => s);
+
   const cancelMembershipMutation = useCancelMembership();
 
   return (
@@ -41,9 +39,7 @@ export const ConfirmationStep = (): JSX.Element => {
                   Superpower Baseline Membership
                 </p>
                 <div className="flex flex-col gap-2 text-[#71717A] md:flex-row md:items-center">
-                  <p className="text-sm">
-                    Annual {formatMoney(subscriptionPriceData?.total || 0)}
-                  </p>
+                  <p className="text-sm">Annual</p>
                   <Ellipsis
                     className="hidden size-0.5 md:block"
                     fill="#71717A"

@@ -44,6 +44,14 @@ help: HELP_SCRIPT = \
 help:
 	@perl -ne '$(HELP_SCRIPT)' $(MAKEFILE_LIST)
 
+### Run
+
+.PHONY: run
+run: description = Run the app locally
+run: prereq
+	@bash $(SHARED_SCRIPT) info "Running $@ ..."
+	doppler run --project=superpower-app --config=dev -- yarn run dev
+
 ### Build
 
 .PHONY: build/local

@@ -1,4 +1,4 @@
 export * from './billing';
-export * from './packages';
+export * from './subscriptions';
 export * from './expandable-card';
 export * from './faq-section';

@@ -1,4 +1,8 @@
-import { CUSTOM_BLOOD_PANEL, SUPERPOWER_BLOOD_PANEL } from '@/const';
+import {
+  ADVANCED_BLOOD_PANEL,
+  CUSTOM_BLOOD_PANEL,
+  SUPERPOWER_BLOOD_PANEL,
+} from '@/const';
 import { COLLECTION_METHODS } from '@/features/orders/const/collection-methods';
 import { CollectionOptionType } from '@/features/orders/types/collection-method';
 import { HealthcareService } from '@/types/api';
@@ -16,7 +20,8 @@ export const getInterpretedAtHomeMethod = (
 ): CollectionOptionType => {
   const isBloodPanel =
     service.name === SUPERPOWER_BLOOD_PANEL ||
-    service.name === CUSTOM_BLOOD_PANEL;
+    service.name === CUSTOM_BLOOD_PANEL ||
+    service.name == ADVANCED_BLOOD_PANEL;
 
   if (!isBloodPanel) {
     return {

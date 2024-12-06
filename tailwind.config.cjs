@@ -32,7 +32,8 @@ module.exports = {
         'female-face': "url('/onboarding/bg-female-face.webp')",
         spine: "url('/onboarding/bg-spine.webp')",
         'female-hands': "url('/onboarding/bg-female-hands.webp')",
-        'membership-card': "url('/shared/membership-card.png')",
+        'baseline-membership': "url('/settings/membership/baseline.webp')",
+        "advanced-membership": "url('/settings/membership/advanced.webp')",
       },
       colors: {
         border: 'hsl(var(--border))',
