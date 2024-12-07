@@ -33,7 +33,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           <div>
             <div className="flex gap-1.5">
               <Body1 className="capitalize text-zinc-900">
-                {availableSubscription.type}
+                {availableSubscription.type} Membership
               </Body1>
               {availableSubscription.type === 'advanced' && (
                 <div className="rounded-[6px] bg-[#FFEDD5] px-2 py-1 text-[11px] text-[#FC5F2B] sm:text-xs">
