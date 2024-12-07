@@ -1,6 +1,7 @@
 import { ArrowUpRight } from 'lucide-react';
 import React from 'react';
 
+import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, Body2, H2 } from '@/components/ui/typography';
@@ -31,14 +32,14 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
       <div className="flex w-full flex-row items-center justify-between">
         <div className="flex flex-row gap-x-4">
           <div>
-            <div className="flex gap-1.5">
+            <div className="flex flex-col-reverse gap-1.5 sm:flex-row">
               <Body1 className="capitalize text-zinc-900">
                 {availableSubscription.type} Membership
               </Body1>
               {availableSubscription.type === 'advanced' && (
-                <div className="rounded-[6px] bg-[#FFEDD5] px-2 py-1 text-[11px] text-[#FC5F2B] sm:text-xs">
+                <Badge className="w-fit" variant="vermillion">
                   Most popular
-                </div>
+                </Badge>
               )}
             </div>
 

@@ -178,7 +178,7 @@ function ToxinPanelSelection({
             <div className="flex flex-row gap-[10px]">
               <h2 className="leading-6 text-zinc-900">{toxinPanel.name}</h2>
               {showBadge && (
-                <Badge className="bg-vermillion-100" variant="default">
+                <Badge variant="vermillion">
                   <span className="text-xs text-[#FC5F2B]">Most popular</span>
                 </Badge>
               )}

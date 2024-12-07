@@ -25,9 +25,7 @@ export const CurrentMembership = (): JSX.Element => {
         <H4 className="text-zinc-400">Current Membership</H4>
         {isLoading ? <Skeleton className="h-[22px] w-[148px]" /> : null}
         {membershipType ? (
-          <Badge className="bg-vermillion-100 text-vermillion-900">
-            {membershipType}
-          </Badge>
+          <Badge variant="vermillion">{membershipType}</Badge>
         ) : null}
       </div>
 
