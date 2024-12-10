@@ -2,6 +2,7 @@ import { useDebouncedCallback } from 'use-debounce';
 
 import { Input } from '@/components/ui/input';
 import { CoreMonitoredIssues } from '@/features/action-plan/components/core-monitored-issues';
+import { Disclaimer } from '@/features/action-plan/components/disclaimer';
 import { BlockEditor } from '@/features/action-plan/components/editor/editor';
 import { HealthScore } from '@/features/action-plan/components/health-score';
 import { PhilosophyBlocks } from '@/features/action-plan/components/philosophy-blocks';
@@ -55,6 +56,8 @@ export const AnnualReportComponent = () => {
         />
 
         <PhilosophyBlocks philosophyBlocks={annualReportBlocks} />
+
+        <Disclaimer />
       </div>
       <HealthScore className={REPORT_STYLE} />
       <CoreMonitoredIssues

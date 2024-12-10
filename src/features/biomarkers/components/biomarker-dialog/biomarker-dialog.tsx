@@ -58,7 +58,7 @@ export function BiomarkerDialog({
       <div className="p-6">
         <BiomarkerTimeSeriesChart biomarker={biomarker} />
       </div>
-      <div className="flex flex-row items-center justify-between px-6">
+      <div className="flex flex-col justify-between gap-2 px-6 pb-6 sm:flex-row sm:items-center">
         <Body2 className="text-secondary">
           See how your {name} compares with your friends!
         </Body2>

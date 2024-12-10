@@ -54,7 +54,7 @@ export function DateFilter<TData>({
             {selectedOrder
               ? moment(selectedOrder.timestamp)
                   .tz(selectedOrder.timezone)
-                  .format('YYYY/MM/DD')
+                  .format('MM/DD/YYYY')
               : 'All results'}
           </Body2>
           <ChevronDown
@@ -72,7 +72,7 @@ export function DateFilter<TData>({
       >
         <div className="flex flex-col gap-4">
           <div className="flex flex-row items-center justify-between">
-            <Body2 className="text-zinc-700">Categories</Body2>
+            <Body2 className="text-zinc-700">Test date</Body2>
             <div>
               <Button
                 variant="ghost"
@@ -97,7 +97,7 @@ export function DateFilter<TData>({
                 key={o.id}
                 onClick={() => table.getColumn('orderId')?.setFilterValue(o.id)}
               >
-                {moment(o.timestamp).tz(o.timezone).format('YYYY/MM/DD')}
+                {moment(o.timestamp).tz(o.timezone).format('MM/DD/YYYY')}
               </Button>
             ))}
           </div>

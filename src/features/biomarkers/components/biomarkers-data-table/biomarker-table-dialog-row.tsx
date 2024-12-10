@@ -1,5 +1,6 @@
 import { X } from 'lucide-react';
 import * as React from 'react';
+import { ReactNode } from 'react';
 
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import {
@@ -11,11 +12,15 @@ import {
 import { Body2 } from '@/components/ui/typography';
 import { BiomarkerDialog } from '@/features/biomarkers/components/biomarker-dialog/biomarker-dialog';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
+import { Biomarker } from '@/types/api';
 
 export function BiomarkerTableDialogRow({
   children,
   biomarker,
-}: any): JSX.Element {
+}: {
+  children: ReactNode;
+  biomarker: Biomarker;
+}): JSX.Element {
   const { width } = useWindowDimensions();
   if (width <= 768) {
     return (
@@ -28,7 +33,7 @@ export function BiomarkerTableDialogRow({
                 <X className="h-4 min-w-4" />
               </div>
             </SheetClose>
-            <Body2>Biomarker</Body2>
+            <Body2>{biomarker.name}</Body2>
             <div className="min-w-[44px]" />
           </div>
           <div className="overflow-y-auto">
