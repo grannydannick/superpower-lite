@@ -28,7 +28,7 @@ check_vars "${REQUIRED_VARS[@]}"
 
 unset NODE_ENV
 yarn
-REACT_APP_GITHUB_SHA=$VERSION yarn run build 
+REACT_APP_GITHUB_SHA=$VERSION yarn run build
 
 # Packages now live in the root
 #pushd packages/app
@@ -148,6 +148,14 @@ aws s3 cp dist/ "s3://${APP_BUCKET}/" \
   --cache-control "no-cache" \
   --exclude "*" \
   --include "*.webmanifest"
+
+aws s3 cp dist/ "s3://${APP_BUCKET}/" \
+  --recursive \
+  --content-type "application/pdf" \
+  --cache-control "no-cache" \
+  --exclude "*" \
+  --include "*.pdf"
+
 
 # aws s3 cp dist/service-worker.js "s3://${APP_BUCKET}/" \
 #   --content-type "application/javascript" \
