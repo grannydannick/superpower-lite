@@ -23,6 +23,8 @@ export const CoreMonitoredIssues: ({
   const addGoal = usePlan((s) => s.addGoal);
   const goals = usePlan((s) =>
     s.goals.filter((goal) => goal.type === goalType),
+  ).sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
   );
 
   if (!isAdmin && !goals.length) {

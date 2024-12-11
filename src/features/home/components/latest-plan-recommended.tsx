@@ -10,7 +10,9 @@ import { useServices } from '@/features/services/api';
 import { Plan, PlanGoalItem } from '@/types/api';
 
 export const LatestPlanRecommended = ({ plan }: { plan: Plan }) => {
-  const items = plan.goals;
+  const items = plan.goals.sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+  );
 
   return (
     <div className="space-y-2">

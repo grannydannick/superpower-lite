@@ -88,7 +88,10 @@ export const planStoreCreator = (initProps: PlanStoreProps) => {
         title: initialPlan.title,
         description: initialPlan.description,
         published: initialPlan.published,
-        goals: initialPlan.goals,
+        goals: initialPlan.goals.sort(
+          (a, b) =>
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+        ),
         updatedAt: initialPlan.updatedAt,
         isUpdating: false,
         annualReport: initialPlan.annualReport,
@@ -194,6 +197,7 @@ export const planStoreCreator = (initProps: PlanStoreProps) => {
               from: new Date().toISOString(),
               to: new Date().toISOString(),
               goalItems: [],
+              createdAt: new Date().toISOString(),
             });
           });
 

@@ -557,6 +557,7 @@ export type PlanGoal = Entity<{
   goalItems: PlanGoalItem[];
   to: string;
   from: string;
+  createdAt: string;
 }>;
 
 export type PlanGoalItem = Entity<{
