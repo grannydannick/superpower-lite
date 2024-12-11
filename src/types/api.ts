@@ -213,6 +213,7 @@ export type HealthcareService = Entity<{
   phlebotomy: boolean;
   image?: string;
   items: ServiceItem[];
+  sampleReportLink?: string;
 }>;
 
 export type Coupon = {

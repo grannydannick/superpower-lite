@@ -77,7 +77,10 @@ export const getStepsFromService = (
       ];
     case GRAIL_GALLERI_MULTI_CANCER_TEST:
       return [
-        { id: StepID.INFO, content: <HealthcareServiceDetails /> },
+        {
+          id: StepID.INFO,
+          content: <HealthcareServiceDetails />,
+        },
         { id: StepID.INFORMED_CONSENT, content: <InformedConsent /> },
         { id: StepID.PHLEBOTOMY, content: <PhlebotomyLocationSelect /> },
         { id: StepID.SCHEDULER, content: <PhlebotomyScheduler /> },
@@ -98,7 +101,10 @@ export const getStepsFromService = (
     case CONTINUOUS_GLUCOSE_MONITOR:
     case GUT_MICROBIOME_ANALYSIS:
       return [
-        { id: StepID.INFO, content: <HealthcareServiceDetails /> },
+        {
+          id: StepID.INFO,
+          content: <HealthcareServiceDetails />,
+        },
         { id: StepID.INFORMED_CONSENT, content: <InformedConsent /> },
         { id: StepID.CONFIRM_ADDRESS, content: <ConfirmAddress /> },
         { id: StepID.SUMMARY, content: <OrderSummary /> },

@@ -1,4 +1,4 @@
-import { X } from 'lucide-react';
+import { ArrowUpRight, X } from 'lucide-react';
 import React, { ReactNode } from 'react';
 
 import {
@@ -120,7 +120,6 @@ export function HealthcareServiceInfoDetails({
   children?: ReactNode;
 }): JSX.Element {
   const serviceDetails = getDetailsForService(healthcareService.name);
-
   return (
     <div>
       <div className="flex flex-col justify-between gap-12 px-6 py-12 md:flex-row md:px-14 md:pb-16">
@@ -139,6 +138,17 @@ export function HealthcareServiceInfoDetails({
           <Body1 className="text-zinc-500">
             {healthcareService.description}
           </Body1>
+          {serviceDetails?.sampleReportLink && (
+            <a
+              href={serviceDetails?.sampleReportLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-0 mb-2 flex cursor-pointer items-center space-x-1 text-sm text-primary"
+            >
+              <span>View sample report</span>
+              <ArrowUpRight className="size-4 text-vermillion-900" />
+            </a>
+          )}
           {children && (
             <DialogClose
               className="flex flex-row items-center space-x-4"
@@ -157,22 +167,27 @@ export function HealthcareServiceInfoDetails({
       </div>
       <Accordion type="single" collapsible className="w-full border-t">
         {serviceDetails
-          ? Object.keys(serviceDetails).map((serviceDetailTitle, index) => (
-              <AccordionItem
-                value={serviceDetailTitle}
-                key={index}
-                className="p-12"
-              >
-                <AccordionTrigger className="p-0">
-                  <H4 className="text-zinc-900">{serviceDetailTitle}</H4>
-                </AccordionTrigger>
-                <AccordionContent className="pb-0 pt-4">
-                  <Body2 className="whitespace-break-spaces text-zinc-500">
-                    {serviceDetails[serviceDetailTitle as keyof TestDetails]}
-                  </Body2>
-                </AccordionContent>
-              </AccordionItem>
-            ))
+          ? Object.keys(serviceDetails)
+              .filter(
+                (serviceDetailTitle) =>
+                  serviceDetailTitle !== 'sampleReportLink',
+              )
+              .map((serviceDetailTitle, index) => (
+                <AccordionItem
+                  value={serviceDetailTitle}
+                  key={index}
+                  className="p-12"
+                >
+                  <AccordionTrigger className="p-0">
+                    <H4 className="text-zinc-900">{serviceDetailTitle}</H4>
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-0 pt-4">
+                    <Body2 className="whitespace-break-spaces text-zinc-500">
+                      {serviceDetails[serviceDetailTitle as keyof TestDetails]}
+                    </Body2>
+                  </AccordionContent>
+                </AccordionItem>
+              ))
           : null}
       </Accordion>
     </div>

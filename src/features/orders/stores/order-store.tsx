@@ -30,6 +30,14 @@ export const OrderStoreProvider = ({
     orderStoreRef.current = orderStoreCreator(props);
   }
 
+  /**
+   * The useEffects above is small hack for props that rely on API call for service,
+   * the problem is that because store is a ref, it doesnt care if something got updated so it executes immidiately,
+   * later to sync the state we need to force rerender by that useEffect
+   *
+   * This is tech debt and we should potentially find better way because
+   * it can cause different sideeffects with rerenders when any of that states change
+   */
   useEffect(() => {
     orderStoreRef.current?.setState({
       collectionMethod: props.collectionMethod,

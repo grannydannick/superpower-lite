@@ -4,7 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@radix-ui/react-accordion';
-import { ChevronDown, Loader } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, Loader } from 'lucide-react';
 import React, { ReactNode, useEffect, useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
@@ -207,28 +207,7 @@ function ToxinPanelSelection({
                         className="mt-2 flex cursor-pointer items-center space-x-1 text-sm text-primary"
                       >
                         <span>View sample report</span>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="17"
-                          viewBox="0 0 16 17"
-                          fill="none"
-                        >
-                          <path
-                            d="M4.66797 11.8893L11.3346 5.22266"
-                            stroke="#FC5F2B"
-                            strokeWidth="1.33333"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <path
-                            d="M4.66797 5.22266H11.3346V11.8893"
-                            stroke="#FC5F2B"
-                            strokeWidth="1.33333"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
+                        <ArrowUpRight className="size-4 text-vermillion-900" />
                       </a>
                     )}
                   </AccordionContent>

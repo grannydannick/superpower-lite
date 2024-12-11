@@ -7,15 +7,18 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   Sheet,
   SheetClose,
   SheetContent,
+  SheetHeader,
+  SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { Body1, Body2 } from '@/components/ui/typography';
 import { getTimelineQueryOptions } from '@/features/home/api/get-timeline';
 import { getOrdersQueryOptions } from '@/features/orders/api';
 import {
@@ -155,15 +158,15 @@ const HealthcareServiceDialogConsumer = ({
       <Sheet onOpenChange={handleOpenChange}>
         <SheetTrigger asChild>{children}</SheetTrigger>
         <SheetContent className="flex max-h-full flex-col rounded-t-[10px]">
-          <div className="flex items-center justify-between px-4 pt-16 md:pb-4">
+          <SheetHeader>
             <SheetClose>
               <div className="flex h-[44px] min-w-[44px] items-center justify-center rounded-full bg-zinc-100">
                 <X className="h-4 min-w-4" />
               </div>
             </SheetClose>
-            <Body2>Book a service</Body2>
+            <SheetTitle>Book a service</SheetTitle>
             <div className="min-w-[44px]" />
-          </div>
+          </SheetHeader>
           <div className="overflow-auto">
             {steps[activeStep]?.content ?? null}
           </div>
@@ -176,15 +179,13 @@ const HealthcareServiceDialogConsumer = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <div className="max-h-[90vh] overflow-y-scroll rounded-xl">
-          <div>
-            <div className="flex flex-row items-center justify-between px-14 pb-6 pt-12">
-              <Body1 className="text-zinc-500">Book a service</Body1>
-              <DialogClose>
-                <X className="size-6 cursor-pointer p-1" />
-              </DialogClose>
-            </div>
-            <div>{steps[activeStep]?.content ?? null}</div>
-          </div>
+          <DialogHeader>
+            <DialogTitle className="text-zinc-500">Book a service</DialogTitle>
+            <DialogClose>
+              <X className="size-6 cursor-pointer p-1" />
+            </DialogClose>
+          </DialogHeader>
+          <div>{steps[activeStep]?.content ?? null}</div>
         </div>
       </DialogContent>
     </Dialog>

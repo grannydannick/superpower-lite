@@ -1,3 +1,6 @@
+import { ArrowUpRight } from 'lucide-react';
+import React from 'react';
+
 import { TestDetails } from '@/components/shared/healthcare-service-info-dialog-content/types/service';
 import {
   Accordion,
@@ -41,6 +44,17 @@ export const HealthcareServiceDetails = () => {
             </Body2>
           </div>
           <Body1 className="text-zinc-500">{service.description}</Body1>
+          {serviceDetails?.sampleReportLink && (
+            <a
+              href={serviceDetails.sampleReportLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 flex cursor-pointer items-center space-x-1 text-sm text-primary"
+            >
+              <span>View sample report</span>
+              <ArrowUpRight className="size-4 text-vermillion-900" />
+            </a>
+          )}
         </div>
 
         <img
