@@ -5,7 +5,7 @@ import { ROLES, useAuthorization } from '@/lib/authorization';
 import { TypeformWebhook, User } from '@/types/api';
 
 type UseCurrentPatientProps = {
-  fullPatientName: string;
+  fullPatientName: string | undefined;
   hasAllowedRole: boolean;
   selectedPatient: User | undefined;
   typeforms: TypeformWebhook[] | undefined;
@@ -35,7 +35,7 @@ export const useCurrentPatient = (
 
   const fullPatientName = selectedPatient
     ? `${selectedPatient.firstName} ${selectedPatient.lastName}`
-    : 'Select member';
+    : undefined;
 
   const typeforms = selectedPatient ? selectedPatient.typeforms : [];
 

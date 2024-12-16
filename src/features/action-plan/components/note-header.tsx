@@ -66,7 +66,9 @@ export const ClinicianNoteHeader = () => {
           <X width="16px" height="16px" color="#52525B" />
         </Button>
         <div>
-          {hasAllowedRole ? <Body2>For: {fullPatientName}</Body2> : null}
+          {hasAllowedRole ? (
+            <Body2>For: {fullPatientName ?? 'ERROR! Patient not found.'}</Body2>
+          ) : null}
         </div>
       </div>
       {hasAllowedRole ? (

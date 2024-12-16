@@ -23,7 +23,7 @@ export function ActionPlanComponent() {
     type,
     description,
     isAdmin,
-    orderId,
+    timestamp,
     changeTitle,
     changeDescription,
     updateActionPlan,
@@ -40,8 +40,6 @@ export function ActionPlanComponent() {
     return null;
   }
 
-  const relatedOrder = ordersQuery.data?.orders.find((o) => o.id === orderId);
-
   return (
     <div className="mb-10 w-full max-w-screen-md space-y-2.5">
       <div className={PLAN_STYLE}>
@@ -50,7 +48,7 @@ export function ActionPlanComponent() {
             {ordersQuery.isLoading ? (
               <Skeleton className="h-5 w-14" />
             ) : (
-              format(new Date(relatedOrder?.timestamp ?? Date.now()), 'PP')
+              format(new Date(timestamp ?? Date.now()), 'PP')
             )}
           </Body2>
           <Input
