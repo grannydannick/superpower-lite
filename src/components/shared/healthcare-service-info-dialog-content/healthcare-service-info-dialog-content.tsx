@@ -23,7 +23,10 @@ import { Body1, Body2, H2, H4 } from '@/components/ui/typography';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { HealthcareService } from '@/types/api';
 import { getHealthcareServicePriceLabel } from '@/utils/format-money';
-import { getDetailsForService } from '@/utils/service';
+import {
+  getDetailsForService,
+  getSampleReportLinkForService,
+} from '@/utils/service';
 
 import { TestDetails } from '../healthcare-service-info-dialog-content/types/service';
 
@@ -120,6 +123,10 @@ export function HealthcareServiceInfoDetails({
   children?: ReactNode;
 }): JSX.Element {
   const serviceDetails = getDetailsForService(healthcareService.name);
+  const sampleReportLink = getSampleReportLinkForService(
+    healthcareService.name,
+  );
+
   return (
     <div>
       <div className="flex flex-col justify-between gap-12 px-6 py-12 md:flex-row md:px-14 md:pb-16">
@@ -138,17 +145,17 @@ export function HealthcareServiceInfoDetails({
           <Body1 className="text-zinc-500">
             {healthcareService.description}
           </Body1>
-          {serviceDetails?.sampleReportLink && (
+          {sampleReportLink ? (
             <a
-              href={serviceDetails?.sampleReportLink}
+              href={sampleReportLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-0 mb-2 flex cursor-pointer items-center space-x-1 text-sm text-primary"
+              className="mb-2 mt-0 flex cursor-pointer items-center space-x-1 text-sm text-primary"
             >
               <span>View sample report</span>
               <ArrowUpRight className="size-4 text-vermillion-900" />
             </a>
-          )}
+          ) : null}
           {children && (
             <DialogClose
               className="flex flex-row items-center space-x-4"

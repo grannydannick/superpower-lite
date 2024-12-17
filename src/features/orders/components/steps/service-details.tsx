@@ -15,12 +15,16 @@ import { useOrder } from '@/features/orders/stores/order-store';
 import { cn } from '@/lib/utils';
 import { OrderStatus } from '@/types/api';
 import { getHealthcareServicePriceLabel } from '@/utils/format-money';
-import { getDetailsForService } from '@/utils/service';
+import {
+  getDetailsForService,
+  getSampleReportLinkForService,
+} from '@/utils/service';
 
 export const HealthcareServiceDetails = () => {
   const { service } = useOrder((s) => s);
   const ordersQuery = useOrders();
   const serviceDetails = getDetailsForService(service.name);
+  const sampleReportLink = getSampleReportLinkForService(service.name);
 
   const existingDraftOrder = ordersQuery.data?.orders
     .filter((o) => o.status === OrderStatus.draft)
@@ -44,9 +48,9 @@ export const HealthcareServiceDetails = () => {
             </Body2>
           </div>
           <Body1 className="text-zinc-500">{service.description}</Body1>
-          {serviceDetails?.sampleReportLink && (
+          {sampleReportLink ? (
             <a
-              href={serviceDetails.sampleReportLink}
+              href={sampleReportLink}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-2 flex cursor-pointer items-center space-x-1 text-sm text-primary"
@@ -54,7 +58,7 @@ export const HealthcareServiceDetails = () => {
               <span>View sample report</span>
               <ArrowUpRight className="size-4 text-vermillion-900" />
             </a>
-          )}
+          ) : null}
         </div>
 
         <img

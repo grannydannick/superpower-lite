@@ -4,7 +4,6 @@ export type TestDetails = {
   'Pre-test considerations'?: string;
   "What's measured?"?: string;
   'Test process'?: string;
-  sampleReportLink?: string;
 };
 
 export type ServiceDetails = {

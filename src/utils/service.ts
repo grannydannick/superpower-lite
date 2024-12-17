@@ -9,6 +9,7 @@ import {
   GRAIL_GALLERI_MULTI_CANCER_TEST,
   GUT_MICROBIOME_ANALYSIS,
   LEGAL_DESCLAIMERS,
+  TOTAL_TOXIN_TEST,
 } from '@/const';
 import { CollectionMethodType, HealthcareService } from '@/types/api';
 
@@ -141,7 +142,6 @@ Before ordering the test, you will meet with your dedicated Superpower physician
 5. Schedule a consultation with your physician to review your results and create an action plan.`,
       'Pre-test considerations': `There are no fasting requirements associated with this test. 
 Connect with your membership advisor if you have any questions or concerns ahead of testing.`,
-      sampleReportLink: '/sample-reports/grail-galleri-multi-cancer-test.pdf',
     },
 
     'Food & Environmental Allergy Testing': {
@@ -210,7 +210,6 @@ Avoid foods high in iodine (seafood, dairy, and seaweed) and selenium (Brazil nu
 
 3. Send the sample to our labs for analysis and work with your care provider to understand the results`,
       'Pre-test considerations': `Urine test is required. There are no fasting requirements associated with this test. Connect with your membership advisor if you have any questions or concerns ahead of testing.`,
-      sampleReportLink: '/sample-reports/total-toxins.pdf',
     },
 
     'Heavy Metals': {
@@ -383,7 +382,6 @@ Testing for PFAS chemicals in your blood is important because:
       'Why is this test important?': `A gut microbiome analysis is essential in better understanding the bacteria that comprise your gut health. Novel research in the last decade has shown the immense impact in which gut health can not only affect digestion, but even our immune system, metabolism, and mood. This can manifest in symptoms like brain fog, fatigue, and digestive issues.`,
       'Test process': `A testing kit will be sent to you. A mess-free sample will be required from a soiled tissue paper in the comfort of your own home. This will then be shipped to a lab and analyzed.`,
       'Pre-test considerations': `Non-invasive but requires at-home sample collection from a soiled tissue paper. Non-invasive but requires careful sample collection. Diet and medication can influence results.`,
-      sampleReportLink: '/sample-reports/gut-microbiome-analysis.pdf',
     },
     'Full Body MRI': {
       "What's measured?": `The Full Body MRI takes a comprehensive and detailed set of images of your major organs, including the following:
@@ -500,6 +498,19 @@ A DEXA scan provides an in-depth body fat analysis including segmental fat mass,
   };
 
   return serviceDetails[healthcareServiceName];
+};
+
+export const getSampleReportLinkForService = (service: string) => {
+  switch (service) {
+    case GRAIL_GALLERI_MULTI_CANCER_TEST:
+      return '/sample-reports/grail-galleri-multi-cancer-test.pdf';
+    case GUT_MICROBIOME_ANALYSIS:
+      return '/sample-reports/gut-microbiome-analysis.pdf';
+    case TOTAL_TOXIN_TEST:
+      return '/sample-reports/total-toxins.pdf';
+    default:
+      return undefined;
+  }
 };
 
 /**
