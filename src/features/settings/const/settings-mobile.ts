@@ -1,4 +1,4 @@
-import { CreditCard, Heart, History, UserIcon } from 'lucide-react';
+import { CreditCard, File, Heart, History, UserIcon } from 'lucide-react';
 
 import { IntegrationsIcon } from '@/components/icons';
 
@@ -13,6 +13,12 @@ export const SETTINGS_MOBILE = [
     icon: CreditCard,
     value: 'billing',
     description: 'Import and manage previous health care records',
+    disabled: false,
+  },
+  {
+    icon: File,
+    value: 'health records',
+    description: 'Integrate your healthcare data into the Superpower ecosystem',
     disabled: false,
   },
   {

@@ -4,6 +4,7 @@ import {
   PdfFileIcon,
   UnknownFileIcon,
 } from '@/components/icons';
+import { cn } from '@/lib/utils';
 import { File } from '@/types/api';
 
 export function FileName({ file }: { file: File }): JSX.Element {
@@ -23,7 +24,14 @@ export function FileName({ file }: { file: File }): JSX.Element {
   return (
     <>
       <div>{extension()}</div>
-      <h3 className="mx-2 line-clamp-1 text-[#3F3F46] md:group-hover:text-[#FC5F2B]">
+      <h3
+        className={cn(
+          'ml-2 line-clamp-1 text-zinc-700',
+          file.contentType === 'application/pdf'
+            ? 'md:group-hover:text-vermillion-900'
+            : null,
+        )}
+      >
         {file.name}
       </h3>
     </>

@@ -4,6 +4,7 @@ import moment from 'moment';
 import React from 'react';
 
 import { Button } from '@/components/ui/button';
+import { ViewPdfDialog } from '@/features/files/components/view-pdf-dialog';
 import { cn } from '@/lib/utils';
 import { File } from '@/types/api';
 import { capitalize } from '@/utils/format';
@@ -33,6 +34,16 @@ export const columns: ColumnDef<File>[] = [
       );
     },
     cell: ({ row }) => {
+      if (row.original.contentType === 'application/pdf') {
+        return (
+          <ViewPdfDialog file={row.original}>
+            <div className="flex cursor-pointer items-center md:max-w-[280px] lg:max-w-[400px]">
+              <FileName file={row.original} />
+            </div>
+          </ViewPdfDialog>
+        );
+      }
+
       return (
         <div className="flex items-center md:max-w-[280px] lg:max-w-[400px]">
           <FileName file={row.original} />

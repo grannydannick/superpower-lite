@@ -21,7 +21,7 @@ export const DataRoute = () => {
           onClick={() => navigate('/vault')}
         >
           <Database className="size-[14px] text-zinc-400" />
-          <Body1 className="text-zinc-500">Health records</Body1>
+          <Body1 className="text-zinc-500">Health Records</Body1>
         </Button>
       </div>
       <DataCards />

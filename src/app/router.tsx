@@ -83,13 +83,6 @@ export const createRouter = () =>
           },
         },
         {
-          path: 'vault/:fileId',
-          lazy: async () => {
-            const { MobileFileRoute } = await import('./routes/app/file');
-            return { Component: MobileFileRoute };
-          },
-        },
-        {
           path: 'plans/:orderId',
           lazy: async () => {
             const { PlanRoute } = await import('./routes/app/plan');

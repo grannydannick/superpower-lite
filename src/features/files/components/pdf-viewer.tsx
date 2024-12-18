@@ -12,7 +12,9 @@ import {
   AlertDialogTrigger,
   DialogClose,
 } from '@/components/ui/dialog';
+import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Body1 } from '@/components/ui/typography';
 import { useDownloadFile } from '@/features/files/api/download-file';
 import { useGetFileUrl } from '@/features/files/api/get-file-url';
 import { ConfirmDelete } from '@/features/files/components/confirm-delete';
@@ -86,7 +88,10 @@ export const PdfViewer = ({ id, name }: PdfViewerProps) => {
   }, [data?.file]);
 
   return (
-    <div ref={setContainerRef} className="gap-0 overflow-y-scroll">
+    <div
+      ref={setContainerRef}
+      className="relative gap-0 overflow-y-scroll scrollbar scrollbar-track-vermillion-300 scrollbar-thumb-vermillion-700"
+    >
       <div className="ml-auto flex items-start gap-2">
         <AlertDialog>
           <AlertDialogTrigger asChild>
@@ -126,7 +131,14 @@ export const PdfViewer = ({ id, name }: PdfViewerProps) => {
             width={
               containerWidth ? Math.min(containerWidth, maxWidth) : maxWidth
             }
-          />
+          >
+            <div className="flex w-full justify-end p-3">
+              <Body1 className="rounded-lg border border-dashed border-zinc-200 p-2 text-vermillion-700">
+                Page {index + 1}/{numPages}
+              </Body1>
+            </div>
+            {index + 1 !== numPages ? <Separator /> : null}
+          </Page>
         ))}
       </Document>
     </div>

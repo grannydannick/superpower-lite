@@ -1,12 +1,9 @@
-import { ChevronLeft, Upload } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { ContentLayout } from '@/components/layouts';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Body1, H1 } from '@/components/ui/typography';
-import { FileUploadBanner } from '@/features/files/components/file-upload-banner';
-import { FilesTable } from '@/features/files/components/files-table';
+import { FilesHub } from '@/features/files/components/files-hub';
 
 export const FilesRoute = () => {
   const navigate = useNavigate();
@@ -31,44 +28,13 @@ export const FilesRoute = () => {
       </div>
 
       <div className="space-y-2">
-        <H1>Health records</H1>
+        <H1>Health Records</H1>
         <Body1 className="text-zinc-500">
           Manage and import previous healthcare records into your Superpower
           dashboard
         </Body1>
       </div>
-      <div className="mx-auto">
-        <div className="space-y-8">
-          <section
-            id="personal-information"
-            className="hidden space-y-8 md:block"
-          >
-            <FileUploadBanner>
-              <Card>
-                <div className="flex flex-row items-center justify-between gap-4 p-12">
-                  <div>
-                    <h3 className="text-base text-primary lg:text-xl">
-                      Integrate your healthcare data into the Superpower
-                      ecosystem
-                    </h3>
-                  </div>
-                  <div className="flex flex-row items-center space-x-6">
-                    <Button className="space-x-2.5">
-                      <div>
-                        <Upload className="size-4" />
-                      </div>
-                      <span> Upload</span>
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            </FileUploadBanner>
-          </section>
-          <section id="files">
-            <FilesTable />
-          </section>
-        </div>
-      </div>
+      <FilesHub />
     </ContentLayout>
   );
 };

@@ -5,6 +5,7 @@ import { Billing } from '@/features/settings/components/billing/billing';
 import { Membership } from '@/features/settings/components/membership/membership';
 import { Profile } from '@/features/settings/components/profile/profile';
 import { OrdersList } from '@/features/settings/components/purchases/orders-list';
+import { Vault } from '@/features/settings/components/vault/vault';
 import { WearablesTable } from '@/features/settings/components/wearables/wearables-table';
 import { SETTINGS_MOBILE } from '@/features/settings/const/settings-mobile';
 import { MobileMenu } from '@/features/settings/types/mobile-menu';
@@ -47,6 +48,7 @@ export const SettingsListMobile = () => {
         {current === 'membership' && <Membership />}
         {current === 'integrations' && <WearablesTable />}
         {current === 'order history' && <OrdersList />}
+        {current === 'health records' && <Vault />}
         {!current && (
           <>
             <div className="mb-2 flex h-[160px] gap-2">

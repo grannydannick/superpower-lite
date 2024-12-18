@@ -4,4 +4,5 @@ export type MobileMenu =
   | 'membership'
   | 'order history'
   | 'integrations'
-  | 'refer a friend';
+  | 'refer a friend'
+  | 'health records';
