@@ -24,8 +24,19 @@ export function TimeSeriesChart({
 }: TimeSeriesChartProps): JSX.Element {
   const { range, value } = biomarker;
   const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
-  const data = value.map(toChartPoint);
 
+  /**
+   * Case when we have no values under biomarker
+   */
+  if (!value.length) {
+    return (
+      <div className="flex h-[400px] w-full flex-col items-center justify-center gap-2 bg-white">
+        <Body1 className="text-zinc-500">No data yet</Body1>
+      </div>
+    );
+  }
+
+  const data = value.map(toChartPoint);
   const min = 0;
   const max = calculateYMax(value, range);
 
@@ -335,14 +346,6 @@ export function TimeSeriesChart({
       },
     ],
   };
-
-  if (!biomarker.value.length) {
-    return (
-      <div className="flex h-[400px] w-full flex-col items-center justify-center gap-2 bg-white">
-        <Body1 className="text-zinc-500">No data yet</Body1>
-      </div>
-    );
-  }
 
   return (
     <HighchartsReact
