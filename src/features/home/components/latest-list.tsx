@@ -20,9 +20,6 @@ import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 
 const LATEST_CARDS = [
   {
-    content: <CompleteOnboardingCard />,
-  },
-  {
     content: <ScoreCard />,
   },
   {
@@ -33,11 +30,28 @@ const LATEST_CARDS = [
   },
 ];
 
+const LATEST_WITH_ONBOARDING_CARDS = [
+  {
+    content: <CompleteOnboardingCard />,
+  },
+  ...LATEST_CARDS,
+];
+
 export const LatestList = () => {
   const getLatestHealthScoreQuery = useLatestHealthScore();
   const biomarkersQuery = useBiomarkers();
   const timelineQuery = useTimeline();
+
   const { width } = useWindowDimensions();
+
+  const incompleteOnboardingQuestionnaires =
+    timelineQuery.data?.filter(
+      (t) => t.type === 'QUESTIONNAIRE' && t.status !== 'DONE',
+    ) ?? [];
+
+  const cards = incompleteOnboardingQuestionnaires.length
+    ? LATEST_WITH_ONBOARDING_CARDS
+    : LATEST_CARDS;
 
   if (
     biomarkersQuery.isLoading ||
@@ -59,12 +73,12 @@ export const LatestList = () => {
     return (
       <Carousel>
         <CarouselMainContainer>
-          {LATEST_CARDS.map((card, index) => (
+          {cards.map((card, index) => (
             <SliderMainItem key={index}>{card.content}</SliderMainItem>
           ))}
         </CarouselMainContainer>
         <CarouselThumbsContainer className="justify-center gap-x-1">
-          {Array.from({ length: LATEST_CARDS.length }).map((_, index) => (
+          {Array.from({ length: cards.length }).map((_, index) => (
             <CarouselIndicator key={index} index={index} />
           ))}
         </CarouselThumbsContainer>
@@ -74,7 +88,7 @@ export const LatestList = () => {
 
   return (
     <div className="space-y-3">
-      {LATEST_CARDS.map((c, index) => (
+      {cards.map((c, index) => (
         <Fragment key={index}>{c.content}</Fragment>
       ))}
     </div>
