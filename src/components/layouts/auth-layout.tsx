@@ -15,6 +15,8 @@ type LayoutProps = {
   className?: string;
 };
 
+const RESTRICTED_REDIRECT_ROUTES = ['/users'];
+
 const AuthStepLayoutHeader = () => {
   return (
     <section id="header" className="flex w-full items-center justify-between">
@@ -26,21 +28,24 @@ const AuthStepLayoutHeader = () => {
 };
 
 export const AuthLayout = ({ children, title }: LayoutProps) => {
+  const user = useUser();
+
   const location = useLocation();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo');
 
-  const user = useUser();
-
-  const navigate = useNavigate();
+  // when we sign in from users (as admin) we don't want to be redirected to the same page
+  const shouldRedirect =
+    redirectTo !== null && !RESTRICTED_REDIRECT_ROUTES.includes(redirectTo);
 
   useEffect(() => {
     if (user.data) {
-      navigate(redirectTo ? redirectTo : '/', {
+      navigate(shouldRedirect ? redirectTo : '/', {
         replace: true,
       });
     }
-  }, [user.data, navigate, redirectTo]);
+  }, [user.data, navigate, shouldRedirect, redirectTo]);
 
   return (
     <>
