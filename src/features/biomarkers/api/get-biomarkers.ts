@@ -4,6 +4,7 @@ import { biologicalAgeBiomarker } from '@/features/biomarkers/utils/biological-a
 import { filterBiomarkersByGender } from '@/features/biomarkers/utils/filter-biomarkers-by-gender';
 import { orderBiomarkerCards } from '@/features/biomarkers/utils/order-biomarker-cards';
 import { paceOfAgingBiomarker } from '@/features/biomarkers/utils/pace-of-aging-biomarker';
+import { useCurrentPatient } from '@/features/rdns/hooks/use-current-patient';
 import { api } from '@/lib/api-client';
 import { useUser } from '@/lib/auth';
 import { QueryConfig } from '@/lib/react-query';
@@ -19,10 +20,9 @@ export const getBiomarkers = async ({
   const response: { biomarkers: Biomarker[] } = await api.get('/biomarkers');
 
   if (response.biomarkers) {
-    // Order the biomarkers
     response.biomarkers = orderBiomarkerCards(response.biomarkers);
 
-    // If dateOfBirth is provided, add special biomarkers at the beginning of the list
+    // if dateOfBirth is provided, add special biomarkers at the beginning of the list
     if (dateOfBirth) {
       const bioAgeMarker = biologicalAgeBiomarker(
         response.biomarkers,
@@ -33,7 +33,7 @@ export const getBiomarkers = async ({
         dateOfBirth,
       );
 
-      // Add the pace and biological age markers to the start of the biomarkers array
+      // add the pace and biological age markers to the start of the biomarkers array
       response.biomarkers.unshift(paceBiomarker);
       response.biomarkers.unshift(bioAgeMarker);
     }
@@ -60,9 +60,19 @@ type UseBiomarkersOptions = {
 
 export const useBiomarkers = ({ queryConfig }: UseBiomarkersOptions = {}) => {
   const { data: user } = useUser();
+  const { selectedPatient } = useCurrentPatient();
+
+  /**
+   * If RDN selected patient, we should use patient's data to calculate pace of aging and bio age
+   */
+  const dateOfBirth = selectedPatient
+    ? selectedPatient.dateOfBirth
+    : user?.dateOfBirth;
+
+  const gender = selectedPatient ? selectedPatient.gender : user?.gender;
 
   return useQuery({
-    ...getBiomarkersQueryOptions(user?.dateOfBirth, user?.gender),
+    ...getBiomarkersQueryOptions(dateOfBirth, gender),
     ...queryConfig,
   });
 };

@@ -18,6 +18,9 @@ export const BiologicalAgeCard = ({
   if (!biomarkersQuery.data) return <></>;
   if (!user) return <></>;
 
+  /**
+   * If RDN selected patient, we should use patient's data to calculate DNAmAge
+   */
   const dateOfBirth = selectedPatient
     ? selectedPatient.dateOfBirth
     : user.dateOfBirth;
