@@ -58,7 +58,6 @@
     "@tryvital/vital-link": "^0.1.7",
     "@typeform/embed-react": "^4.0.0",
     "@types/validator": "^13.12.0",
-    "@usebridge/elements-react": "^0.14.1",
     "@wojtekmaj/react-hooks": "^1.21.0",
     "axios": "^1.6.8",
     "calendar-link": "^2.7.0",

@@ -4017,18 +4017,6 @@
   resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.2.0.tgz#756641adb587851b5ccb3e095daf27ae581c8406"
   integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
 
-"@usebridge/elements-react@^0.14.1":
-  version "0.14.1"
-  resolved "https://registry.yarnpkg.com/@usebridge/elements-react/-/elements-react-0.14.1.tgz#aa10ea5546dd122016e1f21a812e260d38a3f305"
-  integrity sha512-/oik3WRCR8AhvAOETbClNSBK6aR0b2bvYw8UhInAI76BRGznqZe2zeWOIrInxftUrgGhrSHTTbW3oDP7E7kVgQ==
-  dependencies:
-    postcss "^8.4.38"
-    react-modal "^3.16.1"
-    spinners-react "^1.0.7"
-    usehooks-ts "^3.1.0"
-    uuid "^9.0.1"
-    zustand "^4.5.2"
-
 "@vitejs/plugin-react@^4.2.1":
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/@vitejs/plugin-react/-/plugin-react-4.2.1.tgz#744d8e4fcb120fc3dbaa471dadd3483f5a304bb9"
@@ -6426,11 +6414,6 @@ execa@^5.0.0, execa@^5.1.1:
     onetime "^5.1.2"
     signal-exit "^3.0.3"
     strip-final-newline "^2.0.0"
-
-exenv@^1.2.0:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/exenv/-/exenv-1.2.2.tgz#2ae78e85d9894158670b03d47bec1f03bd91bb9d"
-  integrity sha512-Z+ktTxTwv9ILfgKCk32OX3n/doe+OcLTRtqK9pcL+JsP3J1/VW8Uvl4ZjLlKqeW4rzK4oesDOGMEMRIZqtP4Iw==
 
 expand-tilde@^2.0.0, expand-tilde@^2.0.2:
   version "2.0.2"
@@ -10190,21 +10173,6 @@ react-is@^18.0.0, react-is@^18.3.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-18.3.1.tgz#e83557dc12eae63a99e003a46388b1dcbb44db7e"
   integrity sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==
 
-react-lifecycles-compat@^3.0.0:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
-  integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
-
-react-modal@^3.16.1:
-  version "3.16.1"
-  resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-3.16.1.tgz#34018528fc206561b1a5467fc3beeaddafb39b2b"
-  integrity sha512-VStHgI3BVcGo7OXczvnJN7yT2TWHJPDXZWyI/a0ssFNhGZWsPmB8cF0z33ewDXq4VfYMO1vXgiv/g8Nj9NDyWg==
-  dependencies:
-    exenv "^1.2.0"
-    prop-types "^15.7.2"
-    react-lifecycles-compat "^3.0.0"
-    warning "^4.0.3"
-
 react-pdf@^9.1.0:
   version "9.1.0"
   resolved "https://registry.yarnpkg.com/react-pdf/-/react-pdf-9.1.0.tgz#2a1456646d2eb4e4a246e83121d195775bbfa5dc"
@@ -11125,11 +11093,6 @@ spdx-license-ids@^3.0.0:
   version "3.0.17"
   resolved "https://registry.yarnpkg.com/spdx-license-ids/-/spdx-license-ids-3.0.17.tgz#887da8aa73218e51a1d917502d79863161a93f9c"
   integrity sha512-sh8PWc/ftMqAAdFiBu6Fy6JUOYjqDJBJvIhpfDMyHrr0Rbp5liZqd4TjtQ/RgfLjKFZb+LMx5hpml5qOWy0qvg==
-
-spinners-react@^1.0.7:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/spinners-react/-/spinners-react-1.0.10.tgz#84db9ca6f6675054db3e2d34f69489dfebaf1f4a"
-  integrity sha512-VZy4IhnIVTw8tcsuWtUGz1VfRK4EDnnlIVd88ezkfiDQyYlmo+QbIAjJD1BRghTBr5RJBULuJ4MIPsJapTp1xw==
 
 split-on-first@^1.0.0:
   version "1.1.0"
@@ -12052,13 +12015,6 @@ use-sync-external-store@1.2.2, use-sync-external-store@^1.2.0, use-sync-external
   resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.2.2.tgz#c3b6390f3a30eba13200d2302dcdf1e7b57b2ef9"
   integrity sha512-PElTlVMwpblvbNqQ82d2n6RjStvdSoNe9FG28kNfz3WiXilJm4DdNkEzRhCZuIDwY8U08WVihhGR5iRqAwfDiw==
 
-usehooks-ts@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/usehooks-ts/-/usehooks-ts-3.1.0.tgz#156119f36efc85f1b1952616c02580f140950eca"
-  integrity sha512-bBIa7yUyPhE1BCc0GmR96VU/15l/9gP1Ch5mYdLcFBaFGQsdmXkvjV0TtOqW1yUd6VjIwDunm+flSciCQXujiw==
-  dependencies:
-    lodash.debounce "^4.0.8"
-
 util-deprecate@^1.0.1, util-deprecate@^1.0.2, util-deprecate@~1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
@@ -12085,7 +12041,7 @@ uuid@8.3.2, uuid@^8.3.1:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
 
-uuid@^9.0.0, uuid@^9.0.1:
+uuid@^9.0.0:
   version "9.0.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.1.tgz#e188d4c8853cc722220392c424cd637f32293f30"
   integrity sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==
@@ -12219,7 +12175,7 @@ w3c-xmlserializer@^5.0.0:
   dependencies:
     xml-name-validator "^5.0.0"
 
-warning@^4.0.0, warning@^4.0.3:
+warning@^4.0.0:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/warning/-/warning-4.0.3.tgz#16e9e077eb8a86d6af7d64aa1e05fd85b4678ca3"
   integrity sha512-rpJyN222KWIvHJ/F53XSZv0Zl/accqHR8et1kpaMTD/fLCRxtV8iX8czMzY7sVZupTI3zcUTg8eycS2kNF9l6w==

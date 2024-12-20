@@ -722,3 +722,89 @@ export type TimelineItem = Entity<{
   status: TimelineItemStatus;
   id: string;
 }>;
+
+/* BRIDGE INSURANCE */
+export type BridgePayer = {
+  id: string;
+  code: string;
+  name: string;
+  memberId: boolean;
+};
+
+export type BridgePolicyStatus =
+  | 'PENDING'
+  | 'UNKNOWN'
+  | 'CONFIRMED'
+  | 'REVALIDATING'
+  | 'INVALID';
+
+export type BridgeRelationshipStatus =
+  | 'SELF'
+  | 'CHILD'
+  | 'SPOUSE'
+  | 'OTHER'
+  | 'NONE';
+
+export type BridgePerson = {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  middleName?: string;
+};
+
+export type BridgeError = {
+  code: string;
+  message: string;
+};
+
+export type BridgeLatest = {
+  id: string;
+  plan: string;
+  validatedAt: string;
+  effectiveFrom?: string;
+  effectiveTo?: string;
+};
+
+export type BridgePolicy = {
+  id: string;
+  payerId: string;
+  payer: BridgePayer;
+  status: BridgePolicyStatus;
+  state: string;
+  planName?: string;
+  person?: BridgePerson;
+  errors?: BridgeError[];
+  memberId?: string;
+  policyHolder?: BridgePerson;
+  relationship?: BridgeRelationshipStatus;
+  patientId?: string;
+  latest?: BridgeLatest;
+};
+
+export type BridgeCoverage = {
+  rank: number;
+  policyId: string;
+};
+
+export type BridgeAddress = {
+  state: string;
+  line1?: string;
+  line2?: string;
+  city?: string;
+  postalCode?: string;
+  country?: string;
+};
+
+export type BridgePatient = {
+  id: string;
+  createdAt: string;
+  coverage: BridgeCoverage[];
+  firstName: string;
+  lastName: string;
+  email: string;
+  dateOfBirth: string;
+  patientToken?: string;
+  externalId?: string;
+  phone?: string;
+  address?: BridgeAddress;
+};
