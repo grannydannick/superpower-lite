@@ -37,8 +37,8 @@ export const Share = () => {
           <div className="space-y-3">
             <Body1 className="text-white">
               As a thank you for committing to your health and joining the
-              Superpower beta, we’re letting members invite people to skip our
-              125,000 person waitlist.
+              Superpower beta, we’re letting you invite people to skip our
+              150,000 person waitlist.
             </Body1>
             <Body1 className="text-white">
               Start the journey to superpower your health together.{' '}
