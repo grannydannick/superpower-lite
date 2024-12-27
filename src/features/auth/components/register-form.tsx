@@ -207,7 +207,7 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Terms of Service
+                  Terms
                 </a>{' '}
               </span>
               and{' '}
