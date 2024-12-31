@@ -73,7 +73,12 @@ export const TypeformDialog = ({
             Complete
           </Button>
         </SheetTrigger>
-        <SheetContent className="flex max-h-full flex-col bg-female-face bg-cover bg-no-repeat">
+        <SheetContent
+          className="flex max-h-full flex-col bg-female-face bg-cover bg-no-repeat"
+          onInteractOutside={(e) => {
+            e.preventDefault();
+          }}
+        >
           {content}
         </SheetContent>
       </Sheet>
@@ -87,7 +92,12 @@ export const TypeformDialog = ({
           Complete
         </Button>
       </DialogTrigger>
-      <DialogContent className="h-dvh max-h-none max-w-none rounded-none bg-female-face bg-cover bg-no-repeat">
+      <DialogContent
+        className="h-dvh max-h-none max-w-none rounded-none bg-female-face bg-cover bg-no-repeat"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
         {content}
       </DialogContent>
     </Dialog>
