@@ -127,19 +127,14 @@ export const getDetailsForService = (
       "What's measured?": `Galleri is a cancer screening test that leverages DNA sequencing and pattern-recognition technology to screen for the presence of a cancer signal and predict its most likely origin. Galleri uses DNA sequencing technology to analyze DNA fragments circulating in the blood, also known as cell-free DNA (cfDNA). Both non-cancer and cancer cells release cfDNA into the blood, but cfDNA from cancer cells has methylation patterns that are specific to cancer. Galleri checks over 1 million methylation sites covering >100,000 genomic regions in cfDNA and applies machine learning and pattern-recognition to identify abnormal methylation patterns that could signal the presence of cancer.
 
 It is important to note that the Galleri test does not directly detect or diagnose cancer, but rather is capable of assessing the presence of DNA mutations associated with the development of several types of cancer.`,
-      'Why is this test important?': `
-Cancer risk increases for everyone as they age regardless of family history—only 5% to 10% of cancers are inherited. Age is the biggest risk factor for cancer. In fact, adults over age 50 are 13 times more likely to have cancer compared to people under the age of 50. 
+      'Why is this test important?': `Cancer risk increases for everyone as they age regardless of family history—only 5% to 10% of cancers are inherited. Age is the biggest risk factor for cancer. In fact, adults over age 50 are 13 times more likely to have cancer compared to people under the age of 50.`,
+      'Test process': `1. We'll order your test kit and deliver it directly to your house or confirmed address in 3-5 days.
 
-Before ordering the test, you will meet with your dedicated Superpower physician to discuss your risk factors to determine whether this test is appropriate for you. `,
-      'Test process': `1.  Your membership advisor will reach out to schedule a pre-test consultation with your physician to discuss the risk & benefits of testing.
+2. Schedule your at-home blood draw appointment with a phlebotomist via your membership advisor.
 
-2. We'll order your test kit and deliver it directly to your house or confirmed address in 3-5 days.
+3. Receive your results within 2-3 weeks. 
 
-3. Schedule your at-home blood draw appointment with a phlebotomist via your membership advisor.
-
-4. Receive your results within 2-3 weeks. 
-
-5. Schedule a consultation with your physician to review your results and create an action plan.`,
+4. Schedule an optional consultation to review your results.`,
       'Pre-test considerations': `There are no fasting requirements associated with this test. 
 Connect with your membership advisor if you have any questions or concerns ahead of testing.`,
     },
