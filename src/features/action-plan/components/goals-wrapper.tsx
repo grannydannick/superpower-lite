@@ -36,7 +36,7 @@ export const GoalsWrapper: ({
       <H2>{title}</H2>
       {title.toLowerCase().includes('your protocol') && (
         <p className="text-zinc-500">
-          Based on your action plan your clinician recommends you do the
+          Based on your action plan your longevity advisor recommends you do the
           following:
         </p>
       )}

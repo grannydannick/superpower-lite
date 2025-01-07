@@ -34,7 +34,7 @@ export const MessageConcierge = () => {
           <Body1 className="text-zinc-500">Your message</Body1>
           <Body1 className="whitespace-pre-line">{`Request: ${
             service.name
-          }\n\nYour concierge longevity clinician will respond with details about this service.${
+          }\n\nYour concierge longevity advisor will respond with details about this service.${
             message.length > 0 ? `\n\nAdditional Notes:\n\n${message}` : ''
           }`}</Body1>
         </div>

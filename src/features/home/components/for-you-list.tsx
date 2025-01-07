@@ -36,7 +36,7 @@ export const ForYouList = () => {
         alt={consult.name}
       />
       <Body1 className="text-zinc-500">
-        Schedule your consult to get recommendations by your clinician
+        Schedule your consult to get recommendations by your longevity advisor
       </Body1>
       <HealthcareServiceDialog healthcareService={consult}>
         <Button
@@ -54,7 +54,7 @@ export const ForYouList = () => {
     <div className="flex h-[188px] flex-col justify-center space-y-3 rounded-3xl border border-zinc-200 p-5">
       <Body1 className="text-center text-zinc-400">
         We will update this section with any next steps recommended by your
-        clinician
+        longevity advisor
       </Body1>
     </div>
   );

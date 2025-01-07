@@ -13,7 +13,7 @@ const HOW_IT_WORKS: Faq[] = [
     display: 'Do you replace my primary care doctor?',
     description: `No. Your annual membership to Superpower’s Baseline testing and health concierge is designed to complement your primary care doctor, not replace them.
 
-We do not offer typical sick care, but rather, our longevity clinicians are there to answer questions related to prevention, performance, and longevity. We try to step in where the healthcare system is falling short. We provide best-in-class early diagnostics assessments and guidance from our longevity-trained clinicians.`,
+We do not offer typical sick care, but rather, our longevity advisors are there to answer questions related to prevention, performance, and longevity. We try to step in where the healthcare system is falling short. We provide best-in-class early diagnostics assessments and guidance from our longevity advisors.`,
   },
   {
     display: 'Where do I go for my lab visit?',

@@ -57,7 +57,7 @@ export const CreateMessageForm = (): JSX.Element => {
               <FormControl>
                 <Textarea
                   className="h-[150px] w-full resize-none rounded-[20px] px-[18px] py-6"
-                  placeholder="Ask questions about your health, book appointments, and get answers from expert clinicians"
+                  placeholder="Ask questions about your health, book appointments, and get answers from expert longevity advisors"
                   {...field}
                 />
               </FormControl>

@@ -33,7 +33,7 @@ export const ScheduleConsultDoctorCard: ({
       />
       <div className="flex grow flex-col justify-center">
         <div className="flex gap-3">
-          <Body1 className="line-clamp-1">Longevity Clinician Consult</Body1>
+          <Body1 className="line-clamp-1">Longevity Advisor Consult</Body1>
           {/*<Badge*/}
           {/*  className="max-h-6 bg-zinc-200 text-xs text-black"*/}
           {/*  variant="default"*/}

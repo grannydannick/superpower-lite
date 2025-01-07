@@ -18,7 +18,7 @@ export const RecommendedItems = ({ className }: { className?: string }) => {
   return (
     <div className={cn(className, 'flex flex-col items-center')}>
       <H2 className="max-w-[456px] text-center">
-        Your longevity clinician has recommended {productItems.length} items for
+        Your longevity advisor has recommended {productItems.length} items for
         you
       </H2>
       <div className="flex flex-col items-center gap-6">

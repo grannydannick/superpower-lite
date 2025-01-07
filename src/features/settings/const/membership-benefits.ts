@@ -4,7 +4,7 @@ export const MEMBERSHIP_BENEFITS: MembershipBenefit[] = [
   {
     imgPath: '/settings/membership/video.png',
     description:
-      'Video consult call of your biomarker results from a Longevity Clinician',
+      'Video consult call of your biomarker results from a Longevity Advisor',
   },
   {
     imgPath: '/settings/membership/plan.png',

@@ -158,7 +158,7 @@ function ActionPlanProductRow({
           )}
           placeholder={
             !isAdmin
-              ? 'Clinician will add note here.'
+              ? 'Longevity advisor will add note here.'
               : 'Please write short instructions'
           }
           maxLength={75}
@@ -220,7 +220,7 @@ function ActionPlanServiceRow({
             )}
             placeholder={
               !isAdmin
-                ? 'Clinician will add note here.'
+                ? 'Advisor will add note here.'
                 : 'Please write short instructions'
             }
             maxLength={75}

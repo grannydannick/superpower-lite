@@ -195,11 +195,11 @@ The Total Tox Burden is a simple and quick test that provides complete insight i
 Knowing your toxic burden is the first step to creating a personalized detox and wellness plan to achieve better health.`,
       'Test process': `1. Follow our simple instructions to perform this urine test at home.
       
-2. Before testing: There is no need to fast. However, fasting for 12 hours may increase the number of mycotoxins excreted in urine, so your clinician may recommend fasting for 12 hours prior to testing.
+2. Before testing: There is no need to fast. However, fasting for 12 hours may increase the number of mycotoxins excreted in urine, so your longevity advisor may recommend fasting for 12 hours prior to testing.
 
 It is recommended for best test performance to collect the first-morning urine upon awakening, prior to eating or drinking.
 
-Your clinician may ask you to discontinue medications or dietary supplements. Speak to your care team to learn more.
+Your longevity advisor may ask you to discontinue medications or dietary supplements. Speak to your care team to learn more.
 
 Avoid foods high in iodine (seafood, dairy, and seaweed) and selenium (Brazil nuts) as they may cause falsely lowered heavy metal results.
 
@@ -224,7 +224,7 @@ The World Health Organization considers 13 heavy metals to be of significance to
 Heavy metal exposure may also be the root cause of neurological disorders, gastrointestinal disorders, autoimmune disease, and disorders associated with increased oxidative stress and cellular dysfunction.`,
       'Test process': `
 1. Follow our simple instructions to perform this urine test at home
-2. Before testing, there is no need to fast, however your clinician may ask you to discontinue medications or dietary supplements. Speak to your care team to learn more.
+2. Before testing, there is no need to fast, however your longevity advisor may ask you to discontinue medications or dietary supplements. Speak to your care team to learn more.
 3. Send the test to our labs for analysis and speak to your care team to understand the results.`,
       'Pre-test considerations': `Urine test is required. There are no fasting requirements associated with this test.
 Connect with your membership advisor if you have any questions or concerns ahead of testing`,
@@ -242,7 +242,7 @@ Environmental toxins wreak havoc on the body and can cause chronic inflammation 
 
 Testing for environmental toxins can help patients uncover the root causes of toxicity and chronic illness from environmental sources and create personalized wellness solutions to begin healing.`,
       'Test process': `1. Follow our simple instructions to perform this urine test at home
-2. Before testing, there is no need to fast, however your clinician may ask you to discontinue medications or dietary supplements. Speak to your care team to learn more.
+2. Before testing, there is no need to fast, however your longevity advisor may ask you to discontinue medications or dietary supplements. Speak to your care team to learn more.
 3. Send the test to our labs for analysis and speak to your care team to understand the results`,
       'Pre-test considerations': `Urine test is required. There are no fasting requirements associated with this test.
 Connect with your membership advisor if you have any questions or concerns ahead of testing.`,
@@ -263,11 +263,11 @@ A panel test is crucial for identifying exposure to toxic compounds and early de
 If you were diagnosed with or suspect toxic burden, impaired immunity, autoimmune disease, or exposure to mold, this panel may also benefit you.`,
       'Test process': `
 1. Follow our simple instructions to perform this urine test at home.
-2. Before testing, there is no need to fast. However, fasting for 12 hours may increase the number of mycotoxins excreted in urine, so your clinician may recommend fasting for 12 hours prior to testing.
+2. Before testing, there is no need to fast. However, fasting for 12 hours may increase the number of mycotoxins excreted in urine, so your longevity advisor may recommend fasting for 12 hours prior to testing.
 
 It is recommended for best test performance to collect the first-morning urine upon awakening, prior to eating or drinking.
 
-Your clinician may ask you to discontinue medications or dietary supplements. Speak to your care team to learn more.
+Your longevity advisor may ask you to discontinue medications or dietary supplements. Speak to your care team to learn more.
 3. Send the test to our labs for analysis and speak to your care team to understand the results.`,
       'Pre-test considerations': `Urine test is required. There are no fasting requirements associated with this test.
 Connect with your membership advisor if you have any questions or concerns ahead of testing.`,
@@ -283,7 +283,7 @@ Connect with your membership advisor if you have any questions or concerns ahead
 
 3. Receive your results within two weeks. 
 
-4. Schedule a consultation with your clinical team to review your results and create an action plan.`,
+4. Schedule a consultation with your longevity advisor team to review your results and create an action plan.`,
       'Pre-test considerations': `1. Do not collect samples while menstruating. 
 2. Fasting is not required. However, fasting for 24 hours may increase the excretion of toxic chemicals. 
 3. Please consult your healthcare practitioner prior to fasting. 
@@ -317,7 +317,7 @@ Uncovering wheat sensitivities is an easy and critical step in developing a nutr
 
 3. Receive your results within two weeks. 
 
-4. Schedule a consultation with your clinical team to review your results and create an action plan.`,
+4. Schedule a consultation with your longevity advisor team to review your results and create an action plan.`,
       'Pre-test considerations': `
 1. If you are currently taking (or have recently taken) any of the following medications, consult your healthcare provider regarding the timing of collection.
   -Steroids
@@ -339,7 +339,7 @@ Uncovering wheat sensitivities is an easy and critical step in developing a nutr
 
 3. Receive your results within two weeks. 
 
-4. Schedule a consultation with your clinical team to review your results and create an action plan.`,
+4. Schedule a consultation with your care team to review your results and create an action plan.`,
       'Why is this test important?': `
 Testing for PFAS chemicals in your blood is important because:
 
@@ -363,7 +363,7 @@ Testing for PFAS chemicals in your blood is important because:
 
 2. Your membership advisor will reach out to help guide you through the CGM's application.
 
-3. If interested, schedule a consultation with your clinical team to review your results and create an action plan.`,
+3. If interested, schedule a consultation with your care team to review your results and create an action plan.`,
       'Pre-test considerations': `Connect with your membership advisor if you have any questions or concerns regarding the application of the device.`,
     },
     'Heart Calcium Scan': {

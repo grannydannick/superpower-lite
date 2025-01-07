@@ -13,10 +13,10 @@ export const getConciergeData = (service: HealthcareService) => [
       'Your dedicated concierge team is always just a text away – for help with logistics, ordering, scheduling or clarifying questions.',
   },
   {
-    value: 'longevity_clinician',
-    title: 'Longevity Clinician',
+    value: 'longevity_advisor',
+    title: 'Longevity Advisor',
     description:
-      'Your dedicated longevity and functional medicine trained clinician is available to answer health questions related to your plan or test results, and and available for consultations and coaching any time.',
+      'Your dedicated longevity and functional medicine trained advisor is available to answer health questions related to your plan or test results, and available for consultations and coaching any time.',
     action: (
       <HealthcareServiceDialog healthcareService={service}>
         <Button className="gap-4 p-3" variant="outline">

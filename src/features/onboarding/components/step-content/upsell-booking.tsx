@@ -63,8 +63,8 @@ const UpsellBooking = () => {
           additional services now?
         </H2>
         <Body1 className="text-zinc-500">
-          Get your test results as soon as possible so your clinician can
-          provide the most comprehensive analysis of your health.
+          Get your test results as soon as possible so your longevity advisor
+          can provide the most comprehensive analysis of your health.
         </Body1>
       </div>
 
