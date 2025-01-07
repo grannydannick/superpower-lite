@@ -2,6 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useShallow } from 'zustand/react/shallow';
 
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
@@ -22,7 +23,8 @@ export const ClinicianNoteHeader = () => {
     updateIsAdmin,
     updatedAt,
     _makeFinalUpdate,
-  } = usePlan((s) => s);
+  } = usePlan(useShallow((s) => s));
+
   const navigate = useNavigate();
   const { hasAllowedRole, fullPatientName } = useCurrentPatient();
   const isBlurred = useShowBg();

@@ -1,5 +1,6 @@
 import moment from 'moment/moment';
 import { useDebouncedCallback } from 'use-debounce';
+import { useShallow } from 'zustand/react/shallow';
 
 import { DatetimePicker } from '@/components/ui/input';
 import { Body2, H2 } from '@/components/ui/typography';
@@ -10,11 +11,13 @@ import { useUser } from '@/lib/auth';
 import { ACTION_PLAN_SAVE_DELAY } from '../const/delay';
 
 export const Header = () => {
-  const isAdmin = usePlan((s) => s.isAdmin);
-  const timestamp = usePlan((s) => s.timestamp);
-  const dateOverride = usePlan((s) => s.dateOverride);
-  const updateActionPlan = usePlan((s) => s.updateActionPlan);
-  const changeDateOverride = usePlan((s) => s.changeDateOverride);
+  const {
+    isAdmin,
+    timestamp,
+    dateOverride,
+    updateActionPlan,
+    changeDateOverride,
+  } = usePlan(useShallow((s) => s));
 
   const { fullPatientName } = useCurrentPatient();
   const { data: user } = useUser();

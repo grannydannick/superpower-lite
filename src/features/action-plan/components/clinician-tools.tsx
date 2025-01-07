@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { FancySwitch } from '@/components/ui/fancy-switch';
 import { Separator } from '@/components/ui/separator';
@@ -10,7 +11,7 @@ import { TypeformAnswers } from '@/features/rdns/components/typeforms';
 const TOOLS_OPTIONS = ['typeforms', 'biomarkers'];
 
 export const ClinicianTools = () => {
-  const isAdmin = usePlan((s) => s.isAdmin);
+  const { isAdmin } = usePlan(useShallow((s) => s));
   const [selectedOption, setSelectedOption] = useState('typeforms');
 
   if (!isAdmin) {

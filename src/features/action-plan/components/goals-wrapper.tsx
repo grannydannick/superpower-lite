@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -19,15 +20,16 @@ export const GoalsWrapper: ({
   className?: string;
   goalType: PlanGoalType;
 }) => ReactNode = ({ title, className, goalType }) => {
-  const isAdmin = usePlan((s) => s.isAdmin);
-  const addGoal = usePlan((s) => s.addGoal);
-  const goals = usePlan((s) =>
-    s.goals.filter((goal) => goal.type === goalType),
-  ).sort(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-  );
+  const { isAdmin, addGoal, goals } = usePlan(useShallow((s) => s));
 
-  if (!isAdmin && !goals.length) {
+  const sortedGoals = goals
+    .filter((goal) => goal.type === goalType)
+    .sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+    );
+
+  if (!isAdmin && !sortedGoals.length) {
     return null;
   }
 
@@ -54,7 +56,7 @@ export const GoalsWrapper: ({
           </a>
         </p>
       )}
-      {goals.map((goal, idx) => (
+      {sortedGoals.map((goal, idx) => (
         <>
           <ActionPlanGoal
             key={goal.id}
@@ -62,7 +64,7 @@ export const GoalsWrapper: ({
             goalIndex={idx}
             className="mt-8"
           />
-          {idx !== goals.length - 1 && <Separator />}
+          {idx !== sortedGoals.length - 1 && <Separator />}
         </>
       ))}
       {isAdmin && (

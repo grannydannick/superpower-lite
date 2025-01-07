@@ -1,5 +1,6 @@
 import { Trash2 } from 'lucide-react';
 import { useDebouncedCallback } from 'use-debounce';
+import { useShallow } from 'zustand/react/shallow';
 
 import { Input } from '@/components/ui/input';
 import {
@@ -28,12 +29,13 @@ interface ActionPlanGoalProps {
 }
 
 export function ActionPlanGoal({ goal, className }: ActionPlanGoalProps) {
-  const isAdmin = usePlan((s) => s.isAdmin);
-
-  const deleteGoal = usePlan((s) => s.deleteGoal);
-  const changeGoalDescription = usePlan((s) => s.changeGoalDescription);
-  const changeGoalTitle = usePlan((s) => s.changeGoalTitle);
-  const updateActionPlan = usePlan((s) => s.updateActionPlan);
+  const {
+    isAdmin,
+    deleteGoal,
+    changeGoalDescription,
+    changeGoalTitle,
+    updateActionPlan,
+  } = usePlan(useShallow((s) => s));
 
   const servicesQuery = useServices();
   const productsQuery = useProducts();

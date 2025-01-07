@@ -1,4 +1,5 @@
 import { useDebouncedCallback } from 'use-debounce';
+import { useShallow } from 'zustand/react/shallow';
 
 import { Input } from '@/components/ui/input';
 import { BlockEditor } from '@/features/action-plan/components/editor/editor';
@@ -23,7 +24,7 @@ export function ActionPlanComponent() {
     changeTitle,
     changeDescription,
     updateActionPlan,
-  } = usePlan((s) => s);
+  } = usePlan(useShallow((s) => s));
 
   const debouncedTitle = useDebouncedCallback(async (value) => {
     changeTitle(value);

@@ -1,5 +1,6 @@
 import { X } from 'lucide-react';
 import React, { ReactNode, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -86,7 +87,7 @@ export function ClinicianNotePopover({
   );
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
   const [query, setQuery] = useState('');
-  const { insertGoalItem } = usePlan((s) => s);
+  const { insertGoalItem } = usePlan(useShallow((s) => s));
 
   const biomarkersQuery = useBiomarkers();
   const servicesQuery = useServices();

@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import { CalendarIcon, Dot, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
+import { useShallow } from 'zustand/react/shallow';
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -32,7 +33,7 @@ export function ActionPlanItemRow(
   props: ActionPlanItemRowProps,
 ): JSX.Element | null {
   const { item, goalId } = props;
-  const { isAdmin, deleteGoalItem } = usePlan((s) => s);
+  const { isAdmin, deleteGoalItem } = usePlan(useShallow((s) => s));
   const biomarkersQuery = useBiomarkers();
   const servicesQuery = useServices();
   const productsQuery = useProducts();
@@ -128,7 +129,7 @@ function ActionPlanProductRow({
   goalId,
 }: ActionPlanProductRowInterface): JSX.Element {
   const { isAdmin, changeGoalItemDescription, updateActionPlan } = usePlan(
-    (s) => s,
+    useShallow((s) => s),
   );
   const debouncedInstructions = useDebouncedCallback(async (value: string) => {
     changeGoalItemDescription(goalId, goalItem, value);
@@ -183,7 +184,7 @@ function ActionPlanServiceRow({
   goalItem,
 }: ActionPlanServiceRowInterface): JSX.Element {
   const { isAdmin, changeGoalItemDescription, updateActionPlan } = usePlan(
-    (s) => s,
+    useShallow((s) => s),
   );
 
   const debouncedInstructions = useDebouncedCallback(async (value: string) => {
@@ -247,7 +248,7 @@ function ActionPlanItemDatePicker({
   goalId,
 }: ActionPlanItemDatePickerInterface) {
   const [date, setDate] = useState<Date>();
-  const { isAdmin, changeItemDeadline } = usePlan((s) => s);
+  const { isAdmin, changeItemDeadline } = usePlan(useShallow((s) => s));
 
   useEffect(() => {
     if (goalItem.timestamp) {

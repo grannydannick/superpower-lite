@@ -2,6 +2,7 @@ import { Editor } from '@tiptap/core';
 import { useCurrentEditor } from '@tiptap/react';
 import { useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
+import { useShallow } from 'zustand/react/shallow';
 
 import {
   ColorSelector,
@@ -75,8 +76,7 @@ export const BlockEditor = ({
 }: BlockEditorProps) => {
   const content = parseInitialContent(initialContent);
   const { editor } = useCurrentEditor();
-  const isAdmin = usePlan((s) => s.isAdmin);
-  const updateActionPlan = usePlan((s) => s.updateActionPlan);
+  const { isAdmin, updateActionPlan } = usePlan(useShallow((s) => s));
 
   const [openNode, setOpenNode] = useState(false);
   const [openColor, setOpenColor] = useState(false);

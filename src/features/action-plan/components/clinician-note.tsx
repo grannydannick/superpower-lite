@@ -1,3 +1,5 @@
+import { useShallow } from 'zustand/react/shallow';
+
 import { Spinner } from '@/components/ui/spinner';
 import { usePlans } from '@/features/action-plan/api/get-plans';
 import { ActionPlanComponent } from '@/features/action-plan/components/action-plan';
@@ -43,7 +45,7 @@ export const ClinicianNote = ({ orderId }: ClinicianNoteProps) => {
 };
 
 const ClinicianNoteLayout = () => {
-  const isAdmin = usePlan((s) => s.isAdmin);
+  const { isAdmin } = usePlan(useShallow((s) => s));
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-zinc-50 bg-dot-zinc-400/[0.4]">

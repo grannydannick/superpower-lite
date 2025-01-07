@@ -1,4 +1,5 @@
 import React, { useState, useCallback, forwardRef } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -21,7 +22,7 @@ export const ReviewStep = (): JSX.Element => {
       },
     },
   });
-  const goals = usePlan((s) => s.goals);
+  const { goals } = usePlan(useShallow((s) => s));
 
   const products = productsQuery.data?.products ?? [];
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);

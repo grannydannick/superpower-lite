@@ -1,3 +1,5 @@
+import { useShallow } from 'zustand/react/shallow';
+
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -14,8 +16,7 @@ import { usePlan } from '@/features/action-plan/stores/plan-store';
 import { useCurrentPatient } from '@/features/rdns/hooks/use-current-patient';
 
 export const PublishAlertDialog = () => {
-  const isUpdating = usePlan((s) => s.isUpdating);
-  const updateActionPlan = usePlan((s) => s.updateActionPlan);
+  const { isUpdating, updateActionPlan } = usePlan(useShallow((s) => s));
   const { selectedPatient } = useCurrentPatient();
 
   return (

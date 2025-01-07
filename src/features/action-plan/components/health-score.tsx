@@ -1,3 +1,5 @@
+import { useShallow } from 'zustand/react/shallow';
+
 import { SuperpowerScoreLogo } from '@/components/shared/score-logo';
 import { Body1, H3 } from '@/components/ui/typography';
 import { usePlan } from '@/features/action-plan/stores/plan-store';
@@ -12,7 +14,8 @@ import { cn } from '@/lib/utils';
 import { yearsSinceDate } from '@/utils/format';
 
 export const HealthScore = ({ className }: { className?: string }) => {
-  const orderId = usePlan((s) => s.orderId);
+  const { orderId } = usePlan(useShallow((s) => s));
+
   const { data: user } = useUser();
   const biomarkersQuery = useBiomarkers();
   const healthScoreQuery = useHealthScoreByOrderId({

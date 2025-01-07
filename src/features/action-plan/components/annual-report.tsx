@@ -1,4 +1,5 @@
 import { useDebouncedCallback } from 'use-debounce';
+import { useShallow } from 'zustand/react/shallow';
 
 import { Input } from '@/components/ui/input';
 import { Disclaimer } from '@/features/action-plan/components/disclaimer';
@@ -17,15 +18,16 @@ import { Header } from './header';
 const REPORT_STYLE = 'space-y-8 rounded-3xl bg-white p-8 shadow-md md:p-12';
 
 export const AnnualReportComponent = () => {
-  const annualReport = usePlan((s) => s.annualReport);
-  const isAnnualReportType = usePlan((s) => s.type === 'ANNUAL_REPORT');
-  const annualReportBlocks = usePlan((s) => s.annualReport?.block || []);
-  const isAdmin = usePlan((s) => s.isAdmin);
-  const changeAnnualReportTitle = usePlan((s) => s.changeAnnualReportTitle);
-  const changeAnnualReportDescription = usePlan(
-    (s) => s.changeAnnualReportDescription,
-  );
-  const updateActionPlan = usePlan((s) => s.updateActionPlan);
+  const {
+    annualReport,
+    type,
+    isAdmin,
+    changeAnnualReportTitle,
+    changeAnnualReportDescription,
+    updateActionPlan,
+  } = usePlan(useShallow((s) => s));
+
+  const isAnnualReportType = type === 'ANNUAL_REPORT';
 
   const debouncedTitle = useDebouncedCallback(async (value) => {
     changeAnnualReportTitle(value);
@@ -55,7 +57,7 @@ export const AnnualReportComponent = () => {
           className="py-0"
         />
 
-        <PhilosophyBlocks philosophyBlocks={annualReportBlocks} />
+        <PhilosophyBlocks philosophyBlocks={annualReport?.block || []} />
 
         <Disclaimer>
           <p className="text-zinc-500">
