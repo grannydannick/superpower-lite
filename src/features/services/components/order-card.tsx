@@ -36,28 +36,26 @@ export function OrderCard(order: Order) {
   return (
     <Card
       className={cn(
-        'bg-zinc-100 p-5',
+        'bg-zinc-100 p-5 flex flex-col justify-center gap-4 md:flex-row',
         order.status.toUpperCase() === OrderStatus.cancelled
           ? 'grayscale opacity-50'
           : '',
       )}
     >
-      <div className="flex flex-col gap-4 md:flex-row">
-        <div className="flex items-center justify-between">
-          <OrderCardFeatureImage imagePath={service.image} />
-          <div className="block md:hidden">
+      <div className="flex justify-between md:justify-start">
+        <OrderCardFeatureImage imagePath={service.image} />
+        <div className="block md:hidden">
+          <OrderCardBadge order={order} />
+        </div>
+      </div>
+      <div className="flex w-full flex-col">
+        <div className="flex justify-between">
+          <Body1 className="line-clamp-1">{service.name}</Body1>
+          <div className="hidden md:block">
             <OrderCardBadge order={order} />
           </div>
         </div>
-        <div className="flex w-full flex-col justify-between">
-          <div className="flex justify-between">
-            <Body1 className="line-clamp-1">{service.name}</Body1>
-            <div className="hidden md:block">
-              <OrderCardBadge order={order} />
-            </div>
-          </div>
-          <OrderCardDetails {...order} />
-        </div>
+        <OrderCardDetails {...order} />
       </div>
     </Card>
   );
