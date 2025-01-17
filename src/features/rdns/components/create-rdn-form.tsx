@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
+import { H4 } from '@/components/ui/typography';
 import {
   CreateRdnInput,
   createRdnInputSchema,
@@ -39,7 +40,7 @@ export function CreateRdnForm(): JSX.Element {
 
   return (
     <div>
-      <h1 className="text-xl">Create New RDN</h1>
+      <H4>Create New RDN</H4>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-1 pt-8">
           <div className="flex flex-col gap-4">
