@@ -205,6 +205,11 @@ Avoid foods high in iodine (seafood, dairy, and seaweed) and selenium (Brazil nu
 
 3. Send the sample to our labs for analysis and work with your care provider to understand the results`,
       'Pre-test considerations': `Urine test is required. There are no fasting requirements associated with this test. Connect with your membership advisor if you have any questions or concerns ahead of testing.`,
+      'Follow-up & Consult details': `We understand you may have questions about interpreting your test results. While these results are incredibly informative, a consult to review them in detail isn’t included with the cost of the test. We do offer optional follow-up consults for $100 if you’d like personalized guidance on your results.
+
+Please note:
+Because your onboarding call is primarily dedicated to reviewing your biomarkers, discussing your key monitored health issues, and walking you through our recommended protocol, it’s unlikely we’ll have time to cover your microbiome results in depth. If time allows, we may briefly touch on them at a high level, but we can’t guarantee a detailed review during this session.
+If you’d like a deeper dive into your results, we recommend scheduling a dedicated follow-up consult once they’re ready.`,
     },
 
     'Heavy Metals': {
@@ -377,6 +382,11 @@ Testing for PFAS chemicals in your blood is important because:
       'Why is this test important?': `A gut microbiome analysis is essential in better understanding the bacteria that comprise your gut health. Novel research in the last decade has shown the immense impact in which gut health can not only affect digestion, but even our immune system, metabolism, and mood. This can manifest in symptoms like brain fog, fatigue, and digestive issues.`,
       'Test process': `A testing kit will be sent to you. A mess-free sample will be required from a soiled tissue paper in the comfort of your own home. This will then be shipped to a lab and analyzed.`,
       'Pre-test considerations': `Non-invasive but requires at-home sample collection from a soiled tissue paper. Non-invasive but requires careful sample collection. Diet and medication can influence results.`,
+      'Follow-up & Consult details': `We understand you may have questions about interpreting your test results. While these results are incredibly informative, a consult to review them in detail isn’t included with the cost of the test. We do offer optional follow-up consults for $100 if you’d like personalized guidance on your results.
+
+Please note:
+Because your onboarding call is primarily dedicated to reviewing your biomarkers, discussing your key monitored health issues, and walking you through our recommended protocol, it’s unlikely we’ll have time to cover your microbiome results in depth. If time allows, we may briefly touch on them at a high level, but we can’t guarantee a detailed review during this session.
+If you’d like a deeper dive into your results, we recommend scheduling a dedicated follow-up consult once they’re ready.`,
     },
     'Full Body MRI': {
       "What's measured?": `The Full Body MRI takes a comprehensive and detailed set of images of your major organs, including the following:

@@ -4,6 +4,7 @@ export type TestDetails = {
   'Pre-test considerations'?: string;
   "What's measured?"?: string;
   'Test process'?: string;
+  'Follow-up & Consult details'?: string;
 };
 
 export type ServiceDetails = {
