@@ -228,7 +228,11 @@ export function DataTable({
             </div>
             <div className="flex w-full flex-col items-center justify-center gap-3 pt-12">
               {healthcareService && (
-                <HealthcareServiceDialog healthcareService={healthcareService}>
+                <HealthcareServiceDialog
+                  healthcareService={healthcareService}
+                  // “force” React to re-create the entire provider (and its state) by passing a key prop that changes when the healthcareService changes
+                  key={healthcareService.id}
+                >
                   <Button variant="default" className="w-full max-w-[400px]">
                     Get Tested
                   </Button>
