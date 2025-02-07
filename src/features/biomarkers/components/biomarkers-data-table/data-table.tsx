@@ -125,7 +125,7 @@ export function DataTable({
     }
 
     return data;
-  }, [filters]);
+  }, [filters, data]);
 
   const table = useReactTable({
     data: filteredData,
