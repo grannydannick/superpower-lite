@@ -1,6 +1,8 @@
+import { AlertTriangleIcon } from 'lucide-react';
 import { useState } from 'react';
 
 import { AddressAutocomplete } from '@/components/ui/address-autocomplete';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
@@ -68,6 +70,19 @@ function FullPrimaryAddressForm({
       setIsZipBlocked(true);
     }
   };
+
+  if (getServiceabilityMutation.isError) {
+    return (
+      <Alert className="border-white/20 bg-white/5 p-4">
+        <AlertTriangleIcon color="white" className="size-4" />
+        <AlertTitle className="text-white">Check back in 24 hours</AlertTitle>
+        <AlertDescription className="text-zinc-200">
+          Due to high demand, availability is currently limited in your area. We
+          are working on it.
+        </AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
     <AddAddressForm
