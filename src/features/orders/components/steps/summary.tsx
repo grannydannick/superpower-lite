@@ -137,7 +137,7 @@ export function OrderSummary(): ReactNode {
 
     if (
       service.name === ADVISORY_CALL &&
-      typeformQuestionnaire?.status === 'INCOMPLETE'
+      typeformQuestionnaire?.status !== 'COMPLETE'
     ) {
       toast.warning('You need to complete Intake before booking Advisory Call');
       return;
