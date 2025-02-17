@@ -16,7 +16,9 @@ export const CompleteOnboardingCard = () => {
 
     const rawProgress = totalQ > 0 ? (completedQ / totalQ) * 100 : 0;
 
-    const clampedProgress = Math.min(Math.max(rawProgress, 0), 100);
+    const clampedProgress = Number(
+      Math.min(Math.max(rawProgress, 0), 100).toFixed(0),
+    );
 
     const incompleteQ = questionnaires.some((q) => q.status !== 'DONE');
 
