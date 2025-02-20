@@ -9,7 +9,7 @@ export const AtHomeNoticeSection = () => {
   const state = user?.primaryAddress?.address.state;
 
   if (state !== 'NY' && state !== 'NJ') {
-    return <></>;
+    return null;
   }
 
   return (

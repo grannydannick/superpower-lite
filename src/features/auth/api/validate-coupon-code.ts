@@ -7,7 +7,7 @@ import { Coupon } from '@/types/api';
 
 export const validateCode = ({
   accessCode,
-}: ValidateInput): Promise<Coupon[]> => {
+}: ValidateInput): Promise<{ coupon: Coupon }> => {
   return api.get(`auth/coupon?code=${accessCode}`);
 };
 
