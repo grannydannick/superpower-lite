@@ -1,42 +1,26 @@
-import { useEffect, useState } from 'react';
-import { useNavigation } from 'react-router-dom';
+import * as ProgressPrimitive from '@radix-ui/react-progress';
+import * as React from 'react';
 
-export const Progress = () => {
-  const { state, location } = useNavigation();
+import { cn } from '@/lib/utils';
 
-  const [progress, setProgress] = useState(0);
+const Progress = React.forwardRef<
+  React.ElementRef<typeof ProgressPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>
+>(({ className, value, ...props }, ref) => (
+  <ProgressPrimitive.Root
+    ref={ref}
+    className={cn(
+      'relative h-2 w-full overflow-hidden rounded-full bg-primary/20',
+      className,
+    )}
+    {...props}
+  >
+    <ProgressPrimitive.Indicator
+      className="size-full flex-1 bg-primary transition-all"
+      style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
+    />
+  </ProgressPrimitive.Root>
+));
+Progress.displayName = ProgressPrimitive.Root.displayName;
 
-  useEffect(() => {
-    setProgress(0);
-  }, [location?.pathname]);
-
-  useEffect(() => {
-    if (state === 'loading') {
-      const timer = setInterval(() => {
-        setProgress((oldProgress) => {
-          if (oldProgress === 100) {
-            clearInterval(timer);
-            return 100;
-          }
-          const newProgress = oldProgress + 10;
-          return newProgress > 100 ? 100 : newProgress;
-        });
-      }, 300);
-
-      return () => {
-        clearInterval(timer);
-      };
-    }
-  }, [state]);
-
-  if (state !== 'loading') {
-    return null;
-  }
-
-  return (
-    <div
-      className="fixed left-0 top-0 h-1 bg-vermillion-900 transition-all duration-200 ease-in-out"
-      style={{ width: `${progress}%` }}
-    ></div>
-  );
-};
+export { Progress };

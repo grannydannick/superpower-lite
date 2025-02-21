@@ -10,11 +10,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from '@/components/ui/dialog';
+import { Progress } from '@/components/ui/progress';
 import {
   Sheet,
   SheetClose,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -152,21 +155,32 @@ const HealthcareServiceDialogConsumer = ({
       </Dialog>
     );
   }
-
   if (width <= 768) {
     return (
       <Sheet onOpenChange={handleOpenChange}>
         <SheetTrigger asChild>{children}</SheetTrigger>
-        <SheetContent className="flex max-h-full flex-col rounded-t-[10px]">
-          <SheetHeader>
-            <SheetClose>
-              <div className="flex h-[44px] min-w-[44px] items-center justify-center rounded-full bg-zinc-100">
-                <X className="h-4 min-w-4" />
+        <SheetContent className="flex max-h-full flex-col overflow-hidden rounded-t-2xl">
+          <SheetHeader className="sticky top-0 z-50 -mt-8 flex flex-col gap-4 bg-white/90 pb-4 backdrop-blur-sm">
+            {steps.length > 1 && (
+              <div className="flex justify-center">
+                <Progress
+                  value={((activeStep + 1) / steps.length) * 100}
+                  className="h-1 w-32"
+                />
               </div>
-            </SheetClose>
-            <SheetTitle>Book a service</SheetTitle>
-            <div className="min-w-[44px]" />
+            )}
+            <SheetTitle className="flex items-center justify-between space-x-24">
+              <SheetClose className="flex size-10 items-center justify-center rounded-full bg-zinc-100">
+                <X className="size-5 text-zinc-400" />
+              </SheetClose>
+              <span className="text-center">Book a service</span>
+              <div className="size-10" />
+            </SheetTitle>
           </SheetHeader>
+          <SheetDescription className="sr-only">
+            Dialog for booking healthcare services and managing the scheduling
+            process
+          </SheetDescription>
           <div className="overflow-auto">
             {steps[activeStep]?.content ?? null}
           </div>
@@ -174,18 +188,48 @@ const HealthcareServiceDialogConsumer = ({
       </Sheet>
     );
   }
+
   return (
     <Dialog onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent>
-        <div className="max-h-[90vh] overflow-y-scroll rounded-xl">
-          <DialogHeader>
-            <DialogTitle className="text-zinc-500">Book a service</DialogTitle>
-            <DialogClose>
-              <X className="size-6 cursor-pointer p-1" />
-            </DialogClose>
-          </DialogHeader>
-          <div>{steps[activeStep]?.content ?? null}</div>
+      <DialogContent className="flex max-h-[90vh] flex-col px-0.5">
+        <DialogHeader className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm">
+          <div className="flex items-center gap-2">
+            {steps.length > 1 ? (
+              <>
+                <DialogTitle className="text-zinc-500">
+                  Step {activeStep + 1} / {steps.length}
+                </DialogTitle>
+                <Progress
+                  value={((activeStep + 1) / steps.length) * 100}
+                  className="ml-2 h-1 w-32"
+                />
+              </>
+            ) : (
+              <DialogTitle className="text-zinc-500">
+                Book a service
+              </DialogTitle>
+            )}
+          </div>
+          <DialogDescription className="sr-only">
+            Dialog for booking healthcare services and managing the scheduling
+            process
+          </DialogDescription>
+          <DialogClose>
+            <X className="size-6 cursor-pointer p-1" />
+          </DialogClose>
+        </DialogHeader>
+        {/*
+         * Custom scrollbar psuedo-element styling:
+         * - [overflow:overlay] - Positions scrollbar on top of content without taking up space
+         * - [&::-webkit-scrollbar]:w-2 - Sets the width of the scrollbar track to 2px
+         * - [&::-webkit-scrollbar-thumb]:rounded-full - Makes the scrollbar thumb fully rounded
+         * - [&::-webkit-scrollbar-button:end:increment] - Targets the bottom pseudo-element of the scrollbar
+         *   - block - Makes the pseudo-element visible (but transparent)
+         *   - h-[13vh] - Creates an invisible spacer to offset the scrollbar from the sticky footer
+         */}
+        <div className="flex-1 overflow-y-auto scrollbar scrollbar-thumb-zinc-300 [overflow:overlay] [&::-webkit-scrollbar-button:end:increment]:block [&::-webkit-scrollbar-button:end:increment]:h-[13vh] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar]:w-2">
+          {steps[activeStep]?.content ?? null}
         </div>
       </DialogContent>
     </Dialog>

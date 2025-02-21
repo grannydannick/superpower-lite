@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { Sidebar } from '@/components/shared/sidebar';
-import { Progress } from '@/components/ui/progress';
+import { NavigationProgress } from '@/components/ui/navigation-progress';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 
@@ -28,7 +28,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       {!hideNavBar && <Sidebar open={open} setOpen={setOpen} />}
-      <Progress />
+      <NavigationProgress />
       <motion.div
         className={cn(
           'flex flex-col',

@@ -29,14 +29,16 @@ export const HealthcareServiceFooter = ({
   return (
     <div
       className={cn(
-        'flex items-center px-6 pb-12 md:justify-between md:px-14',
+        // sticky footer only if parent has overflow: auto/scroll (e.g. dialog)
+        'bottom-0 z-50 bg-white/90 backdrop-blur-sm flex items-center md:justify-between px-6 py-4 md:py-8 md:px-14 [.overflow-auto_&]:sticky [.overflow-y-scroll_&]:sticky',
         className,
       )}
     >
-      <Body1 className="hidden text-zinc-400 md:block">
+      {/* only show on scrollable parent (e.g. dialog) */}
+      <Body1 className="hidden text-zinc-400 md:block [.overflow-auto_&]:invisible [.overflow-y-scroll_&]:invisible">
         Step {activeStep + 1} of {steps.length}
       </Body1>
-      <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
+      <div className="flex w-full flex-col items-end gap-2 md:w-auto md:flex-row">
         {activeStep - 1 >= 0
           ? renderButton(
               prevBtn,

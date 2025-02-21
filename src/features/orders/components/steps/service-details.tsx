@@ -97,7 +97,7 @@ export const HealthcareServiceDetails = () => {
           : null}
       </Accordion>
 
-      <HealthcareServiceFooter className="pt-14" />
+      <HealthcareServiceFooter />
     </div>
   );
 };
