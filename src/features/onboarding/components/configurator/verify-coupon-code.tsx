@@ -44,10 +44,10 @@ export const VerifyCouponCode = () => {
   return (
     <section id="subscriptions" className="w-full space-y-6">
       <div className="space-y-2">
-        <H2 className="text-[#1E1E1E]">Verify coupon</H2>
-        <Body1>
-          Please verify that your discount code is correct, as it will be used
-          to apply any applicable discounts during checkout.
+        <H2 className="text-[#1E1E1E]">Access code</H2>
+        <Body1 className="text-zinc-500">
+          Please verify that your access code is correct, as it will be used to
+          apply any applicable discounts during checkout.
         </Body1>
       </div>
       <div>
@@ -60,7 +60,7 @@ export const VerifyCouponCode = () => {
           aria-invalid={validateCodeQuery.isError}
         />
         {validateCodeQuery.isError && (
-          <Body1 className="text-pink-700">Invalid coupon code</Body1>
+          <Body1 className="text-pink-700">Invalid access code</Body1>
         )}
         {/*rewardful coupons are weird so we don't want to let them edit*/}
         {rewardfulCoupon && 'Editing code is currently disabled.'}
