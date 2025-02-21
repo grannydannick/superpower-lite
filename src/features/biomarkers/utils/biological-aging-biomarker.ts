@@ -1,13 +1,35 @@
 import { calculateDNAmAge } from '@/features/biomarkers/utils/calculate-dnam-age';
-import { Biomarker } from '@/types/api';
+import { Biomarker, BiomarkerResult } from '@/types/api';
 import { yearsSinceDate } from '@/utils/format';
+
+import { getBiologicalAgeTimestamps } from './get-biological-age-timestamps';
+import { mostRecent } from './most-recent-biomarker';
 
 export const biologicalAgeBiomarker = (
   biomarkers: Biomarker[],
   dateOfBirth: string,
 ): Biomarker => {
-  const age = calculateDNAmAge(biomarkers, dateOfBirth);
+  const timestamps = getBiologicalAgeTimestamps(biomarkers);
+
+  const bioAgeResults: BiomarkerResult[] = [];
   const ageInYears = yearsSinceDate(dateOfBirth, false);
+
+  timestamps.forEach((timestamp) => {
+    const age = calculateDNAmAge(biomarkers, dateOfBirth, timestamp);
+    if (age !== null) {
+      bioAgeResults.push({
+        quantity: {
+          value: age,
+          comparator: 'EQUALS',
+          unit: 'yrs',
+        },
+        status: age < ageInYears ? 'OPTIMAL' : 'HIGH',
+        timestamp,
+      });
+    }
+  });
+
+  const latestResult = mostRecent(bioAgeResults);
 
   return {
     id: 'biological-age',
@@ -32,19 +54,7 @@ However, it is important to recognize that biological age is not a discrete pred
 Rather, think of it as a directional measurement of how your body may be aging internally, that is relative to you––i.e., the changes in your biological age over time reflect a general trend (of aging better or worse, or holding steady) and can alert you to lifestyle changes you may want to make to support healthy aging.`,
     importance: '',
     category: 'Aging',
-    value: age
-      ? [
-          {
-            quantity: {
-              value: age,
-              comparator: 'EQUALS',
-              unit: 'yrs',
-            },
-            status: 'OPTIMAL',
-            timestamp: new Date().toISOString(),
-          },
-        ]
-      : [],
+    value: bioAgeResults,
     range: [
       {
         status: 'OPTIMAL',
@@ -68,6 +78,10 @@ Rather, think of it as a directional measurement of how your body may be aging i
       ],
       content: [],
     },
-    status: age ? (age < ageInYears ? 'OPTIMAL' : 'HIGH') : 'PENDING',
+    status: latestResult
+      ? latestResult.status === 'OPTIMAL'
+        ? 'OPTIMAL'
+        : 'HIGH'
+      : 'PENDING',
   };
 };
