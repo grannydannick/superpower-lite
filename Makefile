@@ -75,6 +75,13 @@ build/docker/app/stg: util/login-aws-ecr
 	VERSION=$(VERSION) \
 	bash ./assets/scripts/build-docker-app.sh stg
 
+.PHONY: build/docker/app/stg-emr
+build/docker/app/stg-emr: description = Build and push app/frontend docker image for stg-emr (staging EMR)
+build/docker/app/stg-emr: util/login-aws-ecr
+	@bash $(SHARED_SCRIPT) info "Running $@ ..."
+	AWS_ECR_URL=$(AWS_ECR_URL) \
+	VERSION=$(VERSION) \
+	bash ./assets/scripts/build-docker-app-emr.sh stg
 ### Deploy
 
 .PHONY: deploy/app/stg
@@ -85,6 +92,17 @@ deploy/app/stg: prereq
 	DOPPLER_CONFIG=stg \
 	DEPLOY_ENV=STG \
 	DEPLOY_CONFIG=deployment/deploy.app.yaml \
+	KSP_SERVICE=app \
+	python3 $(DEPLOY_SCRIPT) -r superpower-app -t deploy/hidden
+
+.PHONY: deploy/app/stg-emr
+deploy/app/stg-emr: description = Deploy app to staging EMR
+deploy/app/stg-emr: prereq
+	K8S_CLUSTER=staging-cluster \
+	DOPPLER_PROJECT=superpower-app \
+	DOPPLER_CONFIG=stg_emr \
+	DEPLOY_ENV=STG-EMR \
+	DEPLOY_CONFIG=deployment/deploy.app-emr.yaml \
 	KSP_SERVICE=app \
 	python3 $(DEPLOY_SCRIPT) -r superpower-app -t deploy/hidden
 
