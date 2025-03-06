@@ -22,7 +22,7 @@ const ExpandableCard = () => {
     (as) => as.type === membershipType,
   );
 
-  const annualTotal = selectedSubscription?.total ?? 0;
+  const annualTotal = Math.max(selectedSubscription?.total ?? 0, 0);
 
   const discount = getDiscountedPrice(selectedSubscription);
 
