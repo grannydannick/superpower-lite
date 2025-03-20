@@ -12,9 +12,14 @@ import { getAccessCode, updateAccessCode } from '@/utils/access-code';
 export const VerifyCouponCode = () => {
   const rewardfulCoupon = (window as any).Rewardful?.coupon?.id;
   const [code, setCode] = useState(getAccessCode() ?? '');
-  const debouncedCode = useDebounce(code, 1000).toUpperCase();
-  const availableSubscriptionsQuery = useAvailableSubscriptions();
   const { processing } = useOnboarding();
+
+  const debouncedCode = useDebounce(
+    rewardfulCoupon ? code.trim() : code.toUpperCase().trim(),
+    1000,
+  );
+
+  const availableSubscriptionsQuery = useAvailableSubscriptions();
 
   const validateCodeQuery = useValidateCode({
     accessCode: debouncedCode,
@@ -41,6 +46,11 @@ export const VerifyCouponCode = () => {
     }
   }, [validateCodeQuery.data]);
 
+  // we don't want user to edit rewardful coupon code
+  if (rewardfulCoupon) {
+    return null;
+  }
+
   return (
     <section id="subscriptions" className="w-full space-y-6">
       <div className="space-y-2">
@@ -53,17 +63,19 @@ export const VerifyCouponCode = () => {
       <div>
         <Input
           placeholder="Enter your coupon code"
-          className={`w-full ${validateCodeQuery.isError ? 'border-pink-700 focus-visible:ring-0' : ''}`}
+          className={`w-full ${
+            validateCodeQuery.isError
+              ? 'border-pink-700 focus-visible:ring-0'
+              : ''
+          }`}
           value={code}
-          disabled={rewardfulCoupon || processing}
+          disabled={processing}
           onChange={(e) => setCode(e.target.value)}
           aria-invalid={validateCodeQuery.isError}
         />
         {validateCodeQuery.isError && (
           <Body1 className="text-pink-700">Invalid access code</Body1>
         )}
-        {/*rewardful coupons are weird so we don't want to let them edit*/}
-        {rewardfulCoupon && 'Editing code is currently disabled.'}
       </div>
     </section>
   );
