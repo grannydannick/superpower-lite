@@ -1,6 +1,7 @@
 import moment from 'moment';
 import 'moment-timezone';
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 
 import { HealthcareServiceInfoDialog } from '@/components/shared/healthcare-service-info-dialog-content';
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,7 @@ import { CreateOrderInput } from '@/features/orders/api';
 import { useCreateBulkOrders } from '@/features/orders/api/create-bulk-orders';
 import { getDefaultCollectionMethod } from '@/features/orders/utils/get-default-collection-method';
 import { useService, useServices } from '@/features/services/api';
+import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { CurrentPaymentMethodCard } from '@/features/users/components/current-payment-method-card';
 import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
@@ -111,12 +113,13 @@ const UpsellServiceCard = ({
 };
 
 const Upsell = () => {
-  const { data: user } = useUser();
   const { data, isLoading } = useServices();
   const [upsells, setUpsells] = useState<HealthcareService[]>([]);
   const [checkout, setCheckout] = useState(false);
 
-  const jumpOnboarding = useStepper((s) => s.jumpOnboarding);
+  const { mutateAsync: updateTaskProgress, isError } = useUpdateTask();
+
+  const { jump, getStepIndexById } = useStepper((s) => s);
 
   const updateUpsells = (service: HealthcareService) => {
     setUpsells((prev) => {
@@ -128,6 +131,22 @@ const Upsell = () => {
         return [...prev, service];
       }
     });
+  };
+
+  const updateStep = async () => {
+    const stepToJump = getStepIndexById('mission');
+    if (stepToJump === -1) {
+      toast.error("Something went wrong. Can't skip this step.");
+    }
+
+    await updateTaskProgress({
+      taskName: 'onboarding',
+      data: { progress: stepToJump },
+    });
+
+    if (!isError) {
+      jump('mission');
+    }
   };
 
   const availableServices =
@@ -172,12 +191,7 @@ const Upsell = () => {
         ))}
       </div>
       <div className="flex items-center justify-end gap-2 py-10">
-        <Button
-          variant="outline"
-          onClick={() =>
-            user ? jumpOnboarding('mission', user.onboarding.id) : undefined
-          }
-        >
+        <Button variant="outline" onClick={updateStep}>
           No thanks
         </Button>
         <Button disabled={!upsells.length} onClick={() => setCheckout(true)}>
@@ -197,7 +211,19 @@ const UpsellCheckout = ({
 }) => {
   const { data: user } = useUser();
   const { mutateAsync, isPending, error } = useCreateBulkOrders();
-  const nextOnboardingStep = useStepper((s) => s.nextOnboardingStep);
+  const { nextStep, activeStep } = useStepper((s) => s);
+  const { mutateAsync: updateTaskProgress, isError } = useUpdateTask();
+
+  const updateStep = async () => {
+    await updateTaskProgress({
+      taskName: 'onboarding',
+      data: { progress: activeStep },
+    });
+
+    if (!isError) {
+      nextStep();
+    }
+  };
 
   const createBulkOrdersFromServices = async () => {
     if (!user) return;
@@ -218,8 +244,10 @@ const UpsellCheckout = ({
     }
 
     await mutateAsync({ data: orders });
-    await nextOnboardingStep(user.onboarding.id);
+
+    return updateStep();
   };
+
   return (
     <div className="space-y-4 p-6 md:p-14">
       <H2>Order Summary</H2>

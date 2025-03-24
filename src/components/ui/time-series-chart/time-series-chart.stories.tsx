@@ -22,6 +22,7 @@ const biomarker: Biomarker = {
   favorite: false,
   value: [
     {
+      id: '1',
       quantity: {
         value: 1,
         comparator: 'EQUALS',
@@ -29,8 +30,10 @@ const biomarker: Biomarker = {
       },
       timestamp: '2024-04-26T15:45:00.000Z',
       status: 'OPTIMAL',
+      component: [],
     },
     {
+      id: '2',
       quantity: {
         value: 1,
         comparator: 'EQUALS',
@@ -38,8 +41,10 @@ const biomarker: Biomarker = {
       },
       timestamp: '2024-02-20T15:00:00.000Z',
       status: 'OPTIMAL',
+      component: [],
     },
     {
+      id: '3',
       quantity: {
         value: 1,
         comparator: 'EQUALS',
@@ -47,8 +52,10 @@ const biomarker: Biomarker = {
       },
       timestamp: '2024-01-25T21:41:00.000Z',
       status: 'OPTIMAL',
+      component: [],
     },
     {
+      id: '4',
       quantity: {
         value: 1,
         comparator: 'EQUALS',
@@ -56,8 +63,10 @@ const biomarker: Biomarker = {
       },
       timestamp: '2024-01-19T14:00:00.000Z',
       status: 'OPTIMAL',
+      component: [],
     },
     {
+      id: '5',
       quantity: {
         value: 0,
         comparator: 'EQUALS',
@@ -65,8 +74,10 @@ const biomarker: Biomarker = {
       },
       timestamp: '2023-10-13T03:02:00.000Z',
       status: 'OPTIMAL',
+      component: [],
     },
     {
+      id: '6',
       quantity: {
         value: 1,
         comparator: 'EQUALS',
@@ -74,6 +85,7 @@ const biomarker: Biomarker = {
       },
       timestamp: '2023-01-31T00:00:00.000Z',
       status: 'OPTIMAL',
+      component: [],
     },
   ],
   metadata: {
@@ -211,11 +223,9 @@ const biomarker: Biomarker = {
       status: 'OPTIMAL',
       low: {
         value: 0,
-        comparator: 'EQUALS',
       },
       high: {
         value: 2,
-        comparator: 'EQUALS',
       },
     },
   ],

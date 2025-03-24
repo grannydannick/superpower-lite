@@ -1,54 +1,55 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: superpower-app
+  name: react-app
   namespace: superpower
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: superpower-app
+      app: react-app
   template:
     metadata:
       labels:
-        app: superpower-app
+        app: react-app
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: eks.amazonaws.com/nodegroup
-                    operator: In
-                    values:
-                      - arm-workers
       containers:
-        - name: superpower-app
-          image: __AWS_ECR_URL__/superpower-app:__VERSION__
+        - name: react-app
+          image: react-app:latest
+          # imagePullPolicy: Always # or IfNotPresent
           ports:
             - containerPort: 3000
-
+          env:
+            - name: VITE_APP_API_URL
+              value: '{{ .VITE_APP_API_URL }}'
+            - name: VITE_APP_ENABLE_API_MOCKING
+              value: '{{ .VITE_APP_ENABLE_API_MOCKING }}'
+            - name: VITE_APP_STRIPE_PUBLISHABLE_KEY
+              value: '{{ .VITE_APP_STRIPE_PUBLISHABLE_KEY }}'
+            - name: VITE_APP_VITAL_ENV
+              value: '{{ .VITE_APP_VITAL_ENV }}'
+            - name: VITE_APP_GOOGLE_API_KEY
+              value: '{{ .VITE_APP_GOOGLE_API_KEY }}'
+            - name: VITE_APP_CALENDLY_TOKEN
+              value: '{{ .VITE_APP_CALENDLY_TOKEN }}'
+            - name: VITE_APP_TYPEFORM_FORM_ID
+              value: '{{ .VITE_APP_TYPEFORM_FORM_ID }}'
+            - name: VITE_APP_BRIDGE_PUBLISHABLE_KEY
+              value: '{{ .VITE_APP_BRIDGE_PUBLISHABLE_KEY }}'
+            - name: VITE_APP_BRIDGE_ENDPOINT
+              value: '{{ .VITE_APP_BRIDGE_ENDPOINT }}'
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: superpower-app
+  name: react-app
   namespace: superpower
-  annotations:
-    external-dns.alpha.kubernetes.io/hostname: app.superpower-staging.com
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: 'arn:aws:acm:us-east-1:554179259394:certificate/dc505934-95e6-49a0-b9fd-df2092b3c050'
-    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
-    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: '443'
 spec:
+  type: LoadBalancer # Changed from LoadBalancer to NodePort
   selector:
-    app: superpower-app
+    app: react-app
   ports:
     - name: http
       protocol: TCP
-      port: 80
+      port: 3000
       targetPort: 3000
-    - name: https
-      protocol: TCP
-      port: 443
-      targetPort: 3000
-  type: LoadBalancer

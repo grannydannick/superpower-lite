@@ -1,2 +1,0 @@
-export const ACTION_PLAN_SAVE_DELAY = 1000;
-export const ACTION_PLAN_EDITOR_SAVE_DELAY = 2500;

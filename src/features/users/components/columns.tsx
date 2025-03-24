@@ -2,8 +2,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
-import { CopyToClipboard } from '@/components/ui/copy-to-clipboard';
-import { env } from '@/config/env';
 import { useLogin } from '@/lib/auth';
 import { AdminUser } from '@/types/api';
 
@@ -58,19 +56,6 @@ export const columns: ColumnDef<AdminUser>[] = [
     header: 'Service #',
     cell: ({ row }) => {
       return row.original._count.serviceRequests;
-    },
-  },
-  {
-    accessorKey: 'typeformCpy',
-    header: 'Typeform URL',
-    cell: ({ row }) => {
-      const email = row.original.email;
-      const id = row.original.id;
-      const typeformFormId = env.TYPEFORM_FORM_ID;
-
-      const typeformUrl = `https://superpower-health.typeform.com/to/${typeformFormId}#email=${email}&user_id=${id}`;
-
-      return <CopyToClipboard link={typeformUrl} />;
     },
   },
   {

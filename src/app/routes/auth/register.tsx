@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { AuthLayout } from '@/components/layouts/auth-layout';
 import { CouponCodeAccessForm } from '@/features/auth/components/coupon-code-access-form';
@@ -7,8 +7,6 @@ import { RegisterForm } from '@/features/auth/components/register-form';
 
 export const RegisterRoute = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get('redirectTo');
 
   const [couponValidated, setCouponValidated] = useState(false);
 
@@ -17,7 +15,7 @@ export const RegisterRoute = () => {
       {couponValidated ? (
         <RegisterForm
           onSuccess={() =>
-            navigate(`${redirectTo ? `${redirectTo}` : '/'}`, {
+            navigate('/onboarding', {
               replace: true,
             })
           }

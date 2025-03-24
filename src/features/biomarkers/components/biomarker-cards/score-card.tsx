@@ -1,8 +1,10 @@
 import { SuperpowerScoreLogo } from '@/components/shared/score-logo';
 import { Spinner } from '@/components/ui/spinner';
 import { Body2, H1, H4 } from '@/components/ui/typography';
-import { useLatestHealthScore } from '@/features/biomarkers/api/get-latest-healthscore';
+import { useBiomarkers } from '@/features/biomarkers/api';
 import { ScoreChart } from '@/features/biomarkers/components/charts/score-chart';
+import { getHealthScoreDescription } from '@/features/biomarkers/utils/get-health-score-description';
+import { mostRecent } from '@/features/biomarkers/utils/most-recent-biomarker';
 import { cn } from '@/lib/utils';
 
 export const ScoreCard = ({
@@ -10,9 +12,8 @@ export const ScoreCard = ({
 }: {
   variant?: 'home' | 'biomarkers';
 }) => {
-  const getLatestHealthScoreQuery = useLatestHealthScore();
-
-  if (getLatestHealthScoreQuery.isLoading) {
+  const getBiomarkersQuery = useBiomarkers();
+  if (getBiomarkersQuery.isLoading) {
     return (
       <div className="flex h-48 w-full items-center justify-center">
         <Spinner variant="primary" />
@@ -20,11 +21,14 @@ export const ScoreCard = ({
     );
   }
 
-  if (!getLatestHealthScoreQuery.data) {
+  if (!getBiomarkersQuery.data) {
     return null;
   }
 
-  const latestScore = getLatestHealthScoreQuery.data.healthScoreResult;
+  const latestScore = mostRecent(
+    getBiomarkersQuery.data.biomarkers.find((b) => b.name == 'Health Score')
+      ?.value ?? [],
+  );
 
   return (
     <div
@@ -42,22 +46,24 @@ export const ScoreCard = ({
       {variant === 'home' ? (
         <div className="flex items-end gap-1">
           <H1 className="text-5xl text-white">
-            {latestScore?.finalScore || '--'}
+            {latestScore?.quantity.value || '--'}
           </H1>
-          {latestScore?.finalScore ? (
+          {latestScore?.quantity.value ? (
             <H4 className="text-white">/ 100</H4>
           ) : null}
         </div>
       ) : null}
       {variant === 'biomarkers' ? (
-        latestScore?.finalScore ? (
-          <ScoreChart value={latestScore.finalScore} />
+        latestScore?.quantity.value ? (
+          <ScoreChart value={latestScore.quantity.value} />
         ) : (
           <H1 className="text-5xl text-white">--</H1>
         )
       ) : null}
-      {latestScore?.finalScoreStatus ? (
-        <Body2 className="text-white">{latestScore?.finalScoreStatus}</Body2>
+      {latestScore?.quantity.value ? (
+        <Body2 className="text-white">
+          {getHealthScoreDescription(latestScore.quantity.value)}
+        </Body2>
       ) : (
         <Body2 className="text-white">Awaiting lab results</Body2>
       )}

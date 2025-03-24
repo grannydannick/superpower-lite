@@ -1,12 +1,8 @@
 import { VitalLinkButton } from '@/features/settings/components/vital-button';
-import { useUpdateQuestionnaire } from '@/features/users/api/update-questionnaire';
+import { useUpdateTask } from '@/features/tasks/api/update-task';
 
-export const WearableDialog = ({
-  questionnaireId,
-}: {
-  questionnaireId: string;
-}) => {
-  const { mutate } = useUpdateQuestionnaire();
+export const WearableDialog = () => {
+  const { mutate } = useUpdateTask();
 
   return (
     <VitalLinkButton
@@ -15,8 +11,8 @@ export const WearableDialog = ({
       className="bg-white"
       callback={() =>
         mutate({
-          data: { status: 'ACTIVE' },
-          questionnaireId: questionnaireId,
+          data: { status: 'in-progress' },
+          taskName: 'onboarding-wearable',
         })
       }
     >

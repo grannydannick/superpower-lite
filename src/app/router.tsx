@@ -76,6 +76,15 @@ export const createRouter = () =>
           },
         },
         {
+          path: 'questionnaire/:questionnaireName',
+          lazy: async () => {
+            const { QuestionnaireRoute } = await import(
+              './routes/app/questionnaire'
+            );
+            return { Component: QuestionnaireRoute };
+          },
+        },
+        {
           path: 'vault',
           lazy: async () => {
             const { FilesRoute } = await import('./routes/app/files');
@@ -83,7 +92,7 @@ export const createRouter = () =>
           },
         },
         {
-          path: 'plans/:orderId',
+          path: 'plans/:id',
           lazy: async () => {
             const { PlanRoute } = await import('./routes/app/plan');
             return { Component: PlanRoute };
@@ -124,27 +133,6 @@ export const createRouter = () =>
             return { Component: DataRoute };
           },
           errorElement: <MainErrorFallback />,
-        },
-        {
-          path: 'rdns',
-          lazy: async () => {
-            const { RdnsRoute } = await import('./routes/app/rdns');
-            return { Component: RdnsRoute };
-          },
-        },
-        {
-          path: 'members',
-          lazy: async () => {
-            const { MembersRoute } = await import('./routes/app/members');
-            return { Component: MembersRoute };
-          },
-        },
-        {
-          path: 'upcoming',
-          lazy: async () => {
-            const { UpcomingRoute } = await import('./routes/app/upcoming');
-            return { Component: UpcomingRoute };
-          },
         },
         {
           path: 'users',

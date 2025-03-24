@@ -1,13 +1,11 @@
 import { motion } from 'framer-motion';
 import {
-  CalendarCheck,
   ChevronsLeft,
   ChevronsRight,
   Ellipsis,
   LogIn,
   LogOut,
   LucideIcon,
-  PersonStanding,
   Settings,
 } from 'lucide-react';
 import React, {
@@ -128,24 +126,9 @@ export const DesktopSidebar = () => {
   const { checkAccess } = useAuthorization();
 
   const protectedLinks: Link[] = [
-    checkAccess({ allowedRoles: [ROLES.RDN_CLINICIAN] }) && {
-      name: 'Upcoming',
-      to: './upcoming',
-      icon: CalendarCheck,
-    },
-    checkAccess({ allowedRoles: [ROLES.RDN_CLINICIAN] }) && {
-      name: 'Your members',
-      to: './members',
-      icon: PersonStanding,
-    },
     checkAccess({ allowedRoles: [ROLES.SUPER_ADMIN] }) && {
       name: 'Users',
       to: './users',
-      icon: LockIcon,
-    },
-    checkAccess({ allowedRoles: [ROLES.SUPER_ADMIN] }) && {
-      name: 'RDNs',
-      to: './rdns',
       icon: LockIcon,
     },
   ].filter(Boolean) as Link[];

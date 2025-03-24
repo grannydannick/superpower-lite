@@ -10,8 +10,6 @@ import {
   TimelineHeader,
   TimelineItem,
 } from '@/components/ui/timeline';
-import { usePlans } from '@/features/action-plan/api';
-import { useCurrentPatient } from '@/features/rdns/hooks/use-current-patient';
 import { TimelineItem as TimelineItemType } from '@/types/api';
 
 /**
@@ -31,28 +29,9 @@ export const ActionPlanTimelineItem = ({
   shouldRenderNextConnector: boolean;
   timelineItem: TimelineItemType;
 }) => {
-  const plansQuery = usePlans();
-  const { hasAllowedRole } = useCurrentPatient();
   const navigate = useNavigate();
 
-  const plan = plansQuery.data?.actionPlans.find(
-    (ap) => ap.id === timelineItem.id,
-  );
-
-  if (!plan) return null;
-
   const renderButton = () => {
-    if (hasAllowedRole) {
-      return (
-        <Button
-          size="medium"
-          onClick={() => navigate(`./plans/${plan.orderId}`)}
-        >
-          Edit your note
-        </Button>
-      );
-    }
-
     switch (timelineItem.status) {
       case 'DISABLED':
         return (
@@ -66,7 +45,7 @@ export const ActionPlanTimelineItem = ({
             className="bg-white"
             size="medium"
             variant="outline"
-            onClick={() => navigate(`./plans/${plan.orderId}`)}
+            onClick={() => navigate(`./plans/${timelineItem.id}`)}
           >
             Open
           </Button>
@@ -77,10 +56,6 @@ export const ActionPlanTimelineItem = ({
   };
 
   const renderVariant = () => {
-    if (hasAllowedRole) {
-      return 'default';
-    }
-
     switch (timelineItem.status) {
       case 'DISABLED':
         return 'disabled';

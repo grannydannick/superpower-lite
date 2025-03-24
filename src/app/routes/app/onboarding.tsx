@@ -2,9 +2,9 @@ import { AnimatePresence } from 'framer-motion';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { Spinner } from '@/components/ui/spinner';
 import { steps } from '@/features/onboarding/components/steps';
-import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
-import { useUser } from '@/lib/auth';
+import { useTask } from '@/features/tasks/api/get-task';
 import { StepperStoreProvider, useStepper } from '@/lib/stepper';
 import { preloadImage } from '@/utils/preload-image';
 
@@ -32,36 +32,42 @@ export const onboardingLoader = () => async () => {
 };
 
 export const OnboardingRoute = () => {
-  const { data: user } = useUser({});
+  const onboardingTask = useTask({
+    taskName: 'onboarding',
+  });
+
   const navigate = useNavigate();
-  const setProcessing = useOnboarding((s) => s.setProcessing);
 
   /**
    * This gets triggered on final step or if user already has onboarding completed
    */
   useEffect(() => {
-    if (!user) return;
+    if (!onboardingTask.data) return;
 
-    if (!user?.onboarding) {
+    if (onboardingTask.data.task.status === 'completed') {
       navigate('/', {
         replace: true,
       });
     }
-  }, [user?.onboarding]);
+  }, [onboardingTask.data, navigate]);
 
-  /**
-   * Update processing on initial page load / refresh to prevent any side effects
-   */
-  useEffect(() => {
-    setProcessing(false);
-  }, []);
+  if (onboardingTask.isLoading) {
+    return (
+      <div className="flex h-dvh w-full items-center justify-center">
+        <Spinner variant="primary" size="lg" />
+      </div>
+    );
+  }
+
+  if (!onboardingTask.data) {
+    return null;
+  }
+
+  const initialStep = onboardingTask.data.task.progress ?? 0;
 
   return (
     <AnimatePresence>
-      <StepperStoreProvider
-        steps={steps}
-        initialStep={user?.onboarding?.progress}
-      >
+      <StepperStoreProvider steps={steps} initialStep={initialStep}>
         <Step />
       </StepperStoreProvider>
     </AnimatePresence>

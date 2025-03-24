@@ -54,6 +54,11 @@ run: prereq
 
 ### Build
 
+.PHONY: build/env/local
+build/env/dev: description = Build the .env file
+build/env/dev:
+	doppler secrets download -p superpower-app -c dev --no-file --format=env > .env
+
 .PHONY: build/local
 build/local: description = Build the app locally
 build/local: util/install

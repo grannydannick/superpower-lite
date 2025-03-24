@@ -84,13 +84,18 @@ export const BiomarkersSummaryCard = ({
 }: {
   variant?: 'home' | 'biomarkers';
 }) => {
-  const { data } = useOrders();
+  const getOrdersQuery = useOrders();
+  const getBiomarkersQuery = useBiomarkers();
 
-  const orders = data?.orders.filter(
+  const orders = getOrdersQuery.data?.orders.filter(
     (o) =>
       o.status === OrderStatus.completed &&
       (o.name === SUPERPOWER_BLOOD_PANEL ||
         o.name === SUPERPOWER_ADVANCED_BLOOD_PANEL),
+  );
+
+  const healthScore = getBiomarkersQuery.data?.biomarkers.find(
+    (b) => b.name == 'Health Score',
   );
 
   // we have this filter: orderBy: [{ createdAt: 'desc' }] on backend for orders
@@ -116,7 +121,10 @@ export const BiomarkersSummaryCard = ({
       <div className="flex w-full items-end justify-between">
         <BiomarkersList />
         <ScoreDialog>
-          <Button className="border border-zinc-700 bg-zinc-800 px-4 py-3">
+          <Button
+            className={cn('border border-zinc-700 bg-zinc-800 px-4 py-3')}
+            disabled={!healthScore}
+          >
             Score Report
           </Button>
         </ScoreDialog>

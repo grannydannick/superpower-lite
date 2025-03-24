@@ -5,7 +5,7 @@ import { useDropzone } from 'react-dropzone';
 import { toast } from 'sonner';
 
 import { Card } from '@/components/ui/card';
-import HyperText from '@/components/ui/hyper-text';
+import { Body1 } from '@/components/ui/typography';
 import { acceptedFileTypes } from '@/const/accepted-file-types';
 import { cn } from '@/lib/utils';
 
@@ -117,10 +117,9 @@ export const FileUpload = ({
           <div className="relative mx-auto mt-10 w-full max-w-xl">
             {files.length > 0 && (
               <div className="flex justify-center">
-                <HyperText
-                  className="text-center text-secondary"
-                  text="FILE UPLOADED"
-                />
+                <Body1 className="text-center text-secondary">
+                  FILE UPLOADED
+                </Body1>
               </div>
             )}
             {!files.length && (

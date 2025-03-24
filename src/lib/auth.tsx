@@ -1,9 +1,12 @@
 import { useMutation } from '@tanstack/react-query';
 import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
+import * as React from 'react';
 import { configureAuth } from 'react-query-auth';
 import { Navigate, useLocation } from 'react-router-dom';
 import { z } from 'zod';
 
+import { SuperpowerLoadingLogo } from '@/components/icons/superpower-logo';
+import { useTask } from '@/features/tasks/api/get-task';
 import { MutationConfig } from '@/lib/react-query';
 import { clearActiveLogin, setActiveLogin } from '@/lib/utils';
 import {
@@ -218,8 +221,20 @@ export const { useUser, useLogin, useLogout, useRegister } =
   configureAuth(authConfig);
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const userQuery = useUser();
   const location = useLocation();
+  const userQuery = useUser();
+  const taskQuery = useTask({
+    taskName: 'onboarding',
+  });
+
+  if (taskQuery.isLoading) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center">
+        <SuperpowerLoadingLogo />
+        <span className="sr-only">Loading</span>
+      </div>
+    );
+  }
 
   if (!userQuery.data) {
     return (
@@ -230,12 +245,11 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  if (userQuery.data) {
-    const user = userQuery.data;
+  if (taskQuery.data) {
+    const task = taskQuery.data.task;
 
     const needsOnboarding =
-      user.onboarding?.status === 'INCOMPLETE' &&
-      !location.pathname.includes('onboarding');
+      task.status !== 'completed' && !location.pathname.includes('onboarding');
 
     if (needsOnboarding) {
       return <Navigate to={`/onboarding`} replace />;

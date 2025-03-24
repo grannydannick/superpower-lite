@@ -5,16 +5,12 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { useCreateVerificationSession } from '@/features/onboarding/api/create-verification-session';
-import { useUpdateQuestionnaire } from '@/features/users/api/update-questionnaire';
+import { useUpdateTask } from '@/features/tasks/api/update-task';
 
-export const IdentityDialog = ({
-  questionnaireId,
-}: {
-  questionnaireId: string;
-}) => {
+export const IdentityDialog = () => {
   const stripe = useStripe();
   const createVerificationMutation = useCreateVerificationSession({});
-  const { mutate } = useUpdateQuestionnaire();
+  const { mutate } = useUpdateTask();
 
   const verify = async () => {
     if (!stripe) return;
@@ -36,8 +32,8 @@ export const IdentityDialog = ({
       }
 
       mutate({
-        data: { status: 'ACTIVE' },
-        questionnaireId: questionnaireId,
+        data: { status: 'in-progress' },
+        taskName: 'onboarding-identity',
       });
     } catch (error) {
       toast.error('Unable to verify identity');

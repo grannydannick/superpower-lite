@@ -9,6 +9,5 @@ export enum StepID {
   CONCIERGE = 'concierge',
   EARLY_ACCESS = 'early-access',
   TOXIN_SELECT = 'toxin-select',
-  CALENDLY = 'calendly',
   REFERRAL = 'referral',
 }

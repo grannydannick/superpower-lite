@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
 import { Body1, Body2, H2 } from '@/components/ui/typography';
-import { ADVISORY_CALL } from '@/const';
 import {
   CreateOrderInput,
   UpdateOrderInput,
@@ -19,11 +18,9 @@ import {
 } from '@/features/orders/api';
 import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
 import { useOrder } from '@/features/orders/stores/order-store';
-import { getDraftOrderUpsell } from '@/features/orders/utils/get-draft-order-upsell';
 import { useService } from '@/features/services/api';
 import { usePaymentMethods } from '@/features/settings/api';
 import { CreatePaymentMethodForm } from '@/features/settings/components/billing/create-payment-method-form';
-import { useQuestionnaires } from '@/features/users/api/get-questionnaires';
 import { CurrentPaymentMethodCard } from '@/features/users/components/current-payment-method-card';
 import { useStepper } from '@/lib/stepper';
 import { OrderStatus } from '@/types/api';
@@ -41,8 +38,9 @@ export function OrderSummary(): ReactNode {
     updateCreatedOrderId,
   } = useOrder((s) => s);
   const { nextStep, prevStep } = useStepper((s) => s);
-  const ordersQuery = useOrders();
-  const questionnairesQuery = useQuestionnaires();
+  const ordersQuery = useOrders({
+    queryConfig: { refetchOnMount: 'always' },
+  });
   const paymentMethodsQuery = usePaymentMethods();
 
   const serviceQuery = useService({
@@ -59,17 +57,7 @@ export function OrderSummary(): ReactNode {
     .filter((o) => o.status === OrderStatus.draft)
     .find((o) => o.serviceId === service.id);
 
-  const typeformQuestionnaire = questionnairesQuery.data?.questionnaires.find(
-    (q) => q.name === 'Intake',
-  );
-
-  const price = existingDraftOrder
-    ? getDraftOrderUpsell(
-        collectionMethod,
-        existingDraftOrder,
-        serviceQuery.data?.service,
-      )
-    : serviceQuery.data?.service.price;
+  const price = serviceQuery.data?.service.price;
 
   const createOrderMutation = useCreateOrder();
   const updateOrderMutation = useUpdateOrder();
@@ -80,7 +68,6 @@ export function OrderSummary(): ReactNode {
   const isQueryLoading =
     serviceQuery.isLoading ||
     ordersQuery.isLoading ||
-    questionnairesQuery.isLoading ||
     paymentMethodsQuery.isLoading;
 
   /*
@@ -92,14 +79,6 @@ export function OrderSummary(): ReactNode {
     if (service === null)
       throw Error('There was a problem creating the order.');
 
-    if (
-      service.name === ADVISORY_CALL &&
-      typeformQuestionnaire?.status !== 'COMPLETE'
-    ) {
-      toast.warning('You need to complete Intake before booking Advisory Call');
-      return;
-    }
-
     const data: CreateOrderInput = {
       serviceId: service.id,
       items,
@@ -107,7 +86,6 @@ export function OrderSummary(): ReactNode {
       timestamp: slot ? slot.start : new Date().toISOString(),
       timezone: tz || moment.tz.guess(),
       method: collectionMethod ? [collectionMethod] : [],
-      status: service.name === ADVISORY_CALL ? OrderStatus.draft : undefined,
     };
 
     // if step requires consent, add it to the final data object we send to server
@@ -125,21 +103,9 @@ export function OrderSummary(): ReactNode {
     }
   };
 
-  /*
-   * If we initially called dialog with `draftOrderId` then
-   * we will just update existing order
-   * */
   const updateOrderFn = async (): Promise<void> => {
     if (!existingDraftOrder) {
       toast.warning('No orderId found for previous order. Contact support.');
-      return;
-    }
-
-    if (
-      service.name === ADVISORY_CALL &&
-      typeformQuestionnaire?.status !== 'COMPLETE'
-    ) {
-      toast.warning('You need to complete Intake before booking Advisory Call');
       return;
     }
 
@@ -149,10 +115,7 @@ export function OrderSummary(): ReactNode {
       method: collectionMethod ? collectionMethod : undefined,
 
       timestamp: slot ? slot.start : new Date().toISOString(),
-      status:
-        service.name === ADVISORY_CALL
-          ? OrderStatus.draft
-          : OrderStatus.pending,
+      status: OrderStatus.pending,
     };
 
     // if step requires consent, add it to the final data object we send to server

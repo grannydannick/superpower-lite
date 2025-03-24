@@ -78,6 +78,8 @@ module.exports = {
                   './src/const',
                 ],
                 from: ['./src/features', './src/app'],
+                // exception here to import useTask to check onboarding state
+                except: ['./tasks']
               },
             ],
           },

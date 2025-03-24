@@ -12,7 +12,6 @@ import { phenotypicalAge } from './phenotypical-age';
 export function calculateDNAmAge(
   biomarkers: Biomarker[],
   birthDate?: string,
-  timestamp?: string,
 ): number | null {
   let weightedSum = 0;
   const coreObservations: Map<string, number> = new Map<string, number>();
@@ -22,9 +21,7 @@ export function calculateDNAmAge(
     const biomarker = biomarkers.find((b) => b.name === name);
     const calc = COEFFICIENTS[name].calculateCoefficient;
 
-    const value = timestamp
-      ? biomarker?.value.find((v) => v.timestamp === timestamp)
-      : mostRecent(biomarker?.value || []);
+    const value = mostRecent(biomarker?.value || []);
 
     if (!biomarker || !value) {
       console.warn('Missing biomarker for calculation of bioage: ' + name);

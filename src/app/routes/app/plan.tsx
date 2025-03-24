@@ -1,14 +1,13 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
-import { ClinicianNote } from '@/features/action-plan/components/clinician-note';
+import { CarePlan } from '@/features/plans/components/care-plan';
 
 export const PlanRoute = () => {
-  const { orderId } = useParams();
-  const navigate = useNavigate();
+  const { id } = useParams();
 
-  if (!orderId) {
-    navigate('/', { replace: true });
+  if (!id) {
+    return null;
   }
 
-  return <ClinicianNote orderId={orderId} />;
+  return <CarePlan id={id} />;
 };

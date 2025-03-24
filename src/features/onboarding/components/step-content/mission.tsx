@@ -2,7 +2,7 @@ import { OnboardingLayout } from '@/components/layouts/onboarding-layout';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { H1, H3, H4 } from '@/components/ui/typography';
-import { useUser } from '@/lib/auth';
+import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { useStepper } from '@/lib/stepper';
 
 const MISSION_CONTENT = [
@@ -14,8 +14,23 @@ const MISSION_CONTENT = [
 ];
 
 export const Mission = () => {
-  const { data: user } = useUser();
-  const { nextOnboardingStep, updatingStep } = useStepper((s) => s);
+  const { nextStep, activeStep } = useStepper((s) => s);
+  const {
+    mutateAsync: updateTaskProgress,
+    isError,
+    isPending,
+  } = useUpdateTask();
+
+  const updateStep = async () => {
+    await updateTaskProgress({
+      taskName: 'onboarding',
+      data: { progress: activeStep },
+    });
+
+    if (!isError) {
+      nextStep();
+    }
+  };
 
   return (
     <section
@@ -35,15 +50,13 @@ export const Mission = () => {
           </H3>
         ))}
         <Button
-          onClick={() =>
-            user ? nextOnboardingStep(user.onboarding.id) : undefined
-          }
-          disabled={updatingStep || !user}
+          onClick={updateStep}
+          disabled={isPending}
           type="submit"
           className="w-full"
           variant="white"
         >
-          {updatingStep ? (
+          {isPending ? (
             <Spinner variant="primary" />
           ) : (
             'I’m ready to commit to my health'

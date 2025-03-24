@@ -4,16 +4,31 @@ import { OnboardingLayout } from '@/components/layouts/onboarding-layout';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Body1, H1 } from '@/components/ui/typography';
-import { useUser } from '@/lib/auth';
+import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { useStepper } from '@/lib/stepper';
 
 import { SignatureBlock } from '../signature-block';
 
 export const Commitment = () => {
-  const { nextOnboardingStep, updatingStep } = useStepper((s) => s);
-  const { data: user } = useUser();
+  const { nextStep, activeStep } = useStepper((s) => s);
+  const {
+    mutateAsync: updateTaskProgress,
+    isError,
+    isPending,
+  } = useUpdateTask();
 
   const [enableNext, setEnableNext] = useState(false);
+
+  const updateStep = async () => {
+    await updateTaskProgress({
+      taskName: 'onboarding',
+      data: { progress: activeStep },
+    });
+
+    if (!isError) {
+      nextStep();
+    }
+  };
 
   return (
     <section className="mx-auto flex max-w-[500px] flex-col gap-y-12 py-12">
@@ -50,15 +65,13 @@ export const Commitment = () => {
           <SignatureBlock setNext={setEnableNext} />
         </div>
         <Button
-          onClick={() =>
-            user ? nextOnboardingStep(user.onboarding.id) : undefined
-          }
-          disabled={!enableNext || updatingStep || !user}
+          onClick={updateStep}
+          disabled={!enableNext || isPending}
           type="submit"
           className="w-full"
           variant="white"
         >
-          {updatingStep ? (
+          {isPending ? (
             <Spinner variant="primary" />
           ) : (
             'I’m committed to my health'

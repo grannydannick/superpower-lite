@@ -9,7 +9,7 @@ import {
   CarouselIndicator,
 } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useBiomarkers, useLatestHealthScore } from '@/features/biomarkers/api';
+import { useBiomarkers } from '@/features/biomarkers/api';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 
 import {
@@ -31,11 +31,10 @@ const DATA_CARDS = [
 ];
 
 export const DataCards = () => {
-  const getLatestHealthScoreQuery = useLatestHealthScore();
   const biomarkersQuery = useBiomarkers();
   const { width } = useWindowDimensions();
 
-  if (biomarkersQuery.isLoading || getLatestHealthScoreQuery.isLoading) {
+  if (biomarkersQuery.isLoading) {
     return (
       <section
         id="summary"

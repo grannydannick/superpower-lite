@@ -15,9 +15,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
    *
    * */
   const hideNavBar =
-    !data ||
-    data?.onboarding?.status === 'INCOMPLETE' ||
-    pathname.includes('plans');
+    !data || pathname.includes('onboarding') || pathname.includes('plans');
 
   const [open, setOpen] = useState(true);
 

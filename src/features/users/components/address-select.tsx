@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { MoreVertical, Plus } from 'lucide-react';
 import { ReactNode } from 'react';
 
@@ -23,8 +24,15 @@ export const AddressSelect = ({
   onAddressAdd?: () => void;
   closeBtn?: ReactNode;
 }) => {
+  const queryClient = useQueryClient();
   const { data: user } = useUser();
-  const { mutateAsync } = useUpdateProfile();
+  const { mutateAsync } = useUpdateProfile({
+    mutationConfig: {
+      onSuccess: () => {
+        queryClient.resetQueries();
+      },
+    },
+  });
 
   if (!user) {
     return <div className="md:p-16">Cannot load user information.</div>;

@@ -1,6 +1,7 @@
 import { createStore } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
+import { ADVISORY_CALL } from '@/const';
 import {
   CollectionMethodType,
   HealthcareService,
@@ -51,7 +52,7 @@ const initialState = {
   slot: null,
   createdOrderId: null,
   informedConsent: null,
-  collectionMethod: null,
+  // collectionMethod: null,
 };
 
 export const orderStoreCreator = (initProps: OrderStoreProps) => {
@@ -75,7 +76,8 @@ export const orderStoreCreator = (initProps: OrderStoreProps) => {
                 : [...state.items, item],
             };
           }),
-        collectionMethod: null,
+        collectionMethod:
+          initProps.service.name === ADVISORY_CALL ? 'AT_HOME' : null,
         updateCollectionMethod: (collectionMethod) => set({ collectionMethod }),
         updateLocation: (location) => set({ location }),
         setTz: (tz) => set({ tz }),

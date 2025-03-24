@@ -1,4 +1,3 @@
-export * from './calendly';
 export * from './confirm-address';
 export * from './informed-consent';
 export * from './invite-friend';

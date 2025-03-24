@@ -34,6 +34,11 @@ export const useCreateBulkOrders = ({
       queryClient.invalidateQueries({
         queryKey: getServicesQueryOptions().queryKey,
       });
+      // https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation#query-matching-with-invalidatequeries
+      // we want to invalidate ALL service queries here
+      queryClient.invalidateQueries({
+        queryKey: ['service'],
+      });
       onSuccess?.(...args);
     },
     ...restConfig,

@@ -1,7 +1,6 @@
 import { Body2, H1, H4 } from '@/components/ui/typography';
 import { useBiomarkers } from '@/features/biomarkers/api';
 import { calculateDNAmAge } from '@/features/biomarkers/utils/calculate-dnam-age';
-import { useCurrentPatient } from '@/features/rdns/hooks/use-current-patient';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 import { yearsSinceDate } from '@/utils/format';
@@ -13,25 +12,17 @@ export const BiologicalAgeCard = ({
 }) => {
   const biomarkersQuery = useBiomarkers();
   const { data: user } = useUser();
-  const { selectedPatient } = useCurrentPatient();
 
   if (!biomarkersQuery.data) return <></>;
   if (!user) return <></>;
 
-  /**
-   * If RDN selected patient, we should use patient's data to calculate DNAmAge
-   */
-  const dateOfBirth = selectedPatient
-    ? selectedPatient.dateOfBirth
-    : user.dateOfBirth;
-
   const biologicalAge = calculateDNAmAge(
     biomarkersQuery.data.biomarkers,
-    dateOfBirth,
+    user.dateOfBirth,
   );
 
   const ageDifference = biologicalAge
-    ? Math.round((yearsSinceDate(dateOfBirth) - biologicalAge) * 10) / 10.0
+    ? Math.round((yearsSinceDate(user.dateOfBirth) - biologicalAge) * 10) / 10.0
     : null;
 
   return (

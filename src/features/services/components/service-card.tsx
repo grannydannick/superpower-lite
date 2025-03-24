@@ -1,11 +1,8 @@
 import { ChevronRight } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
 import { Body1, Body2, H4 } from '@/components/ui/typography';
-import { ADVISORY_CALL } from '@/const';
 import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
-import { useGetSchedulingLink } from '@/features/services/api';
 import { HealthcareService, Order } from '@/types/api';
 
 export const ServiceCard = ({
@@ -30,22 +27,12 @@ const DesktopCard = ({
   service: HealthcareService;
   draftOrder?: Order;
 }) => {
-  const schedulingLinkQuery = useGetSchedulingLink({
-    queryConfig: {
-      enabled: service.name === ADVISORY_CALL,
-    },
-  });
-
-  const noSchedulingLink =
-    service.name === ADVISORY_CALL &&
-    (!schedulingLinkQuery.data?.link || schedulingLinkQuery.data.link === '');
-
   const renderButton = () => {
     if (draftOrder) {
       return <Button className="px-5 py-3">Schedule</Button>;
     }
 
-    if (!service.active || noSchedulingLink) {
+    if (!service.active) {
       return (
         <Button
           variant="white"
@@ -60,13 +47,8 @@ const DesktopCard = ({
       <Button
         variant="white"
         className="border border-zinc-200 px-5 py-3 hover:bg-white/30"
-        disabled={schedulingLinkQuery.isLoading}
       >
-        {schedulingLinkQuery.isLoading ? (
-          <Spinner variant="primary" />
-        ) : (
-          'Get Started'
-        )}
+        Get Started
       </Button>
     );
   };

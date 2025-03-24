@@ -1,28 +1,10 @@
-import { useEffect } from 'react';
-
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { ConfiguratorSections } from '@/features/onboarding/components/configurator/configurator-sections';
 import { FaqSection } from '@/features/onboarding/components/configurator/faq-section';
 import { ConfiguratorLayout } from '@/features/onboarding/components/layouts';
-import { useUser } from '@/lib/auth';
-import { useStepper } from '@/lib/stepper';
 import { cn } from '@/lib/utils';
 
 export const Configurator = () => {
-  const { data: user } = useUser();
-  const { nextOnboardingStep } = useStepper((s) => s);
-
-  /**
-   * If user already paid but something happened
-   * we advance user to resolve weird UI state
-   */
-  useEffect(() => {
-    if (user && user.subscribed) {
-      console.warn('User already subscribed, advancing step...');
-      nextOnboardingStep(user.onboarding.id);
-    }
-  }, []);
-
   return (
     <>
       <div

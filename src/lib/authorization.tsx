@@ -5,7 +5,6 @@ import { useUser } from './auth';
 export enum ROLES {
   SUPER_ADMIN = 'SUPER_ADMIN',
   MEMBER = 'MEMBER',
-  RDN_CLINICIAN = 'RDN_CLINICIAN',
 }
 
 type RoleTypes = keyof typeof ROLES;
@@ -44,7 +43,7 @@ export const useAuthorization = () => {
   }, [user.data]);
 
   /**
-   * This is used to make sure user has role (e.g. MEMBER can't see RDN pages)
+   * This is used to make sure user has role
    */
   const checkAccess = React.useCallback(
     ({ allowedRoles }: { allowedRoles: RoleTypes[] }) => {

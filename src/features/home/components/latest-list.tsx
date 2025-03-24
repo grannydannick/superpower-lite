@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AffiliateInviteCard } from '@/features/affiliate/components/affiliate-invite-card';
-import { useBiomarkers, useLatestHealthScore } from '@/features/biomarkers/api';
+import { useBiomarkers } from '@/features/biomarkers/api';
 import {
   BiologicalAgeCard,
   ScoreCard,
@@ -38,26 +38,21 @@ const LATEST_WITH_ONBOARDING_CARDS = [
 ];
 
 export const LatestList = () => {
-  const getLatestHealthScoreQuery = useLatestHealthScore();
   const biomarkersQuery = useBiomarkers();
   const timelineQuery = useTimeline();
 
   const { width } = useWindowDimensions();
 
-  const incompleteOnboardingQuestionnaires =
+  const incompleteOnboardingTasks =
     timelineQuery.data?.filter(
-      (t) => t.type === 'QUESTIONNAIRE' && t.status !== 'DONE',
+      (t) => t.type === 'ONBOARDING_TASK' && t.status !== 'DONE',
     ) ?? [];
 
-  const cards = incompleteOnboardingQuestionnaires.length
+  const cards = incompleteOnboardingTasks.length
     ? LATEST_WITH_ONBOARDING_CARDS
     : LATEST_CARDS;
 
-  if (
-    biomarkersQuery.isLoading ||
-    getLatestHealthScoreQuery.isLoading ||
-    timelineQuery.isLoading
-  ) {
+  if (biomarkersQuery.isLoading || timelineQuery.isLoading) {
     return (
       <div className="space-y-3">
         {Array(3)

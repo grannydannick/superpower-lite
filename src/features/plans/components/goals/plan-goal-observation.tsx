@@ -1,0 +1,76 @@
+import { Circle } from 'lucide-react';
+
+import { Skeleton } from '@/components/ui/skeleton';
+import { Body2 } from '@/components/ui/typography';
+import { useBiomarker } from '@/features/biomarkers/api/get-biomarker';
+import { BiomarkerTableDialogRow } from '@/features/biomarkers/components/biomarkers-data-table/biomarker-table-dialog-row';
+import { BiomarkerSparklineChart } from '@/features/biomarkers/components/charts/biomarker-sparkline-chart';
+import { BiomarkerRange } from '@/features/biomarkers/components/range';
+import { BiomarkerValueUnit } from '@/features/biomarkers/components/value-unit';
+import { STATUS_TO_COLOR } from '@/features/biomarkers/const/status-to-color';
+import { mostRecent } from '@/features/biomarkers/utils/most-recent-biomarker';
+import { cn } from '@/lib/utils';
+
+export type PlanObservationProps = {
+  id: string;
+  className?: string;
+};
+
+export function PlanGoalObservation({ id, className }: PlanObservationProps) {
+  const getBiomarkerQuery = useBiomarker({ id });
+
+  if (getBiomarkerQuery.isLoading) {
+    return <Skeleton className="h-[82px] w-full rounded-[20px]" />;
+  }
+
+  if (!getBiomarkerQuery.data) return null;
+
+  const biomarker = getBiomarkerQuery.data.biomarker;
+  const result = mostRecent(biomarker.value);
+  const { status, name } = biomarker;
+
+  return (
+    <BiomarkerTableDialogRow biomarker={biomarker}>
+      <div
+        className={cn(
+          'flex h-[60px] grow items-center justify-between rounded-xl bg-zinc-50 py-2.5 pl-5 pr-3 hover:cursor-pointer',
+          className,
+        )}
+      >
+        <div className="flex w-1/2 flex-col items-start">
+          <div className="flex flex-col justify-start gap-1">
+            <div className="flex items-center gap-2.5">
+              <Circle
+                className="size-2 min-w-2 md:hidden"
+                style={{
+                  fill: STATUS_TO_COLOR[status.toLowerCase()],
+                }}
+                strokeWidth={0}
+              />
+              <Body2 className="line-clamp-1 max-w-[200px]">{name}</Body2>
+            </div>
+            <BiomarkerValueUnit
+              baseUnit={biomarker.unit}
+              result={result}
+              textClassName="text-xs md:text-xs"
+            />
+          </div>
+        </div>
+
+        <div className="flex w-1/2 items-center justify-end md:justify-between">
+          <BiomarkerRange
+            biomarker={biomarker}
+            className="hidden rounded-[20px] px-3 py-2 text-xs md:block"
+          />
+          <BiomarkerSparklineChart
+            biomarker={biomarker}
+            className="h-[44px] sm:ml-0"
+            height={44}
+            markerRadius={8}
+            markerLineWidth={1}
+          />
+        </div>
+      </div>
+    </BiomarkerTableDialogRow>
+  );
+}

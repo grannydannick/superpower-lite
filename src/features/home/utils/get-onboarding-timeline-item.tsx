@@ -1,35 +1,44 @@
+import React from 'react';
+
+import { Button } from '@/components/ui/button';
+import { Link } from '@/components/ui/link';
+import { INTAKE_QUESTIONNAIRE } from '@/const/questionnaire';
 import { TimelineItem } from '@/types/api';
 
 import {
   IdentityDialog,
   InsuranceDialog,
-  TypeformDialog,
   WearableDialog,
 } from '../components/onboarding-items';
 
 export const getOnboardingTimelineItem = (timelineItem: TimelineItem) => {
-  const questionnaireId = timelineItem.id;
   switch (timelineItem.name) {
     case 'Identity':
       return {
         image: 'services/full_genetic_sequencing.png',
-        button: <IdentityDialog questionnaireId={questionnaireId} />,
+        button: <IdentityDialog />,
       };
 
     case 'Intake':
       return {
         image: 'timeline/typeform.png',
-        button: <TypeformDialog questionnaireId={questionnaireId} />,
+        button: (
+          <Link to={`/questionnaire/${INTAKE_QUESTIONNAIRE}`}>
+            <Button variant="outline" className="bg-white" size="medium">
+              Complete
+            </Button>
+          </Link>
+        ),
       };
     case 'Wearable':
       return {
         image: 'timeline/wearables.webp',
-        button: <WearableDialog questionnaireId={questionnaireId} />,
+        button: <WearableDialog />,
       };
     case 'Insurance':
       return {
         image: 'timeline/insurance.webp',
-        button: <InsuranceDialog questionnaireId={questionnaireId} />,
+        button: <InsuranceDialog />,
       };
     default:
       return null;

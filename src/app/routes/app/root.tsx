@@ -5,7 +5,6 @@ import { Outlet, useLocation } from 'react-router-dom';
 
 import { AppLayout } from '@/components/layouts/app-layout';
 import { Spinner } from '@/components/ui/spinner';
-import { PatientSelector } from '@/features/rdns/components/patient-selector';
 
 export const AppRoot = () => {
   const location = useLocation();
@@ -22,7 +21,6 @@ export const AppRoot = () => {
           key={location.pathname}
           fallback={<div>Something went wrong!</div>}
         >
-          <PatientSelector />
           <Outlet />
         </ErrorBoundary>
       </Suspense>

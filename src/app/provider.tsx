@@ -19,13 +19,14 @@ type AppProviderProps = {
 };
 
 function AuthLoader({ children }: { children: React.ReactNode }) {
-  const { isFetched } = useUser();
+  const userQuery = useUser();
+
   const [isDelayed, setIsDelayed] = useState<boolean>(false);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
 
-    if (isFetched) {
+    if (userQuery.isFetched) {
       // artificial timeout to make UI look better
       timer = setTimeout(() => {
         setIsDelayed(true);
@@ -37,9 +38,9 @@ function AuthLoader({ children }: { children: React.ReactNode }) {
         clearTimeout(timer);
       }
     };
-  }, [isFetched]);
+  }, [userQuery.isFetched]);
 
-  if (!isFetched || !isDelayed) {
+  if (!userQuery.isFetched || !isDelayed) {
     return (
       <div className="flex h-screen w-screen items-center justify-center">
         <SuperpowerLoadingLogo />

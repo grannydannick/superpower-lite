@@ -50,7 +50,7 @@ export function SchedulerHeading(): JSX.Element {
           className="text-sm [--base-color:theme(colors.zinc.600)] [--base-gradient-color:theme(colors.zinc.200)] sm:text-base"
           duration={1.2}
         >
-          Hang tight, it might take a little time to fetch the locations.
+          Hang tight, it might take a little time...
         </TextShimmer>
       ) : (
         <Body1 className="text-sm text-zinc-600 sm:text-base">

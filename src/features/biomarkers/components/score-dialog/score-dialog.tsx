@@ -2,7 +2,6 @@ import { X } from 'lucide-react';
 import { ReactNode } from 'react';
 import * as React from 'react';
 
-import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import {
   Sheet,
@@ -11,27 +10,11 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Body2 } from '@/components/ui/typography';
-import { useLatestHealthScore } from '@/features/biomarkers/api/get-latest-healthscore';
 import { ScoreContent } from '@/features/biomarkers/components/score-dialog/score-content';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 
 export const ScoreDialog = ({ children }: { children: ReactNode }) => {
-  const getLatestHealthScoreQuery = useLatestHealthScore();
   const { width } = useWindowDimensions();
-
-  if (!getLatestHealthScoreQuery.data) {
-    return null;
-  }
-
-  const latestScore = getLatestHealthScoreQuery.data.healthScoreResult;
-
-  if (!latestScore) {
-    return (
-      <Button disabled className="border border-zinc-700 bg-zinc-800 px-4 py-3">
-        Coming soon
-      </Button>
-    );
-  }
 
   if (width <= 768) {
     return (
@@ -48,7 +31,7 @@ export const ScoreDialog = ({ children }: { children: ReactNode }) => {
             <div className="min-w-[44px]" />
           </div>
           <div className="overflow-y-auto">
-            <ScoreContent latestScore={latestScore} />
+            <ScoreContent />
           </div>
         </SheetContent>
       </Sheet>
@@ -57,10 +40,10 @@ export const ScoreDialog = ({ children }: { children: ReactNode }) => {
 
   return (
     <Dialog>
-      <DialogTrigger>{children}</DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
 
       <DialogContent>
-        <ScoreContent latestScore={latestScore} />
+        <ScoreContent />
       </DialogContent>
     </Dialog>
   );

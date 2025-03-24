@@ -3,10 +3,7 @@ import { z } from 'zod';
 
 import { getTimelineQueryOptions } from '@/features/home/api/get-timeline';
 import { getOrdersQueryOptions } from '@/features/orders/api/get-orders';
-import {
-  getServiceQueryOptions,
-  getServicesQueryOptions,
-} from '@/features/services/api';
+import { getServicesQueryOptions } from '@/features/services/api';
 import { addressInputSchema } from '@/features/users/api';
 import { api } from '@/lib/api-client';
 import { MutationConfig } from '@/lib/react-query';
@@ -91,18 +88,15 @@ export const useCreateOrder = ({
         queryKey: getOrdersQueryOptions().queryKey,
       });
       queryClient.invalidateQueries({
-        queryKey: getServicesQueryOptions().queryKey,
-      });
-      queryClient.invalidateQueries({
         queryKey: getTimelineQueryOptions().queryKey,
       });
-
-      const { serviceId, method } = args[0].order;
       queryClient.invalidateQueries({
-        queryKey: getServiceQueryOptions(
-          serviceId,
-          method.length > 0 ? method[0] : null,
-        ).queryKey,
+        queryKey: getServicesQueryOptions().queryKey,
+      });
+      // https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation#query-matching-with-invalidatequeries
+      // we want to invalidate ALL service queries here
+      queryClient.invalidateQueries({
+        queryKey: ['service'],
       });
 
       onSuccess?.(...args);

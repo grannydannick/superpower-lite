@@ -10,7 +10,7 @@ export const CompleteOnboardingCard = () => {
 
   const { completed, total, progress, hasIncomplete } = useMemo(() => {
     const questionnaires =
-      timeline?.filter((t) => t.type === 'QUESTIONNAIRE') ?? [];
+      timeline?.filter((t) => t.type === 'ONBOARDING_TASK') ?? [];
     const totalQ = questionnaires.length;
     const completedQ = questionnaires.filter((q) => q.status === 'DONE').length;
 

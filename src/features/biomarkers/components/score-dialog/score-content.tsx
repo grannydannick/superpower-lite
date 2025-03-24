@@ -1,32 +1,54 @@
 import { Separator } from '@/components/ui/separator';
 import { Spinner } from '@/components/ui/spinner';
 import { Body2, H3 } from '@/components/ui/typography';
+import {
+  HEALTH_OPTIMIZATION,
+  ENVIRONMENTAL_TOXINS,
+  NUTRITION_AND_GUT,
+  LOOK_AND_FEEL,
+} from '@/const/health-score';
 import { useAffiliateLinks } from '@/features/affiliate/api';
 import { ShareButtons } from '@/features/affiliate/components/share-buttons';
-import { useBiomarkers, useHealthScores } from '@/features/biomarkers/api';
+import { useBiomarkers } from '@/features/biomarkers/api';
 import { BiomarkerDialogHeader } from '@/features/biomarkers/components/biomarker-dialog/biomarker-dialog-header';
 import { BiomarkerDialogMetadata } from '@/features/biomarkers/components/biomarker-dialog/biomarker-dialog-metadata';
 import { BiomarkerTimeSeriesChart } from '@/features/biomarkers/components/charts/biomarker-time-series-chart';
 import { ReportBlock } from '@/features/biomarkers/components/score-dialog/record-block';
 import { calculateDNAmAge } from '@/features/biomarkers/utils/calculate-dnam-age';
-import { scoreBiomarker } from '@/features/biomarkers/utils/score-biomarker';
+import { mostRecent } from '@/features/biomarkers/utils/most-recent-biomarker';
 import { useUser } from '@/lib/auth';
-import { HealthScoreResult } from '@/types/api';
 
-export const ScoreContent = ({
-  latestScore,
-}: {
-  latestScore: HealthScoreResult;
-}) => {
-  const healthScoresQuery = useHealthScores();
+export const ScoreContent = () => {
   const { data, isError } = useAffiliateLinks();
   const { data: user } = useUser();
-  const biomarkersQuery = useBiomarkers();
+
+  const getBiomarkersQuery = useBiomarkers();
+  if (getBiomarkersQuery.isLoading) {
+    return (
+      <div className="flex h-48 w-full items-center justify-center">
+        <Spinner variant="primary" />
+      </div>
+    );
+  }
+
+  if (!getBiomarkersQuery.data) {
+    return null;
+  }
+
+  const healthScore = getBiomarkersQuery.data.biomarkers.find(
+    (b) => b.name == 'Health Score',
+  );
+
+  if (!healthScore) {
+    return null;
+  }
+
+  const latestScore = mostRecent(healthScore.value);
 
   const dateOfBirth = user?.dateOfBirth;
   const biologicalAge =
-    dateOfBirth && biomarkersQuery.data
-      ? calculateDNAmAge(biomarkersQuery.data.biomarkers, dateOfBirth)
+    dateOfBirth && getBiomarkersQuery.data
+      ? calculateDNAmAge(getBiomarkersQuery.data.biomarkers, dateOfBirth)
       : null;
 
   const affiliateLink =
@@ -37,34 +59,19 @@ export const ScoreContent = ({
   // Set share message based on the availability of biological age
   const shareMessage =
     biologicalAge !== null
-      ? `I scored ${latestScore.finalScore} on my Superpower score report and my biological age is ${Math.floor(biologicalAge)}!\nIf you want to get a detailed report on your health, become a member at ${affiliateLink}`
-      : `I scored ${latestScore.finalScore} on my Superpower score report!\nIf you want to get a detailed report on your health, become a member at ${affiliateLink}`;
-
-  if (healthScoresQuery.isLoading) {
-    return (
-      <div className="flex h-48 w-full items-center justify-center">
-        <Spinner variant="primary" />
-      </div>
-    );
-  }
-
-  if (!healthScoresQuery.data) {
-    return null;
-  }
-
-  const healthScores = healthScoresQuery.data.healthScores;
-  const transformedScore = scoreBiomarker(healthScores, latestScore.finalScore);
+      ? `I scored ${latestScore?.quantity.value} on my Superpower score report and my biological age is ${Math.floor(biologicalAge)}!\nIf you want to get a detailed report on your health, become a member at ${affiliateLink}`
+      : `I scored ${latestScore?.quantity.value} on my Superpower score report!\nIf you want to get a detailed report on your health, become a member at ${affiliateLink}`;
 
   return (
     <>
       <BiomarkerDialogHeader
-        name={transformedScore.name}
-        status={transformedScore.status}
-        result={transformedScore.value[0]}
-        unit={transformedScore.unit}
+        name={healthScore.name}
+        status={healthScore.status}
+        result={healthScore.value[0]}
+        unit={healthScore.unit}
       />
       <div className="p-6">
-        <BiomarkerTimeSeriesChart biomarker={transformedScore} />
+        <BiomarkerTimeSeriesChart biomarker={healthScore} />
       </div>
       <div className="flex flex-row items-center justify-between px-6">
         <Body2 className="text-secondary">
@@ -76,30 +83,46 @@ export const ScoreContent = ({
       <div className="flex flex-col gap-7 px-10 py-8">
         <H3>Latest Superpower Report Summary</H3>
         <ReportBlock
-          categoryScores={latestScore.categoryScores.prevention}
-          blockTitle="Health Optimization"
+          categoryScores={
+            latestScore?.component.filter(
+              (c) => c.category === HEALTH_OPTIMIZATION,
+            ) ?? []
+          }
+          blockTitle={HEALTH_OPTIMIZATION}
         />
         <ReportBlock
-          categoryScores={latestScore.categoryScores.environmental}
-          blockTitle="Environmental toxins"
+          categoryScores={
+            latestScore?.component.filter(
+              (c) => c.category === ENVIRONMENTAL_TOXINS,
+            ) ?? []
+          }
+          blockTitle={ENVIRONMENTAL_TOXINS}
         />
         <ReportBlock
-          categoryScores={latestScore.categoryScores.nutrition}
-          blockTitle="Nutrition & Gut"
+          categoryScores={
+            latestScore?.component.filter(
+              (c) => c.category === NUTRITION_AND_GUT,
+            ) ?? []
+          }
+          blockTitle={NUTRITION_AND_GUT}
         />
         <ReportBlock
-          categoryScores={latestScore.categoryScores.lookAndFeel}
-          blockTitle="Look & feel"
+          categoryScores={
+            latestScore?.component.filter(
+              (c) => c.category === LOOK_AND_FEEL,
+            ) ?? []
+          }
+          blockTitle={LOOK_AND_FEEL}
         />
       </div>
       <Separator />
       <div className="flex flex-col gap-7 px-10 py-8">
         <BiomarkerDialogMetadata
           className="space-y-8"
-          name={transformedScore.name}
-          description={transformedScore.description}
-          content={transformedScore.metadata.content}
-          importance={transformedScore.importance}
+          name={healthScore.name}
+          description={healthScore.description}
+          content={healthScore.metadata.content}
+          importance={healthScore.importance}
         />
       </div>
     </>

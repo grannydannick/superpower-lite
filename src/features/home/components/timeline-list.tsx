@@ -11,7 +11,6 @@ import {
   TimelineDot,
   TimelineConnector,
 } from '@/components/ui/timeline';
-import { usePlans } from '@/features/action-plan/api';
 import { useTimeline } from '@/features/home/api/get-timeline';
 import { useOrders } from '@/features/orders/api';
 import { useServices } from '@/features/services/api';
@@ -24,20 +23,18 @@ import {
 
 export const TimelineList = () => {
   /**
-   * We initially call services / orders query here to "preload" them for UI
+   * We initially call these queries here to "preload" them for UI
    */
   const timelineQuery = useTimeline();
   const servicesQuery = useServices();
   const ordersQuery = useOrders();
-  const plansQuery = usePlans();
 
   const timelineItems = timelineQuery.data;
 
   if (
     servicesQuery.isLoading ||
     ordersQuery.isLoading ||
-    timelineQuery.isLoading ||
-    plansQuery.isLoading
+    timelineQuery.isLoading
   ) {
     return (
       <div className="w-full space-y-3">
@@ -55,12 +52,12 @@ export const TimelineList = () => {
   }
 
   const onboardingItems = timelineItems.filter(
-    (ti) => ti.type === 'QUESTIONNAIRE' && ti.status !== 'DONE',
+    (ti) => ti.type === 'ONBOARDING_TASK' && ti.status !== 'DONE',
   );
 
   const currentItems = timelineItems.filter(
     (ti) =>
-      ti.type !== 'QUESTIONNAIRE' &&
+      ti.type !== 'ONBOARDING_TASK' &&
       ti.status !== 'DONE' &&
       ti.status !== 'DISABLED',
   );
@@ -78,7 +75,7 @@ export const TimelineList = () => {
       ) : null}
       {onboardingItems.map((t, i) => {
         switch (t.type) {
-          case 'QUESTIONNAIRE':
+          case 'ONBOARDING_TASK':
             return (
               <OnboardingTimelineItem
                 key={t.id}
@@ -148,7 +145,7 @@ export const TimelineList = () => {
                 shouldRenderNextConnector={false}
               />
             );
-          case 'QUESTIONNAIRE':
+          case 'ONBOARDING_TASK':
             return (
               <OnboardingTimelineItem
                 key={t.id}

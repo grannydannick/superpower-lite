@@ -8,6 +8,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { useGetServiceability } from '@/features/orders/api';
 import { AddAddressForm } from '@/features/settings/components/profile/add-address-form';
+import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { FormAddressInput, useUpdateProfile } from '@/features/users/api';
 import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
@@ -19,8 +20,14 @@ function FullPrimaryAddressForm({
   googleAddres: FormAddressInput;
 }) {
   const { data: user } = useUser();
-  const { nextOnboardingStep, updatingStep } = useStepper((s) => s);
+  const { nextStep, activeStep } = useStepper((s) => s);
+
   const { setIsZipBlocked } = useOnboarding();
+  const {
+    mutateAsync: updateTaskProgress,
+    isPending,
+    isError,
+  } = useUpdateTask();
 
   const getServiceabilityMutation = useGetServiceability();
   const updateProfileMutation = useUpdateProfile();
@@ -61,11 +68,18 @@ function FullPrimaryAddressForm({
       };
 
       await updateProfileMutation.mutateAsync({
-        data: { primaryAddress: { address } },
+        data: { activeAddress: { address } },
       });
 
       setIsZipBlocked(false);
-      await nextOnboardingStep(user.onboarding.id);
+      await updateTaskProgress({
+        taskName: 'onboarding',
+        data: { progress: activeStep + 1 },
+      });
+
+      if (!isError) {
+        nextStep();
+      }
     } else {
       setIsZipBlocked(true);
     }
@@ -92,7 +106,7 @@ function FullPrimaryAddressForm({
             type="submit"
             variant="white"
             className="w-full"
-            disabled={updatingStep || !user}
+            disabled={isPending || !user}
           >
             {getServiceabilityMutation.isPending ? (
               <Spinner variant="primary" />

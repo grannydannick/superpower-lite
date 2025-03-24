@@ -7,7 +7,7 @@ import { HealthcareService } from '@/types/api';
 export const getServices = async (): Promise<{
   services: HealthcareService[];
 }> => {
-  return api.get('/services');
+  return await api.get('/services');
 };
 
 export const getServicesQueryOptions = () => {

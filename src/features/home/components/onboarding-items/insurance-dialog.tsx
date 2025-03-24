@@ -21,17 +21,13 @@ import {
 } from '@/components/ui/sheet';
 import { Body1, Body2 } from '@/components/ui/typography';
 import { CreatePolicyForm } from '@/features/insurance/components/create-policy-form';
-import { useUpdateQuestionnaire } from '@/features/users/api/update-questionnaire';
+import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
 
-export const InsuranceDialog = ({
-  questionnaireId,
-}: {
-  questionnaireId: string;
-}) => {
+export const InsuranceDialog = () => {
   const { width } = useWindowDimensions();
-  const { mutate } = useUpdateQuestionnaire();
+  const { mutate } = useUpdateTask();
   const [current, setCurrent] = useState<'collection' | 'submitted'>(
     'collection',
   );
@@ -40,8 +36,8 @@ export const InsuranceDialog = ({
     if (!open) {
       if (current === 'submitted') {
         mutate({
-          data: { status: 'COMPLETE' },
-          questionnaireId: questionnaireId,
+          data: { status: 'completed' },
+          taskName: 'onboarding-insurance',
         });
       }
     }

@@ -1,4 +1,5 @@
 import { Skeleton } from '@/components/ui/skeleton';
+import { ADVISORY_CALL } from '@/const';
 import { ENVIRONMENTAL_TOXIN_PANEL } from '@/const/toxin-panel';
 
 import { useServices } from '../api/get-services';
@@ -28,11 +29,11 @@ export const ServicesList = () => {
 
   const filteredServices = servicesQuery.data.services
     .filter(
-      (healthcareService) =>
-        !ENVIRONMENTAL_TOXIN_PANEL.find(
-          (panel) => panel.name === healthcareService.name,
-        ),
+      (s) => !ENVIRONMENTAL_TOXIN_PANEL.find((panel) => panel.name === s.name),
     )
+    // hiding for now based on:
+    // https://linear.app/superpower/issue/ENG-3793/remove-advisory-call-service-on-frontend
+    .filter((s) => s.name !== ADVISORY_CALL)
     .sort(customSort);
 
   return (

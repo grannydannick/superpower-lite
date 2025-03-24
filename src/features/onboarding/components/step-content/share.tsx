@@ -1,5 +1,3 @@
-import { useNavigate } from 'react-router-dom';
-
 import { OnboardingLayout } from '@/components/layouts/onboarding-layout';
 import { Button } from '@/components/ui/button';
 import { CopyToClipboard } from '@/components/ui/copy-to-clipboard';
@@ -7,22 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { Body1, Body2, H1 } from '@/components/ui/typography';
 import { useAffiliateLinks } from '@/features/affiliate/api';
-import { useUpdateQuestionnaire } from '@/features/users/api/update-questionnaire';
-import { useUser } from '@/lib/auth';
+import { useUpdateTask } from '@/features/tasks/api/update-task';
 
 export const Share = () => {
-  const { data: user, refetch } = useUser();
   const { data, isLoading } = useAffiliateLinks();
-  const navigate = useNavigate();
-  const completeOnboardingMutation = useUpdateQuestionnaire({
-    mutationConfig: {
-      onSuccess: async () => {
-        await refetch();
-        localStorage.removeItem('onboarding');
-        navigate('/');
-      },
-    },
-  });
+  const { mutateAsync: updateTaskProgress, isPending } = useUpdateTask();
 
   const { links } = data || { links: [] };
 
@@ -65,24 +52,18 @@ export const Share = () => {
           </div>
         </div>
         <Button
-          onClick={() =>
-            user
-              ? completeOnboardingMutation.mutate({
-                  data: { status: 'COMPLETE' },
-                  questionnaireId: user.onboarding.id,
-                })
-              : undefined
-          }
-          disabled={isLoading || completeOnboardingMutation.isPending}
+          onClick={async () => {
+            await updateTaskProgress({
+              taskName: 'onboarding',
+              data: { status: 'completed' },
+            });
+          }}
+          disabled={isLoading || isPending}
           type="submit"
           className="w-full"
           variant="white"
         >
-          {completeOnboardingMutation.isPending || isLoading ? (
-            <Spinner variant="primary" />
-          ) : (
-            'Continue'
-          )}
+          {isPending || isLoading ? <Spinner variant="primary" /> : 'Continue'}
         </Button>
       </div>
     </section>

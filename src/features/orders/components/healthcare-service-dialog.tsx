@@ -30,7 +30,6 @@ import {
 } from '@/features/orders/stores/order-store';
 import { StepID } from '@/features/orders/types/step-id';
 import { getStepsFromService } from '@/features/orders/utils/get-steps-for-service';
-import { useGetSchedulingLink } from '@/features/services/api/get-scheduling-link';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { StepperStoreProvider, useStepper } from '@/lib/stepper';
 import { HealthcareService } from '@/types/api';
@@ -44,7 +43,6 @@ import { HealthcareService } from '@/types/api';
  *
  * @param {ReactNode} children - A button to trigger the dialog for scheduling services.
  * @param healthcareService - The healthcare service being scheduled. If not provided, then won't render inside the modal
- * @param draftOrder - Draft order if we want to finish booking order that we already created before
  * @param excludeSteps - Steps that we want to exclude. It's important to check if step is required and can be skipped.
  * @param onSubmit - Called when user clicks "Close" button on success screen
  */
@@ -59,22 +57,11 @@ export const HealthcareServiceDialog = ({
   onSubmit?: () => void;
   children?: ReactNode;
 }) => {
-  const schedulingLinkQuery = useGetSchedulingLink();
-
-  if (!schedulingLinkQuery.data) {
-    return <></>;
-  }
-
-  let steps = getStepsFromService(
-    healthcareService,
-    schedulingLinkQuery.data.link,
-  );
+  let steps = getStepsFromService(healthcareService);
 
   if (excludeSteps) {
     steps = steps.filter((step) => !excludeSteps.includes(step.id));
   }
-
-  // const collectionMethod = getDefaultCollectionMethod(healthcareService);
 
   return (
     <StepperStoreProvider steps={steps}>

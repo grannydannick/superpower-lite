@@ -17,6 +17,7 @@ import {
   useAvailableSubscriptions,
   useCreateSubscription,
 } from '@/features/settings/api';
+import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
 
@@ -29,7 +30,8 @@ export const SectionBilling = () => {
   const [error, setError] = useState<StripeError | undefined>(undefined);
   const addPaymentMethodMutation = useAddPaymentMethod();
   const createSubscriptionMutation = useCreateSubscription();
-  const nextOnboardingStep = useStepper((s) => s.nextOnboardingStep);
+  const { activeStep, nextStep } = useStepper((s) => s);
+  const { mutateAsync: updateTaskProgress } = useUpdateTask();
 
   const {
     membershipType,
@@ -106,11 +108,17 @@ export const SectionBilling = () => {
         } catch (e) {
           console.error('Failed to track subscription:', e);
         }
-        await nextOnboardingStep(user.onboarding.id);
+
+        await updateTaskProgress({
+          taskName: 'onboarding',
+          data: { progress: activeStep + 1 },
+        });
+        nextStep();
       }
     } catch (e) {
+      console.error(e);
+    } finally {
       setProcessing(false);
-      return;
     }
   };
 

@@ -5,13 +5,13 @@ import { Badge } from '@/components/ui/badge';
 import { HealthGradeComponent } from '@/components/ui/health-grade';
 import { Separator } from '@/components/ui/separator';
 import { Body1, Body2 } from '@/components/ui/typography';
-import { CategoryScore } from '@/types/api';
+import { BiomarkerComponent } from '@/types/api';
 
 export const ReportBlock = ({
   categoryScores,
   blockTitle,
 }: {
-  categoryScores: CategoryScore[];
+  categoryScores: BiomarkerComponent[];
   blockTitle: string;
 }) => {
   const navigate = useNavigate();
@@ -22,11 +22,11 @@ export const ReportBlock = ({
         <Separator className="w-7" />
         <Body2 className="text-zinc-400">{blockTitle}</Body2>
       </div>
-      {categoryScores.map((p, idx) => (
+      {categoryScores.map((c, idx) => (
         <div className="flex items-center gap-4" key={idx}>
-          <HealthGradeComponent grade={p.score} />
-          <Body1>{p.categoryName}</Body1>
-          {p.score === '-' ? (
+          <HealthGradeComponent grade={c.value} />
+          <Body1>{c.title}</Body1>
+          {c.value === '-' ? (
             <Badge
               className="cursor-pointer gap-1 rounded-lg bg-zinc-100 px-2 py-1 text-zinc-400"
               onClick={() => navigate('/services')}

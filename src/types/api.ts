@@ -1,3 +1,5 @@
+import { CarePlan, Goal } from '@medplum/fhirtypes';
+
 export type BaseEntity = {
   id: string;
 };
@@ -17,7 +19,7 @@ export type UserIdentity = {
   verifiedAt: Date;
 };
 
-export type UserRole = 'MEMBER' | 'SUPER_ADMIN' | 'RDN_CLINICIAN';
+export type UserRole = 'MEMBER' | 'SUPER_ADMIN';
 
 interface BaseUser {
   id: string;
@@ -41,7 +43,6 @@ export interface AdminUser extends BaseUser {
 
 export interface User extends BaseUser {
   gender: string;
-  onboarding: Questionnaire;
   subscribed: boolean;
   admin: boolean;
   carePlan?: string;
@@ -51,14 +52,6 @@ export interface User extends BaseUser {
   userIdentity?: UserIdentity;
   role: UserRole[];
   rdn?: Rdn;
-  typeforms?: TypeformWebhook[];
-}
-
-export interface TypeformWebhook {
-  SCORES: { name: string; id: string }[];
-  formResponse: FormResponse;
-  userId: string;
-  formId: string;
 }
 
 export interface FormResponse {
@@ -189,19 +182,35 @@ export type OperationOutcome = {
 };
 
 /* QUESTIONNAIRE */
+export type QuestionnaireName = 'onboarding-intake';
 
-export type QuestionnaireStatus = 'INCOMPLETE' | 'COMPLETE' | 'ACTIVE';
-export type QuestionnaireName =
-  | 'Identity'
-  | 'Intake'
-  | 'Wearable'
-  | 'Insurance';
+/* TASK */
+export type Task = {
+  id?: string;
+  reason: string;
+  name: TaskName;
+  status:
+    | 'draft'
+    | 'requested'
+    | 'received'
+    | 'accepted'
+    | 'rejected'
+    | 'ready'
+    | 'cancelled'
+    | 'in-progress'
+    | 'on-hold'
+    | 'failed'
+    | 'completed'
+    | 'entered-in-error';
+  priority?: 'routine' | 'urgent' | 'asap' | 'stat';
+  progress?: number;
+};
 
-export type Questionnaire = Entity<{
-  readonly name: QuestionnaireName;
-  readonly status: QuestionnaireStatus;
-  readonly progress: number;
-}>;
+export type TaskName =
+  | 'onboarding-insurance'
+  | 'onboarding'
+  | 'onboarding-wearable'
+  | 'onboarding-identity';
 
 /* HEALTHCARE SERVICE */
 export type HealthcareService = Entity<{
@@ -236,13 +245,19 @@ export type Biomarker = Entity<{
   metadata: BiomarkerMetadata;
 }>;
 
-export interface BiomarkerResult {
+export type BiomarkerComponent = {
+  category?: string;
+  title: string;
+  value: string;
+};
+
+export type BiomarkerResult = Entity<{
   quantity: Quantity;
   timestamp: string;
   status?: BiomarkerStatus;
-  biomarkerId?: string;
   orderId?: string;
-}
+  component: BiomarkerComponent[];
+}>;
 
 export interface BiomarkerMetadata {
   source: MetadataSource[];
@@ -269,10 +284,15 @@ export type BiomarkerStatus =
   | 'PENDING';
 
 export interface Range {
-  low?: Quantity;
-  high?: Quantity;
+  low?: {
+    value: number;
+    unit?: string;
+  };
+  high?: {
+    value: number;
+    unit?: string;
+  };
   status: BiomarkerStatus;
-  comparator?: string;
 }
 
 export interface Quantity {
@@ -300,26 +320,6 @@ export type Message = Entity<{
 
 export type VerifyOPT = {
   success: boolean;
-};
-
-/* HEALTH SCORES */
-export type HealthScoreResult = {
-  categoryScores: {
-    prevention: CategoryScore[];
-    environmental: CategoryScore[];
-    nutrition: CategoryScore[];
-    lookAndFeel: CategoryScore[];
-  };
-  finalScore: number;
-  finalScoreStatus: string;
-};
-export type ScoreType = 'A' | 'B' | 'C' | '-';
-export type ScoreStatus = 'optimal' | 'normal' | 'out of range';
-
-export type CategoryScore = {
-  categoryName: string;
-  score: ScoreType;
-  status: ScoreStatus;
 };
 
 /* SUBSCRIPTIONS */
@@ -543,109 +543,9 @@ export type Wearable = {
 
 /* ACTION PLAN */
 
-export type Plan = Entity<{
-  orderId: string;
-  timestamp: string;
-  title: string;
-  type: ActionPlanType;
-  description: string;
-  published: boolean;
-  goals: PlanGoal[];
-  videoFileId?: string;
-  annualReport?: AnnualReport;
-  updatedAt: string;
-  dateOverride?: string;
-}>;
-
-export type PlanGoal = Entity<{
-  title: string;
-  type: PlanGoalType;
-  description: string;
-  goalItems: PlanGoalItem[];
-  to: string;
-  from: string;
-  createdAt: string;
-}>;
-
-export type PlanGoalItem = Entity<{
-  itemId: string;
-  itemType: PlanGoalItemType;
-  title?: string;
-  description?: string;
-  timestamp?: string;
-}>;
-
-export type PlanDate = {
-  timestamp: string;
-  orderId: string;
-  actionPlanId?: string;
+export type FhirCarePlan = CarePlan & {
+  goal?: Array<{ resource: Goal }>;
 };
-
-export type PlanGoalItemType = 'SERVICE' | 'BIOMARKER' | 'PRODUCT';
-
-export type ActionPlanType = 'DEFAULT' | 'ANNUAL_REPORT';
-
-export type PlanGoalType =
-  | 'DEFAULT'
-  | 'ANNUAL_REPORT_PRIMARY'
-  | 'ANNUAL_REPORT_SECONDARY'
-  | 'ANNUAL_REPORT_PROTOCOLS';
-
-export type AnnualReportBlockType =
-  | 'PREVENTION'
-  | 'ENVIRONMENTAL'
-  | 'NUTRITION'
-  | 'LOOK_AND_FEEL';
-
-export type AnnualReportBlockGroupItemType = 'BIOMARKER' | 'SELF_EVALUATION';
-
-export type AnnualReportBlockGroupItemRefType = 'TEXT_LINK' | 'BUTTON_LINK';
-export type AnnualReportBlockGroupItemStatusType =
-  | 'OPTIMAL'
-  | 'NORMAL'
-  | 'OUT_OF_RANGE';
-
-export type BlockGroupItemRef = Entity<{
-  type: AnnualReportBlockGroupItemRefType;
-  text: string;
-  value: string;
-}>;
-
-export type BlockGroupItem = Entity<{
-  type: AnnualReportBlockGroupItemType;
-  biomarkerId: string | null;
-  selfEvalId: string | null;
-  name: string;
-  range: string | null;
-  status: AnnualReportBlockGroupItemStatusType | null;
-  value: string | null;
-  ref: BlockGroupItemRef[];
-}>;
-
-export type BlockGroup = Entity<{
-  name: string;
-  description: string;
-  hover: string;
-  score: string;
-  scoreCustom: string;
-  scoreCustomSetBy: string;
-  scoreCustomSetAt: string;
-  blockGroupItem: BlockGroupItem[];
-}>;
-
-export type Block = Entity<{
-  type: AnnualReportBlockType;
-  title: string;
-  subtitle: string;
-  subtitleValue: string;
-  blockGroup: BlockGroup[];
-}>;
-
-export type AnnualReport = Entity<{
-  title: string;
-  description: string;
-  block: Block[];
-}>;
 
 /* PRODUCTS */
 
@@ -731,7 +631,7 @@ export type RdnUserAssignment = {
 };
 
 /* TIMELINE */
-export type TimelineItemType = 'PLAN' | 'ORDER' | 'QUESTIONNAIRE';
+export type TimelineItemType = 'PLAN' | 'ORDER' | 'ONBOARDING_TASK';
 export type TimelineItemStatus =
   | 'DONE'
   | 'DISABLED'

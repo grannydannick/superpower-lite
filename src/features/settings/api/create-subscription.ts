@@ -1,6 +1,7 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 
+import { getOrdersQueryOptions } from '@/features/orders/api';
 import { api } from '@/lib/api-client';
 import { MutationConfig } from '@/lib/react-query';
 import { Subscription } from '@/types/api';
@@ -30,10 +31,14 @@ type UseCreateSubscriptionOptions = {
 export const useCreateSubscription = ({
   mutationConfig,
 }: UseCreateSubscriptionOptions = {}) => {
+  const queryClient = useQueryClient();
   const { onSuccess, ...restConfig } = mutationConfig || {};
 
   return useMutation({
     onSuccess: (...args) => {
+      queryClient.invalidateQueries({
+        queryKey: getOrdersQueryOptions().queryKey,
+      });
       onSuccess?.(...args);
     },
     ...restConfig,

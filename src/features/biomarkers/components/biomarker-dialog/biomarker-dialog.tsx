@@ -2,8 +2,7 @@ import { Separator } from '@/components/ui/separator';
 import { Body2 } from '@/components/ui/typography';
 import { useAffiliateLinks } from '@/features/affiliate/api';
 import { ShareButtons } from '@/features/affiliate/components/share-buttons';
-import { getNormalContent } from '@/features/biomarkers/utils/get-normal-content';
-import { Biomarker, MetadataContent } from '@/types/api';
+import { Biomarker } from '@/types/api';
 
 import { BiomarkerTimeSeriesChart } from '../charts/biomarker-time-series-chart';
 
@@ -27,16 +26,6 @@ export function BiomarkerDialog({
   if (!biomarker) return <></>;
 
   const { name, unit, description, importance, status, metadata } = biomarker;
-
-  let content: MetadataContent[] = [];
-
-  if (status === 'NORMAL') {
-    content = getNormalContent(biomarker);
-  } else {
-    content = metadata.content.filter((content: MetadataContent) => {
-      return content.status.toLowerCase() === status.toLowerCase();
-    });
-  }
 
   const sortedBiomarkerValues = biomarker.value.sort((a, b) => {
     return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
@@ -69,7 +58,7 @@ export function BiomarkerDialog({
         className="space-y-8 p-6"
         name={name}
         description={description}
-        content={content}
+        content={metadata.content}
         importance={importance}
       />
       <BiomarkerDialogFooter
