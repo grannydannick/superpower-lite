@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'sonner';
 
+import { toast } from '@/components/ui/sonner';
 import { Spinner } from '@/components/ui/spinner';
 import { useQuestionnaire } from '@/features/questionnaires/api/get-questionnaire';
 import { useUpdateQuestionnaireResponse } from '@/features/questionnaires/api/update-questionnaire-response';

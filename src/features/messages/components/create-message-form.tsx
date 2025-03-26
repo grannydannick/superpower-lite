@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TimerIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -11,6 +10,7 @@ import {
   FormItem,
   FormMessage,
 } from '@/components/ui/form';
+import { toast } from '@/components/ui/sonner';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 import { Body1 } from '@/components/ui/typography';

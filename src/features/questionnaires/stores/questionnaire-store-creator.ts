@@ -4,9 +4,9 @@ import {
   QuestionnaireResponse,
   QuestionnaireResponseItem,
 } from '@medplum/fhirtypes';
-import { toast } from 'sonner';
 import { createStore } from 'zustand';
 
+import { toast } from '@/components/ui/sonner';
 import {
   buildInitialResponse,
   getNumberOfPages,

@@ -5,11 +5,11 @@ import {
 } from '@stripe/react-stripe-js';
 import { StripeError } from '@stripe/stripe-js';
 import { FormEvent, useState } from 'react';
-import { toast } from 'sonner';
 
 import { ConsentInfo } from '@/components/shared/consent-info';
 import { StripeCardForm } from '@/components/shared/stripe-card-form';
 import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from '@/components/ui/sonner';
 import { H2 } from '@/components/ui/typography';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import {
@@ -50,7 +50,7 @@ export const SectionBilling = () => {
   const handleSubmit = async (event: FormEvent) => {
     if (!user) return;
     if (!consentGiven) {
-      toast.warning('You need to give consent first!');
+      toast('You need to give consent first!');
       return;
     }
     // We don't want to let default form submission happen here,

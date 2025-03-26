@@ -1,6 +1,5 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { ChevronDown } from 'lucide-react';
-import { toast } from 'sonner';
 
 import { FileUpload } from '@/components/shared/upload-wrapper';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown';
+import { toast } from '@/components/ui/sonner';
 import { useCreateFile } from '@/features/files/api';
 import { useCompleteOrder } from '@/features/orders/api/complete-order';
 import { useAuthorization } from '@/lib/authorization';

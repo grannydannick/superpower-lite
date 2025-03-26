@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -27,6 +26,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { toast } from '@/components/ui/sonner';
 import { Spinner } from '@/components/ui/spinner';
 import { Body2 } from '@/components/ui/typography';
 import { US_STATES } from '@/const';

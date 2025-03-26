@@ -1,5 +1,4 @@
 import { EllipsisVertical } from 'lucide-react';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
@@ -9,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown';
+import { toast } from '@/components/ui/sonner';
 import { useSubscriptions, useInvoice } from '@/features/settings/api';
 import { CancelMembershipDialog } from '@/features/settings/components/membership/cancel-membership-dialog';
 import { OrderInvoiceContent } from '@/features/settings/components/purchases/orders-invoice-content';

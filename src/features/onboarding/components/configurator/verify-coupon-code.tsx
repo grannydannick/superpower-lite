@@ -1,18 +1,18 @@
-import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
+import { useEffect, useState, useRef } from 'react';
 
 import { Input } from '@/components/ui/input';
+import { toast } from '@/components/ui/sonner';
 import { Body1, H2 } from '@/components/ui/typography';
 import { useValidateCode } from '@/features/auth/api';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { useAvailableSubscriptions } from '@/features/settings/api';
 import { useDebounce } from '@/hooks/use-debounce';
 import { getAccessCode, updateAccessCode } from '@/utils/access-code';
-
 export const VerifyCouponCode = () => {
   const rewardfulCoupon = (window as any).Rewardful?.coupon?.id;
   const [code, setCode] = useState(getAccessCode() ?? '');
   const { processing } = useOnboarding();
+  const isInitialMount = useRef(true);
 
   const debouncedCode = useDebounce(
     rewardfulCoupon ? code.trim() : code.toUpperCase().trim(),
@@ -42,8 +42,14 @@ export const VerifyCouponCode = () => {
       setCode(debouncedCode);
 
       availableSubscriptionsQuery.refetch();
-      toast.success(`Updated coupon code to ${debouncedCode}`);
+
+      // do not show toast on initial mount
+      if (!isInitialMount.current) {
+        toast.success('Access code successfully applied');
+      }
     }
+
+    isInitialMount.current = false;
   }, [validateCodeQuery.data]);
 
   // we don't want user to edit rewardful coupon code

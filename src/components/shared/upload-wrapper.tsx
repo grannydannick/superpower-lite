@@ -2,9 +2,9 @@ import { motion } from 'framer-motion';
 import { Upload } from 'lucide-react';
 import React, { ReactNode, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { toast } from 'sonner';
 
 import { Card } from '@/components/ui/card';
+import { toast } from '@/components/ui/sonner';
 import { Body1 } from '@/components/ui/typography';
 import { acceptedFileTypes } from '@/const/accepted-file-types';
 import { cn } from '@/lib/utils';

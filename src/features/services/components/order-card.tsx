@@ -1,9 +1,9 @@
 import moment from 'moment';
-import { toast } from 'sonner';
 
 import { TimestampDisplay } from '@/components/shared/timestamp-display';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from '@/components/ui/sonner';
 import { Body1, Body2 } from '@/components/ui/typography';
 import {
   ADVANCED_BLOOD_PANEL,
@@ -66,7 +66,7 @@ function OrderCardBadge({ order }: { order: Order }): JSX.Element {
   const { checkAdminActorAccess } = useAuthorization();
   const { mutateAsync } = useCancelOrder({
     mutationConfig: {
-      onSuccess: () => toast.warning('Cancelled order!'),
+      onSuccess: () => toast('Cancelled order!'),
     },
   });
 

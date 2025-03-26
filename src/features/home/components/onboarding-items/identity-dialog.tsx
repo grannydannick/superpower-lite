@@ -1,8 +1,8 @@
 import { useStripe } from '@stripe/react-stripe-js';
 import * as React from 'react';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
+import { toast } from '@/components/ui/sonner';
 import { Spinner } from '@/components/ui/spinner';
 import { useCreateVerificationSession } from '@/features/onboarding/api/create-verification-session';
 import { useUpdateTask } from '@/features/tasks/api/update-task';

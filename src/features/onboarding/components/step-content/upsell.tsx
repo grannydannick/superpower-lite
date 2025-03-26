@@ -1,12 +1,12 @@
 import moment from 'moment';
 import 'moment-timezone';
 import React, { useState } from 'react';
-import { toast } from 'sonner';
 
 import { HealthcareServiceInfoDialog } from '@/components/shared/healthcare-service-info-dialog-content';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from '@/components/ui/sonner';
 import { TextShimmer } from '@/components/ui/text-shimmer';
 import { Body1, Body2, H2 } from '@/components/ui/typography';
 import {

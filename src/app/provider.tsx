@@ -4,10 +4,10 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { HelmetProvider } from 'react-helmet-async';
-import { Toaster } from 'sonner';
 
 import { MainErrorFallback } from '@/components/errors/main';
 import { SuperpowerLoadingLogo } from '@/components/icons/superpower-logo';
+import { Toaster } from '@/components/ui/sonner';
 import { TextShimmer } from '@/components/ui/text-shimmer';
 import { useUser } from '@/lib/auth';
 import { NewRelicProvider } from '@/lib/newrelic';
@@ -76,7 +76,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
                 {import.meta.env.DEV && (
                   <ReactQueryDevtools buttonPosition="top-right" />
                 )}
-                <Toaster richColors />
+                <Toaster />
                 <AuthLoader>{children}</AuthLoader>
               </StripeProvider>
             </NewRelicProvider>

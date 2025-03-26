@@ -1,6 +1,6 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
-import { toast } from 'sonner';
 
+import { toast } from '@/components/ui/sonner';
 import { env } from '@/config/env';
 import { clearActiveLogin, getActiveLogin, setActiveLogin } from '@/lib/utils';
 import { OAuthGrantType, TokenResponse } from '@/types/api';

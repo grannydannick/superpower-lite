@@ -1,12 +1,12 @@
 import { Calendar, Check, MapPin } from 'lucide-react';
 import moment from 'moment';
 import React, { ReactNode } from 'react';
-import { toast } from 'sonner';
 
 import { DotIcon } from '@/components/icons/dot';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from '@/components/ui/sonner';
 import { Spinner } from '@/components/ui/spinner';
 import { Body1, Body2, H2 } from '@/components/ui/typography';
 import {
@@ -108,7 +108,7 @@ export function OrderSummary(): ReactNode {
 
   const updateOrderFn = async (): Promise<void> => {
     if (!existingDraftOrder) {
-      toast.warning('No orderId found for previous order. Contact support.');
+      toast('No orderId found for previous order. Contact support.');
       return;
     }
 

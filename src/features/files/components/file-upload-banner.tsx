@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
-import { toast } from 'sonner';
 
 import { FileUpload } from '@/components/shared/upload-wrapper';
+import { toast } from '@/components/ui/sonner';
 import { useCreateFile } from '@/features/files/api';
 
 export const FileUploadBanner = ({ children }: { children?: ReactNode }) => {

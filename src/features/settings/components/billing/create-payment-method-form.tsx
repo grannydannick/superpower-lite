@@ -5,11 +5,11 @@ import {
 } from '@stripe/react-stripe-js';
 import { StripeError } from '@stripe/stripe-js';
 import React, { FormEvent, useEffect, useState } from 'react';
-import { toast } from 'sonner';
 
 import { StripeCardForm } from '@/components/shared/stripe-card-form';
 import { Button } from '@/components/ui/button';
 import { DialogClose } from '@/components/ui/dialog';
+import { toast } from '@/components/ui/sonner';
 import { TextShimmer } from '@/components/ui/text-shimmer';
 import { useAddPaymentMethod } from '@/features/settings/api';
 
