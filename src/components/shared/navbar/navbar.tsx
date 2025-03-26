@@ -81,11 +81,6 @@ export const DesktopNavbar = () => {
       to: './users',
       icon: LockIcon,
     },
-    checkAccess({ allowedRoles: [ROLES.SUPER_ADMIN] }) && {
-      name: 'RDNs',
-      to: './rdns',
-      icon: LockIcon,
-    },
   ].filter(Boolean) as Link[];
 
   const dropdownItems = useMemo(() => {
@@ -332,11 +327,6 @@ export const MobileNavbar = () => {
     checkAccess({ allowedRoles: [ROLES.SUPER_ADMIN] }) && {
       name: 'Users',
       to: './users',
-      icon: LockIcon,
-    },
-    checkAccess({ allowedRoles: [ROLES.SUPER_ADMIN] }) && {
-      name: 'RDNs',
-      to: './rdns',
       icon: LockIcon,
     },
   ].filter(Boolean) as Link[];
