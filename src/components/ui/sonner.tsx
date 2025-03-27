@@ -1,6 +1,6 @@
 'use client';
 
-import { X, CheckCircle, AlertCircle } from 'lucide-react';
+import { X, AlertCircle, Check } from 'lucide-react';
 import React from 'react';
 import { Toaster as Sonner, toast as sonnerToast, ExternalToast } from 'sonner';
 
@@ -97,7 +97,7 @@ function createToast() {
       <CustomToast
         title={message}
         type="success"
-        icon={options?.icon || <CheckCircle className="size-4" />}
+        icon={options?.icon || <Check className="size-4" />}
         action={options?.action}
         closeButton={options?.closeButton}
       />

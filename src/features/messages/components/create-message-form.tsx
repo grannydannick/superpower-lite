@@ -33,7 +33,7 @@ export const CreateMessageForm = (): JSX.Element => {
   const createMessageMutation = useCreateMessage({
     mutationConfig: {
       onSuccess: () => {
-        toast.success('Message sent. We will get back in <24 hrs on weekdays.');
+        toast.success('Message sent! We will get back to you within 24 hours.');
         form.reset();
       },
     },
