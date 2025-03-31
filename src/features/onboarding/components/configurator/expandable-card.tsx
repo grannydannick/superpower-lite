@@ -148,12 +148,16 @@ const ExpandableCard = () => {
               <div>
                 <div className="flex items-center gap-2">
                   <Body1 className="text-white sm:hidden">
-                    {formatMoney(annualTotal)}/yr
+                    {annualTotal === 0
+                      ? 'Included'
+                      : `${formatMoney(annualTotal)}/yr`}
                   </Body1>
 
                   <H4 className="hidden text-white sm:block">My membership</H4>
                   <H4 className="hidden text-zinc-400 sm:block">
-                    {formatMoney(annualTotal)}/yr
+                    {annualTotal === 0
+                      ? 'Included'
+                      : `${formatMoney(annualTotal)}/yr`}
                   </H4>
                 </div>
                 <button

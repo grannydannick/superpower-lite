@@ -21,6 +21,21 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   selected,
   ...rest
 }) => {
+  const adjustedSubtotal = React.useMemo(() => {
+    const { subtotal, coupon } = availableSubscription;
+    let discountedPrice = subtotal;
+
+    if (coupon?.percent_off) {
+      discountedPrice *= 1 - coupon.percent_off / 100;
+    }
+
+    if (coupon?.amount_off) {
+      discountedPrice = Math.max(0, discountedPrice - coupon.amount_off);
+    }
+
+    return discountedPrice;
+  }, [availableSubscription]);
+
   return (
     <div
       className={cn(
@@ -50,7 +65,9 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         </div>
         <div className="flex flex-row items-center gap-x-6">
           <Body2 className="text-zinc-500">
-            {formatMoney(availableSubscription.subtotal)}
+            {adjustedSubtotal === 0
+              ? 'Included'
+              : formatMoney(adjustedSubtotal)}
           </Body2>
 
           <RadioGroupItem value={availableSubscription.type} />
