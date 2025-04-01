@@ -1,36 +1,13 @@
 import { X } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
+import { useBlur } from '@/hooks/use-blur';
 import { cn } from '@/lib/utils';
-
-const useShowBg = () => {
-  const [isBlurred, setIsBlurred] = useState(false);
-
-  useEffect(() => {
-    let timeoutId: number;
-
-    const handleScroll = () => {
-      clearTimeout(timeoutId);
-      timeoutId = window.setTimeout(() => {
-        setIsBlurred(window.scrollY > 10);
-      }, 10);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      clearTimeout(timeoutId);
-    };
-  }, []);
-
-  return isBlurred;
-};
 
 export const CarePlanHeader = () => {
   const navigate = useNavigate();
-  const isBlurred = useShowBg();
+  const isBlurred = useBlur();
 
   return (
     <div

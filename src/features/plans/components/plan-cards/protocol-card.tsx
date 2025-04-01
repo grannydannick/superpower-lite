@@ -63,7 +63,7 @@ export const ProtocolCard = ({ onClick }: { onClick?: () => void }) => {
           </div>
           <div className="flex h-full flex-col justify-between">
             <div className="relative h-full">
-              <Body2 className="mt-2 bg-gradient-to-b from-white/75 to-white/10 bg-clip-text text-transparent">
+              <Body2 className="mt-2 line-clamp-5 bg-gradient-to-b from-white/75 to-white/10 bg-clip-text text-transparent">
                 {latestAvailablePlan?.description}
               </Body2>
               {!latestAvailablePlan ? (

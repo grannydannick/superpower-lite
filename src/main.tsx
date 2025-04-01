@@ -1,10 +1,15 @@
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
-
 import './index.css';
+import { scan } from 'react-scan';
 
 import { App } from './app';
 import { enableMocking } from './testing/mocks';
+
+// react scan
+scan({
+  enabled: process.env.NODE_ENV === 'development',
+});
 
 const root = document.getElementById('root');
 if (!root) throw new Error('No root element found');

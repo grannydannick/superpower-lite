@@ -1,6 +1,9 @@
 import { useMemo } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
+import { DataRoute } from '@/app/routes/app/data';
+import { HomeRoute } from '@/app/routes/app/home';
+import { ServicesRoute } from '@/app/routes/app/services';
 import { MainErrorFallback } from '@/components/errors/main';
 import { ProtectedRoute } from '@/lib/auth';
 
@@ -55,10 +58,12 @@ export const createRouter = () =>
       children: [
         {
           path: '',
-          lazy: async () => {
-            const { HomeRoute } = await import('./routes/app/home');
-            return { Component: HomeRoute };
-          },
+          // lazy: async () => {
+          //   const { HomeRoute } = await import('./routes/app/home');
+          //   return { Component: HomeRoute };
+          // },
+          // NOTE: intentionally killed lazy loading for now
+          element: <HomeRoute />,
           loader: async () => {
             const { homeLoader } = await import('./routes/app/home');
             return homeLoader()();
@@ -66,10 +71,12 @@ export const createRouter = () =>
         },
         {
           path: 'services',
-          lazy: async () => {
-            const { ServicesRoute } = await import('./routes/app/services');
-            return { Component: ServicesRoute };
-          },
+          // lazy: async () => {
+          //   const { ServicesRoute } = await import('./routes/app/services');
+          //   return { Component: ServicesRoute };
+          // },
+          // NOTE: intentionally killed lazy loading for now
+          element: <ServicesRoute />,
           errorElement: <MainErrorFallback />,
         },
         {
@@ -132,10 +139,12 @@ export const createRouter = () =>
         },
         {
           path: 'data',
-          lazy: async () => {
-            const { DataRoute } = await import('./routes/app/data');
-            return { Component: DataRoute };
-          },
+          // lazy: async () => {
+          //   const { DataRoute } = await import('./routes/app/data');
+          //   return { Component: DataRoute };
+          // },
+          // NOTE: intentionally killed lazy loading for now
+          element: <DataRoute />,
           errorElement: <MainErrorFallback />,
         },
         {

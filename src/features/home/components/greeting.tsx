@@ -2,13 +2,23 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 
 import { H2 } from '@/components/ui/typography';
-import { useBiomarkers } from '@/features/biomarkers/api';
 import { useUser } from '@/lib/auth';
-import { cn } from '@/lib/utils';
 import { getDaytime } from '@/utils/get-date-time';
 
 import { HomeCards } from './home-cards';
 import { SharablesTabType, ShareableModal } from './shareable';
+
+const backgroundImageVariants = {
+  initial: { scale: 1.2, opacity: 1 },
+  animate: {
+    scale: 1,
+    opacity: 1,
+    transition: {
+      duration: 2,
+      ease: [0.25, 0.1, 0.25, 1.0],
+    },
+  },
+};
 
 export const GreetingComponent = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,7 +26,6 @@ export const GreetingComponent = () => {
     useState<SharablesTabType>('superpower-score');
 
   const { data: user } = useUser();
-  const biomarkersQuery = useBiomarkers();
 
   const handleCardClick = (tabType: SharablesTabType) => {
     setActiveModalTab(tabType);
@@ -32,18 +41,6 @@ export const GreetingComponent = () => {
     : `Good ${getDaytime()},`;
 
   const greetingText = 'Welcome to Superpower';
-
-  const backgroundImageVariants = {
-    initial: { scale: 1.2, opacity: 1 },
-    animate: {
-      scale: 1,
-      opacity: 1,
-      transition: {
-        duration: 5,
-        ease: [0.25, 0.1, 0.25, 1.0],
-      },
-    },
-  };
 
   return (
     <header
@@ -64,23 +61,6 @@ export const GreetingComponent = () => {
         />
         <HomeCards onClick={handleCardClick} />
       </div>
-
-      <div
-        className={cn(
-          'progressive-blur pointer-events-none absolute left-1/2 top-0 z-10 max-w-[1800px] -translate-x-1/2 transition-opacity duration-500 delay-75',
-          biomarkersQuery.isLoading
-            ? 'opacity-0 invisible'
-            : 'opacity-100 visible',
-        )}
-      />
-
-      <div
-        className="absolute left-1/2 top-0 z-20 size-full h-full max-w-[2012px] -translate-x-1/2 scale-150"
-        style={{
-          backgroundImage:
-            'linear-gradient(to right, black 0%, transparent 5%, transparent 95%, black 100%)',
-        }}
-      />
 
       <div className="absolute left-1/2 top-0 size-full max-w-[2010px] -translate-x-1/2 scale-150 overflow-hidden">
         <motion.img
