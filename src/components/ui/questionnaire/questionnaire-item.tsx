@@ -147,7 +147,7 @@ export const QuestionnaireFormItem = ({
       return (
         <QuestionnaireErrorWrapper isError={localError}>
           <Input
-            placeholder="Input number..."
+            placeholder="Tell us here..."
             type="number"
             step="any"
             id={name}
@@ -168,7 +168,7 @@ export const QuestionnaireFormItem = ({
       return (
         <QuestionnaireErrorWrapper isError={localError}>
           <Input
-            placeholder="Input number..."
+            placeholder="Tell us here..."
             type="number"
             step={1}
             id={name}
@@ -189,7 +189,7 @@ export const QuestionnaireFormItem = ({
       return (
         <QuestionnaireErrorWrapper isError={localError}>
           <Input
-            placeholder="Input date..."
+            placeholder="Tell us here..."
             className="h-14 w-full"
             type="date"
             id={name}
@@ -213,7 +213,7 @@ export const QuestionnaireFormItem = ({
       return (
         <QuestionnaireErrorWrapper isError={localError}>
           <Input
-            placeholder="Input time..."
+            placeholder="Tell us here..."
             type="time"
             id={name}
             name={name}
@@ -232,7 +232,7 @@ export const QuestionnaireFormItem = ({
       return (
         <QuestionnaireErrorWrapper isError={localError}>
           <Input
-            placeholder="Input text..."
+            placeholder="Tell us here..."
             id={name}
             name={name}
             // eslint-disable-next-line jsx-a11y/no-autofocus

@@ -165,13 +165,13 @@ export function RadioButtons({
               value={optionName}
               className="invisible rounded-xl border-zinc-400 after:visible after:transition-all after:duration-300 after:ease-in-out after:content-[''] data-[state=checked]:after:absolute data-[state=checked]:after:inset-0 data-[state=checked]:after:bg-black after:hover:bg-zinc-800"
             />
-            <span className="pointer-events-none invisible py-1.5">
+            <span className="pointer-events-none invisible py-1.5 pr-24">
               {optionValue.value}
             </span>
             <Label
               id={optionName}
               htmlFor={optionName}
-              className="absolute inset-0 z-10 m-0 flex w-full cursor-pointer select-none items-center justify-start px-6 py-4 text-left text-base font-normal text-white mix-blend-difference"
+              className="absolute inset-0 z-10 m-0 flex w-full cursor-pointer select-none items-center justify-start px-6 py-4 pr-24 text-left text-base font-normal text-white mix-blend-difference"
             >
               <span>{optionValue.value}</span>
             </Label>

@@ -253,7 +253,7 @@ export const QuestionnaireQuestion = ({
                   <Button
                     type="button"
                     variant="outline"
-                    className="ml-auto w-full md:w-[108px]"
+                    className="ml-auto w-full bg-white hover:bg-white/75 md:w-[108px]"
                     onClick={handleNextStep}
                   >
                     Skip
