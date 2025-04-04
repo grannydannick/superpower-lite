@@ -156,9 +156,9 @@ const HealthcareServiceDialogConsumer = ({
                 />
               </div>
             )}
-            <SheetTitle className="flex items-center justify-between space-x-24">
+            <SheetTitle className="grid w-full grid-cols-3 items-center">
               <SheetClose className="flex size-10 items-center justify-center rounded-full bg-zinc-100">
-                <X className="size-5 text-zinc-400" />
+                <X className="size-5 text-black" />
               </SheetClose>
               <span className="text-center">Book a service</span>
               <div className="size-10" />
