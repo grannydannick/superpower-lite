@@ -14,6 +14,9 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Body1, H2 } from '@/components/ui/typography';
+import { useProducts } from '@/features/plans/api';
+import { useCarePlan } from '@/features/plans/context/care-plan-context';
+import { parseProductRequests } from '@/features/plans/utils/parse-product-requests';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 
 import { ReviewStep } from './steps/review-step';
@@ -24,6 +27,22 @@ export const ActionPlanCheckoutModal = ({
   children: ReactNode;
 }) => {
   const { width } = useWindowDimensions();
+  const { plan } = useCarePlan();
+  const { data: productsData } = useProducts({});
+
+  const productRequests = parseProductRequests(plan.activity ?? []);
+
+  const unavailableCount = productRequests.reduce((count, productId) => {
+    const productExists = productsData?.products?.some(
+      (p) => p.id === productId,
+    );
+    return productExists ? count : count + 1;
+  }, 0);
+
+  const checkoutTitle =
+    unavailableCount > 0
+      ? `Checkout (${unavailableCount} unavailable)`
+      : 'Checkout';
 
   if (width <= 768) {
     return (
@@ -61,7 +80,7 @@ export const ActionPlanCheckoutModal = ({
             </DialogClose>
           </div>
           <div className="px-10 pt-2">
-            <H2>Checkout</H2>
+            <H2>{checkoutTitle}</H2>
           </div>
         </div>
         <ReviewStep />

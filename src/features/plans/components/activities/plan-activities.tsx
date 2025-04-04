@@ -42,8 +42,9 @@ export function PlanActivities() {
   const activityGroups: ActivityGroup[] = [
     {
       activities: productActivities,
-      title: 'Supplements',
-      titleSubtext: '',
+      title: 'Products / Supplements',
+      titleSubtext:
+        'These are the following products your clinician has recommended to help you achieve your goals.',
       renderActivity: (activity, index) => {
         const productCode =
           activity.detail?.productCodeableConcept?.coding?.[0]?.code;

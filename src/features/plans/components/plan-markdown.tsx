@@ -10,24 +10,29 @@ export const SafeMarkdown = ({ content }: { content: string }) => {
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          p: (props) => <Body1 className="mb-4 text-zinc-500" {...props} />,
-          h1: (props) => <H1 className="mb-2" {...props} />,
-          h2: (props) => <H2 className="mb-2" {...props} />,
-          h3: (props) => <H3 className="mb-2" {...props} />,
-          h4: (props) => <H4 className="mb-2" {...props} />,
+          p: (props) => (
+            <Body1 className="mb-4 break-words text-zinc-500" {...props} />
+          ),
+          h1: (props) => <H1 className="mb-2 break-words" {...props} />,
+          h2: (props) => <H2 className="mb-2 break-words" {...props} />,
+          h3: (props) => <H3 className="mb-2 break-words" {...props} />,
+          h4: (props) => <H4 className="mb-2 break-words" {...props} />,
           ul: (props) => (
             <ul className="mb-4 ml-5 list-disc text-zinc-500" {...props} />
           ),
           ol: (props) => (
             <ol className="mb-4 ml-5 list-decimal text-zinc-500" {...props} />
           ),
-          li: (props) => <li className="mb-1" {...props} />,
+          li: (props) => <li className="mb-1 break-words" {...props} />,
           strong: (props) => (
-            <strong className="font-bold text-zinc-800" {...props} />
+            <strong
+              className="break-words font-bold text-zinc-800"
+              {...props}
+            />
           ),
           a: (props) => (
             <a
-              className="text-vermillion-900 hover:underline"
+              className="break-all text-vermillion-900 hover:underline"
               target="_blank"
               rel="noreferrer"
               {...props}
@@ -42,7 +47,9 @@ export const SafeMarkdown = ({ content }: { content: string }) => {
     );
   } catch (error) {
     return (
-      <Body1 className="whitespace-pre-line text-zinc-500">{content}</Body1>
+      <Body1 className="whitespace-pre-line break-words text-zinc-500">
+        {content}
+      </Body1>
     );
   }
 };

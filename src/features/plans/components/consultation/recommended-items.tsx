@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Mono } from '@/components/ui/typography';
+import { useProducts } from '@/features/plans/api';
 import {
   PlanSection,
   PlanSectionHeader,
@@ -13,11 +14,27 @@ import { ActionPlanCheckoutModal } from '../checkout/checkout-modal';
 
 export const RecommendedItems = () => {
   const { plan } = useCarePlan();
+  const { data: productsData } = useProducts({});
 
   const productRequests = parseProductRequests(plan.activity ?? []);
 
-  if (!plan.activity || plan.activity.length === 0) {
-    return null;
+  if (
+    !plan.activity ||
+    plan.activity.length === 0 ||
+    productRequests.length === 0
+  ) {
+    return <div className="h-16" />;
+  }
+
+  const availableProductCount = productRequests.reduce((count, productId) => {
+    const productExists = productsData?.products?.some(
+      (p) => p.id === productId,
+    );
+    return productExists ? count + 1 : count;
+  }, 0);
+
+  if (availableProductCount === 0) {
+    return <div className="h-16" />;
   }
 
   const productCount = productRequests.length;

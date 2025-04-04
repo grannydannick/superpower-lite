@@ -1,4 +1,9 @@
-import { CarePlanActivity } from '@medplum/fhirtypes';
+import {
+  CarePlanActivity,
+  Coding,
+  CarePlanActivityDetail,
+} from '@medplum/fhirtypes';
+import { HelpCircle, ExternalLink, Image } from 'lucide-react';
 import { ReactNode } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -8,12 +13,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Body1, H2 } from '@/components/ui/typography';
+import { Body1, H4 } from '@/components/ui/typography';
 import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
 import { useProducts } from '@/features/plans/api';
 import { SafeMarkdown } from '@/features/plans/components/plan-markdown';
 import { useServices } from '@/features/services/api';
 import { cn } from '@/lib/utils';
+import { Product, HealthcareService } from '@/types/api';
 
 interface PlanActivityProps {
   activity: CarePlanActivity;
@@ -24,10 +30,9 @@ interface ActivityCardProps {
   className?: string;
   image?: string;
   name: string;
-  description?: string;
+  description?: string | ReactNode;
   actionBtn?: ReactNode;
   url?: string;
-  isProduct?: boolean;
 }
 
 function ActivityCard({
@@ -37,7 +42,6 @@ function ActivityCard({
   description,
   actionBtn,
   url,
-  isProduct = false,
 }: ActivityCardProps) {
   const content = (
     <div
@@ -56,26 +60,16 @@ function ActivityCard({
           />
         ) : (
           <div className="flex size-[72px] items-center justify-center rounded-[8px] bg-white p-4">
-            <H2 className="text-zinc-500">?</H2>
+            <Image size={48} className="text-zinc-500" />
           </div>
         )}
 
-        <div className="flex flex-1 items-start justify-between">
-          <div className="flex flex-col gap-1">
-            <Body1 className="line-clamp-1">{name}</Body1>
-            <Body1
-              className={cn(
-                'text-base italic line-clamp-1 pr-4',
-                description ? 'text-zinc-600' : 'text-zinc-400',
-              )}
-            >
-              {description ||
-                (isProduct
-                  ? 'Recommended supplement'
-                  : 'Book your appointment')}
-            </Body1>
+        <div className="flex min-w-0 flex-1 items-start justify-between">
+          <div className="flex min-w-0 max-w-full flex-col gap-1 overflow-hidden pr-2">
+            <Body1 className="overflow-hidden truncate">{name}</Body1>
+            <Body1 className="overflow-hidden truncate">{description}</Body1>
           </div>
-          {actionBtn}
+          {actionBtn && <div className="shrink-0">{actionBtn}</div>}
         </div>
       </div>
     </div>
@@ -113,54 +107,112 @@ export function PlanActivity({ activity, className }: PlanActivityProps) {
   );
 
   if (productCoding) {
-    // only show shopify product if it exists
-    if (product) {
-      return (
+    return renderProductActivity(productCoding, detail, product, className);
+  }
+
+  if (service) {
+    return renderServiceActivity(service, serviceCoding, detail, className);
+  }
+
+  return <SafeMarkdown content={detail?.description || ''} />;
+}
+
+function renderProductActivity(
+  productCoding: Coding,
+  detail?: CarePlanActivityDetail,
+  product?: Product,
+  className?: string,
+) {
+  const productName = productCoding.display || 'Unnamed Product';
+  const productDesc = detail?.description || 'Recommended supplement';
+
+  if (product) {
+    return (
+      <div className="mt-8 space-y-2">
+        <H4>{productName}</H4>
+        <Body1 className="text-zinc-500">{productDesc}</Body1>
         <ActivityCard
           {...product}
-          description={detail?.description}
+          name={productName}
+          description={
+            <div className="flex items-center gap-2 text-zinc-500">
+              <Body1 className="italic text-zinc-500">Available in stock</Body1>
+              <ExternalLink size={16} />
+            </div>
+          }
           className={className}
           url={product.url}
-          isProduct={true}
         />
-      );
-    }
-    return (
-      <TooltipProvider>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-8 space-y-2">
+      <H4>{productName}</H4>
+      <Body1 className="text-zinc-500">{productDesc}</Body1>
+      <TooltipProvider delayDuration={0}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="group relative cursor-help">
+            <div className="group relative cursor-pointer">
               <ActivityCard
-                name={productCoding.display || 'Unavailable Product'}
-                description={detail?.description}
+                name={productName}
+                description={
+                  <div className="flex w-full items-center gap-2 text-zinc-500">
+                    <Body1 className="italic text-zinc-500">
+                      Product not available
+                    </Body1>
+                    <HelpCircle size={16} />
+                  </div>
+                }
                 className={cn('opacity-70', className)}
-                isProduct={true}
               />
             </div>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Product not currently available.</p>
+            <p>
+              Product not available in store. You can order it online or contact
+              your clinician for assistance.
+            </p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-    );
-  }
+    </div>
+  );
+}
 
-  if (service) {
-    return (
+function renderServiceActivity(
+  service: HealthcareService,
+  serviceCoding?: Coding,
+  detail?: CarePlanActivityDetail,
+  className?: string,
+) {
+  const serviceName =
+    service.name || serviceCoding?.display || 'Unnamed Service';
+  const serviceDesc =
+    detail?.description || service.description || 'Book your appointment';
+
+  return (
+    <div className="mt-8 space-y-2">
+      <H4>{serviceName}</H4>
+      <Body1 className="text-zinc-500">{serviceDesc}</Body1>
       <ActivityCard
         {...service}
-        description={detail?.description}
+        name={serviceName}
+        description={
+          <div className="flex items-center gap-2 text-zinc-500">
+            <Body1 className="italic text-zinc-500">
+              Available for booking
+            </Body1>
+          </div>
+        }
         className={className}
         actionBtn={
           <HealthcareServiceDialog healthcareService={service}>
             <Button size="medium">Book</Button>
           </HealthcareServiceDialog>
         }
-        isProduct={false}
       />
-    );
-  }
-
-  return <SafeMarkdown content={detail?.description || ''} />;
+    </div>
+  );
 }
