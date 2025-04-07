@@ -162,7 +162,7 @@ export const QuestionnaireFormItem = ({
                 return;
               }
               onChangeAnswer({
-                valueInteger: e.currentTarget.valueAsNumber,
+                valueDecimal: e.currentTarget.valueAsNumber,
               });
             }}
             onKeyDown={onKeyDown}

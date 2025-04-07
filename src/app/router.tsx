@@ -5,7 +5,6 @@ import { DataRoute } from '@/app/routes/app/data';
 import { HomeRoute } from '@/app/routes/app/home';
 import { ServicesRoute } from '@/app/routes/app/services';
 import { MainErrorFallback } from '@/components/errors/main';
-import { QuestionnaireCheckModal } from '@/features/questionnaires/components/questionnaire-check-modal';
 import { ProtectedRoute } from '@/lib/auth';
 
 import { AppRoot } from './routes/app/root';
@@ -53,7 +52,7 @@ export const createRouter = () =>
       path: '/',
       element: (
         <ProtectedRoute>
-          <QuestionnaireCheckModal />
+          {/*<QuestionnaireCheckModal />*/}
           <AppRoot />
         </ProtectedRoute>
       ),
