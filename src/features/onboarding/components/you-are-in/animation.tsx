@@ -1,4 +1,5 @@
 import { useWindowWidth } from '@wojtekmaj/react-hooks';
+import { differenceInYears, parseISO } from 'date-fns';
 import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 
@@ -21,6 +22,10 @@ export const Activation = ({
   const [scrollInSection, setScrollInSection] = useState(0);
   const width = useWindowWidth();
   const isMobile = width ? width < 768 : false;
+
+  const birthDate = parseISO(user?.dateOfBirth ?? '');
+  const today = new Date();
+  const age = differenceInYears(today, birthDate);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -129,8 +134,7 @@ export const Activation = ({
                 </p>
                 <div className="flex flex-col">
                   <H3 className="text-right text-2xl text-white md:!text-3xl">
-                    {new Date().getFullYear() -
-                      new Date(user?.dateOfBirth ?? new Date()).getFullYear()}
+                    {age}
                   </H3>
                   <p className="text-right text-white">
                     Chronological years old
