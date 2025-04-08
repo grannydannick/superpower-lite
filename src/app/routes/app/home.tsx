@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { LockIcon } from '@/components/icons';
 import { PlusCircleIcon } from '@/components/icons/plus-circle';
 import { ContentLayout } from '@/components/layouts';
 // import { AffiliateBanner } from '@/features/affiliate/components/affiliate-banner';
+import { BlurTooltip } from '@/components/ui/blur-tooltip';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -73,17 +74,16 @@ export const HomeRoute = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <button
-            disabled
-            onClick={() => setTab('twin')}
-            className="text-lg disabled:opacity-20 md:w-40 md:text-2xl"
-          >
-            <LockIcon
-              className="mb-1 mr-2 inline-flex size-4 md:size-6"
-              fill="currentColor"
-            />
-            Digital Twin
-          </button>
+
+          <BlurTooltip message="Coming Soon">
+            <button className="flex items-center text-lg opacity-50 md:w-40 md:text-2xl">
+              <LockIcon
+                className="mb-1 mr-2 inline-flex size-4 md:size-6"
+                fill="currentColor"
+              />
+              Digital Twin
+            </button>
+          </BlurTooltip>
         </div>
         {tab === 'timeline' && <TimelineList />}
       </div>
