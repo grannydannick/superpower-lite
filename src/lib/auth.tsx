@@ -35,8 +35,11 @@ export const baseLoginInputSchema = z.object({
 
 export const loginInputSchema = baseLoginInputSchema.merge(
   z.object({
-    email: z.string().min(1, 'Required').email('Invalid email'),
-    password: z.string().min(5, 'Required'),
+    email: z
+      .string()
+      .min(1, 'Please enter your email address.')
+      .email('Please enter a valid email address.'),
+    password: z.string().min(5, 'Please enter your password.'),
     authMethod: z.enum(['admin']).optional(),
   }),
 );
@@ -58,12 +61,12 @@ const loginWithEmailAndPassword = (
 };
 
 export const registerInputSchema = z.object({
-  firstName: z.string().min(1, 'First name is required.'),
-  lastName: z.string().min(1, 'Last name is required.'),
-  email: z.string().email('Invalid email address.'),
+  firstName: z.string().min(1, 'Please enter your first name.'),
+  lastName: z.string().min(1, 'Please enter your last name.'),
+  email: z.string().email('Please enter a valid email address.'),
   phone: z
     .string()
-    .min(1, 'Phone number is required.')
+    .min(1, 'Please enter your phone number.')
     .refine(
       (value) => {
         // Check if the phone number is valid
@@ -74,7 +77,7 @@ export const registerInputSchema = z.object({
         return phoneNumber && phoneNumber.country === 'US';
       },
       {
-        message: 'Invalid US phone number.',
+        message: 'Please enter a valid US phone number.',
       },
     ),
   dateOfBirth: z.date().refine((data) => {
@@ -92,7 +95,9 @@ export const registerInputSchema = z.object({
     return age >= 18 && age <= 100;
   }, 'You must be at least 18 years old and no older than 100 to register.'),
   gender: z.enum(['MALE', 'FEMALE']),
-  password: z.string().min(6, 'Password must be at least 6 characters long.'),
+  password: z
+    .string()
+    .min(8, 'Please enter a password with at least 8 characters.'),
 });
 
 export type RegisterInput = z.infer<typeof registerInputSchema>;

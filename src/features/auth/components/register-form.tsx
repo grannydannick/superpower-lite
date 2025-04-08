@@ -195,6 +195,7 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
                         autoCorrect="off"
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />

@@ -34,7 +34,7 @@ function CustomToast({
   return (
     <div
       /* eslint-disable-next-line tailwindcss/no-custom-classname */
-      className={`toast group flex items-center gap-3 rounded-full md:!inset-x-0 md:!mx-auto ${bgColor} ${textColor} h-12 w-fit px-5 py-3 shadow-[0px_4px_4px_rgba(0,0,0,0.1),0px_8px_16px_rgba(0,0,0,0.1)]`}
+      className={`toast group !inset-x-0 !mx-auto flex items-center gap-3 rounded-full ${bgColor} ${textColor} h-auto min-h-12 w-fit px-5 py-3 text-center shadow-[0px_4px_4px_rgba(0,0,0,0.1),0px_8px_16px_rgba(0,0,0,0.1)]`}
     >
       {icon && <div className="flex-none">{icon}</div>}
 
