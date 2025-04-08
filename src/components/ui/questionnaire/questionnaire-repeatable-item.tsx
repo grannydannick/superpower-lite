@@ -87,10 +87,10 @@ export const QuestionnaireFormRepeatableItem = ({
                 ? 'text-2xl mb-3'
                 : 'text-2xl mb-5',
           )}
-        >
-          {item.text}
-          {/* {item.required ? <span className="italic text-pink-700">*</span> : null} */}
-        </Body1>
+          // This is needed to allow for a underline inside the question text
+          // I don't see a case for XSS because the only way to edit this is in Medplum
+          dangerouslySetInnerHTML={{ __html: item.text ?? '' }}
+        />
         {(description || isMultipleChoice) && (
           <Body2 className="text-secondary">
             {description ?? (isMultipleChoice && 'Select all that apply.')}
