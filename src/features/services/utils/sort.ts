@@ -18,7 +18,7 @@ export const customSort = (
 };
 
 export const healthcareServicesOrder = [
-  '1-1 Advisory Call',
+  //'1-1 Advisory Call',
   'Superpower Blood Panel',
   'Advanced Blood Panel',
   'Custom Blood Panel',

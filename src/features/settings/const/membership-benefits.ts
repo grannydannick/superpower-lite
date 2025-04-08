@@ -1,11 +1,11 @@
 import { MembershipBenefit } from '../types/membership';
 
 export const MEMBERSHIP_BENEFITS: MembershipBenefit[] = [
-  {
-    imgPath: '/settings/membership/video.png',
-    description:
-      'Video consult call of your biomarker results from a Longevity Advisor',
-  },
+  // {
+  //   imgPath: '/settings/membership/video.png',
+  //   description:
+  //     'Video consult call of your biomarker results from a Longevity Advisor',
+  // },
   {
     imgPath: '/settings/membership/plan.png',
     description: 'Personalized action plan backed by the latest science',

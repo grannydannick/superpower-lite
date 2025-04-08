@@ -113,8 +113,8 @@ const InsuranceSubmitted = () => {
           <ShieldCheckIcon className="size-24" />
           <Body1 className="text-zinc-500">Thank you!</Body1>
           <Body2 className="text-center text-zinc-500">
-            Our team will notify you if your plan is covered when Superpower
-            begins accepting insurance for provider consults.
+            We&apos;ve received your insurance information. Our team will notify
+            you as soon as Superpower begins accepting your insurance plan.
           </Body2>
         </div>
       </div>

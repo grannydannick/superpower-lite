@@ -205,11 +205,7 @@ Avoid foods high in iodine (seafood, dairy, and seaweed) and selenium (Brazil nu
 
 3. Send the sample to our labs for analysis and work with your care provider to understand the results`,
       'Pre-test considerations': `Urine test is required. There are no fasting requirements associated with this test. Connect with your membership advisor if you have any questions or concerns ahead of testing.`,
-      'Follow-up & Consult details': `We understand you may have questions about interpreting your test results. While these results are incredibly informative, a consult to review them in detail isn’t included with the cost of the test. We do offer optional follow-up consults for $100 if you’d like personalized guidance on your results.
-
-Please note:
-Because your onboarding call is primarily dedicated to reviewing your biomarkers, discussing your key monitored health issues, and walking you through our recommended protocol, it’s unlikely we’ll have time to cover your microbiome results in depth. If time allows, we may briefly touch on them at a high level, but we can’t guarantee a detailed review during this session.
-If you’d like a deeper dive into your results, we recommend scheduling a dedicated follow-up consult once they’re ready.`,
+      'Follow-up & Concierge support': `We understand you may have questions about interpreting your test results. While these results are incredibly informative, detailed analysis isn't included with the cost of the test. For personalized guidance on your results, you can use our concierge chat service, which provides expert support to help you understand your results and next steps. Our concierge team is available to answer your questions and provide tailored recommendations based on your specific test outcomes.`,
     },
 
     'Heavy Metals': {

@@ -128,8 +128,9 @@ export const CreatePolicyForm = ({ onSuccess }: { onSuccess: () => void }) => {
         className="space-y-3 md:max-w-[372px]"
       >
         <Body2 className="text-zinc-500">
-          Enter your insurance details below to be notified when Superpower
-          begins accepting insurance for provider consults.
+          Enter your insurance information below and we&apos;ll notify you as
+          soon as Superpower begins accepting your insurance plan. This helps us
+          prioritize coverage expansion.
         </Body2>
         <div className="grid gap-4 sm:grid-cols-2">
           <FormField
