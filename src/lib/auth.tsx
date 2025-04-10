@@ -91,9 +91,9 @@ export const registerInputSchema = z.object({
       age--;
     }
 
-    // Return true if age is between 18 and 100, inclusive
-    return age >= 18 && age <= 100;
-  }, 'You must be at least 18 years old and no older than 100 to register.'),
+    //upper age limit is iterative, medical risk / liability reasons
+    return age >= 18 && age <= 70;
+  }, 'You must be over 18 years old and no older than 70 to register.'),
   gender: z.enum(['MALE', 'FEMALE']),
   password: z
     .string()
