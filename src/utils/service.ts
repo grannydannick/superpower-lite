@@ -83,7 +83,7 @@ export const getDetailsForService = (
 
     'Advanced Blood Panel': {
       'Why is this test important?': `Proactive laboratory testing can provide targeted insight into you body's current health status, identifying areas of optimal and suboptimal physiologic function. The advanced panel dives into further areas of health that are not covered in our baseline panel, including heavy metal testing, certain key nutrients like omega fatty acids, and even critical hormones like cortisol that may be causing you stress. Furthermore, this test can serve to track how your body is responding to your Superpower action plan.`,
-      'Test Process': `"1. Order and schedule your advanced blood panel.
+      'Test Process': `1. Order and schedule your advanced blood panel.
 
 2. Fast and prepare for your at-home appointment.
 
@@ -91,7 +91,7 @@ export const getDetailsForService = (
 
 4. Receive your results within 10 days.
 
-5. Schedule a consultation with your clinical team to review your results and create an action plan."`,
+5. Schedule a consultation with your clinical team to review your results and create an action plan.`,
       'Pre-test considerations': `°  Hydrate for 24 hours prior to sample collection and after your blood draw is completed.
 
 ° No eating 10 hours prior to the appointment. The sample should be collected in a fasted state.
