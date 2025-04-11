@@ -14,6 +14,11 @@ import { NewRelicProvider } from '@/lib/newrelic';
 import { queryConfig } from '@/lib/react-query';
 import { StripeProvider } from '@/lib/stripe';
 
+import { captureCampaignParameters } from '../utils/campaign-tracking';
+
+// Initialize campaign tracking immediately since this is a client-side app
+captureCampaignParameters();
+
 type AppProviderProps = {
   children: React.ReactNode;
 };

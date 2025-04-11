@@ -71,7 +71,7 @@ export function CarePlan({ id }: { id: string }) {
   const isAnnualReport = isAnnualReportPlan(actionPlan);
 
   return (
-    <div className="w-full space-y-4 bg-zinc-50 bg-dot-zinc-400/[0.4] min-h-screen">
+    <div className="min-h-screen w-full space-y-4 bg-zinc-50 bg-dot-zinc-400/[0.4]">
       <CarePlanHeader />
       <CarePlanProvider plan={actionPlan} isAnnualReport={isAnnualReport}>
         <CarePlanContent />

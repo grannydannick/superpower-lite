@@ -20,6 +20,7 @@ import {
 import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
+import { getCampaignData } from '@/utils/campaign-tracking';
 
 import { trackSubscription } from '../../utils/gtm';
 
@@ -98,6 +99,8 @@ export const SectionBilling = () => {
           code: localStorage.getItem('superpower-code') ?? undefined,
           referralId: (window as any)?.Rewardful?.referral,
           membershipType,
+          // Add campaign data
+          campaignData: getCampaignData() ?? undefined,
         },
       });
 
