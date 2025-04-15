@@ -35,7 +35,11 @@ test('should register new user and call onSuccess cb which should navigate the u
   await userEvent.click(screen.getByRole('option', { name: 'Male' }));
 
   await userEvent.type(screen.getByLabelText(/email/i), newUser.email);
-  await userEvent.type(screen.getByLabelText(/password/i), newUser.password);
+  await userEvent.type(screen.getByLabelText(/^password$/i), newUser.password);
+  await userEvent.type(
+    screen.getByLabelText(/confirm password/i),
+    newUser.password,
+  );
 
   await userEvent.click(screen.getByRole('button', { name: /Register/i }));
 

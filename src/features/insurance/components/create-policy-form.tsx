@@ -70,7 +70,7 @@ export const CreatePolicyForm = ({ onSuccess }: { onSuccess: () => void }) => {
     },
   });
 
-  const payerMemberId = form.watch('payer.memberId');
+  const payerMemberId = form.watch('payer')?.memberId;
 
   useEffect(() => {
     setRequireMemberId(payerMemberId ?? false);

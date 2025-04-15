@@ -61,45 +61,53 @@ const loginWithEmailAndPassword = (
   return api.post('/auth/login', data);
 };
 
-export const registerInputSchema = z.object({
-  firstName: z.string().min(1, 'Please enter your first name.'),
-  lastName: z.string().min(1, 'Please enter your last name.'),
-  email: z.string().email('Please enter a valid email address.'),
-  phone: z
-    .string()
-    .min(1, 'Please enter your phone number.')
-    .refine(
-      (value) => {
-        // Check if the phone number is valid
-        if (!isValidPhoneNumber(value)) return false;
+export const registerInputSchema = z
+  .object({
+    firstName: z.string().min(1, 'Please enter your first name.'),
+    lastName: z.string().min(1, 'Please enter your last name.'),
+    email: z.string().email('Please enter a valid email address.'),
+    phone: z
+      .string()
+      .min(1, 'Please enter your phone number.')
+      .refine(
+        (value) => {
+          // Check if the phone number is valid
+          if (!isValidPhoneNumber(value)) return false;
 
-        // Parse the phone number to get its country
-        const phoneNumber = parsePhoneNumber(value);
-        return phoneNumber && phoneNumber.country === 'US';
-      },
-      {
-        message: 'Please enter a valid US phone number.',
-      },
-    ),
-  dateOfBirth: z.date().refine((data) => {
-    const today = new Date();
-    const birthDate = new Date(data);
-    let age = today.getFullYear() - birthDate.getFullYear();
+          // Parse the phone number to get its country
+          const phoneNumber = parsePhoneNumber(value);
+          return phoneNumber && phoneNumber.country === 'US';
+        },
+        {
+          message: 'Please enter a valid US phone number.',
+        },
+      ),
+    dateOfBirth: z.date().refine((data) => {
+      const today = new Date();
+      const birthDate = new Date(data);
+      let age = today.getFullYear() - birthDate.getFullYear();
 
-    // Check if the user has not had their birthday this year yet
-    const m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
+      // Check if the user has not had their birthday this year yet
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
 
-    //upper age limit is iterative, medical risk / liability reasons
-    return age >= 18 && age <= 70;
-  }, 'You must be over 18 years old and no older than 70 to register.'),
-  gender: z.enum(['MALE', 'FEMALE']),
-  password: z
-    .string()
-    .min(8, 'Please enter a password with at least 8 characters.'),
-});
+      //upper age limit is iterative, medical risk / liability reasons
+      return age >= 18 && age <= 70;
+    }, 'You must be over 18 years old and no older than 70 to register.'),
+    gender: z.enum(['MALE', 'FEMALE']),
+    password: z
+      .string()
+      .min(8, 'Please enter a password with at least 8 characters.'),
+    confirmPassword: z
+      .string()
+      .min(8, 'Please enter a password with at least 8 characters.'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
 export type RegisterInput = z.infer<typeof registerInputSchema>;
 
