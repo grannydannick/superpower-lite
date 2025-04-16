@@ -62,6 +62,8 @@ export function RatingScale({
     }
   }
 
+  const { startLabel, endLabel } = getStartEndLabels(item);
+
   const currentAnswer = getCurrentAnswer(response);
   const answerLinkId = getCurrentRadioAnswer(options, currentAnswer);
 
@@ -139,16 +141,17 @@ export function RatingScale({
         }}
         className="mt-4 hidden w-full justify-between gap-2 md:grid"
       >
-        <Body3 className="text-center text-zinc-400">Very poor</Body3>
+        <Body3 className="text-center text-zinc-400">{startLabel}</Body3>
         {Array.from({ length: options.length - 2 }).map((_, index) => (
           <div key={index} />
         ))}
-        <Body3 className="text-center text-zinc-400">Excellent</Body3>
+        <Body3 className="text-center text-zinc-400">{endLabel}</Body3>
       </div>
       {options.length > 5 && (
         <div className="flex w-full justify-between gap-2 pt-4 md:hidden">
           <Body3 className="text-center text-zinc-400">
-            Rate from very poor (1) to excellent (10)
+            Rate from {startLabel.toLowerCase()} (1) to {endLabel.toLowerCase()}{' '}
+            (10)
           </Body3>
         </div>
       )}
@@ -179,4 +182,28 @@ function getCurrentRadioAnswer(
   return options.find((option) =>
     deepEquals(option[1].value, defaultAnswer?.value),
   )?.[0];
+}
+
+interface StartEndLabels {
+  startLabel: string;
+  endLabel: string;
+}
+
+function getStartEndLabels(item: QuestionnaireItem): StartEndLabels {
+  const startLabel = item.extension?.find(
+    (e) =>
+      e.url ===
+      'https://superpower.com/fhir/StructureDefinition/questionnaire-rangeStartLabel',
+  )?.valueString;
+
+  const endLabel = item.extension?.find(
+    (e) =>
+      e.url ===
+      'https://superpower.com/fhir/StructureDefinition/questionnaire-rangeEndLabel',
+  )?.valueString;
+
+  return {
+    startLabel: startLabel ?? 'Very poor',
+    endLabel: endLabel ?? 'Excellent',
+  };
 }
