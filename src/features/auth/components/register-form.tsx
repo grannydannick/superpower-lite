@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, EyeOff } from 'lucide-react';
+import { Lock, Mail } from 'lucide-react';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import PhoneInput from 'react-phone-number-input/input';
@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { H1, H4 } from '@/components/ui/typography';
+import { AuthInput } from '@/features/auth/components/auth-input';
 import { useRegister, registerInputSchema, RegisterInput } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 
@@ -32,8 +33,6 @@ type RegisterFormProps = {
 
 export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
   const registering = useRegister({ onSuccess });
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
 
   const form = useForm<RegisterInput>({
     resolver: zodResolver(registerInputSchema),
@@ -170,12 +169,15 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
+                      <AuthInput
+                        variant="individual"
+                        border="bottom"
                         placeholder="name@example.com"
                         autoCapitalize="none"
                         autoComplete="email"
                         autoCorrect="off"
+                        icon={<Mail className="size-4 text-zinc-400" />}
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -191,34 +193,19 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
                   <FormItem>
                     <FormLabel htmlFor="password">Password</FormLabel>
                     <FormControl>
-                      <div className="relative">
-                        <Input
-                          id="password"
-                          {...field}
-                          placeholder="********"
-                          type={showPassword ? 'text' : 'password'}
-                          autoCapitalize="off"
-                          autoComplete="new-password"
-                          autoCorrect="off"
-                          aria-label="Password"
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="small"
-                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                          onClick={() => setShowPassword(!showPassword)}
-                        >
-                          {showPassword ? (
-                            <EyeOff className="h-4 w-4 text-zinc-500" />
-                          ) : (
-                            <Eye className="h-4 w-4 text-zinc-500" />
-                          )}
-                          <span className="sr-only">
-                            {showPassword ? 'Hide password' : 'Show password'}
-                          </span>
-                        </Button>
-                      </div>
+                      <AuthInput
+                        variant="individual"
+                        border="bottom"
+                        id="password"
+                        placeholder="********"
+                        type="password"
+                        autoCapitalize="off"
+                        autoComplete="new-password"
+                        autoCorrect="off"
+                        aria-label="Password"
+                        icon={<Lock className="size-4 text-zinc-400" />}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -235,38 +222,19 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
                       Confirm Password
                     </FormLabel>
                     <FormControl>
-                      <div className="relative">
-                        <Input
-                          id="confirmPassword"
-                          {...field}
-                          placeholder="********"
-                          type={showConfirmPassword ? 'text' : 'password'}
-                          autoCapitalize="off"
-                          autoComplete="new-password"
-                          autoCorrect="off"
-                          aria-label="Confirm Password"
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="small"
-                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                          onClick={() =>
-                            setShowConfirmPassword(!showConfirmPassword)
-                          }
-                        >
-                          {showConfirmPassword ? (
-                            <EyeOff className="h-4 w-4 text-zinc-500" />
-                          ) : (
-                            <Eye className="h-4 w-4 text-zinc-500" />
-                          )}
-                          <span className="sr-only">
-                            {showConfirmPassword
-                              ? 'Hide password'
-                              : 'Show password'}
-                          </span>
-                        </Button>
-                      </div>
+                      <AuthInput
+                        variant="individual"
+                        border="bottom"
+                        id="confirmPassword"
+                        placeholder="********"
+                        type="password"
+                        autoCapitalize="off"
+                        autoComplete="new-password"
+                        autoCorrect="off"
+                        aria-label="Confirm Password"
+                        icon={<Lock className="size-4 text-zinc-400" />}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

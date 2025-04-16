@@ -7,10 +7,14 @@ export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   icon: React.ReactNode;
   border: 'top' | 'bottom';
+  variant?: 'connected' | 'individual';
 }
 
 const AuthInput = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, icon, type, border = 'top', ...props }, ref) => {
+  (
+    { className, icon, type, border = 'top', variant = 'connected', ...props },
+    ref,
+  ) => {
     const [showPassword, setShowPassword] = React.useState(false);
 
     const togglePasswordVisibility = () => {
@@ -21,7 +25,11 @@ const AuthInput = React.forwardRef<HTMLInputElement, InputProps>(
       <div
         className={cn(
           'flex border border-input items-center p-4 gap-3',
-          border === 'top' ? ' rounded-t-lg border-b-0' : ' rounded-b-lg',
+          variant === 'connected'
+            ? border === 'top'
+              ? 'rounded-t-lg border-b-0'
+              : 'rounded-b-lg'
+            : 'rounded-lg',
         )}
       >
         <div className="">{icon}</div>
