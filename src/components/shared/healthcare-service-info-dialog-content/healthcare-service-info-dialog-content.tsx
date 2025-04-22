@@ -2,12 +2,6 @@ import { ArrowUpRight, X } from 'lucide-react';
 import React, { ReactNode } from 'react';
 
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import {
   Dialog,
   DialogClose,
   DialogContent,
@@ -19,16 +13,15 @@ import {
   SheetContent,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { Body1, Body2, H2, H4 } from '@/components/ui/typography';
+import { Body1, Body2, H2 } from '@/components/ui/typography';
+import {
+  SUPERPOWER_BLOOD_PANEL,
+  SUPERPOWER_ADVANCED_BLOOD_PANEL,
+} from '@/const/services';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { HealthcareService } from '@/types/api';
 import { getHealthcareServicePriceLabel } from '@/utils/format-money';
-import {
-  getDetailsForService,
-  getSampleReportLinkForService,
-} from '@/utils/service';
-
-import { TestDetails } from '../healthcare-service-info-dialog-content/types/service';
+import { getSampleReportLinkForService } from '@/utils/service';
 
 /**
  * This version of dialog should not trigger Order flow.
@@ -122,10 +115,13 @@ export function HealthcareServiceInfoDetails({
   healthcareService: HealthcareService;
   children?: ReactNode;
 }): JSX.Element {
-  const serviceDetails = getDetailsForService(healthcareService.name);
   const sampleReportLink = getSampleReportLinkForService(
     healthcareService.name,
   );
+
+  const showWhatsTestedText =
+    healthcareService.name === SUPERPOWER_BLOOD_PANEL ||
+    healthcareService.name === SUPERPOWER_ADVANCED_BLOOD_PANEL;
 
   return (
     <div>
@@ -145,6 +141,17 @@ export function HealthcareServiceInfoDetails({
           <Body1 className="text-zinc-500">
             {healthcareService.description}
           </Body1>
+          {showWhatsTestedText && (
+            <a
+              href="https://superpower.com/biomarkers"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mb-2 mt-0 flex cursor-pointer items-center space-x-1 text-sm text-primary"
+            >
+              <span>What&apos;s tested?</span>
+              <ArrowUpRight className="size-4 text-vermillion-900" />
+            </a>
+          )}
           {sampleReportLink ? (
             <a
               href={sampleReportLink}
@@ -172,31 +179,6 @@ export function HealthcareServiceInfoDetails({
           alt={healthcareService.name}
         />
       </div>
-      <Accordion type="single" collapsible className="w-full border-t">
-        {serviceDetails
-          ? Object.keys(serviceDetails)
-              .filter(
-                (serviceDetailTitle) =>
-                  serviceDetailTitle !== 'sampleReportLink',
-              )
-              .map((serviceDetailTitle, index) => (
-                <AccordionItem
-                  value={serviceDetailTitle}
-                  key={index}
-                  className="p-12"
-                >
-                  <AccordionTrigger className="p-0">
-                    <H4 className="text-zinc-900">{serviceDetailTitle}</H4>
-                  </AccordionTrigger>
-                  <AccordionContent className="pb-0 pt-4">
-                    <Body2 className="whitespace-break-spaces text-zinc-500">
-                      {serviceDetails[serviceDetailTitle as keyof TestDetails]}
-                    </Body2>
-                  </AccordionContent>
-                </AccordionItem>
-              ))
-          : null}
-      </Accordion>
     </div>
   );
 }

@@ -61,6 +61,7 @@ export const getDetailsForService = (
 ): TestDetails | undefined => {
   const serviceDetails: ServiceDetails = {
     'Superpower Blood Panel': {
+      "What's tested?": 'https://superpower.com/biomarkers',
       'Why is this test important?': `Proactive laboratory testing can provide targeted insight into you body's current health status, identifying areas of optimal and suboptimal physiologic function. Establish a baseline or track how your body is responding to your Superpower action plan.`,
       'Test Process': `1. Order and schedule your blood panel.
 
@@ -83,6 +84,7 @@ export const getDetailsForService = (
     },
 
     'Advanced Blood Panel': {
+      "What's tested?": 'https://superpower.com/biomarkers',
       'Why is this test important?': `Proactive laboratory testing can provide targeted insight into you body's current health status, identifying areas of optimal and suboptimal physiologic function. The advanced panel dives into further areas of health that are not covered in our baseline panel, including heavy metal testing, certain key nutrients like omega fatty acids, and even critical hormones like cortisol that may be causing you stress. Furthermore, this test can serve to track how your body is responding to your Superpower action plan.`,
       'Test Process': `1. Order and schedule your advanced blood panel.
 
@@ -254,7 +256,7 @@ Connect with your membership advisor if you have any questions or concerns ahead
       "What's measured?": `Mycotoxins are toxic compounds produced by certain types of fungi. These fungi can grow on various agricultural products such as grains, nuts, spices, dried fruits, apples, and coffee beans.
 
 The Mycotoxin test is used to identify and quantify the level of a large set of mycotixins from both and environmental molds and give you a complete picture of your levels of mycotoxins from your urine. The results are provided in 3 tables subgrouping the mycotoxins into Aflatoxins, Trichothecenes and Other Mycotoxins.`,
-      'Why is this test important?': `According to the World Health Organization and Food and Agricultural Organization, 25% of the world’s agricultural products are contaminated with mycotoxins.
+      'Why is this test important?': `According to the World Health Organization and Food and Agricultural Organization, 25% of the world's agricultural products are contaminated with mycotoxins.
 
 Symptoms of mycotoxin toxicity are often general and vague, and thus difficult to diagnose, leaving you at risk of long-term health damage.
 
@@ -332,7 +334,7 @@ Uncovering wheat sensitivities is an easy and critical step in developing a nutr
     },
 
     'PFAS Chemicals': {
-      "What's measured?": `The PFAS chemical test measures 21 different toxin markers in your blood associated with exposure to perfluoroalkyl and polyfluoroalkyl chemicals, commonly called ‘PFAS.’`,
+      "What's measured?": `The PFAS chemical test measures 21 different toxin markers in your blood associated with exposure to perfluoroalkyl and polyfluoroalkyl chemicals, commonly called 'PFAS.'`,
       'Test process': `1. Order your test kit -- we'll deliver it directly to your house or confirmed in 3-5 days
 
 2. Self-collect your sample 
@@ -375,7 +377,7 @@ Testing for PFAS chemicals in your blood is important because:
       'Pre-test considerations': `Involves radiation exposure; not recommended for routine screening in low-risk individuals.`,
     },
     'Gut Microbiome Analysis': {
-      "What's measured?": `Four main indicators of gut health will be measured. The first is a gut diversity score, indicating the breath of species which indicate a healthier gut and immune system. The second is the levels of bacteria that support metabolic health and fight inflammation. Thirdly, we will look for red flags of intestinal permeability (“leaky gut”) that may contribute to disease. The last will be any common parasites, bacteria, and fungi that can cause infection.`,
+      "What's measured?": `Four main indicators of gut health will be measured. The first is a gut diversity score, indicating the breath of species which indicate a healthier gut and immune system. The second is the levels of bacteria that support metabolic health and fight inflammation. Thirdly, we will look for red flags of intestinal permeability ("leaky gut") that may contribute to disease. The last will be any common parasites, bacteria, and fungi that can cause infection.`,
       'Why is this test important?': `A gut microbiome analysis is essential in better understanding the bacteria that comprise your gut health. Novel research in the last decade has shown the immense impact in which gut health can not only affect digestion, but even our immune system, metabolism, and mood. This can manifest in symptoms like brain fog, fatigue, and digestive issues.`,
       'Test process': `A testing kit will be sent to you. A mess-free sample will be required from a soiled tissue paper in the comfort of your own home. This will then be shipped to a lab and analyzed.`,
       'Pre-test considerations': `Non-invasive but requires at-home sample collection from a soiled tissue paper. Non-invasive but requires careful sample collection. Diet and medication can influence results.`,
@@ -414,7 +416,7 @@ It is important to note that this scan does not directly diagnose cancer or dise
 
 ° It is recommended to eat lighter (e.g. no fried, greasy, heavy foods) and to eat less gassy foods (e.g. soda, seltzer water, beans, broccoli, cabbage, etc.) before the scan.
 
-° Try to limit fluid intake approximately 1.5 – 2 hours prior to your appointment so you don’t feel the need to stop the scan.
+° Try to limit fluid intake approximately 1.5 – 2 hours prior to your appointment so you don't feel the need to stop the scan.
 
 ° Connect with your membership advisor if you have any questions or concerns ahead of testing.`,
     },

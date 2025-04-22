@@ -5,6 +5,7 @@ export type TestDetails = {
   "What's measured?"?: string;
   'Test process'?: string;
   'Follow-up & Concierge support'?: string;
+  "What's tested?"?: string;
 };
 
 export type ServiceDetails = {

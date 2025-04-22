@@ -48,6 +48,18 @@ export const HealthcareServiceDetails = () => {
             </Body2>
           </div>
           <Body1 className="text-zinc-500">{service.description}</Body1>
+          {(service.name === 'Superpower Blood Panel' ||
+            service.name === 'Advanced Blood Panel') && (
+            <a
+              href="https://superpower.com/biomarkers"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mb-2 mt-0 flex cursor-pointer items-center space-x-1 text-sm text-primary"
+            >
+              <span>What&apos;s tested?</span>
+              <ArrowUpRight className="size-4 text-vermillion-900" />
+            </a>
+          )}
           {sampleReportLink ? (
             <a
               href={sampleReportLink}
@@ -78,22 +90,34 @@ export const HealthcareServiceDetails = () => {
         )}
       >
         {serviceDetails
-          ? Object.keys(serviceDetails).map((serviceDetailTitle, index) => (
-              <AccordionItem
-                value={serviceDetailTitle}
-                key={index}
-                className="p-8 md:p-14"
-              >
-                <AccordionTrigger className="p-0">
-                  <H4 className="text-zinc-900">{serviceDetailTitle}</H4>
-                </AccordionTrigger>
-                <AccordionContent className="pb-0 pt-4">
-                  <Body2 className="whitespace-break-spaces text-zinc-500">
-                    {serviceDetails[serviceDetailTitle as keyof TestDetails]}
-                  </Body2>
-                </AccordionContent>
-              </AccordionItem>
-            ))
+          ? Object.keys(serviceDetails)
+              .filter(
+                (serviceDetailTitle) =>
+                  serviceDetailTitle !== 'sampleReportLink' &&
+                  serviceDetailTitle !== "What's tested?",
+              )
+              .map((serviceDetailTitle, index) => {
+                return (
+                  <AccordionItem
+                    value={serviceDetailTitle}
+                    key={index}
+                    className="p-8 md:p-14"
+                  >
+                    <AccordionTrigger className="p-0">
+                      <H4 className="text-zinc-900">{serviceDetailTitle}</H4>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-0 pt-4">
+                      <Body2 className="whitespace-break-spaces text-zinc-500">
+                        {
+                          serviceDetails[
+                            serviceDetailTitle as keyof TestDetails
+                          ]
+                        }
+                      </Body2>
+                    </AccordionContent>
+                  </AccordionItem>
+                );
+              })
           : null}
       </Accordion>
 
