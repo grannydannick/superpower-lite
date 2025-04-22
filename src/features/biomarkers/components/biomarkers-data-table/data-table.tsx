@@ -221,12 +221,18 @@ export function DataTable({
           </Table>
         );
       default:
+        // 4/19/2025 - don't have a good way to filter DocumentReferences by service yet, so changing generic message here
         return (
           <div className="w-full rounded-3xl bg-white px-8 py-16 text-center">
             <div className="text-xl">
-              Looks like we don&apos;t have your {currentCategory} data.
+              Your {currentCategory} data lives in your{' '}
+              <Link to="/vault" className="text-vermillion-900">
+                Vault.
+              </Link>
+              <br />
+              Haven&apos;t tested yet?
             </div>
-            <div className="flex w-full flex-col items-center justify-center gap-3 pt-12">
+            <div className="flex w-full flex-col items-center justify-center gap-3 pt-4">
               {healthcareService && (
                 <HealthcareServiceDialog
                   healthcareService={healthcareService}
@@ -234,15 +240,10 @@ export function DataTable({
                   key={healthcareService.id}
                 >
                   <Button variant="default" className="w-full max-w-[400px]">
-                    Get Tested
+                    Get Started
                   </Button>
                 </HealthcareServiceDialog>
               )}
-              <Link to="/vault" className="w-full max-w-[400px]">
-                <Button variant="outline" className="w-full">
-                  Upload Lab Report
-                </Button>
-              </Link>
             </div>
           </div>
         );
