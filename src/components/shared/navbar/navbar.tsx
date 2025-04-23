@@ -21,7 +21,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown';
 import { useBlur } from '@/hooks/use-blur';
+import { useUser } from '@/lib/auth';
 import { ROLES, useAuthorization } from '@/lib/authorization';
+import { shopifyMultipassService } from '@/lib/services/shopify-multipass';
 import { cn } from '@/lib/utils';
 
 type Link = {
@@ -38,6 +40,30 @@ const baseLinks: Link[] = [
   { icon: ServicesIcon, name: 'Services', to: './services' },
 ];
 
+// Shared function for handling marketplace clicks with Multipass
+const useMarketplaceClick = () => {
+  const { data: user } = useUser();
+
+  return async (e: React.MouseEvent) => {
+    e.preventDefault();
+    try {
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+      console.log('Redirecting to Shopify');
+      await shopifyMultipassService.redirectToShopify({
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      });
+    } catch (error) {
+      console.error('Error redirecting to Shopify:', error);
+      // Fallback to the regular marketplace URL if Multipass fails
+      window.location.href = 'https://products.superpower.com/';
+    }
+  };
+};
+
 export const Navbar = () => {
   return (
     <>
@@ -51,6 +77,7 @@ export const DesktopNavbar = () => {
   const { checkAccess } = useAuthorization();
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const handleMarketplaceClick = useMarketplaceClick();
 
   const isHomePage = pathname === '/';
 
@@ -155,28 +182,19 @@ export const DesktopNavbar = () => {
         </div>
         <div className="h-10 flex-1">
           <div className="flex items-center justify-end gap-4">
-            <NavLink
-              to="https://products.superpower.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() =>
-                handleLinkClick('https://products.superpower.com/')
-              }
-              className={({ isActive }) =>
-                cn(
-                  'group relative z-10 px-4 py-1.5 transition-all duration-150',
-                  isHomePage
-                    ? isBlurred
-                      ? 'text-secondary hover:text-black'
-                      : 'text-white'
-                    : isActive
-                      ? 'text-white'
-                      : 'text-secondary hover:text-black',
-                )
-              }
+            <button
+              onClick={handleMarketplaceClick}
+              className={cn(
+                'group relative z-10 px-4 py-1.5 transition-all duration-150',
+                isHomePage
+                  ? isBlurred
+                    ? 'text-secondary hover:text-black'
+                    : 'text-white'
+                  : 'text-secondary hover:text-black',
+              )}
             >
               <MarketplaceIcon className="mb-1 w-[18px]" />
-            </NavLink>
+            </button>
             <NavLink
               to="./invite"
               onClick={() => handleLinkClick('./invite')}
@@ -250,6 +268,7 @@ export const DesktopNavbar = () => {
 export const MobileNavbar = () => {
   const { checkAccess } = useAuthorization();
   const [open, setOpen] = useState(false);
+  const handleMarketplaceClick = useMarketplaceClick();
 
   const protectedLinks: Link[] = [
     checkAccess({ allowedRoles: [ROLES.SUPER_ADMIN] }) && {
@@ -349,8 +368,13 @@ export const MobileNavbar = () => {
                   <DropdownMenuItem
                     key={i}
                     className="cursor-pointer rounded-[18px] p-4 transition duration-200 ease-in-out focus:bg-[#252525]"
-                    onClick={() => {
-                      handleLinkClick(link.to);
+                    onClick={(e) => {
+                      if (link.name === 'Marketplace') {
+                        e.preventDefault();
+                        handleMarketplaceClick(e);
+                      } else {
+                        handleLinkClick(link.to);
+                      }
                       setOpen(false);
                     }}
                   >
