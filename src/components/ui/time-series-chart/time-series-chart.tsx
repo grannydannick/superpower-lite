@@ -66,6 +66,7 @@ export function TimeSeriesChart({
       ? Infinity
       : optimalRange?.high?.value ?? -Infinity,
   );
+
   if (!isFinite(softMin)) softMin = -Infinity;
   if (!isFinite(softMax)) softMax = Infinity;
 

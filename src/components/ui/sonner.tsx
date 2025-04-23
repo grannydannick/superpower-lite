@@ -125,7 +125,7 @@ function createToast() {
   // toastFn.custom = sonnerToast.custom;
   // toastFn.dismiss = sonnerToast.dismiss;
   // toastFn.message = sonnerToast.message;
-  // toastFn.info = sonnerToast.info;
+  toastFn.info = sonnerToast.info;
   // toastFn.warning = sonnerToast.warning;
 
   return toastFn;

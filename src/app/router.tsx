@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
+import { ConciergeRoute } from '@/app/routes/app/concierge';
 import { DataRoute } from '@/app/routes/app/data';
 import { HomeRoute } from '@/app/routes/app/home';
 import { ServicesRoute } from '@/app/routes/app/services';
 import { MainErrorFallback } from '@/components/errors/main';
+import { ConciergeLayout } from '@/features/messages/layouts/concierge-layout';
 import { ProtectedRoute } from '@/lib/auth';
 
 import { AppRoot } from './routes/app/root';
@@ -52,7 +54,6 @@ export const createRouter = () =>
       path: '/',
       element: (
         <ProtectedRoute>
-          {/*<QuestionnaireCheckModal />*/}
           <AppRoot />
         </ProtectedRoute>
       ),
@@ -133,10 +134,11 @@ export const createRouter = () =>
         },
         {
           path: 'concierge',
-          lazy: async () => {
-            const { ConciergeRoute } = await import('./routes/app/concierge');
-            return { Component: ConciergeRoute };
-          },
+          element: <ConciergeLayout />,
+          children: [
+            { index: true, element: <ConciergeRoute /> }, // new chat
+            { path: ':id', element: <ConciergeRoute /> }, // existing chat
+          ],
         },
         {
           path: 'data',

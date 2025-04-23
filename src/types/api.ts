@@ -54,65 +54,6 @@ export interface User extends BaseUser {
   rdn?: Rdn;
 }
 
-export interface FormResponse {
-  form_id: string;
-  submitted_at: string;
-  event_type: string;
-  token: string;
-  calculated?: {
-    score?: number;
-  };
-  hidden: {
-    email: string;
-    user_id: string;
-  };
-  answers: Answer[];
-  definition: {
-    fields: Field[];
-    title: string;
-    endings: any[];
-  };
-}
-
-export interface Field {
-  id: string;
-  ref: string;
-  type: string;
-  title: string;
-  choices?: Choice[];
-}
-
-export interface Choice {
-  id: string;
-  ref: string;
-  label: string;
-}
-
-export interface Answer {
-  type: string;
-  field: {
-    id: string;
-    ref: string;
-    type: string;
-    title?: string;
-  };
-  text?: string;
-  choice?: {
-    id: string;
-    ref: string;
-    label: string;
-  };
-  choices?: {
-    ids: string[];
-    refs: string[];
-    labels: string[];
-  };
-  boolean?: string;
-  number?: number;
-  description?: string;
-  question: string;
-}
-
 export type ActiveAddress = Entity<{
   address: Address;
 }>;
@@ -390,12 +331,6 @@ export interface InformedConsent {
   agreedAt: string;
 }
 
-export type OrderWithUserInfo = Order & {
-  firstName: string;
-  lastName: string;
-  userId: string;
-};
-
 export type Annotation = Entity<{
   serviceRequestId: string;
   text: string;
@@ -485,8 +420,6 @@ export type UserIdentityVerificationSession = Entity<{
   url: string | null;
 }>;
 
-export type ConciergeNotificationType = 'concierge' | 'service' | 'plan';
-
 /* PAYMENTS */
 
 export type PaymentMethod = {
@@ -569,32 +502,6 @@ export type PaginationInfo = {
 export type PaginatedResponse<T> = {
   pagination: PaginationInfo;
   data: T[];
-};
-
-export type ProductsResponse = {
-  pagination: PaginationInfo;
-  products: Product[];
-};
-
-export type ProductOrder = {
-  id: string;
-  name: string;
-  description?: string;
-  imageUrl?: string;
-  url?: string;
-  price: string;
-  createdAt: Date;
-};
-
-export type ProductOrderLineItem = {
-  name: string;
-  price: string;
-  imageUrl: string;
-};
-
-export type CheckoutLineItem = {
-  productVariantId: string;
-  quantity: number;
 };
 
 /* FILES */
@@ -733,3 +640,23 @@ export type BridgePatient = {
   phone?: string;
   address?: BridgeAddress;
 };
+
+/* AI CHAT */
+export type Visibility = 'public' | 'private';
+
+export interface Chat {
+  id: string; // UUID
+  createdAt: Date;
+  title: string;
+  userId: string; // UUID, references User.id
+  visibility: Visibility;
+}
+
+export interface ChatMessage {
+  id: string; // UniqueEntityId
+  chatId: string; // UniqueEntityId
+  role: string;
+  parts: unknown; // JSON
+  attachments: unknown; // JSON
+  createdAt: Date;
+}

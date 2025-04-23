@@ -18,6 +18,7 @@
     "run-mock-server": "vite-node mock-server.ts | pino-pretty -c"
   },
   "dependencies": {
+    "@ai-sdk/react": "^1.2.9",
     "@hookform/resolvers": "^3.9.0",
     "@medplum/core": "^3.2.29",
     "@medplum/fhirtypes": "^3.2.28",
@@ -53,6 +54,7 @@
     "@tryvital/vital-link": "^0.1.7",
     "@types/validator": "^13.12.0",
     "@wojtekmaj/react-hooks": "^1.21.0",
+    "ai": "^4.3.9",
     "axios": "^1.6.8",
     "calendar-link": "^2.7.0",
     "class-variance-authority": "^0.7.0",

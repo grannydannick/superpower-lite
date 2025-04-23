@@ -100,7 +100,7 @@ export const DesktopNavbar = () => {
   return (
     <nav
       className={cn(
-        'sticky top-0 z-[49] hidden w-full px-4 md:block transition-colors duration-200',
+        'sticky top-0 z-[49] hidden w-full px-4 lg:block transition-colors duration-200',
         isBlurred
           ? 'bg-opacity-10 bg-white backdrop-blur-sm rounded-b-2xl'
           : null,
@@ -138,7 +138,6 @@ export const DesktopNavbar = () => {
               <NavLink
                 key={idx}
                 to={link.to}
-                end
                 onClick={() => handleLinkClick(link.to)}
                 className={({ isActive }) =>
                   cn(
@@ -293,7 +292,7 @@ export const MobileNavbar = () => {
     <>
       <div
         className={cn(
-          'flex justify-between md:hidden items-center w-full p-4 fixed bottom-0 bg-white border-t border-t-zinc-100 z-10 h-[72px]',
+          'flex justify-between lg:hidden items-center w-full p-4 fixed bottom-0 bg-white border-t border-t-zinc-100 z-10 h-[72px]',
         )}
       >
         {baseLinks.map((link, idx) => (

@@ -1,8 +1,18 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { TimerIcon } from 'lucide-react';
+import { ArrowUpIcon, Clock, XIcon } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -11,9 +21,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { toast } from '@/components/ui/sonner';
-import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
-import { Body1 } from '@/components/ui/typography';
+import { Body1, H3 } from '@/components/ui/typography';
 
 import {
   CreateMessageInput,
@@ -22,6 +31,8 @@ import {
 } from '../api/create-message';
 
 export const CreateMessageForm = (): JSX.Element => {
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+
   const form = useForm<CreateMessageInput>({
     resolver: zodResolver(createMessageInputSchema),
     defaultValues: {
@@ -33,6 +44,7 @@ export const CreateMessageForm = (): JSX.Element => {
   const createMessageMutation = useCreateMessage({
     mutationConfig: {
       onSuccess: () => {
+        setShowConfirmationModal(true);
         toast.success('Message sent! We will get back to you within 24 hours.');
         form.reset();
       },
@@ -44,44 +56,134 @@ export const CreateMessageForm = (): JSX.Element => {
   }
 
   return (
-    <Form {...form}>
-      <form
-        className="flex w-full flex-col gap-6"
-        onSubmit={form.handleSubmit(onSubmit)}
-      >
-        <FormField
-          control={form.control}
-          name="text"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Textarea
-                  className="min-h-[150px] w-full resize-none rounded-[20px] px-[18px] py-6"
-                  placeholder="Ask questions about your health, book appointments, and get answers from expert longevity advisors"
-                  {...field}
-                  minRows={8}
-                  maxRows={16}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="flex flex-col-reverse items-center justify-between gap-6 md:flex-row">
-          <div className="flex items-center gap-1">
-            <TimerIcon color="#71717A" className="size-4" />
-            <Body1 className="line-clamp-1 text-zinc-500">{`Response Time: < 24 hrs on weekdays`}</Body1>
-          </div>
+    <>
+      <Form {...form}>
+        <form
+          className="flex w-full flex-col gap-6"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
+          <FormField
+            control={form.control}
+            name="text"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <div className="flex flex-col-reverse gap-2 lg:flex-col lg:gap-4">
+                    <div className="rounded-[20px] border border-zinc-100 bg-white px-4 pt-4 shadow-lg shadow-black/5">
+                      <Textarea
+                        {...field}
+                        placeholder="Ask questions about your health, book appointments, and get answers from expert longevity advisors..."
+                        className="scrollbar-w-1.5 min-h-0 border-none p-0 scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300 hover:scrollbar-thumb-zinc-400 focus-visible:bg-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                      />
 
+                      <div className="flex w-full flex-row justify-end pb-4">
+                        <Button
+                          className="h-fit rounded-full border p-1.5 dark:border-zinc-600"
+                          type="submit"
+                          disabled={form.watch('text').length === 0}
+                        >
+                          <ArrowUpIcon size={14} />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </form>
+      </Form>
+      <SuccessDialog
+        showConfirmationModal={showConfirmationModal}
+        setShowConfirmationModal={setShowConfirmationModal}
+      />
+    </>
+  );
+};
+
+const SuccessDialog = ({
+  showConfirmationModal,
+  setShowConfirmationModal,
+}: {
+  showConfirmationModal: boolean;
+  setShowConfirmationModal: (show: boolean) => void;
+}) => {
+  const navigate = useNavigate();
+
+  return (
+    <Dialog
+      open={showConfirmationModal}
+      onOpenChange={setShowConfirmationModal}
+    >
+      <DialogContent className="sm:max-w-lg">
+        <DialogClose asChild>
           <Button
-            className="w-full md:w-auto"
-            type="submit"
-            disabled={createMessageMutation.isPending}
+            variant="ghost"
+            className="absolute right-3 top-3 text-zinc-500"
           >
-            {createMessageMutation.isPending ? <Spinner /> : 'Send Message'}
+            <XIcon size={16} />
+          </Button>
+        </DialogClose>
+        <DialogHeader>
+          <DialogTitle className="hidden">Message Sent</DialogTitle>
+          <div className="flex w-full flex-col items-center justify-center gap-2">
+            <div className="flex -space-x-2">
+              <img
+                className="size-20 min-w-20 rounded-full border-2 border-white object-cover"
+                src="/services/doctors/doc_1.webp"
+                alt="Superpower Concierge Doctor 1"
+              />
+              <img
+                className="size-20 min-w-20 rounded-full border-2 border-white object-cover"
+                src="/services/doctors/doc_2.webp"
+                alt="Superpower Concierge Doctor 2"
+              />
+              <img
+                className="size-20 min-w-20 rounded-full border-2 border-white object-cover"
+                src="/services/doctors/doc_3.webp"
+                alt="Superpower Concierge Doctor 3"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="text-zinc-400" size={16} />
+              <Body1 className="line-clamp-1 text-center text-zinc-400">{`<24h on weekdays`}</Body1>
+            </div>
+          </div>
+        </DialogHeader>
+        <div className="flex flex-col gap-2 px-8 py-4">
+          <H3 className="text-center">Your care team is contacted via SMS</H3>
+          <Body1 className="mb-11 text-center text-secondary">
+            Your care team has been contacted. One of our health experts will
+            text you from &nbsp;
+            <a
+              href="tel:+14157422828"
+              className="text-vermillion-900 transition-all duration-150 hover:text-vermillion-700"
+            >
+              +1 (415) 742-2828
+            </a>
+            &nbsp; within 24 hours on weekdays.
+          </Body1>
+          <Button
+            variant="default"
+            className="w-full rounded-full"
+            onClick={() => {
+              navigate('/concierge?type=ai');
+            }}
+          >
+            Message AI Health Advocate
+          </Button>
+          <Button
+            variant="ghost"
+            className="w-full rounded-full text-zinc-500"
+            onClick={() => {
+              setShowConfirmationModal(false);
+            }}
+          >
+            Return to Concierge Page
           </Button>
         </div>
-      </form>
-    </Form>
+      </DialogContent>
+    </Dialog>
   );
 };
