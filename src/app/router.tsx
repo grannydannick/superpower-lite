@@ -5,6 +5,7 @@ import { ConciergeRoute } from '@/app/routes/app/concierge';
 import { DataRoute } from '@/app/routes/app/data';
 import { HomeRoute } from '@/app/routes/app/home';
 import { ServicesRoute } from '@/app/routes/app/services';
+import { SettingsRoute } from '@/app/routes/app/settings';
 import { MainErrorFallback } from '@/components/errors/main';
 import { ConciergeLayout } from '@/features/messages/layouts/concierge-layout';
 import { ProtectedRoute } from '@/lib/auth';
@@ -60,24 +61,10 @@ export const createRouter = () =>
       children: [
         {
           path: '',
-          // lazy: async () => {
-          //   const { HomeRoute } = await import('./routes/app/home');
-          //   return { Component: HomeRoute };
-          // },
-          // NOTE: intentionally killed lazy loading for now
           element: <HomeRoute />,
-          loader: async () => {
-            const { homeLoader } = await import('./routes/app/home');
-            return homeLoader()();
-          },
         },
         {
           path: 'services',
-          // lazy: async () => {
-          //   const { ServicesRoute } = await import('./routes/app/services');
-          //   return { Component: ServicesRoute };
-          // },
-          // NOTE: intentionally killed lazy loading for now
           element: <ServicesRoute />,
           errorElement: <MainErrorFallback />,
         },
@@ -113,10 +100,7 @@ export const createRouter = () =>
         },
         {
           path: 'settings',
-          lazy: async () => {
-            const { SettingsRoute } = await import('./routes/app/settings');
-            return { Component: SettingsRoute };
-          },
+          element: <SettingsRoute />,
         },
         {
           path: 'onboarding',
@@ -142,11 +126,6 @@ export const createRouter = () =>
         },
         {
           path: 'data',
-          // lazy: async () => {
-          //   const { DataRoute } = await import('./routes/app/data');
-          //   return { Component: DataRoute };
-          // },
-          // NOTE: intentionally killed lazy loading for now
           element: <DataRoute />,
           errorElement: <MainErrorFallback />,
         },

@@ -8,16 +8,9 @@ import { HelmetProvider } from 'react-helmet-async';
 import { MainErrorFallback } from '@/components/errors/main';
 import { SuperpowerLoadingLogo } from '@/components/icons/superpower-logo';
 import { Toaster } from '@/components/ui/sonner';
-import { TextShimmer } from '@/components/ui/text-shimmer';
 import { useUser } from '@/lib/auth';
-import { NewRelicProvider } from '@/lib/newrelic';
 import { queryConfig } from '@/lib/react-query';
 import { StripeProvider } from '@/lib/stripe';
-
-import { captureCampaignParameters } from '../utils/campaign-tracking';
-
-// Initialize campaign tracking immediately since this is a client-side app
-captureCampaignParameters();
 
 type AppProviderProps = {
   children: React.ReactNode;
@@ -66,28 +59,18 @@ export const AppProvider = ({ children }: AppProviderProps) => {
   );
 
   return (
-    <React.Suspense
-      fallback={
-        <div className="flex h-screen w-screen items-center justify-center">
-          <TextShimmer>Superpower</TextShimmer>
-        </div>
-      }
-    >
-      <ErrorBoundary FallbackComponent={MainErrorFallback}>
-        <HelmetProvider>
-          <QueryClientProvider client={queryClient}>
-            <NewRelicProvider>
-              <StripeProvider>
-                {import.meta.env.DEV && (
-                  <ReactQueryDevtools buttonPosition="top-right" />
-                )}
-                <Toaster />
-                <AuthLoader>{children}</AuthLoader>
-              </StripeProvider>
-            </NewRelicProvider>
-          </QueryClientProvider>
-        </HelmetProvider>
-      </ErrorBoundary>
-    </React.Suspense>
+    <ErrorBoundary FallbackComponent={MainErrorFallback}>
+      <HelmetProvider>
+        <QueryClientProvider client={queryClient}>
+          <StripeProvider>
+            {import.meta.env.DEV && (
+              <ReactQueryDevtools buttonPosition="top-right" />
+            )}
+            <Toaster />
+            <AuthLoader>{children}</AuthLoader>
+          </StripeProvider>
+        </QueryClientProvider>
+      </HelmetProvider>
+    </ErrorBoundary>
   );
 };

@@ -49,13 +49,7 @@ export const GreetingComponent = () => {
         <HomeCards onClick={handleCardClick} />
       </div>
 
-      <div className="absolute left-1/2 top-0 size-full max-w-[2010px] -translate-x-1/2 scale-150 overflow-hidden">
-        <img
-          src="/user/backgrounds/default.webp"
-          alt="Greeting"
-          className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-[640px] w-full max-w-[2000px] object-cover object-top blur-sm"
-        />
-      </div>
+      <div className="pointer-events-none absolute left-1/2 top-0 size-full max-w-[2010px] -translate-x-1/2 scale-150 overflow-hidden bg-home bg-cover bg-top blur-sm" />
     </header>
   );
 };

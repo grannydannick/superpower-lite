@@ -14,25 +14,6 @@ import {
 } from '@/components/ui/dropdown';
 import { GreetingComponent } from '@/features/home/components/greeting';
 import { TimelineList } from '@/features/home/components/timeline-list';
-import { preloadImage } from '@/utils/preload-image';
-
-export const homeLoader = () => async () => {
-  /**
-   * Preload main image
-   *
-   * If we are not using this, images are loaded dynamically and create weird "flicker" effect
-   * which this loader hopefully should fix
-   *
-   */
-  const preloadedImages = ['/user/backgrounds/default.webp'];
-
-  const imagesPromiseList: Promise<any>[] = [];
-  for (const i of preloadedImages) {
-    imagesPromiseList.push(preloadImage(i));
-  }
-
-  return Promise.all(imagesPromiseList);
-};
 
 export const HomeRoute = () => {
   const [tab, setTab] = useState<'timeline' | 'twin'>('timeline');

@@ -1,6 +1,7 @@
 import { ChevronRight } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { ProgressiveImage } from '@/components/ui/progressive-image';
 import { Body1, Body2, H4 } from '@/components/ui/typography';
 import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
 import { HealthcareService, Order } from '@/types/api';
@@ -55,8 +56,8 @@ const DesktopCard = ({
 
   return (
     <div className="hidden h-[386px] flex-col items-start rounded-3xl border border-zinc-100 bg-zinc-100 sm:flex">
-      <img
-        src={service.image}
+      <ProgressiveImage
+        src={service.image as string}
         alt={service.name}
         className="h-[190px] w-full rounded-b-2xl rounded-t-3xl object-cover"
       />
@@ -80,8 +81,8 @@ const MobileCard = ({ service }: { service: HealthcareService }) => {
   return (
     <HealthcareServiceDialog healthcareService={service}>
       <div className="flex items-center justify-between gap-3 rounded-[20px] bg-zinc-100 px-5 py-4 sm:hidden">
-        <img
-          src={service.image}
+        <ProgressiveImage
+          src={service.image as string}
           alt={service.name}
           className="size-9 rounded-lg object-cover"
         />

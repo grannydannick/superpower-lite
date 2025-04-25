@@ -22,7 +22,7 @@
     "@hookform/resolvers": "^3.9.0",
     "@medplum/core": "^3.2.29",
     "@medplum/fhirtypes": "^3.2.28",
-    "@newrelic/browser-agent": "^1.269.0",
+    "@newrelic/browser-agent": "^1.288.1",
     "@ngneat/falso": "^7.2.0",
     "@number-flow/react": "^0.5.5",
     "@radix-ui/react-accordion": "^1.2.0",
