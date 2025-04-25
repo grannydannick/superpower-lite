@@ -15,9 +15,9 @@ import {
 } from '@/components/ui/tooltip';
 import { Body1, H4 } from '@/components/ui/typography';
 import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
-import { useProducts } from '@/features/plans/api';
 import { SafeMarkdown } from '@/features/plans/components/plan-markdown';
 import { useServices } from '@/features/services/api';
+import { useProducts } from '@/features/shop/api';
 import { cn } from '@/lib/utils';
 import { Product, HealthcareService } from '@/types/api';
 

@@ -9,7 +9,7 @@ export const createCheckoutUrl = ({
 }: {
   data: { products: Product[] };
 }): Promise<{ checkoutUrl: string }> => {
-  return api.post('/shop/checkout', data); // TODO: double check this endpoint post cutover
+  return api.post('/shop/checkout', data);
 };
 
 type UseCreateCheckoutUrlOptions = {

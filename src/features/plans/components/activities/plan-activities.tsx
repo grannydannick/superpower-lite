@@ -3,8 +3,8 @@ import React from 'react';
 
 import { Separator } from '@/components/ui/separator';
 import { Body1, H3, H4 } from '@/components/ui/typography';
-import { useProducts } from '@/features/plans/api';
 import { Disclaimer } from '@/features/plans/components/plan-disclaimer';
+import { useProducts } from '@/features/shop/api';
 
 import { useCarePlan } from '../../context/care-plan-context';
 import {

@@ -79,7 +79,8 @@ module.exports = {
                 ],
                 from: ['./src/features', './src/app'],
                 // exception here to import useTask to check onboarding state
-                except: ['./tasks']
+                // exception 2 here to import useGetMultipassUrl in navbar
+                except: ['./tasks', './shop']
               },
             ],
           },

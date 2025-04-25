@@ -1,12 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Mono } from '@/components/ui/typography';
-import { useProducts } from '@/features/plans/api';
 import {
   PlanSection,
   PlanSectionHeader,
   PlanSectionTitle,
   PlanSectionContent,
 } from '@/features/plans/components/plan-section';
+import { useProducts } from '@/features/shop/api';
 
 import { useCarePlan } from '../../context/care-plan-context';
 import { parseProductRequests } from '../../utils/parse-product-requests';

@@ -20,10 +20,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown';
+import { MARKETPLACE_URL } from '@/const/shopify';
+import { useGetMultipassUrl } from '@/features/shop/api/get-multipass-url';
 import { useBlur } from '@/hooks/use-blur';
-import { useUser } from '@/lib/auth';
 import { ROLES, useAuthorization } from '@/lib/authorization';
-import { shopifyMultipassService } from '@/lib/services/shopify-multipass';
 import { cn } from '@/lib/utils';
 
 type Link = {
@@ -40,28 +40,15 @@ const baseLinks: Link[] = [
   { icon: ServicesIcon, name: 'Services', to: './services' },
 ];
 
-// Shared function for handling marketplace clicks with Multipass
-const useMarketplaceClick = () => {
-  const { data: user } = useUser();
-
-  return async (e: React.MouseEvent) => {
-    e.preventDefault();
-    try {
-      if (!user) {
-        throw new Error('User not authenticated');
-      }
-      console.log('Redirecting to Shopify');
-      await shopifyMultipassService.redirectToShopify({
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-      });
-    } catch (error) {
-      console.error('Error redirecting to Shopify:', error);
-      // Fallback to the regular marketplace URL if Multipass fails
-      window.location.href = 'https://products.superpower.com/';
-    }
-  };
+// Helper to handle clicks:
+// If the URL is external, open a new tab; if not, scroll to top.
+const handleLinkClick = (url: string) => {
+  if (url.includes('https')) {
+    window.location.href = url;
+  } else {
+    // For internal navigation, scroll to top after navigation.
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 };
 
 export const Navbar = () => {
@@ -77,7 +64,7 @@ export const DesktopNavbar = () => {
   const { checkAccess } = useAuthorization();
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const handleMarketplaceClick = useMarketplaceClick();
+  const { data } = useGetMultipassUrl();
 
   const isHomePage = pathname === '/';
 
@@ -112,17 +99,6 @@ export const DesktopNavbar = () => {
     () => [...baseLinks, ...protectedLinks],
     [protectedLinks],
   );
-
-  // Helper to handle clicks:
-  // If the URL is external, open a new tab; if not, scroll to top.
-  const handleLinkClick = (url: string) => {
-    if (url.includes('https')) {
-      window.open(url, '_blank', 'noreferrer');
-    } else {
-      // For internal navigation, scroll to top after navigation.
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
 
   return (
     <nav
@@ -183,7 +159,7 @@ export const DesktopNavbar = () => {
         <div className="h-10 flex-1">
           <div className="flex items-center justify-end gap-4">
             <button
-              onClick={handleMarketplaceClick}
+              onClick={() => handleLinkClick(data?.url ?? MARKETPLACE_URL)}
               className={cn(
                 'group relative z-10 px-4 py-1.5 transition-all duration-150',
                 isHomePage
@@ -267,8 +243,8 @@ export const DesktopNavbar = () => {
 
 export const MobileNavbar = () => {
   const { checkAccess } = useAuthorization();
+  const { data } = useGetMultipassUrl();
   const [open, setOpen] = useState(false);
-  const handleMarketplaceClick = useMarketplaceClick();
 
   const protectedLinks: Link[] = [
     checkAccess({ allowedRoles: [ROLES.SUPER_ADMIN] }) && {
@@ -299,14 +275,6 @@ export const MobileNavbar = () => {
     ...protectedLinks,
   ];
 
-  const handleLinkClick = (url: string) => {
-    if (url.includes('https')) {
-      window.open(url, '_blank', 'noreferrer');
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
   return (
     <>
       <div
@@ -318,10 +286,13 @@ export const MobileNavbar = () => {
           <NavLink
             key={idx}
             to={link.to}
-            end
             target={link.to.includes('https') ? '_blank' : undefined}
             rel={link.to.includes('https') ? 'noopener noreferrer' : undefined}
-            onClick={() => handleLinkClick(link.to)}
+            onClick={() =>
+              link.name === 'Marketplace'
+                ? handleLinkClick(data?.url ?? MARKETPLACE_URL)
+                : handleLinkClick(link.to)
+            }
             className={({ isActive }) =>
               cn(
                 'flex transition-colors rounded-xl flex-col md:flex-row items-center gap-2 p-2 min-w-[62px] md:min-w-0 md:p-4 cursor-pointer hover:bg-zinc-100',
@@ -363,46 +334,31 @@ export const MobileNavbar = () => {
             align="end"
           >
             <ul className="flex flex-col gap-1.5">
-              {additionalMobileLinks.map((link, i) =>
-                link.to.includes('https') ? (
-                  <DropdownMenuItem
-                    key={i}
-                    className="cursor-pointer rounded-[18px] p-4 transition duration-200 ease-in-out focus:bg-[#252525]"
-                    onClick={(e) => {
-                      if (link.name === 'Marketplace') {
-                        e.preventDefault();
-                        handleMarketplaceClick(e);
-                      } else {
-                        handleLinkClick(link.to);
-                      }
-                      setOpen(false);
-                    }}
-                  >
-                    <div className="flex flex-1 items-center gap-3">
-                      <link.icon width={12} height={12} color="white" />
-                      <p className="text-sm text-white">{link.name}</p>
-                    </div>
-                  </DropdownMenuItem>
-                ) : (
-                  <NavLink
-                    key={i}
-                    to={link.to}
-                    onClick={() => {
-                      handleLinkClick(link.to);
-                      setOpen(false);
-                    }}
-                    className={({ isActive }) =>
-                      cn(
-                        'flex cursor-pointer items-center gap-3 rounded-[18px] p-4 transition duration-200 ease-in-out hover:bg-[#252525]',
-                        isActive && 'bg-[#252525]',
-                      )
-                    }
-                  >
-                    <link.icon width={12} height={12} color="white" />
-                    <p className="text-sm text-white">{link.name}</p>
-                  </NavLink>
-                ),
-              )}
+              {additionalMobileLinks.map((link, i) => (
+                <NavLink
+                  key={i}
+                  to={link.to}
+                  target={link.to.includes('https') ? '_blank' : undefined}
+                  rel={
+                    link.to.includes('https')
+                      ? 'noopener noreferrer'
+                      : undefined
+                  }
+                  onClick={() => {
+                    handleLinkClick(link.to);
+                    setOpen(false);
+                  }}
+                  className={({ isActive }) =>
+                    cn(
+                      'flex cursor-pointer items-center gap-3 rounded-[18px] p-4 transition duration-200 ease-in-out hover:bg-[#252525]',
+                      isActive && 'bg-[#252525]',
+                    )
+                  }
+                >
+                  <link.icon width={12} height={12} color="white" />
+                  <p className="text-sm text-white">{link.name}</p>
+                </NavLink>
+              ))}
               <NavLink
                 to="/logout"
                 onClick={() => {

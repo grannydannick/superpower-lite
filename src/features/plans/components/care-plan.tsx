@@ -2,13 +2,13 @@ import { CarePlan as FhirCarePlan } from '@medplum/fhirtypes';
 
 import { Spinner } from '@/components/ui/spinner';
 import { useBiomarkers } from '@/features/biomarkers/api/get-biomarkers';
-import { useProducts } from '@/features/plans/api';
 import { usePlan } from '@/features/plans/api/get-plan';
 import { PlanHealthScore } from '@/features/plans/components/annual-report/plan-health-score';
 import { RecommendedItems } from '@/features/plans/components/consultation/recommended-items';
 import { PlanGoals } from '@/features/plans/components/goals/plan-goals';
 import { PlanOverview } from '@/features/plans/components/plan-overview';
 import { PlanTopper } from '@/features/plans/components/plan-topper';
+import { useProducts } from '@/features/shop/api';
 
 import { CarePlanProvider, useCarePlan } from '../context/care-plan-context';
 

@@ -7,10 +7,10 @@ import { DialogClose } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, H2 } from '@/components/ui/typography';
 import { useCarePlan } from '@/features/plans/context/care-plan-context';
+import { useProducts, useCreateCheckoutUrl } from '@/features/shop/api';
 import { cn } from '@/lib/utils';
 import { Product } from '@/types/api';
 
-import { useCreateCheckoutUrl, useProducts } from '../../../api';
 import { calculateTotals } from '../../../utils/calculate-totals';
 import { parseProductRequests } from '../../../utils/parse-product-requests';
 import { CheckoutPrice } from '../checkout-price';

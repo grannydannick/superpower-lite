@@ -14,9 +14,9 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Body1, H2 } from '@/components/ui/typography';
-import { useProducts } from '@/features/plans/api';
 import { useCarePlan } from '@/features/plans/context/care-plan-context';
 import { parseProductRequests } from '@/features/plans/utils/parse-product-requests';
+import { useProducts } from '@/features/shop/api';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 
 import { ReviewStep } from './steps/review-step';
