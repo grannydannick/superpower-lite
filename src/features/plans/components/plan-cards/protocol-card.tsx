@@ -1,3 +1,5 @@
+import { CarePlan } from '@medplum/fhirtypes';
+import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 
 import { LockIcon } from '@/components/icons';
@@ -5,6 +7,8 @@ import { ArrowTopRight } from '@/components/icons/arrow-top-right-icon';
 import { Button } from '@/components/ui/button';
 import { H4, Body2 } from '@/components/ui/typography';
 import { usePlans } from '@/features/plans/api/get-plans';
+import { ANNUAL_PLAN_PHILOSOPHY_MARKDOWN } from '@/features/plans/const/philosophy';
+import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
 
 const getTimestamp = (plan: { created?: string }) =>
@@ -12,25 +16,33 @@ const getTimestamp = (plan: { created?: string }) =>
 
 export const ProtocolCard = ({ onClick }: { onClick?: () => void }) => {
   const navigate = useNavigate();
+  const { width } = useWindowDimensions();
+  const isMobile = width <= 768;
 
   const getPlansQuery = usePlans({});
 
-  let latestAvailablePlan = getPlansQuery.data?.actionPlans
-    ? getPlansQuery.data.actionPlans.sort(
-        (a, b) => getTimestamp(b) - getTimestamp(a),
-      )?.[0]
+  //most recent completed action plan
+  const latestAvailablePlan = getPlansQuery.data?.actionPlans
+    ? getPlansQuery.data.actionPlans
+        .filter((plan: CarePlan) => plan.status === 'completed')
+        .sort((a: any, b: any) => getTimestamp(b) - getTimestamp(a))?.[0]
     : undefined;
-
-  // note this logic here checks if latest plan is published
-  latestAvailablePlan =
-    latestAvailablePlan && latestAvailablePlan.status === 'completed'
-      ? latestAvailablePlan
-      : undefined;
 
   const handleClick = () => {
     onClick ? onClick() : undefined;
     navigate(`/plans/${latestAvailablePlan?.id}`);
   };
+
+  const startDate = latestAvailablePlan?.period?.start;
+  const startDateFormatted = startDate
+    ? moment(startDate).format('MMM DD, YYYY')
+    : undefined;
+
+  const description = latestAvailablePlan?.description;
+  const descriptionWithoutPhilosophy = description?.replace(
+    ANNUAL_PLAN_PHILOSOPHY_MARKDOWN,
+    '',
+  );
 
   return (
     <div
@@ -44,7 +56,7 @@ export const ProtocolCard = ({ onClick }: { onClick?: () => void }) => {
     >
       <div className="flex h-full flex-col justify-start transition-opacity duration-500">
         <div className="flex w-full justify-between gap-4">
-          <H4 className="text-white">Your Protocol</H4>
+          <H4 className="text-white">Your Action Plan</H4>
           {latestAvailablePlan ? (
             <ArrowTopRight className="absolute right-5 top-5 text-white/50 transition-all duration-200 group-hover:right-4 group-hover:top-4 group-hover:text-white/75" />
           ) : (
@@ -57,7 +69,7 @@ export const ProtocolCard = ({ onClick }: { onClick?: () => void }) => {
         <div className="flex h-full flex-col justify-between">
           <div className="relative h-full">
             <Body2 className="mt-2 line-clamp-5 bg-gradient-to-b from-white/75 to-white/10 bg-clip-text text-transparent">
-              {latestAvailablePlan?.description}
+              {descriptionWithoutPhilosophy}
             </Body2>
             {!latestAvailablePlan ? (
               <div className="absolute inset-0 z-20 mb-2 flex items-center justify-center">
@@ -73,8 +85,8 @@ export const ProtocolCard = ({ onClick }: { onClick?: () => void }) => {
           </div>
           <div className="flex w-full items-end justify-between gap-4">
             <Body2 className="text-white">
-              {latestAvailablePlan
-                ? 'Access your latest plan'
+              {latestAvailablePlan && !isMobile
+                ? `Access your latest plan ${startDate ? `from ${startDateFormatted}` : ''}`
                 : 'Awaiting lab results'}
             </Body2>
             {latestAvailablePlan ? (
