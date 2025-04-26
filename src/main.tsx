@@ -1,4 +1,3 @@
-import { BrowserAgent } from '@newrelic/browser-agent/loaders/browser-agent';
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
@@ -31,6 +30,7 @@ if (!root) throw new Error('No root element found');
  *
  * For session replay rates, adjust manually
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const options = {
   init: {
     session_replay: {
@@ -67,7 +67,8 @@ const options = {
   }, // NREUM.loader_config
 };
 
-new BrowserAgent(options);
+// NOTE: disabled on Apr 25 2025 due to the fact it kills performance of the app and it sucks
+// new BrowserAgent(options);
 
 // Initialize campaign tracking immediately since this is a client-side app
 captureCampaignParameters();

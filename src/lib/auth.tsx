@@ -1,7 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
 import * as React from 'react';
-import { useEffect } from 'react';
 import { configureAuth } from 'react-query-auth';
 import { Navigate, useLocation } from 'react-router-dom';
 import { z } from 'zod';
@@ -238,14 +237,6 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const taskQuery = useTask({
     taskName: 'onboarding',
   });
-
-  // update newrelic's userId
-  useEffect(() => {
-    if ((window as any)?.newrelic && userQuery.data) {
-      (window as any).newrelic.setUserId(userQuery.data.id);
-      console.log(`updated newRelic userId ${userQuery.data.id}`);
-    }
-  }, [userQuery.data]);
 
   if (taskQuery.isLoading) {
     return (
