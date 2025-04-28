@@ -1,5 +1,6 @@
 import { CarePlan as FhirCarePlan } from '@medplum/fhirtypes';
 
+import { MainErrorFallback } from '@/components/errors/main';
 import { Spinner } from '@/components/ui/spinner';
 import { useBiomarkers } from '@/features/biomarkers/api/get-biomarkers';
 import { usePlan } from '@/features/plans/api/get-plan';
@@ -59,8 +60,17 @@ export function CarePlan({ id }: { id: string }) {
     getProductsQuery.isLoading ||
     getBiomarkersQuery.isLoading;
 
+  const hasError =
+    getPlansQuery.isError ||
+    getProductsQuery.isError ||
+    getBiomarkersQuery.isError;
+
   if (isLoading) {
     return <LoadingSpinner />;
+  }
+
+  if (hasError) {
+    return <MainErrorFallback />;
   }
 
   if (!getPlansQuery.data) {

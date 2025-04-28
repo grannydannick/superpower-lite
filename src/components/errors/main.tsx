@@ -9,7 +9,7 @@ export const MainErrorFallback = () => {
       role="alert"
     >
       <img src="/logo-dark.svg" className="h-auto w-[163px]" alt="logo" />
-      <H2 className="text-center">Ooops, something went wrong.</H2>
+      <H2 className="text-center">Oops, something went wrong.</H2>
       <Body1 className="text-center text-zinc-500">
         Sorry, even our superpowers can’t handle this request
       </Body1>
