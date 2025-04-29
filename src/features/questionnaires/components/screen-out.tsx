@@ -147,7 +147,7 @@ export const ScreenOut = () => {
         </div>
         <div className="flex w-screen items-center justify-center bg-white px-10 py-4 text-center md:h-14">
           <Body2 className="text-primary">
-            Sorry, you’re not eligible for Superpower services at this time.
+            One of our clinicians will call you within the next 48 hours.
           </Body2>
         </div>
       </div>
