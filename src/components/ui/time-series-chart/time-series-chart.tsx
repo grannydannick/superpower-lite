@@ -36,6 +36,10 @@ export function TimeSeriesChart({
     );
   }
 
+  const chartWidth = chartComponentRef.current?.container.current?.clientWidth;
+  const pointColumnWidth = chartWidth ? chartWidth / value.length : 0;
+  const columnWidthTooSmall = pointColumnWidth < 70; //placeholder tooltip cannot be clicked below this width
+
   const data = value.map(toChartPoint);
   const min = 0;
   const max = calculateYMax(value, range);
@@ -274,6 +278,26 @@ export function TimeSeriesChart({
             return this.y?.toFixed(1); // Format the value to 1 decimal place
           },
         },
+        point: {
+          events: {
+            click: function () {
+              const point = this as any;
+
+              //hack to create the illusion of clicking placeholder tooltip 'book now' button after seeing the (unclickable) tooltip
+              if (point.isPlaceholder && columnWidthTooSmall) {
+                if (!point._clicked) {
+                  point._clicked = true;
+
+                  setTimeout(() => {
+                    point._clicked = false;
+                  }, 2000);
+                } else {
+                  window.location.href = '/services';
+                }
+              }
+            },
+          },
+        },
       },
     },
     tooltip: {
@@ -284,8 +308,9 @@ export function TimeSeriesChart({
       borderWidth: 0,
       borderRadius: 10,
       padding: 0,
-      hideDelay: 0,
+      hideDelay: 100,
       shadow: false,
+      stickOnContact: true,
       style: {
         pointerEvents: 'auto',
       },
@@ -297,9 +322,10 @@ export function TimeSeriesChart({
 
         if (isPlaceholder) {
           return `
-             <div class="shadow bg-white flex flex-col gap-2.5 items-center pb-4 pt-[18px] px-4 rounded-md font-sans">
+             <div class="shadow bg-white flex flex-col gap-2.5 items-center pb-4 pt-[18px] px-4 rounded-md font-sans ${columnWidthTooSmall ? 'cursor-pointer' : ''}" 
+                  ${columnWidthTooSmall ? 'onclick="window.location.href=\'/services\'"' : ''}>
               <p class="text-zinc-500">Schedule your<br /> annual re-test</p>
-              <button class="bg-primary text-white px-4 py-2.5 rounded-lg"><a href="/services">Book now</a></button>
+              <a href="/services" class="bg-primary text-white px-4 py-2.5 rounded-lg cursor-pointer">Book now</a>
             </div>
           `;
         }
