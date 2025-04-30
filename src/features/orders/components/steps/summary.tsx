@@ -238,7 +238,7 @@ function CreateOrderAppointmentDetails() {
           <div className="space-y-1">
             <Body2 className="text-zinc-500">Location</Body2>
             <div>
-              <Body1>{location.address.line}</Body1>
+              <Body1>{location.address.line.join(' ')}</Body1>
               <Body1>
                 {location.address.city}, {location.address.state},{' '}
                 {location.address.postalCode}
