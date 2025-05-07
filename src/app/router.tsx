@@ -11,6 +11,7 @@ import { ConciergeLayout } from '@/features/messages/layouts/concierge-layout';
 import { ProtectedRoute } from '@/lib/auth';
 
 import { AppRoot } from './routes/app/root';
+import { NotFoundRoute } from './routes/not-found';
 
 export const createRouter = () =>
   createBrowserRouter([
@@ -141,10 +142,11 @@ export const createRouter = () =>
     },
     {
       path: '*',
-      lazy: async () => {
-        const { NotFoundRoute } = await import('./routes/not-found');
-        return { Component: NotFoundRoute };
-      },
+      element: (
+        <ProtectedRoute>
+          <NotFoundRoute />
+        </ProtectedRoute>
+      ),
     },
   ]);
 
