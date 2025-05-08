@@ -20,8 +20,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown';
-import { MARKETPLACE_URL } from '@/const/shopify';
-import { useGetMultipassUrl } from '@/features/shop/api/get-multipass-url';
 import { useBlur } from '@/hooks/use-blur';
 import { ROLES, useAuthorization } from '@/lib/authorization';
 import { cn } from '@/lib/utils';
@@ -58,7 +56,6 @@ export const Navbar = () => {
 export const DesktopNavbar = () => {
   const { checkAccess } = useAuthorization();
   const { pathname } = useLocation();
-  const { data } = useGetMultipassUrl();
 
   const isHomePage = pathname === '/';
 
@@ -151,9 +148,8 @@ export const DesktopNavbar = () => {
         <div className="h-10 flex-1">
           <div className="flex items-center justify-end gap-4">
             <NavLink
-              to={data?.url ?? MARKETPLACE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+              to="/marketplace"
+              state={{ from: pathname }}
               className={cn(
                 'group relative z-10 px-4 py-1.5 transition-all duration-150',
                 isHomePage
@@ -236,8 +232,8 @@ export const DesktopNavbar = () => {
 
 export const MobileNavbar = () => {
   const { checkAccess } = useAuthorization();
-  const { data } = useGetMultipassUrl();
   const [open, setOpen] = useState(false);
+  const { pathname } = useLocation();
 
   const protectedLinks: Link[] = [
     checkAccess({ allowedRoles: [ROLES.SUPER_ADMIN] }) && {
@@ -257,7 +253,7 @@ export const MobileNavbar = () => {
     {
       icon: MarketplaceIcon,
       name: 'Marketplace',
-      to: 'https://products.superpower.com',
+      to: '/marketplace',
     },
     {
       icon: SettingsIcon,
@@ -267,8 +263,6 @@ export const MobileNavbar = () => {
     invite,
     ...protectedLinks,
   ];
-
-  const marketplaceUrl = data?.url ?? MARKETPLACE_URL;
 
   return (
     <>
@@ -325,7 +319,8 @@ export const MobileNavbar = () => {
               {additionalMobileLinks.map((link, i) => (
                 <NavLink
                   key={i}
-                  to={link.name === 'Marketplace' ? marketplaceUrl : link.to}
+                  to={link.to}
+                  state={{ from: pathname }}
                   target={link.to.includes('https') ? '_blank' : undefined}
                   rel={
                     link.to.includes('https')

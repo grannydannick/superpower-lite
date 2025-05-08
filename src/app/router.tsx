@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { ConciergeRoute } from '@/app/routes/app/concierge';
 import { DataRoute } from '@/app/routes/app/data';
 import { HomeRoute } from '@/app/routes/app/home';
+import { MarketplaceRoute } from '@/app/routes/app/marketplace';
 import { ServicesRoute } from '@/app/routes/app/services';
 import { SettingsRoute } from '@/app/routes/app/settings';
 import { MainErrorFallback } from '@/components/errors/main';
@@ -102,6 +103,10 @@ export const createRouter = () =>
         {
           path: 'settings',
           element: <SettingsRoute />,
+        },
+        {
+          path: 'marketplace',
+          element: <MarketplaceRoute />,
         },
         {
           path: 'onboarding',
