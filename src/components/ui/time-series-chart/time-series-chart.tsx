@@ -93,6 +93,7 @@ export function TimeSeriesChart({
       return {
         x: i,
         y: pt.y,
+        comparator: pt.comparator,
         marker: pt.isPlaceholder ? { fillColor: '#c6c6c6' } : undefined,
         isPlaceholder: pt.isPlaceholder,
       };
@@ -333,7 +334,7 @@ export function TimeSeriesChart({
       <div class="shadow bg-white flex flex-row gap-x-2 py-2 px-4 rounded-md font-sans text-primary">
         <div class="rounded-full size-3" style="background: ${this.color};"></div>
         <p>${ColorStatus[this.color as ChartColor]}</p>
-        <p>${integerPart}.${decimalPart}</p>
+        <p>${(this.point as any).comparator} ${integerPart}.${decimalPart}</p>
         <p class="text-zinc-500">${biomarker.unit}</p>
       </div>
     `;
@@ -355,6 +356,7 @@ export function TimeSeriesChart({
           {
             x: seriesData[seriesData.length - 1].x + 1,
             y: seriesData[seriesData.length - 1].y,
+            comparator: seriesData[seriesData.length - 1].comparator,
             isPlaceholder: true,
           } as Highcharts.PointOptionsObject,
         ],

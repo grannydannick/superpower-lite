@@ -6,6 +6,7 @@ import { BiomarkerStatusBadge } from '@/features/biomarkers/components/status-ba
 import { STATUS_TO_BG } from '@/features/biomarkers/const/status-to-bg';
 import { cn } from '@/lib/utils';
 import { BiomarkerResult, BiomarkerStatus } from '@/types/api';
+import { getDisplayComparator } from '@/utils/get-display-comparator';
 
 export interface BiomarkerDialogHeaderProps extends BiomarkerValueProps {
   name: string;
@@ -65,6 +66,7 @@ function BiomarkerValue({ result, unit }: BiomarkerValueProps): JSX.Element {
 
   return (
     <span className="flex flex-row space-x-1 text-black opacity-40">
+      <span>{getDisplayComparator(result?.quantity.comparator)}</span>
       <span>{value}</span>
       <span>{biomarkerUnit}</span>
     </span>

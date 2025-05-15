@@ -3,6 +3,7 @@ import React from 'react';
 
 import 'moment-timezone';
 import { BiomarkerResult, Range } from '@/types/api';
+import { getDisplayComparator } from '@/utils/get-display-comparator';
 
 export class SparklineChartLegendBuilder {
   private props: {
@@ -61,6 +62,7 @@ export class SparklineChartLegendBuilder {
         // x: new Date(d.timestamp).getTime(),
         // y: Math.max(Math.min(d.quantity.value, max - padding), min + padding),
         y: this.transformValue(d),
+        comparator: getDisplayComparator(d.quantity.comparator),
         value: d.quantity.value,
         dateFormatted: moment(d.timestamp)
           .tz(moment.tz.guess())
@@ -86,8 +88,29 @@ export class SparklineChartLegendBuilder {
       bound?.low !== undefined &&
       bound?.high !== undefined
     ) {
-      const plotBand = this.plotBands().find((b) => b.status === bound?.status);
-      if (plotBand === undefined) throw Error("Can't find matching plotband");
+      const plotBands = this.plotBands().filter(
+        (b) => b.status === bound?.status,
+      );
+
+      if (plotBands.length === 0) throw Error("Can't find matching plotband");
+
+      // Note: I know this is a complete hack and bad code
+      // But since we're rewriting these charts I'll let it be
+      // - Kingsley 05-14-2025
+
+      // Right now if there are 2 normals, we push both of them with the
+      // same band.Status onto plotBands.
+      // The first one is high normal and the second one is low normal.
+      // This is a hack to make we display it on the right one..
+      let plotBand = plotBands[0];
+
+      // There is high normal and low normal
+      if (plotBands.length > 1 && bound?.status === 'NORMAL') {
+        const optimalLowerBound = this.optimalBound()?.low;
+        if (d.quantity.value < (optimalLowerBound ?? Infinity)) {
+          plotBand = plotBands[1];
+        }
+      }
 
       const val =
         plotBand.from +

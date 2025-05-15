@@ -1,6 +1,7 @@
 import { Body2 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 import { BiomarkerResult } from '@/types/api';
+import { getDisplayComparator } from '@/utils/get-display-comparator';
 
 interface ValueUnitProps {
   result?: BiomarkerResult;
@@ -25,6 +26,11 @@ export const BiomarkerValueUnit = ({
 
   return (
     <div className="flex gap-1">
+      {result?.quantity.comparator && (
+        <Body2 className={cn('', textClassName)}>
+          {getDisplayComparator(result?.quantity.comparator)}
+        </Body2>
+      )}
       <Body2 className={cn('md:text-base', textClassName)}>{value}</Body2>
       <Body2 className={cn('text-zinc-500 md:text-base', textClassName)}>
         {unit}

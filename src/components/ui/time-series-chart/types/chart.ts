@@ -8,5 +8,6 @@ export enum ChartColor {
 export interface ChartPoint {
   x: number;
   y: number;
+  comparator: string;
   isPlaceholder: boolean;
 }

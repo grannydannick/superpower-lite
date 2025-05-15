@@ -131,7 +131,7 @@ export const SparkLineChartGraph = memo((props: any) => {
         formatter: function () {
           return `<div class="shadow bg-white flex flex-row gap-x-2 items-center py-2 px-4 rounded-md"><span class="block" style="height: 10px; width: 10px; border-radius: 100%; background-color: ${
             this.point.color
-          };"></span><div><b>${(this.point as any).value}</b><span style="color: gray;">${
+          };"></span><div><b>${(this.point as any).comparator} ${(this.point as any).value}</b><span style="color: gray;">${
             ' ' + (this.point as any).unit
           }<span class="ml-3">${(this.point as any).dateFormatted}</span></div></div>`;
         },
