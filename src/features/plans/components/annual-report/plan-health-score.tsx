@@ -107,7 +107,7 @@ export function PlanHealthScore() {
             />
             <div>
               <Body1 className="text-zinc-500">
-                Biological Age: {latestBiologicalAge?.toFixed(0)}
+                Biological Age: {latestBiologicalAge}
               </Body1>
               <Body1 className="text-zinc-500 opacity-50">
                 {Math.abs(ageDifference)} years{' '}
