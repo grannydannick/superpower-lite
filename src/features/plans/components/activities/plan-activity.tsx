@@ -131,7 +131,7 @@ function renderProductActivity(
     return (
       <div className="mt-8 space-y-2">
         <H4>{productName}</H4>
-        <Body1 className="text-zinc-500">{productDesc}</Body1>
+        <SafeMarkdown content={productDesc} />
         <ActivityCard
           {...product}
           name={productName}
@@ -151,7 +151,7 @@ function renderProductActivity(
   return (
     <div className="mt-8 space-y-2">
       <H4>{productName}</H4>
-      <Body1 className="text-zinc-500">{productDesc}</Body1>
+      <SafeMarkdown content={productDesc} />
       <TooltipProvider delayDuration={0}>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -200,7 +200,7 @@ function renderServiceActivity(
   return (
     <div className="mt-8 space-y-2">
       <H4>{serviceName}</H4>
-      <Body1 className="text-zinc-500">{serviceDesc}</Body1>
+      <SafeMarkdown content={serviceDesc} />
       <ActivityCard
         {...service}
         name={serviceName}
