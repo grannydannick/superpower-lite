@@ -6,7 +6,7 @@ import {
 import { COLLECTION_METHODS } from '@/features/orders/const/collection-methods';
 import { CollectionOptionType } from '@/features/orders/types/collection-method';
 import { getInterpretedAtHomeMethod } from '@/features/orders/utils/get-interpreted-method';
-import { ActiveAddress, HealthcareService } from '@/types/api';
+import { Address, HealthcareService } from '@/types/api';
 
 /**
  * Returns a list of collection methods available for the given service and draft order.
@@ -18,7 +18,7 @@ import { ActiveAddress, HealthcareService } from '@/types/api';
  */
 export const getCollectionMethods = (
   service: HealthcareService,
-  primaryAddress?: ActiveAddress,
+  primaryAddress?: Address,
   isAdmin = false,
 ): CollectionOptionType[] => {
   const isBloodPanel =
@@ -27,8 +27,8 @@ export const getCollectionMethods = (
     service.name == ADVANCED_BLOOD_PANEL;
   const INTERPRETED = getInterpretedAtHomeMethod(service);
 
-  if (primaryAddress?.address) {
-    const state = primaryAddress.address.state;
+  if (primaryAddress) {
+    const state = primaryAddress.state;
 
     // If user is admin, allow in-lab options regardless of state
     if (isAdmin) {

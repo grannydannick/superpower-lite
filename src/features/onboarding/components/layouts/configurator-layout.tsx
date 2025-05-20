@@ -9,7 +9,7 @@ type Props = {
 
 export const ConfiguratorLayout = (props: Props) => {
   return (
-    <div className="flex h-dvh flex-col bg-white lg:flex-row">
+    <div className="mx-auto grid min-h-dvh w-full gap-16 py-8 md:p-8 lg:grid-cols-2 lg:justify-items-end">
       <Head title={props.title} />
       {props.children}
     </div>

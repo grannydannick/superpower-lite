@@ -18,9 +18,6 @@ export const servicesHandlers = [
         return HttpResponse.json({ message: error }, { status: 401 });
       }
 
-      // const result = db.healthcareService.findMany({});
-      // return HttpResponse.json(result);
-
       return HttpResponse.json({ services });
     } catch (error: any) {
       return HttpResponse.json(
@@ -45,13 +42,6 @@ export const servicesHandlers = [
         }
         const serviceId = params.serviceId as string;
         const service = services.find(({ id }) => id === serviceId);
-        // const service = db.healthcareService.findFirst({
-        //   where: {
-        //     id: {
-        //       equals: serviceId,
-        //     },
-        //   },
-        // });
 
         if (!service) {
           return HttpResponse.json(

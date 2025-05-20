@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { AtHomeNoticeSection } from '@/features/onboarding/components/configurator/at-home-notice-section';
+import { AtHomeNoticeSection } from '@/components/shared/at-home-notice-section';
 import { VerifyCouponCode } from '@/features/onboarding/components/configurator/verify-coupon-code';
 
 import {

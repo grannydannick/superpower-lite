@@ -1,18 +1,15 @@
-import { Command as CommandPrimitive } from 'cmdk';
-import { useState, useCallback, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { forwardRef, useEffect, useState } from 'react';
+import * as React from 'react';
 import usePlacesService from 'react-google-autocomplete/lib/usePlacesAutocompleteService';
 
-import { Spinner } from '@/components/ui/spinner';
+import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, Body3 } from '@/components/ui/typography';
 import { env } from '@/config/env';
-import { useDebounce } from '@/hooks/use-debounce';
 import { cn } from '@/lib/utils';
-
-import { CommandGroup, CommandItem, CommandList } from '../command';
-
-import { AddressCommandInput } from './address-command-input';
-
-type Color = 'white' | 'zinc';
+import { GoogleAddressComponent } from '@/types/address';
+import { addressFromGoogleComponents } from '@/utils/google';
 
 type FormAddressInput = {
   line1: string;
@@ -22,182 +19,202 @@ type FormAddressInput = {
   postalCode: string;
 };
 
-type AutoCompleteProps = {
+/**
+ * Note: this intentionally copies input values of
+ * ControllerRenderProps<FieldValues, string>
+ *
+ * Idea is that its library-agnostic and we can also use it outside of the
+ * use-hook-form context
+ */
+export interface AddressAutocompleteProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   placeholder?: string;
-  color?: Color;
-  onSubmit: (address: FormAddressInput) => void;
+  onFormSubmit: (address: FormAddressInput) => void;
+  value: string;
+  onChange: (...event: any[]) => void;
+  onBlur: () => void;
+}
+
+const container = {
+  hidden: { opacity: 0, height: 0 },
+  show: {
+    opacity: 1,
+    height: 'auto',
+    transition: {
+      height: {
+        duration: 0.4,
+      },
+      staggerChildren: 0.1,
+    },
+  },
+  exit: {
+    opacity: 0,
+    height: 0,
+    transition: {
+      height: {
+        duration: 0.3,
+      },
+      opacity: {
+        duration: 0.2,
+      },
+    },
+  },
 };
 
-export const AddressAutocomplete = ({
-  placeholder,
-  onSubmit,
-  color = 'white',
-}: AutoCompleteProps) => {
-  const [searchInput, setSearchInput] = useState('');
-  const [selected, setSelected] = useState('');
-  const [serachPlaceholder, setSerachPlaceholder] = useState(
-    placeholder ?? 'Enter address',
-  );
+export const AddressAutocomplete = forwardRef<
+  HTMLInputElement,
+  AddressAutocompleteProps
+>(
+  (
+    { placeholder, onFormSubmit, value, disabled, onChange, onBlur, ...rest },
+    ref,
+  ) => {
+    const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
+    const [isFocused, setIsFocused] = useState(false);
+    const {
+      placesService,
+      placePredictions,
+      getPlacePredictions,
+      isPlacePredictionsLoading,
+    } = usePlacesService({
+      apiKey: env.GOOGLE_API_KEY,
+      options: {
+        types: ['address'],
+        componentRestrictions: {
+          country: 'us',
+        },
+      },
+    });
 
-  const [isOpen, setIsOpen] = useState(false);
-  const open = useCallback(() => {
-    setIsOpen(true);
-    setSerachPlaceholder('Start searching…');
-  }, []);
+    useEffect(() => {
+      if (value && value.length > 0) {
+        getPlacePredictions({ input: value });
+      }
+    }, [value]);
 
-  const close = useCallback(() => {
-    setIsOpen(false);
-    setSerachPlaceholder(placeholder ?? 'Enter address');
-  }, [placeholder]);
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Escape') {
-      close();
-    }
-  };
-
-  const debouncedSearchInput = useDebounce(searchInput, 500);
-
-  const {
-    placesService,
-    placePredictions,
-    getPlacePredictions,
-    isPlacePredictionsLoading,
-  } = usePlacesService({
-    apiKey: env.GOOGLE_API_KEY,
-  });
-
-  useEffect(() => {
-    getPlacePredictions({ input: debouncedSearchInput });
-  }, [debouncedSearchInput]);
-
-  useEffect(() => {
-    if (selected) {
+    const handleSelect = (placeId: string) => {
       placesService?.getDetails(
         {
-          placeId: selected,
+          placeId,
         },
         ({
           address_components,
         }: {
-          address_components: {
-            long_name: string;
-            short_name: string;
-            types: string[];
-          }[];
+          address_components: GoogleAddressComponent[];
         }) => {
-          const aptNumber = address_components.find((a) =>
-            a.types.includes('subpremise'),
-          )?.long_name;
-          const streetNumber = address_components.find((a) =>
-            a.types.includes('street_number'),
-          )?.long_name;
-          const route = address_components.find((a) =>
-            a.types.includes('route'),
-          )?.long_name;
-          const city =
-            address_components.find((a) => a.types.includes('locality'))
-              ?.long_name ?? '';
-          const state =
-            address_components.find((a) =>
-              a.types.includes('administrative_area_level_1'),
-            )?.short_name ?? '';
-          const postalCode =
-            address_components.find((a) => a.types.includes('postal_code'))
-              ?.long_name ?? '';
+          const address = addressFromGoogleComponents(address_components);
 
-          const line1 = `${streetNumber || ''} ${route || ''}`;
-          const line2 = aptNumber ? `${aptNumber}` : undefined;
+          setSelectedPlaceId(placeId);
 
-          const address: FormAddressInput = {
-            line1,
-            line2,
-            city,
-            state,
-            postalCode,
-          };
-          onSubmit(address);
+          onFormSubmit(address);
         },
       );
-    }
-  }, [selected]);
+    };
 
-  return (
-    <CommandPrimitive onKeyDown={handleKeyDown}>
+    return (
       <div>
-        <AddressCommandInput
-          value={searchInput}
-          onValueChange={setSearchInput}
-          onBlur={close}
-          onFocus={open}
-          color={color}
-          placeholder={serachPlaceholder}
+        <Input
+          placeholder={placeholder ?? 'Address'}
+          disabled={disabled}
+          ref={ref}
+          value={value}
+          onChange={(e) => {
+            getPlacePredictions({ input: e.target.value });
+            onChange(e);
+          }}
+          onFocus={() => {
+            setIsFocused(true);
+            setSelectedPlaceId(null);
+          }}
+          onBlur={() => {
+            setIsFocused(false);
+            onBlur();
+          }}
+          {...rest}
         />
-      </div>
-      <div className="relative mt-1">
-        <div
-          className={cn(
-            'animate-in fade-in-0 zoom-in-95 absolute top-0 z-10 w-full rounded-2xl bg-white outline-none',
-            isOpen ? 'block' : 'hidden',
-            color === 'zinc' && 'border border-zinc-200',
-          )}
-        >
-          <CommandList className="max-h-[200px] rounded-2xl">
-            {isPlacePredictionsLoading ? (
-              <CommandPrimitive.Loading>
-                <div className="flex w-full items-center justify-center px-[28px] py-4">
-                  <Spinner variant="primary" />
+        <AnimatePresence>
+          {isFocused && !selectedPlaceId && value.length > 0 ? (
+            <motion.div
+              className="relative"
+              variants={container}
+              initial="hidden"
+              animate="show"
+              exit="exit"
+            >
+              <div className="absolute top-1 z-10 w-full rounded-2xl bg-white outline-none animate-in fade-in-0 zoom-in-95">
+                <div
+                  className={cn(
+                    'max-h-[200px] rounded-2xl overflow-scroll border border-zinc-200',
+                  )}
+                >
+                  {isPlacePredictionsLoading
+                    ? Array(6)
+                        .fill(0)
+                        .map((_, i) => (
+                          <div
+                            className="flex w-full flex-col items-start rounded-[10px] px-[28px] py-4"
+                            key={i}
+                          >
+                            <Skeleton className="h-10 w-full" />
+                          </div>
+                        ))
+                    : null}
+                  {placePredictions.length > 0 && !isPlacePredictionsLoading ? (
+                    <div>
+                      {placePredictions.map(
+                        (
+                          option: {
+                            place_id: string;
+                            description: string;
+                            structured_formatting: {
+                              main_text: string;
+                              secondary_text: string;
+                            };
+                          },
+                          index,
+                        ) => {
+                          const isSelected =
+                            selectedPlaceId === option.place_id;
+                          return (
+                            <button
+                              data-testid={`autocomplete-${index}`}
+                              type="button"
+                              key={option.place_id}
+                              onClick={() => {
+                                handleSelect(option.place_id);
+                              }}
+                              className={cn(
+                                'flex w-full py-4 rounded-[10px] px-[28px] flex-col items-start cursor-pointer data-[disabled]:opacity-100 hover:bg-zinc-50 hover:rounded-[10px] data-[disabled]:pointer-events-auto',
+                                isSelected ? 'bg-zinc-50' : null,
+                              )}
+                            >
+                              <Body1>
+                                {option.structured_formatting.main_text}
+                              </Body1>
+                              <Body3 className="text-zinc-400">
+                                {option.structured_formatting.secondary_text}
+                              </Body3>
+                            </button>
+                          );
+                        },
+                      )}
+                    </div>
+                  ) : null}
+                  {!isPlacePredictionsLoading &&
+                  !placePredictions.length &&
+                  value.length > 0 ? (
+                    <div className="select-none rounded-sm px-[28px] py-4 text-center text-base font-normal text-zinc-500">
+                      No results.
+                    </div>
+                  ) : null}
                 </div>
-              </CommandPrimitive.Loading>
-            ) : null}
-            {placePredictions.length > 0 && !isPlacePredictionsLoading ? (
-              <CommandGroup>
-                {placePredictions.map(
-                  (option: {
-                    place_id: string;
-                    description: string;
-                    structured_formatting: {
-                      main_text: string;
-                      secondary_text: string;
-                    };
-                  }) => {
-                    const isSelected = selected === option.place_id;
-                    return (
-                      <CommandItem
-                        key={option.place_id}
-                        value={option.description}
-                        onMouseDown={(event) => {
-                          event.preventDefault();
-                          event.stopPropagation();
-                        }}
-                        onSelect={() => {
-                          setSelected(option.place_id);
-                        }}
-                        className={cn(
-                          'flex w-full py-4 px-[28px] flex-col items-start cursor-pointer data-[disabled]:opacity-100 hover:bg-zinc-50 hover:rounded-[10px] data-[disabled]:pointer-events-auto',
-                          isSelected ? 'bg-zinc-50 rounded-[10px]' : null,
-                        )}
-                      >
-                        <Body1>{option.structured_formatting.main_text}</Body1>
-                        <Body3 className="text-zinc-400">
-                          {option.structured_formatting.secondary_text}
-                        </Body3>
-                      </CommandItem>
-                    );
-                  },
-                )}
-              </CommandGroup>
-            ) : null}
-            {!isPlacePredictionsLoading &&
-            !placePredictions.length &&
-            debouncedSearchInput.length ? (
-              <CommandPrimitive.Empty className="select-none rounded-sm px-[28px] py-4 text-center text-base font-normal text-zinc-500">
-                No results.
-              </CommandPrimitive.Empty>
-            ) : null}
-          </CommandList>
-        </div>
+              </div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
       </div>
-    </CommandPrimitive>
-  );
-};
+    );
+  },
+);
+
+AddressAutocomplete.displayName = 'AddressAutocomplete';

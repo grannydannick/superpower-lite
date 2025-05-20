@@ -30,6 +30,14 @@ const createEnv = () => {
     NEW_RELIC_LOADER_AGENT_ID: z.string(),
     NEW_RELIC_LOADER_LICENSE_KEY: z.string(),
     NEW_RELIC_LOADER_APPLICATION_ID: z.string(),
+    KLAVIYO_PUBLIC_API_KEY: z.string(),
+    KLAVIYO_LIST_ID: z.string(),
+    ENABLE_WAITLIST: z
+      .string()
+      .refine((s) => s === 'true' || s === 'false')
+      .transform((s) => s === 'true')
+      .optional()
+      .default('true'),
   });
 
   const envVars = Object.entries(import.meta.env).reduce<

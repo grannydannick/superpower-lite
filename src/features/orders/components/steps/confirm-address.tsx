@@ -16,7 +16,7 @@ export const ConfirmAddress = () => {
       return;
     }
 
-    updateLocation({ address: user.primaryAddress.address });
+    updateLocation({ address: user.primaryAddress });
     nextStep();
   };
 

@@ -4,12 +4,12 @@ import { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RadioGroup } from '@/components/ui/radio-group';
-import { AddressDialog } from '@/features/settings/components/profile/address-dialog';
 import { cn } from '@/lib/utils';
 
 import { useAddressManagement } from '../hooks/use-address-management';
 
 import { AddressCard } from './address-card';
+import { AddressDialog } from './dialogs/address-dialog';
 
 /**
  *
@@ -84,18 +84,15 @@ const AddressHeader = ({ closeBtn }: { closeBtn?: ReactNode }) => (
 
 const AddNewAddressButton = () => (
   <AddressDialog mode="add">
-    {(props) => (
-      <Button
-        variant="ghost"
-        className="group flex cursor-pointer items-center gap-1.5 p-0 text-sm text-zinc-400 hover:text-zinc-700"
-        {...props}
-      >
-        <Plus
-          strokeWidth={2.75}
-          className="size-4 text-zinc-400 transition-colors group-hover:text-zinc-700"
-        />
-        Add address
-      </Button>
-    )}
+    <Button
+      variant="ghost"
+      className="group flex cursor-pointer items-center gap-1.5 p-0 text-sm text-zinc-400 hover:text-zinc-700"
+    >
+      <Plus
+        strokeWidth={2.75}
+        className="size-4 text-zinc-400 transition-colors group-hover:text-zinc-700"
+      />
+      Add address
+    </Button>
   </AddressDialog>
 );

@@ -12,13 +12,22 @@ import {
 } from '../utils';
 
 type NewUserBody = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  phone: string;
-  dateOfBirth: string;
-  gender: string;
+  user: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    phone: string;
+    dateOfBirth: string;
+    gender: string;
+    address: {
+      line: string[];
+      city: string;
+      state: string;
+      postalCode: string;
+      use: string;
+    };
+  };
 };
 
 type LoginBody = {
@@ -30,12 +39,13 @@ export const authHandlers = [
   http.post(`${env.API_URL}/auth/newuser`, async ({ request }) => {
     await networkDelay();
     try {
-      const userObject = (await request.json()) as NewUserBody;
+      const data = (await request.json()) as NewUserBody;
+      const { user } = data;
 
       const existingUser = db.user.findFirst({
         where: {
           email: {
-            equals: userObject.email,
+            equals: user.email,
           },
         },
       });
@@ -48,16 +58,16 @@ export const authHandlers = [
       }
 
       db.user.create({
-        ...userObject,
+        ...user,
         role: ['SUPER_ADMIN', 'MEMBER'],
-        password: hash(userObject.password),
+        password: hash(user.password),
       });
 
       await persistDb('user');
 
       const { login } = await authenticate({
-        email: userObject.email,
-        password: userObject.password,
+        email: user.email,
+        password: user.password,
       });
 
       return HttpResponse.json({ code: login.id, userId: login.userId });
@@ -188,7 +198,28 @@ export const authHandlers = [
 
     try {
       const { user } = await requireAuth(token);
-      return HttpResponse.json(user);
+      return HttpResponse.json({
+        ...user,
+        // note: using mock address for now
+        address: [
+          {
+            id: '018fadc8-2666-4256-9c12-d583aec403ff',
+            line: ['1600 Amphitheatre Parkway'],
+            city: 'Mountain View',
+            state: 'CA',
+            postalCode: '94043',
+            use: 'home',
+          },
+        ],
+        primaryAddress: {
+          id: '018fadc8-2666-4256-9c12-d583aec403ff',
+          line: ['1600 Amphitheatre Parkway'],
+          city: 'Mountain View',
+          state: 'CA',
+          postalCode: '94043',
+          use: 'home',
+        },
+      });
     } catch (error: any) {
       return HttpResponse.json(
         { message: error?.message || 'Server Error' },

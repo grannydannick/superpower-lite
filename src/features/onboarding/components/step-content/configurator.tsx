@@ -1,26 +1,52 @@
-import { SuperpowerLogo } from '@/components/icons/superpower-logo';
+import { motion } from 'framer-motion';
+
+import { TestimonialCarousel } from '@/components/shared/testimonials/components/testimonial-carousel';
+import { H4 } from '@/components/ui/typography';
 import { ConfiguratorSections } from '@/features/onboarding/components/configurator/configurator-sections';
-import { FaqSection } from '@/features/onboarding/components/configurator/faq-section';
+import { MembershipCard } from '@/features/onboarding/components/configurator/membership-card';
 import { ConfiguratorLayout } from '@/features/onboarding/components/layouts';
+import { useAvailableSubscriptions } from '@/features/settings/api';
+import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
 
 export const Configurator = () => {
+  const { width } = useWindowDimensions();
+  const isMobile = width < 1024;
+
+  const availableSubscriptionsQuery = useAvailableSubscriptions();
+
   return (
     <>
+      <ConfiguratorSections />
       <div
         className={cn(
-          'flex flex-col gap-6 items-center justify-between flex-1 bg-zinc-50 p-8',
+          'flex flex-col gap-6 lg:min-h-[750px] overflow-hidden sticky top-8 items-center justify-center max-h-[calc(100dvh-4rem)] flex-1 lg:bg-[#120B04] w-full lg:rounded-3xl',
         )}
       >
-        <SuperpowerLogo />
-        <img
-          src="/onboarding/dashboard.png"
-          className="h-[156px] w-full max-w-[240px] object-cover lg:h-auto lg:max-w-[423px]"
-          alt="dashboard"
+        <div className="hidden flex-1 flex-col justify-end pt-8 lg:flex">
+          <H4 className="mb-16 max-w-[256px] text-center text-zinc-50 opacity-50">
+            One last step before we start your membership
+          </H4>
+        </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{
+            duration: 2,
+          }}
+          className={cn(
+            'absolute inset-0 -z-10 bg-[url("/onboarding/gradient.webp")] bg-cover bg-center hidden lg:block',
+          )}
         />
-        <FaqSection />
+        <div className="relative hidden flex-1 items-center justify-center lg:flex">
+          {availableSubscriptionsQuery.data?.map((as) => (
+            <MembershipCard key={as.type} />
+          ))}
+        </div>
+        <div className="flex flex-1 flex-col justify-end px-8 pb-8">
+          <TestimonialCarousel darkMode={!isMobile} />
+        </div>
       </div>
-      <ConfiguratorSections />
     </>
   );
 };

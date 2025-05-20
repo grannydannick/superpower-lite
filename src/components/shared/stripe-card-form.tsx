@@ -4,7 +4,7 @@ import {
   CardNumberElement,
 } from '@stripe/react-stripe-js';
 import { StripeElementStyle, StripeError } from '@stripe/stripe-js';
-import { FormEvent, FormHTMLAttributes, forwardRef } from 'react';
+import { FormEvent, FormHTMLAttributes, forwardRef, useState } from 'react';
 
 import { Label } from '@/components/ui/label';
 import { Body3 } from '@/components/ui/typography';
@@ -26,6 +26,10 @@ const STRIPE_INPUT_STYLE: { style: StripeElementStyle } = {
   },
 };
 
+// Common input styling for all Stripe elements
+const commonInputClasses =
+  'rounded-xl shadow-sm border border-input transition-all duration-150 overflow-auto bg-white px-6 py-4 text-base text-foreground placeholder:text-muted-foreground [&_input]:caret-vermillion-900';
+
 enum ERROR_TYPES {
   CVC = 'incomplete_cvc',
   EXPIRY = 'incomplete_expiry',
@@ -41,10 +45,12 @@ interface StripeCardFormProps extends FormHTMLAttributes<HTMLFormElement> {
 
 export const StripeCardForm = forwardRef<HTMLFormElement, StripeCardFormProps>(
   ({ id, processing, error, onSubmit, setError, ...rest }, ref) => {
+    const [focusedElement, setFocusedElement] = useState<string | null>(null);
+
     return (
       <form
         onSubmit={onSubmit}
-        className="grid gap-8"
+        className="grid gap-4"
         id={id}
         {...rest}
         ref={ref}
@@ -66,9 +72,16 @@ export const StripeCardForm = forwardRef<HTMLFormElement, StripeCardFormProps>(
               disabled: processing,
               ...STRIPE_INPUT_STYLE,
             }}
-            onFocus={() => setError && setError(undefined)}
+            onFocus={() => {
+              setError && setError(undefined);
+              setFocusedElement('cardNumber');
+            }}
+            onBlur={() => setFocusedElement(null)}
             className={cn(
-              'rounded-xl border border-input bg-white px-6 py-4 text-base text-foreground',
+              commonInputClasses,
+              focusedElement === 'cardNumber'
+                ? 'bg-zinc-50 ring-2 ring-ring'
+                : '',
               processing ? 'opacity-50' : null,
               error?.code === ERROR_TYPES.NUMBER
                 ? 'border-pink-700 bg-pink-50 text-pink-700 placeholder:text-pink-700'
@@ -96,10 +109,17 @@ export const StripeCardForm = forwardRef<HTMLFormElement, StripeCardFormProps>(
                 disabled: processing,
                 ...STRIPE_INPUT_STYLE,
               }}
-              onFocus={() => setError && setError(undefined)}
+              onFocus={() => {
+                setError && setError(undefined);
+                setFocusedElement('cardExpiration');
+              }}
+              onBlur={() => setFocusedElement(null)}
               id="cardExpiration"
               className={cn(
-                'rounded-xl border border-input bg-white px-6 py-4 text-base text-foreground',
+                commonInputClasses,
+                focusedElement === 'cardExpiration'
+                  ? 'bg-zinc-50 ring-2 ring-ring'
+                  : '',
                 processing ? 'opacity-50' : null,
                 error?.code === ERROR_TYPES.EXPIRY
                   ? 'border-pink-700 bg-pink-50 text-pink-700 placeholder:text-pink-700'
@@ -126,10 +146,17 @@ export const StripeCardForm = forwardRef<HTMLFormElement, StripeCardFormProps>(
                 disabled: processing,
                 ...STRIPE_INPUT_STYLE,
               }}
-              onFocus={() => setError && setError(undefined)}
+              onFocus={() => {
+                setError && setError(undefined);
+                setFocusedElement('cardCvc');
+              }}
+              onBlur={() => setFocusedElement(null)}
               id="cardCvc"
               className={cn(
-                'rounded-xl border border-input bg-white px-6 py-4 text-base text-foreground',
+                commonInputClasses,
+                focusedElement === 'cardCvc'
+                  ? 'bg-zinc-50 ring-2 ring-ring'
+                  : '',
                 processing ? 'opacity-50' : null,
                 error?.code === ERROR_TYPES.CVC
                   ? 'border-pink-700 bg-pink-50 text-pink-700 placeholder:text-pink-700'

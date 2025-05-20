@@ -1,5 +1,6 @@
 import { ChevronLeftIcon } from '@radix-ui/react-icons';
 import { EmblaOptionsType } from 'embla-carousel';
+import Autoplay, { AutoplayOptionsType } from 'embla-carousel-autoplay';
 import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronRightIcon } from 'lucide-react';
 import React, {
@@ -60,6 +61,11 @@ type CarouselContextType = {
   direction: DirectionOption;
 } & CarouselContextProps;
 
+type CarouselProps = CarouselContextProps &
+  React.HTMLAttributes<HTMLDivElement> & {
+    autoPlayOptions?: AutoplayOptionsType;
+  };
+
 const useCarousel = () => {
   const context = useContext(CarouselContext);
   if (!context) {
@@ -74,10 +80,7 @@ const CarouselContext = createContext<CarouselContextType | null>(null);
  * Carousel Docs: {@link: https://shadcn-extension.vercel.app/docs/carousel}
  */
 
-const Carousel = forwardRef<
-  HTMLDivElement,
-  CarouselContextProps & React.HTMLAttributes<HTMLDivElement>
->(
+const Carousel = forwardRef<HTMLDivElement, CarouselProps>(
   (
     {
       carouselOptions,
@@ -86,6 +89,7 @@ const Carousel = forwardRef<
       plugins,
       children,
       className,
+      autoPlayOptions,
       ...props
     },
     ref,
@@ -96,7 +100,12 @@ const Carousel = forwardRef<
         axis: orientation === 'vertical' ? 'y' : 'x',
         direction: carouselOptions?.direction ?? (dir as DirectionOption),
       },
-      plugins,
+      // Add plugins from props
+      [
+        // The autoPlay plugin needs to be added manually and can't be added via props for some reason
+        ...(autoPlayOptions ? [Autoplay(autoPlayOptions)] : []),
+        ...(plugins || []),
+      ],
     );
 
     const [emblaThumbsRef, emblaThumbsApi] = useEmblaCarousel(

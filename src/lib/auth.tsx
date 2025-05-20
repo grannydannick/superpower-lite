@@ -9,6 +9,7 @@ import { SuperpowerLoadingLogo } from '@/components/icons/superpower-logo';
 import { useTask } from '@/features/tasks/api/get-task';
 import { MutationConfig } from '@/lib/react-query';
 import { clearActiveLogin, setActiveLogin } from '@/lib/utils';
+import { AddressInput, formAddressInputSchema } from '@/types/address';
 import {
   LoginAuthenticationResponse,
   OAuthGrantType,
@@ -70,10 +71,8 @@ export const registerInputSchema = z.object({
     .min(1, 'Please enter your phone number.')
     .refine(
       (value) => {
-        // Check if the phone number is valid
         if (!isValidPhoneNumber(value)) return false;
 
-        // Parse the phone number to get its country
         const phoneNumber = parsePhoneNumber(value);
         return phoneNumber && phoneNumber.country === 'US';
       },
@@ -98,6 +97,7 @@ export const registerInputSchema = z.object({
   password: z
     .string()
     .min(8, 'Please enter a password with at least 8 characters.'),
+  address: formAddressInputSchema,
 });
 
 export type RegisterInput = z.infer<typeof registerInputSchema>;
@@ -105,15 +105,32 @@ export type RegisterInput = z.infer<typeof registerInputSchema>;
 const registerWithEmailAndPassword = (
   data: RegisterInput,
 ): Promise<LoginAuthenticationResponse> => {
+  const line = [data.address.line1];
+
+  if (data.address.line2) {
+    line.push(data.address.line2);
+  }
+
+  const address: AddressInput = {
+    line: line,
+    city: data.address.city,
+    state: data.address.state,
+    postalCode: data.address.postalCode,
+    use: 'home',
+  };
+
   const registerData = {
-    ...data,
-    dateOfBirth: new Date(
-      Date.UTC(
-        data.dateOfBirth.getFullYear(),
-        data.dateOfBirth.getMonth(),
-        data.dateOfBirth.getDate(),
+    user: {
+      ...data,
+      address,
+      dateOfBirth: new Date(
+        Date.UTC(
+          data.dateOfBirth.getFullYear(),
+          data.dateOfBirth.getMonth(),
+          data.dateOfBirth.getDate(),
+        ),
       ),
-    ),
+    },
     campaignData: getCampaignData(),
   };
   console.log(
@@ -235,6 +252,9 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const userQuery = useUser();
   const taskQuery = useTask({
     taskName: 'onboarding',
+    queryConfig: {
+      enabled: userQuery.isSuccess,
+    },
   });
 
   if (taskQuery.isLoading) {
@@ -252,6 +272,16 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         to={`/signin?redirectTo=${encodeURIComponent(location.pathname)}`}
         replace
       />
+    );
+  }
+
+  // note: we should probably never get to this state anyways
+  if (taskQuery.isError) {
+    return (
+      <div className="p-4">
+        <p className="text-red-600">Ooops...Error loading onboarding status.</p>
+        <button onClick={() => taskQuery.refetch()}>Retry</button>
+      </div>
     );
   }
 

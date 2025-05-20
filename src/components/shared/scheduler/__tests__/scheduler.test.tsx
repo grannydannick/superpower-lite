@@ -10,10 +10,12 @@ test('One slot', async () => {
       serviceId="1"
       collectionMethod="AT_HOME"
       address={{
+        id: '1',
         city: 'test',
         state: 'test',
         postalCode: '12345',
         line: ['test'],
+        use: 'home',
       }}
     />,
   );

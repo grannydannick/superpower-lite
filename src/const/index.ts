@@ -5,3 +5,4 @@ export * from './toxin-panel';
 export * from './us-state-codes';
 export * from './consent-agreements';
 export * from './products';
+export * from './additional-lab-fees';

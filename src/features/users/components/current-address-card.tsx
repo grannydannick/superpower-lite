@@ -19,7 +19,7 @@ export const CurrentAddressCard = ({
   const { data: user } = useUser();
   const [isEditing, setIsEditing] = useState(false);
 
-  const address = user?.primaryAddress?.address;
+  const address = user?.primaryAddress;
 
   if (isEditing && !disableEdit) {
     return (

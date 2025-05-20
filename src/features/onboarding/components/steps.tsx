@@ -2,7 +2,6 @@ import {
   BookingStep,
   CommitmentStep,
   ConfiguratorStep,
-  PrimaryAddressStep,
   UpsellStep,
   UpsellBookingStep,
   MissionStep,
@@ -12,10 +11,6 @@ import {
 import { StepItem } from '@/lib/stepper/stepper-store-creator';
 
 export const steps: StepItem[] = [
-  {
-    id: 'primary-address',
-    content: <PrimaryAddressStep />,
-  },
   {
     id: 'configurator',
     content: <ConfiguratorStep />,

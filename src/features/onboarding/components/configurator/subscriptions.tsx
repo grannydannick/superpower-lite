@@ -1,10 +1,9 @@
-import { ArrowUpRight } from 'lucide-react';
 import React from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Body1, Body2, H2 } from '@/components/ui/typography';
+import { Body1, Body2, Body3, H3, H4 } from '@/components/ui/typography';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { useAvailableSubscriptions } from '@/features/settings/api/get-available-subscriptions';
 import { cn } from '@/lib/utils';
@@ -39,8 +38,8 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   return (
     <div
       className={cn(
-        'flex flex-row items-center rounded-xl border border-zinc-200 p-4 sm:px-6 sm:py-5',
-        selected ? 'bg-zinc-50' : null,
+        'flex flex-row items-center rounded-2xl border border-zinc-200 p-4 sm:px-6 sm:py-4 cursor-pointer transition-all duration-150 hover:bg-zinc-100',
+        selected ? 'bg-zinc-100' : null,
       )}
       {...rest}
     >
@@ -63,12 +62,15 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
             </Body2>
           </div>
         </div>
-        <div className="flex flex-row items-center gap-x-6">
-          <Body2 className="text-zinc-500">
-            {adjustedSubtotal === 0
-              ? 'Included'
-              : formatMoney(adjustedSubtotal)}
-          </Body2>
+        <div className="flex flex-row items-center gap-x-4">
+          {adjustedSubtotal === 0 ? (
+            <Body2 className="text-zinc-500">Included</Body2>
+          ) : (
+            <div className="flex items-center gap-1">
+              <Body3 className="text-zinc-500">USD</Body3>
+              <H4>{formatMoney(adjustedSubtotal)}</H4>
+            </div>
+          )}
 
           <RadioGroupItem value={availableSubscription.type} />
         </div>
@@ -88,26 +90,26 @@ const SectionSubscriptions = () => {
   return (
     <section id="subscriptions" className="w-full space-y-6">
       <div className="space-y-2">
-        <H2 className="text-[#1E1E1E]">Your membership</H2>
-        <p className="text-base text-zinc-500">
-          Choose the blood test package would like as part of your membership.
-        </p>
-        <a
-          href="https://superpower.com/biomarkers"
-          target="blank"
-          rel="noreferrer"
-          className="flex flex-row items-center space-x-1 text-[#FC5F2B]"
-        >
-          <span>Compare and view tests</span>
-          <ArrowUpRight className="size-4" />
-        </a>
+        <H3 className="text-[#1E1E1E]">Your annual membership</H3>
+        <Body2 className="text-zinc-500">
+          Your Superpower membership package details.
+        </Body2>
       </div>
       <div className="space-y-2">
-        <RadioGroup value={membershipType ?? 'baseline'}>
+        <RadioGroup
+          value={membershipType ?? 'baseline'}
+          // hide radio buttons if there is only one subscription = no need to select
+          className={cn(
+            availableSubscriptions?.length === 1 && '[&_[role=radio]]:hidden',
+          )}
+          aria-hidden={availableSubscriptions?.length === 1}
+        >
           {availableSubscriptionsQuery.isLoading
-            ? Array(2)
+            ? Array(1)
                 .fill(0)
-                .map((_, i) => <Skeleton key={i} className="h-[86px] w-full" />)
+                .map((_, i) => (
+                  <Skeleton key={i} className="h-20 w-full rounded-2xl" />
+                ))
             : null}
           {availableSubscriptions?.map((as, i) => (
             <SubscriptionCard

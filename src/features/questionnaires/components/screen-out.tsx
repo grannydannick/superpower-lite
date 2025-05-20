@@ -8,52 +8,20 @@ const SCREEN_OUT_TEXT = [
     title:
       'Thank you for taking the time to share your health information with us.',
     body: [
-      'Based on your responses, it appears we may need to contact you to clarify some parts of your medical history.',
-      'You can expect one of our clinicians to call you within the next 48 hours to ask for some more information.',
+      'Based on your responses, it appears we may need one of our clinicians to manually review your medical history.',
+      'You can expect us to get back to you within the next 48 hours.',
     ],
   },
   {
     heading: 'Why do we do this?',
     body: [
-      'We understand that it’s inconvenient to have the start of your Superpower journey delayed. However, we take health seriously, and we always put our members’ safety first. Before we make any recommendations on how to improve your health, we need to make sure we can do so in a safe manner that prioritizes your wellbeing.',
-      'Speak soon!',
+      'We understand that it’s inconvenient to have the start of your Superpower journey delayed. However, we take your health seriously, and we always put our members’ safety first. Before we make any recommendations on how to improve, we need to make sure we can do so in a safe manner that prioritizes your wellbeing.',
+      "You'll hear from us very soon!",
     ],
   },
 ];
 
-/* NOTE (04/10/2025):
- *
- * We are not screening legacy users out as of today.
- */
-
-// const LEGACY_USER_TEXT = [
-//   {
-//     title:
-//       'Thank you for taking the time to share your health information with us.',
-//     body: [
-//       'Based on your responses, it looks like you may need more specialized or intensive care than our program can safely support at this time.',
-//       'We know this may be disappointing to hear, and we want you to know that your health and safety are always our top priorities. Our care model is built for individuals without certain advanced or unstable conditions, and we’d never want to recommend a program that isn’t aligned with your needs.',
-//     ],
-//   },
-//   {
-//     heading: 'What this means for your membership',
-//     body: [
-//       'Since our program isn’t the right fit for you right now, we’ll be pausing your Superpower journey going forward. You have not been billed again for your membership, and you won’t be in the future. We hope you understand this decision comes from our commitment to providing safe, responsible care.',
-//       'If you have any questions or need support, our concierge team is here to help.',
-//     ],
-//   },
-//   {
-//     heading: 'What you can do next',
-//     body: [
-//       'If you haven’t already, we encourage you to connect with a primary care provider or specialist who can help guide you toward the best care for your needs.',
-//       'We truly appreciate your trust in us and hope you find a care path that feels right for you. You’re not alone in this, and we’re wishing you the very best on your journey toward better health.',
-//     ],
-//   },
-// ];
-
 function Information() {
-  const text = SCREEN_OUT_TEXT;
-
   return (
     <motion.section
       id="main"
@@ -62,7 +30,7 @@ function Information() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
     >
-      {text.map((text, idx) => (
+      {SCREEN_OUT_TEXT.map((text, idx) => (
         <motion.div
           key={text.heading || idx}
           className="space-y-3"

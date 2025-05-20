@@ -12,7 +12,6 @@ import {
 import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
 import { LocationList } from '@/features/orders/components/locations-list';
 import { useOrder } from '@/features/orders/stores/order-store';
-import { AddressForm } from '@/features/settings/components/profile/address-form';
 import { CurrentAddressCard } from '@/features/users/components/current-address-card';
 import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
@@ -48,12 +47,7 @@ export const PhlebotomyLocationSelect = () => {
               <CreateOrderPhlebotomyAtHome />
             ) : null}
           </div>
-        ) : (
-          <div className="space-y-4">
-            <H2>We do not have your primary address!</H2>
-            <AddressForm />
-          </div>
-        )}
+        ) : null}
       </div>
       {user?.primaryAddress ? (
         <HealthcareServiceFooter
@@ -77,7 +71,7 @@ function CreateOrderPhlebotomyInLab(): JSX.Element {
   const updateLocation = useOrder((s) => s.updateLocation);
 
   const [zipCode, setZipCode] = useState<string>(
-    user?.primaryAddress?.address.postalCode ?? '',
+    user?.primaryAddress?.postalCode ?? '',
   );
 
   const phlebotomyLocationsMutation = usePhlebotomyLocations({
@@ -176,7 +170,7 @@ function CreateOrderPhlebotomyAtHome(): JSX.Element {
         return;
       }
 
-      const { postalCode } = user.primaryAddress.address;
+      const { postalCode } = user.primaryAddress;
 
       const response = await mutateAsync({
         data: {
@@ -186,7 +180,7 @@ function CreateOrderPhlebotomyAtHome(): JSX.Element {
       });
 
       if (response.serviceable) {
-        updateLocation({ address: user.primaryAddress.address });
+        updateLocation({ address: user.primaryAddress });
       } else {
         updateLocation(null);
       }

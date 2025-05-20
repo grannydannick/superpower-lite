@@ -29,7 +29,6 @@ interface BaseUser {
   email: string;
   phone: string;
   dateOfBirth: string;
-  primaryAddress?: ActiveAddress;
 }
 
 export interface AdminUser extends BaseUser {
@@ -47,16 +46,13 @@ export interface User extends BaseUser {
   admin: boolean;
   carePlan?: string;
   authMethod: 'admin' | 'password';
-  activeAddresses: ActiveAddress[];
+  address: Address[];
+  primaryAddress?: Address;
   adminActor?: AdminActor;
   userIdentity?: UserIdentity;
   role: UserRole[];
   rdn?: Rdn;
 }
-
-export type ActiveAddress = Entity<{
-  address: Address;
-}>;
 
 export type AdminActor = Entity<{
   firstName: string;
@@ -370,13 +366,15 @@ export type Location = {
   webAddress?: WebAddressDTO;
 };
 
-export type Address = {
+export type AddressUseType = 'home' | 'work' | 'temp' | 'old' | 'billing';
+
+export type Address = Entity<{
   line: string[];
   city: string;
   state: string;
   postalCode: string;
-  text?: string;
-};
+  use: AddressUseType;
+}>;
 
 export type WebAddressType = 'ZOOM';
 
@@ -391,10 +389,14 @@ export type PhlebotomyLocation = {
   address: Address;
 };
 
-export type Serviceable = {
+export type NotServiceableReason =
+  | 'state-not-serviceable'
+  | 'no-providers-in-range';
+
+export type ServiceableResponse = {
   serviceable: boolean;
   providers: ('getlabs' | 'labcorp' | 'bioreference')[];
-  reason?: 'state-not-serviceable' | 'no-providers-in-range';
+  reason?: NotServiceableReason;
 };
 
 export type Slot = {

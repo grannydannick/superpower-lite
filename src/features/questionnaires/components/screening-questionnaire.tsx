@@ -5,9 +5,9 @@ import { Spinner } from '@/components/ui/spinner';
 import { useOrders } from '@/features/orders/api';
 import { useQuestionnaire } from '@/features/questionnaires/api/get-questionnaire';
 import { useQuestionnaireResponse } from '@/features/questionnaires/api/get-questionnaire-response';
+import { useScreening } from '@/features/questionnaires/api/screening';
 import { useUpdateQuestionnaireResponse } from '@/features/questionnaires/api/update-questionnaire-response';
 import { ScreenOut } from '@/features/questionnaires/components/screen-out';
-import { checkEligibility } from '@/features/questionnaires/utils/check-eligibility';
 import { QuestionnaireName } from '@/types/api';
 
 export const ScreeningQuestionnaire = ({
@@ -19,6 +19,7 @@ export const ScreeningQuestionnaire = ({
 }) => {
   const [isScreenedOut, setIsScreenedOut] = useState(false);
   const updateQuestionnaireResponseMutation = useUpdateQuestionnaireResponse();
+  const screeningMutation = useScreening();
 
   const getQuestionnaireQuery = useQuestionnaire({
     questionnaireName: 'onboarding-screening',
@@ -52,11 +53,7 @@ export const ScreeningQuestionnaire = ({
   }
 
   if (isScreenedOut) {
-    return (
-      <ScreenOut
-      // legacy={getOrdersQuery.data.orders.some((o) => o.status !== 'DRAFT')}
-      />
-    );
+    return <ScreenOut />;
   }
 
   return (
@@ -69,20 +66,19 @@ export const ScreeningQuestionnaire = ({
           questionnaireName: 'onboarding-screening' as QuestionnaireName,
         });
       }}
-      onSubmit={(item) => {
-        updateQuestionnaireResponseMutation.mutate({
+      onSubmit={async (item) => {
+        const response = await updateQuestionnaireResponseMutation.mutateAsync({
           data: { item, status: 'completed' },
           questionnaireName: 'onboarding-screening' as QuestionnaireName,
         });
 
-        // Note: this is purely visual frontend check
-        // actual refund / cancellation logic happens via medplum bot => server
-        const isIneligible = checkEligibility(
-          item,
-          getQuestionnaireQuery.data.questionnaire.item,
-        );
+        const screeningData = await screeningMutation.mutateAsync({
+          data: {
+            screeningResponse: response.questionnaireResponse,
+          },
+        });
 
-        if (isIneligible === true) {
+        if (screeningData.isIneligible === true) {
           setIsScreenedOut(true);
           return;
         }

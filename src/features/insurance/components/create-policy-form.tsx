@@ -63,7 +63,7 @@ export const CreatePolicyForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const form = useForm<CreatePolicyInput>({
     resolver: zodResolver(createPolicyInputSchema),
     defaultValues: {
-      state: user?.primaryAddress?.address.state,
+      state: user?.primaryAddress?.state,
       firstName: user?.firstName,
       lastName: user?.lastName,
       dateOfBirth: user?.dateOfBirth ? new Date(user?.dateOfBirth) : undefined,

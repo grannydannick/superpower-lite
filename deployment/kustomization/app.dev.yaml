@@ -41,6 +41,10 @@ spec:
               value: '{{ .VITE_APP_BRIDGE_PUBLISHABLE_KEY }}'
             - name: VITE_APP_BRIDGE_ENDPOINT
               value: '{{ .VITE_APP_BRIDGE_ENDPOINT }}'
+            - name: VITE_APP_KLAVIYO_LIST_ID
+              value: '{{ .VITE_APP_KLAVIYO_LIST_ID }}'
+            - name: VITE_APP_KLAVIYO_PUBLIC_API_KEY
+              value: '{{ .VITE_APP_KLAVIYO_PUBLIC_API_KEY }}'
 
 ---
 apiVersion: v1

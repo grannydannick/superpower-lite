@@ -5,5 +5,4 @@ export * from './mission';
 export * from './share';
 export * from './upsell';
 export * from './upsell-booking';
-export * from './primary-address/primary-address';
 export * from './questionnaire';

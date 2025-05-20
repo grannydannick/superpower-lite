@@ -4,12 +4,12 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 const textAreaVariants = cva(
-  'flex min-h-[80px] w-full resize-none rounded-md border text-base ring-offset-background focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
+  'flex min-h-[80px] w-full resize-none rounded-xl border text-base ring-offset-background focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
   {
     variants: {
       variant: {
         default:
-          'border-input bg-background px-6 py-4 caret-vermillion-900 placeholder:text-muted-foreground focus-visible:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-ring',
+          'border-input bg-background px-6 py-4 caret-vermillion-900 transition-all duration-150 placeholder:text-muted-foreground focus-visible:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-ring',
         glass:
           'border-white/20 bg-white/5 p-4 text-white caret-white placeholder:text-white placeholder:opacity-50 focus:border-white',
       },

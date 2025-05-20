@@ -61,4 +61,14 @@ export const phlebotomyHandlers = [
       );
     }
   }),
+  http.post(`${env.API_URL}/phlebotomy/serviceable`, async () => {
+    await networkDelay();
+
+    return HttpResponse.json(
+      {
+        serviceable: true,
+      },
+      { status: 200 },
+    );
+  }),
 ];

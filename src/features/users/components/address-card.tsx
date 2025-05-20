@@ -13,14 +13,14 @@ import {
 import { Label } from '@/components/ui/label';
 import { RadioGroupItem } from '@/components/ui/radio-group';
 import { Body1, Body3 } from '@/components/ui/typography';
-import { AddressDialog } from '@/features/settings/components/profile/address-dialog';
 import { cn } from '@/lib/utils';
-import { ActiveAddress } from '@/types/api';
+import { Address } from '@/types/api';
 
-import { DeleteAddressDialog } from './delete-address-dialog';
+import { AddressDialog } from './dialogs/address-dialog';
+import { DeleteAddressDialog } from './dialogs/delete-address-dialog';
 
 interface AddressCardProps {
-  address: ActiveAddress;
+  address: Address;
   isPrimary: boolean;
 }
 
@@ -41,9 +41,7 @@ export const AddressCard = memo(({ address, isPrimary }: AddressCardProps) => {
         />
         <div>
           <div className="flex items-center gap-2">
-            <Body1 className="text-zinc-600">
-              {address.address.line.join(' ')}
-            </Body1>
+            <Body1 className="text-zinc-600">{address.line.join(' ')}</Body1>
             {isPrimary && (
               <motion.div
                 className="hidden items-center gap-2 md:flex"
@@ -62,14 +60,8 @@ export const AddressCard = memo(({ address, isPrimary }: AddressCardProps) => {
             )}
           </div>
           <Body3 className="text-zinc-400">
-            {address.address.city}, {address.address.state},{' '}
-            {address.address.postalCode}, United States
+            {address.city}, {address.state}, {address.postalCode}, United States
           </Body3>
-          {address.address.text && (
-            <Body3 className="italic text-zinc-400">
-              Note: {address.address.text}
-            </Body3>
-          )}
         </div>
       </div>
 
@@ -95,18 +87,15 @@ export const AddressCard = memo(({ address, isPrimary }: AddressCardProps) => {
 
 AddressCard.displayName = 'AddressCard';
 
-const AddressEditOption = memo(({ address }: { address: ActiveAddress }) => (
+const AddressEditOption = memo(({ address }: { address: Address }) => (
   <AddressDialog mode="edit" address={address}>
-    {(props: React.ComponentProps<typeof DropdownMenuItem>) => (
-      <DropdownMenuItem
-        onSelect={(e) => {
-          e.preventDefault();
-        }}
-        {...props}
-      >
-        Edit
-      </DropdownMenuItem>
-    )}
+    <DropdownMenuItem
+      onSelect={(e) => {
+        e.preventDefault();
+      }}
+    >
+      Edit
+    </DropdownMenuItem>
   </AddressDialog>
 ));
 

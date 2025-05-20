@@ -181,7 +181,6 @@ export const DesktopNavbar = () => {
             <DropdownMenu>
               <DropdownMenuTrigger
                 asChild
-                data-testid="user-menu-trigger"
                 className="group rounded-full outline outline-1 outline-transparent transition-all duration-150 data-[state=open]:outline-2"
               >
                 <button
@@ -193,6 +192,7 @@ export const DesktopNavbar = () => {
                         : 'text-white'
                       : 'text-secondary hover:text-black',
                   )}
+                  data-testid="navbar-more-btn"
                 >
                   More
                   <ChevronDown className="size-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />

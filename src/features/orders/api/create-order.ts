@@ -4,9 +4,9 @@ import { z } from 'zod';
 import { getTimelineQueryOptions } from '@/features/home/api/get-timeline';
 import { getOrdersQueryOptions } from '@/features/orders/api/get-orders';
 import { getServicesQueryOptions } from '@/features/services/api';
-import { addressInputSchema } from '@/features/users/api';
 import { api } from '@/lib/api-client';
 import { MutationConfig } from '@/lib/react-query';
+import { addressInputSchema } from '@/types/address';
 import { Order } from '@/types/api';
 
 export const serviceItemInputSchema = z.object({

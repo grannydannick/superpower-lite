@@ -1,9 +1,7 @@
-// This list is serviceable for members who registered
-// before April 2024.
-
-// It's only available directly in the APP.
 export const US_STATE_CODES: string[] = [
+  'AK', // Alaska
   'AZ', // Arizona
+  'AR', // Arkansas
   'CA', // California
   'CO', // Colorado
   'CT', // Connecticut
@@ -11,6 +9,7 @@ export const US_STATE_CODES: string[] = [
   'DC', // District of Columbia
   'FL', // Florida
   'GA', // Georgia
+  'HI', // Hawaii
   'ID', // Idaho
   'IL', // Illinois
   'IN', // Indiana
@@ -51,7 +50,9 @@ export const US_STATE_CODES: string[] = [
 ];
 
 export const US_STATES = [
+  { value: 'AK', label: 'Alaska' },
   { value: 'AZ', label: 'Arizona' },
+  { value: 'AR', label: 'Arkansas' },
   { value: 'CA', label: 'California' },
   { value: 'CO', label: 'Colorado' },
   { value: 'CT', label: 'Connecticut' },
@@ -59,6 +60,7 @@ export const US_STATES = [
   { value: 'DC', label: 'District of Columbia' },
   { value: 'FL', label: 'Florida' },
   { value: 'GA', label: 'Georgia' },
+  { value: 'HI', label: 'Hawaii' },
   { value: 'ID', label: 'Idaho' },
   { value: 'IL', label: 'Illinois' },
   { value: 'IN', label: 'Indiana' },
@@ -86,7 +88,7 @@ export const US_STATES = [
   { value: 'OK', label: 'Oklahoma' },
   { value: 'OR', label: 'Oregon' },
   { value: 'PA', label: 'Pennsylvania' },
-  // { value: "RI", label: "Rhode Island" }, // Temporarily blocked because Vital does not support
+  // { value: 'RI', label: 'Rhode Island' }, // Temporarily blocked because Vital does not support
   { value: 'SC', label: 'South Carolina' },
   { value: 'SD', label: 'South Dakota' },
   { value: 'TN', label: 'Tennessee' },

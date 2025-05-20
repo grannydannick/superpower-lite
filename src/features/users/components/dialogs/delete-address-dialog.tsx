@@ -13,10 +13,10 @@ import {
 import { DropdownMenuItem } from '@/components/ui/dropdown';
 import { H2 } from '@/components/ui/typography';
 import { useDeleteAddress } from '@/features/users/api/delete-address';
-import { ActiveAddress } from '@/types/api';
+import { Address } from '@/types/api';
 
 interface DeleteAddressDialogProps {
-  address: ActiveAddress;
+  address: Address;
 }
 
 export function DeleteAddressDialog({ address }: DeleteAddressDialogProps) {
@@ -41,7 +41,7 @@ export function DeleteAddressDialog({ address }: DeleteAddressDialogProps) {
           Delete
         </DropdownMenuItem>
       </AlertDialogTrigger>
-      <AlertDialogContent className="rounded-2xl p-8">
+      <AlertDialogContent className="max-w-[95vw] p-8 sm:max-w-[525px]">
         <AlertDialogHeader className="mb-4">
           <H2>Delete address</H2>
           <AlertDialogDescription className="text-base text-zinc-600">

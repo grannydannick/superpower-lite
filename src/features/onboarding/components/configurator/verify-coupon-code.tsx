@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
-import { Body1, H2 } from '@/components/ui/typography';
+import { Body2, H3 } from '@/components/ui/typography';
 import { useValidateCode } from '@/features/auth/api';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { useAvailableSubscriptions } from '@/features/settings/api';
@@ -60,11 +60,11 @@ export const VerifyCouponCode = () => {
   return (
     <section id="subscriptions" className="w-full space-y-6">
       <div className="space-y-2">
-        <H2 className="text-[#1E1E1E]">Access code</H2>
-        <Body1 className="text-zinc-500">
+        <H3 className="text-[#1E1E1E]">Discount code</H3>
+        <Body2 className="text-zinc-500">
           Please verify that your access code is correct, as it will be used to
           apply any applicable discounts during checkout.
-        </Body1>
+        </Body2>
       </div>
       <div>
         <Input
@@ -80,7 +80,7 @@ export const VerifyCouponCode = () => {
           aria-invalid={validateCodeQuery.isError}
         />
         {validateCodeQuery.isError && (
-          <Body1 className="text-pink-700">Invalid access code</Body1>
+          <Body2 className="text-pink-700">Invalid access code</Body2>
         )}
       </div>
     </section>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { useEditAddress } from '@/features/users/api';
 import { useUser } from '@/lib/auth';
-import { ActiveAddress } from '@/types/api';
+import { Address } from '@/types/api';
 
 export function useAddressManagement() {
   const { data: user } = useUser();
@@ -12,19 +12,21 @@ export function useAddressManagement() {
     string | undefined
   >(user?.primaryAddress?.id);
 
-  const setDefaultAddress = async (address: ActiveAddress) => {
+  const setDefaultAddress = async (address: Address) => {
     setSelectedAddressId(address.id);
     await editUserAddressMutation.mutateAsync({
       data: {
-        primaryAddressId: address.id,
+        ...address,
+        use: 'home',
       },
+      id: address.id,
     });
   };
 
   return {
     selectedAddressId,
     setDefaultAddress,
-    addresses: user?.activeAddresses || [],
+    addresses: user?.address || [],
     primaryAddressId: user?.primaryAddress?.id,
   };
 }
