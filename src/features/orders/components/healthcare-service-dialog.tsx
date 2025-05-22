@@ -160,7 +160,7 @@ const HealthcareServiceDialogConsumer = ({
     return (
       <Sheet onOpenChange={handleOpenChange}>
         <SheetTrigger asChild>{children}</SheetTrigger>
-        <SheetContent className="flex max-h-full flex-col overflow-hidden rounded-t-2xl">
+        <SheetContent className="flex max-h-[83.3333vh] flex-col overflow-hidden rounded-t-2xl">
           <SheetHeader className="sticky top-0 z-50 -mt-8 flex flex-col gap-4 bg-white/90 pb-4 backdrop-blur-sm">
             {steps.length > 1 && (
               <div className="flex justify-center">
@@ -182,7 +182,7 @@ const HealthcareServiceDialogConsumer = ({
             Dialog for booking healthcare services and managing the scheduling
             process
           </SheetDescription>
-          <div className="overflow-auto">
+          <div className="flex-1 overflow-auto">
             {steps[activeStep]?.content ?? null}
           </div>
         </SheetContent>
