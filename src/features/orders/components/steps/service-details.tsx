@@ -1,29 +1,18 @@
 import { ArrowUpRight } from 'lucide-react';
 import React from 'react';
 
-import { TestDetails } from '@/components/shared/healthcare-service-info-dialog-content/types/service';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import { Body1, Body2, H2, H4 } from '@/components/ui/typography';
+import { Body1, Body2, H2 } from '@/components/ui/typography';
 import { useOrders } from '@/features/orders/api';
 import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
+import { ServiceDetails } from '@/features/orders/components/service-details';
 import { useOrder } from '@/features/orders/stores/order-store';
-import { cn } from '@/lib/utils';
 import { OrderStatus } from '@/types/api';
 import { getHealthcareServicePriceLabel } from '@/utils/format-money';
-import {
-  getDetailsForService,
-  getSampleReportLinkForService,
-} from '@/utils/service';
+import { getSampleReportLinkForService } from '@/utils/service';
 
 export const HealthcareServiceDetails = () => {
   const { service } = useOrder((s) => s);
   const ordersQuery = useOrders();
-  const serviceDetails = getDetailsForService(service.name);
   const sampleReportLink = getSampleReportLinkForService(service.name);
 
   const existingDraftOrder = ordersQuery.data?.orders
@@ -79,48 +68,7 @@ export const HealthcareServiceDetails = () => {
           alt={service.name}
         />
       </div>
-      <Accordion
-        type="single"
-        collapsible
-        className={cn(
-          'w-full',
-          serviceDetails && Object.keys(serviceDetails).length > 0
-            ? 'border-t'
-            : null,
-        )}
-      >
-        {serviceDetails
-          ? Object.keys(serviceDetails)
-              .filter(
-                (serviceDetailTitle) =>
-                  serviceDetailTitle !== 'sampleReportLink' &&
-                  serviceDetailTitle !== "What's tested?",
-              )
-              .map((serviceDetailTitle, index) => {
-                return (
-                  <AccordionItem
-                    value={serviceDetailTitle}
-                    key={index}
-                    className="p-8 md:p-14"
-                  >
-                    <AccordionTrigger className="p-0">
-                      <H4 className="text-zinc-900">{serviceDetailTitle}</H4>
-                    </AccordionTrigger>
-                    <AccordionContent className="pb-0 pt-4">
-                      <Body2 className="whitespace-break-spaces text-zinc-500">
-                        {
-                          serviceDetails[
-                            serviceDetailTitle as keyof TestDetails
-                          ]
-                        }
-                      </Body2>
-                    </AccordionContent>
-                  </AccordionItem>
-                );
-              })
-          : null}
-      </Accordion>
-
+      <ServiceDetails serviceName={service.name} />
       <HealthcareServiceFooter />
     </div>
   );

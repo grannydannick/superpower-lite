@@ -2,6 +2,7 @@ import { google, ics } from 'calendar-link';
 import { ChevronDown } from 'lucide-react';
 import React from 'react';
 
+import { Button } from '@/components/ui/button';
 import {
   Popover,
   PopoverContent,
@@ -13,7 +14,6 @@ import {
   SUPERPOWER_ADVANCED_BLOOD_PANEL,
   SUPERPOWER_BLOOD_PANEL,
 } from '@/const';
-import { cn } from '@/lib/utils';
 import { Address, CollectionMethodType, Slot } from '@/types/api';
 
 import { getCalendarEvent } from '../add-to-calendar-button/utils/get-calendar-event';
@@ -23,7 +23,6 @@ export function AddToCalendar({
   address,
   collectionMethod,
   service,
-  className,
 }: {
   slot: Slot;
   address: Address;
@@ -32,22 +31,16 @@ export function AddToCalendar({
     | typeof SUPERPOWER_BLOOD_PANEL
     | typeof GRAIL_GALLERI_MULTI_CANCER_TEST
     | typeof SUPERPOWER_ADVANCED_BLOOD_PANEL;
-  className?: string;
 }) {
   const event = getCalendarEvent({ slot, address, collectionMethod, service });
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <div
-          className={cn(
-            'flex w-full max-w-[244px] cursor-pointer items-center justify-between rounded-xl border border-zinc-200 px-[18px] py-4',
-            className,
-          )}
-        >
+        <Button size="small" variant="outline" className="gap-2">
           <Body1 className="text-zinc-900">Add to calendar</Body1>
-          <ChevronDown size={24} color="#A1A1AA" />
-        </div>
+          <ChevronDown size={18} color="#A1A1AA" />
+        </Button>
       </PopoverTrigger>
       <PopoverContent
         className="z-[99999] rounded-xl border border-zinc-200 p-0"
@@ -61,7 +54,7 @@ export function AddToCalendar({
           <a
             href={ics(event)}
             target="_blank"
-            className="flex gap-3 rounded-xl px-3 py-4 hover:cursor-pointer hover:bg-zinc-50 text-base text-zinc-600"
+            className="flex gap-3 rounded-xl px-3 py-4 text-base text-zinc-600 hover:cursor-pointer hover:bg-zinc-50"
             rel="noreferrer"
           >
             <img
@@ -74,7 +67,7 @@ export function AddToCalendar({
           <a
             href={google(event)}
             target="_blank"
-            className="flex gap-3 rounded-xl px-3 py-4 hover:cursor-pointer hover:bg-zinc-50 text-base text-zinc-600"
+            className="flex gap-3 rounded-xl px-3 py-4 text-base text-zinc-600 hover:cursor-pointer hover:bg-zinc-50"
             rel="noreferrer"
           >
             <img

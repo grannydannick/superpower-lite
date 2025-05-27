@@ -52,7 +52,7 @@ export function DateFilter<TData>({
         >
           <Body2 className="text-zinc-500">
             {selectedOrder
-              ? moment(selectedOrder.timestamp)
+              ? moment(selectedOrder.startTimestamp)
                   .tz(selectedOrder.timezone)
                   .format('MM/DD/YYYY')
               : 'All results'}
@@ -97,7 +97,7 @@ export function DateFilter<TData>({
                 key={o.id}
                 onClick={() => table.getColumn('orderId')?.setFilterValue(o.id)}
               >
-                {moment(o.timestamp).tz(o.timezone).format('MM/DD/YYYY')}
+                {moment(o.startTimestamp).tz(o.timezone).format('MM/DD/YYYY')}
               </Button>
             ))}
           </div>

@@ -1,8 +1,7 @@
-import { Calendar, Check, MapPin } from 'lucide-react';
+import { Check } from 'lucide-react';
 import moment from 'moment';
 import React, { ReactNode } from 'react';
 
-import { DotIcon } from '@/components/icons/dot';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -17,6 +16,7 @@ import {
   useUpdateOrder,
 } from '@/features/orders/api';
 import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
+import { OrderAppointmentDetails } from '@/features/orders/components/order-appointment-details';
 import { useOrder } from '@/features/orders/stores/order-store';
 import { useService } from '@/features/services/api';
 import { usePaymentMethods } from '@/features/settings/api';
@@ -162,7 +162,11 @@ export function OrderSummary(): ReactNode {
             {price !== undefined ? (
               <CreateOrderSummaryItem basePrice={price} />
             ) : null}
-            <CreateOrderAppointmentDetails />
+            <OrderAppointmentDetails
+              slot={slot ?? undefined}
+              timezone={tz ?? moment.tz.guess()}
+              location={location ?? undefined}
+            />
             {price && price > 0 ? <CurrentPaymentMethodCard /> : null}
           </>
         ) : null}
@@ -203,51 +207,6 @@ export function OrderSummary(): ReactNode {
         />
       ) : null}
     </>
-  );
-}
-
-function CreateOrderAppointmentDetails() {
-  const { slot, tz, location } = useOrder((s) => s);
-
-  if (!slot && !location) {
-    return null;
-  }
-
-  return (
-    <div className="space-y-4 rounded-2xl border border-zinc-200 p-6">
-      <Body1>Appointment details</Body1>
-      {slot ? (
-        <div className="flex gap-4">
-          <Calendar className="size-5 text-zinc-500" />
-          <div className="space-y-1">
-            <Body2 className="text-zinc-500">Date scheduled</Body2>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-              <Body1>{moment(slot.start).tz(tz).format('MMM Do, YYYY')}</Body1>
-              <DotIcon fill="#18181B" className="hidden sm:block" />
-              <Body1>
-                {moment(slot.start).tz(tz).format('h:mma')} -{' '}
-                {moment(slot.end).tz(tz).format('h:mma z')}
-              </Body1>
-            </div>
-          </div>
-        </div>
-      ) : null}
-      {location?.address ? (
-        <div className="flex gap-4">
-          <MapPin className="size-5 text-zinc-500" />
-          <div className="space-y-1">
-            <Body2 className="text-zinc-500">Location</Body2>
-            <div>
-              <Body1>{location.address.line.join(' ')}</Body1>
-              <Body1>
-                {location.address.city}, {location.address.state},{' '}
-                {location.address.postalCode}
-              </Body1>
-            </div>
-          </div>
-        </div>
-      ) : null}
-    </div>
   );
 }
 

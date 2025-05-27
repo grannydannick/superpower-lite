@@ -340,7 +340,8 @@ export type Order = Entity<{
   name: string;
   status: OrderStatus;
   location: Location;
-  timestamp: string;
+  startTimestamp: string;
+  endTimestamp: string;
   timezone: string;
   report: boolean;
   method: CollectionMethodType[];

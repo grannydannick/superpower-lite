@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { X } from 'lucide-react';
 import moment from 'moment-timezone';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 
 import {
   Dialog,
@@ -65,9 +65,6 @@ export const HealthcareServiceDialog = ({
   if (excludeSteps) {
     steps = steps.filter((step) => !excludeSteps.includes(step.id));
   }
-
-  // key here is used to recreate entire store when steps change
-  // this is useful when we change address directly and need component to be unmounted
   const key = steps.map((s) => s.id).join('-');
 
   return (
@@ -98,8 +95,8 @@ const HealthcareServiceDialogConsumer = ({
   children,
   onSubmit,
 }: {
-  children?: ReactNode;
   onSubmit?: () => void;
+  children?: ReactNode;
 }) => {
   const { steps, activeStep, resetSteps } = useStepper((s) => s);
   const queryClient = useQueryClient();

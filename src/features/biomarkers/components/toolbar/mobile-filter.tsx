@@ -197,7 +197,7 @@ const MobileDatesFilter = <TData,>({ table }: MobileFilterProps<TData>) => {
                 <Circle className="fill-zinc-900" height={14} width={14} />
               </div>
               <Body2 className="text-zinc-500">
-                {moment(order.timestamp)
+                {moment(order.startTimestamp)
                   .tz(order.timezone)
                   .format('YYYY/MM/DD')}
               </Body2>

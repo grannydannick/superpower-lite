@@ -62,7 +62,7 @@ export function OrderCard(order: Order) {
 }
 
 function OrderCardBadge({ order }: { order: Order }): JSX.Element {
-  const { id, name, status, timestamp, timezone } = order;
+  const { id, name, status, startTimestamp, timezone } = order;
   const { checkAdminActorAccess } = useAuthorization();
   const { mutateAsync } = useCancelOrder({
     mutationConfig: {
@@ -72,7 +72,8 @@ function OrderCardBadge({ order }: { order: Order }): JSX.Element {
 
   const isAdmin = checkAdminActorAccess();
   const isLessThan24Hours =
-    moment(timestamp).tz(timezone).diff(moment().tz(timezone), 'hours') <= 24;
+    moment(startTimestamp).tz(timezone).diff(moment().tz(timezone), 'hours') <=
+    24;
 
   const isUpcoming = status.toUpperCase() === OrderStatus.upcoming;
   const isAllowedToCancelService = [
@@ -106,14 +107,17 @@ function OrderCardBadge({ order }: { order: Order }): JSX.Element {
 }
 
 function OrderCardDetails({
-  timestamp,
+  startTimestamp,
   timezone,
   location,
 }: Order): JSX.Element {
   return (
     <div className="flex flex-col gap-0.5">
       <Body2 className="text-zinc-500">
-        <TimestampDisplay timestamp={new Date(timestamp)} timezone={timezone} />
+        <TimestampDisplay
+          timestamp={new Date(startTimestamp)}
+          timezone={timezone}
+        />
       </Body2>
       <Body2 className="line-clamp-1 text-zinc-400">
         {location.address?.line.join(', ')}

@@ -9,7 +9,9 @@ import {
   TimelineHeader,
   TimelineItem,
 } from '@/components/ui/timeline';
+import { useOrders } from '@/features/orders/api';
 import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
+import { HealthcareServiceRescheduleDialog } from '@/features/orders/components/reschedule';
 import { useServices } from '@/features/services/api';
 import { TimelineItem as TimelineItemType } from '@/types/api';
 
@@ -31,12 +33,42 @@ const OrderTimelineItem = ({
   timelineItem: TimelineItemType;
 }) => {
   const servicesQuery = useServices();
+  const getOrdersQuery = useOrders();
 
   const service = servicesQuery.data?.services.find(
     (s) => s.name === timelineItem.name,
   );
+  const order = getOrdersQuery.data?.orders.find(
+    (o) => o.id === timelineItem.id,
+  );
 
-  if (!service) return null;
+  if (!service || !order) return null;
+
+  const renderTimelineButton = () => {
+    switch (timelineItem.status) {
+      case 'ACTION_REQUIRED':
+        return (
+          <HealthcareServiceDialog healthcareService={service}>
+            <Button className="bg-white" size="medium" variant="outline">
+              Book
+            </Button>
+          </HealthcareServiceDialog>
+        );
+      case 'CURRENT':
+        return (
+          <HealthcareServiceRescheduleDialog
+            healthcareService={service}
+            order={order}
+          >
+            <Button className="bg-white" size="medium" variant="outline">
+              More Details
+            </Button>
+          </HealthcareServiceRescheduleDialog>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <TimelineItem>
@@ -52,15 +84,7 @@ const OrderTimelineItem = ({
           title={timelineItem.name}
           description={timelineItem.description}
           variant={timelineItem.status === 'DISABLED' ? 'disabled' : 'default'}
-          button={
-            timelineItem.status === 'ACTION_REQUIRED' ? (
-              <HealthcareServiceDialog healthcareService={service}>
-                <Button className="bg-white" size="medium" variant="outline">
-                  Book
-                </Button>
-              </HealthcareServiceDialog>
-            ) : null
-          }
+          button={renderTimelineButton()}
         />
       </TimelineHeader>
     </TimelineItem>

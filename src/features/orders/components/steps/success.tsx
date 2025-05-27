@@ -46,7 +46,6 @@ export const Success = () => {
         slot={slot}
         service={service.name}
         collectionMethod={collectionMethod}
-        className="max-w-none md:max-w-[244px]"
       />
     );
   };

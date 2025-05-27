@@ -126,7 +126,7 @@ export const BiomarkersSummaryCard = ({
         <H4 className="text-white">Results</H4>
         {mostRecentOrder ? (
           <Body1 className="text-zinc-400">
-            As of {moment(mostRecentOrder.timestamp).format('DD MMM')}
+            As of {moment(mostRecentOrder.startTimestamp).format('DD MMM')}
           </Body1>
         ) : (
           <Body1 className="text-zinc-400">Not available yet.</Body1>
