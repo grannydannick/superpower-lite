@@ -21,7 +21,7 @@ export const HealthcareServiceDetails = () => {
 
   return (
     <div>
-      <div className="flex flex-col justify-between gap-12 px-6 py-12 md:flex-row md:px-14 md:pb-16">
+      <div className="flex flex-col justify-between gap-12 p-6 md:flex-row md:px-14 md:pb-16">
         <div className="flex flex-col justify-center gap-4 md:max-w-[278px]">
           <img
             src={service.image}

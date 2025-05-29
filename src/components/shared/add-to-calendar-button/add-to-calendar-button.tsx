@@ -14,6 +14,7 @@ import {
   SUPERPOWER_ADVANCED_BLOOD_PANEL,
   SUPERPOWER_BLOOD_PANEL,
 } from '@/const';
+import { cn } from '@/lib/utils';
 import { Address, CollectionMethodType, Slot } from '@/types/api';
 
 import { getCalendarEvent } from '../add-to-calendar-button/utils/get-calendar-event';
@@ -23,6 +24,7 @@ export function AddToCalendar({
   address,
   collectionMethod,
   service,
+  className,
 }: {
   slot: Slot;
   address: Address;
@@ -31,13 +33,14 @@ export function AddToCalendar({
     | typeof SUPERPOWER_BLOOD_PANEL
     | typeof GRAIL_GALLERI_MULTI_CANCER_TEST
     | typeof SUPERPOWER_ADVANCED_BLOOD_PANEL;
+  className?: string;
 }) {
   const event = getCalendarEvent({ slot, address, collectionMethod, service });
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="gap-2 py-4 px-5 text-base">
+        <Button variant="outline" className={cn('gap-2', className)}>
           <Body1 className="text-zinc-900">Add to calendar</Body1>
           <ChevronDown size={18} color="#A1A1AA" />
         </Button>

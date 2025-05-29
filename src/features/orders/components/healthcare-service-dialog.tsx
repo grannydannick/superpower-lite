@@ -157,16 +157,16 @@ const HealthcareServiceDialogConsumer = ({
     return (
       <Sheet onOpenChange={handleOpenChange}>
         <SheetTrigger asChild>{children}</SheetTrigger>
-        <SheetContent className="flex max-h-[83.3333vh] flex-col overflow-hidden rounded-t-2xl">
-          <SheetHeader className="sticky top-0 z-50 -mt-8 flex flex-col gap-4 bg-white/90 pb-4 backdrop-blur-sm">
-            {steps.length > 1 && (
+        <SheetContent className="flex flex-col overflow-hidden rounded-t-2xl">
+          <SheetHeader className="sticky top-0 z-50 flex flex-col gap-4 bg-white/90 pb-4 backdrop-blur-sm">
+            {steps.length > 1 ? (
               <div className="flex justify-center">
                 <Progress
                   value={((activeStep + 1) / steps.length) * 100}
                   className="h-1 w-32"
                 />
               </div>
-            )}
+            ) : null}
             <SheetTitle className="grid w-full grid-cols-3 items-center">
               <SheetClose className="flex size-10 items-center justify-center rounded-full bg-zinc-100">
                 <X className="size-5 text-black" />

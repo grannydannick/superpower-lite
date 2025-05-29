@@ -9,12 +9,12 @@ import { OrderAppointmentDetails } from '../order-appointment-details';
 export function HealthcareServiceRescheduleDetails({
   healthcareService,
   order,
-  resultsPending,
 }: {
   healthcareService: HealthcareService;
   order: Order;
-  resultsPending: boolean;
 }) {
+  const isPastAppointment = new Date(order.startTimestamp) < new Date();
+
   return (
     <div>
       <div className="space-y-8 px-6 md:px-10">
@@ -24,12 +24,12 @@ export function HealthcareServiceRescheduleDetails({
             className="block size-[70px] rounded-2xl border border-zinc-200 bg-white  object-cover"
             alt={healthcareService.name}
           />
-          {resultsPending && (
+          {isPastAppointment ? (
             <div className="inline-flex items-center space-x-1 self-start rounded-lg bg-vermillion-100 px-2 py-1">
               <Clock4Icon className="size-4 text-vermillion-900" />
               <Body2 className="text-vermillion-900">Results in progress</Body2>
             </div>
-          )}
+          ) : null}
           <div className="max-w-[220px] space-y-4 md:max-w-none">
             <H2 className="text-zinc-900">{healthcareService.name}</H2>
           </div>

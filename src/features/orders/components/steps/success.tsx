@@ -46,6 +46,7 @@ export const Success = () => {
         slot={slot}
         service={service.name}
         collectionMethod={collectionMethod}
+        className="w-full"
       />
     );
   };
