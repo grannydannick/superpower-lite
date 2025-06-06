@@ -1,18 +1,17 @@
 import {
   capitalize,
+  deepEquals,
   getTypedPropertyValue,
   TypedValue,
-  deepEquals,
 } from '@medplum/core';
 import {
   QuestionnaireItem,
   QuestionnaireResponseItem,
 } from '@medplum/fhirtypes';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
 
 import { QuestionnaireErrorWrapper } from '../questionnaire-error-wrapper';
@@ -34,7 +33,6 @@ export function RadioButtons({
   onChangeAnswer,
 }: RadioButtonsProps) {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const { width } = useWindowDimensions();
 
   const formattedOptions = useMemo(() => {
     const options: [string, TypedValue][] = [];
@@ -72,40 +70,6 @@ export function RadioButtons({
     [nextStep],
   );
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const num = parseInt(e.key);
-
-      if (
-        !isNaN(num) &&
-        num >= 1 &&
-        num <= 9 &&
-        num <= formattedOptions.length
-      ) {
-        const optionIndex = num - 1;
-        const [, optionValue] = formattedOptions[optionIndex];
-
-        const propertyName = 'value' + capitalize(optionValue.type);
-        onChangeAnswer({ [propertyName]: optionValue.value });
-
-        setSelectedAnswer(optionValue.value);
-
-        autoAdvance(300);
-      }
-    };
-
-    // Only add keydown event listener on non-mobile devices
-    const isNonMobile = width > 768;
-
-    if (formattedOptions.length < 10 && isNonMobile) {
-      document.addEventListener('keydown', handleKeyDown);
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [formattedOptions, onChangeAnswer, autoAdvance, width]);
-
   return (
     <QuestionnaireErrorWrapper isError={isError}>
       <RadioGroup
@@ -134,30 +98,9 @@ export function RadioButtons({
               selectedAnswer === optionValue.value && 'ring-2 ring-black',
             )}
             data-radio-group={item.linkId}
-            tabIndex={0}
             key={index}
             role="radio"
             aria-checked={optionName === answerLinkId}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                e.stopPropagation();
-
-                const radioInput = document.getElementById(optionName);
-                if (radioInput) {
-                  radioInput.click();
-                } else {
-                  const option = formattedOptions.find(
-                    (option) => option[0] === optionName,
-                  );
-                  if (option) {
-                    const propertyName = 'value' + capitalize(option[1].type);
-                    onChangeAnswer({ [propertyName]: option[1].value });
-                    setSelectedAnswer(option[1].value);
-                  }
-                }
-              }
-            }}
           >
             <RadioGroupItem
               key={optionName}
@@ -175,20 +118,9 @@ export function RadioButtons({
             >
               <span>{optionValue.value}</span>
             </Label>
-            {formattedOptions.length < 10 && (
-              <span className="absolute right-8 top-1/2 hidden aspect-square size-6 -translate-y-1/2 items-center justify-center rounded-md bg-zinc-100 p-1 text-sm leading-none text-zinc-500 md:flex">
-                {index + 1}
-              </span>
-            )}
           </div>
         ))}
       </RadioGroup>
-      {formattedOptions.length < 10 && (
-        <p className="mt-2 hidden text-xs italic text-zinc-500 md:block">
-          Tip: You can also select options using number keys 1-
-          {formattedOptions.length}
-        </p>
-      )}
     </QuestionnaireErrorWrapper>
   );
 }
