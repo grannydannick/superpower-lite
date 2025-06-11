@@ -7,12 +7,7 @@ import { useValidateCode } from '@/features/auth/api';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { useAvailableSubscriptions } from '@/features/settings/api';
 import { useDebounce } from '@/hooks/use-debounce';
-import {
-  getAccessCode,
-  setManualCouponOverride,
-  clearManualCouponOverride,
-} from '@/utils/access-code';
-
+import { getAccessCode, updateAccessCode } from '@/utils/access-code';
 export const VerifyCouponCode = () => {
   // Start with empty code to allow users to enter their own
   const [code, setCode] = useState('');
@@ -43,8 +38,7 @@ export const VerifyCouponCode = () => {
     }
 
     if (validateCodeQuery.data.coupon) {
-      // Use setManualCouponOverride to mark this as a manual entry
-      setManualCouponOverride(debouncedCode);
+      updateAccessCode(debouncedCode);
       setCode(debouncedCode);
 
       availableSubscriptionsQuery.refetch();
@@ -57,14 +51,6 @@ export const VerifyCouponCode = () => {
 
     isInitialMount.current = false;
   }, [validateCodeQuery.data]);
-
-  // Handle clearing the input to remove manual override
-  useEffect(() => {
-    if (!code.trim() && !isInitialMount.current) {
-      clearManualCouponOverride();
-      availableSubscriptionsQuery.refetch();
-    }
-  }, [code, availableSubscriptionsQuery]);
 
   // Always show the coupon field, allowing users to override Rewardful coupon
   return (

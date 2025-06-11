@@ -23,7 +23,6 @@ import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
 import { cn } from '@/lib/utils';
-import { getAccessCode } from '@/utils/access-code';
 import { getUtmData } from '@/utils/utm-middleware';
 
 import { trackSubscription } from '../../utils/gtm';
@@ -114,7 +113,7 @@ export const SectionBilling = () => {
 
       const subscription = await createSubscriptionMutation.mutateAsync({
         data: {
-          code: getAccessCode() ?? undefined,
+          code: localStorage.getItem('superpower-code') ?? undefined,
           referralId: (window as any)?.Rewardful?.referral,
           membershipType,
           // Use cookie-based UTM data instead of sessionStorage
