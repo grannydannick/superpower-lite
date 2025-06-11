@@ -1,4 +1,10 @@
-import { Calendar, MapPin, ArrowUpRight, FileIcon } from 'lucide-react';
+import {
+  Calendar,
+  MapPin,
+  ArrowUpRight,
+  FileIcon,
+  HomeIcon,
+} from 'lucide-react';
 import moment from 'moment';
 import React from 'react';
 
@@ -98,6 +104,16 @@ export function OrderAppointmentDetails({
     );
   };
 
+  const method = collectionMethod ?? 'IN_LAB';
+  const collectionMethodLabel =
+    method === 'AT_HOME' ? 'At home visit' : 'Location';
+  const collectionMethodIcon =
+    method === 'AT_HOME' ? (
+      <HomeIcon className="size-5 text-zinc-500" />
+    ) : (
+      <MapPin className="size-5 text-zinc-500" />
+    );
+
   return (
     <div>
       <H4>Appointment details</H4>
@@ -122,9 +138,9 @@ export function OrderAppointmentDetails({
       </div>
       {location?.address ? (
         <div className="flex gap-4 px-4 py-6">
-          <MapPin className="size-5 text-zinc-500" />
+          {collectionMethodIcon}
           <div className="space-y-1">
-            <Body1 className="text-zinc-500">Location</Body1>
+            <Body1 className="text-zinc-500">{collectionMethodLabel}</Body1>
             <div>
               <Body1>{location.address.line.join(' ')}</Body1>
               <Body1>
@@ -132,7 +148,7 @@ export function OrderAppointmentDetails({
                 {location.address.postalCode}
               </Body1>
             </div>
-            {location?.address && (
+            {location?.address && method !== 'AT_HOME' && (
               <div className="mt-2">
                 <button
                   type="button"
@@ -148,7 +164,9 @@ export function OrderAppointmentDetails({
                     openInMaps(phlebotomyLocation, mapType);
                   }}
                 >
-                  Open in maps <ArrowUpRight className="size-4" />
+                  <>
+                    Open in maps <ArrowUpRight className="size-4" />
+                  </>
                 </button>
               </div>
             )}

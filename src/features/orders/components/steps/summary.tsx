@@ -163,6 +163,7 @@ export function OrderSummary(): ReactNode {
               <CreateOrderSummaryItem basePrice={price} />
             ) : null}
             <OrderAppointmentDetails
+              collectionMethod={collectionMethod ?? undefined}
               slot={slot ?? undefined}
               timezone={tz ?? moment.tz.guess()}
               location={location ?? undefined}
