@@ -63,7 +63,7 @@ export function Chat({
 
   if (type === 'concierge') {
     return (
-      <div className="mx-auto flex size-full min-w-0 max-w-[592px] flex-1 flex-col justify-center">
+      <div className="mx-auto flex size-full min-w-0 max-w-[592px] flex-1 flex-col justify-center pb-[50px]">
         <div className="mx-auto flex w-full flex-col gap-6 pb-2">
           <Greeting />
           <ChatOptions />

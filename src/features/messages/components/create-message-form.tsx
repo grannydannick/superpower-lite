@@ -72,10 +72,10 @@ export const CreateMessageForm = (): JSX.Element => {
                       <Textarea
                         {...field}
                         placeholder="Ask questions about your health, book appointments, and get answers from expert longevity advisors..."
-                        className="scrollbar-w-1.5 min-h-0 border-none p-0 scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300 hover:scrollbar-thumb-zinc-400 focus-visible:bg-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                        className="min-h-0 border-none p-1 scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300 hover:scrollbar-thumb-zinc-400 focus-visible:bg-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                       />
 
-                      <div className="flex w-full flex-row justify-end pb-4">
+                      <div className="flex w-full flex-row justify-end pb-4 pt-2">
                         <Button
                           className="h-fit rounded-full p-1.5"
                           type="submit"
