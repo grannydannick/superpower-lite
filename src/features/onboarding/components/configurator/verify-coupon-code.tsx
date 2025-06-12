@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 
 import { Input } from '@/components/ui/input';
@@ -8,7 +9,8 @@ import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { useAvailableSubscriptions } from '@/features/settings/api';
 import { useDebounce } from '@/hooks/use-debounce';
 import { getAccessCode, updateAccessCode } from '@/utils/access-code';
-export const VerifyCouponCode = () => {
+
+const AccessCodeInputSection = () => {
   // Start with empty code to allow users to enter their own
   const [code, setCode] = useState('');
   const { processing } = useOnboarding();
@@ -79,5 +81,45 @@ export const VerifyCouponCode = () => {
         )}
       </div>
     </section>
+  );
+};
+
+/**
+ * Verifies a given coupon code and determines whether the associated access code section should be displayed.
+ */
+export const VerifyCouponCode = () => {
+  const { showAccessCode, setShowAccessCode } = useOnboarding();
+
+  useEffect(() => {
+    if (getAccessCode()) {
+      setShowAccessCode(true);
+    }
+  }, [setShowAccessCode]);
+
+  return (
+    <AnimatePresence>
+      {showAccessCode ? (
+        <motion.div
+          initial={{ opacity: 0, height: 0, filter: 'blur(5px)' }}
+          animate={{ opacity: 1, height: 'auto', filter: 'blur(0px)' }}
+          transition={{
+            duration: 0.5,
+            ease: [0.4, 0, 0.2, 1],
+            opacity: { duration: 0.5 },
+            height: {
+              duration: 0.5,
+              type: 'spring',
+              stiffness: 100,
+              damping: 20,
+            },
+            filter: { duration: 0.4 },
+          }}
+          style={{ willChange: 'transform, opacity, height, filter' }}
+          key="access-code-section"
+        >
+          <AccessCodeInputSection />
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
   );
 };

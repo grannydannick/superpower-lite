@@ -57,6 +57,8 @@ export const SectionBilling = () => {
     setProcessing,
     processing,
     setConsentGiven,
+    showAccessCode,
+    setShowAccessCode,
   } = useOnboarding();
 
   const availableSubscriptionsQuery = useAvailableSubscriptions();
@@ -187,24 +189,37 @@ export const SectionBilling = () => {
 
         <ConsentInfo htmlFor="terms" />
       </div>
+      <div className="space-y-2">
+        <Button
+          className="w-full rounded-xl border border-zinc-500 bg-black px-6 py-4"
+          disabled={
+            availableSubscriptionsQuery.isLoading || processing || !consentGiven
+          }
+          type="submit"
+          form="billingForm"
+          onClick={async (e) => {
+            e.stopPropagation();
+          }}
+        >
+          {processing ? (
+            <TransactionSpinner className="flex justify-center" />
+          ) : (
+            'Purchase'
+          )}
+        </Button>
 
-      <Button
-        className="w-full rounded-xl border border-zinc-500 bg-black px-6 py-4"
-        disabled={
-          availableSubscriptionsQuery.isLoading || processing || !consentGiven
-        }
-        type="submit"
-        form="billingForm"
-        onClick={async (e) => {
-          e.stopPropagation();
-        }}
-      >
-        {processing ? (
-          <TransactionSpinner className="flex justify-center" />
-        ) : (
-          'Purchase'
-        )}
-      </Button>
+        {!showAccessCode ? (
+          <Button
+            variant="link"
+            size="small"
+            className="mr-auto px-0 text-zinc-500"
+            onClick={() => setShowAccessCode(true)}
+            disabled={processing}
+          >
+            I have an access code
+          </Button>
+        ) : null}
+      </div>
     </div>
   );
 };

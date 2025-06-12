@@ -9,6 +9,8 @@ type OnboardingStore = {
   setConsentGiven: (consentGiven: boolean) => void;
   membershipType: SubscriptionType;
   updateMembershipType: (membershipType: SubscriptionType) => void;
+  showAccessCode: boolean;
+  setShowAccessCode: (show: boolean) => void;
 };
 
 export const useOnboarding = create<OnboardingStore>()((set) => ({
@@ -18,4 +20,6 @@ export const useOnboarding = create<OnboardingStore>()((set) => ({
   setConsentGiven: (consentGiven) => set({ consentGiven }),
   membershipType: 'baseline',
   updateMembershipType: (membershipType) => set({ membershipType }),
+  showAccessCode: false,
+  setShowAccessCode: (show) => set({ showAccessCode: show }),
 }));
