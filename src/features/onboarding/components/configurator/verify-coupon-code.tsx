@@ -10,6 +10,24 @@ import { useAvailableSubscriptions } from '@/features/settings/api';
 import { useDebounce } from '@/hooks/use-debounce';
 import { getAccessCode, updateAccessCode } from '@/utils/access-code';
 
+/*
+ * TIER 1 - Manual Override (SessionStorage - highest priority):
+ * When someone manually types in a coupon code, we store it in sessionStorage with a timestamp.
+ * This becomes the top priority and overrides everything else.
+ * The key insight here is using sessionStorage instead of localStorage - it automatically expires
+ * when they close their browser tab, which prevents long-term conflicts.
+ *
+ * TIER 2 - Active Rewardful (Window Object - medium priority):
+ * This is the live Rewardful coupon from their JavaScript that tracks active referral relationships.
+ * If there’s no manual override, this takes precedence.
+ * This preserves our affiliate program functionality.
+ *
+ * TIER 3 - Persistent Backup (LocalStorage - lowest priority):
+ * This is our existing system that stores the last known coupon code.
+ * Only used when neither manual override nor active Rewardful exists.
+ * This prevents users from losing their codes when they navigate around the app or refresh pages.
+ */
+
 const AccessCodeInputSection = () => {
   // Start with empty code to allow users to enter their own
   const [code, setCode] = useState('');
