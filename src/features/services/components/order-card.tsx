@@ -66,16 +66,19 @@ function OrderCardBadge({ order }: { order: Order }): JSX.Element {
   const { checkAdminActorAccess } = useAuthorization();
   const { mutateAsync } = useCancelOrder({
     mutationConfig: {
-      onSuccess: () => toast('Cancelled order!'),
+      onSuccess: () => {
+        toast('Cancelled order!');
+      },
     },
   });
 
   const isAdmin = checkAdminActorAccess();
+  const isUpcoming = status.toUpperCase() === OrderStatus.upcoming;
+
   const isLessThan24Hours =
     moment(startTimestamp).tz(timezone).diff(moment().tz(timezone), 'hours') <=
     24;
 
-  const isUpcoming = status.toUpperCase() === OrderStatus.upcoming;
   const isAllowedToCancelService = [
     ADVISORY_CALL,
     SUPERPOWER_BLOOD_PANEL,
@@ -83,18 +86,26 @@ function OrderCardBadge({ order }: { order: Order }): JSX.Element {
     ADVANCED_BLOOD_PANEL,
   ].includes(name);
 
-  const actions: { label: string; onClick: () => void }[] = [];
-  if (
-    (isAllowedToCancelService && isUpcoming && !isLessThan24Hours) ||
-    isAdmin
-  ) {
-    actions.push({
-      label: 'Cancel appointment',
-      onClick: async () => {
-        await mutateAsync({ orderId: id });
-      },
-    });
-  }
+  const getAvailableActions = (): { label: string; onClick: () => void }[] => {
+    const actions: { label: string; onClick: () => void }[] = [];
+
+    if (isUpcoming) {
+      const canCancelAsUser = isAllowedToCancelService && !isLessThan24Hours;
+
+      if (canCancelAsUser || isAdmin) {
+        actions.push({
+          label: 'Cancel appointment',
+          onClick: async () => {
+            await mutateAsync({ orderId: id });
+          },
+        });
+      }
+    }
+
+    return actions;
+  };
+
+  const actions = getAvailableActions();
 
   return (
     <OrderStatusBadge

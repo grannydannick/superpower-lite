@@ -49,6 +49,11 @@ export const OrderStatusBadge = ({
 }: OrderStatusBadgeProps): JSX.Element => {
   if (!variant) throw Error('OrderStatusBadge variant was not provided.');
 
+  const { checkAdminActorAccess } = useAuthorization();
+  const isAdmin = checkAdminActorAccess();
+
+  const showDropdown = actions.length > 0 || isAdmin;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -56,13 +61,13 @@ export const OrderStatusBadge = ({
           className={cn(
             orderStatusBadgeVariants({ variant }),
             className,
-            `inline-flex flex-row items-center rounded-full px-2.5 py-0.5-pointer`,
-            actions.length > 0 ? 'cursor-pointer' : null,
+            `inline-flex flex-row items-center rounded-full px-2.5 py-0.5`,
+            showDropdown ? 'cursor-pointer' : 'cursor-default',
           )}
           {...props}
         >
           {capitalize(variant.toLowerCase())}
-          {actions.length > 0 ? (
+          {showDropdown ? (
             <Button
               variant="ghost"
               className="flex size-4 p-0 hover:text-inherit"
@@ -73,7 +78,7 @@ export const OrderStatusBadge = ({
           ) : null}
         </div>
       </DropdownMenuTrigger>
-      <OrderCardActions actions={actions} order={order} />
+      {showDropdown && <OrderCardActions actions={actions} order={order} />}
     </DropdownMenu>
   );
 };
@@ -101,17 +106,19 @@ function OrderCardActions({
     },
   });
 
-  if (!actions || actions.length === 0) return <></>;
-
   const isAdmin = checkAdminActorAccess();
+  const hasActions = actions && actions.length > 0;
+
+  if (!hasActions && !isAdmin) return null;
 
   return (
     <DropdownMenuContent align="end" className="w-[30px]">
-      {actions.map((action, idx) => (
+      {actions?.map((action, idx) => (
         <DropdownMenuItem key={idx} onClick={() => action.onClick()}>
           {action.label}
         </DropdownMenuItem>
       ))}
+
       {isAdmin && (
         <FileUpload
           onChange={async (files) => {
