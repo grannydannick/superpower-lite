@@ -52,7 +52,7 @@ run: prereq util/k8s/context/dev
 	@bash $(SHARED_SCRIPT) info "Running $@ ..."
 	doppler run --project=superpower-app --config=dev -- yarn run dev
 
-.PHONY: run/skaffold 
+.PHONY: run/skaffold
 run/skaffold: description = Run the app with all dependencies via skaffold
 run/skaffold: prereq build/env/dev util/k8s/context/dev
 	@bash $(SHARED_SCRIPT) info "Running $@ ..."
@@ -104,7 +104,7 @@ build/docker/app/stg-emr: util/login-aws-ecr
 
 .PHONY: build/docker/app/feature
 build/docker/app/feature: description = Build and push app docker image for feature
-build/docker/app/feature: FEATURE_NAME ?= $(shell git branch --show-current | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]')
+build/docker/app/feature: FEATURE_NAME ?= $(shell git branch --show-current | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]' | cut -c -44)
 build/docker/app/feature: util/login-aws-ecr
 	@bash $(SHARED_SCRIPT) info "Building Docker image for feature deployment..."
 	AWS_ECR_URL=$(AWS_ECR_URL) \
@@ -159,7 +159,7 @@ deploy/app/prd:
 
 .PHONY: deploy/app/feature
 deploy/app/feature: description = Deploy app to feature environment
-deploy/app/feature: FEATURE_NAME ?= $(shell git branch --show-current | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]')
+deploy/app/feature: FEATURE_NAME ?= $(shell git branch --show-current | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]' | cut -c -44)
 deploy/app/feature: prereq
 	@echo "🚀 Deploying app feature: $(FEATURE_NAME)"
 	@echo "🔗 App URL: https://app-$(FEATURE_NAME).superpower-staging.com"
@@ -177,7 +177,7 @@ deploy/app/feature: prereq
 
 .PHONY: cleanup/app/feature
 cleanup/app/feature: description = Clean up feature app environment
-cleanup/app/feature: FEATURE_NAME ?= $(shell git branch --show-current | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]')
+cleanup/app/feature: FEATURE_NAME ?= $(shell git branch --show-current | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]' | cut -c -44)
 cleanup/app/feature: prereq
 	@echo "Cleaning up feature app environment: $(FEATURE_NAME)"
 	@if [ "$(FEATURE_NAME)" = "main" ]; then echo "❌ ERROR: Cannot cleanup main branch environment"; exit 1; fi
