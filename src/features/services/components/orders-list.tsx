@@ -1,5 +1,5 @@
 import { ChevronDown } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -10,15 +10,79 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 import { Body1 } from '@/components/ui/typography';
 import { useOrders } from '@/features/orders/api';
+import { HealthcareServiceRescheduleDialog } from '@/features/orders/components/reschedule/healthcare-service-reschedule-dialog';
 import { OrderCard } from '@/features/services/components/order-card';
 import { cn } from '@/lib/utils';
-import { OrderStatus } from '@/types/api';
+import { HealthcareService, Order, OrderStatus } from '@/types/api';
 
 const DEFAULT_VISIBLE = 12;
 
-export function OrdersList(): JSX.Element {
+export const OrdersList = React.memo((): JSX.Element => {
   const { data, isLoading } = useOrders();
-  const [open, setOpen] = useState(false);
+  const [collapsibleOpen, setCollapsibleOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [rescheduleDialog, setRescheduleDialog] = useState<{
+    order: Order;
+    service: HealthcareService;
+  } | null>(null);
+
+  const { visibleOrders, restOrders, totalFiltered } = useMemo(() => {
+    if (!data?.orders) {
+      return { visibleOrders: [], restOrders: [], totalFiltered: 0 };
+    }
+
+    const filteredOrders = data.orders.filter(
+      (order) => order.status.toUpperCase() !== OrderStatus.draft,
+    );
+
+    // Sort orders by status priority first, then by startTimestamp
+    const sortedOrders = filteredOrders.sort((a, b) => {
+      // First sort by status priority: upcoming > pending > completed > cancelled
+      const statusPriority: Record<OrderStatus, number> = {
+        [OrderStatus.upcoming]: 1,
+        [OrderStatus.pending]: 2,
+        [OrderStatus.completed]: 3,
+        [OrderStatus.cancelled]: 4,
+        [OrderStatus.revoked]: 5,
+        [OrderStatus.draft]: 999, // This won't be used since we filter out drafts
+      };
+
+      const priorityA = statusPriority[a.status];
+      const priorityB = statusPriority[b.status];
+
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB;
+      }
+
+      // If status is the same, sort by startTimestamp (ascending - soonest first)
+      const timestampA = new Date(a.startTimestamp).getTime();
+      const timestampB = new Date(b.startTimestamp).getTime();
+
+      return timestampA - timestampB;
+    });
+
+    const visibleOrders = sortedOrders.slice(0, DEFAULT_VISIBLE);
+    const restOrders = sortedOrders.slice(DEFAULT_VISIBLE);
+
+    return { visibleOrders, restOrders, totalFiltered: filteredOrders.length };
+  }, [data?.orders]);
+
+  const handleReschedule = (order: Order, service: HealthcareService) => {
+    setRescheduleDialog({ order, service });
+    setDialogOpen(true);
+  };
+
+  const handleRescheduleClose = (open: boolean) => {
+    setDialogOpen(open);
+    if (!open) {
+      setRescheduleDialog(null);
+    }
+  };
+
+  const handleSubmit = () => {
+    setDialogOpen(false);
+    setRescheduleDialog(null);
+  };
 
   if (isLoading) {
     return (
@@ -32,33 +96,34 @@ export function OrdersList(): JSX.Element {
 
   if (data.orders.length === 0) return <OrdersListEmpty />;
 
-  let { orders } = data;
-
-  orders = orders.filter(
-    (order) => order.status.toUpperCase() !== OrderStatus.draft,
-  );
-
-  const vibileOrders = orders.slice(0, DEFAULT_VISIBLE);
-  const restOrders = orders.slice(DEFAULT_VISIBLE, orders.length);
+  if (totalFiltered === 0) return <OrdersListEmpty />;
 
   return (
     <>
-      <Collapsible open={open} onOpenChange={setOpen}>
-        <div className="grid gap-5 lg:grid-cols-2">
-          {vibileOrders.map((order) => (
-            <OrderCard {...order} key={order.id} />
+      <Collapsible open={collapsibleOpen} onOpenChange={setCollapsibleOpen}>
+        <div className="grid gap-5 p-2 lg:grid-cols-2">
+          {visibleOrders.map((order) => (
+            <OrderCard
+              key={order.id}
+              order={order}
+              onReschedule={handleReschedule}
+            />
           ))}
         </div>
 
         <CollapsibleContent>
-          <div className="mt-5 grid gap-5 md:grid-cols-2">
+          <div className="mt-5 grid gap-5 p-2 md:grid-cols-2">
             {restOrders.map((order) => (
-              <OrderCard {...order} key={order.id} />
+              <OrderCard
+                key={order.id}
+                order={order}
+                onReschedule={handleReschedule}
+              />
             ))}
           </div>
         </CollapsibleContent>
 
-        {orders.length > DEFAULT_VISIBLE && !isLoading && (
+        {totalFiltered > DEFAULT_VISIBLE && (
           <CollapsibleTrigger asChild>
             <Button
               variant="ghost"
@@ -66,30 +131,44 @@ export function OrdersList(): JSX.Element {
               className="mx-auto mt-5 flex flex-row items-center space-x-2 text-secondary"
             >
               <Body1>
-                {open
+                {collapsibleOpen
                   ? 'Collapse'
-                  : `${orders.length - DEFAULT_VISIBLE} more bookings`}
+                  : `${totalFiltered - DEFAULT_VISIBLE} more bookings`}
               </Body1>
               <ChevronDown
                 className={cn(
                   'size-4 transition-transform duration-300 ease-in-out',
-                  open ? 'rotate-180' : 'rotate-0',
+                  collapsibleOpen ? 'rotate-180' : 'rotate-0',
                 )}
               />
               <span className="sr-only">
-                {open
+                {collapsibleOpen
                   ? 'Collapse'
-                  : `${orders.length - DEFAULT_VISIBLE} more bookings`}
+                  : `${totalFiltered - DEFAULT_VISIBLE} more bookings`}
               </span>
             </Button>
           </CollapsibleTrigger>
         )}
       </Collapsible>
+
+      {rescheduleDialog && (
+        <HealthcareServiceRescheduleDialog
+          order={rescheduleDialog.order}
+          healthcareService={rescheduleDialog.service}
+          open={dialogOpen}
+          onOpenChange={handleRescheduleClose}
+          onSubmit={handleSubmit}
+        >
+          <div />
+        </HealthcareServiceRescheduleDialog>
+      )}
     </>
   );
-}
+});
 
-export function OrdersListEmpty(): JSX.Element {
+OrdersList.displayName = 'OrdersList';
+
+export const OrdersListEmpty = (): JSX.Element => {
   return (
     <div className="flex shrink-0 items-center justify-center rounded-md border border-dashed border-zinc-300 py-10">
       <div className="mx-auto flex max-w-[420px] flex-col items-center justify-center text-center">
@@ -100,4 +179,4 @@ export function OrdersListEmpty(): JSX.Element {
       </div>
     </div>
   );
-}
+};

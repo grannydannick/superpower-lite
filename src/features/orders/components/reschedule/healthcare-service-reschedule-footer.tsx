@@ -9,19 +9,24 @@ import {
   useCancelOrder,
 } from '@/features/orders/api/cancel-order';
 import { RescheduleDialogMode } from '@/features/orders/types/reschedule-dialog-mode';
+import { StepID } from '@/features/orders/types/step-id';
 import { cn } from '@/lib/utils';
 import { HealthcareService, Order } from '@/types/api';
 
 export const HealthcareServiceRescheduleFooter = ({
   mode,
   setMode,
+  setSkipStepIds,
   order,
   healthcareService,
+  onClose,
 }: {
   mode: RescheduleDialogMode;
   setMode: Dispatch<SetStateAction<RescheduleDialogMode>>;
+  setSkipStepIds: Dispatch<SetStateAction<StepID[]>>;
   order: Order;
   healthcareService: HealthcareService;
+  onClose?: () => void;
 }) => {
   const queryClient = useQueryClient();
   const cancelOrderMutation = useCancelOrder({
@@ -32,9 +37,12 @@ export const HealthcareServiceRescheduleFooter = ({
   const handleConfirm = async (mode: RescheduleDialogMode) => {
     await cancelOrderMutation.mutateAsync({ orderId: order.id });
     if (mode === 'reschedule') {
+      // Skip info step for rescheduling since user already knows the service
+      setSkipStepIds([StepID.INFO]);
       setMode('booking');
     } else {
       resyncDataAfterCancelOrder({ queryClient });
+      onClose?.();
     }
   };
 

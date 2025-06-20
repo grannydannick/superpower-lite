@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import { AddToCalendar } from '@/components/shared/add-to-calendar-button';
 import { Button } from '@/components/ui/button';
@@ -19,8 +20,16 @@ export const Success = () => {
   const { slot, service, collectionMethod, location } = useOrder((s) => s);
   const { nextStep, activeStep, steps } = useStepper((s) => s);
   const timelineSteps = getServiceTimeline(service, collectionMethod);
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const isLastStep = activeStep === steps.length - 1;
+
+  const handleClose = useCallback(() => {
+    if (pathname === '/services') {
+      navigate('/services?tab=orders');
+    }
+  }, [navigate, pathname]);
 
   const renderCalendarButton = () => {
     if (!location?.address) {
@@ -64,7 +73,9 @@ export const Success = () => {
         nextBtn={
           isLastStep ? (
             <DialogClose asChild>
-              <Button className="w-full md:w-auto">Done</Button>
+              <Button className="w-full md:w-auto" onClick={handleClose}>
+                Done
+              </Button>
             </DialogClose>
           ) : (
             <Button onClick={nextStep} className="w-full md:w-auto">

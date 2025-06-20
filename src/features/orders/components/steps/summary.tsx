@@ -63,7 +63,16 @@ export function OrderSummary(): ReactNode {
   const price = serviceQuery.data?.service.price;
 
   const createOrderMutation = useCreateOrder();
-  const updateOrderMutation = useUpdateOrder();
+  const updateOrderMutation = useUpdateOrder({
+    mutationConfig: {
+      onSettled: () => {
+        // Use setTimeout to ensure the component has time to process the query invalidation
+        setTimeout(() => {
+          nextStep();
+        }, 50);
+      },
+    },
+  });
 
   const isMutationLoading =
     createOrderMutation.isPending || updateOrderMutation.isPending;
@@ -126,14 +135,10 @@ export function OrderSummary(): ReactNode {
       data.informedConsent = { agreedAt: new Date().toISOString() };
     }
 
-    const response = await updateOrderMutation.mutateAsync({
+    await updateOrderMutation.mutateAsync({
       orderId: existingDraftOrder.id,
       data,
     });
-
-    if (response.order) {
-      nextStep();
-    }
   };
 
   return (

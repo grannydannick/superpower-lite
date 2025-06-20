@@ -70,7 +70,7 @@ function SchedulerConsumer({
 
   useEffect(() => {
     fetchSlots();
-  }, [startRange]);
+  }, [fetchSlots, startRange]);
 
   return (
     <div className={cn('w-full space-y-10', className)}>
