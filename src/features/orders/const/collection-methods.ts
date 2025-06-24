@@ -17,7 +17,7 @@ export const COLLECTION_METHODS: Record<
     description:
       'Stress-free at your home or office. A nurse will come to you.',
     cancelationText: 'Late cancellation or rescheduling fees apply.',
-    price: 7900,
+    price: 9900,
     disabled: false,
   },
 };
