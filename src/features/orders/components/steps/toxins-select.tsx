@@ -198,7 +198,7 @@ function ToxinPanelSelection({
                     className="mt-2 flex cursor-pointer items-center space-x-1 text-sm text-primary"
                   >
                     <span>View sample report</span>
-                    <ArrowUpRight className="size-4 text-vermillion-900" />
+                    <ArrowUpRight className="mb-0.5 size-4 text-vermillion-900" />
                   </a>
                 )}
               </div>
@@ -221,7 +221,7 @@ function ToxinPanelSelection({
                         className="mt-2 flex cursor-pointer items-center space-x-1 text-sm text-primary"
                       >
                         <span>View sample report</span>
-                        <ArrowUpRight className="size-4 text-vermillion-900" />
+                        <ArrowUpRight className="mb-0.5 size-4 text-vermillion-900" />
                       </a>
                     )}
                   </AccordionContent>

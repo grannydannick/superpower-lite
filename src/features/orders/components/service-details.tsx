@@ -8,6 +8,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Body2, H4 } from '@/components/ui/typography';
+import { Markdown } from '@/features/messages/components/ai/markdown';
 import { cn } from '@/lib/utils';
 import { getDetailsForService } from '@/utils/service';
 
@@ -44,7 +45,13 @@ export const ServiceDetails = ({ serviceName }: { serviceName: string }) => {
                   </AccordionTrigger>
                   <AccordionContent className="pb-0 pt-4">
                     <Body2 className="whitespace-break-spaces text-zinc-500">
-                      {serviceDetails[serviceDetailTitle as keyof TestDetails]}
+                      <Markdown>
+                        {String(
+                          serviceDetails[
+                            serviceDetailTitle as keyof TestDetails
+                          ],
+                        )}
+                      </Markdown>
                     </Body2>
                   </AccordionContent>
                 </AccordionItem>

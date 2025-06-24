@@ -165,7 +165,7 @@ export function OrderAppointmentDetails({
                   }}
                 >
                   <>
-                    Open in maps <ArrowUpRight className="size-4" />
+                    Open in maps <ArrowUpRight className="mb-0.5 size-4" />
                   </>
                 </button>
               </div>

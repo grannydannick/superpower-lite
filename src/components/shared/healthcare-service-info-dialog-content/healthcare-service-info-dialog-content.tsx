@@ -149,7 +149,7 @@ export function HealthcareServiceInfoDetails({
               className="mb-2 mt-0 flex cursor-pointer items-center space-x-1 text-sm text-primary"
             >
               <span>What&apos;s tested?</span>
-              <ArrowUpRight className="size-4 text-vermillion-900" />
+              <ArrowUpRight className="mb-0.5 size-4 text-vermillion-900" />
             </a>
           )}
           {sampleReportLink ? (
@@ -160,7 +160,7 @@ export function HealthcareServiceInfoDetails({
               className="mb-2 mt-0 flex cursor-pointer items-center space-x-1 text-sm text-primary"
             >
               <span>View sample report</span>
-              <ArrowUpRight className="size-4 text-vermillion-900" />
+              <ArrowUpRight className="mb-0.5 size-4 text-vermillion-900" />
             </a>
           ) : null}
           {children && (
