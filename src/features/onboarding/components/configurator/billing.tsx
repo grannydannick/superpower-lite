@@ -4,7 +4,7 @@ import {
   useStripe,
 } from '@stripe/react-stripe-js';
 import { StripeError } from '@stripe/stripe-js';
-import React, { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 
 import { ConsentInfo } from '@/components/shared/consent-info';
 import { StripeCardForm } from '@/components/shared/stripe-card-form';
@@ -65,24 +65,19 @@ export const SectionBilling = () => {
 
   const availableSubscriptionsQuery = useAvailableSubscriptions();
 
-  // console.info('Available subscriptions:', availableSubscriptionsQuery.data);
-  // console.info('Current membershipType in context:', membershipType);
-
   // When available subscriptions changes, update membershipType
+  // Currently used to add 'ESSENTIAL' membership into the list if specific coupon is provided
   //
   // NOTE: If we decide to begin offering multiple different membership types
   // during onboarding, this block/useEffect() will have to be removed! ~DS
-  React.useEffect(() => {
+  useEffect(() => {
     if (
       availableSubscriptionsQuery.data &&
       availableSubscriptionsQuery.data.length > 0
     ) {
       // If there is only one available subscription, or there are no radio or
       // selectable items, set membershipType to the first available subscription.
-      if (
-        typeof setMembershipType === 'function' &&
-        availableSubscriptionsQuery.data.length === 1
-      ) {
+      if (availableSubscriptionsQuery.data.length === 1) {
         setMembershipType(availableSubscriptionsQuery.data[0].type);
         return;
       }
@@ -92,7 +87,7 @@ export const SectionBilling = () => {
       const found = availableSubscriptionsQuery.data.find(
         (as) => as.type === membershipType,
       );
-      if (!found && typeof setMembershipType === 'function') {
+      if (!found) {
         // Default to the first available subscription type
         setMembershipType(availableSubscriptionsQuery.data[0].type);
       }
