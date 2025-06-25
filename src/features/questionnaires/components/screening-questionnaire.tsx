@@ -8,6 +8,7 @@ import { useQuestionnaireResponse } from '@/features/questionnaires/api/get-ques
 import { useScreening } from '@/features/questionnaires/api/screening';
 import { useUpdateQuestionnaireResponse } from '@/features/questionnaires/api/update-questionnaire-response';
 import { ScreenOut } from '@/features/questionnaires/components/screen-out';
+import { useUser } from '@/lib/auth';
 import { QuestionnaireName } from '@/types/api';
 
 export const ScreeningQuestionnaire = ({
@@ -20,6 +21,7 @@ export const ScreeningQuestionnaire = ({
   const [isScreenedOut, setIsScreenedOut] = useState(false);
   const updateQuestionnaireResponseMutation = useUpdateQuestionnaireResponse();
   const screeningMutation = useScreening();
+  const { data: user } = useUser();
 
   const getQuestionnaireQuery = useQuestionnaire({
     questionnaireName: 'onboarding-screening',
@@ -60,6 +62,7 @@ export const ScreeningQuestionnaire = ({
     <QuestionnaireForm
       questionnaire={getQuestionnaireQuery.data.questionnaire}
       response={getQuestionnaireResponseQuery.data.questionnaireResponse}
+      user={user}
       onSave={(item) => {
         updateQuestionnaireResponseMutation.mutate({
           data: { item, status: 'in-progress' },

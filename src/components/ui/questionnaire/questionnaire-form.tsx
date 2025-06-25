@@ -4,6 +4,8 @@ import {
   QuestionnaireResponseItem,
 } from '@medplum/fhirtypes';
 
+import { User } from '@/types/api';
+
 import { QuestionnaireFormPageSequence } from './questionnaire-page-sequence';
 import {
   QuestionnaireStoreProvider,
@@ -25,6 +27,7 @@ export const QuestionnaireForm = ({
   onSubmit,
   className,
   showIntro = true,
+  user,
 }: {
   questionnaire: Questionnaire;
   response: QuestionnaireResponse;
@@ -32,6 +35,7 @@ export const QuestionnaireForm = ({
   onSubmit: (item: QuestionnaireResponseItem[]) => void;
   className?: string;
   showIntro?: boolean;
+  user?: User;
 }) => {
   // Process the questionnaire to include both initial values and any existing responses
   const mergedQuestionnaire = {
@@ -45,6 +49,7 @@ export const QuestionnaireForm = ({
     <QuestionnaireStoreProvider
       questionnaire={mergedQuestionnaire}
       initialResponse={response}
+      user={user}
     >
       <QuestionnaireFormConsumer
         onSave={onSave}

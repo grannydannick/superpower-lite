@@ -8,14 +8,17 @@ import {
   QuestionnaireResponseItemAnswer,
 } from '@medplum/fhirtypes';
 
+import { User } from '@/types/api';
+
 // This function is used to build the initial response with the initial values.
 export function buildInitialResponse(
   questionnaire: Questionnaire,
+  user?: User,
 ): QuestionnaireResponse {
   const response: QuestionnaireResponse = {
     resourceType: 'QuestionnaireResponse',
     questionnaire: getReferenceString(questionnaire),
-    item: buildInitialResponseItems(questionnaire.item),
+    item: buildInitialResponseItems(questionnaire.item, user),
     status: 'in-progress',
   };
 
@@ -24,19 +27,30 @@ export function buildInitialResponse(
 
 function buildInitialResponseItems(
   items: QuestionnaireItem[] | undefined,
+  user?: User,
 ): QuestionnaireResponseItem[] {
-  return items?.map(buildInitialResponseItem) ?? [];
+  return items?.map((item) => buildInitialResponseItem(item, user)) ?? [];
 }
 
 export function buildInitialResponseItem(
   item: QuestionnaireItem,
+  user?: User,
 ): QuestionnaireResponseItem {
+  let initialAnswer = item.initial?.map(buildInitialResponseAnswer) || [];
+
+  // Pre-populate sex-assigned-at-birth for screening questionnaire
+  if (item.linkId === 'sex-assigned-at-birth' && user?.gender) {
+    initialAnswer = [
+      { valueString: user.gender === 'MALE' ? 'Male' : 'Female' },
+    ];
+  }
+
   return {
     id: generateId(),
     linkId: item.linkId,
     text: item.text,
-    item: buildInitialResponseItems(item.item),
-    answer: item.initial?.map(buildInitialResponseAnswer) || [],
+    item: buildInitialResponseItems(item.item, user),
+    answer: initialAnswer,
   };
 }
 

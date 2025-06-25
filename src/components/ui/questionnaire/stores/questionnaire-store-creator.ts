@@ -7,6 +7,8 @@ import {
 import { toast } from 'sonner';
 import { createStore } from 'zustand';
 
+import { User } from '@/types/api';
+
 import {
   buildInitialResponse,
   isQuestionEnabled,
@@ -16,6 +18,7 @@ import {
 export interface QuestionnaireStoreProps {
   questionnaire: Questionnaire;
   initialResponse?: QuestionnaireResponse;
+  user?: User;
 }
 
 export interface QuestionnaireStore extends QuestionnaireStoreProps {
@@ -51,7 +54,7 @@ export const questionnaireStoreCreator = (
   return createStore<QuestionnaireStore>()((set, get) => {
     const initialResponse =
       initProps.initialResponse ||
-      buildInitialResponse(initProps.questionnaire);
+      buildInitialResponse(initProps.questionnaire, initProps.user);
 
     const getAllQuestions = () => {
       const { questionnaire, response } = get();
