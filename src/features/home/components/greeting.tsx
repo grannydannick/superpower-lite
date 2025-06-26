@@ -1,33 +1,34 @@
-import { useState } from 'react';
-
+import {
+  Carousel,
+  CarouselIndicator,
+  CarouselMainContainer,
+  CarouselThumbsContainer,
+  SliderMainItem,
+} from '@/components/ui/carousel';
 import { H2 } from '@/components/ui/typography';
+import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { useUser } from '@/lib/auth';
 import { getDaytime } from '@/utils/get-date-time';
 
-import { HomeCards } from './home-cards';
-import { SharablesTabType, ShareableModal } from './shareable';
+import { AgeCard } from './greeting-items/age-card';
+import { ProtocolCard } from './greeting-items/protocol-card';
+import { ScoreCard } from './greeting-items/score-card';
 
-export const GreetingComponent = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeModalTab, setActiveModalTab] =
-    useState<SharablesTabType>('superpower-score');
-
+export const Greeting = () => {
   const { data: user } = useUser();
-
-  const handleCardClick = (tabType: SharablesTabType) => {
-    setActiveModalTab(tabType);
-    setIsModalOpen(true);
-  };
-
-  const handleTabChange = (tab: SharablesTabType) => {
-    setActiveModalTab(tab);
-  };
+  const { width } = useWindowDimensions();
 
   const greeting = user?.firstName
     ? `Good ${getDaytime()} ${user.firstName},`
     : `Good ${getDaytime()},`;
 
   const greetingText = 'Welcome to Superpower';
+
+  const cards = [
+    <ScoreCard key="score" />,
+    <AgeCard key="age" />,
+    <ProtocolCard key="protocol" />,
+  ];
 
   return (
     <header
@@ -39,17 +40,41 @@ export const GreetingComponent = () => {
           {greeting} <br />
           <span className="text-white/75">{greetingText}</span>
         </H2>
-
-        <ShareableModal
-          open={isModalOpen}
-          onOpenChange={setIsModalOpen}
-          openTab={activeModalTab}
-          onTabChange={handleTabChange}
-        />
-        <HomeCards onClick={handleCardClick} />
+        {
+          // We want to show a carousel on mobile
+          width <= 1024 ? (
+            <Carousel className="cursor-grab [mask-image:linear-gradient(to_right,transparent_0%,black_10%,black_90%,transparent_100%)] active:cursor-grabbing">
+              <CarouselMainContainer className="px-4">
+                {cards.map((card, index) => (
+                  <SliderMainItem
+                    key={index}
+                    className={index > 0 ? 'px-4' : ''}
+                  >
+                    {card}
+                  </SliderMainItem>
+                ))}
+              </CarouselMainContainer>
+              <CarouselThumbsContainer className="justify-center gap-x-1.5">
+                {Array.from({ length: cards.length }).map((_, index) => (
+                  <CarouselIndicator
+                    key={index}
+                    index={index}
+                    className="size-1.5 data-[active='false']:bg-white/30 data-[active='true']:bg-white hover:bg-white/50"
+                  />
+                ))}
+              </CarouselThumbsContainer>
+            </Carousel>
+          ) : (
+            <div className="grid w-full grid-cols-3 gap-4">
+              {cards.map((card, index) => (
+                <div key={index}>{card}</div>
+              ))}
+            </div>
+          )
+        }
       </div>
-
       <div className="pointer-events-none absolute left-1/2 top-0 size-full max-w-[2010px] -translate-x-1/2 scale-150 overflow-hidden bg-home bg-cover bg-top blur-sm" />
+      {/* <CompleteAvatarUploadModal /> */}
     </header>
   );
 };

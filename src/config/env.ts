@@ -3,6 +3,7 @@ import * as z from 'zod';
 const createEnv = () => {
   const EnvSchema = z.object({
     API_URL: z.string(),
+    SOCIAL_BASE_URL: z.string(),
     STRIPE_PUBLISHABLE_KEY: z.string(),
     ENABLE_API_MOCKING: z
       .string()

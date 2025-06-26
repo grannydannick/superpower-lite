@@ -5,7 +5,7 @@ import {
   TabsTrigger,
   URLTabs,
 } from '@/components/ui/tabs';
-import { H1 } from '@/components/ui/typography';
+import { H2 } from '@/components/ui/typography';
 import { FinishScheduleList } from '@/features/services/components/finish-schedule-list';
 import { OrdersList } from '@/features/services/components/orders-list';
 import { ServicesList } from '@/features/services/components/services-list';
@@ -13,9 +13,9 @@ import { ServicesList } from '@/features/services/components/services-list';
 export const ServicesRoute = () => {
   return (
     <ContentLayout title="Services">
-      <H1>Services</H1>
+      <H2>Services</H2>
       <section id="orders" className="space-y-6">
-        <URLTabs className="overflow-auto">
+        <URLTabs>
           <TabsList className="flex w-fit items-center justify-start overflow-x-auto">
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="schedule">To be scheduled</TabsTrigger>

@@ -18,7 +18,7 @@ export const BiologicalAgeInfo = (): React.ReactNode => {
     mostRecent(bioAgeMarker.value ?? [])?.quantity.value ?? null;
 
   return (
-    <div className="flex flex-col items-end">
+    <div className="flex flex-col items-end pb-0.5 text-sm">
       <H2 className="text-white">{bioAgeValue}</H2>
       <Body1 className="text-white">Biological years old</Body1>
     </div>

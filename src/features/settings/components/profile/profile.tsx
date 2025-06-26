@@ -1,5 +1,5 @@
 import { Card } from '@/components/ui/card';
-import { H2 } from '@/components/ui/typography';
+import { H3 } from '@/components/ui/typography';
 import { ContactForm } from '@/features/settings/components/profile/contact-form';
 import { PersonalInformationForm } from '@/features/settings/components/profile/personal-informartion-form';
 
@@ -7,14 +7,14 @@ export const Profile = () => {
   return (
     <div className="space-y-8 md:space-y-20">
       <section id="personal" className="md:space-y-8">
-        <H2 className="hidden md:block">Personal Information</H2>
-        <Card className="overflow-visible bg-transparent p-0 shadow-none md:bg-white md:p-[72px] md:shadow-sm">
+        <Card className="overflow-visible bg-transparent p-0 shadow-none md:bg-white md:p-10 md:shadow-sm">
+          <H3 className="mb-4 hidden md:block">Personal Information</H3>
           <PersonalInformationForm />
         </Card>
       </section>
       <section id="contact" className="md:space-y-8">
-        <H2 className="hidden md:block">Contact</H2>
-        <Card className="overflow-visible bg-transparent p-0 shadow-none md:bg-white md:p-[72px] md:shadow-sm">
+        <Card className="overflow-visible bg-transparent p-0 shadow-none md:bg-white md:p-10 md:shadow-sm">
+          <H3 className="mb-4 hidden md:block">Contact</H3>
           <ContactForm />
         </Card>
       </section>

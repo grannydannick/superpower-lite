@@ -1,9 +1,9 @@
 import { test as setup } from '@playwright/test';
-import { createUser } from '../../src/testing/data-generators';
 import {
   mockAddressComponents,
   mockPlacePredictions,
 } from '../../__mocks__/use-places-service';
+import { createUser } from '../../src/testing/data-generators';
 
 const authFile = 'e2e/.auth/user.json';
 
@@ -90,6 +90,9 @@ setup('authenticate', async ({ page }) => {
   await page.getByTestId('autocomplete-0').click();
   await page.getByRole('button', { name: /register/i }).click();
   await page.waitForURL('/');
+
+  // the modal for avatar upload opens up, close it.
+  // await page.getByTestId('keep-default-avatar-btn').click();
 
   // log out:
   // disable tanstack query for test

@@ -1,12 +1,28 @@
+import { cva } from 'class-variance-authority';
 import moment from 'moment';
 
-import { HoverableCard } from '@/components/shared/hoverable-card';
+import { Hover3D } from '@/components/ui/hover-3d';
 import { H2 } from '@/components/ui/typography';
 import { useSubscriptions } from '@/features/settings/api';
 import { BiologicalAgeInfo } from '@/features/settings/components/membership/bio-age-info';
-import { getMembershipType } from '@/features/settings/utils/get-membership-type';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
+
+const membershipCardVariants = cva(
+  'flex w-full flex-col justify-between rounded-xl border border-white/10 p-6 md:h-72 md:rounded-2xl',
+  {
+    variants: {
+      isActive: {
+        true: 'bg-baseline-membership',
+        false: 'bg-baseline-membership grayscale',
+      },
+      isLoading: {
+        true: 'animate-pulse bg-muted',
+        false: '',
+      },
+    },
+  },
+);
 
 export const MembershipCard = (): JSX.Element => {
   const { data: user } = useUser();
@@ -30,25 +46,6 @@ export const MembershipCard = (): JSX.Element => {
         new Date() < new Date(superpowerMembership?.current_period_end * 1000))
     : false;
 
-  // if user has superpowerMembership then we should be able to get membershipType
-  const membershipType = getMembershipType(superpowerMembership);
-
-  // Determine background class based on membership type
-  let backgroundClass = '';
-  if (
-    membershipType === 'Baseline Membership' ||
-    membershipType === 'Essential Membership'
-  ) {
-    backgroundClass = 'bg-baseline-membership';
-  } else if (membershipType === 'Advanced Membership') {
-    backgroundClass = 'bg-advanced-membership';
-  }
-
-  // If not active, use baseline and grayscale
-  if (!isActive && !isLoading) {
-    backgroundClass = 'bg-baseline-membership grayscale';
-  }
-
   return (
     <div
       className={cn(
@@ -56,30 +53,40 @@ export const MembershipCard = (): JSX.Element => {
         !isActive && !isLoading && 'opacity-50',
       )}
     >
-      <HoverableCard
+      <Hover3D
         className={cn(
-          'aspect-[5/3.15]',
-          backgroundClass,
-          isLoading ? 'animate-pulse bg-muted' : '',
+          'aspect-[5/3.15] max-w-[calc(100vw-4rem)] bg-cover flex flex-col justify-between w-full md:h-72 p-6 rounded-xl md:rounded-2xl border border-white/10',
+          membershipCardVariants({
+            isActive,
+            isLoading,
+          }),
         )}
-        disabled={!isActive && !isLoading}
-        isLoading={isLoading}
+        options={{
+          resetOnHover: true,
+          resetDuration: 500,
+          shadow: {
+            opacity: 0.1,
+          },
+        }}
+        disabled={isLoading || !isActive}
       >
-        <div className="relative z-10">
-          <H2 className="text-white">
-            {firstName} {lastName}
-          </H2>
-        </div>
-
-        <div className="relative z-10 flex flex-row justify-between">
-          <div className="flex items-end">
-            <span className="text-sm xs:text-lg">
-              Since {moment(createdAt).format('YYYY')}
-            </span>
+        <div className="flex aspect-[5/3.15] w-full flex-col justify-between pb-4">
+          <div className="relative z-10">
+            <H2 className="text-white">
+              {firstName} {lastName}
+            </H2>
           </div>
-          <BiologicalAgeInfo />
+
+          <div className="relative z-10 flex flex-row justify-between gap-8">
+            <div className="flex items-end">
+              <span className="text-sm text-white xs:text-lg">
+                Since {moment(createdAt).format('YYYY')}
+              </span>
+            </div>
+            <BiologicalAgeInfo />
+          </div>
         </div>
-      </HoverableCard>
+      </Hover3D>
     </div>
   );
 };

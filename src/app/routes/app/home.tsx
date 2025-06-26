@@ -8,11 +8,11 @@ import { ContentLayout } from '@/components/layouts';
 import { BlurTooltip } from '@/components/ui/blur-tooltip';
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown';
-import { GreetingComponent } from '@/features/home/components/greeting';
+import { Greeting } from '@/features/home/components/greeting';
 import { TimelineList } from '@/features/home/components/timeline-list';
 
 export const HomeRoute = () => {
@@ -22,7 +22,7 @@ export const HomeRoute = () => {
     <ContentLayout title="Home" className="!pb-0">
       <div className="relative mt-[-134px] h-[675px] w-full md:h-[700px]">
         <div className="absolute left-1/2 top-0 h-full w-screen -translate-x-1/2 overflow-hidden">
-          <GreetingComponent />
+          <Greeting />
           <div className="absolute bottom-0 z-50 h-40 w-full rounded-t-[32px] bg-white" />
         </div>
       </div>

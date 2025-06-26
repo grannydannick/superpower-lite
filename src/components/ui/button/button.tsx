@@ -15,13 +15,14 @@ const buttonVariants = cva(
           'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
         outline:
           'border border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground',
-        ghost: 'hover:text-accent-foreground',
+        ghost:
+          'text-secondary hover:text-accent-foreground focus-visible:ring-0',
         glass: 'bg-white bg-opacity-5 text-white hover:bg-opacity-10',
         link: 'text-primary underline-offset-4 hover:underline',
         white: 'bg-white text-zinc-900 hover:bg-white/90',
       },
       size: {
-        default: 'px-5 py-4 text-base',
+        default: 'px-5 py-3.5 text-base',
         medium: 'px-4 py-3 text-sm',
         small: 'px-3 py-2 text-sm',
         icon: 'p-0',

@@ -1,12 +1,11 @@
-import * as React from 'react';
 import { Fragment } from 'react';
 
 import {
   Carousel,
-  CarouselMainContainer,
-  SliderMainItem,
-  CarouselThumbsContainer,
   CarouselIndicator,
+  CarouselMainContainer,
+  CarouselThumbsContainer,
+  SliderMainItem,
 } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useBiomarkers } from '@/features/biomarkers/api';
@@ -20,10 +19,10 @@ import {
 
 const DATA_CARDS = [
   {
-    content: <ScoreCard variant="biomarkers" />,
+    content: <ScoreCard />,
   },
   {
-    content: <BiologicalAgeCard variant="biomarkers" />,
+    content: <BiologicalAgeCard />,
   },
   {
     content: <BiomarkersSummaryCard variant="biomarkers" />,

@@ -6,33 +6,29 @@ import removeMarkdown from 'remove-markdown';
 import { LockIcon } from '@/components/icons';
 import { ArrowTopRight } from '@/components/icons/arrow-top-right-icon';
 import { Button } from '@/components/ui/button';
-import { H4, Body2 } from '@/components/ui/typography';
+import { Body2, H4 } from '@/components/ui/typography';
 import { usePlans } from '@/features/plans/api/get-plans';
 import { ANNUAL_PLAN_PHILOSOPHY_MARKDOWN } from '@/features/plans/const/philosophy';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
 
+import { GreetingCard } from './greeting-card';
+
 const getTimestamp = (plan: { created?: string }) =>
   plan.created ? new Date(plan.created).getTime() : 0;
 
-export const ProtocolCard = ({ onClick }: { onClick?: () => void }) => {
+export const ProtocolCard = () => {
   const navigate = useNavigate();
   const { width } = useWindowDimensions();
   const isMobile = width <= 768;
 
   const getPlansQuery = usePlans({});
 
-  //most recent completed action plan
   const latestAvailablePlan = getPlansQuery.data?.actionPlans
     ? getPlansQuery.data.actionPlans
         .filter((plan: CarePlan) => plan.status === 'completed')
         .sort((a: any, b: any) => getTimestamp(b) - getTimestamp(a))?.[0]
     : undefined;
-
-  const handleClick = () => {
-    onClick ? onClick() : undefined;
-    navigate(`/plans/${latestAvailablePlan?.id}`);
-  };
 
   const startDate = latestAvailablePlan?.period?.start;
   const startDateFormatted = startDate
@@ -53,14 +49,17 @@ export const ProtocolCard = ({ onClick }: { onClick?: () => void }) => {
   }
 
   return (
-    <div
+    <GreetingCard
+      isLoading={getPlansQuery.isLoading}
+      onClick={() => {
+        if (latestAvailablePlan) {
+          navigate(`/plans/${latestAvailablePlan?.id}`);
+        }
+      }}
       className={cn(
-        'group flex h-56 w-full flex-col transition-all duration-300 justify-between outline-transparent focus:outline-1 focus:outline-white/20 overflow-hidden rounded-2xl border border-white/10 bg-zinc-400/30 p-4 backdrop-blur-xl hover:border-white/20 hover:bg-zinc-400/40',
+        'mx-auto max-w-sm cursor-pointer',
         latestAvailablePlan ? 'cursor-pointer' : undefined,
-        getPlansQuery.isLoading ? 'opacity-50 animate-pulse' : undefined,
       )}
-      onClick={latestAvailablePlan ? handleClick : undefined}
-      role="presentation"
     >
       <div className="flex h-full flex-col justify-start transition-opacity duration-500">
         <div className="flex w-full justify-between gap-4">
@@ -99,7 +98,7 @@ export const ProtocolCard = ({ onClick }: { onClick?: () => void }) => {
                   type="button"
                   variant="white"
                   size="medium"
-                  onClick={() => onClick?.()}
+                  onClick={() => navigate(`/plans/${latestAvailablePlan?.id}`)}
                   className="border border-primary/10"
                 >
                   More info
@@ -109,6 +108,6 @@ export const ProtocolCard = ({ onClick }: { onClick?: () => void }) => {
           </div>
         </div>
       </div>
-    </div>
+    </GreetingCard>
   );
 };

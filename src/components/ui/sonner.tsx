@@ -1,8 +1,8 @@
 'use client';
 
-import { X, AlertCircle, Check } from 'lucide-react';
+import { AlertCircle, Check, Loader2, X } from 'lucide-react';
 import React from 'react';
-import { Toaster as Sonner, toast as sonnerToast, ExternalToast } from 'sonner';
+import { ExternalToast, Toaster as Sonner, toast as sonnerToast } from 'sonner';
 
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 
@@ -119,9 +119,45 @@ function createToast() {
     ));
   };
 
+  toastFn.promise = function <T>(
+    promise: Promise<T>,
+    options: {
+      loading: React.ReactNode;
+      success: (data: T) => React.ReactNode;
+      error: (error: any) => React.ReactNode;
+      loadingIcon?: React.ReactNode;
+      action?: {
+        label: React.ReactNode;
+        onClick: () => void;
+      };
+      closeButton?: boolean;
+    },
+  ): string | number {
+    const toastId = sonnerToast.custom(() => (
+      <CustomToast
+        title={options.loading}
+        type="default"
+        icon={
+          options.loadingIcon || <Loader2 className="size-4 animate-spin" />
+        }
+        action={options.action}
+        closeButton={options.closeButton}
+      />
+    ));
+
+    promise
+      .then((data) => {
+        toast.success(options.success(data));
+      })
+      .catch((error) => {
+        toast.error(options.error(error));
+      });
+
+    return toastId;
+  };
+
   // define other toast types
   // toastFn.loading = sonnerToast.loading;
-  // toastFn.promise = sonnerToast.promise;
   // toastFn.custom = sonnerToast.custom;
   // toastFn.dismiss = sonnerToast.dismiss;
   // toastFn.message = sonnerToast.message;
