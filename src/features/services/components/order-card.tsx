@@ -13,6 +13,7 @@ import {
 } from '@/const';
 import { useServices } from '@/features/services/api';
 import { OrderStatusBadge } from '@/features/services/components/order-status-badge';
+import { useAuthorization } from '@/lib/authorization';
 import { cn } from '@/lib/utils';
 import { Order, OrderStatus, HealthcareService } from '@/types/api';
 
@@ -24,6 +25,7 @@ interface OrderCardProps {
 export const OrderCard = React.memo(
   ({ order, onReschedule }: OrderCardProps) => {
     const { data, isLoading } = useServices();
+    const { checkAdminActorAccess } = useAuthorization();
 
     const service = useMemo(
       () => data?.services.find((s) => s.id === order.serviceId),
@@ -61,6 +63,8 @@ export const OrderCard = React.memo(
       GRAIL_GALLERI_MULTI_CANCER_TEST,
     ].includes(service.name);
 
+    const isAdminActor = checkAdminActorAccess();
+
     const canReschedule =
       isModifiableService &&
       !isCancelled &&
@@ -73,6 +77,15 @@ export const OrderCard = React.memo(
       }
     };
 
+    const adminCancelAction = {
+      label: 'Admin Override Cancel',
+      onClick: () => {
+        onReschedule?.(order, service);
+      },
+    };
+
+    const actions = isAdminActor ? [adminCancelAction] : [];
+
     return (
       <Card
         className={cn(
@@ -84,14 +97,14 @@ export const OrderCard = React.memo(
         <div className="flex justify-between md:justify-start">
           <OrderCardFeatureImage imagePath={service.image} />
           <div className="block md:hidden">
-            <OrderCardBadge order={order} />
+            <OrderCardBadge order={order} actions={actions} />
           </div>
         </div>
         <div className="flex w-full flex-col">
           <div className="flex justify-between">
             <Body1 className="line-clamp-1">{service.name}</Body1>
             <div className="hidden md:block">
-              <OrderCardBadge order={order} />
+              <OrderCardBadge order={order} actions={actions} />
             </div>
           </div>
           <OrderCardDetails {...order} />
@@ -104,11 +117,17 @@ export const OrderCard = React.memo(
 OrderCard.displayName = 'OrderCard';
 
 export const OrderCardBadge = React.memo(
-  ({ order }: { order: Order }): JSX.Element => {
+  ({
+    order,
+    actions,
+  }: {
+    order: Order;
+    actions: { label: string; onClick: () => void }[];
+  }): JSX.Element => {
     return (
       <OrderStatusBadge
         className="w-fit select-none"
-        actions={[]}
+        actions={actions}
         order={order}
       />
     );

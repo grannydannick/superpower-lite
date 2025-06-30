@@ -10,6 +10,7 @@ import {
 } from '@/features/orders/api/cancel-order';
 import { RescheduleDialogMode } from '@/features/orders/types/reschedule-dialog-mode';
 import { StepID } from '@/features/orders/types/step-id';
+import { useAuthorization } from '@/lib/authorization';
 import { cn } from '@/lib/utils';
 import { HealthcareService, Order } from '@/types/api';
 
@@ -34,6 +35,11 @@ export const HealthcareServiceRescheduleFooter = ({
   });
   const isPastAppointment = new Date(order.startTimestamp) < new Date();
 
+  const { checkAdminActorAccess } = useAuthorization();
+  const isAdminActor = checkAdminActorAccess();
+
+  const showDefaultActions = !isPastAppointment || isAdminActor;
+
   const handleConfirm = async (mode: RescheduleDialogMode) => {
     await cancelOrderMutation.mutateAsync({ orderId: order.id });
     if (mode === 'reschedule') {
@@ -56,7 +62,7 @@ export const HealthcareServiceRescheduleFooter = ({
         'bottom-0 z-50 bg-white/90 backdrop-blur-sm flex items-center md:justify-end gap-4 px-6 py-4 md:py-8 md:px-14 [.overflow-auto_&]:sticky [.overflow-y-scroll_&]:sticky',
       )}
     >
-      {mode === 'default' && !isPastAppointment ? (
+      {mode === 'default' && showDefaultActions ? (
         <>
           <Button
             variant="outline"
