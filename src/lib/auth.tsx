@@ -251,6 +251,8 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     taskName: 'onboarding',
     queryConfig: {
       enabled: userQuery.isSuccess,
+      retry: 3,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000), // 1s, 2s, 4s, max 5s
     },
   });
 
