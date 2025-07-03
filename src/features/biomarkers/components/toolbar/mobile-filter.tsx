@@ -49,7 +49,7 @@ export function MobileFilter<TData>({
       </SheetTrigger>
       <SheetContent className="flex max-h-full flex-col rounded-t-[10px]">
         <SheetHeader>
-          <div className="flex items-center justify-between px-4 pb-4 pt-16">
+          <div className="flex w-full items-center justify-between pb-4">
             <SheetClose>
               <div className="flex h-[44px] min-w-[44px] items-center justify-center rounded-full bg-zinc-100">
                 <X className="h-4 min-w-4" />
