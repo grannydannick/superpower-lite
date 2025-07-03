@@ -107,8 +107,16 @@ const AccessCodeInputSection = () => {
           onChange={(e) => setCode(e.target.value)}
           aria-invalid={validateCodeQuery.isError}
         />
-        {validateCodeQuery.isError && debouncedCode && (
-          <Body2 className="text-pink-700">Invalid access code</Body2>
+        {debouncedCode && (
+          <>
+            {validateCodeQuery.isLoading ? (
+              <Body2 className="text-zinc-500">Validating code...</Body2>
+            ) : validateCodeQuery.isError ? (
+              <Body2 className="text-pink-700">Invalid access code</Body2>
+            ) : validateCodeQuery.data?.coupon ? (
+              <Body2 className="text-vermillion-900">Valid access code</Body2>
+            ) : null}
+          </>
         )}
       </div>
     </section>

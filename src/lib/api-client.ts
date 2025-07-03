@@ -43,6 +43,8 @@ api.interceptors.response.use(
           for (const issue of apiError.issue) {
             toast(issue.details.text);
           }
+        } else if (apiError.message) {
+          toast(apiError.message);
         } else {
           toast('An unknown error occurred. Please try again later.');
         }
