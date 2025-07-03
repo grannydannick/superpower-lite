@@ -352,7 +352,7 @@ function PureMultimodalInput({
             />
           </div>
 
-          <div className="absolute bottom-3.5 right-4 flex flex-row items-end justify-end">
+          <div className="absolute right-4 flex flex-row items-end justify-end">
             <AttachmentsButton
               {...getInputProps()}
               fileInputRef={fileInputRef}
