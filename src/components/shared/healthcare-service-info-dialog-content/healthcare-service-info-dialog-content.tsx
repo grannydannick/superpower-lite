@@ -1,5 +1,5 @@
 import { ArrowUpRight, X } from 'lucide-react';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 import {
   Dialog,
@@ -15,8 +15,8 @@ import {
 } from '@/components/ui/sheet';
 import { Body1, Body2, H2 } from '@/components/ui/typography';
 import {
-  SUPERPOWER_BLOOD_PANEL,
   SUPERPOWER_ADVANCED_BLOOD_PANEL,
+  SUPERPOWER_BLOOD_PANEL,
 } from '@/const/services';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { HealthcareService } from '@/types/api';
@@ -154,7 +154,7 @@ export function HealthcareServiceInfoDetails({
           )}
           {sampleReportLink ? (
             <a
-              href={sampleReportLink}
+              href={sampleReportLink.pdf}
               target="_blank"
               rel="noopener noreferrer"
               className="mb-2 mt-0 flex cursor-pointer items-center space-x-1 text-sm text-primary"

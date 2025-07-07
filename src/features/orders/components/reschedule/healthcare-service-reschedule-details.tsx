@@ -1,7 +1,7 @@
 import { Clock4Icon } from 'lucide-react';
 
 import { Body1, Body2, H2 } from '@/components/ui/typography';
-import { ServiceDetails } from '@/features/orders/components/service-details';
+import { ServiceFaqs } from '@/features/services/components/service-faqs';
 import { HealthcareService, Order } from '@/types/api';
 
 import { OrderAppointmentDetails } from '../order-appointment-details';
@@ -50,7 +50,15 @@ export function HealthcareServiceRescheduleDetails({
         />
       </div>
 
-      <ServiceDetails serviceName={healthcareService.name} />
+      <div className="px-6 md:px-10">
+        <ServiceFaqs
+          filter={(faq) =>
+            faq.question !== 'sampleReportLink' &&
+            faq.question !== "What's tested?"
+          }
+          serviceName={healthcareService.name}
+        />
+      </div>
     </div>
   );
 }

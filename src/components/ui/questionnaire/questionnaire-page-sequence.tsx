@@ -3,13 +3,13 @@ import {
   QuestionnaireResponseItem,
 } from '@medplum/fhirtypes';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { Body2 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 
-import { IntakeQuestionnaireCover } from './covers/intake-questionnaire';
+import { IntakeQuestionnaireCover } from './covers/intake-questionnaire-cover';
 import { QuestionnaireQuestion } from './questionnaire-question';
 import { useQuestionnaireStore } from './stores/questionnaire-store';
 import { QuestionnaireItemType } from './utils';

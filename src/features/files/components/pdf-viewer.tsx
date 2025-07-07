@@ -5,7 +5,7 @@ import { useResizeObserver } from '@wojtekmaj/react-hooks';
 import { Download, Trash2, X } from 'lucide-react';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
 import { useCallback, useEffect, useState } from 'react';
-import { pdfjs, Document, Page } from 'react-pdf';
+import { Document, Page, pdfjs } from 'react-pdf';
 
 import {
   AlertDialog,

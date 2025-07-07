@@ -148,10 +148,10 @@ export const LEGAL_DESCLAIMERS = {
 export const AGREEMENT_COPIES = {
   grail: (
     <>
-      BY CLICKING “I AGREE”, YOU ACKNOWLEDGE THAT YOU HAVE READ AND UNDERSTAND
-      THE INFORMATION PROVIDED ABOUT THE GRAIL GALLERI CANCER DETECTION TEST,
-      INCLUDING THE RISKS, BENEFITS, AND SAFETY CONSIDERATIONS, AND YOU ARE
-      PROVIDING YOUR INFORMED CONSENT.
+      By clicking &quot;I agree&quot;, you acknowledge that you have read and
+      understand the information provided about the GRAIL Galleri cancer
+      detection test, including the risks, benefits, and safety considerations,
+      and you are providing your informed consent.
     </>
   ),
   gut: (

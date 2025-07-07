@@ -1,5 +1,5 @@
 import { Pencil, X } from 'lucide-react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Body1, Body2 } from '@/components/ui/typography';
@@ -8,7 +8,13 @@ import { PaymentMethodsSelect } from '@/features/users/components/payment-method
 import { cn } from '@/lib/utils';
 import { capitalize } from '@/utils/format';
 
-export const CurrentPaymentMethodCard = ({ error }: { error?: string }) => {
+export const CurrentPaymentMethodCard = ({
+  error,
+  className,
+}: {
+  error?: string;
+  className?: string;
+}) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const paymentMethodsQuery = usePaymentMethods();
@@ -36,6 +42,7 @@ export const CurrentPaymentMethodCard = ({ error }: { error?: string }) => {
         className={cn(
           'w-full space-y-3 rounded-2xl border px-8 py-6',
           error ? 'border-pink-700 bg-pink-50' : 'border-zinc-200',
+          className,
         )}
       >
         <div className="flex items-center justify-between">

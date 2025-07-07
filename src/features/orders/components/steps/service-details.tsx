@@ -1,11 +1,10 @@
 import { ArrowUpRight } from 'lucide-react';
-import React from 'react';
 
 import { Body1, Body2, H2 } from '@/components/ui/typography';
 import { useOrders } from '@/features/orders/api';
 import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
-import { ServiceDetails } from '@/features/orders/components/service-details';
 import { useOrder } from '@/features/orders/stores/order-store';
+import { ServiceFaqs } from '@/features/services/components/service-faqs';
 import { OrderStatus } from '@/types/api';
 import { getHealthcareServicePriceLabel } from '@/utils/format-money';
 import { getSampleReportLinkForService } from '@/utils/service';
@@ -51,7 +50,7 @@ export const HealthcareServiceDetails = () => {
           )}
           {sampleReportLink ? (
             <a
-              href={sampleReportLink}
+              href={sampleReportLink.pdf}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-2 flex cursor-pointer items-center space-x-1 text-sm text-primary"
@@ -68,7 +67,16 @@ export const HealthcareServiceDetails = () => {
           alt={service.name}
         />
       </div>
-      <ServiceDetails serviceName={service.name} />
+      <div className="mb-6 h-px w-full bg-zinc-200" />
+      <div className="px-6 md:px-12">
+        <ServiceFaqs
+          filter={(faq) =>
+            faq.question !== 'sampleReportLink' &&
+            faq.question !== "What's tested?"
+          }
+          serviceName={service.name}
+        />
+      </div>
       <HealthcareServiceFooter />
     </div>
   );
