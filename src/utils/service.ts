@@ -31,7 +31,7 @@ export const getServiceTimeline = (
       },
       { title: 'Test results processed within 10 days', complete: false },
       { title: 'Results uploaded', complete: false },
-      { title: 'Schedule a follow-up appointment', complete: false },
+      { title: 'Action plan ready', complete: false },
     ];
   }
 
