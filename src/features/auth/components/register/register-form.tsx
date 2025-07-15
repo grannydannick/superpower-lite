@@ -78,6 +78,10 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
           })
         : registerInputSchema,
     ),
+    // don't validate immediately - debounce and validate on field absence
+    mode: 'onBlur',
+    reValidateMode: 'onBlur',
+    delayError: 500,
   });
 
   const handleNext = form.handleSubmit(() => setStep(2));

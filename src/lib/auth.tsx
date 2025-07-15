@@ -63,8 +63,8 @@ const loginWithEmailAndPassword = (
 };
 
 export const registerInputSchema = z.object({
-  firstName: z.string().min(1, 'Please enter your first name.'),
-  lastName: z.string().min(1, 'Please enter your last name.'),
+  firstName: z.string().min(2, 'Please enter your full first name.'),
+  lastName: z.string().min(2, 'Please enter your full last name.'),
   email: z.string().email('Please enter a valid email address.'),
   phone: z
     .string()
