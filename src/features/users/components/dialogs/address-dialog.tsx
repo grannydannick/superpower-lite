@@ -105,7 +105,6 @@ export function AddressDialog({
         toast.success('Address added successfully');
       },
       onError: (error) => {
-        toast.error(`Failed to add address. Please try again.`);
         console.error(`Failed to add address:`, error);
       },
     },
@@ -127,6 +126,8 @@ export function AddressDialog({
   const title = mode === 'add' ? 'Add an address' : 'Edit address';
 
   const handleDialogClose = () => {
+    // reset the mutation state so the user can create a new address
+    createAddressMutation.reset();
     setIsOpen(false);
     if (onSuccess) onSuccess();
   };
