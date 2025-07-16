@@ -6,38 +6,17 @@ import {
   PlanSectionTitle,
   PlanSectionContent,
 } from '@/features/plans/components/plan-section';
-import { useProducts } from '@/features/shop/api';
 
-import { useCarePlan } from '../../context/care-plan-context';
-import { parseProductRequests } from '../../utils/parse-product-requests';
+import { useProductAvailability } from '../../hooks/use-product-availability';
 import { ActionPlanCheckoutModal } from '../checkout/checkout-modal';
 
 export const RecommendedItems = () => {
-  const { plan } = useCarePlan();
-  const { data: productsData } = useProducts({});
+  const { hasProducts, hasAvailableProducts, productCount } =
+    useProductAvailability();
 
-  const productRequests = parseProductRequests(plan.activity ?? []);
-
-  if (
-    !plan.activity ||
-    plan.activity.length === 0 ||
-    productRequests.length === 0
-  ) {
+  if (!hasProducts || !hasAvailableProducts) {
     return <div className="h-16" />;
   }
-
-  const availableProductCount = productRequests.reduce((count, productId) => {
-    const productExists = productsData?.products?.some(
-      (p) => p.id === productId,
-    );
-    return productExists ? count + 1 : count;
-  }, 0);
-
-  if (availableProductCount === 0) {
-    return <div className="h-16" />;
-  }
-
-  const productCount = productRequests.length;
 
   return (
     <PlanSection>

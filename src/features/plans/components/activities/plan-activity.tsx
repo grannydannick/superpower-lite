@@ -3,8 +3,9 @@ import {
   CarePlanActivityDetail,
   Coding,
 } from '@medplum/fhirtypes';
-import { ExternalLink, HelpCircle, Image } from 'lucide-react';
-import { ReactNode } from 'react';
+import { HelpCircle, Image } from 'lucide-react';
+import { ReactNode, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -15,12 +16,14 @@ import {
 } from '@/components/ui/tooltip';
 import { Body1, H4 } from '@/components/ui/typography';
 import { ADVISORY_CALL } from '@/const';
+import { useOrders } from '@/features/orders/api';
 import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
 import { SafeMarkdown } from '@/features/plans/components/plan-markdown';
+import { useCarePlanCart } from '@/features/plans/stores/care-plan-cart-store';
 import { useServices } from '@/features/services/api';
 import { useProducts } from '@/features/shop/api';
 import { cn } from '@/lib/utils';
-import { HealthcareService, Product } from '@/types/api';
+import { HealthcareService, Product, OrderStatus } from '@/types/api';
 
 interface PlanActivityProps {
   activity: CarePlanActivity;
@@ -33,22 +36,19 @@ interface ActivityCardProps {
   name: string;
   description?: string | ReactNode;
   actionBtn?: ReactNode;
-  url?: string;
 }
 
-function ActivityCard({
+export function ActivityCard({
   className,
   image,
   name,
   description,
   actionBtn,
-  url,
 }: ActivityCardProps) {
   const content = (
     <div
       className={cn(
         'flex min-h-[96px] w-full items-center justify-between rounded-[20px] bg-zinc-50 p-3 transition',
-        url && 'hover:bg-zinc-100',
         className,
       )}
     >
@@ -65,10 +65,10 @@ function ActivityCard({
           </div>
         )}
 
-        <div className="flex min-w-0 flex-1 items-start justify-between">
+        <div className="flex min-w-0 flex-1 items-center justify-between">
           <div className="flex min-w-0 max-w-full flex-col gap-1 overflow-hidden pr-2">
-            <Body1 className="overflow-hidden truncate">{name}</Body1>
-            <Body1 className="overflow-hidden truncate">{description}</Body1>
+            <Body1 className="break-words">{name}</Body1>
+            <div className="break-words">{description}</div>
           </div>
           {actionBtn && <div className="shrink-0">{actionBtn}</div>}
         </div>
@@ -76,56 +76,104 @@ function ActivityCard({
     </div>
   );
 
-  if (url) {
-    return (
-      <a
-        href={url}
-        className="block cursor-pointer hover:no-underline"
-        target="_blank"
-        rel="noreferrer"
-      >
-        {content}
-      </a>
-    );
-  }
-
   return content;
 }
 
-export function PlanActivity({ activity, className }: PlanActivityProps) {
-  const { detail } = activity;
-  const { data: productsData } = useProducts({});
-  const { data: servicesData } = useServices();
+export const ServiceActivity = ({
+  service,
+  serviceCoding,
+  detail,
+  className,
+}: {
+  service: HealthcareService;
+  serviceCoding?: Coding;
+  detail?: CarePlanActivityDetail;
+  className?: string;
+}) => {
+  const { data: ordersData } = useOrders();
 
-  const productCoding = detail?.productCodeableConcept?.coding?.[0];
-  const serviceCoding = detail?.code?.coding?.[0];
+  const serviceName =
+    service.name || serviceCoding?.display || 'Unnamed Service';
+  const serviceDesc =
+    detail?.description || service.description || 'Book your appointment';
+  const isAdvisory = serviceName === ADVISORY_CALL;
 
-  const product = productsData?.products?.find(
-    (p) => p.id === productCoding?.code,
+  const isServiceScheduled = useMemo(() => {
+    if (!ordersData?.orders) return false;
+    return ordersData.orders.some(
+      (order) =>
+        order.serviceId === service.id &&
+        (order.status === OrderStatus.upcoming ||
+          order.status === OrderStatus.pending ||
+          order.status === OrderStatus.completed),
+    );
+  }, [ordersData?.orders, service.id]);
+
+  const serviceMessage = useMemo(() => {
+    if (isAdvisory) return 'Not currently available.';
+    if (isServiceScheduled) return 'Service scheduled';
+    return 'Available for booking';
+  }, [isAdvisory, isServiceScheduled]);
+
+  const actionButton = useMemo(() => {
+    if (isAdvisory || isServiceScheduled) return null;
+    return (
+      <HealthcareServiceDialog healthcareService={service}>
+        <Button size="medium">Book</Button>
+      </HealthcareServiceDialog>
+    );
+  }, [isAdvisory, isServiceScheduled, service]);
+
+  return (
+    <div className="mt-8 space-y-2">
+      <H4>{serviceName}</H4>
+      <SafeMarkdown content={serviceDesc} />
+      <ActivityCard
+        {...service}
+        name={serviceName}
+        description={
+          <div className="flex items-center gap-2 text-zinc-500">
+            <Body1 className="italic text-zinc-500">{serviceMessage}</Body1>
+          </div>
+        }
+        className={className}
+        actionBtn={actionButton}
+      />
+    </div>
   );
-  const service = servicesData?.services?.find(
-    (s) => s.id === serviceCoding?.code,
-  );
+};
 
-  if (productCoding) {
-    return renderProductActivity(productCoding, detail, product, className);
-  }
-
-  if (service) {
-    return renderServiceActivity(service, serviceCoding, detail, className);
-  }
-
-  return <SafeMarkdown content={detail?.description || ''} />;
-}
-
-function renderProductActivity(
-  productCoding: Coding,
-  detail?: CarePlanActivityDetail,
-  product?: Product,
-  className?: string,
-) {
+const ProductActivity = ({
+  productCoding,
+  detail,
+  product,
+  className,
+}: {
+  productCoding: Coding;
+  detail?: CarePlanActivityDetail;
+  product?: Product;
+  className?: string;
+}) => {
+  const [, setSearchParams] = useSearchParams();
+  const { addProduct, removeProduct, isProductSelected } = useCarePlanCart();
   const productName = productCoding.display || 'Unnamed Product';
   const productDesc = detail?.description || 'Recommended supplement';
+
+  const handleAddToCart = () => {
+    if (product) {
+      addProduct(product);
+    }
+    setSearchParams((params) => {
+      params.set('modal', 'checkout');
+      return params;
+    });
+  };
+
+  const handleRemoveFromCart = () => {
+    if (product) {
+      removeProduct(product.id);
+    }
+  };
 
   if (product) {
     return (
@@ -138,11 +186,24 @@ function renderProductActivity(
           description={
             <div className="flex items-center gap-2 text-zinc-500">
               <Body1 className="italic text-zinc-500">Available in stock</Body1>
-              <ExternalLink size={16} />
             </div>
           }
           className={className}
-          url={product.url}
+          actionBtn={
+            <Button
+              size="medium"
+              onClick={
+                isProductSelected(product.id)
+                  ? handleRemoveFromCart
+                  : handleAddToCart
+              }
+              variant={isProductSelected(product.id) ? 'outline' : 'default'}
+            >
+              {isProductSelected(product.id)
+                ? 'Remove from Cart'
+                : 'Add to Cart'}
+            </Button>
+          }
         />
       </div>
     );
@@ -180,44 +241,44 @@ function renderProductActivity(
       </TooltipProvider>
     </div>
   );
-}
+};
 
-function renderServiceActivity(
-  service: HealthcareService,
-  serviceCoding?: Coding,
-  detail?: CarePlanActivityDetail,
-  className?: string,
-) {
-  const serviceName =
-    service.name || serviceCoding?.display || 'Unnamed Service';
-  const serviceDesc =
-    detail?.description || service.description || 'Book your appointment';
-  const isAdvisory = serviceName === ADVISORY_CALL;
-  const serviceMsg = isAdvisory
-    ? 'Not currently available.'
-    : 'Available for booking';
+export function PlanActivity({ activity, className }: PlanActivityProps) {
+  const { detail } = activity;
+  const { data: productsData } = useProducts({});
+  const { data: servicesData } = useServices();
 
-  return (
-    <div className="mt-8 space-y-2">
-      <H4>{serviceName}</H4>
-      <SafeMarkdown content={serviceDesc} />
-      <ActivityCard
-        {...service}
-        name={serviceName}
-        description={
-          <div className="flex items-center gap-2 text-zinc-500">
-            <Body1 className="italic text-zinc-500">{serviceMsg}</Body1>
-          </div>
-        }
-        className={className}
-        actionBtn={
-          isAdvisory ? null : (
-            <HealthcareServiceDialog healthcareService={service}>
-              <Button size="medium">Book</Button>
-            </HealthcareServiceDialog>
-          )
-        }
-      />
-    </div>
+  const productCoding = detail?.productCodeableConcept?.coding?.[0];
+  const serviceCoding = detail?.code?.coding?.[0];
+
+  const product = productsData?.products?.find(
+    (p) => p.id === productCoding?.code,
   );
+  const service = servicesData?.services?.find(
+    (s) => s.id === serviceCoding?.code,
+  );
+
+  if (productCoding) {
+    return (
+      <ProductActivity
+        productCoding={productCoding}
+        detail={detail}
+        product={product}
+        className={className}
+      />
+    );
+  }
+
+  if (service) {
+    return (
+      <ServiceActivity
+        service={service}
+        serviceCoding={serviceCoding}
+        detail={detail}
+        className={className}
+      />
+    );
+  }
+
+  return <SafeMarkdown content={detail?.description || ''} />;
 }

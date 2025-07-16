@@ -14,6 +14,7 @@ import { useProducts } from '@/features/shop/api';
 import { CarePlanProvider, useCarePlan } from '../context/care-plan-context';
 
 import { PlanActivities } from './activities/plan-activities';
+import { CarePlanFooter } from './plan-footer';
 import { CarePlanHeader } from './plan-header';
 
 function CarePlanContent() {
@@ -81,10 +82,11 @@ export function CarePlan({ id }: { id: string }) {
   const isAnnualReport = isAnnualReportPlan(actionPlan);
 
   return (
-    <div className="min-h-screen w-full space-y-4 bg-zinc-50 bg-dot-zinc-400/[0.4]">
-      <CarePlanHeader />
+    <div className="min-h-screen w-full space-y-4 bg-zinc-50">
       <CarePlanProvider plan={actionPlan} isAnnualReport={isAnnualReport}>
+        <CarePlanHeader />
         <CarePlanContent />
+        <CarePlanFooter />
       </CarePlanProvider>
     </div>
   );

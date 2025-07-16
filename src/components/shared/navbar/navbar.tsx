@@ -20,7 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown';
-import { useBlur } from '@/hooks/use-blur';
+import { useScrollThreshold } from '@/hooks/use-scroll-threshold';
 import { ROLES, useAuthorization } from '@/lib/authorization';
 import { cn } from '@/lib/utils';
 
@@ -59,7 +59,9 @@ export const DesktopNavbar = () => {
 
   const isHomePage = pathname === '/';
 
-  const isBlurred = useBlur({ blurAfter: isHomePage ? 621 : 10 });
+  const isBlurred = useScrollThreshold({
+    thresholdPx: isHomePage ? 621 : 10,
+  });
 
   const protectedLinks: Link[] = [
     checkAccess({ allowedRoles: [ROLES.SUPER_ADMIN] }) && {

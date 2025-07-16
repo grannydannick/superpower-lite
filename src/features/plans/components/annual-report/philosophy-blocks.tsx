@@ -5,16 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { HealthGradeComponent } from '@/components/ui/health-grade';
 import { Spinner } from '@/components/ui/spinner';
-import { Body1, Body2 } from '@/components/ui/typography';
-import {
-  ENVIRONMENTAL_TOXINS,
-  HEALTH_OPTIMIZATION,
-  LOOK_AND_FEEL,
-  NUTRITION_AND_GUT,
-} from '@/const/health-score';
-import { useBiomarkers } from '@/features/biomarkers/api';
-import { mostRecent } from '@/features/biomarkers/utils/most-recent-biomarker';
-import { BlockAccordion } from '@/features/plans/components/annual-report/block-accordion';
+import { Body1, Body2, H4 } from '@/components/ui/typography';
+import { ServiceActivity } from '@/features/plans/components/activities/plan-activity';
+import { useBiomarkerCategoriesWithUpsells } from '@/features/plans/hooks/use-biomarker-categories-with-upsells';
+import { useLatestHealthScore } from '@/features/plans/hooks/use-latest-health-score';
 import { cn } from '@/lib/utils';
 import { BiomarkerComponent } from '@/types/api';
 
@@ -41,9 +35,11 @@ export const BlockGroupComponent = ({
   return (
     <div className={cn('health-grade-card p-5', className)}>
       <div className="flex flex-col gap-4">
-        <div className=" flex items-center gap-4">
-          <HealthGradeComponent grade={component.value} />
-          <Body1>{component.title}</Body1>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <HealthGradeComponent grade={component.value} />
+            <Body1>{component.title}</Body1>
+          </div>
           {component.value === '-' ? (
             <Badge
               className="cursor-pointer gap-1 rounded-lg bg-zinc-100 px-2 py-1 text-zinc-400"
@@ -65,9 +61,38 @@ export const BlockGroupComponent = ({
   );
 };
 
+const BiomarkerBlocks = ({
+  biomarkers,
+  prefix,
+}: {
+  biomarkers: BiomarkerComponent[];
+  prefix: string;
+}) => {
+  return biomarkers.map((bc, groupIndex) => (
+    <BlockGroupComponent
+      key={`${prefix}-${groupIndex}`}
+      component={bc}
+      className="border-b border-zinc-200"
+    />
+  ));
+};
+
 export const PhilosophyBlocks = ({ className }: { className?: string }) => {
-  const getBiomarkersQuery = useBiomarkers();
-  if (getBiomarkersQuery.isLoading) {
+  const {
+    latestScore,
+    healthGrades,
+    isLoading: isHealthScoreLoading,
+  } = useLatestHealthScore();
+
+  const {
+    environmentalBiomarkers,
+    nutritionBiomarkers,
+    environmentalService,
+    nutritionService,
+    isLoading: biomarkerCategoriesLoading,
+  } = useBiomarkerCategoriesWithUpsells(latestScore?.component ?? []);
+
+  if (isHealthScoreLoading || biomarkerCategoriesLoading) {
     return (
       <div className="flex h-48 w-full items-center justify-center">
         <Spinner variant="primary" />
@@ -75,117 +100,35 @@ export const PhilosophyBlocks = ({ className }: { className?: string }) => {
     );
   }
 
-  if (!getBiomarkersQuery.data) {
+  if (!latestScore) {
     return null;
   }
-
-  const healthScore = getBiomarkersQuery.data.biomarkers.find(
-    (b) => b.name == 'Health Score',
-  );
-
-  if (!healthScore) {
-    return null;
-  }
-
-  const latestScore = mostRecent(healthScore.value);
-
-  const healthGrades =
-    latestScore?.component.filter((c) => c.category === HEALTH_OPTIMIZATION) ??
-    [];
-  const environmentalGrades =
-    latestScore?.component.filter((c) => c.category === ENVIRONMENTAL_TOXINS) ??
-    [];
-  const nutritionGrades =
-    latestScore?.component.filter((c) => c.category === NUTRITION_AND_GUT) ??
-    [];
-  const lookAndFeelGrades =
-    latestScore?.component.filter((c) => c.category === LOOK_AND_FEEL) ?? [];
 
   return (
-    <section
-      className={cn('flex flex-col items-center justify-center', className)}
-    >
-      <div className="flex w-full flex-col items-center gap-1">
-        <BlockAccordion title={HEALTH_OPTIMIZATION}>
-          {healthGrades.map((bc, groupIndex) => {
-            // const biomarkers = group.blockGroupItem.filter(
-            //   (item) => item.type === 'BIOMARKER',
-            // );
-
-            return (
-              <BlockGroupComponent
-                key={groupIndex}
-                component={bc}
-                className={cn(
-                  {
-                    'border-none': groupIndex === healthGrades.length - 1,
-                  },
-                  'border-b border-zinc-200',
-                )}
-              ></BlockGroupComponent>
-            );
-          })}
-        </BlockAccordion>
-        <BlockAccordion title={ENVIRONMENTAL_TOXINS}>
-          {environmentalGrades.map((bc, groupIndex) => {
-            // const biomarkers = group.blockGroupItem.filter(
-            //   (item) => item.type === 'BIOMARKER',
-            // );
-
-            return (
-              <BlockGroupComponent
-                key={groupIndex}
-                component={bc}
-                className={cn(
-                  {
-                    'border-none': groupIndex === healthGrades.length - 1,
-                  },
-                  'border-b border-zinc-200',
-                )}
-              ></BlockGroupComponent>
-            );
-          })}
-        </BlockAccordion>
-        <BlockAccordion title={NUTRITION_AND_GUT}>
-          {nutritionGrades.map((bc, groupIndex) => {
-            // const biomarkers = group.blockGroupItem.filter(
-            //   (item) => item.type === 'BIOMARKER',
-            // );
-
-            return (
-              <BlockGroupComponent
-                key={groupIndex}
-                component={bc}
-                className={cn(
-                  {
-                    'border-none': groupIndex === healthGrades.length - 1,
-                  },
-                  'border-b border-zinc-200',
-                )}
-              ></BlockGroupComponent>
-            );
-          })}
-        </BlockAccordion>
-        <BlockAccordion title={LOOK_AND_FEEL}>
-          {lookAndFeelGrades.map((bc, groupIndex) => {
-            // const biomarkers = group.blockGroupItem.filter(
-            //   (item) => item.type === 'BIOMARKER',
-            // );
-
-            return (
-              <BlockGroupComponent
-                key={groupIndex}
-                component={bc}
-                className={cn(
-                  {
-                    'border-none': groupIndex === healthGrades.length - 1,
-                  },
-                  'border-b border-zinc-200',
-                )}
-              ></BlockGroupComponent>
-            );
-          })}
-        </BlockAccordion>
+    <section className={cn('flex flex-col', className)}>
+      <div className="flex w-full flex-col gap-1">
+        <div className="mt-8 flex flex-col gap-2">
+          <H4>Overview</H4>
+          <Body1>
+            We have processed 100+ biomarkers to provide you with this
+            comprehensive report.
+          </Body1>
+        </div>
+        <BiomarkerBlocks biomarkers={healthGrades} prefix="health" />
+        <BiomarkerBlocks
+          biomarkers={environmentalBiomarkers.validBiomarkers}
+          prefix="environmental"
+        />
+        <BiomarkerBlocks
+          biomarkers={nutritionBiomarkers.validBiomarkers}
+          prefix="nutrition"
+        />
+        {environmentalService && environmentalBiomarkers.hasNulls && (
+          <ServiceActivity service={environmentalService} />
+        )}
+        {nutritionService && nutritionBiomarkers.hasNulls && (
+          <ServiceActivity service={nutritionService} />
+        )}
       </div>
     </section>
   );

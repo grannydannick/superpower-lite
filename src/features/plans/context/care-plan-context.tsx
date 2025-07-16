@@ -24,8 +24,8 @@ export function CarePlanProvider({
   return (
     <CarePlanContext.Provider
       value={{
+        plan: contextProps.plan,
         isAnnualReport,
-        ...contextProps,
       }}
     >
       {children}

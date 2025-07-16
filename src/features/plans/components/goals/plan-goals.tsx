@@ -36,7 +36,11 @@ export function PlanGoals() {
         <div className="space-y-16">
           {goals.map((goal, index) =>
             goal.resource ? (
-              <PlanGoal goal={goal.resource} index={index} key={goal.id} />
+              <PlanGoal
+                goal={goal.resource}
+                index={index}
+                key={goal.resource.id}
+              />
             ) : null,
           )}
         </div>

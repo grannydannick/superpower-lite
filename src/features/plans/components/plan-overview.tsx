@@ -1,7 +1,6 @@
 import { Calendar } from 'lucide-react';
 
 import { H3 } from '@/components/ui/typography';
-import { PhilosophyBlocks } from '@/features/plans/components/annual-report/philosophy-blocks';
 import { SafeMarkdown } from '@/features/plans/components/plan-markdown';
 import {
   PlanSection,
@@ -11,7 +10,7 @@ import {
 import { useCarePlan } from '@/features/plans/context/care-plan-context';
 
 export function PlanOverview() {
-  const { plan, isAnnualReport } = useCarePlan();
+  const { plan } = useCarePlan();
 
   return (
     <PlanSection>
@@ -39,7 +38,6 @@ export function PlanOverview() {
           <SafeMarkdown content={plan.description} />
         </PlanSectionContent>
       ) : null}
-      {isAnnualReport ? <PhilosophyBlocks /> : null}
     </PlanSection>
   );
 }

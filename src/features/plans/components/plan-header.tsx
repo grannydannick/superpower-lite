@@ -2,22 +2,12 @@ import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
-import { useBlur } from '@/hooks/use-blur';
-import { cn } from '@/lib/utils';
 
 export const CarePlanHeader = () => {
   const navigate = useNavigate();
-  const isBlurred = useBlur();
 
   return (
-    <div
-      className={cn(
-        'sticky z-10 left-0 top-0 flex w-full justify-between p-5 transition duration-300',
-        isBlurred
-          ? 'bg-opacity-40 bg-white backdrop-blur-md rounded-b-2xl'
-          : null,
-      )}
-    >
+    <div className="sticky left-0 top-0 z-10 flex w-full justify-between p-5 transition duration-300">
       <div className="flex items-center justify-center">
         <Button
           variant="white"

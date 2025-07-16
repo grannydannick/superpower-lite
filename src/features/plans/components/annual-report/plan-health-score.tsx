@@ -15,6 +15,8 @@ import {
 import { useUser } from '@/lib/auth';
 import { yearsSinceDate } from '@/utils/format';
 
+import { PhilosophyBlocks } from './philosophy-blocks';
+
 export function PlanHealthScore() {
   const { data: user } = useUser();
   const { data: biomarkersData, isLoading: biomarkersLoading } =
@@ -120,6 +122,7 @@ export function PlanHealthScore() {
             <BiomarkersList />
           </div>
         </div>
+        <PhilosophyBlocks />
       </PlanSectionContent>
     </PlanSection>
   );
