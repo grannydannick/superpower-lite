@@ -1,4 +1,4 @@
 export const ADDITIONAL_LAB_FEES: { [key: string]: number } = {
-  NY: 179,
-  NJ: 179,
+  NY: 199,
+  NJ: 199,
 };
