@@ -1,8 +1,5 @@
-import { ArrowUpRight } from 'lucide-react';
 import { ReactNode, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 
-import { Badge } from '@/components/ui/badge';
 import { HealthGradeComponent } from '@/components/ui/health-grade';
 import { Spinner } from '@/components/ui/spinner';
 import { Body1, Body2, H4 } from '@/components/ui/typography';
@@ -11,6 +8,8 @@ import { useBiomarkerCategoriesWithUpsells } from '@/features/plans/hooks/use-bi
 import { useLatestHealthScore } from '@/features/plans/hooks/use-latest-health-score';
 import { cn } from '@/lib/utils';
 import { BiomarkerComponent } from '@/types/api';
+
+import { COMPONENT_DESCRIPTIONS } from './component-descriptions';
 
 export const BlockGroupComponent = ({
   className,
@@ -21,16 +20,44 @@ export const BlockGroupComponent = ({
   children?: ReactNode;
   component: BiomarkerComponent;
 }) => {
-  const navigate = useNavigate();
-
   const { title, value } = component;
 
-  const description = useMemo(() => {
-    if (value === '-') return '';
-    if (value === 'A') return 'good';
-    if (value === 'B') return 'normal';
-    return 'out of range';
-  }, [value]);
+  const { description, hasCustomDescription } = useMemo(() => {
+    const componentDescription =
+      COMPONENT_DESCRIPTIONS[title as keyof typeof COMPONENT_DESCRIPTIONS];
+    if (
+      componentDescription &&
+      value in componentDescription &&
+      componentDescription[value as keyof typeof componentDescription]
+    ) {
+      return {
+        description:
+          componentDescription[value as keyof typeof componentDescription],
+        hasCustomDescription: true,
+      };
+    }
+
+    let defaultDescription = '';
+    switch (value) {
+      case 'A':
+        defaultDescription = 'good';
+        break;
+      case 'B':
+        defaultDescription = 'normal';
+        break;
+      default:
+        defaultDescription = 'out of range';
+    }
+
+    return {
+      description: defaultDescription,
+      hasCustomDescription: false,
+    };
+  }, [value, title]);
+
+  if (value === '-') {
+    return null;
+  }
 
   return (
     <div className={cn('health-grade-card p-5', className)}>
@@ -40,21 +67,14 @@ export const BlockGroupComponent = ({
             <HealthGradeComponent grade={component.value} />
             <Body1>{component.title}</Body1>
           </div>
-          {component.value === '-' ? (
-            <Badge
-              className="cursor-pointer gap-1 rounded-lg bg-zinc-100 px-2 py-1 text-zinc-400"
-              onClick={() => navigate('/services')}
-            >
-              <Body2 className="text-zinc-500">Get a score</Body2>
-              <ArrowUpRight width={16} height={16} />
-            </Badge>
-          ) : null}
         </div>
-        {component.value !== '-' ? (
-          <Body2 className="max-w-[221px] text-zinc-500">
+        {hasCustomDescription ? (
+          <Body2 className="text-zinc-500">{description}</Body2>
+        ) : (
+          <Body2 className="text-zinc-500">
             Your {title} is {description} based on our records.
           </Body2>
-        ) : null}
+        )}
         {children}
       </div>
     </div>
