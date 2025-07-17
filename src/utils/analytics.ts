@@ -45,15 +45,27 @@ export const trackEvent = (
       ...properties,
       ...commonProps,
     });
+    // console.log(
+    //   `tracked Segment event ${eventName} with ${JSON.stringify({
+    //     ...properties,
+    //     ...commonProps,
+    //   })}`,
+    // );
 
     // Also track with GTM during transition period
     if (win.dataLayer) {
-      win.dataLayer.push({
+      const rewardfulProperties = {
         event: eventName,
         value: properties?.value || 0, // Ensure value is always provided for GTM
         referralId: win.Rewardful?.referral || null,
         ...properties,
-      });
+      };
+
+      win.dataLayer.push(rewardfulProperties);
+
+      // console.log(
+      //   `tracked Rewardful event ${eventName} with ${JSON.stringify(rewardfulProperties)}`,
+      // );
     }
   } catch (error) {
     console.error('Analytics tracking failed:', error);

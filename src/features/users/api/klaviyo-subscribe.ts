@@ -8,13 +8,18 @@ import { MutationConfig } from '@/lib/react-query';
 import { getCampaignData } from '@/utils/campaign-tracking';
 
 export const subscribeInputSchema = z.object({
-  state: z.string().min(1, 'Required'),
   email: z.string().email('Please enter a valid email address.'),
+  type: z.enum(['waitlist', 'leads']),
+  state: z.string().optional(),
   phone: z
     .string()
-    .min(1, 'Please enter your phone number.')
+    .optional()
     .refine(
       (value) => {
+        if (!value || value.trim() === '') {
+          return true;
+        }
+
         if (!isValidPhoneNumber(value)) return false;
 
         const phoneNumber = parsePhoneNumber(value);
@@ -24,7 +29,7 @@ export const subscribeInputSchema = z.object({
         message: 'Please enter a valid US phone number.',
       },
     ),
-  firstName: z.string().min(1, 'Required'),
+  firstName: z.string().optional(),
 });
 
 export type SubscribeInput = z.infer<typeof subscribeInputSchema>;
@@ -44,12 +49,20 @@ export const subscribe = async ({
           data: {
             type: 'profile',
             attributes: {
-              location: { region: data.state },
-              phone_number: data.phone,
+              location: data.state ? { region: data.state } : undefined,
+              phone_number: data.phone ? data.phone : undefined,
               email: data.email,
-              first_name: data.firstName,
+              first_name: data.firstName ? data.firstName : undefined,
               properties: {
                 ...campaignData,
+              },
+              subscriptions: {
+                email: {
+                  marketing: { consent: 'SUBSCRIBED' },
+                },
+                sms: {
+                  marketing: { consent: 'SUBSCRIBED' },
+                },
               },
             },
           },
@@ -57,7 +70,13 @@ export const subscribe = async ({
       },
       relationships: {
         list: {
-          data: { type: 'list', id: env.KLAVIYO_LIST_ID },
+          data: {
+            type: 'list',
+            id:
+              data.type === 'leads'
+                ? env.KLAVIYO_LEADS_LIST_ID
+                : env.KLAVIYO_WAITLIST_LIST_ID,
+          },
         },
       },
     },
@@ -69,7 +88,7 @@ export const subscribe = async ({
     {
       params: { company_id: env.KLAVIYO_PUBLIC_API_KEY },
       headers: {
-        revision: '2024-07-15',
+        revision: '2025-04-15',
         'Content-Type': 'application/json',
       },
     },
@@ -82,7 +101,7 @@ type UseSubscribeOptions = {
   mutationConfig?: MutationConfig<typeof subscribe>;
 };
 
-export const useAddToWaitlist = ({
+export const useKlaviyoSubscribe = ({
   mutationConfig,
 }: UseSubscribeOptions = {}) => {
   return useMutation({

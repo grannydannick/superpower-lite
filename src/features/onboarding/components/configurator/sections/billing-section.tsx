@@ -4,7 +4,7 @@ import {
   useStripe,
 } from '@stripe/react-stripe-js';
 import { StripeError } from '@stripe/stripe-js';
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useState } from 'react';
 
 import { ConsentInfo } from '@/components/shared/consent-info';
 import { StripeCardForm } from '@/components/shared/stripe-card-form';
@@ -16,7 +16,6 @@ import { H3 } from '@/components/ui/typography';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import {
   useAddPaymentMethod,
-  useAvailableSubscriptions,
   useCreateSubscription,
 } from '@/features/settings/api';
 import { useUpdateTask } from '@/features/tasks/api/update-task';
@@ -24,16 +23,15 @@ import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
 import { cn } from '@/lib/utils';
 import { getAccessCode } from '@/utils/access-code';
+import { trackSubscription } from '@/utils/gtm';
 import { getUtmData } from '@/utils/utm-middleware';
-
-import { trackSubscription } from '../../utils/gtm';
 
 import {
   VisaIcon,
   AmericanExpressIcon,
   MasterCardIcon,
   HSAFSAIcon,
-} from './credit-card-icons';
+} from '../credit-card-icons';
 
 const AVAILABLE_PAYMENT_METHODS = [
   { icon: <AmericanExpressIcon /> },
@@ -42,7 +40,7 @@ const AVAILABLE_PAYMENT_METHODS = [
   { icon: <HSAFSAIcon /> },
 ];
 
-export const SectionBilling = () => {
+export const BillingSection = () => {
   const elements = useElements();
   const stripe = useStripe();
   const { data: user } = useUser();
@@ -53,60 +51,25 @@ export const SectionBilling = () => {
   const { mutateAsync: updateTaskProgress } = useUpdateTask();
 
   const {
-    membershipType,
+    membership,
     consentGiven,
     setProcessing,
     processing,
     setConsentGiven,
     showAccessCode,
     setShowAccessCode,
-    updateMembershipType: setMembershipType,
   } = useOnboarding();
 
-  const availableSubscriptionsQuery = useAvailableSubscriptions();
-
-  // When available subscriptions changes, update membershipType
-  // Currently used to add 'ESSENTIAL' membership into the list if specific coupon is provided
-  //
-  // NOTE: If we decide to begin offering multiple different membership types
-  // during onboarding, this block/useEffect() will have to be removed! ~DS
-  useEffect(() => {
-    if (
-      availableSubscriptionsQuery.data &&
-      availableSubscriptionsQuery.data.length > 0
-    ) {
-      // If there is only one available subscription, or there are no radio or
-      // selectable items, set membershipType to the first available subscription.
-      if (availableSubscriptionsQuery.data.length === 1) {
-        setMembershipType(availableSubscriptionsQuery.data[0].type);
-        return;
-      }
-
-      // If current membershipType is not in the available list or selectedSubscription
-      // is undefined, update it.
-      const found = availableSubscriptionsQuery.data.find(
-        (as) => as.type === membershipType,
-      );
-      if (!found) {
-        // Default to the first available subscription type
-        setMembershipType(availableSubscriptionsQuery.data[0].type);
-      }
-    }
-  }, [availableSubscriptionsQuery.data, membershipType, setMembershipType]);
-
-  const selectedSubscription = availableSubscriptionsQuery.data?.find(
-    (as) => as.type === membershipType,
-  );
-
   const handleSubmit = async (event: FormEvent) => {
-    if (!user) return;
-    if (!consentGiven) {
-      toast('You need to give consent first!');
-      return;
-    }
     // We don't want to let default form submission happen here,
     // which would refresh the page.
     event.preventDefault();
+
+    if (!user) return;
+    if (!membership) {
+      toast('Select membership first!');
+      return;
+    }
 
     if (!stripe || !elements) {
       // Stripe.js hasn't yet loaded.
@@ -148,7 +111,7 @@ export const SectionBilling = () => {
         data: {
           code: getAccessCode() ?? undefined,
           referralId: (window as any)?.Rewardful?.referral,
-          membershipType,
+          membershipType: membership.type,
           // Use cookie-based UTM data instead of sessionStorage
           campaignData: getUtmData() ?? undefined,
         },
@@ -157,7 +120,7 @@ export const SectionBilling = () => {
       if (subscription) {
         // Track but don't await or let errors bubble up
         try {
-          trackSubscription(selectedSubscription?.total);
+          trackSubscription(membership?.total);
         } catch (e) {
           console.error('Failed to track subscription:', e);
         }
@@ -223,9 +186,7 @@ export const SectionBilling = () => {
       <div className="space-y-2">
         <Button
           className="w-full rounded-xl border border-zinc-500 bg-black px-6 py-4"
-          disabled={
-            availableSubscriptionsQuery.isLoading || processing || !consentGiven
-          }
+          disabled={processing || !consentGiven || !membership}
           type="submit"
           form="billingForm"
           onClick={async (e) => {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { UseFormReturn } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 
 import { AddressAutocomplete } from '@/components/ui/address-autocomplete';
 import {
@@ -21,11 +21,9 @@ import {
 import { US_STATES } from '@/const';
 import { RegisterInput } from '@/lib/auth';
 
-function FullPrimaryAddressForm({
-  form,
-}: {
-  form: UseFormReturn<RegisterInput>;
-}) {
+function FullPrimaryAddressForm() {
+  const form = useFormContext<RegisterInput>();
+
   return (
     <div className="flex flex-col gap-x-8 gap-y-4">
       <FormField
@@ -128,24 +126,21 @@ function FullPrimaryAddressForm({
   );
 }
 
-export function PrimaryAddressForm({
-  form,
-}: {
-  form: UseFormReturn<RegisterInput>;
-}) {
+export function PrimaryAddressForm() {
+  const form = useFormContext<RegisterInput>();
+
   const [input, setInput] = useState('');
   const address = form.watch('address');
 
   if (address) {
-    return <FullPrimaryAddressForm form={form} />;
+    return <FullPrimaryAddressForm />;
   }
 
   return (
     // note: intentionally leaving some fields blank here so we display it "one time"
     <div className="mt-2 flex flex-col gap-4">
       <Label className="text-secondary" htmlFor="line1">
-        Where should we provide your Superpower services? &nbsp;
-        <span className="text-vermillion-900">*</span>
+        Where should we provide your Superpower services?
       </Label>
       <AddressAutocomplete
         onChange={(e) => {
@@ -158,6 +153,11 @@ export function PrimaryAddressForm({
           form.setValue('address', address);
         }}
       />
+      {form.formState.errors.address ? (
+        <p className="text-sm font-medium text-destructive">
+          Address is required
+        </p>
+      ) : null}
     </div>
   );
 }

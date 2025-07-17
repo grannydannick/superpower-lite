@@ -16,6 +16,27 @@ const getUtmParameters = () => {
 };
 
 /**
+ * Track lead capture using unified trackEvent
+ */
+export const trackLead = (userData: { email: string }) => {
+  try {
+    const utmParams = getUtmParameters();
+
+    const leadProperties = {
+      email: userData.email.toLowerCase().trim(),
+      via: 'web_app',
+      ...utmParams,
+    };
+
+    // Track lead event with email and UTM data
+    trackEvent('Lead', leadProperties);
+  } catch (error) {
+    // Log tracking errors for debugging but don't interrupt user flow
+    console.warn('Lead analytics failed:', error);
+  }
+};
+
+/**
  * Track user creation using unified trackEvent - GTM will hash automatically
  */
 export const trackUserCreated = (userData: {
@@ -26,15 +47,17 @@ export const trackUserCreated = (userData: {
   try {
     const utmParams = getUtmParameters();
 
-    // Send raw data - GTM will hash using built-in functions, Segment gets raw data
-    trackEvent('register', {
+    const registerProperties = {
       email: userData.email.toLowerCase().trim(),
       first_name: userData.firstName.toLowerCase().trim(),
       last_name: userData.lastName.toLowerCase().trim(),
       user_id: userData.email,
       via: 'web_app',
       ...utmParams,
-    });
+    };
+
+    // Send raw data - GTM will hash using built-in functions, Segment gets raw data
+    trackEvent('register', registerProperties);
   } catch (error) {
     // Log tracking errors for debugging but don't interrupt user flow
     console.warn('Registration analytics failed:', error);

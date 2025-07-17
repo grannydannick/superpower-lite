@@ -1,4 +1,4 @@
-import { waitFor } from '@testing-library/react';
+import { fireEvent, waitFor } from '@testing-library/react';
 
 import { createUser } from '@/testing/data-generators';
 import { renderApp, screen, userEvent } from '@/testing/test-utils';
@@ -14,10 +14,13 @@ test('should register new user and call onSuccess cb which should navigate the u
 
   // test
   await userEvent.type(screen.getByLabelText(/email/i), newUser.email);
-  await userEvent.type(screen.getByLabelText(/phone/i), newUser.phone);
-  await userEvent.type(screen.getByLabelText(/password/i), newUser.password);
 
-  await userEvent.click(screen.getByRole('button', { name: /Continue/i }));
+  await userEvent.click(screen.getByRole('button', { name: /Get started/i }));
+
+  await waitFor(
+    () => expect(screen.getByLabelText(/first name/i)).toBeVisible(),
+    { timeout: 3000 },
+  );
 
   // test
   await userEvent.type(
@@ -41,9 +44,19 @@ test('should register new user and call onSuccess cb which should navigate the u
   });
   await userEvent.click(screen.getByTestId('gender-option-male'));
 
+  await userEvent.type(screen.getByLabelText(/phone/i), newUser.phone);
+  await userEvent.type(screen.getByLabelText(/password/i), newUser.password);
+
   await userEvent.type(await screen.findByPlaceholderText(/address/i), '123');
 
-  await userEvent.click(screen.getByTestId('autocomplete-0'));
+  // since onPointerDown is disabled for address-autocomplete we use fireEvent
+  fireEvent.click(screen.getByTestId('autocomplete-0'));
+
+  await userEvent.click(
+    screen.getByRole('checkbox', {
+      name: /I agree to receive text messages from Superpower/i,
+    }),
+  );
 
   await userEvent.click(screen.getByRole('button', { name: /Register/i }));
 

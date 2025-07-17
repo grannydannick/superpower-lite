@@ -1,24 +1,25 @@
-import React from 'react';
-
 import { AtHomeNoticeSection } from '@/components/shared/at-home-notice-section';
-import { VerifyCouponCode } from '@/features/onboarding/components/configurator/verify-coupon-code';
 
 import {
-  SectionBilling,
-  SectionSubscriptions,
+  SubscriptionsSection,
+  VerifyCouponCodeSection,
+  BillingSection,
 } from '../components/configurator';
 
 export const CONFIGURATOR_ITEMS = [
   {
-    component: <SectionSubscriptions />,
+    component: <SubscriptionsSection />,
   },
   {
     component: <AtHomeNoticeSection />,
   },
+  // we need to have 2 components inside parent to avoid layout jump on VerifyCouponCodeSection's animation exit
   {
-    component: <VerifyCouponCode />,
-  },
-  {
-    component: <SectionBilling />,
+    component: (
+      <>
+        <VerifyCouponCodeSection />
+        <BillingSection />
+      </>
+    ),
   },
 ];

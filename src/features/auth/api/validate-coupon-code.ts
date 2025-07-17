@@ -1,14 +1,14 @@
-import { queryOptions, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { z } from 'zod';
 
 import { api } from '@/lib/api-client';
-import { QueryConfig } from '@/lib/react-query';
+import { MutationConfig } from '@/lib/react-query';
 import { Coupon } from '@/types/api';
 
 export const validateCode = ({
   accessCode,
 }: ValidateInput): Promise<{ coupon: Coupon }> => {
-  return api.get(`auth/coupon?code=${accessCode}`, {
+  return api.get(`/billing/coupons?code=${accessCode}`, {
     headers: {
       'x-hide-toast': 'true',
     },
@@ -21,24 +21,13 @@ export const validateInputSchema = z.object({
 
 export type ValidateInput = z.infer<typeof validateInputSchema>;
 
-export const validateCodeQueryOptions = (accessCode: string) => {
-  return queryOptions({
-    queryKey: ['accessCode', accessCode],
-    queryFn: () => validateCode({ accessCode }),
-  });
-};
-
 type UseValidateCodeOptions = {
-  accessCode: string;
-  queryConfig?: QueryConfig<typeof validateCodeQueryOptions>;
+  mutationConfig?: MutationConfig<typeof validateCode>;
 };
 
-export const useValidateCode = ({
-  accessCode,
-  queryConfig,
-}: UseValidateCodeOptions) => {
-  return useQuery({
-    ...validateCodeQueryOptions(accessCode),
-    ...queryConfig,
+export const useValidateCode = ({ mutationConfig }: UseValidateCodeOptions) => {
+  return useMutation({
+    ...mutationConfig,
+    mutationFn: validateCode,
   });
 };

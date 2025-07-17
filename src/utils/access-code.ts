@@ -1,7 +1,3 @@
-export const updateAccessCode = (accessCode: string) => {
-  localStorage.setItem('superpower-code', accessCode.trim());
-};
-
 // Store manual coupon override in sessionStorage
 export const setManualCouponOverride = (accessCode: string) => {
   const override = {
@@ -31,23 +27,17 @@ const getManualCouponOverride = () => {
   return null;
 };
 
-export const getAccessCode = () => {
-  // First check for manual override in sessionStorage
+export const getAccessCode = (): string | null => {
   const manualOverride = getManualCouponOverride();
   if (manualOverride && manualOverride !== '$') {
+    console.warn(`Manual override coupon ${manualOverride} used`);
     return manualOverride;
   }
-
-  // Then check for Rewardful coupon in window object
+  // check if rewardful exists otherwise return null
   const rewardfulCoupon = (window as any)?.Rewardful?.coupon?.id;
   if (rewardfulCoupon && rewardfulCoupon.trim() !== '$') {
+    console.warn(`Rewardful coupon ${rewardfulCoupon} used`);
     return rewardfulCoupon.trim();
-  }
-
-  // Fall back to localStorage
-  const localCode = localStorage.getItem('superpower-code')?.trim();
-  if (localCode && localCode !== '$') {
-    return localCode;
   }
 
   return null;

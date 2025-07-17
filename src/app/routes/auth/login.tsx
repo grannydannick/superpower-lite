@@ -1,11 +1,15 @@
+import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-import { AuthLayout } from '@/components/layouts/auth-layout';
+import { ImageWithWithBlockLayout } from '@/components/layouts/image-with-block-layout';
 import { LoginForm } from '@/features/auth/components/login-form';
+import { useUser } from '@/lib/auth';
 
 const RESTRICTED_REDIRECT_ROUTES = ['/users'];
 
 export const LoginRoute = () => {
+  const user = useUser();
+
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo');
@@ -14,8 +18,16 @@ export const LoginRoute = () => {
   const shouldRedirect =
     redirectTo !== null && !RESTRICTED_REDIRECT_ROUTES.includes(redirectTo);
 
+  useEffect(() => {
+    if (user.data) {
+      navigate(shouldRedirect ? redirectTo : '/', {
+        replace: true,
+      });
+    }
+  }, [user.data, navigate, shouldRedirect, redirectTo]);
+
   return (
-    <AuthLayout title="Log in">
+    <ImageWithWithBlockLayout title="Log in">
       <LoginForm
         onSuccess={() => {
           navigate(`${shouldRedirect ? `${redirectTo}` : '/'}`, {
@@ -23,6 +35,6 @@ export const LoginRoute = () => {
           });
         }}
       />
-    </AuthLayout>
+    </ImageWithWithBlockLayout>
   );
 };

@@ -1,14 +1,26 @@
-import { ReactNode } from 'react';
+import * as React from 'react';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
-import { TestimonialCarousel } from '@/components/shared/testimonials/components/testimonial-carousel';
+import { Head } from '@/components/seo';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { Progress } from '@/components/ui/progress';
 import { Body1, Body2, H3 } from '@/components/ui/typography';
+
+// NOTE: progress here is used if we want to indicate any type of progress like 1/3 steps etc
+type LayoutProps = {
+  children: React.ReactNode;
+  title: string;
+  className?: string;
+  progress?: {
+    current: number;
+    total: number;
+  };
+};
 
 const MEMBERSHIP_BENEFITS = [
   {
@@ -113,78 +125,99 @@ const MEMBERSHIP_FAQ = [
   },
 ];
 
-export const RegisterLayout = ({ children }: { children: ReactNode }) => {
-  return (
-    <div className="mx-auto grid min-h-dvh w-full gap-16 p-4 py-8 md:p-8 lg:grid-cols-2 lg:justify-items-center">
-      <div className="flex w-full flex-1 flex-col justify-between gap-8 md:px-8 lg:max-w-2xl lg:gap-4">
-        <SuperpowerLogo />
-        {children}
-        <div className="lg:hidden">
-          <TestimonialCarousel darkMode={false} />
-        </div>
-        <div className="flex gap-6 text-xs text-zinc-400">
-          <a
-            href="https://www.superpower.com/privacy"
-            target="_blank"
-            rel="noreferrer"
-            className="transition-colors duration-150 hover:text-zinc-500"
-          >
-            Privacy Policy
-          </a>
-          <a
-            href="https://www.superpower.com/terms"
-            target="_blank"
-            rel="noreferrer"
-            className="transition-colors duration-150 hover:text-zinc-500"
-          >
-            Terms of services
-          </a>
-        </div>
-      </div>
+const FooterLinks = () => (
+  <div className="flex gap-6 text-xs text-zinc-400">
+    <a
+      href="https://www.superpower.com/privacy"
+      target="_blank"
+      rel="noreferrer"
+      className="transition-colors duration-150 hover:text-zinc-500"
+    >
+      Privacy Policy
+    </a>
+    <a
+      href="https://www.superpower.com/terms"
+      target="_blank"
+      rel="noreferrer"
+      className="transition-colors duration-150 hover:text-zinc-500"
+    >
+      Terms of Service
+    </a>
+  </div>
+);
 
-      <div className="sticky top-8 hidden w-full flex-1 flex-col justify-between gap-12 rounded-3xl px-16 py-12 lg:flex lg:min-h-[calc(100vh-4rem)] lg:bg-zinc-100">
-        <div className="space-y-6">
-          <H3>Your membership includes</H3>
-          <div className="space-y-4">
-            {MEMBERSHIP_BENEFITS.map((b, i) => (
-              <div
-                className="flex gap-3 rounded-[20px] bg-white p-4 shadow-md shadow-black/[.02] animate-in fade-in slide-in-from-bottom-10"
-                key={i}
-                style={{
-                  animationDuration: `${(i + 1) * 0.3}s`,
-                }}
-              >
-                <img
-                  className="size-12 min-w-12 rounded-xl bg-zinc-100"
-                  src={b.image}
-                  alt="superpower benefit"
+export const BlockWithFaqLayout = ({
+  children,
+  title,
+  progress,
+}: LayoutProps) => {
+  return (
+    <>
+      <Head title={title} />
+      <div className="relative mx-auto grid w-full gap-16 p-4 py-8 md:p-8 lg:min-h-dvh lg:grid-cols-2 lg:justify-items-center">
+        <div className="flex w-full flex-col gap-8 md:px-8 lg:max-w-2xl lg:flex-1 lg:justify-between lg:gap-4">
+          <div className="flex items-center justify-between">
+            <SuperpowerLogo />
+            {progress ? (
+              <div className="flex items-center gap-4">
+                <Body2 className="text-zinc-400">
+                  Step {progress.current} / {progress.total}
+                </Body2>
+                <Progress
+                  value={(progress.current / progress.total) * 100}
+                  className="h-[3px] w-20"
                 />
-                <div>
-                  {b.title}
-                  {b.descripion}
-                </div>
               </div>
-            ))}
+            ) : null}
           </div>
+          {children}
+          <FooterLinks />
         </div>
-        <Accordion
-          type="single"
-          collapsible
-          className="w-full"
-          defaultValue={MEMBERSHIP_FAQ[0].display}
-        >
-          {MEMBERSHIP_FAQ.map((item, i) => (
-            <AccordionItem value={item.display} key={i}>
-              <AccordionTrigger className="py-3 text-left text-sm text-zinc-900 hover:text-zinc-500">
-                {item.display}
-              </AccordionTrigger>
-              <AccordionContent className="text-zinc-500">
-                {item.description}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+
+        <div className="sticky top-8 hidden w-full flex-1 flex-col justify-between gap-12 rounded-3xl px-16 py-12 lg:flex lg:min-h-[calc(100vh-4rem)] lg:bg-zinc-100">
+          <div className="space-y-6">
+            <H3>Your membership includes</H3>
+            <div className="space-y-4">
+              {MEMBERSHIP_BENEFITS.map((b, i) => (
+                <div
+                  className="flex gap-3 rounded-[20px] bg-white p-4 shadow-md shadow-black/[.02] animate-in fade-in slide-in-from-bottom-10"
+                  key={i}
+                  style={{
+                    animationDuration: `${(i + 1) * 0.3}s`,
+                  }}
+                >
+                  <img
+                    className="size-12 min-w-12 rounded-xl bg-zinc-100"
+                    src={b.image}
+                    alt="superpower benefit"
+                  />
+                  <div>
+                    {b.title}
+                    {b.descripion}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <Accordion
+            type="single"
+            collapsible
+            className="w-full"
+            defaultValue={MEMBERSHIP_FAQ[0].display}
+          >
+            {MEMBERSHIP_FAQ.map((item, i) => (
+              <AccordionItem value={item.display} key={i}>
+                <AccordionTrigger className="py-3 text-left text-sm text-zinc-900 hover:text-zinc-500">
+                  {item.display}
+                </AccordionTrigger>
+                <AccordionContent className="text-zinc-500">
+                  {item.description}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
       </div>
-    </div>
+    </>
   );
 };

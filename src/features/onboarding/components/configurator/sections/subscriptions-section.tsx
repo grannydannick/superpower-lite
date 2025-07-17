@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Body1, Body2, Body3, H3, H4 } from '@/components/ui/typography';
+import { Body1, Body2, H3, H4 } from '@/components/ui/typography';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import { useAvailableSubscriptions } from '@/features/settings/api/get-available-subscriptions';
 import { cn } from '@/lib/utils';
@@ -17,7 +17,6 @@ interface SubscriptionCardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   availableSubscription,
-  selected,
   ...rest
 }) => {
   const adjustedSubtotal = React.useMemo(() => {
@@ -38,8 +37,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   return (
     <div
       className={cn(
-        'flex flex-row items-center rounded-2xl border border-zinc-200 p-4 sm:px-6 sm:py-4 cursor-pointer transition-all duration-150 hover:bg-zinc-100',
-        selected ? 'bg-zinc-100' : null,
+        'flex flex-row items-center rounded-2xl bg-white border border-zinc-200 p-4 sm:px-6 sm:py-4 cursor-pointer transition-all duration-150',
       )}
       {...rest}
     >
@@ -67,8 +65,16 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
             <Body2 className="text-zinc-500">Included</Body2>
           ) : (
             <div className="flex items-center gap-1">
-              <Body3 className="text-zinc-500">USD</Body3>
-              <H4>{formatMoney(adjustedSubtotal)}</H4>
+              {Object.keys(availableSubscription.coupon).length > 0 ? (
+                <div className="flex items-center gap-1">
+                  <H4 className="text-vermillion-900 line-through">
+                    {formatMoney(availableSubscription.subtotal)}
+                  </H4>
+                  <H4>{formatMoney(adjustedSubtotal)}</H4>
+                </div>
+              ) : (
+                <H4>{formatMoney(adjustedSubtotal)}</H4>
+              )}
             </div>
           )}
 
@@ -79,13 +85,25 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   );
 };
 
-const SectionSubscriptions = () => {
-  const membershipType = useOnboarding((s) => s.membershipType);
-  const updateMembershipType = useOnboarding((s) => s.updateMembershipType);
+export const SubscriptionsSection = () => {
+  const membership = useOnboarding((s) => s.membership);
+  const updateMembership = useOnboarding((s) => s.updateMembership);
+  const coupon = useOnboarding((s) => s.coupon);
 
-  const availableSubscriptionsQuery = useAvailableSubscriptions();
+  const availableSubscriptionsQuery = useAvailableSubscriptions({
+    code: coupon ?? undefined,
+  });
 
-  const availableSubscriptions = availableSubscriptionsQuery.data;
+  const availableSubscriptions = availableSubscriptionsQuery.data ?? [];
+
+  // NOTE: this just assigns default subscription on load
+  useEffect(() => {
+    if (availableSubscriptions.length > 0) {
+      updateMembership(availableSubscriptions[0]);
+    } else {
+      updateMembership(null);
+    }
+  }, [availableSubscriptions]);
 
   return (
     <section id="subscriptions" className="w-full space-y-6">
@@ -97,12 +115,12 @@ const SectionSubscriptions = () => {
       </div>
       <div className="space-y-2">
         <RadioGroup
-          value={membershipType ?? 'baseline'}
+          value={membership?.type ?? 'baseline'}
           // hide radio buttons if there is only one subscription = no need to select
           className={cn(
-            availableSubscriptions?.length === 1 && '[&_[role=radio]]:hidden',
+            availableSubscriptions.length === 1 && '[&_[role=radio]]:hidden',
           )}
-          aria-hidden={availableSubscriptions?.length === 1}
+          aria-hidden={availableSubscriptions.length === 1}
         >
           {availableSubscriptionsQuery.isLoading
             ? Array(1)
@@ -111,18 +129,22 @@ const SectionSubscriptions = () => {
                   <Skeleton key={i} className="h-20 w-full rounded-2xl" />
                 ))
             : null}
-          {availableSubscriptions?.map((as, i) => (
+          {availableSubscriptions.map((as, i) => (
             <SubscriptionCard
               key={i}
               availableSubscription={as}
-              selected={as.type === membershipType}
-              onClick={() => updateMembershipType(as.type)}
+              selected={as.type === membership?.type}
+              onClick={() => updateMembership(as)}
             />
           ))}
+          {availableSubscriptions.length === 0 &&
+          !availableSubscriptionsQuery.isLoading ? (
+            <div className="flex h-[78px] items-center justify-center rounded-2xl border border-dashed border-zinc-200 bg-white p-4 sm:px-6 sm:py-4">
+              No available subscriptions found. Contact support.
+            </div>
+          ) : null}
         </RadioGroup>
       </div>
     </section>
   );
 };
-
-export { SectionSubscriptions };

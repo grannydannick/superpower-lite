@@ -294,7 +294,7 @@ export type Subscription = {
 export type SubscriptionType = 'baseline' | 'advanced' | 'essential';
 
 export type AvailableSubscription = {
-  coupon?: Coupon;
+  coupon: Coupon;
   description: string;
   total: number;
   subtotal: number;

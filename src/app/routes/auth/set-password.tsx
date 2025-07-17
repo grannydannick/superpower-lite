@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 
-import { AuthLayout } from '@/components/layouts';
+import { ImageWithWithBlockLayout } from '@/components/layouts';
 import { SetPasswordForm } from '@/features/auth/components/set-password-form';
 
 export const SetPasswordRoute = () => {
@@ -9,8 +9,8 @@ export const SetPasswordRoute = () => {
   const secret = params.secret as string;
 
   return (
-    <AuthLayout title="Set password">
+    <ImageWithWithBlockLayout title="Set password">
       <SetPasswordForm id={id} secret={secret} />
-    </AuthLayout>
+    </ImageWithWithBlockLayout>
   );
 };

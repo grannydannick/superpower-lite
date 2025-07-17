@@ -1,25 +1,40 @@
 import { create } from 'zustand';
 
-import { SubscriptionType } from '@/types/api';
+import { AvailableSubscription } from '@/types/api';
+import { getAccessCode, setManualCouponOverride } from '@/utils/access-code';
 
 type OnboardingStore = {
-  processing: boolean;
-  setProcessing: (processing: boolean) => void;
   consentGiven: boolean;
   setConsentGiven: (consentGiven: boolean) => void;
-  membershipType: SubscriptionType;
-  updateMembershipType: (membershipType: SubscriptionType) => void;
+  processing: boolean;
+  setProcessing: (processing: boolean) => void;
+  membership: AvailableSubscription | null;
+  updateMembership: (membershipType: AvailableSubscription | null) => void;
   showAccessCode: boolean;
   setShowAccessCode: (show: boolean) => void;
+  coupon: string | null;
+  setCoupon: (coupon: string | null) => void;
 };
 
 export const useOnboarding = create<OnboardingStore>()((set) => ({
-  processing: false,
-  setProcessing: (processing) => set({ processing }),
   consentGiven: false,
   setConsentGiven: (consentGiven) => set({ consentGiven }),
-  membershipType: 'baseline',
-  updateMembershipType: (membershipType) => set({ membershipType }),
+  processing: false,
+  setProcessing: (processing) => set({ processing }),
+  membership: null,
+  updateMembership: (membership) => {
+    console.warn(`Updated membership to ${JSON.stringify(membership)}`);
+    set({ membership });
+  },
   showAccessCode: false,
   setShowAccessCode: (show) => set({ showAccessCode: show }),
+  coupon: getAccessCode(),
+  setCoupon: (coupon) => {
+    set({ coupon });
+    if (coupon) {
+      // set manual coupon override to be accessible in all getAccessCode() calls
+      // this would save it into sessionstorage
+      setManualCouponOverride(coupon);
+    }
+  },
 }));

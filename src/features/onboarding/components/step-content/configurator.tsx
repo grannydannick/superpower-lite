@@ -5,15 +5,12 @@ import { H4 } from '@/components/ui/typography';
 import { ConfiguratorSections } from '@/features/onboarding/components/configurator/configurator-sections';
 import { MembershipCard } from '@/features/onboarding/components/configurator/membership-card';
 import { ConfiguratorLayout } from '@/features/onboarding/components/layouts';
-import { useAvailableSubscriptions } from '@/features/settings/api';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
 
 export const Configurator = () => {
   const { width } = useWindowDimensions();
   const isMobile = width < 1024;
-
-  const availableSubscriptionsQuery = useAvailableSubscriptions();
 
   return (
     <>
@@ -39,9 +36,7 @@ export const Configurator = () => {
           )}
         />
         <div className="relative hidden flex-1 items-center justify-center lg:flex">
-          {availableSubscriptionsQuery.data?.map((as) => (
-            <MembershipCard key={as.type} />
-          ))}
+          <MembershipCard />
         </div>
         <div className="flex flex-1 flex-col justify-end px-8 pb-8">
           <TestimonialCarousel darkMode={!isMobile} />

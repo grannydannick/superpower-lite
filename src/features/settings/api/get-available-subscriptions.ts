@@ -3,23 +3,20 @@ import { useQuery, queryOptions } from '@tanstack/react-query';
 import { api } from '@/lib/api-client';
 import { QueryConfig } from '@/lib/react-query';
 import { AvailableSubscription } from '@/types/api';
-import { getAccessCode } from '@/utils/access-code';
 
-export const getAvailableSubscriptions = (): Promise<
-  AvailableSubscription[]
-> => {
-  // get current value in local storage
-  const coupon = getAccessCode();
+export const getAvailableSubscriptions = (
+  coupon?: string,
+): Promise<AvailableSubscription[]> => {
   return api.get(
     `billing/subscription/available${coupon ? `?code=${coupon}` : ''}`,
   );
 };
 
-export const availableSubscriptionsQueryOptions = () => {
+export const availableSubscriptionsQueryOptions = (code?: string) => {
   return queryOptions({
     // we dont need cache key here because its highly dynamic
-    queryKey: ['availableSubscriptions'],
-    queryFn: () => getAvailableSubscriptions(),
+    queryKey: ['availableSubscriptions', code],
+    queryFn: () => getAvailableSubscriptions(code),
   });
 };
 
@@ -33,9 +30,10 @@ type UseAvailableSubscriptionsOptions = {
  * */
 export const useAvailableSubscriptions = ({
   queryConfig,
+  code,
 }: UseAvailableSubscriptionsOptions = {}) => {
   return useQuery({
-    ...availableSubscriptionsQueryOptions(),
+    ...availableSubscriptionsQueryOptions(code),
     ...queryConfig,
   });
 };

@@ -141,7 +141,7 @@ export const AddressAutocomplete = forwardRef<
               animate="show"
               exit="exit"
             >
-              <div className="absolute top-1 z-10 w-full rounded-2xl bg-white outline-none animate-in fade-in-0 zoom-in-95">
+              <div className="absolute top-1 z-40 w-full rounded-2xl bg-white outline-none animate-in fade-in-0 zoom-in-95">
                 <div
                   className={cn(
                     'max-h-[200px] rounded-2xl overflow-scroll border border-zinc-200',
@@ -180,6 +180,7 @@ export const AddressAutocomplete = forwardRef<
                               data-testid={`autocomplete-${index}`}
                               type="button"
                               key={option.place_id}
+                              onPointerDown={(e) => e.preventDefault()}
                               onClick={() => {
                                 handleSelect(option.place_id);
                               }}

@@ -32,7 +32,8 @@ const createEnv = () => {
     NEW_RELIC_LOADER_LICENSE_KEY: z.string(),
     NEW_RELIC_LOADER_APPLICATION_ID: z.string(),
     KLAVIYO_PUBLIC_API_KEY: z.string(),
-    KLAVIYO_LIST_ID: z.string(),
+    KLAVIYO_WAITLIST_LIST_ID: z.string(),
+    KLAVIYO_LEADS_LIST_ID: z.string(),
     ENABLE_WAITLIST: z
       .string()
       .refine((s) => s === 'true' || s === 'false')

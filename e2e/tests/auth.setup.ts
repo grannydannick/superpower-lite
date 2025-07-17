@@ -28,16 +28,23 @@ setup('authenticate', async ({ page }) => {
       }),
   );
 
+  await page.route(
+    'https://a.klaviyo.com/client/subscriptions?*',
+    async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ id: 'fake-id', success: true }),
+      });
+    },
+  );
+
   await page.goto('/register');
 
   await page.getByLabel(/email/i).click();
   await page.getByLabel(/email/i).fill(user.email);
-  await page.getByLabel(/phone/i).click();
-  await page.getByLabel(/phone/i).fill(user.phone);
-  await page.getByLabel(/password/i).click();
-  await page.getByLabel(/password/i).fill(user.password);
 
-  await page.getByRole('button', { name: /continue/i }).click();
+  await page.getByRole('button', { name: /get started/i }).click();
 
   await page.getByPlaceholder('First name').click();
   await page.getByPlaceholder('First name').fill(user.firstName);
@@ -52,6 +59,11 @@ setup('authenticate', async ({ page }) => {
   await page.getByTestId('days').fill('20');
   await page.getByTestId('years').focus();
   await page.getByTestId('years').fill('1990');
+
+  await page.getByLabel(/phone/i).click();
+  await page.getByLabel(/phone/i).fill(user.phone);
+  await page.getByLabel(/password/i).click();
+  await page.getByLabel(/password/i).fill(user.password);
 
   // this needs to be there to mock google api that lives in window once address-autocomplete mounts
   await page.evaluate(
@@ -88,6 +100,8 @@ setup('authenticate', async ({ page }) => {
   await page.getByPlaceholder('Address').click();
   await page.getByPlaceholder('Address').fill('123');
   await page.getByTestId('autocomplete-0').click();
+  await page.getByLabel(/I agree to receive text messages/i).check();
+
   await page.getByRole('button', { name: /register/i }).click();
   await page.waitForURL('/');
 
