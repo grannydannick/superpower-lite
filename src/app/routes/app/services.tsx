@@ -7,6 +7,7 @@ import {
   URLTabs,
 } from '@/components/ui/tabs';
 import { FinishScheduleList } from '@/features/services/components/finish-schedule-list';
+import { MarketplaceList } from '@/features/services/components/marketplace-list';
 import { OrdersList } from '@/features/services/components/orders-list';
 import { ServicesList } from '@/features/services/components/services-list';
 
@@ -22,6 +23,7 @@ export const ServicesRoute = () => {
             <TabsTrigger value="orders">Your orders</TabsTrigger>
           </TabsList>
           <TabsContent value="all" className="py-6 md:py-[72px]">
+            <MarketplaceList />
             <ServicesList />
           </TabsContent>
           <TabsContent value="schedule" className="py-6 md:py-[72px]">

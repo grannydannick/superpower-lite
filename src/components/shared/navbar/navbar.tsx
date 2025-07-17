@@ -302,9 +302,14 @@ export const MobileNavbar = () => {
 
   const additionalMobileLinks: Link[] = [
     {
-      icon: MarketplaceIcon,
-      name: 'Marketplace',
-      to: '/marketplace',
+      icon: Pill,
+      name: 'Prescriptions',
+      to: '/prescriptions',
+    },
+    {
+      icon: ShoppingBag,
+      name: 'Supplements',
+      to: '/supplements',
     },
     {
       icon: SettingsIcon,
