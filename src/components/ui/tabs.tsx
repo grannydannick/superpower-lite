@@ -48,8 +48,10 @@ URLTabs.displayName = 'URLTabs';
 
 const TabsList = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
->(({ className, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.List> & {
+    showUnderline?: boolean;
+  }
+>(({ className, showUnderline, ...props }, ref) => {
   const [activeTabElement, setActiveTabElement] =
     React.useState<HTMLElement | null>(null);
   const [indicatorStyle, setIndicatorStyle] = React.useState({
@@ -131,7 +133,7 @@ const TabsList = React.forwardRef<
 
       <div
         className={cn(
-          'absolute h-0.5 bg-black transition-all duration-150 ease-in-out',
+          'absolute h-0.5 bg-vermillion-900 rounded-full transition-all duration-150 ease-in-out',
           isInitialLoad ? 'opacity-0' : 'opacity-100',
         )}
         style={{
@@ -142,7 +144,9 @@ const TabsList = React.forwardRef<
           transitionProperty: 'opacity, width, left, top',
         }}
       />
-      <div className="absolute bottom-[-5px] left-1/2 h-px w-screen -translate-x-1/2 bg-zinc-200" />
+      {showUnderline && (
+        <div className="absolute bottom-[-5px] left-1/2 h-px w-screen -translate-x-1/2 bg-zinc-200" />
+      )}
     </div>
   );
 });
