@@ -41,6 +41,7 @@ const createEnv = () => {
       .optional()
       .default('true'),
     POSTHOG_HOST: z.string().optional(),
+    POSTHOG_UI_HOST: z.string().optional(),
     POSTHOG_KEY: z.string().optional(),
     POSTHOG_DEBUG: z.string().optional(),
   });

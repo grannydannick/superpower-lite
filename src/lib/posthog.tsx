@@ -9,6 +9,7 @@ import { useUser } from './auth';
 const phClient = env.POSTHOG_KEY
   ? posthog.init(env.POSTHOG_KEY, {
       api_host: env.POSTHOG_HOST,
+      ui_host: env.POSTHOG_UI_HOST,
       defaults: '2025-05-24',
       debug: env.POSTHOG_DEBUG === 'true',
       person_profiles: 'always',
