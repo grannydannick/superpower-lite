@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { AnimatedCheckbox } from '@/components/ui/checkbox';
 import { toast } from '@/components/ui/sonner';
 import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner';
-import { H3 } from '@/components/ui/typography';
+import { Body2, H3 } from '@/components/ui/typography';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import {
   useAddPaymentMethod,
@@ -218,6 +218,19 @@ export const BillingSection = () => {
             I have an access code
           </Button>
         ) : null}
+
+        <Body2 className="text-zinc-400">
+          By purchasing this subscription, you agree that your membership will
+          automatically renew at the end of each term for the same duration and
+          at the then-current rate, unless you cancel in accordance with the
+          Membership Agreement. You authorize Superpower to charge your payment
+          method for the initial term and any subsequent renewal terms unless
+          canceled. To cancel, email concierge@superpower.com or log into your
+          account and follow the cancellation instructions. No refunds are
+          provided for the remainder of the subscription term after
+          cancellation. For full details, please refer to your Membership
+          Agreement.
+        </Body2>
       </div>
     </div>
   );
