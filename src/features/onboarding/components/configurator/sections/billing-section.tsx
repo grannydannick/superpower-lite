@@ -126,6 +126,9 @@ export const BillingSection = () => {
             access_code: getAccessCode(),
             referral_id: (window as any)?.Rewardful?.referral,
             membership_type: membership.type,
+            value: membership.total,
+            // Fixed currency for now, can be dynamic later
+            currency: 'USD',
           });
           trackSubscription(membership?.total);
         } catch (e) {
