@@ -7,7 +7,7 @@ import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
 
-import { UPSELL_SERVICES } from '../const/upsell-services';
+import { UPSELL_SERVICES } from '../../../const/upsell-services';
 import { ItemPreviews } from '../item-previews';
 
 import { BookingCard } from './booking-card';

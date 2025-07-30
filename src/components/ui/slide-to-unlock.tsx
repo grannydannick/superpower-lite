@@ -24,6 +24,8 @@ export const SlideToUnlock = ({
   const startPositionRef = useRef(0);
   const currentTranslateRef = useRef(0);
   const shrinkingContainerRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<number | null>(null);
+  const hasMovedRef = useRef(false);
 
   const handleStart = useCallback(
     (clientX: number) => {
@@ -31,6 +33,7 @@ export const SlideToUnlock = ({
 
       isDraggingRef.current = true;
       startPositionRef.current = clientX;
+      hasMovedRef.current = false;
 
       if (sliderRef.current) {
         sliderRef.current.style.cursor = 'grabbing';
@@ -62,6 +65,11 @@ export const SlideToUnlock = ({
 
       let newTranslate = currentTranslateRef.current + deltaX;
       newTranslate = Math.max(0, Math.min(newTranslate, maxTranslate));
+
+      // if user moves the slider, reset auto-slide
+      if (Math.abs(deltaX) > 2) {
+        hasMovedRef.current = true;
+      }
 
       sliderRef.current.style.transform = `translateX(${newTranslate}px)`;
       shrinkingContainerRef.current.style.maxWidth = `${containerWidth - newTranslate}px`;
@@ -115,6 +123,59 @@ export const SlideToUnlock = ({
     sliderRef.current.style.cursor = 'grab';
   }, [disabled, onProgress]);
 
+  const triggerAutoSlide = useCallback(() => {
+    if (
+      !sliderRef.current ||
+      !containerRef.current ||
+      !shrinkingContainerRef.current ||
+      disabled
+    )
+      return;
+
+    const containerWidth = containerRef.current.offsetWidth;
+    const sliderWidth = sliderRef.current.offsetWidth;
+    const maxTranslate = containerWidth - sliderWidth - 18;
+    const duration = 300; // ms
+    const startTime = Date.now();
+    const startTranslate = currentTranslateRef.current;
+
+    sliderRef.current.style.transition = 'none';
+    shrinkingContainerRef.current.style.transition = 'none';
+
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // ease-out animation
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+      const currentTranslate =
+        startTranslate + (maxTranslate - startTranslate) * easeProgress;
+
+      if (sliderRef.current && shrinkingContainerRef.current) {
+        sliderRef.current.style.transform = `translateX(${currentTranslate}px)`;
+        shrinkingContainerRef.current.style.maxWidth = `${containerWidth - currentTranslate}px`;
+
+        const progressPercent =
+          maxTranslate > 0 ? currentTranslate / maxTranslate : 0;
+        onProgress?.(progressPercent);
+      }
+
+      if (progress < 1) {
+        animationRef.current = requestAnimationFrame(animate);
+      } else {
+        currentTranslateRef.current = maxTranslate;
+        onComplete();
+      }
+    };
+
+    // Cancel any existing auto-slide animation before starting a new one
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+
+    animationRef.current = requestAnimationFrame(animate);
+  }, [disabled, onComplete, onProgress]);
+
   const onMouseDown = useCallback(
     (e: React.MouseEvent) => {
       if (disabled) return;
@@ -160,10 +221,24 @@ export const SlideToUnlock = ({
       if (disabled) return;
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        onComplete();
+        triggerAutoSlide();
       }
     },
-    [onComplete, disabled],
+    [triggerAutoSlide, disabled],
+  );
+
+  const onClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (disabled) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      // only trigger auto-slide if the user hasn't actually moved the slider via drag
+      if (!hasMovedRef.current) {
+        triggerAutoSlide();
+      }
+    },
+    [triggerAutoSlide, disabled],
   );
 
   return (
@@ -186,6 +261,7 @@ export const SlideToUnlock = ({
         onMouseDown={onMouseDown}
         onTouchStart={onTouchStart}
         onKeyDown={onKeyDown}
+        onClick={onClick}
       >
         <LucideArrowRight className="size-6 touch-manipulation" />
       </div>

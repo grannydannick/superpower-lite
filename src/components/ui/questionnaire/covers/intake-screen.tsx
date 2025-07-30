@@ -18,7 +18,7 @@ export const IntakeScreen = ({ handleNext }: { handleNext: () => void }) => {
       <div className="absolute bottom-8 flex w-full max-w-[calc(100%-2rem)] flex-col gap-4 md:static">
         <Button
           variant="white"
-          className="mx-auto w-full bg-white px-8 py-4 transition-all duration-500 animate-in fade-in slide-in-from-bottom-4 hover:opacity-80 md:max-w-xl"
+          className="mx-auto w-full bg-white px-8 py-4 transition-all duration-500 animate-in fade-in slide-in-from-bottom-4 hover:opacity-80 md:max-w-[450px]"
           onClick={handleNext}
         >
           Complete intake

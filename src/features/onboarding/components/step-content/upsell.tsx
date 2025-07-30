@@ -1,6 +1,7 @@
 import 'moment-timezone';
 
-import { UpsellSequence } from '../../steps/upsell/items/upsell-sequence';
+import { UpsellSequence } from '@/features/onboarding/components/upsell';
+
 import { ConfiguratorLayout } from '../layouts';
 
 export const UpsellStep = () => (

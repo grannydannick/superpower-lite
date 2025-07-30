@@ -1,5 +1,6 @@
-import { UPSELL_SERVICES } from '@/features/onboarding/steps/upsell/const/upsell-services';
 import { useOrders } from '@/features/orders/api';
+
+import { UPSELL_SERVICES } from '../const/upsell-services';
 
 /**
  * This hook is used to get the upsell orders from the orders API.

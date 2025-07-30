@@ -1,4 +1,5 @@
-import { UpsellBooking } from '../../steps/upsell/booking/upesell-booking';
+import { UpsellBooking } from '@/features/onboarding/components/upsell';
+
 import { ConfiguratorLayout } from '../layouts';
 
 export const UpsellBookingStep = () => (

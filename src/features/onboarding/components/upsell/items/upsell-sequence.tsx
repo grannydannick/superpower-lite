@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import { getUpsellServices } from '@/features/onboarding/utils/get-upsell-services';
 import { useOrders } from '@/features/orders/api';
 import { useServices } from '@/features/services/api/get-services';
 import { HealthcareService } from '@/types/api';
 
 import { UpsellCover } from '../upsell-cover';
-import { getUpsellServices } from '../utils/get-upsell-services';
 
 import { UpsellCheckout } from './upsell-checkout';
 import { UpsellItemCover } from './upsell-item-cover';

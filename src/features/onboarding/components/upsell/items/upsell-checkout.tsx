@@ -7,10 +7,11 @@ import { TestimonialCarousel } from '@/components/shared/testimonials/components
 import { Button } from '@/components/ui/button';
 import { TextShimmer } from '@/components/ui/text-shimmer';
 import { Body1, H3, H4 } from '@/components/ui/typography';
+import { useUpsellOrders } from '@/features/onboarding/hooks/use-upsell-orders';
+import { getUpsellServices } from '@/features/onboarding/utils/get-upsell-services';
 import { useOrders } from '@/features/orders/api';
 import { useCreateBulkOrders } from '@/features/orders/api/create-bulk-orders';
 import { CreateOrderInput } from '@/features/orders/api/create-order';
-import { useUpsellOrders } from '@/features/orders/hooks/use-upsell-orders';
 import { getDefaultCollectionMethod } from '@/features/orders/utils/get-default-collection-method';
 import { useServices } from '@/features/services/api';
 import { useUpdateTask } from '@/features/tasks/api/update-task';
@@ -23,7 +24,6 @@ import { formatMoney } from '@/utils/format-money';
 
 import { ItemPreview } from '../item-preview';
 import { ItemPreviews } from '../item-previews';
-import { getUpsellServices } from '../utils/get-upsell-services';
 
 const AnimatedCheckmark = ({ isOpen }: { isOpen: boolean }) => {
   return (

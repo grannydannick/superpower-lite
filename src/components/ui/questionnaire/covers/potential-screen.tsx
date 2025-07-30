@@ -24,7 +24,7 @@ const PotentialSlideToUnlock = ({ handleNext }: { handleNext: () => void }) => {
             className="truncate text-sm [--base-color:rgba(255,255,255,0.5)] [--base-gradient-color:#ffffff]"
             duration={2}
           >
-            Unlock your potential
+            Slide to unlock your potential
           </TextShimmer>
         </div>
       </SlideToUnlock>

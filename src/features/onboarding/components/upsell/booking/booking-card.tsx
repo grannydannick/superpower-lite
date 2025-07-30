@@ -9,8 +9,8 @@ import { HealthcareServiceDialog } from '@/features/orders/components/healthcare
 import { useServices } from '@/features/services/api';
 import { HealthcareService, Order, OrderStatus } from '@/types/api';
 
+import { getImageForUpsellService } from '../../../utils/get-image-for-upsell-service';
 import { ItemPreview } from '../item-preview';
-import { getImageForService } from '../utils/get-image-for-service';
 
 const StatusAction = ({
   service,
@@ -40,7 +40,7 @@ export const BookingCard = ({ order }: { order: Order }) => {
   const { data } = useServices();
   const service = data?.services.find((s) => s.id === order.serviceId);
 
-  const image = service ? getImageForService(service) : undefined;
+  const image = service ? getImageForUpsellService(service) : undefined;
 
   // we might expand this in the future
   const isScheduledService = service?.name === GRAIL_GALLERI_MULTI_CANCER_TEST;

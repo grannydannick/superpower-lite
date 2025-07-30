@@ -1,13 +1,14 @@
 import { useMemo } from 'react';
 
 import { Body1, Body2 } from '@/components/ui/typography';
-import { useUpsellOrders } from '@/features/orders/hooks/use-upsell-orders';
+import { useUpsellOrders } from '@/features/onboarding/hooks/use-upsell-orders';
 import { useServices } from '@/features/services/api';
 import { cn } from '@/lib/utils';
 import { HealthcareService } from '@/types/api';
 
+import { getImageForUpsellService } from '../../utils/get-image-for-upsell-service';
+
 import { ItemPreview } from './item-preview';
-import { getImageForService } from './utils/get-image-for-service';
 
 export const ItemPreviews = ({
   selectedServices,
@@ -28,7 +29,7 @@ export const ItemPreviews = ({
 
         if (!service) return;
 
-        items.push({ ...service, image: getImageForService(service) });
+        items.push({ ...service, image: getImageForUpsellService(service) });
       }
     });
 
