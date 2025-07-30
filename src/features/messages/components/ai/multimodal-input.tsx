@@ -41,7 +41,6 @@ function PureMultimodalInput({
   setAttachments,
   messages,
   setMessages,
-  append,
   handleSubmit,
 }: {
   chatId: string;
@@ -328,7 +327,7 @@ function PureMultimodalInput({
               onChange={handleInput}
               style={{
                 // Setting padding right doesn't work via tailwind for textarea, needs to be adjusted when adding attachments
-                paddingRight: 48,
+                paddingRight: 96,
               }}
               rows={1}
               className="size-full min-h-0 flex-1 scroll-p-4 overflow-hidden rounded-none border-none bg-transparent p-1 outline-none transition-all scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300 hover:scrollbar-thumb-zinc-400 focus-visible:bg-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -372,9 +371,7 @@ function PureMultimodalInput({
         </div>
         {messages.length === 0 &&
           attachments.length === 0 &&
-          uploadQueue.length === 0 && (
-            <SuggestedActions append={append} chatId={chatId} />
-          )}
+          uploadQueue.length === 0 && <SuggestedActions setInput={setInput} />}
       </div>
     </div>
   );

@@ -6,11 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Body2 } from '@/components/ui/typography';
 
 interface SuggestedActionsProps {
-  chatId: string;
-  append: UseChatHelpers['append'];
+  setInput: UseChatHelpers['setInput'];
 }
 
-function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
+function PureSuggestedActions({ setInput }: SuggestedActionsProps) {
   const suggestedActions = [
     {
       title: 'Supplement recommendations',
@@ -22,7 +21,7 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
     },
     {
       title: 'Help me understand',
-      action: `Help me understand my latest blood panel results.`,
+      action: `Help me understand my latest blood panel results`,
     },
   ];
 
@@ -39,13 +38,8 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
         >
           <Button
             variant="ghost"
-            onClick={async () => {
-              window.history.replaceState({}, '', `/concierge/${chatId}`);
-
-              append({
-                role: 'user',
-                content: suggestedAction.action,
-              });
+            onClick={() => {
+              setInput(suggestedAction.action);
             }}
             className="group h-auto w-full flex-1 flex-col items-start justify-start gap-1 rounded-full border px-4 py-2 text-left text-sm transition-all duration-150 hover:bg-zinc-100"
           >
