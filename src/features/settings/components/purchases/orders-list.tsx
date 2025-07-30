@@ -94,10 +94,13 @@ const OrderRow = ({
   multiPlatformOrder: MultiPlatformOrder;
 }) => {
   const { width } = useWindowDimensions();
-  const haveInvoice =
-    multiPlatformOrder.invoiceId || multiPlatformOrder.invoiceUrl;
 
-  if (!haveInvoice || width >= 768) {
+  // NOTE: If it has an invoiceId, then we can retrieve
+  // details about the invoice from the server.
+  // If it only has a invoiceUrl, then we can't, we link to shopify.
+  const hasNativeInvoice = multiPlatformOrder.invoiceId !== undefined; // || multiPlatformOrder.invoiceUrl;
+
+  if (!hasNativeInvoice || width >= 768) {
     return <OrderRowCard multiPlatformOrder={multiPlatformOrder} />;
   }
 
@@ -122,6 +125,7 @@ const OrderRowCard = ({
   ...rest
 }: OrderRowContentProps) => {
   const navigate = useNavigate();
+  const { width } = useWindowDimensions();
   const haveInvoice =
     multiPlatformOrder.invoiceId || multiPlatformOrder.invoiceUrl;
 
@@ -134,6 +138,18 @@ const OrderRowCard = ({
   });
 
   const orderPrice = multiPlatformOrder.price;
+
+  const onClickHandler = () => {
+    if (multiPlatformOrder.type === 'service') {
+      navigate('/services');
+    }
+
+    if (multiPlatformOrder.invoiceUrl && width >= 768) {
+      navigate(multiPlatformOrder.invoiceUrl);
+    }
+
+    return;
+  };
 
   return (
     <div
@@ -160,9 +176,7 @@ const OrderRowCard = ({
                 'md:hover:text-vermillion-900 cursor-pointer',
             )}
             role="presentation"
-            onClick={() =>
-              multiPlatformOrder.type === 'service' && navigate('/services')
-            }
+            onClick={onClickHandler}
           >
             {multiPlatformOrder.name}
           </Body1>
