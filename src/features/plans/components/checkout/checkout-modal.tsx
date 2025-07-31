@@ -18,7 +18,6 @@ import {
 import { Body1, H2 } from '@/components/ui/typography';
 import { useProductAvailability } from '@/features/plans/hooks/use-product-availability';
 import { useCarePlanCart } from '@/features/plans/stores/care-plan-cart-store';
-import { useProducts } from '@/features/shop/api';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 
 import { ReviewStep } from './steps/review-step';
@@ -56,7 +55,8 @@ export const ActionPlanCheckoutModal = ({
   children: ReactNode;
 }) => {
   const { width } = useWindowDimensions();
-  const { unavailableProductCount } = useProductAvailability();
+  const { unavailableProductCount, availableProducts } =
+    useProductAvailability();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const isOpen = searchParams.get('modal') === 'checkout';
@@ -80,21 +80,12 @@ export const ActionPlanCheckoutModal = ({
       ? `Checkout (${unavailableProductCount} unavailable)`
       : 'Checkout';
 
-  const { productRequests } = useProductAvailability();
-  const getProductsQuery = useProducts({});
   const { selectedProducts, addAllProducts, clearAllItems } = useCarePlanCart();
-
-  // Compute the products that are available for selection
-  const sortedProducts =
-    getProductsQuery.data?.products.filter((p) =>
-      productRequests.includes(p.id),
-    ) ?? [];
-
   const handleToggleAll = () => {
-    if (selectedProducts.length === sortedProducts.length) {
+    if (selectedProducts.length === availableProducts.length) {
       clearAllItems();
     } else {
-      addAllProducts(sortedProducts);
+      addAllProducts(availableProducts);
     }
   };
 
@@ -119,14 +110,14 @@ export const ActionPlanCheckoutModal = ({
           </div>
           <div className="flex items-center justify-between px-6 pt-4">
             <H2>{checkoutTitle}</H2>
-            {sortedProducts.length > 0 && (
+            {availableProducts.length > 0 && (
               <Button
                 variant="outline"
                 size="small"
                 onClick={handleToggleAll}
                 className="ml-4 text-xs"
               >
-                {selectedProducts.length === sortedProducts.length
+                {selectedProducts.length === availableProducts.length
                   ? 'Clear all'
                   : 'Add all'}
               </Button>
@@ -157,14 +148,14 @@ export const ActionPlanCheckoutModal = ({
           </div>
           <div className="flex items-center justify-between px-10 pt-2">
             <H2>{checkoutTitle}</H2>
-            {sortedProducts.length > 0 && (
+            {availableProducts.length > 0 && (
               <Button
                 variant="outline"
                 size="small"
                 onClick={handleToggleAll}
                 className="ml-4 text-xs"
               >
-                {selectedProducts.length === sortedProducts.length
+                {selectedProducts.length === availableProducts.length
                   ? 'Clear all'
                   : 'Add all'}
               </Button>

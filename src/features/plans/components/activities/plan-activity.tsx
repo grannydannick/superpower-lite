@@ -4,7 +4,7 @@ import {
   Coding,
 } from '@medplum/fhirtypes';
 import { HelpCircle, Image } from 'lucide-react';
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
@@ -159,7 +159,7 @@ const ProductActivity = ({
   const productName = productCoding.display || 'Unnamed Product';
   const productDesc = detail?.description || 'Recommended supplement';
 
-  const handleAddToCart = () => {
+  const handleAddToCart = useCallback(() => {
     if (product) {
       addProduct(product);
     }
@@ -167,13 +167,53 @@ const ProductActivity = ({
       params.set('modal', 'checkout');
       return params;
     });
-  };
+  }, [product, addProduct, setSearchParams]);
 
-  const handleRemoveFromCart = () => {
+  const handleRemoveFromCart = useCallback(() => {
     if (product) {
       removeProduct(product.id);
     }
-  };
+  }, [product, removeProduct]);
+
+  const isProductAvailable = useMemo(() => {
+    if (!product) return false;
+    // For backward compatibility: if inventoryQuantity is undefined/null, consider it in stock
+    return (
+      product.inventoryQuantity === undefined ||
+      product.inventoryQuantity === null ||
+      product.inventoryQuantity > 0
+    );
+  }, [product]);
+
+  const productMessage = useMemo(() => {
+    if (!product) return 'Product not available';
+    if (isProductAvailable) {
+      return 'Available in stock';
+    } else {
+      return 'Product out of stock';
+    }
+  }, [product, isProductAvailable]);
+
+  const actionButton = useMemo(() => {
+    if (!isProductAvailable || !product) return null;
+    return (
+      <Button
+        size="medium"
+        onClick={
+          isProductSelected(product.id) ? handleRemoveFromCart : handleAddToCart
+        }
+        variant={isProductSelected(product.id) ? 'outline' : 'default'}
+      >
+        {isProductSelected(product.id) ? 'Remove from Cart' : 'Add to Cart'}
+      </Button>
+    );
+  }, [
+    isProductAvailable,
+    product,
+    isProductSelected,
+    handleRemoveFromCart,
+    handleAddToCart,
+  ]);
 
   if (product) {
     return (
@@ -185,25 +225,11 @@ const ProductActivity = ({
           name={productName}
           description={
             <div className="flex items-center gap-2 text-zinc-500">
-              <Body1 className="italic text-zinc-500">Available in stock</Body1>
+              <Body1 className="italic text-zinc-500">{productMessage}</Body1>
             </div>
           }
           className={className}
-          actionBtn={
-            <Button
-              size="medium"
-              onClick={
-                isProductSelected(product.id)
-                  ? handleRemoveFromCart
-                  : handleAddToCart
-              }
-              variant={isProductSelected(product.id) ? 'outline' : 'default'}
-            >
-              {isProductSelected(product.id)
-                ? 'Remove from Cart'
-                : 'Add to Cart'}
-            </Button>
-          }
+          actionBtn={actionButton}
         />
       </div>
     );

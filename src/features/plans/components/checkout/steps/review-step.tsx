@@ -9,7 +9,7 @@ import { Body1, H2 } from '@/components/ui/typography';
 import { useProductAvailability } from '@/features/plans/hooks/use-product-availability';
 import { useSortedProducts } from '@/features/plans/hooks/use-sorted-products';
 import { useCarePlanCart } from '@/features/plans/stores/care-plan-cart-store';
-import { useProducts, useCreateCheckoutUrl } from '@/features/shop/api';
+import { useCreateCheckoutUrl } from '@/features/shop/api';
 import { cn } from '@/lib/utils';
 import { Product } from '@/types/api';
 import { trackEvent } from '@/utils/analytics';
@@ -18,8 +18,8 @@ import { calculateTotals } from '../../../utils/calculate-totals';
 import { CheckoutPrice } from '../checkout-price';
 
 export const ReviewStep = (): JSX.Element => {
-  const { productRequests } = useProductAvailability();
-  const getProductsQuery = useProducts({});
+  const { productRequests, availableProducts, isLoading } =
+    useProductAvailability();
   const { selectedProducts, addProduct, removeProduct, isProductSelected } =
     useCarePlanCart();
 
@@ -32,7 +32,7 @@ export const ReviewStep = (): JSX.Element => {
   });
 
   const sortedProducts = useSortedProducts({
-    products: getProductsQuery.data?.products,
+    products: availableProducts,
     productIds: productRequests,
     isProductSelected,
   });
@@ -71,7 +71,7 @@ export const ReviewStep = (): JSX.Element => {
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex-1 overflow-y-auto px-6 py-4 scrollbar scrollbar-thumb-zinc-300 [overflow:overlay] md:px-10 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar]:w-2">
         <div className="flex flex-col gap-1">
-          {getProductsQuery.isLoading
+          {isLoading
             ? Array(4)
                 .fill(0)
                 .map((_, i) => <LoadingSkeleton key={i} />)

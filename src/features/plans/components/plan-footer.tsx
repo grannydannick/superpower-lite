@@ -8,7 +8,7 @@ import { useProductAvailability } from '../hooks/use-product-availability';
 import { useCarePlanCart } from '../stores/care-plan-cart-store';
 
 export const CarePlanFooter = () => {
-  const { productCount, hasAvailableProducts } = useProductAvailability();
+  const { productCount, availableProducts } = useProductAvailability();
   const { selectedProducts } = useCarePlanCart();
   const [searchParams, setSearchParams] = useSearchParams();
   const isPastTopThreshold = useScrollThreshold({ thresholdPx: 50 });
@@ -23,7 +23,7 @@ export const CarePlanFooter = () => {
     isPastTopThreshold &&
     isBeforeBottomThreshold &&
     !isModalOpen &&
-    hasAvailableProducts &&
+    availableProducts.length > 0 &&
     (productCount > 0 || hasItemsInCart);
 
   const handleCardClick = () => {
@@ -54,6 +54,14 @@ export const CarePlanFooter = () => {
         <>
           recommended{' '}
           <span className="font-semibold">{productCount} products</span>
+        </>
+      ),
+      line3: (
+        <>
+          <span className="font-semibold">
+            {availableProducts.length} product
+            {availableProducts.length !== 1 ? 's' : ''} available
+          </span>
         </>
       ),
     };
@@ -101,6 +109,9 @@ export const CarePlanFooter = () => {
           <div className="flex-1 text-sm text-white md:text-zinc-600">
             <div>{message.line1}</div>
             <div>{message.line2}</div>
+            {availableProducts.length !== productCount && (
+              <div>{message.line3}</div>
+            )}
           </div>
           <ChevronRightIcon className="size-5 text-zinc-400" />
         </div>
@@ -128,6 +139,9 @@ export const CarePlanFooter = () => {
             <div className="text-sm text-zinc-600">
               <div>{message.line1}</div>
               <div>{message.line2}</div>
+              {availableProducts.length !== productCount && (
+                <div>{message.line3}</div>
+              )}
             </div>
             <ChevronRightIcon className="ml-4 size-5 text-zinc-400" />
           </div>

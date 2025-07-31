@@ -495,6 +495,7 @@ export type Product = {
   url: string;
   discount: number;
   type?: string;
+  inventoryQuantity?: number;
 };
 
 export type PaginationInfo = {
