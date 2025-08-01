@@ -9,6 +9,7 @@ import { InformedConsentStep } from '@/features/home/components/modals/consent-m
 import { ConsentNoticeStep } from '@/features/home/components/modals/consent-modal-notice-step';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { useUser } from '@/lib/auth';
+import { useAuthorization } from '@/lib/authorization';
 import { StepItem, StepperStoreProvider, useStepper } from '@/lib/stepper';
 
 const steps: StepItem[] = [
@@ -35,6 +36,8 @@ export const ConsentModal = ({
 }: ConsentModalProps = {}) => {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const { data: user } = useUser();
+  const { checkAdminActorAccess } = useAuthorization();
+  const isAdminActor = checkAdminActorAccess();
   const { width } = useWindowDimensions();
   const isMobile = width <= 768;
 
@@ -67,7 +70,7 @@ export const ConsentModal = ({
     }
   }, [user, open, consentQuery.data, consentQuery.isLoading]);
 
-  if (!user) return null;
+  if (!user || isAdminActor) return null;
 
   const stepId = initialStep || 'consent_notice';
   const initialStepIndex = steps.findIndex((s) => s.id === stepId);
