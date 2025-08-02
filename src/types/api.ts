@@ -510,6 +510,7 @@ export type PaginatedResponse<T> = {
 };
 
 /* FILES */
+/** Supported MIME types for file uploads */
 export type FileContentType =
   | 'application/pdf'
   | 'text/csv'
@@ -517,15 +518,61 @@ export type FileContentType =
   | 'image/png'
   | 'video/mp4';
 
+/** Document type classification for uploaded files */
+export type FileCategory = 'blood-panel' | 'unknown';
+
+/** Source of the file - whether uploaded by user or generated internally */
+export type FileSource =
+  | 'user'
+  | 'user-admin-actor'
+  | 'internal-server'
+  | 'unknown';
+
+/** Current processing status of an uploaded file */
+export type FileProcessingStatus =
+  | 'pending'
+  | 'processing'
+  | 'completed'
+  | 'failed'
+  | 'unknown'
+  | 'unsupported-file-type';
+
+/** File entity with metadata and processing information */
 export type File = {
   id: string;
   name: string;
   contentType: FileContentType;
   uploadedAt: string;
   status: string;
+  processingStatus: FileProcessingStatus;
+  category?: FileCategory;
+  source?: FileSource;
   orderId?: string;
   deletable: boolean;
   presignedUrl?: string;
+};
+
+export type UploadFileFailedResult = {
+  success: false;
+  fileName: string;
+  error: string;
+};
+
+export type UploadFileSuccessResult = {
+  success: true;
+  file: File;
+};
+
+export type UploadFileSummary = {
+  total: number;
+  successful: number;
+  failed: number;
+};
+
+export type UploadFilesAPIResponse = {
+  successful: File[];
+  failed: UploadFileFailedResult[];
+  summary: UploadFileSummary;
 };
 
 /* RDNS */

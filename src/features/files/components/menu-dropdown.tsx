@@ -1,14 +1,13 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 
-import { AlertDialog, AlertDialogTrigger } from '@/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown';
+import { useDeleteFile } from '@/features/files/api/delete-file';
 import { useDownloadFile } from '@/features/files/api/download-file';
-import { ConfirmDelete } from '@/features/files/components/confirm-delete';
 import { ViewPdfDialog } from '@/features/files/components/view-pdf-dialog';
 import { downloadBlob } from '@/features/files/utils/download-blob';
 import { File } from '@/types/api';
@@ -60,19 +59,60 @@ function DownloadMenuItem({ id, name }: File): JSX.Element {
 }
 
 function DeleteMenuItem({ id }: File): JSX.Element {
+  const [isConfirming, setIsConfirming] = useState(false);
+  const { mutateAsync, isPending } = useDeleteFile({
+    mutationConfig: {
+      onSuccess: () => {
+        // Show "Deleting..." for 500ms before resetting state
+        setTimeout(() => {
+          setIsConfirming(false);
+        }, 500);
+      },
+      onError: () => {
+        setIsConfirming(false);
+      },
+    },
+  });
+
+  const handleClick = async (event: React.MouseEvent): Promise<void> => {
+    if (!isConfirming) {
+      event.preventDefault();
+      event.stopPropagation();
+      setIsConfirming(true);
+      return;
+    }
+    await mutateAsync({ fileId: id });
+  };
+
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <DropdownMenuItem
-          onSelect={(event) => {
-            event.preventDefault();
-          }}
-          className="cursor-pointer text-pink-700 focus:bg-pink-50 focus:text-pink-700"
+    <DropdownMenuItem
+      onClick={handleClick}
+      disabled={isPending}
+      className="cursor-pointer text-pink-700 transition-all duration-200 ease-in-out focus:bg-pink-50 focus:text-pink-700"
+    >
+      <div className="relative">
+        <span
+          className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${
+            isPending ? 'opacity-0' : isConfirming ? 'opacity-0' : 'opacity-100'
+          }`}
         >
           Delete
-        </DropdownMenuItem>
-      </AlertDialogTrigger>
-      <ConfirmDelete fileId={id} />
-    </AlertDialog>
+        </span>
+        <span
+          className={`absolute inset-0 transition-opacity delay-300 duration-500 ease-in-out ${
+            isPending ? 'opacity-0' : isConfirming ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          Confirm
+        </span>
+        <span
+          className={`transition-opacity delay-300 duration-500 ease-in-out ${
+            isPending ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          Deleting...
+        </span>
+      </div>
+    </DropdownMenuItem>
   );
 }

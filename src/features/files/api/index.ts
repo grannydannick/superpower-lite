@@ -1,4 +1,5 @@
 export * from './create-file';
+export * from './create-files';
 export * from './delete-file';
 export * from './download-file';
 export * from './get-file-url';

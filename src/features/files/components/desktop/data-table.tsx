@@ -17,6 +17,12 @@ import {
   TableBody,
   TableCell,
 } from '@/components/ui/table';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 
 interface DataTableProps<TData, TValue> {
@@ -53,48 +59,72 @@ export function DataTable<TData, TValue>({
 
   return (
     <Card className="hidden md:block">
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow
-              key={headerGroup.id}
-              className="text-base hover:bg-transparent [&>*:first-child]:pl-12 [&>*:last-child]:pr-12"
-            >
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
+      <TooltipProvider>
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow
+                key={headerGroup.id}
+                className="text-base hover:bg-transparent [&>*:first-child]:pl-12 [&>*:last-child]:pr-12"
+              >
+                {headerGroup.headers.map((header) => {
+                  const tooltipContent = (
+                    header.column.columnDef.meta as { tooltip?: string }
+                  )?.tooltip;
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder ? null : tooltipContent ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="relative inline-block cursor-pointer">
+                              <div>
+                                {flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext(),
+                                )}
+                              </div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-[250px]">
+                            {tooltipContent}
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        flexRender(
                           header.column.columnDef.header,
                           header.getContext(),
-                        )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && 'selected'}
-                className="group p-6 text-base text-zinc-500 [&>*:first-child]:pl-12 [&>*:last-child]:pr-12"
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
+                        )
+                      )}
+                    </TableHead>
+                  );
+                })}
               </TableRow>
-            ))
-          ) : (
-            <></>
-          )}
-        </TableBody>
-      </Table>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && 'selected'}
+                  className="group p-6 text-base text-zinc-500 [&>*:first-child]:pl-12 [&>*:last-child]:pr-12"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <></>
+            )}
+          </TableBody>
+        </Table>
+      </TooltipProvider>
     </Card>
   );
 }

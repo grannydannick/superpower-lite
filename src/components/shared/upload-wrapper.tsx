@@ -6,20 +6,42 @@ import { useDropzone } from 'react-dropzone';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/components/ui/sonner';
 import { Body1 } from '@/components/ui/typography';
-import { acceptedFileTypes } from '@/const/accepted-file-types';
+import { acceptedFileContentTypes } from '@/const/accepted-file-types';
 import { cn } from '@/lib/utils';
 
 const ONE_MB = 1048576; // bytes
-const MAX_MB = 5000;
-const MAX_FILE_SIZE = ONE_MB * MAX_MB; // 5000MB
+const MAX_FILE_SIZE_MB = 100; // 100MB per file
+const MAX_FILE_SIZE = ONE_MB * MAX_FILE_SIZE_MB; // 100MB in bytes
+const MAX_TOTAL_SIZE_MB = 512; // 0.5GB total
+const MAX_TOTAL_SIZE = ONE_MB * MAX_TOTAL_SIZE_MB; // 0.5GB in bytes
+const MAX_FILENAME_LENGTH = 255; // 255 bytes
 
-function nameLengthValidator(file: File) {
-  const truncated = ~~(file.size / ONE_MB);
-
-  if (file.name && file.name.length > MAX_FILE_SIZE) {
+function fileValidator(file: File, existingFiles: File[] = []) {
+  // Check individual file size
+  if (file.size > MAX_FILE_SIZE) {
+    const fileSizeMB = Math.round(file.size / ONE_MB);
     return {
-      code: 'name-too-large',
-      message: `Please upload files less than 100mb. Found ${truncated} mb.`,
+      code: 'file-too-large',
+      message: `File "${file.name}" is too large. Maximum size is ${MAX_FILE_SIZE_MB}MB. Found ${fileSizeMB}MB.`,
+    };
+  }
+
+  // Check filename length
+  if (file.name && file.name.length > MAX_FILENAME_LENGTH) {
+    return {
+      code: 'name-too-long',
+      message: `Filename "${file.name}" is too long. Maximum length is ${MAX_FILENAME_LENGTH} characters.`,
+    };
+  }
+
+  // Check total upload size
+  const totalSize =
+    existingFiles.reduce((sum, f) => sum + f.size, 0) + file.size;
+  if (totalSize > MAX_TOTAL_SIZE) {
+    const totalSizeMB = Math.round(totalSize / ONE_MB);
+    return {
+      code: 'total-size-exceeded',
+      message: `Total upload size would exceed ${MAX_TOTAL_SIZE_MB}MB. Current total: ${totalSizeMB}MB.`,
     };
   }
 
@@ -48,9 +70,11 @@ const secondaryVariant = {
 };
 
 export const FileUpload = ({
+  multiple = false,
   onChange,
   children,
 }: {
+  multiple?: boolean;
   onChange: (files: File[]) => void;
   children?: ReactNode;
 }) => {
@@ -71,13 +95,13 @@ export const FileUpload = ({
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    multiple: false,
-    accept: acceptedFileTypes,
+    multiple,
+    accept: acceptedFileContentTypes,
     onDrop: handleFileChange,
     onDropRejected: (error) => {
       error.map((e) => e.errors.map((err) => toast.error(err.message)));
     },
-    validator: nameLengthValidator,
+    validator: (file) => fileValidator(file, files),
   });
 
   if (children) {

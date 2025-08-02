@@ -7,12 +7,13 @@ import { Button } from '@/components/ui/button';
 import { ViewPdfDialog } from '@/features/files/components/view-pdf-dialog';
 import { cn } from '@/lib/utils';
 import { File } from '@/types/api';
-import { capitalize } from '@/utils/format';
 
 import { ContentType } from '../content-type';
+// import { SourceLabel, CategoryLabel, StatusLabel } from '../file-labels';
 import { FileName } from '../file-name';
 import { MenuDropdown } from '../menu-dropdown';
 
+// TODO: Enable source, category, and status columns
 export const columns: ColumnDef<File>[] = [
   {
     accessorKey: 'name',
@@ -85,19 +86,53 @@ export const columns: ColumnDef<File>[] = [
       return <div>{moment(row.original.uploadedAt).format('MM/DD/YYYY')}</div>;
     },
   },
-  {
-    accessorKey: 'status',
-    header: () => {
-      return <div className="text-nowrap">Status</div>;
-    },
-    cell: ({ row }) => {
-      return (
-        <div className="text-zinc-500">
-          {capitalize(row.original.status.toLowerCase())}
-        </div>
-      );
-    },
-  },
+  // {
+  //   accessorKey: 'source',
+  //   meta: {
+  //     tooltip:
+  //       'Indicates whether this is a file you uploaded or a file from Superpower, like your blood panel summary.',
+  //   },
+  //   header: 'Source',
+  //   cell: ({ row }) => {
+  //     return (
+  //       <div className="hidden lg:table-cell">
+  //         <SourceLabel source={row.original.source} />
+  //       </div>
+  //     );
+  //   },
+  // },
+  // {
+  //   accessorKey: 'category',
+  //   meta: {
+  //     tooltip:
+  //       "We categorize your health records to extract useful information. Currently, blood panels are fully supported, and we'll process other documents as we expand our capabilities.",
+  //   },
+  //   header: 'Category',
+  //   cell: ({ row }) => {
+  //     return (
+  //       <div className="hidden lg:table-cell">
+  //         <CategoryLabel category={row.original.category} />
+  //       </div>
+  //     );
+  //   },
+  // },
+  // {
+  //   accessorKey: 'status',
+  //   meta: {
+  //     tooltip:
+  //       'Indicates where the file is in our processing workflow. We will notify you when the status changes, typically within 72 hours.',
+  //   },
+  //   header: () => {
+  //     return <div className="text-nowrap">Status</div>;
+  //   },
+  //   cell: ({ row }) => {
+  //     return (
+  //       <div className="text-zinc-500">
+  //         <StatusLabel status={row.original.processingStatus} />
+  //       </div>
+  //     );
+  //   },
+  // },
   {
     id: 'action',
     header: () => {

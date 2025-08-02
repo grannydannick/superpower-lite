@@ -19,8 +19,8 @@ import { useDropzone } from 'react-dropzone';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import { Textarea } from '@/components/ui/textarea';
-import { acceptedFileTypes } from '@/const';
-import { useCreateFile } from '@/features/files/api';
+import { acceptedFileContentTypes } from '@/const';
+import { useCreateFiles } from '@/features/files/api';
 import { AttachmentsButton } from '@/features/messages/components/ai/attachements-button';
 import { sanitizeUIMessages } from '@/features/messages/utils/sanitize-ui-messsages';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
@@ -59,7 +59,7 @@ function PureMultimodalInput({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const inputWrapperRef = useRef<HTMLDivElement>(null);
   const { width } = useWindowDimensions();
-  const createFileMutation = useCreateFile();
+  const createFilesMutation = useCreateFiles();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
@@ -79,7 +79,7 @@ function PureMultimodalInput({
       textarea.style.overflowY =
         textarea.scrollHeight > MAX_HEIGHT ? 'auto' : 'hidden';
     }
-  }, [attachments, uploadQueue]);
+  }, [isAttachmentPresent]);
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -136,29 +136,39 @@ function PureMultimodalInput({
       textareaRef.current?.focus();
     }
   }, [
-    attachments,
+    chatId,
     handleSubmit,
+    attachments,
     setAttachments,
     setLocalStorageInput,
+    resetHeight,
     width,
-    chatId,
   ]);
 
-  const uploadFile = async (file: File) => {
-    try {
-      const { file: superpowerFile } = await createFileMutation.mutateAsync({
-        data: { file },
-      });
+  const uploadFiles = useCallback(
+    async (files: File[]) => {
+      try {
+        const { successful } = await createFilesMutation.mutateAsync({
+          data: {
+            files: files.map((file) => ({
+              rawFile: file,
+              source: 'user',
+            })),
+          },
+        });
 
-      return {
-        url: `/files/${superpowerFile.id}`,
-        name: superpowerFile.name,
-        contentType: superpowerFile.contentType,
-      };
-    } catch (error) {
-      toast.error('Failed to upload file, please try again!');
-    }
-  };
+        return successful.map((superpowerFile) => ({
+          url: `/files/${superpowerFile.id}`,
+          name: superpowerFile.name,
+          contentType: superpowerFile.contentType,
+        }));
+      } catch (error) {
+        toast.error('Failed to upload files, please try again!');
+        return [];
+      }
+    },
+    [createFilesMutation],
+  );
 
   const handleFileChange = useCallback(
     async (event: ChangeEvent<HTMLInputElement>) => {
@@ -186,15 +196,11 @@ function PureMultimodalInput({
       setUploadQueue(files.map((file) => file.name));
 
       try {
-        const uploadPromises = files.map((file) => uploadFile(file));
-        const uploadedAttachments = await Promise.all(uploadPromises);
-        const successfullyUploadedAttachments = uploadedAttachments.filter(
-          (attachment) => attachment !== undefined,
-        ) as Attachment[];
+        const uploadedAttachments = await uploadFiles(files);
 
         setAttachments((currentAttachments) => [
           ...currentAttachments,
-          ...successfullyUploadedAttachments,
+          ...uploadedAttachments,
         ]);
       } catch (error) {
         console.error('Error uploading files!', error);
@@ -202,12 +208,12 @@ function PureMultimodalInput({
         setUploadQueue([]);
       }
     },
-    [setAttachments, uploadFile],
+    [setAttachments, uploadFiles],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     // We only want to handle files that can actually be stored for now
-    accept: acceptedFileTypes,
+    accept: acceptedFileContentTypes,
     onDrop: (acceptedFiles) => {
       const fileList = {
         item: (index: number) => acceptedFiles[index],

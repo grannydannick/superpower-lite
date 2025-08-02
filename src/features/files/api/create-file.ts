@@ -22,13 +22,13 @@ export const createFile = ({
   );
 };
 
-type UseCreatePlanOptions = {
+type UseCreateFileOptions = {
   mutationConfig?: MutationConfig<typeof createFile>;
 };
 
 export const useCreateFile = ({
   mutationConfig,
-}: UseCreatePlanOptions = {}) => {
+}: UseCreateFileOptions = {}) => {
   const queryClient = useQueryClient();
 
   const { onSuccess, ...restConfig } = mutationConfig || {};

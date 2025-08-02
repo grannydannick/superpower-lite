@@ -1,4 +1,6 @@
-export const acceptedFileTypes: { [key in 'application/pdf']: string[] } = {
+export const acceptedFileContentTypes: {
+  [key in 'application/pdf']: string[];
+} = {
   'application/pdf': ['.pdf'],
   // 'text/csv': [],
   // 'image/jpeg': [],

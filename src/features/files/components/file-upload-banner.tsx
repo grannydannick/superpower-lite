@@ -1,27 +1,32 @@
 import { ReactNode } from 'react';
 
 import { FileUpload } from '@/components/shared/upload-wrapper';
-import { toast } from '@/components/ui/sonner';
-import { useCreateFile } from '@/features/files/api';
+import { useCreateFiles } from '@/features/files/api';
+import { useAuthorization } from '@/lib/authorization';
 
 export const FileUploadBanner = ({ children }: { children?: ReactNode }) => {
-  const { mutate } = useCreateFile({
-    mutationConfig: {
-      onSuccess: () => {
-        toast.success('File uploaded successfully.');
-      },
-    },
-  });
+  const { mutate } = useCreateFiles({});
+  const { checkAdminActorAccess } = useAuthorization();
+  const isAdmin = checkAdminActorAccess();
+
+  const source = isAdmin ? 'user-admin-actor' : 'user';
 
   const onChange = (files: File[]) => {
-    const file = files[0];
-
-    if (file) {
+    if (files.length > 0) {
       mutate({
-        data: { file },
+        data: {
+          files: files.map((file) => ({
+            rawFile: file,
+            source,
+          })),
+        },
       });
     }
   };
 
-  return <FileUpload onChange={onChange}>{children}</FileUpload>;
+  return (
+    <FileUpload multiple onChange={onChange}>
+      {children}
+    </FileUpload>
+  );
 };
