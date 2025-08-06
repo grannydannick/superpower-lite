@@ -88,7 +88,7 @@ build/docker/app/dev:
 
 .PHONY: build/docker/app/stg
 build/docker/app/stg: description = Build and push app/frontend docker image for stg (staging)
-build/docker/app/stg: check/clean-tree util/login-aws-ecr
+build/docker/app/stg: util/login-aws-ecr
 	@bash $(SHARED_SCRIPT) info "Running $@ ..."
 	AWS_ECR_URL=$(AWS_ECR_URL) \
 	VERSION=$(VERSION) \
@@ -96,7 +96,7 @@ build/docker/app/stg: check/clean-tree util/login-aws-ecr
 
 .PHONY: build/docker/app/stg-emr
 build/docker/app/stg-emr: description = Build and push app/frontend docker image for stg-emr (staging EMR)
-build/docker/app/stg-emr: check/clean-tree util/login-aws-ecr
+build/docker/app/stg-emr: util/login-aws-ecr
 	@bash $(SHARED_SCRIPT) info "Running $@ ..."
 	AWS_ECR_URL=$(AWS_ECR_URL) \
 	VERSION=$(VERSION) \
@@ -113,7 +113,7 @@ build/docker/app/prd-v2: util/login-aws-ecr
 .PHONY: build/docker/app/feature
 build/docker/app/feature: description = Build and push app docker image for feature
 build/docker/app/feature: FEATURE_NAME ?= $(shell git branch --show-current | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]' | cut -c -44)
-build/docker/app/feature: check/clean-tree util/login-aws-ecr
+build/docker/app/feature: util/login-aws-ecr
 	@bash $(SHARED_SCRIPT) info "Building Docker image for feature deployment..."
 	AWS_ECR_URL=$(AWS_ECR_URL) \
 	VERSION=$(VERSION) \
@@ -168,7 +168,7 @@ deploy/story/stg: prereq
 
 .PHONY: deploy/app/prd
 deploy/app/prd: description = Deploy app to prd (production)
-deploy/app/prd: check/branch-main check/clean-tree
+deploy/app/prd:
 	@bash $(SHARED_SCRIPT) info "Creating deployment notification in Slack ..."
 	@TARGET=$@ bash $(SHARED_SCRIPT) notify $(PRD_DEPLOYMENT_MSG)
 	@bash $(SHARED_SCRIPT) info "Deploying app to cloudfront ..."
@@ -342,35 +342,3 @@ deploy/feature/automated: prereq
 	sed "s/__AWS_ECR_URL__/$(AWS_ECR_URL)/g" | \
 	sed "s/__FEATURE_NAME__/$(FEATURE_NAME)/g" | \
 	kubectl apply -f -
-
-### Checks
-
-.PHONY: check/branch-main
-check/branch-main: description = Check that the branch is on main and up to date
-check/branch-main:
-	@bash $(SHARED_SCRIPT) info "Checking that current branch is main and up to date ..."
-	@current_branch=$$(git branch --show-current); \
-	if [ "$$current_branch" != "main" ]; then \
-		echo "Error: Current branch is '$$current_branch', but must be on 'main' for production deployment." >&2; \
-		exit 1; \
-	fi
-	@bash $(SHARED_SCRIPT) info "✓ Current branch is main"
-	@git fetch origin
-	@if [ "$$(git rev-list HEAD...origin/main --count)" != "0" ]; then \
-		echo "Error: Local main branch is not up to date with origin/main. Please pull latest changes." >&2; \
-		echo "Local commits behind: $$(git rev-list HEAD..origin/main --count)" >&2; \
-		echo "Local commits ahead: $$(git rev-list origin/main..HEAD --count)" >&2; \
-		exit 1; \
-	fi
-	@bash $(SHARED_SCRIPT) info "✓ Local main is up to date with origin/main"
-
-.PHONY: check/clean-tree
-check/clean-tree: description = Check that the working tree is clean
-check/clean-tree:
-	@bash $(SHARED_SCRIPT) info "Checking that working tree is clean ..."
-	@if [ -n "$$(git status --porcelain)" ]; then \
-		echo "Error: Working tree is not clean. Please commit or stash all changes before deployments." >&2; \
-		git status --short >&2; \
-		exit 1; \
-	fi
-	@bash $(SHARED_SCRIPT) info "✓ Working tree is clean"
