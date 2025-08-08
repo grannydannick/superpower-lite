@@ -37,6 +37,15 @@ export const ConsentInfo = forwardRef<
       </a>
       ,&nbsp;
       <a
+        href="https://superpower.com/legal/membership"
+        target="_blank"
+        className="cursor-pointer text-vermillion-900"
+        rel="noreferrer"
+      >
+        Membership Agreement
+      </a>
+      ,&nbsp;
+      <a
         href="https://superpower.com/privacy"
         target="_blank"
         className="cursor-pointer text-vermillion-900"
@@ -53,35 +62,7 @@ export const ConsentInfo = forwardRef<
       >
         Notice of Medical Group Privacy Practices
       </a>
-      .&nbsp;Additionally, I acknowledge that I have reviewed, understand, and
-      consent to the&nbsp;
-      <a
-        href="https://static.cloudhealthmedicalgroup.com/docs/Consent+for+Healthcare+Services+-+2024-05-13.pdf"
-        className="cursor-pointer text-vermillion-900"
-        target="_blank"
-        rel="noreferrer"
-      >
-        Consent to Treatment
-      </a>
-      ,&nbsp;
-      <a
-        href="https://static.cloudhealthmedicalgroup.com/docs/Assignment+of+Benefits+-+2024-05-13.pdf"
-        className="cursor-pointer text-vermillion-900"
-        target="_blank"
-        rel="noreferrer"
-      >
-        Assignment of Benefits Policy
-      </a>
-      , and&nbsp;
-      <a
-        href="https://bridge-static-files.s3.amazonaws.com/legal/Bridge_Privacy_Policy_2024-04-14.pdf"
-        className="cursor-pointer text-vermillion-900"
-        target="_blank"
-        rel="noreferrer"
-      >
-        Data Privacy Statement
-      </a>
-      &nbsp;policies.
+      .&nbsp;
     </label>
   );
 });
