@@ -1,25 +1,25 @@
 import { QuestionnaireForm } from '@/components/ui/questionnaire';
 import { Spinner } from '@/components/ui/spinner';
-import { INTAKE_QUESTIONNAIRE } from '@/const/questionnaire';
+import { RX_ASSESSMENT_GHK_CU } from '@/const/questionnaire';
 import { useQuestionnaire } from '@/features/questionnaires/api/get-questionnaire';
 import { useQuestionnaireResponse } from '@/features/questionnaires/api/get-questionnaire-response';
 import { useUpdateQuestionnaireResponse } from '@/features/questionnaires/api/update-questionnaire-response';
 
-export const IntakeQuestionnaire = ({
-  showIntro = true,
+export const RxIntakeQuestionnaire = ({
+  showIntro = false,
   onSubmit,
 }: {
-  showIntro: boolean;
+  showIntro?: boolean;
   onSubmit?: () => void;
 }) => {
   const updateQuestionnaireResponseMutation = useUpdateQuestionnaireResponse();
 
   const getQuestionnaireQuery = useQuestionnaire({
-    questionnaireName: INTAKE_QUESTIONNAIRE,
+    questionnaireName: RX_ASSESSMENT_GHK_CU,
   });
 
   const getQuestionnaireResponseQuery = useQuestionnaireResponse({
-    questionnaireName: INTAKE_QUESTIONNAIRE,
+    questionnaireName: RX_ASSESSMENT_GHK_CU,
   });
 
   if (
@@ -33,28 +33,26 @@ export const IntakeQuestionnaire = ({
     );
   }
 
-  if (
-    !getQuestionnaireQuery.data ||
-    !getQuestionnaireResponseQuery.data ||
-    getQuestionnaireResponseQuery.data.questionnaireResponse === null
-  ) {
+  if (!getQuestionnaireQuery.data) {
     return null;
   }
 
   return (
     <QuestionnaireForm
       questionnaire={getQuestionnaireQuery.data.questionnaire}
-      response={getQuestionnaireResponseQuery.data.questionnaireResponse}
+      response={
+        getQuestionnaireResponseQuery?.data?.questionnaireResponse ?? undefined
+      }
       onSave={(item) => {
         updateQuestionnaireResponseMutation.mutate({
           data: { item, status: 'in-progress' },
-          questionnaireName: INTAKE_QUESTIONNAIRE,
+          questionnaireName: RX_ASSESSMENT_GHK_CU,
         });
       }}
       onSubmit={(item) => {
         updateQuestionnaireResponseMutation.mutate({
           data: { item, status: 'completed' },
-          questionnaireName: INTAKE_QUESTIONNAIRE,
+          questionnaireName: RX_ASSESSMENT_GHK_CU,
         });
         onSubmit && onSubmit();
       }}

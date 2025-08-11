@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { QuestionnaireForm } from '@/components/ui/questionnaire';
 import { Spinner } from '@/components/ui/spinner';
+import { ONBOARDING_SCREENING } from '@/const/questionnaire';
 import { useOrders } from '@/features/orders/api';
 import { useQuestionnaire } from '@/features/questionnaires/api/get-questionnaire';
 import { useQuestionnaireResponse } from '@/features/questionnaires/api/get-questionnaire-response';
@@ -9,7 +10,6 @@ import { useScreening } from '@/features/questionnaires/api/screening';
 import { useUpdateQuestionnaireResponse } from '@/features/questionnaires/api/update-questionnaire-response';
 import { ScreenOut } from '@/features/questionnaires/components/screen-out';
 import { useUser } from '@/lib/auth';
-import { QuestionnaireName } from '@/types/api';
 
 export const ScreeningQuestionnaire = ({
   onSubmit,
@@ -24,11 +24,11 @@ export const ScreeningQuestionnaire = ({
   const { data: user } = useUser();
 
   const getQuestionnaireQuery = useQuestionnaire({
-    questionnaireName: 'onboarding-screening',
+    questionnaireName: ONBOARDING_SCREENING,
   });
 
   const getQuestionnaireResponseQuery = useQuestionnaireResponse({
-    questionnaireName: 'onboarding-screening',
+    questionnaireName: ONBOARDING_SCREENING,
   });
 
   const getOrdersQuery = useOrders();
@@ -66,13 +66,13 @@ export const ScreeningQuestionnaire = ({
       onSave={(item) => {
         updateQuestionnaireResponseMutation.mutate({
           data: { item, status: 'in-progress' },
-          questionnaireName: 'onboarding-screening' as QuestionnaireName,
+          questionnaireName: ONBOARDING_SCREENING,
         });
       }}
       onSubmit={async (item) => {
         const response = await updateQuestionnaireResponseMutation.mutateAsync({
           data: { item, status: 'completed' },
-          questionnaireName: 'onboarding-screening' as QuestionnaireName,
+          questionnaireName: ONBOARDING_SCREENING,
         });
 
         const screeningData = await screeningMutation.mutateAsync({

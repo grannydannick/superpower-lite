@@ -5,6 +5,10 @@ import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogContent } from '@/components/ui/dialog';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Body1, Body2, H3 } from '@/components/ui/typography';
+import {
+  INTAKE_QUESTIONNAIRE,
+  ONBOARDING_SCREENING,
+} from '@/const/questionnaire';
 import { useQuestionnaireResponse } from '@/features/questionnaires/api/get-questionnaire-response';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { useUser } from '@/lib/auth';
@@ -19,10 +23,10 @@ export function QuestionnaireCheckModal() {
   const { data: user } = useUser();
 
   const { data: screening } = useQuestionnaireResponse({
-    questionnaireName: 'onboarding-screening',
+    questionnaireName: ONBOARDING_SCREENING,
   });
   const { data: intake } = useQuestionnaireResponse({
-    questionnaireName: 'onboarding-intake',
+    questionnaireName: INTAKE_QUESTIONNAIRE,
   });
 
   const screeningStatus = screening?.questionnaireResponse?.status;

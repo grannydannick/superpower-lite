@@ -1,5 +1,11 @@
 import { CarePlan, Goal } from '@medplum/fhirtypes';
 
+import {
+  INTAKE_QUESTIONNAIRE,
+  ONBOARDING_SCREENING,
+  RX_ASSESSMENT_GHK_CU,
+} from '@/const/questionnaire';
+
 export type BaseEntity = {
   id: string;
 };
@@ -120,7 +126,10 @@ export type OperationOutcome = {
 };
 
 /* QUESTIONNAIRE */
-export type QuestionnaireName = 'onboarding-intake' | 'onboarding-screening';
+export type QuestionnaireName =
+  | typeof INTAKE_QUESTIONNAIRE
+  | typeof ONBOARDING_SCREENING
+  | typeof RX_ASSESSMENT_GHK_CU;
 
 /* TASK */
 export type Task = {
