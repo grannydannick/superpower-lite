@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
+import { useAnalytics } from '@/hooks/use-analytics';
 
 import { IntakeScreen } from './intake-screen';
 import { PotentialScreen } from './potential-screen';
@@ -15,6 +16,8 @@ export const IntakeQuestionnaireCover = ({
     'potential',
   );
 
+  const { track } = useAnalytics();
+
   const handleNext = () => {
     if (step === 'potential') {
       setStep('welcome');
@@ -22,6 +25,7 @@ export const IntakeQuestionnaireCover = ({
       setStep('intake');
     } else {
       handleStartQuestionnaire();
+      track('started_intake');
     }
   };
 

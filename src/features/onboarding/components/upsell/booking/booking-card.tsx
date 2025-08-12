@@ -45,8 +45,6 @@ export const BookingCard = ({ order }: { order: Order }) => {
   // we might expand this in the future
   const isScheduledService = service?.name === GRAIL_GALLERI_MULTI_CANCER_TEST;
 
-  console.log(order);
-
   return (
     <div className="flex w-full items-center justify-between rounded-3xl bg-white p-3 pr-5 shadow shadow-black/[.03]">
       <div className="flex items-center gap-4">

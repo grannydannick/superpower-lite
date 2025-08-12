@@ -10,6 +10,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { toast } from '@/components/ui/sonner';
 import { Body1, H3, H4 } from '@/components/ui/typography';
 import { useOrders } from '@/features/orders/api';
+import { useAnalytics } from '@/hooks/use-analytics';
 import { useScrollDetection } from '@/hooks/use-scroll-detection';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
@@ -70,6 +71,7 @@ export const UpsellItemDetails = ({
   const skipButtonRef = useRef<HTMLButtonElement>(null);
 
   const { data, isLoading } = useOrders();
+  const { track } = useAnalytics();
   const serviceDetails = getDetailsForService(item.name);
 
   const isAlreadyBooked = useMemo(() => {
@@ -169,6 +171,15 @@ export const UpsellItemDetails = ({
           <Button
             onClick={() => {
               selectItem(item);
+
+              // track service addition
+              if (!isAlreadyBooked) {
+                track('added_service', {
+                  service_name: item.name,
+                  amount: item.price,
+                  value: item.price,
+                });
+              }
 
               // show toast for user feedback
               if (!isAlreadyBooked) {

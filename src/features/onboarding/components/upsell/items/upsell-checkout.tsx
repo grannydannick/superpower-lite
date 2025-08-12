@@ -16,6 +16,7 @@ import { getDefaultCollectionMethod } from '@/features/orders/utils/get-default-
 import { useServices } from '@/features/services/api';
 import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { CurrentPaymentMethodCard } from '@/features/users/components/current-payment-method-card';
+import { useAnalytics } from '@/hooks/use-analytics';
 import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
 import { cn } from '@/lib/utils';
@@ -62,6 +63,7 @@ export const UpsellCheckout = ({
   const { data: user } = useUser();
   const { data: ordersData } = useOrders();
   const { mutateAsync, isPending, error } = useCreateBulkOrders();
+  const { track } = useAnalytics();
   const { nextStep, activeStep } = useStepper((s) => s);
   const { mutateAsync: updateTaskProgress, isError } = useUpdateTask();
   const { data: upsellOrders } = useUpsellOrders();
@@ -132,8 +134,17 @@ export const UpsellCheckout = ({
 
     await mutateAsync({ data: orders });
 
+    // track each ordered service
+    services.forEach((service) => {
+      track('ordered_service', {
+        service_name: service.name,
+        amount: service.price,
+        value: service.price,
+      });
+    });
+
     return updateStep();
-  }, [services, mutateAsync, updateStep, user]);
+  }, [user, mutateAsync, services, updateStep, track]);
 
   const isAllServicesPaid = useMemo(() => {
     return services.every((service) => service.price === 0);
