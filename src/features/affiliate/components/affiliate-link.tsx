@@ -21,8 +21,8 @@ export function AffiliateLink(): JSX.Element {
 
   return (
     <Card>
-      <div className="flex flex-col gap-4 p-12 md:flex-row md:items-center">
-        <h3 className="text-base text-primary lg:text-xl">
+      <div className="relative flex flex-col gap-2 p-6 md:flex-row md:items-center md:gap-4 md:p-12">
+        <h3 className="pr-8 text-base text-primary md:pr-0 lg:text-xl">
           Share referral link
         </h3>
         <Separator orientation="vertical" className="hidden h-10 md:block" />
@@ -33,10 +33,16 @@ export function AffiliateLink(): JSX.Element {
           )}
           role="presentation"
         >
-          <Body1 className="line-clamp-1 text-vermillion-900">
-            {links[0] || 'On request'}
+          <Body1 className="line-clamp-2 w-full flex-1 text-vermillion-900">
+            {/* Leave more space to show full link */}
+            {links[0]?.replace('https://', '') || 'On request'}
           </Body1>
-          {links.length > 0 && <CopyToClipboard link={links[0]} />}
+          {links.length > 0 && (
+            <CopyToClipboard
+              link={links[0]}
+              className="absolute right-4 top-4 md:static"
+            />
+          )}
         </div>
       </div>
     </Card>
