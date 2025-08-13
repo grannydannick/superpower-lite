@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, ChevronLeft, Mail } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm, useFormContext } from 'react-hook-form';
 import PhoneInput from 'react-phone-number-input/input';
 
@@ -137,22 +137,6 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
     }
   };
 
-  // we want enter to handle the next step or submit the form if typing in an input
-  useEffect(() => {
-    const keyDownHandler = (event: KeyboardEvent) => {
-      const isInputFocused = document.activeElement instanceof HTMLInputElement;
-
-      if (event.key === 'Enter' && isInputFocused) {
-        if (step === 1) {
-          handleNext();
-        }
-      }
-    };
-
-    document.addEventListener('keydown', keyDownHandler);
-    return () => document.removeEventListener('keydown', keyDownHandler);
-  }, [step]);
-
   return (
     <>
       <NotServiceableDialog
@@ -227,7 +211,7 @@ const Step1 = ({ onNext }: { onNext: () => void }) => {
       <div className="space-y-3">
         <H1 className="text-3xl md:text-5xl">Member signup</H1>
         <Body1 className="whitespace-pre-line text-zinc-500">
-          {`It all starts with 100+ lab tests. 
+          {`It all starts with 100+ lab tests.
           All for $499 per year with no hidden fees.`}
         </Body1>
       </div>
@@ -247,6 +231,12 @@ const Step1 = ({ onNext }: { onNext: () => void }) => {
                   autoComplete="email"
                   autoCorrect="off"
                   icon={<Mail className="size-4 text-zinc-400" />}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleNext();
+                    }
+                  }}
                   {...field}
                 />
               </FormControl>
