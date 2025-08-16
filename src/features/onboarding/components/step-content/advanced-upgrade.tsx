@@ -12,13 +12,12 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner';
 import { Body1, Body2, H2, H3, H4 } from '@/components/ui/typography';
-import { UPGRADE_PRICE, UPGRADE_PRICE_NYNJ } from '@/const';
+import { UPGRADE_PRICE } from '@/const';
 import BiomarkersFaqDialog from '@/features/onboarding/components/biomarkers-dialog';
 import { ConfiguratorLayout } from '@/features/onboarding/components/layouts';
 import { useUpgradeOrder } from '@/features/orders/api/upgrade-order';
 import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { CurrentPaymentMethodCard } from '@/features/users/components/current-payment-method-card';
-import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
 import { cn } from '@/lib/utils';
 import { formatMoney } from '@/utils/format-money';
@@ -175,13 +174,6 @@ const AdvancedUpgrade = () => {
 };
 
 const CardInfo = ({ className }: { className?: string }) => {
-  const { data: user } = useUser();
-
-  const price =
-    user?.primaryAddress?.state === 'NY' || user?.primaryAddress?.state === 'NJ'
-      ? UPGRADE_PRICE_NYNJ
-      : UPGRADE_PRICE;
-
   return (
     <div
       className={cn(
@@ -215,7 +207,7 @@ const CardInfo = ({ className }: { className?: string }) => {
           </svg>
           <Body1 className="text-zinc-500">One time Upgrade</Body1>
         </div>
-        <H3>{formatMoney(price)}</H3>
+        <H3>{formatMoney(UPGRADE_PRICE)}</H3>
         <Collapsible className="w-full space-y-2">
           <div className="flex items-center justify-center">
             <CollapsibleTrigger asChild>
@@ -240,23 +232,16 @@ const CardInfo = ({ className }: { className?: string }) => {
 };
 
 const TotalInfo = () => {
-  const { data: user } = useUser();
-
-  const price =
-    user?.primaryAddress?.state === 'NY' || user?.primaryAddress?.state === 'NJ'
-      ? UPGRADE_PRICE_NYNJ
-      : UPGRADE_PRICE;
-
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <Body1 className="text-zinc-500">Subtotal</Body1>
-        <Body1>{formatMoney(price)}</Body1>
+        <Body1>{formatMoney(UPGRADE_PRICE)}</Body1>
       </div>
       <Separator />
       <div className="flex items-center justify-between">
         <Body1 className="text-zinc-500">Total</Body1>
-        <Body1>{formatMoney(price)}</Body1>
+        <Body1>{formatMoney(UPGRADE_PRICE)}</Body1>
       </div>
     </div>
   );

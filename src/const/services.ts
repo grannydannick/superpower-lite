@@ -38,5 +38,6 @@ export enum ServiceLabTypeEnum {
 }
 export type ServiceLabType = ServiceLabTypeEnum;
 
-export const UPGRADE_PRICE_NYNJ = 16000;
-export const UPGRADE_PRICE = 15000;
+// side note we dont have a good way right now to get individual charge items from server
+// so we just stick to that approach
+export const UPGRADE_PRICE = 19900;
