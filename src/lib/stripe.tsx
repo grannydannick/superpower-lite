@@ -13,5 +13,20 @@ export function StripeProvider(props: {
 }): JSX.Element {
   const { children } = props;
 
-  return <Elements stripe={stripePromise}>{children}</Elements>;
+  return (
+    <Elements
+      stripe={stripePromise}
+      options={{
+        mode: 'setup',
+        currency: 'usd',
+        appearance: {
+          variables: {
+            borderRadius: '12px',
+          },
+        },
+      }}
+    >
+      {children}
+    </Elements>
+  );
 }

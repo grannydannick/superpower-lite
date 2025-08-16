@@ -3,7 +3,10 @@ import {
   useElements,
   useStripe,
 } from '@stripe/react-stripe-js';
-import { StripeError } from '@stripe/stripe-js';
+import {
+  StripeError,
+  StripeExpressCheckoutElementConfirmEvent,
+} from '@stripe/stripe-js';
 import { FormEvent, useState } from 'react';
 
 import { ConsentInfo } from '@/components/shared/consent-info';
@@ -13,11 +16,13 @@ import { Button } from '@/components/ui/button';
 import { AnimatedCheckbox } from '@/components/ui/checkbox';
 import { toast } from '@/components/ui/sonner';
 import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner';
-import { Body2 } from '@/components/ui/typography';
+import { Body1, Body2, H3 } from '@/components/ui/typography';
 import { useOnboarding } from '@/features/onboarding/stores/onboarding-store';
 import {
   useAddPaymentMethod,
+  useCreateSetupIntent,
   useCreateSubscription,
+  useSetDefaultPaymentMethod,
 } from '@/features/settings/api';
 import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { useAnalytics } from '@/hooks/use-analytics';
@@ -28,6 +33,8 @@ import { getAccessCode } from '@/utils/access-code';
 import { trackSubscription } from '@/utils/gtm';
 import { getUtmData } from '@/utils/utm-middleware';
 
+import { DigitalWalletSection } from './digital-wallet-section';
+
 export const BillingSection = () => {
   const elements = useElements();
   const stripe = useStripe();
@@ -35,6 +42,8 @@ export const BillingSection = () => {
   const [error, setError] = useState<StripeError | undefined>(undefined);
   const addPaymentMethodMutation = useAddPaymentMethod();
   const createSubscriptionMutation = useCreateSubscription();
+  const setupIntentMutation = useCreateSetupIntent();
+  const setDefaultPaymentMethodMutation = useSetDefaultPaymentMethod();
   const { activeStep, nextStep } = useStepper((s) => s);
   const { mutateAsync: updateTaskProgress } = useUpdateTask();
   const { track } = useAnalytics();
@@ -49,17 +58,49 @@ export const BillingSection = () => {
     setConsentGiven,
   } = useOnboarding();
 
+  const createSubscription = async (paymentMethod: string) => {
+    try {
+      const subscription = await createSubscriptionMutation.mutateAsync({
+        data: {
+          code: getAccessCode() ?? undefined,
+          referralId: (window as any)?.Rewardful?.referral,
+          campaignData: getUtmData() ?? undefined,
+        },
+      });
+
+      if (subscription) {
+        try {
+          track('subscription_created', {
+            access_code: getAccessCode(),
+            referral_id: (window as any)?.Rewardful?.referral,
+            currency: 'USD',
+            value: membership?.total,
+            payment_method: paymentMethod,
+          });
+          trackSubscription(membership?.total, paymentMethod);
+        } catch (e) {
+          console.error('Failed to track subscription:', e);
+        }
+
+        await updateTaskProgress({
+          taskName: 'onboarding',
+          data: { progress: activeStep + 1 },
+        });
+        nextStep();
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error((e as StripeError)?.message ?? 'An error occurred');
+    }
+  };
+
   const handleSubmit = async (event: FormEvent) => {
     // We don't want to let default form submission happen here,
     // which would refresh the page.
     event.preventDefault();
 
-    if (!user) return;
-
-    if (!stripe || !elements) {
-      // Stripe.js hasn't yet loaded.
-      return;
-    }
+    // If any of the following are null, or if we're in the middle of processing, do not proceed with submission
+    if (!user || !stripe || !elements || !membership || processing) return;
 
     const cardNumber = elements.getElement(CardNumberElement);
 
@@ -76,10 +117,7 @@ export const BillingSection = () => {
       });
 
       if (error) {
-        setError(error);
-        setProcessing(false);
-        toast.error(error.message);
-        return;
+        throw new Error(`Failed adding payment method: ${error.message}`);
       }
 
       const { success } = await addPaymentMethodMutation.mutateAsync({
@@ -87,42 +125,69 @@ export const BillingSection = () => {
       });
 
       if (!success) {
-        setProcessing(false);
-        return;
+        throw new Error('Failed adding payment method');
       }
 
-      const subscription = await createSubscriptionMutation.mutateAsync({
-        data: {
-          code: getAccessCode() ?? undefined,
-          referralId: (window as any)?.Rewardful?.referral,
-          // Use cookie-based UTM data instead of sessionStorage
-          campaignData: getUtmData() ?? undefined,
-        },
-      });
-
-      if (subscription) {
-        // Track but don't await or let errors bubble up
-        try {
-          track('subscription_created', {
-            access_code: getAccessCode(),
-            referral_id: (window as any)?.Rewardful?.referral,
-            // Fixed currency for now, can be dynamic later
-            currency: 'USD',
-            value: membership?.total,
-          });
-          trackSubscription(membership?.total);
-        } catch (e) {
-          console.error('Failed to track subscription:', e);
-        }
-
-        await updateTaskProgress({
-          taskName: 'onboarding',
-          data: { progress: activeStep + 1 },
-        });
-        nextStep();
-      }
+      await createSubscription('card');
     } catch (e) {
       console.error(e);
+      toast.error((e as StripeError)?.message ?? 'An error occurred');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleDigitalWalletPayment = async (
+    event: StripeExpressCheckoutElementConfirmEvent,
+  ) => {
+    // If any of the following are null, or if we're in the middle of processing, do not proceed with submission
+    if (!user || !stripe || !elements || !membership || processing) return;
+
+    setProcessing(true);
+
+    try {
+      const { error: submitError } = await elements.submit();
+
+      if (submitError) {
+        throw submitError;
+      }
+
+      const { client_secret } =
+        await setupIntentMutation.mutateAsync(undefined);
+
+      const { error: confirmSetupError, setupIntent } =
+        await stripe.confirmSetup({
+          elements,
+          clientSecret: client_secret,
+          confirmParams: {
+            return_url: `${window.location.origin}`,
+          },
+          redirect: 'if_required',
+        });
+
+      const isValidSetupIntent =
+        setupIntent?.status === 'succeeded' ||
+        setupIntent?.status === 'processing';
+
+      if (confirmSetupError || !isValidSetupIntent) {
+        throw confirmSetupError;
+      }
+
+      const paymentMethod = setupIntent?.payment_method as string;
+
+      if (!paymentMethod) {
+        throw new Error('No payment method found in setup intent');
+      }
+
+      await setDefaultPaymentMethodMutation.mutateAsync({
+        data: { setDefault: true },
+        paymentMethodId: paymentMethod,
+      });
+
+      await createSubscription(event.expressPaymentType);
+    } catch (e) {
+      setError(e as StripeError);
+      toast.error((e as StripeError)?.message ?? 'An error occurred');
     } finally {
       setProcessing(false);
     }
@@ -130,7 +195,21 @@ export const BillingSection = () => {
 
   return (
     <div className="space-y-8">
+      <div className="space-y-2">
+        <H3 className="text-primary">Purchase Membership</H3>
+        <Body1 className="text-zinc-500">
+          Your membership auto-renews each year. Cancel anytime. HSA/FSA
+          eligible.
+        </Body1>
+      </div>
       <div className="space-y-4">
+        {membership ? (
+          <DigitalWalletSection
+            onConfirm={handleDigitalWalletPayment}
+            membershipAmountInCents={membership?.total}
+            processing={processing}
+          />
+        ) : null}
         <PaymentDetails />
         <StripeCardForm
           processing={processing}

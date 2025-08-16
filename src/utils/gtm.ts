@@ -1,7 +1,10 @@
 import { RewardfulWindow } from '@/types/window';
 import { getAccessCode } from '@/utils/access-code';
 
-export const trackSubscription = (price: number | undefined) => {
+export const trackSubscription = (
+  price: number | undefined,
+  paymentMethod: string,
+) => {
   try {
     // We'll handle this server-side, keeping only GTM for now
     const win = window as RewardfulWindow;
@@ -12,6 +15,7 @@ export const trackSubscription = (price: number | undefined) => {
       referralId: win.Rewardful?.referral || null,
       rewardfulCode: win.Rewardful?.coupon || null,
       accessCode: getAccessCode(),
+      paymentMethod,
     };
 
     if (win.dataLayer) {

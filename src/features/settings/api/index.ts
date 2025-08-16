@@ -1,5 +1,6 @@
 export * from './add-payment-method';
 export * from './cancel-membership';
+export * from './create-setup-intent';
 export * from './create-subscription';
 export * from './delete-payment-method';
 export * from './delete-wearable';
