@@ -18,6 +18,8 @@ export const HealthcareServiceRescheduleConfirmation = ({
     return startTimestamp - now < 24 * 60 * 60 * 1000;
   }, [order.startTimestamp]);
 
+  const isAtHomeAppointment = order.method.includes('AT_HOME');
+
   const lateFeeMessage = (() => {
     return mode === 'reschedule'
       ? 'Your appointment is within 24 hours. Rescheduling now will incur a $99 late fee.'
@@ -36,11 +38,13 @@ export const HealthcareServiceRescheduleConfirmation = ({
           Are you sure you want to {mode} your {order.serviceName}?
         </H2>
       </div>
-      {isWithin24Hours && (mode === 'reschedule' || mode === 'cancel') && (
-        <Body1 className="my-4 rounded-lg bg-vermillion-100 p-4 text-vermillion-900">
-          {lateFeeMessage}
-        </Body1>
-      )}
+      {isWithin24Hours &&
+        isAtHomeAppointment &&
+        (mode === 'reschedule' || mode === 'cancel') && (
+          <Body1 className="my-4 rounded-lg bg-vermillion-100 p-4 text-vermillion-900">
+            {lateFeeMessage}
+          </Body1>
+        )}
       {mode === 'cancel' ? (
         <Body1 className="text-zinc-500">
           You can schedule a new appointment from the services page of the
