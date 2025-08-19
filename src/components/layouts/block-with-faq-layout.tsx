@@ -68,10 +68,10 @@ const MEMBERSHIP_FAQ = [
     display: 'What lab tests do I get in a membership?',
     description: (
       <p>
-        A membership covers two lab panels per year. The first establishes your
-        baseline across 60 labs — each handpicked by our board of MDs. The
-        second, six months later, rechecks the same 60 to track progress. You
-        can find the full list of tested biomarkers{' '}
+        Your membership includes one comprehensive blood panel per year. This
+        single draw measures 100+ biomarkers - handpicked by our board of MDs -
+        to give you a complete baseline of your health. You can find the full
+        list of tested biomarkers{' '}
         <a
           href="https://superpower.com/biomarkers"
           target="_blank"
@@ -88,7 +88,7 @@ const MEMBERSHIP_FAQ = [
   {
     display: 'Don’t I already get a blood test in my general checkup?',
     description:
-      "Your general check up includes anywhere from 10 to 30 labs, which isn't a comprehensive view of your health. We take it a step further by testing 60+ labs across 17 core areas of health (e.g. heart, liver, inflammation, hormones and more) to ensure we give you a precise and tailored action plan to take your health to the next level.",
+      "Your general check up includes anywhere from 10 to 30 labs, which isn't a comprehensive view of your health. We take it a step further by giving you 100+ insights across 17 core areas of health (e.g. heart, liver, inflammation, hormones and more) to ensure we give you a precise and tailored action plan to take your health to the next level.",
   },
   {
     display: 'Can I get more tests whenever I want?',
