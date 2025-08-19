@@ -144,7 +144,17 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
         onClick={() => setReason(undefined)}
       />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-1">
+        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-1"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && step === 2) {
+              e.preventDefault();
+              form.trigger(); // trigger validation to show errors
+            }
+          }}
+        >
           {step === 1 ? (
             <ImageWithWithBlockLayout
               title="Email"
@@ -211,7 +221,7 @@ const Step1 = ({ onNext }: { onNext: () => void }) => {
       <div className="space-y-3">
         <H1 className="text-3xl md:text-5xl">Member signup</H1>
         <Body1 className="whitespace-pre-line text-zinc-500">
-          {`It all starts with 100+ lab tests. 
+          {`It all starts with 100+ lab tests.
           All for $199 per year with no hidden fees.`}
         </Body1>
       </div>
