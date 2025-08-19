@@ -71,7 +71,7 @@ export const CreateMessageForm = (): JSX.Element => {
                     <div className="rounded-[20px] border border-zinc-100 bg-white px-4 pt-4 shadow-lg shadow-black/5">
                       <Textarea
                         {...field}
-                        placeholder="Ask questions about your health, book appointments, and get answers from expert longevity advisors..."
+                        placeholder="Ask questions about your health from longevity advisors and get help from our customer service team"
                         className="min-h-0 border-none p-1 scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300 hover:scrollbar-thumb-zinc-400 focus-visible:bg-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                       />
 

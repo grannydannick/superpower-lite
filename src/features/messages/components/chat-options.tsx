@@ -83,7 +83,9 @@ const CareTeamCard = () => {
       </div>
       <div>
         <Body1>Ask your care team</Body1>
-        <Body2 className="text-zinc-400">Complex topics and appointments</Body2>
+        <Body2 className="text-zinc-400">
+          Complex topics and customer service
+        </Body2>
       </div>
     </div>
   );
