@@ -41,3 +41,4 @@ export type ServiceLabType = ServiceLabTypeEnum;
 // side note we dont have a good way right now to get individual charge items from server
 // so we just stick to that approach
 export const UPGRADE_PRICE = 18900;
+export const UPGRADE_PRICE_NYNJ = 19900;

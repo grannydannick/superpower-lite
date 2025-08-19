@@ -12,39 +12,17 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner';
 import { Body1, Body2, H2, H3, H4 } from '@/components/ui/typography';
-import { UPGRADE_PRICE } from '@/const';
+import { UPGRADE_INFO } from '@/const';
 import BiomarkersFaqDialog from '@/features/onboarding/components/biomarkers-dialog';
 import { ConfiguratorLayout } from '@/features/onboarding/components/layouts';
 import { useUpgradeOrder } from '@/features/orders/api/upgrade-order';
 import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { CurrentPaymentMethodCard } from '@/features/users/components/current-payment-method-card';
+import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
 import { cn } from '@/lib/utils';
 import { formatMoney } from '@/utils/format-money';
-
-const UPGRADE_INFO = [
-  {
-    title: 'Who is this Ideal for?',
-    preview:
-      'Ideal for those navigating symptoms, family planning, performance goals, or higher risk due to age or family history.',
-    markdown: `
-- Men 35+ who need to be getting screened for prostate cancer.
-- Women 30+ navigating fertility concerns, irregular cycles, or perimenopause.
-- People with symptoms like fatigue, brain fog, weight gain, low libido, or poor mood.
-- High performers and health optimizers who need real data to personalize their training, recovery, and longevity strategies.
-- Anyone with family history of heart disease or diabetes.`,
-  },
-  {
-    title: 'What’s included in the advanced panel?',
-    preview:
-      'Biomarkers including prolactin, IGF-1, Lp(a), fasting insulin, B12, and folate for deeper insights into hormones, heart health, and nutrient status.',
-    markdown: `
-- Identify nutrient gaps with B12, folate, magnesium & ferritin for better energy, mood & stress support.
-- Uncover cardiovascular risk with Lp(a), homocysteine & advanced lipoprotein testing.
-- Spot insulin resistance early with fasting insulin & eAG - before A1c rises.
-- Screen critical hormones including PSA (men), prolactin & progesterone (women), plus FSH/LH & IGF‑1 for insight into energy, libido & hormonal balance.`,
-  },
-] as const;
+import { getUpgradePrice } from '@/utils/get-upgrade-price';
 
 const AdvancedUpgrade = () => {
   const { nextStep, activeStep } = useStepper((s) => s);
@@ -54,6 +32,9 @@ const AdvancedUpgrade = () => {
     isPending: isTaskUpdating,
   } = useUpdateTask();
   const upgradeOrderMutation = useUpgradeOrder();
+  const { data: user } = useUser();
+
+  const price = getUpgradePrice(user);
 
   const updateStep = async () => {
     await updateTaskProgress({
@@ -87,7 +68,7 @@ const AdvancedUpgrade = () => {
             risk.
           </Body1>
 
-          <CardInfo className="lg:hidden" />
+          <CardInfo className="lg:hidden" price={price} />
           <BiomarkersFaqDialog
             onUpgradeOrder={upgradeOrder}
             isLoading={upgradeOrderMutation.isPending || isTaskUpdating}
@@ -133,7 +114,7 @@ const AdvancedUpgrade = () => {
             {upgradeOrderMutation.isPending || isTaskUpdating ? (
               <TransactionSpinner className="flex justify-center" />
             ) : (
-              'Upgrade to Advanced (+$189)'
+              <>Upgrade to Advanced (+{formatMoney(price)})</>
             )}
           </Button>
           <Button
@@ -166,14 +147,20 @@ const AdvancedUpgrade = () => {
       </div>
       <div className="hidden w-full flex-col gap-4 rounded-3xl border border-zinc-200 bg-white p-10 lg:sticky lg:top-8 lg:flex lg:h-[calc(100svh-4rem)] lg:max-h-[calc(100svh-4rem)] lg:overflow-auto">
         <Body1 className="text-zinc-500">One-time upgrade</Body1>
-        <CardInfo />
-        <TotalInfo />
+        <CardInfo price={price} />
+        <TotalInfo price={price} />
       </div>
     </>
   );
 };
 
-const CardInfo = ({ className }: { className?: string }) => {
+const CardInfo = ({
+  className,
+  price,
+}: {
+  className?: string;
+  price: number;
+}) => {
   return (
     <div
       className={cn(
@@ -207,7 +194,7 @@ const CardInfo = ({ className }: { className?: string }) => {
           </svg>
           <Body1 className="text-zinc-500">One time Upgrade</Body1>
         </div>
-        <H3>{formatMoney(UPGRADE_PRICE)}</H3>
+        <H3>{formatMoney(price)}</H3>
         <Collapsible className="w-full space-y-2">
           <div className="flex items-center justify-center">
             <CollapsibleTrigger asChild>
@@ -223,7 +210,7 @@ const CardInfo = ({ className }: { className?: string }) => {
               130+ biomarkers for deep insights across health optimization,
               prevention, and complex symptoms
             </Body1>
-            <TotalInfo />
+            <TotalInfo price={price} />
           </CollapsibleContent>
         </Collapsible>
       </div>
@@ -231,17 +218,17 @@ const CardInfo = ({ className }: { className?: string }) => {
   );
 };
 
-const TotalInfo = () => {
+const TotalInfo = ({ price }: { price: number }) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <Body1 className="text-zinc-500">Subtotal</Body1>
-        <Body1>+{formatMoney(UPGRADE_PRICE)}</Body1>
+        <Body1>+{formatMoney(price)}</Body1>
       </div>
       <Separator />
       <div className="flex items-center justify-between">
         <Body1 className="text-zinc-500">Total</Body1>
-        <Body1>+{formatMoney(UPGRADE_PRICE)}</Body1>
+        <Body1>+{formatMoney(price)}</Body1>
       </div>
     </div>
   );

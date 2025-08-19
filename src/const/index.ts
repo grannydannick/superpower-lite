@@ -7,3 +7,4 @@ export * from './consent-agreements';
 export * from './products';
 export * from './additional-lab-fees';
 export * from './collection-methods';
+export * from './upgrade-info';
