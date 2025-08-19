@@ -101,7 +101,7 @@ export function PaymentMethodCard({
             Expires on {paymentMethod.card.exp_month}/
             {paymentMethod.card.exp_year}
           </p>
-          <p className="leading-normal text-zinc-500">
+          <p className="hidden leading-normal text-zinc-500">
             Zip code - {paymentMethod?.billing_details?.postal_code}
           </p>
         </div>
