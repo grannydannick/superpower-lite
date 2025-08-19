@@ -12,7 +12,7 @@ export const MEMBERSHIP_BENEFITS: MembershipBenefit[] = [
   },
   {
     imgPath: '/settings/membership/biomarkers.png',
-    description: '100+ blood biomarkers tested via an at-home nurse',
+    description: 'Annual full-body lab testing across 100+ biomarkers',
   },
   {
     imgPath: '/settings/membership/concierge.png',
