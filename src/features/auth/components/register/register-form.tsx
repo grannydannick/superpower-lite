@@ -42,6 +42,7 @@ import { useAnalytics } from '@/hooks/use-analytics';
 import { RegisterInput, registerInputSchema, useRegister } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 import { NotServiceableReason } from '@/types/api';
+import { getCollectionMethodForState } from '@/utils/serviceability';
 
 type RegisterFormProps = {
   onSuccess: () => void;
@@ -81,10 +82,12 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
   const handlePrev = () => setStep(1);
 
   const onSubmit = async (data: RegisterInput) => {
+    const collectionMethod = getCollectionMethodForState(data.address.state);
+
     const response = await getServiceabilityMutation.mutateAsync({
       data: {
         zipCode: data.address.postalCode,
-        collectionMethod: 'IN_LAB',
+        collectionMethod,
       },
     });
 
