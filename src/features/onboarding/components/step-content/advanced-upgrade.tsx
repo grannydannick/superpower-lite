@@ -71,7 +71,7 @@ const AdvancedUpgrade = () => {
           <CardInfo className="lg:hidden" price={price} />
           <BiomarkersFaqDialog
             onUpgradeOrder={upgradeOrder}
-            isLoading={upgradeOrderMutation.isPending || isTaskUpdating}
+            isLoading={upgradeOrderMutation.isPending}
           >
             <Button
               variant="ghost"
@@ -111,7 +111,7 @@ const AdvancedUpgrade = () => {
             disabled={isTaskUpdating || upgradeOrderMutation.isPending}
             onClick={upgradeOrder}
           >
-            {upgradeOrderMutation.isPending || isTaskUpdating ? (
+            {upgradeOrderMutation.isPending ? (
               <TransactionSpinner className="flex justify-center" />
             ) : (
               <>Upgrade to Advanced (+{formatMoney(price)})</>
