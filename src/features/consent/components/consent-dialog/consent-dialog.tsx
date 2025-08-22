@@ -15,6 +15,7 @@ import { Body1, Body2, H2 } from '@/components/ui/typography';
 import { LEGAL_DESCLAIMERS, LEGAL_LINKS } from '@/const';
 import { useCreateConsent, useGetConsent } from '@/features/consent/api';
 import { useUser } from '@/lib/auth';
+import { useAuthorization } from '@/lib/authorization';
 
 interface ConsentDialogProps {
   isOpen?: boolean;
@@ -30,6 +31,7 @@ export const ConsentDialog = ({
   initialStep = 0,
 }: ConsentDialogProps) => {
   const { pathname } = useLocation();
+  const { checkAdminActorAccess } = useAuthorization();
   const [internalOpen, setInternalOpen] = useState(false);
   const [step, setStep] = useState<0 | 1>(initialStep);
   const { data: user } = useUser();
@@ -42,15 +44,19 @@ export const ConsentDialog = ({
   });
 
   const hasConsent = data?.exists === true;
+  const isAdmin = checkAdminActorAccess();
 
   useEffect(() => {
     if (isControlled) return;
     if (!user) return;
     if (isLoading) return;
+    // do not show consent modal for admins
+    if (isAdmin) return;
+
     if (pathname.includes('onboarding')) return; // should always be disabled in onboarding
 
     if (!hasConsent) setInternalOpen(true);
-  }, [isControlled, user, isLoading, hasConsent, pathname]);
+  }, [isControlled, user, isLoading, hasConsent, isAdmin, pathname]);
 
   const handleClose = (next: boolean) => {
     if (isControlled) return; // parent controls
@@ -73,6 +79,12 @@ export const ConsentDialog = ({
         data-testid="consent-modal"
         preventCloseAutoFocus
         onInteractOutside={(event) => event.preventDefault()}
+        onEscapeKeyDown={(event) =>
+          // allow test or dev to escape this
+          ['test', 'development'].includes(process.env.NODE_ENV as string)
+            ? undefined
+            : event.preventDefault()
+        }
       >
         {step === 0 ? (
           <ConsentNotice onNext={() => setStep(1)} />
