@@ -79,11 +79,13 @@ export const OnboardingLayout = (props: Props) => {
                   <AccordionContent className="space-y-2 pb-0 pt-4">
                     <div>
                       Superpower is currently available to residents in Arizona,
-                      California, Colorado, Connecticut, Florida, Georgia,
-                      Illinois, Indiana, Massachusetts, Maryland, Michigan,
-                      Minnesota, North Carolina, New Jersey, Nevada, New York,
-                      Ohio, Oklahoma, Oregon, Pennsylvania, Tennessee, Texas,
-                      Utah, Virginia, and Washington.
+                      California, Colorado, Connecticut, Delaware, District of
+                      Columbia, Florida, Georgia, Illinois, Indiana,
+                      Massachusetts, Maryland, Michigan, Minnesota, Missouri,
+                      North Carolina, New Hampshire, New Jersey, New Mexico,
+                      Nevada, New York, Ohio, Oklahoma, Oregon, Pennsylvania,
+                      South Carolina, Tennessee, Texas, Utah, Virginia,
+                      Washington, and Wisconsin.
                     </div>
                     <div>
                       We are expanding quickly with plans to be available for
