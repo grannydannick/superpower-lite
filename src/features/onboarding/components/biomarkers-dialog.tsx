@@ -23,16 +23,19 @@ import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner'
 import { Body1, H3, H4 } from '@/components/ui/typography';
 import { BIOMARKER_CATEGORIES } from '@/features/onboarding/const/biomarkers-content';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
+import { formatMoney } from '@/utils/format-money';
 
 interface BiomarkersFaqDialogProps {
   children: React.ReactNode;
   onUpgradeOrder: () => Promise<void>;
   isLoading: boolean;
+  price: number;
 }
 const BiomarkersFaqDialog = ({
   children,
   onUpgradeOrder,
   isLoading,
+  price,
 }: BiomarkersFaqDialogProps) => {
   const { width } = useWindowDimensions();
 
@@ -94,7 +97,7 @@ const BiomarkersFaqDialog = ({
           {isLoading ? (
             <TransactionSpinner className="flex justify-center" />
           ) : (
-            'Upgrade to Advanced (+$189)'
+            <>Upgrade to Advanced (+{formatMoney(price)})</>
           )}
         </Button>
       </div>

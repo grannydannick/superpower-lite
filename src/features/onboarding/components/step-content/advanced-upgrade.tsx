@@ -72,6 +72,7 @@ const AdvancedUpgrade = () => {
           <BiomarkersFaqDialog
             onUpgradeOrder={upgradeOrder}
             isLoading={upgradeOrderMutation.isPending}
+            price={price}
           >
             <Button
               variant="ghost"
