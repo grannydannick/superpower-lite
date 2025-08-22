@@ -43,6 +43,12 @@ const OnboardingTimelineItem = ({
           return data.button;
         }
         return null;
+      case 'DONE':
+        // allow gift button to remain active even when done
+        if (timelineItem.name === 'Gift friends & family 100 years') {
+          return data.button;
+        }
+        return null;
       default:
         return null;
     }

@@ -187,7 +187,7 @@ const TimelineCard = React.forwardRef<HTMLDivElement, TimelineCardProps>(
       >
         <div className="mr-2 flex items-center gap-4">
           <img
-            className="size-12 min-w-12 rounded-lg object-cover"
+            className="size-12 min-w-12 rounded-xl object-cover"
             src={image}
             alt="service"
           />

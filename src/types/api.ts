@@ -157,7 +157,8 @@ export type TaskName =
   | 'onboarding-insurance'
   | 'onboarding'
   | 'onboarding-wearable'
-  | 'onboarding-identity';
+  | 'onboarding-identity'
+  | 'onboarding-gift';
 
 /* HEALTHCARE SERVICE */
 export type HealthcareService = Entity<{
