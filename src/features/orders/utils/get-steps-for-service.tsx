@@ -76,7 +76,6 @@ export const getStepsFromService = (
           content: <HealthcareServiceDetails />,
         },
         { id: StepID.INFORMED_CONSENT, content: <InformedConsent /> },
-        { id: StepID.PHLEBOTOMY, content: <PhlebotomyLocationSelect /> },
         { id: StepID.SCHEDULER, content: <PhlebotomyScheduler /> },
         { id: StepID.SUMMARY, content: <OrderSummary /> },
         { id: StepID.SUCCESS, content: <Success /> },

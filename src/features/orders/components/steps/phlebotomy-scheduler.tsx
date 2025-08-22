@@ -3,9 +3,11 @@ import { useEffect } from 'react';
 import { Scheduler } from '@/components/shared/scheduler';
 import { Button } from '@/components/ui/button';
 import { Body1, H2 } from '@/components/ui/typography';
+import { ADVISORY_CALL } from '@/const';
 import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
 import { useOrder } from '@/features/orders/stores/order-store';
 import { getCollectionInstructions } from '@/features/orders/utils/get-collection-instructions';
+import { shouldUsePrimaryAddress } from '@/features/orders/utils/should-use-primary-address';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
@@ -25,7 +27,7 @@ export const PhlebotomyScheduler = () => {
   const nextStep = useStepper((s) => s.nextStep);
   const { data: user } = useUser();
 
-  const isAdvisoryCall = service.id === '1-1-advisory-call';
+  const usePrimaryAddress = shouldUsePrimaryAddress(service, collectionMethod);
 
   // If not advisory and still no collectionMethod, throw an error
   if (!collectionMethod) {
@@ -34,15 +36,16 @@ export const PhlebotomyScheduler = () => {
     );
   }
 
-  /**
-   * '/availability' requires address body so we update the current order location to member's primary address
-   * this is only needed for advisory calls
-   */
   useEffect(() => {
-    if (isAdvisoryCall && !location?.address && user?.primaryAddress) {
+    if (usePrimaryAddress && !location?.address && user?.primaryAddress) {
       updateLocation({ address: user.primaryAddress });
     }
-  }, [isAdvisoryCall, location?.address, user?.primaryAddress, updateLocation]);
+  }, [
+    usePrimaryAddress,
+    location?.address,
+    user?.primaryAddress,
+    updateLocation,
+  ]);
 
   const onSlotUpdate = (selectedSlot: Slot | null, tz?: string) => {
     if (selectedSlot) updateSlot(selectedSlot);
@@ -51,9 +54,8 @@ export const PhlebotomyScheduler = () => {
 
   const numDaysToShow = width > 600 ? 5 : 4;
   const instructions = getCollectionInstructions(collectionMethod);
-
   const addressToUse =
-    isAdvisoryCall && user?.primaryAddress
+    usePrimaryAddress && user?.primaryAddress
       ? user.primaryAddress
       : location?.address;
 
@@ -63,7 +65,7 @@ export const PhlebotomyScheduler = () => {
         <div className="space-y-1 pb-4">
           <H2>Pick a time for your appointment</H2>
           <Body1 className="text-zinc-500">
-            {isAdvisoryCall ? undefined : instructions}
+            {service.name === ADVISORY_CALL ? undefined : instructions}
           </Body1>
         </div>
         <div className="w-full rounded-xl py-6">
@@ -73,7 +75,9 @@ export const PhlebotomyScheduler = () => {
             service={service}
             onSlotUpdate={onSlotUpdate}
             displayCancellationNote={
-              isAdvisoryCall ? false : collectionMethod !== 'IN_LAB'
+              service.name === ADVISORY_CALL
+                ? false
+                : collectionMethod !== 'IN_LAB'
             }
             showCreateBtn={false}
             numDays={numDaysToShow}

@@ -1,7 +1,7 @@
 import { createStore } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
-import { ADVISORY_CALL } from '@/const';
+import { ADVISORY_CALL, GRAIL_GALLERI_MULTI_CANCER_TEST } from '@/const';
 import {
   CollectionMethodType,
   HealthcareService,
@@ -79,7 +79,10 @@ export const orderStoreCreator = (initProps: OrderStoreProps) => {
             };
           }),
         collectionMethod:
-          initProps.service.name === ADVISORY_CALL ? 'AT_HOME' : null,
+          initProps.service.name === ADVISORY_CALL ||
+          initProps.service.name === GRAIL_GALLERI_MULTI_CANCER_TEST
+            ? 'AT_HOME'
+            : null,
         updateCollectionMethod: (collectionMethod) => set({ collectionMethod }),
         updateLocation: (location) => set({ location }),
         setTz: (tz) => set({ tz }),
