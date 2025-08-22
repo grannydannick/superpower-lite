@@ -2,7 +2,7 @@ import { LockIcon } from '@/components/icons';
 import { ArrowTopRight } from '@/components/icons/arrow-top-right-icon';
 import NumberFlow from '@/components/shared/number-flow';
 import { SuperpowerScoreLogo } from '@/components/shared/score-logo';
-import { Body3 } from '@/components/ui/typography';
+import { Body2 } from '@/components/ui/typography';
 import { SCORE_MESSAGES } from '@/const/score-messages';
 import { useBiomarkers } from '@/features/biomarkers/api';
 import { mostRecent } from '@/features/biomarkers/utils/most-recent-biomarker';
@@ -49,7 +49,7 @@ export const ScoreCard = () => {
               <h2>---</h2>
             )}
           </div>
-          <Body3 className="text-white">
+          <Body2 className="text-white">
             {latestScore
               ? SCORE_MESSAGES.find(
                   (message) =>
@@ -58,7 +58,7 @@ export const ScoreCard = () => {
                     latestScore?.quantity?.value <= message.range[1],
                 )?.message
               : 'Awaiting lab results'}
-          </Body3>
+          </Body2>
         </div>
       </GreetingCard>
     </ShareableCardsModal>

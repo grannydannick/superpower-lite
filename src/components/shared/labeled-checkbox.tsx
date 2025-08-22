@@ -1,3 +1,5 @@
+import { ReactNode } from 'react';
+
 import { cn } from '@/lib/utils';
 
 import { AnimatedCheckbox } from '../ui/checkbox';
@@ -12,7 +14,7 @@ export const LabeledCheckbox = ({
   id: string;
   checked: boolean;
   onCheckedChange: (value: boolean) => void;
-  label: string;
+  label: string | ReactNode;
 }) => {
   return (
     <div className="group flex space-x-3">

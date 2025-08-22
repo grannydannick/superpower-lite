@@ -69,6 +69,11 @@ export function OrderSummary(): ReactNode {
 
   const price = serviceQuery.data?.service.price;
 
+  const isIncludedInMembership =
+    price !== undefined &&
+    price === 0 &&
+    CORE_BLOOD_TESTS.includes(service.name);
+
   // Helper function to track order events
   const trackOrderEvents = () => {
     // only track blood draw scheduling for phlebotomy services
@@ -189,7 +194,7 @@ export function OrderSummary(): ReactNode {
         ) : null}
         {defaultPaymentMethod && !isQueryLoading ? (
           <>
-            {price !== undefined && price === 0 ? (
+            {isIncludedInMembership ? (
               <Alert className="mb-8" variant="success">
                 <Check className="size-4" />
                 <AlertTitle>Heads up!</AlertTitle>

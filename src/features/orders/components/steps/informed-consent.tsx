@@ -1,6 +1,5 @@
+import { LabeledCheckbox } from '@/components/shared/labeled-checkbox';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Body2, H2 } from '@/components/ui/typography';
 import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
@@ -32,14 +31,12 @@ export const InformedConsent = () => {
           </ScrollArea>
         </div>
         <div className="flex items-start justify-start gap-4">
-          <Checkbox
+          <LabeledCheckbox
             id="legal"
             checked={informedConsent ?? false}
             onCheckedChange={updateInformedConsent}
+            label={defaultAgreementCopy}
           />
-          <Label className="leading-normal text-zinc-500" htmlFor="legal">
-            {defaultAgreementCopy}
-          </Label>
         </div>
       </div>
       <HealthcareServiceFooter

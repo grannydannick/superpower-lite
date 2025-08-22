@@ -25,10 +25,11 @@ export const ServicesList = () => {
 
   if (!servicesQuery.data) return null;
 
+  const excluded = new Set([ADVISORY_CALL]);
+
   const filteredServices = servicesQuery.data.services
-    // hiding for now based on:
-    // https://linear.app/superpower/issue/ENG-3793/remove-advisory-call-service-on-frontend
-    .filter((s) => s.name !== ADVISORY_CALL);
+    .filter((s) => !excluded.has(s.name))
+    .toSorted((a, b) => Number(b.active) - Number(a.active));
 
   return (
     <div className="grid grid-cols-1 gap-1 sm:gap-x-3 sm:gap-y-9 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

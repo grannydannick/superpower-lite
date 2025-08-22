@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowUpIcon, Clock, XIcon } from 'lucide-react';
+import { ArrowUpIcon, Clock, Loader, XIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -51,6 +51,7 @@ export const CreateMessageForm = (): JSX.Element => {
   });
 
   function onSubmit(values: CreateMessageInput) {
+    if (createMessageMutation.isPending) return;
     createMessageMutation.mutate({ data: values });
   }
 
@@ -73,15 +74,29 @@ export const CreateMessageForm = (): JSX.Element => {
                         {...field}
                         placeholder="Ask questions about your health from longevity advisors and get help from our customer service team"
                         className="min-h-0 border-none p-1 scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300 hover:scrollbar-thumb-zinc-400 focus-visible:bg-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                        disabled={createMessageMutation.isPending}
                       />
 
                       <div className="flex w-full flex-row justify-end pb-4 pt-2">
                         <Button
                           className="h-fit rounded-full p-1.5"
                           type="submit"
-                          disabled={form.watch('text').length === 0}
+                          disabled={
+                            form.watch('text').length === 0 ||
+                            createMessageMutation.isPending
+                          }
+                          aria-busy={createMessageMutation.isPending}
+                          aria-label={
+                            createMessageMutation.isPending
+                              ? 'Sending message'
+                              : 'Send message'
+                          }
                         >
-                          <ArrowUpIcon size={14} />
+                          {createMessageMutation.isPending ? (
+                            <Loader size={14} className="animate-spin" />
+                          ) : (
+                            <ArrowUpIcon size={14} />
+                          )}
                         </Button>
                       </div>
                     </div>

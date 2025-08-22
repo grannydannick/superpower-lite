@@ -1,5 +1,6 @@
 import { Card } from '@/components/ui/card';
 import { MembershipBenefit } from '@/features/settings/types/membership';
+import { cn } from '@/lib/utils';
 
 export const MembershipBenefits = (props: {
   benefits: MembershipBenefit[];
@@ -9,7 +10,12 @@ export const MembershipBenefits = (props: {
       {props.benefits.map((benefit, idx) => (
         <Card
           key={idx}
-          className="flex flex-row items-center space-x-4 rounded-2xl bg-zinc-50 p-4"
+          className={cn(
+            'flex flex-1 flex-row items-center space-x-4 rounded-2xl bg-zinc-50 p-4',
+            idx === props.benefits.length - 1 &&
+              props.benefits.length % 2 !== 0 &&
+              'lg:col-span-2',
+          )}
         >
           <img
             src={benefit.imgPath}

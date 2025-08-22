@@ -131,11 +131,11 @@ OrdersList.displayName = 'OrdersList';
 
 export const OrdersListEmpty = (): JSX.Element => {
   return (
-    <div className="flex shrink-0 items-center justify-center rounded-md border border-dashed border-zinc-300 py-10">
+    <div className="flex shrink-0 items-center justify-center rounded-3xl border border-dashed border-zinc-300 py-10">
       <div className="mx-auto flex max-w-[420px] flex-col items-center justify-center text-center">
         <h3 className="mt-4 text-lg">No orders yet</h3>
         <p className="mb-4 mt-2 text-sm text-secondary">
-          You have not ordered any services. Book one below.
+          You have not ordered any services.
         </p>
       </div>
     </div>

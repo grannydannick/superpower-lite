@@ -6,10 +6,6 @@ export const WEARABLES: MembershipBenefit[] = [
     description: 'Oura Ring',
   },
   {
-    imgPath: '/settings/wearables/apple_health.png',
-    description: 'Apple Health',
-  },
-  {
     imgPath: '/settings/wearables/whoop_band.png',
     description: 'WHOOP band',
   },

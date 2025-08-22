@@ -1,7 +1,7 @@
 import { LockIcon } from '@/components/icons';
 import { ArrowTopRight } from '@/components/icons/arrow-top-right-icon';
 import NumberFlow from '@/components/shared/number-flow';
-import { Body3, H4 } from '@/components/ui/typography';
+import { Body2, H4 } from '@/components/ui/typography';
 import { useBiologicalAge } from '@/features/biomarkers/hooks/use-biological-age';
 import { ShareableCardsModal } from '@/features/shareables/components/shareable-cards-modal';
 
@@ -40,11 +40,11 @@ export const AgeCard = () => {
               <h2>---</h2>
             )}
           </div>
-          <Body3 className="text-white">
+          <Body2 className="text-white">
             {!isEmpty
               ? `${Math.abs(ageDifference ?? 0)} ${isYounger ? 'younger' : 'older'} than your chronological age`
               : 'Awaiting lab results'}
-          </Body3>
+          </Body2>
         </div>
       </GreetingCard>
     </ShareableCardsModal>
