@@ -1,8 +1,10 @@
 import { ChevronRight } from 'lucide-react';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ProgressiveImage } from '@/components/ui/progressive-image';
 import { Body1, Body2, H4 } from '@/components/ui/typography';
+import { ADVANCED_BLOOD_PANEL } from '@/const';
 import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
 import { HealthcareService, Order } from '@/types/api';
 import { getServiceImage } from '@/utils/service';
@@ -56,11 +58,16 @@ const DesktopCard = ({
   };
 
   return (
-    <div className="hidden h-[386px] flex-col items-start rounded-3xl border border-zinc-100 bg-zinc-100 sm:flex">
+    <div className="relative hidden h-[386px] flex-col items-start overflow-hidden rounded-3xl border border-zinc-100 bg-zinc-100 sm:flex">
+      {service.name === ADVANCED_BLOOD_PANEL && (
+        <Badge className="absolute right-3 top-3 z-10 bg-vermillion-100 sm:block">
+          <Body2 className="uppercase text-vermillion-900">New</Body2>
+        </Badge>
+      )}
       <ProgressiveImage
         src={getServiceImage(service.name)}
         alt={service.name}
-        className="h-[190px] w-full rounded-b-2xl rounded-t-3xl object-cover"
+        className="h-[190px] w-full rounded-b-2xl bg-white object-cover"
       />
       <div className="flex w-full flex-1 flex-col justify-between sm:p-5">
         <div className="space-y-1">
