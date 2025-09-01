@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { forwardRef, useEffect, useState } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import * as React from 'react';
 import usePlacesService from 'react-google-autocomplete/lib/usePlacesAutocompleteService';
 
@@ -71,6 +71,7 @@ export const AddressAutocomplete = forwardRef<
   ) => {
     const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
     const [isFocused, setIsFocused] = useState(false);
+    const initialValue = useRef(value);
     const {
       placesService,
       placePredictions,
@@ -133,7 +134,11 @@ export const AddressAutocomplete = forwardRef<
           {...rest}
         />
         <AnimatePresence>
-          {isFocused && !selectedPlaceId && value.length > 0 ? (
+          {isFocused &&
+          !selectedPlaceId &&
+          // only search when input differs from initial value
+          value !== initialValue.current &&
+          placePredictions.length > 0 ? (
             <motion.div
               className="relative"
               variants={container}

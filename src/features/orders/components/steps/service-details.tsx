@@ -13,10 +13,15 @@ import {
   getServiceImage,
 } from '@/utils/service';
 
+import { useScheduleGapWarning } from '../hooks/use-schedule-gap-warning';
+
+import { ScheduleWarningBanner } from './schedule-warning-banner';
+
 export const HealthcareServiceDetails = () => {
   const { service } = useOrder((s) => s);
   const ordersQuery = useOrders();
   const sampleReportLink = getSampleReportLinkForService(service.name);
+  const shouldShowWarning = useScheduleGapWarning(service.name);
 
   const existingDraftOrder = ordersQuery.data?.orders
     .filter((o) => o.status === OrderStatus.draft)
@@ -24,6 +29,7 @@ export const HealthcareServiceDetails = () => {
 
   return (
     <div>
+      {shouldShowWarning && <ScheduleWarningBanner />}
       <div className="flex flex-col justify-between gap-12 p-6 md:flex-row md:px-14 md:pb-16">
         <div className="flex flex-col justify-center gap-4 md:max-w-[278px]">
           <img

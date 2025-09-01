@@ -3,7 +3,6 @@ import { ReactNode } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { RadioGroup } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
 
 import { useAddressManagement } from '../hooks/use-address-management';
@@ -18,7 +17,7 @@ import { AddressDialog } from './dialogs/address-dialog';
  * @constructor
  */
 export const AddressSelect = ({ closeBtn }: { closeBtn?: ReactNode }) => {
-  const { selectedAddressId, setDefaultAddress, addresses, primaryAddressId } =
+  const { setDefaultAddress, addresses, primaryAddressId } =
     useAddressManagement();
 
   if (!addresses.length) {
@@ -37,28 +36,16 @@ export const AddressSelect = ({ closeBtn }: { closeBtn?: ReactNode }) => {
     <div className="space-y-2">
       <AddressHeader closeBtn={closeBtn} />
 
-      <div className="rounded-xl border border-zinc-200 bg-white md:bg-transparent">
-        <div className="p-2">
-          <RadioGroup
-            className="flex flex-col"
-            value={selectedAddressId}
-            onValueChange={(value) => {
-              const selectedAddress = addresses.find(
-                (addr) => addr.id === value,
-              );
-              if (selectedAddress) {
-                setDefaultAddress(selectedAddress);
-              }
-            }}
-          >
-            {addresses.map((address) => (
-              <AddressCard
-                key={address.id}
-                address={address}
-                isPrimary={address.id === primaryAddressId}
-              />
-            ))}
-          </RadioGroup>
+      <div className="rounded-[20px] border border-zinc-200 bg-white md:bg-transparent">
+        <div className="space-y-2 p-2">
+          {addresses.map((address) => (
+            <AddressCard
+              key={address.id}
+              address={address}
+              isPrimary={address.id === primaryAddressId}
+              onSetDefault={setDefaultAddress}
+            />
+          ))}
         </div>
 
         <div className={cn(addresses.length > 0 ? 'pb-3' : 'py-3', 'px-6')}>

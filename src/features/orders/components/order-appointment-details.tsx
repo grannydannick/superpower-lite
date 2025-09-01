@@ -4,6 +4,7 @@ import {
   ArrowUpRight,
   FileIcon,
   HomeIcon,
+  VideoIcon,
 } from 'lucide-react';
 import moment from 'moment';
 import React from 'react';
@@ -16,6 +17,7 @@ import {
   GRAIL_GALLERI_MULTI_CANCER_TEST,
   SUPERPOWER_ADVANCED_BLOOD_PANEL,
   SUPERPOWER_BLOOD_PANEL,
+  ADVISORY_CALL,
 } from '@/const';
 import { useFiles } from '@/features/files/api';
 import { useDownloadFile } from '@/features/files/api/download-file';
@@ -107,14 +109,21 @@ export function OrderAppointmentDetails({
   };
 
   const method = collectionMethod ?? 'IN_LAB';
-  const collectionMethodLabel =
-    method === 'AT_HOME' ? 'At home visit' : 'Location';
-  const collectionMethodIcon =
-    method === 'AT_HOME' ? (
+  const isAdvisoryCall = serviceName === ADVISORY_CALL;
+
+  const collectionMethodLabel = (() => {
+    if (isAdvisoryCall) return 'Video call';
+    return method === 'AT_HOME' ? 'At home visit' : 'Location';
+  })();
+
+  const collectionMethodIcon = (() => {
+    if (isAdvisoryCall) return <VideoIcon className="size-5 text-zinc-500" />;
+    return method === 'AT_HOME' ? (
       <HomeIcon className="size-5 text-zinc-500" />
     ) : (
       <MapPin className="size-5 text-zinc-500" />
     );
+  })();
 
   return (
     <div>

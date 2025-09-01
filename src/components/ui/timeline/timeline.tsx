@@ -163,6 +163,7 @@ interface TimelineCardProps
   image: string;
   title: string;
   description?: string;
+  info?: string;
   button?: ReactNode;
 }
 
@@ -174,6 +175,7 @@ const TimelineCard = React.forwardRef<HTMLDivElement, TimelineCardProps>(
       image,
       title,
       description,
+      info,
       button,
       ...props
     },
@@ -196,6 +198,11 @@ const TimelineCard = React.forwardRef<HTMLDivElement, TimelineCardProps>(
             <Body2 className="line-clamp-1 text-sm text-zinc-500">
               {description}
             </Body2>
+            {info && (
+              <Body2 className="line-clamp-1 text-sm text-zinc-400">
+                {info}
+              </Body2>
+            )}
           </div>
         </div>
         {button}

@@ -37,7 +37,7 @@ export const SettingsListDesktop = () => {
           ))}
         </TabsList>
         {settings.map((s, idx) => (
-          <TabsContent value={s.value} className="mt-16" key={idx}>
+          <TabsContent value={s.value} className="mt-10" key={idx}>
             {s.component}
           </TabsContent>
         ))}

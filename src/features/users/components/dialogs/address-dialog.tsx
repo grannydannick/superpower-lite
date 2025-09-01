@@ -129,6 +129,16 @@ export function AddressDialog({
   const handleDialogClose = () => {
     // reset the mutation state so the user can create a new address
     createAddressMutation.reset();
+    // reset the form when closing (especially important for add mode)
+    if (mode === 'add') {
+      form.reset({
+        line1: '',
+        line2: '',
+        city: '',
+        state: '',
+        postalCode: '',
+      });
+    }
     setIsOpen(false);
     if (onSuccess) onSuccess();
   };

@@ -1,6 +1,5 @@
 import { SERVICE_DETAILS } from '@/const/service-details';
 import {
-  GRAIL_GALLERI_MULTI_CANCER_TEST,
   GUT_MICROBIOME_ANALYSIS,
   ENVIRONMENTAL_TOXIN_TEST,
 } from '@/const/services';
@@ -63,28 +62,6 @@ export const UPSELL_SERVICES = [
       name: ENVIRONMENTAL_TOXIN_TEST,
       image: '/services/transparent/total_toxin_test.png',
       ...SERVICE_DETAILS[ENVIRONMENTAL_TOXIN_TEST],
-    },
-  },
-  {
-    order: 3,
-    cover: {
-      title: '1 in 2 men will develop cancer in their lifetime.',
-      femaleTitle: '1 in 2 women will develop cancer in their lifetime.',
-      description:
-        'The Grail Galleri test screens for over 50 types of cancer before symptoms appear, using a single blood draw. If caught early, outcomes improve dramatically.',
-      circularProgress: 0.5,
-      source: 'JAMA, 2018 (Genome Sequencing Screening Study)',
-      foregroundImage:
-        '/onboarding/upsell/grail-galleri-multi-cancer-test-foreground.webp',
-      femaleForegroundImage:
-        '/onboarding/upsell/grail-galleri-multi-cancer-test-foreground-female.webp',
-      backgroundImage:
-        '/onboarding/upsell/grail-galleri-multi-cancer-test-background.webp',
-    },
-    item: {
-      name: GRAIL_GALLERI_MULTI_CANCER_TEST,
-      image: '/services/transparent/grail_galleri_multi_cancer_test.png',
-      ...SERVICE_DETAILS[GRAIL_GALLERI_MULTI_CANCER_TEST],
     },
   },
 ] as UpsellService[];

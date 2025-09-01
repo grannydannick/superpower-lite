@@ -9,12 +9,15 @@ import {
   TimelineHeader,
   TimelineItem,
 } from '@/components/ui/timeline';
+import { GUT_MICROBIOME_ANALYSIS, TOTAL_TOXIN_TEST } from '@/const';
 import { useOrders } from '@/features/orders/api';
 import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
 import { HealthcareServiceRescheduleDialog } from '@/features/orders/components/reschedule';
 import { useServices } from '@/features/services/api';
 import { TimelineItem as TimelineItemType } from '@/types/api';
 import { getServiceImage } from '@/utils/service';
+
+import DeliveryTestDialog from './delivery-test-dialog';
 
 /**
  * Wrapping component for TimelineItem to have specific to group logic
@@ -45,7 +48,21 @@ const OrderTimelineItem = ({
 
   if (!order) return null;
 
+  const isDelivery =
+    order.name === GUT_MICROBIOME_ANALYSIS || order.name === TOTAL_TOXIN_TEST;
+
   const renderTimelineButton = () => {
+    // If the order is a gut GUT_MICROBIOME_ANALYSIS test, show a button to view more details
+    if (isDelivery && order.status === 'COMPLETED') {
+      return (
+        <DeliveryTestDialog>
+          <Button className="bg-white" size="medium" variant="outline">
+            More details
+          </Button>
+        </DeliveryTestDialog>
+      );
+    }
+
     switch (timelineItem.status) {
       case 'ACTION_REQUIRED': {
         // reason #1: we cannot render booking without full service info
@@ -95,6 +112,7 @@ const OrderTimelineItem = ({
           image={getServiceImage(order.serviceName)}
           title={timelineItem.name}
           description={timelineItem.description}
+          info={order.location?.address?.line?.join(', ')}
           variant={timelineItem.status === 'DISABLED' ? 'disabled' : 'default'}
           button={renderTimelineButton()}
         />

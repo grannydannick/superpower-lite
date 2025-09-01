@@ -65,6 +65,7 @@ export const HealthcareServiceDialog = ({
   if (excludeSteps) {
     steps = steps.filter((step) => !excludeSteps.includes(step.id));
   }
+
   const key = steps.map((s) => s.id).join('-');
 
   return (

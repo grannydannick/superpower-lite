@@ -63,6 +63,8 @@ export const VitalLinkButton = ({
 
   const { open, ready } = useVitalLink(config);
 
+  const disabled = isLoading || !ready || isError || !data?.linkToken;
+
   const handleVitalOpen = async () => {
     setLoading(true);
     open(data?.linkToken);
@@ -75,7 +77,7 @@ export const VitalLinkButton = ({
       variant={variant}
       size={size}
       onClick={handleVitalOpen}
-      disabled={isLoading || !ready || isError}
+      disabled={disabled}
       className={className}
     >
       {children}

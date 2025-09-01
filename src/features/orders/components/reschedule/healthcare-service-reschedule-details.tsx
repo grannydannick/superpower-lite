@@ -1,6 +1,7 @@
 import { Clock4Icon } from 'lucide-react';
 
 import { Body1, Body2, H2 } from '@/components/ui/typography';
+import { ADVISORY_CALL } from '@/const';
 import { ServiceFaqs } from '@/features/services/components/service-faqs';
 import { HealthcareService, Order } from '@/types/api';
 import { getServiceImage } from '@/utils/service';
@@ -25,7 +26,7 @@ export function HealthcareServiceRescheduleDetails({
             className="block size-[70px] rounded-2xl border border-zinc-200 bg-white  object-cover"
             alt={order.serviceName}
           />
-          {isPastAppointment ? (
+          {isPastAppointment && order.serviceName !== ADVISORY_CALL ? (
             <div className="inline-flex items-center space-x-1 self-start rounded-lg bg-vermillion-100 px-2 py-1">
               <Clock4Icon className="size-4 text-vermillion-900" />
               <Body2 className="text-vermillion-900">Results in progress</Body2>

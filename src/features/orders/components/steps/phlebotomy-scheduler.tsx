@@ -1,10 +1,16 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { Scheduler } from '@/components/shared/scheduler';
 import { Button } from '@/components/ui/button';
-import { Body1, H2 } from '@/components/ui/typography';
-import { ADVISORY_CALL } from '@/const';
+import { Body1, H2, H3 } from '@/components/ui/typography';
+import {
+  ADVANCED_BLOOD_PANEL,
+  ADVISORY_CALL,
+  SUPERPOWER_BLOOD_PANEL,
+} from '@/const';
 import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
+import { RecommendationDialog } from '@/features/orders/components/recommendation-dialog';
 import { useOrder } from '@/features/orders/stores/order-store';
 import { getCollectionInstructions } from '@/features/orders/utils/get-collection-instructions';
 import { shouldUsePrimaryAddress } from '@/features/orders/utils/should-use-primary-address';
@@ -13,7 +19,11 @@ import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
 import { Address, Slot } from '@/types/api';
 
+import { PhlebotomyRecommendations } from '../phlebotomy-recommendations';
+
 export const PhlebotomyScheduler = () => {
+  const [showInlineRecs, setShowInlineRecs] = useState(true);
+
   const {
     service,
     location,
@@ -26,6 +36,9 @@ export const PhlebotomyScheduler = () => {
   const { width } = useWindowDimensions();
   const nextStep = useStepper((s) => s.nextStep);
   const { data: user } = useUser();
+  const routerLocation = useLocation();
+
+  const isOnboardingFlow = routerLocation.pathname.includes('/onboarding');
 
   const usePrimaryAddress = shouldUsePrimaryAddress(service, collectionMethod);
 
@@ -58,6 +71,43 @@ export const PhlebotomyScheduler = () => {
     usePrimaryAddress && user?.primaryAddress
       ? user.primaryAddress
       : location?.address;
+
+  const isBloodTest =
+    service.name === SUPERPOWER_BLOOD_PANEL ||
+    service.name === ADVANCED_BLOOD_PANEL;
+
+  const showInlineRecommendations = useMemo(() => {
+    if (!isBloodTest) {
+      return false;
+    }
+
+    if (!isOnboardingFlow) {
+      return showInlineRecs;
+    }
+
+    return false;
+  }, [isBloodTest, isOnboardingFlow, showInlineRecs]);
+
+  const showModalRecommendations = useMemo(() => {
+    return isOnboardingFlow && isBloodTest;
+  }, [isOnboardingFlow, isBloodTest]);
+
+  if (showInlineRecommendations) {
+    return (
+      <div className="px-6 pb-8 md:px-12">
+        <H3 className="mb-6">Recommendations for testing</H3>
+        <PhlebotomyRecommendations />
+        <div className="sticky bottom-8 z-10 mt-8 flex w-full justify-end">
+          <Button
+            onClick={() => setShowInlineRecs(false)}
+            className="w-full md:w-auto"
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -95,6 +145,8 @@ export const PhlebotomyScheduler = () => {
           </Button>
         }
       />
+
+      {showModalRecommendations && <RecommendationDialog />}
     </>
   );
 };

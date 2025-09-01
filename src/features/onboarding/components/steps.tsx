@@ -29,16 +29,16 @@ export const steps: StepItem[] = [
     content: <QuestionnaireStep type="screening" />,
   },
   {
-    id: 'booking',
-    content: <BookingStep />,
-  },
-  {
     id: 'upsell',
     content: <UpsellStep />,
   },
   {
     id: 'upsell-booking',
     content: <UpsellBookingStep />,
+  },
+  {
+    id: 'booking',
+    content: <BookingStep />,
   },
   {
     id: 'mission',

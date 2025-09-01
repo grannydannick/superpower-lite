@@ -26,11 +26,7 @@ export function WearablesTable() {
     );
   }
 
-  if (!data) return <></>;
-
-  const { wearables } = data;
-
-  if (!wearables) return <></>;
+  const wearables = data?.wearables || [];
 
   return (
     <>

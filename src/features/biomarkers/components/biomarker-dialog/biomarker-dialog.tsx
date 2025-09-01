@@ -6,6 +6,7 @@ import { Biomarker } from '@/types/api';
 
 import { BiomarkerTimeSeriesChart } from '../charts/biomarker-time-series-chart';
 
+import { BiomarkerDialogBanner } from './biomarker-dialog-banner';
 import { BiomarkerDialogFooter } from './biomarker-dialog-footer';
 import { BiomarkerDialogHeader } from './biomarker-dialog-header';
 import { BiomarkerDialogMetadata } from './biomarker-dialog-metadata';
@@ -43,6 +44,10 @@ export function BiomarkerDialog({
         status={status}
         result={sortedBiomarkerValues[0]}
         unit={unit}
+      />
+      <BiomarkerDialogBanner
+        biomarkerName={name}
+        result={sortedBiomarkerValues[0]}
       />
       <div className="p-6">
         <BiomarkerTimeSeriesChart biomarker={biomarker} />

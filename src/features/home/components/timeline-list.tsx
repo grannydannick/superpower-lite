@@ -10,10 +10,11 @@ import {
   TimelineItem,
   TimelineHeader,
   TimelineDot,
-  TimelineConnector,
 } from '@/components/ui/timeline';
 import { useTimeline } from '@/features/home/api/get-timeline';
+import { getTimelineItems } from '@/features/home/utils/get-timeline-items';
 import { useOrders } from '@/features/orders/api';
+import { usePlans } from '@/features/plans/api/get-plans';
 import { useServices } from '@/features/services/api';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
@@ -31,6 +32,7 @@ export const TimelineList = () => {
   const timelineQuery = useTimeline();
   const servicesQuery = useServices();
   const ordersQuery = useOrders();
+  const plansQuery = usePlans({});
 
   const timelineItems = timelineQuery.data;
 
@@ -47,47 +49,19 @@ export const TimelineList = () => {
    * TODO: grouping of timeline items (and subfiltering of each group) should be done in backend
    */
 
-  const onboardingItems = useMemo(
-    () =>
-      timelineItems?.filter(
-        (ti) => ti.type === 'ONBOARDING_TASK' && ti.status !== 'DONE',
-      ),
-    [timelineItems],
-  );
-
-  const currentItems = useMemo(
-    () =>
-      timelineItems
-        ?.filter(
-          (ti) =>
-            ti.type !== 'ONBOARDING_TASK' &&
-            ti.status !== 'DONE' &&
-            ti.status !== 'DISABLED',
-        )
-        //we want latest appointments first, and for unbooked items to be priortized to be scheduled ahead of time
-        // this is a hack until we enable timeline grouping on backend
-        .sort((a, b) => {
-          if (a.timestamp && b.timestamp) {
-            return b.timestamp.getTime() - a.timestamp.getTime();
-          }
-          return 0;
-        })
-        .reverse(),
-    [timelineItems],
-  );
-
-  const completedItems = useMemo(
-    () =>
-      timelineItems?.filter(
-        (ti) => ti.status === 'DONE' || ti.status === 'DISABLED',
-      ),
-    [timelineItems],
-  );
+  const { onboardingItems, currentItems, completedItems } = useMemo(() => {
+    return {
+      onboardingItems: getTimelineItems(timelineItems, 'onboarding'),
+      currentItems: getTimelineItems(timelineItems, 'current'),
+      completedItems: getTimelineItems(timelineItems, 'completed'),
+    };
+  }, [timelineItems]);
 
   if (
     servicesQuery.isLoading ||
     ordersQuery.isLoading ||
-    timelineQuery.isLoading
+    timelineQuery.isLoading ||
+    plansQuery.isLoading
   ) {
     return (
       <div className="w-full space-y-3">
@@ -188,15 +162,6 @@ export const TimelineList = () => {
             </button>
             {isCurrentItemsOpen && (
               <div>
-                <div>
-                  <TimelineItem>
-                    <TimelineConnector />
-                    <TimelineHeader>
-                      <TimelineDot className="hidden md:block" />
-                      <TimelineEmptyCard />
-                    </TimelineHeader>
-                  </TimelineItem>
-                </div>
                 {currentItems.map((t, i) => {
                   switch (t.type) {
                     case 'ORDER':
@@ -208,7 +173,7 @@ export const TimelineList = () => {
                             shouldRenderConnector={
                               i !== currentItems.length - 1
                             }
-                            shouldRenderNextConnector={false}
+                            shouldRenderNextConnector={true}
                           />
                         </div>
                       );
@@ -220,7 +185,7 @@ export const TimelineList = () => {
                             shouldRenderConnector={
                               i !== currentItems.length - 1
                             }
-                            shouldRenderNextConnector={false}
+                            shouldRenderNextConnector={true}
                             timelineItem={t}
                           />
                         </div>
@@ -229,6 +194,14 @@ export const TimelineList = () => {
                       return null;
                   }
                 })}
+                <div>
+                  <TimelineItem>
+                    <TimelineHeader>
+                      <TimelineDot className="hidden md:block" />
+                      <TimelineEmptyCard />
+                    </TimelineHeader>
+                  </TimelineItem>
+                </div>
               </div>
             )}
           </div>

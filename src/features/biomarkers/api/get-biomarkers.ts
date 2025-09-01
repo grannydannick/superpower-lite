@@ -5,6 +5,11 @@ import { useUser } from '@/lib/auth';
 import { QueryConfig } from '@/lib/react-query';
 import { Biomarker } from '@/types/api';
 
+import {
+  FILTERED_FEMALE_BIOMARKERS,
+  FILTERED_MALE_BIOMARKERS,
+} from '../const/filters';
+
 export const getBiomarkers = async ({
   dateOfBirth,
 }: {
@@ -30,8 +35,37 @@ type UseBiomarkersOptions = {
 export const useBiomarkers = ({ queryConfig }: UseBiomarkersOptions = {}) => {
   const { data: user } = useUser();
 
-  return useQuery({
+  const query = useQuery({
     ...getBiomarkersQueryOptions(user?.dateOfBirth),
     ...queryConfig,
   });
+
+  // TODO: Move this into backend when we have the capacity for it
+  const filteredData = query.data
+    ? {
+        ...query.data,
+        biomarkers: query.data.biomarkers.filter((biomarker) => {
+          if (
+            user?.gender === 'female' &&
+            FILTERED_FEMALE_BIOMARKERS.includes(biomarker.name)
+          ) {
+            return false;
+          }
+
+          if (
+            user?.gender === 'male' &&
+            FILTERED_MALE_BIOMARKERS.includes(biomarker.name)
+          ) {
+            return false;
+          }
+
+          return true;
+        }),
+      }
+    : query.data;
+
+  return {
+    ...query,
+    data: filteredData,
+  };
 };

@@ -5,6 +5,7 @@ export * from './message-concierge';
 export * from './phlebotomy-location';
 export * from './phlebotomy-scheduler';
 export * from './request-early-access';
+export * from './schedule-warning-banner';
 export * from './service-details';
 export * from './success';
 export * from './summary';

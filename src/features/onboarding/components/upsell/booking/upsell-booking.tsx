@@ -47,12 +47,16 @@ export const UpsellBooking = () => {
       <div className="mx-auto mb-16 flex size-full flex-col items-start px-6 md:mt-0 lg:max-w-[512px] lg:pt-16">
         <div className="mb-8 space-y-4">
           <H3>
-            Thank you, {user?.firstName}. Would you like to schedule your
-            additional services now?
+            Thanks, {user?.firstName}! Let&apos;s finalize shipping details.
           </H3>
           <Body1 className="text-zinc-500">
-            Get your test results as soon as possible so your longevity advisor
-            can provide the most comprehensive analysis of your health.
+            Test kits will be shipped once you complete confirmation. We
+            recommend doing this now to complete your test sooner and get a
+            comprehensive analysis alongside your blood test results.
+          </Body1>
+          <Body1 className="italic text-zinc-500">
+            Note: if you choose to skip, your kit{orders.length > 1 ? 's' : ''}{' '}
+            will not be shipped until you confirm in your dashboard.
           </Body1>
         </div>
 
