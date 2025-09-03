@@ -13,6 +13,7 @@ import { HealthcareServiceDialog } from '@/features/orders/components/healthcare
 import { useServices } from '@/features/services/api';
 import { useProducts } from '@/features/shop/api';
 import { HealthcareService, Product, OrderStatus } from '@/types/api';
+import { getServiceImage } from '@/utils/service';
 
 import { PlanMarkdown } from '../plan-markdown';
 
@@ -82,6 +83,7 @@ export const ServiceActivity = ({
       <PlanMarkdown content={serviceDesc} />
       <ActivityCard
         {...service}
+        image={getServiceImage(service.name)}
         name={serviceName}
         description={
           <div className="flex items-center gap-2 text-zinc-500">

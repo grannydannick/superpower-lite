@@ -22,7 +22,7 @@ export function ActivityCard({
   return (
     <div
       className={cn(
-        'flex bg-white min-h-[96px] transition-all hover:bg-zinc-50 grow items-center justify-between rounded-2xl border border-zinc-200 shadow shadow-black/[0.025] p-2 pr-3 hover:cursor-pointer',
+        'flex bg-white min-h-[96px] transition-all grow items-center justify-between rounded-2xl border border-zinc-200 shadow shadow-black/[0.025] p-2 pr-3',
         className,
       )}
     >
@@ -44,7 +44,7 @@ export function ActivityCard({
             <Body1 className="break-words">{name}</Body1>
             <div className="break-words">{description}</div>
           </div>
-          {actionBtn && <div className="shrink-0">{actionBtn}</div>}
+          {actionBtn && <div className="mr-3 shrink-0">{actionBtn}</div>}
         </div>
       </div>
     </div>

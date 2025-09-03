@@ -171,7 +171,7 @@ export const ProtocolSection = () => {
                       </H4>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="pb-4">
+                  <AccordionContent className="px-4 pb-4">
                     <div className="space-y-3">
                       {group.titleSubtext && (
                         <Body1 className="text-zinc-500">

@@ -18,7 +18,7 @@ export const PlanMarkdown = ({ content }: { content: string }) => {
           h4: (props) => <H4 className="mb-2 break-words" {...props} />,
           ul: (props) => (
             <ul
-              className="mb-4 ml-3 list-outside list-disc space-y-1 font-sans text-base [&_li::marker]:text-zinc-300"
+              className="relative z-10 mb-4 ml-3 list-outside list-disc space-y-1 font-sans text-base [&_li::marker]:text-zinc-300"
               {...props}
             />
           ),

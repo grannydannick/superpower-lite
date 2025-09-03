@@ -67,23 +67,25 @@ export const ProductCard = ({
     }
   }, [product, isProductAvailable]);
 
+  const isSelected = useMemo(() => {
+    return product ? isProductSelected(product.id) : false;
+  }, [product, isProductSelected]);
+
   const actionButton = useMemo(() => {
     if (!isProductAvailable || !product || hideButton) return null;
     return (
       <Button
         size="medium"
-        onClick={
-          isProductSelected(product.id) ? handleRemoveFromCart : handleAddToCart
-        }
-        variant={isProductSelected(product.id) ? 'outline' : 'default'}
+        onClick={isSelected ? handleRemoveFromCart : handleAddToCart}
+        variant={isSelected ? 'outline' : 'default'}
       >
-        {isProductSelected(product.id) ? 'Remove from Cart' : 'Add to Cart'}
+        {isSelected ? 'Remove from Cart' : 'Add to Cart'}
       </Button>
     );
   }, [
     isProductAvailable,
     product,
-    isProductSelected,
+    isSelected,
     handleRemoveFromCart,
     handleAddToCart,
     hideButton,
@@ -120,7 +122,10 @@ export const ProductCard = ({
                   <HelpCircle size={16} />
                 </div>
               }
-              className={cn('opacity-70', className)}
+              className={cn(
+                'opacity-70 hover:bg-zinc-50 cursor-pointer',
+                className,
+              )}
             />
           </div>
         </TooltipTrigger>
