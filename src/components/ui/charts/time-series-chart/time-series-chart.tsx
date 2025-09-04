@@ -1,5 +1,6 @@
+import NumberFlow from '@number-flow/react';
 import moment from 'moment';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,6 +16,26 @@ import { RangeStack } from '../range-stack';
 import { CHART_CONFIG } from './config';
 import { Pagination } from './pagination';
 import { useTimeSeriesChart } from './use-time-series-chart';
+
+const MemoizedYAxisLabel = memo(
+  ({ value, x, y }: { value: number; x: number; y: number }) => {
+    return (
+      <foreignObject x={x} y={y - 18} width="60" height="24">
+        <NumberFlow
+          value={value}
+          format={{ minimumFractionDigits: 1, maximumFractionDigits: 1 }}
+          className="pointer-events-none text-xs text-gray-600"
+          style={{ fontSize: '12px', color: '#666' }}
+          transformTiming={{ duration: 250, easing: 'ease-in-out' }}
+          spinTiming={{ duration: 150, easing: 'ease-out' }}
+          opacityTiming={{ duration: 350, easing: 'ease-out' }}
+        />
+      </foreignObject>
+    );
+  },
+);
+
+MemoizedYAxisLabel.displayName = 'MemoizedYAxisLabel';
 
 export const TimeSeriesChart = ({
   biomarker,
@@ -44,6 +65,14 @@ export const TimeSeriesChart = ({
     return () => window.removeEventListener('resize', updateWidth);
   }, []);
 
+  const [displayedPoint, setDisplayedPoint] = useState<{
+    value: number;
+    timestamp: string;
+    position: { x: number; y: number };
+    pointIndex: number;
+    source?: string;
+  } | null>(null);
+
   const { meta, data, axes, optimal, rangeStack, config } = useTimeSeriesChart({
     biomarker,
     svgWidth,
@@ -53,16 +82,10 @@ export const TimeSeriesChart = ({
     itemsPerPage: isMobile
       ? CHART_CONFIG.ITEMS_PER_PAGE_MOBILE
       : CHART_CONFIG.ITEMS_PER_PAGE_DESKTOP,
+    hoveredSource: displayedPoint?.source,
   });
 
   const navigate = useNavigate();
-
-  const [displayedPoint, setDisplayedPoint] = useState<{
-    value: number;
-    timestamp: string;
-    position: { x: number; y: number };
-    pointIndex: number;
-  } | null>(null);
 
   const svgRef = useRef<SVGSVGElement>(null);
   const lastPointRef = useRef<number | null>(null);
@@ -141,6 +164,7 @@ export const TimeSeriesChart = ({
               setDisplayedPoint({
                 value: originalValue.quantity.value,
                 timestamp: originalValue.timestamp,
+                source: originalValue.source || 'quest',
                 position: {
                   x: rect.left + nearestPoint.x + window.scrollX,
                   y: rect.top + nearestPoint.y - 40 + window.scrollY,
@@ -340,16 +364,12 @@ export const TimeSeriesChart = ({
           )}
 
           {axes.yAxisLabels.map((label) => (
-            <text
+            <MemoizedYAxisLabel
               key={label.key}
+              value={parseFloat(label.label)}
               x={label.x}
               y={label.y}
-              textAnchor="start"
-              className="text-xs"
-              fill="#666"
-            >
-              {label.label}
-            </text>
+            />
           ))}
 
           <g>
@@ -468,7 +488,7 @@ export const TimeSeriesChart = ({
           >
             {data.dataPoints[displayedPoint.pointIndex].status ===
             'next-test' ? (
-              <div className="pointer-events-auto flex items-center gap-4 p-2">
+              <div className="pointer-events-auto flex max-w-32 items-center gap-4 p-2">
                 <div className="text-sm">
                   <div className="mb-3 text-center font-semibold">
                     Schedule your annual re-test
@@ -502,21 +522,8 @@ export const TimeSeriesChart = ({
                     {displayedPoint.value.toFixed(1)} {biomarker.unit}
                   </div>
                   <div className="text-muted-foreground">
-                    {(() => {
-                      try {
-                        return moment(displayedPoint.timestamp).format(
-                          'MMM DD, YYYY',
-                        );
-                      } catch {
-                        return new Date(
-                          displayedPoint.timestamp,
-                        ).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                        });
-                      }
-                    })()}
+                    {moment(displayedPoint.timestamp).format('MMM DD, YYYY')} (
+                    <span className="capitalize">{displayedPoint.source}</span>)
                   </div>
                 </div>
               </div>

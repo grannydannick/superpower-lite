@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 
 import { STATUS_TO_COLOR } from '@/const/status-to-color';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Biomarker } from '@/types/api';
+import { Biomarker, Lab } from '@/types/api';
 
 import { ChartTooltip } from '../chart-tooltip';
 import { RangeStack } from '../range-stack';
@@ -29,6 +29,7 @@ const SparklineLineChart = ({
     timestamp: string;
     position: { x: number; y: number };
     status: string;
+    source: Lab;
   }) => void;
   onHoverEnd: () => void;
   hoveredPointIndex?: number | null;
@@ -79,6 +80,7 @@ const SparklineLineChart = ({
                 window.scrollY,
             },
             status: nearestPoint.status as string,
+            source: nearestPoint.source as Lab,
           });
         }
       });
@@ -249,6 +251,7 @@ export const SparklineChart = ({
     timestamp: string;
     position: { x: number; y: number };
     status: string;
+    source: Lab;
   } | null>(null);
 
   return (
@@ -285,7 +288,7 @@ export const SparklineChart = ({
           >
             <div className="flex items-center gap-2">
               <div
-                className="size-3 rounded-full border border-white"
+                className="size-3 shrink-0 rounded-full border border-white"
                 style={{
                   backgroundColor:
                     STATUS_TO_COLOR[
@@ -298,21 +301,8 @@ export const SparklineChart = ({
                   {displayedPoint.value.toFixed(1)} {biomarker.unit}
                 </div>
                 <div className="text-muted-foreground">
-                  {(() => {
-                    try {
-                      return moment(displayedPoint.timestamp).format(
-                        'MMM DD, YYYY',
-                      );
-                    } catch {
-                      return new Date(
-                        displayedPoint.timestamp,
-                      ).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      });
-                    }
-                  })()}
+                  {moment(displayedPoint.timestamp).format('MMM DD, YYYY')} (
+                  <span className="capitalize">{displayedPoint.source})</span>
                 </div>
               </div>
             </div>

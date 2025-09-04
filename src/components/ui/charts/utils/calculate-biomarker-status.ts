@@ -1,3 +1,4 @@
+import { getBiomarkerRanges } from '@/components/ui/charts/utils/get-biomarker-ranges';
 import { Biomarker, BiomarkerStatus } from '@/types/api';
 
 export const calculateBiomarkerStatus = (
@@ -5,8 +6,11 @@ export const calculateBiomarkerStatus = (
 ): BiomarkerStatus => {
   if (!biomarker.value || biomarker.value.length === 0) return 'PENDING';
 
-  const latestValue = biomarker.value[0].quantity.value;
-  const ranges = biomarker.range;
+  const { ranges, lastValue } = getBiomarkerRanges(biomarker);
+
+  if (!lastValue) return 'PENDING';
+
+  const latestValue = lastValue.quantity.value;
 
   if (!ranges || ranges.length === 0) return 'PENDING';
 

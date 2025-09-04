@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
+import { getBiomarkerRanges } from '@/components/ui/charts/utils/get-biomarker-ranges';
 import { getNewestValue } from '@/components/ui/charts/utils/get-newest-value';
 import { getValueStatus } from '@/components/ui/charts/utils/get-value-status';
 import { STATUS_TO_COLOR } from '@/const/status-to-color';
@@ -73,32 +74,28 @@ export const useSparklineChart = ({
   maxValuesToShow: number;
   svgWidth: number;
 }) => {
-  const { range, value } = biomarker;
+  const { value } = biomarker;
+
+  const { ranges, sortedValues: allSortedValues } =
+    getBiomarkerRanges(biomarker);
 
   const newestValueInfo = useMemo(() => getNewestValue(value), [value]);
 
+  // Limit to most recent values for chart display based on max values to show const, oldest first for chronological rendering inside the chart
   const sortedValues = useMemo(
-    () =>
-      [...value]
-        .sort(
-          (a, b) =>
-            new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
-        )
-        .slice(-maxValuesToShow),
-    [value, maxValuesToShow],
+    () => allSortedValues.slice(0, maxValuesToShow).reverse(),
+    [allSortedValues, maxValuesToShow],
   );
 
-  const dimensions = useMemo(
-    () =>
-      calculateChartDimensions(
-        range,
-        sortedValues
-          .map((v) => v.quantity.value)
-          .filter((v) => Number.isFinite(v)),
-        CHART_CONFIG.RANGE_EXTENSION_FACTOR,
-      ),
-    [range, sortedValues],
-  );
+  const dimensions = useMemo(() => {
+    return calculateChartDimensions(
+      ranges,
+      sortedValues
+        .map((v) => v.quantity.value)
+        .filter((v) => Number.isFinite(v)),
+      CHART_CONFIG.RANGE_EXTENSION_FACTOR,
+    );
+  }, [ranges, sortedValues]);
 
   const valueToY = useCallback(
     (val: number) => convertValueToY(dimensions, val),
@@ -128,6 +125,7 @@ export const useSparklineChart = ({
           value: v.quantity.value,
           timestamp: v.timestamp,
           index,
+          source: v.source || 'quest',
           status: getValueStatus(dimensions, v.quantity.value, newestValueInfo),
         };
       }),
@@ -329,7 +327,10 @@ export const useSparklineChart = ({
     });
 
     const backgroundRect =
-      rectHeight > 0 && Number.isFinite(rectY) && Number.isFinite(rectHeight)
+      rectHeight > 0 &&
+      Number.isFinite(rectY) &&
+      Number.isFinite(rectHeight) &&
+      ranges.length > 0
         ? {
             x: -3,
             y: rectY,
@@ -372,11 +373,13 @@ export const useSparklineChart = ({
     TOOLTIP_OFFSET: CHART_CONFIG.TOOLTIP_OFFSET,
   };
 
-  const rangeStack = {
-    range: biomarker.range,
-    values: sortedValues.map((v) => v.quantity.value),
-    dimensions,
-  };
+  const rangeStack = useMemo(() => {
+    return {
+      range: ranges,
+      values: sortedValues.map((v) => v.quantity.value),
+      dimensions,
+    };
+  }, [ranges, sortedValues, dimensions]);
 
   return {
     meta,

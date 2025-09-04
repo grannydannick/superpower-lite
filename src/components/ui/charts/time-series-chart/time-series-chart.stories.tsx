@@ -30,6 +30,7 @@ const biomarker: Biomarker = {
       },
       timestamp: '2024-04-26T15:45:00.000Z',
       status: 'OPTIMAL',
+      source: 'quest',
       component: [],
     },
     {
@@ -41,6 +42,7 @@ const biomarker: Biomarker = {
       },
       timestamp: '2024-02-20T15:00:00.000Z',
       status: 'OPTIMAL',
+      source: 'quest',
       component: [],
     },
     {
@@ -52,6 +54,7 @@ const biomarker: Biomarker = {
       },
       timestamp: '2024-01-25T21:41:00.000Z',
       status: 'OPTIMAL',
+      source: 'quest',
       component: [],
     },
     {
@@ -63,6 +66,7 @@ const biomarker: Biomarker = {
       },
       timestamp: '2024-01-19T14:00:00.000Z',
       status: 'OPTIMAL',
+      source: 'quest',
       component: [],
     },
     {
@@ -74,6 +78,7 @@ const biomarker: Biomarker = {
       },
       timestamp: '2023-10-13T03:02:00.000Z',
       status: 'OPTIMAL',
+      source: 'quest',
       component: [],
     },
     {
@@ -85,6 +90,7 @@ const biomarker: Biomarker = {
       },
       timestamp: '2023-01-31T00:00:00.000Z',
       status: 'OPTIMAL',
+      source: 'quest',
       component: [],
     },
   ],
@@ -218,17 +224,42 @@ const biomarker: Biomarker = {
       },
     ],
   },
-  range: [
-    {
-      status: 'OPTIMAL',
-      low: {
-        value: 0,
+  ranges: {
+    quest: [
+      {
+        status: 'OPTIMAL',
+        low: {
+          value: 0,
+        },
+        high: {
+          value: 2,
+        },
       },
-      high: {
-        value: 2,
+    ],
+    custom: [],
+    labcorp: [
+      {
+        status: 'OPTIMAL',
+        low: {
+          value: 0,
+        },
+        high: {
+          value: 2,
+        },
       },
-    },
-  ],
+    ],
+    bioref: [
+      {
+        status: 'OPTIMAL',
+        low: {
+          value: 0,
+        },
+        high: {
+          value: 2,
+        },
+      },
+    ],
+  },
 };
 
 export const TimeSeriesChartComponent = (): JSX.Element => {
@@ -260,6 +291,7 @@ const singleValueBiomarker: Biomarker = {
       },
       timestamp: '2024-04-26T15:45:00.000Z',
       status: 'OPTIMAL',
+      source: 'quest',
       component: [],
     },
   ],
@@ -278,17 +310,42 @@ const singleValueBiomarker: Biomarker = {
       },
     ],
   },
-  range: [
-    {
-      status: 'OPTIMAL',
-      low: {
-        value: 4.0,
+  ranges: {
+    custom: [],
+    quest: [
+      {
+        status: 'OPTIMAL',
+        low: {
+          value: 4.0,
+        },
+        high: {
+          value: 5.6,
+        },
       },
-      high: {
-        value: 5.6,
+    ],
+    labcorp: [
+      {
+        status: 'OPTIMAL',
+        low: {
+          value: 4.0,
+        },
+        high: {
+          value: 5.6,
+        },
       },
-    },
-  ],
+    ],
+    bioref: [
+      {
+        status: 'OPTIMAL',
+        low: {
+          value: 4.0,
+        },
+        high: {
+          value: 5.6,
+        },
+      },
+    ],
+  },
 };
 
 export const SingleValueTimeSeriesChart = (): JSX.Element => {
@@ -320,6 +377,7 @@ const extremeBoundaryBiomarker: Biomarker = {
       },
       timestamp: '2024-04-26T15:45:00.000Z',
       status: 'OPTIMAL',
+      source: 'quest',
       component: [],
     },
     {
@@ -331,6 +389,7 @@ const extremeBoundaryBiomarker: Biomarker = {
       },
       timestamp: '2024-03-15T14:30:00.000Z',
       status: 'HIGH',
+      source: 'quest',
       component: [],
     },
     {
@@ -342,6 +401,7 @@ const extremeBoundaryBiomarker: Biomarker = {
       },
       timestamp: '2024-02-10T10:00:00.000Z',
       status: 'LOW',
+      source: 'quest',
       component: [],
     },
     {
@@ -353,6 +413,7 @@ const extremeBoundaryBiomarker: Biomarker = {
       },
       timestamp: '2024-01-20T09:15:00.000Z',
       status: 'LOW',
+      source: 'quest',
       component: [],
     },
     {
@@ -364,6 +425,7 @@ const extremeBoundaryBiomarker: Biomarker = {
       },
       timestamp: '2023-12-15T16:45:00.000Z',
       status: 'HIGH',
+      source: 'quest',
       component: [],
     },
     {
@@ -375,6 +437,7 @@ const extremeBoundaryBiomarker: Biomarker = {
       },
       timestamp: '2023-11-10T11:30:00.000Z',
       status: 'OPTIMAL',
+      source: 'quest',
       component: [],
     },
     {
@@ -386,6 +449,7 @@ const extremeBoundaryBiomarker: Biomarker = {
       },
       timestamp: '2023-10-05T08:00:00.000Z',
       status: 'LOW',
+      source: 'quest',
       component: [],
     },
     {
@@ -397,6 +461,7 @@ const extremeBoundaryBiomarker: Biomarker = {
       },
       timestamp: '2023-09-01T12:00:00.000Z',
       status: 'LOW',
+      source: 'quest',
       component: [],
     },
   ],
@@ -425,44 +490,123 @@ const extremeBoundaryBiomarker: Biomarker = {
       },
     ],
   },
-  range: [
-    {
-      status: 'LOW',
-      low: {
-        value: 0,
+  ranges: {
+    custom: [],
+    quest: [
+      {
+        status: 'LOW',
+        low: {
+          value: 0,
+        },
+        high: {
+          value: 149,
+        },
       },
-      high: {
-        value: 149,
+      {
+        status: 'NORMAL',
+        low: {
+          value: 150,
+        },
+        high: {
+          value: 199,
+        },
       },
-    },
-    {
-      status: 'NORMAL',
-      low: {
-        value: 150,
+      {
+        status: 'OPTIMAL',
+        low: {
+          value: 200,
+        },
+        high: {
+          value: 239,
+        },
       },
-      high: {
-        value: 199,
+      {
+        status: 'HIGH',
+        low: {
+          value: 240,
+        },
+        high: {
+          value: 500,
+        },
       },
-    },
-    {
-      status: 'OPTIMAL',
-      low: {
-        value: 200,
+    ],
+    labcorp: [
+      {
+        status: 'LOW',
+        low: {
+          value: 0,
+        },
+        high: {
+          value: 149,
+        },
       },
-      high: {
-        value: 239,
+      {
+        status: 'NORMAL',
+        low: {
+          value: 150,
+        },
+        high: {
+          value: 199,
+        },
       },
-    },
-    {
-      status: 'HIGH',
-      low: {
-        value: 240,
+      {
+        status: 'OPTIMAL',
+        low: {
+          value: 200,
+        },
+        high: {
+          value: 239,
+        },
       },
-      high: {
-        value: 500,
+      {
+        status: 'HIGH',
+        low: {
+          value: 240,
+        },
+        high: {
+          value: 500,
+        },
       },
-    },
-  ],
+    ],
+    bioref: [
+      {
+        status: 'LOW',
+        low: {
+          value: 0,
+        },
+        high: {
+          value: 149,
+        },
+      },
+      {
+        status: 'NORMAL',
+        low: {
+          value: 150,
+        },
+        high: {
+          value: 199,
+        },
+      },
+      {
+        status: 'OPTIMAL',
+        low: {
+          value: 200,
+        },
+        high: {
+          value: 239,
+        },
+      },
+      {
+        status: 'HIGH',
+        low: {
+          value: 240,
+        },
+        high: {
+          value: 500,
+        },
+      },
+    ],
+  },
 };
 
 export const ExtremeBoundaryTimeSeriesChart = (): JSX.Element => {
@@ -494,6 +638,7 @@ const extremeDateClusteringBiomarker: Biomarker = {
       },
       timestamp: '2024-04-26T08:00:00.000Z',
       status: 'OPTIMAL',
+      source: 'quest',
       component: [],
     },
     {
@@ -505,6 +650,7 @@ const extremeDateClusteringBiomarker: Biomarker = {
       },
       timestamp: '2024-04-26T12:30:00.000Z',
       status: 'OPTIMAL',
+      source: 'quest',
       component: [],
     },
     {
@@ -516,6 +662,7 @@ const extremeDateClusteringBiomarker: Biomarker = {
       },
       timestamp: '2024-04-26T18:45:00.000Z',
       status: 'OPTIMAL',
+      source: 'quest',
       component: [],
     },
     {
@@ -527,6 +674,7 @@ const extremeDateClusteringBiomarker: Biomarker = {
       },
       timestamp: '2024-10-26T09:15:00.000Z',
       status: 'OPTIMAL',
+      source: 'quest',
       component: [],
     },
     {
@@ -538,6 +686,7 @@ const extremeDateClusteringBiomarker: Biomarker = {
       },
       timestamp: '2024-10-26T15:30:00.000Z',
       status: 'OPTIMAL',
+      source: 'quest',
       component: [],
     },
   ],
@@ -556,17 +705,42 @@ const extremeDateClusteringBiomarker: Biomarker = {
       },
     ],
   },
-  range: [
-    {
-      status: 'OPTIMAL',
-      low: {
-        value: 70,
+  ranges: {
+    custom: [],
+    quest: [
+      {
+        status: 'OPTIMAL',
+        low: {
+          value: 70,
+        },
+        high: {
+          value: 140,
+        },
       },
-      high: {
-        value: 140,
+    ],
+    labcorp: [
+      {
+        status: 'OPTIMAL',
+        low: {
+          value: 70,
+        },
+        high: {
+          value: 140,
+        },
       },
-    },
-  ],
+    ],
+    bioref: [
+      {
+        status: 'OPTIMAL',
+        low: {
+          value: 70,
+        },
+        high: {
+          value: 140,
+        },
+      },
+    ],
+  },
 };
 
 export const ExtremeDateClusteringTimeSeriesChart = (): JSX.Element => {

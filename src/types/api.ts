@@ -177,6 +177,11 @@ export type Coupon = {
   percent_off: number | null;
 };
 
+/* LABS */
+export type Lab = 'quest' | 'labcorp' | 'bioref' | 'custom'; // custom is e.g. for hardcoded markers like BiologicalAge
+
+export type LabRanges = Record<Lab, Range[]>;
+
 /* BIOMARKERS */
 export type Biomarker = Entity<{
   id?: string;
@@ -187,7 +192,7 @@ export type Biomarker = Entity<{
   category: string;
   unit: string;
   favorite: boolean;
-  range: Range[];
+  ranges: LabRanges;
   value: BiomarkerResult[];
   metadata: BiomarkerMetadata;
 }>;
@@ -203,6 +208,7 @@ export type BiomarkerResult = Entity<{
   timestamp: string;
   status?: BiomarkerStatus;
   orderId?: string;
+  source?: Lab;
   component: BiomarkerComponent[];
 }>;
 

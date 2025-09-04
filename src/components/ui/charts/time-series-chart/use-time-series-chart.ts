@@ -3,6 +3,11 @@ import { useMemo } from 'react';
 import { STATUS_TO_COLOR } from '@/const/status-to-color';
 import type { Biomarker, Comparator, Range } from '@/types/api';
 
+import {
+  isBinaryBiomarker,
+  getBinaryBiomarkerDimensions,
+} from '../utils/binary-biomarker';
+import { getBiomarkerRanges } from '../utils/get-biomarker-ranges';
 import { getNewestValue } from '../utils/get-newest-value';
 import { getValueStatus } from '../utils/get-value-status';
 
@@ -51,6 +56,11 @@ const calculateChartDimensions = (
 
   const optimalRange = range.find((r) => r.status === 'OPTIMAL');
   const normalRange = range.find((r) => r.status === 'NORMAL');
+
+  // Check for binary biomarkers and use forced ranges
+  if (isBinaryBiomarker(optimalRange, normalRange)) {
+    return getBinaryBiomarkerDimensions(minValue, maxValue);
+  }
 
   if (!optimalRange) {
     const totalRange = maxValue - minValue || 1;
@@ -275,6 +285,7 @@ export const useTimeSeriesChart = ({
   isMobile,
   currentPage = 0,
   itemsPerPage = 6,
+  hoveredSource,
 }: {
   biomarker: Biomarker;
   svgWidth: number;
@@ -282,6 +293,7 @@ export const useTimeSeriesChart = ({
   isMobile: boolean;
   currentPage?: number;
   itemsPerPage?: number;
+  hoveredSource?: string;
 }) => {
   const newestValueInfo = useMemo(
     () => getNewestValue(biomarker.value),
@@ -338,8 +350,26 @@ export const useTimeSeriesChart = ({
   const pageValues = sortedValues.slice(startIndex, endIndex);
 
   const values = pageValues.map((v) => v.quantity.value);
+
+  const { ranges } = getBiomarkerRanges(biomarker);
   const dimensions = calculateChartDimensions(
-    biomarker.range,
+    ranges,
+    values,
+    CHART_CONFIG.RANGE_EXTENSION_FACTOR,
+  );
+
+  const hoveredRange = (() => {
+    if (!hoveredSource || !biomarker.ranges) {
+      return ranges;
+    }
+
+    const sourceRange =
+      biomarker.ranges[hoveredSource as keyof typeof biomarker.ranges];
+    return sourceRange && sourceRange.length > 0 ? sourceRange : ranges;
+  })();
+
+  const hoveredDimensions = calculateChartDimensions(
+    hoveredRange,
     values,
     CHART_CONFIG.RANGE_EXTENSION_FACTOR,
   );
@@ -391,6 +421,7 @@ export const useTimeSeriesChart = ({
           x = CHART_CONFIG.LEFT_PADDING + chartWidth * 0.25;
         }
       } else {
+        // Equal visual spacing regardless of actual time intervals
         x =
           CHART_CONFIG.LEFT_PADDING +
           (index / (allValuesWithNextTest.length - 1)) * chartWidth;
@@ -612,41 +643,96 @@ export const useTimeSeriesChart = ({
   const timeScale = determineTimeScale(timeSpan, chartWidth, timestamps);
 
   const responsiveLabelWidth = isMobile ? 60 : 80;
-  const minXLabelSpacing = isMobile ? 40 : 60;
+  const minXLabelSpacing = isMobile ? 60 : 80;
   const edgePadding = responsiveLabelWidth / 2;
 
-  const maxLabels = Math.max(
-    2,
-    Math.floor((chartWidth - edgePadding * 2) / minXLabelSpacing) + 1,
-  );
-
-  const createOptimizedLabels = (points: DataPoint[]): XAxisLabel[] => {
+  const createSimpleLabels = (points: DataPoint[]): XAxisLabel[] => {
     if (points.length === 0) return [];
 
-    // move single datapoint to the center
     const actualDataPoints = points.filter((p) => p.status !== 'next-test');
     const nextTestPoints = points.filter((p) => p.status === 'next-test');
-    if (actualDataPoints.length === 1 && nextTestPoints.length === 1) {
-      const actualPointX = Math.max(
+
+    if (actualDataPoints.length === 0) return [];
+
+    const labels: XAxisLabel[] = [];
+
+    // Simple approach: just show labels directly under each data point
+    // but limit to avoid overcrowding
+    const availableWidth = svgWidth - 2 * edgePadding;
+    const maxLabels = Math.floor(availableWidth / minXLabelSpacing);
+
+    if (actualDataPoints.length <= maxLabels) {
+      // Show all data points if they fit
+      actualDataPoints.forEach((point, index) => {
+        labels.push({
+          label: timeScale.format(new Date(point.timestamp)),
+          x: Math.max(edgePadding, Math.min(svgWidth - edgePadding, point.x)),
+          y: svgHeight - 16,
+          key: `x-label-${index}`,
+        });
+      });
+    } else {
+      // Show subset with even distribution
+      const step = Math.ceil(actualDataPoints.length / maxLabels);
+
+      for (let i = 0; i < actualDataPoints.length; i += step) {
+        const point = actualDataPoints[i];
+        labels.push({
+          label: timeScale.format(new Date(point.timestamp)),
+          x: Math.max(edgePadding, Math.min(svgWidth - edgePadding, point.x)),
+          y: svgHeight - 16,
+          key: `x-label-${i}`,
+        });
+      }
+
+      // Only include the last point if it has sufficient spacing from existing labels
+      const lastPoint = actualDataPoints[actualDataPoints.length - 1];
+      const lastLabelX = Math.max(
         edgePadding,
-        Math.min(svgWidth - edgePadding, actualDataPoints[0].x),
+        Math.min(svgWidth - edgePadding, lastPoint.x),
       );
+      const hasLastPoint = labels.some(
+        (label) => Math.abs(label.x - lastLabelX) < 10,
+      );
+
+      // Check if adding the last point would violate spacing requirements
+      const hasEnoughSpacing =
+        labels.length === 0 ||
+        labels.every(
+          (label) => Math.abs(label.x - lastLabelX) >= minXLabelSpacing,
+        );
+
+      if (!hasLastPoint && labels.length < maxLabels && hasEnoughSpacing) {
+        labels.push({
+          label: timeScale.format(new Date(lastPoint.timestamp)),
+          x: lastLabelX,
+          y: svgHeight - 16,
+          key: 'x-label-last',
+        });
+      }
+    }
+
+    // Add next test point if it exists
+    if (nextTestPoints.length === 1) {
       const nextTestX = Math.max(
         edgePadding,
         Math.min(svgWidth - edgePadding, nextTestPoints[0].x),
       );
 
-      const minSpacing = 80;
-      const labels: XAxisLabel[] = [
-        {
-          label: timeScale.format(new Date(actualDataPoints[0].timestamp)),
-          x: actualPointX,
-          y: svgHeight - 16,
-          key: 'x-label-actual',
-        },
-      ];
+      // Check if there's enough space from the nearest existing label
+      const tooClose = labels.some(
+        (label) => Math.abs(label.x - nextTestX) < minXLabelSpacing * 0.6,
+      );
 
-      if (Math.abs(nextTestX - actualPointX) >= minSpacing) {
+      // check if we're using a subset of labels (step > 1) for visual balance
+      const usingSubset = actualDataPoints.length > maxLabels;
+      const step = Math.ceil(actualDataPoints.length / maxLabels);
+
+      // if we're skipping labels for balance and the next test would be shown,
+      // also skip it to maintain visual consistency otherwise it'd look bad.
+      const shouldHideForBalance = usingSubset && step > 1;
+
+      if (!tooClose && !shouldHideForBalance) {
         labels.push({
           label: timeScale.format(new Date(nextTestPoints[0].timestamp)),
           x: nextTestX,
@@ -654,198 +740,49 @@ export const useTimeSeriesChart = ({
           key: 'x-label-next-test',
         });
       }
-
-      return labels;
-    }
-
-    if (points.length === 1) {
-      return [
-        {
-          label: timeScale.format(new Date(points[0].timestamp)),
-          x: Math.max(
-            edgePadding,
-            Math.min(svgWidth - edgePadding, points[0].x),
-          ),
-          y: svgHeight - 16,
-          key: 'x-label-0',
-        },
-      ];
-    }
-
-    const availableWidth = svgWidth - 2 * edgePadding;
-    const safeSpacing = minXLabelSpacing * 1.4;
-    const maxPossibleLabels = Math.max(
-      1,
-      Math.floor(availableWidth / safeSpacing),
-    );
-    const targetLabels = Math.min(maxPossibleLabels, maxLabels, points.length);
-
-    if (targetLabels === 1) {
-      return [
-        {
-          label: timeScale.format(
-            new Date(points[points.length - 1].timestamp),
-          ),
-          x: Math.max(
-            edgePadding,
-            Math.min(svgWidth - edgePadding, points[points.length - 1].x),
-          ),
-          y: svgHeight - 16,
-          key: `x-label-${points.length - 1}`,
-        },
-      ];
-    }
-
-    const labels: XAxisLabel[] = [];
-    const firstX = Math.max(edgePadding, points[0].x);
-    const lastX = Math.min(svgWidth - edgePadding, points[points.length - 1].x);
-
-    if (targetLabels === 2) {
-      if (Math.abs(lastX - firstX) < safeSpacing) {
-        return [
-          {
-            label: timeScale.format(
-              new Date(points[points.length - 1].timestamp),
-            ),
-            x: lastX,
-            y: svgHeight - 16,
-            key: `x-label-${points.length - 1}`,
-          },
-        ];
-      }
-
-      return [
-        {
-          label: timeScale.format(new Date(points[0].timestamp)),
-          x: firstX,
-          y: svgHeight - 16,
-          key: 'x-label-0',
-        },
-        {
-          label: timeScale.format(
-            new Date(points[points.length - 1].timestamp),
-          ),
-          x: lastX,
-          y: svgHeight - 16,
-          key: `x-label-${points.length - 1}`,
-        },
-      ];
-    }
-
-    const selectedIndices: number[] = [];
-    if (targetLabels >= 3) {
-      selectedIndices.push(0);
-
-      for (let i = 1; i < targetLabels - 1; i += 1) {
-        const ratio = i / (targetLabels - 1);
-        const index = Math.round(ratio * (points.length - 1));
-        if (
-          index > 0 &&
-          index < points.length - 1 &&
-          !selectedIndices.includes(index)
-        ) {
-          selectedIndices.push(index);
-        }
-      }
-
-      selectedIndices.push(points.length - 1);
-    }
-
-    for (let i = 0; i < selectedIndices.length; i += 1) {
-      const pointIndex = selectedIndices[i];
-      const point = points[pointIndex];
-
-      let proposedX: number;
-      if (i === 0) {
-        proposedX = firstX;
-      } else if (i === selectedIndices.length - 1) {
-        proposedX = lastX;
-      } else {
-        proposedX = Math.max(
-          edgePadding,
-          Math.min(svgWidth - edgePadding, point.x),
-        );
-      }
-
-      let hasCollision = false;
-      const labelText = timeScale.format(new Date(point.timestamp));
-
-      for (const existingLabel of labels) {
-        if (
-          Math.abs(existingLabel.x - proposedX) < safeSpacing ||
-          existingLabel.label === labelText
-        ) {
-          hasCollision = true;
-          break;
-        }
-      }
-
-      if (!hasCollision) {
-        labels.push({
-          label: labelText,
-          x: proposedX,
-          y: svgHeight - 16,
-          key: `x-label-${pointIndex}`,
-        });
-      }
-    }
-
-    if (labels.length === 0 && points.length > 0) {
-      return [
-        {
-          label: timeScale.format(
-            new Date(points[points.length - 1].timestamp),
-          ),
-          x: Math.max(
-            edgePadding,
-            Math.min(svgWidth - edgePadding, points[points.length - 1].x),
-          ),
-          y: svgHeight - 16,
-          key: `x-label-${points.length - 1}`,
-        },
-      ];
     }
 
     return labels.sort((a, b) => a.x - b.x);
   };
 
-  const xAxisLabels = createOptimizedLabels(allDataPoints);
+  const xAxisLabels = createSimpleLabels(allDataPoints);
 
-  const rawYAxisLabels = [
+  const baseYAxisLabels = [
     {
-      value: dimensions.normalHigh,
-      label: dimensions.normalHigh.toFixed(1),
+      baseValue: dimensions.normalHigh,
+      hoveredValue: hoveredDimensions.normalHigh,
       priority: 3,
     },
     {
-      value: dimensions.optimalHigh,
-      label: dimensions.optimalHigh.toFixed(1),
+      baseValue: dimensions.optimalHigh,
+      hoveredValue: hoveredDimensions.optimalHigh,
       priority: 2,
     },
     {
-      value: dimensions.optimalLow,
-      label: dimensions.optimalLow.toFixed(1),
+      baseValue: dimensions.optimalLow,
+      hoveredValue: hoveredDimensions.optimalLow,
       priority: 2,
     },
     {
-      value: dimensions.normalLow,
-      label: dimensions.normalLow.toFixed(1),
+      baseValue: dimensions.normalLow,
+      hoveredValue: hoveredDimensions.normalLow,
       priority: 3,
     },
   ].filter(
     (item, index, arr) =>
-      arr.findIndex((other) => Math.abs(other.value - item.value) < 0.01) ===
-      index,
+      arr.findIndex(
+        (other) => Math.abs(other.baseValue - item.baseValue) < 0.01,
+      ) === index,
   );
 
   const minLabelSpacing = 25;
-  const processedYAxisLabels = rawYAxisLabels
-    .sort((a, b) => b.value - a.value)
+  const processedYAxisLabels = baseYAxisLabels
+    .sort((a, b) => b.baseValue - a.baseValue)
     .reduce(
       (acc, current) => {
         const currentY =
           CHART_CONFIG.TOP_PADDING +
-          (convertValueToY(dimensions, current.value) / 100) * chartHeight;
+          (convertValueToY(dimensions, current.baseValue) / 100) * chartHeight;
 
         if (acc.length === 0) {
           acc.push({ ...current, y: currentY });
@@ -876,19 +813,19 @@ export const useTimeSeriesChart = ({
         return acc;
       },
       [] as Array<{
-        value: number;
-        label: string;
+        baseValue: number;
+        hoveredValue: number;
         priority: number;
         y: number;
       }>,
     );
 
   const yAxisLabels: YAxisLabel[] = processedYAxisLabels.map((label) => ({
-    value: label.value,
-    label: label.label,
+    value: label.hoveredValue,
+    label: label.hoveredValue.toFixed(1),
     x: 12,
     y: label.y + 14,
-    key: `y-label-${label.value}`,
+    key: `y-label-${label.baseValue}`,
   }));
 
   const getStatusColorLight = (status: string): string => {
@@ -942,7 +879,7 @@ export const useTimeSeriesChart = ({
   };
 
   const rangeStackProps = {
-    range: biomarker.range,
+    range: ranges,
     values,
     height: chartHeight,
     padding: 0,

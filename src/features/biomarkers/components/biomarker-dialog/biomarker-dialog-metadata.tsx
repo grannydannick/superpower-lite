@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Body1 } from '@/components/ui/typography';
+import { MEASUREMENTS } from '@/features/biomarkers/const/measurements';
 import { pluralizeIs } from '@/features/biomarkers/utils/pluralize';
 import { MetadataContent } from '@/types/api';
 
@@ -19,7 +20,11 @@ export function BiomarkerDialogMetadata({
   content,
   className,
 }: BiomarkerDialogMetadataProps): JSX.Element {
-  const metadata = [...content];
+  {
+    /* IMPORTANT: This is a frontend hack that is temporary until we have these as Library / Observation Definitions in the backend.
+   Because of upcoming changes we decided to not implement this directly in the backend. As soon as Library is there we can implement this directly in the backend. */
+  }
+  const metadata = [...content, MEASUREMENTS];
 
   importance.length > 0 &&
     metadata.unshift({

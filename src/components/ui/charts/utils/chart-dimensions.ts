@@ -25,8 +25,8 @@ export const calculateChartDimensions = (
   const minValue = Math.min(...values);
   const maxValue = Math.max(...values);
 
-  const optimalRange = range.find((r) => r.status === 'OPTIMAL');
-  const normalRange = range.find((r) => r.status === 'NORMAL');
+  const optimalRange = range?.find((r) => r.status === 'OPTIMAL');
+  const normalRange = range?.find((r) => r.status === 'NORMAL');
 
   if (!optimalRange) {
     const totalRange = maxValue - minValue || 1;

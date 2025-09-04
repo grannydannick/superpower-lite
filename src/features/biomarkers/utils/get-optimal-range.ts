@@ -1,8 +1,9 @@
+import { getBiomarkerRanges } from '@/components/ui/charts/utils/get-biomarker-ranges';
 import { Biomarker } from '@/types/api';
 
 export const getOptimalRange = (biomarker: Biomarker): string => {
-  const range = biomarker.range;
-  const optimalRange = range.find((r) => r.status === 'OPTIMAL');
+  const { ranges } = getBiomarkerRanges(biomarker);
+  const optimalRange = ranges?.find((r) => r.status === 'OPTIMAL');
 
   if (!optimalRange) {
     console.error(`No optimal range found for ${biomarker.name}`);

@@ -85,7 +85,7 @@ export const ChartTooltip = ({
     >
       <div
         className={cn(
-          'rounded-lg w-32 border bg-popover px-2 py-1.5 text-sm text-popover-foreground shadow-md shadow-black/5',
+          'rounded-lg w-auto border bg-popover px-2 py-1.5 text-sm text-popover-foreground shadow-md shadow-black/5',
           'transition-all duration-300 ease-in-out pointer-events-none',
           isOpen
             ? 'animate-in fade-in zoom-in'

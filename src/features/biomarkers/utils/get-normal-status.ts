@@ -1,10 +1,11 @@
+import { getBiomarkerRanges } from '@/components/ui/charts/utils/get-biomarker-ranges';
 import { Biomarker } from '@/types/api';
 
 export type NormalStatusType = 'NOT_FOUND' | 'LOW_NORMAL' | 'HIGH_NORMAL';
 
 export const getNormalStatus = (biomarker: Biomarker): NormalStatusType => {
-  const optimalRange = biomarker.range.find((rng) => rng.status === 'OPTIMAL');
-  const lastValue = biomarker.value.length - 1;
+  const { ranges, lastValue } = getBiomarkerRanges(biomarker);
+  const optimalRange = ranges.find((rng) => rng.status === 'OPTIMAL');
   /*
    * If we don't find optimal range OR we don't have any values (just extra check)
    *
@@ -12,7 +13,7 @@ export const getNormalStatus = (biomarker: Biomarker): NormalStatusType => {
    * */
   if (
     !optimalRange ||
-    biomarker.value.length === 0 ||
+    !lastValue ||
     !optimalRange.low?.value ||
     !optimalRange.high?.value
   ) {
@@ -23,11 +24,9 @@ export const getNormalStatus = (biomarker: Biomarker): NormalStatusType => {
    *  If less than low optimal => low normal
    *  If higher than high optimal => high normal
    * */
-  if (biomarker.value[lastValue].quantity.value < optimalRange?.low?.value) {
+  if (lastValue.quantity.value < optimalRange.low.value) {
     return 'LOW_NORMAL';
-  } else if (
-    biomarker.value[lastValue].quantity.value > optimalRange?.high?.value
-  ) {
+  } else if (lastValue.quantity.value > optimalRange.high.value) {
     return 'HIGH_NORMAL';
   }
 
