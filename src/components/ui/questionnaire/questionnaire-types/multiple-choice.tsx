@@ -52,7 +52,7 @@ export function MultipleChoice({
   onChange,
 }: MultipleChoiceProps) {
   const options = item.answerOption || [];
-  const gridCols = options.length > 5 ? 'md:grid-cols-2' : 'grid-cols-1';
+  const gridCols = options.length > 6 ? 'md:grid-cols-2' : 'grid-cols-1';
 
   const nextStep = useQuestionnaireStore((s) => s.nextStep);
   const activeStep = useQuestionnaireStore((s) => s.activeStep);
