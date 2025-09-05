@@ -1,13 +1,14 @@
 interface CodeBlockProps {
-  node: any;
-  inline: boolean;
-  className: string;
+  inline?: boolean;
+  className?: string;
   children: any;
+  node?: any;
+  [key: string]: any;
 }
 
 export function CodeBlock({
-  inline,
-  className,
+  inline = false,
+  className = '',
   children,
   ...props
 }: CodeBlockProps) {
