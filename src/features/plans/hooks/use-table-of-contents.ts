@@ -9,6 +9,7 @@ type SectionLink = {
 export function useTableOfContents() {
   const [sectionLinks, setSectionLinks] = useState<SectionLink[]>([]);
   const [activeSection, setActiveSection] = useState<string>('overview');
+  const [scrollPercentage, setScrollPercentage] = useState<number>(0);
 
   useEffect(() => {
     // Find all H2 elements with id="section-title"
@@ -68,8 +69,43 @@ export function useTableOfContents() {
     };
   }, []);
 
+  useEffect(() => {
+    let ticking = false;
+
+    const calculateScrollPercentage = () => {
+      const scrollTop = window.scrollY;
+      const documentHeight = document.documentElement.scrollHeight;
+      const windowHeight = window.innerHeight;
+      const scrollableHeight = documentHeight - windowHeight;
+
+      if (scrollableHeight <= 0) {
+        setScrollPercentage(0);
+        return;
+      }
+
+      const percentage = Math.round((scrollTop / scrollableHeight) * 100);
+      setScrollPercentage(Math.min(100, Math.max(0, percentage)));
+      ticking = false;
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(calculateScrollPercentage);
+        ticking = true;
+      }
+    };
+
+    calculateScrollPercentage();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return {
     sectionLinks,
     activeSection,
+    scrollPercentage,
   };
 }

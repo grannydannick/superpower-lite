@@ -10,6 +10,7 @@ import { CarePlanProvider } from '../context/care-plan-context';
 
 import { CarePlanContent } from './care-plan-content';
 import { CarePlanSidebar } from './care-plan-sidebar';
+import { FloatingMenu } from './navigation/floating-menu';
 
 function LoadingSpinner() {
   return (
@@ -71,6 +72,7 @@ export function CarePlan({ id }: { id: string }) {
           </div>
           <div className="hidden w-full max-w-48 shrink-0 lg:block" />
         </div>
+        <FloatingMenu />
       </CarePlanProvider>
     </div>
   );

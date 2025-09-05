@@ -15,6 +15,7 @@ import { useSection } from '../../hooks/use-section';
 import { useCarePlanCart } from '../../stores/care-plan-cart-store';
 import { ProductCard } from '../activities/product-card';
 import { ActionPlanCheckoutModal } from '../checkout/checkout-modal';
+import { NotificationDot } from '../notification-dot';
 
 import { SectionTitle } from './section-title';
 
@@ -188,15 +189,13 @@ export const NextStepsSection = () => {
       <button
         onClick={handleCardClick}
         className={cn(
-          'fixed flex lg:flex-col items-center lg:items-start flex-row gap-4 lg:gap-0 bottom-[88px] lg:left-auto left-4 lg:bottom-4 right-4 hover:bg-zinc-50 z-10 lg:w-full lg:max-w-56 rounded-full lg:rounded-2xl border border-zinc-200 bg-white p-3 shadow-lg shadow-black/5 transition-all duration-300 ease-in-out',
+          'fixed hidden lg:flex lg:flex-col items-center lg:items-start flex-row gap-4 lg:gap-0 bottom-[88px] lg:left-auto left-4 lg:bottom-4 right-4 hover:bg-zinc-50 z-10 lg:w-full lg:max-w-56 rounded-full lg:rounded-2xl border border-zinc-200 bg-white p-3 shadow-lg shadow-black/5 transition-all duration-300 ease-in-out',
           isVisible
             ? 'opacity-100'
             : 'opacity-0 pointer-events-none scale-[.99] translate-y-1 translate-x-1',
         )}
       >
-        <div className="absolute right-0 top-0 hidden aspect-square w-2 rounded-full bg-vermillion-900 outline outline-2 outline-offset-0 outline-white lg:block">
-          <div className="absolute inset-0 animate-ping rounded-full bg-vermillion-900" />
-        </div>
+        <NotificationDot className="absolute right-0 top-0 hidden lg:block" />
         <div className="flex items-center -space-x-1 lg:mb-2 ">
           {Array.from({ length: 3 }, (_, index) => (
             <div
