@@ -23,7 +23,7 @@ const MemoizedYAxisLabel = memo(
       <foreignObject x={x} y={y - 18} width="60" height="24">
         <NumberFlow
           value={value}
-          format={{ minimumFractionDigits: 1, maximumFractionDigits: 1 }}
+          format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
           className="pointer-events-none text-xs text-gray-600"
           style={{ fontSize: '12px', color: '#666' }}
           transformTiming={{ duration: 250, easing: 'ease-in-out' }}
@@ -519,7 +519,7 @@ export const TimeSeriesChart = ({
                 />
                 <div className="text-xs">
                   <div className="font-semibold">
-                    {displayedPoint.value.toFixed(1)} {biomarker.unit}
+                    {displayedPoint.value.toFixed(2)} {biomarker.unit}
                   </div>
                   <div className="text-muted-foreground">
                     {moment(displayedPoint.timestamp).format('MMM DD, YYYY')} (

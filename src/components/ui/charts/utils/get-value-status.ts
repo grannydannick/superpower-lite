@@ -20,7 +20,7 @@ export const getValueStatus = (
     dimensions.normalLow !== dimensions.optimalLow ||
     dimensions.normalHigh !== dimensions.optimalHigh;
 
-  if (val >= dimensions.optimalLow && val < dimensions.optimalHigh) {
+  if (val >= dimensions.optimalLow && val <= dimensions.optimalHigh) {
     return 'optimal';
   }
 
@@ -39,7 +39,14 @@ export const getValueStatus = (
       return 'low';
     }
 
-    if (val > dimensions.normalLow && val < dimensions.normalHigh) {
+    if (val >= dimensions.normalLow && val <= dimensions.normalHigh) {
+      return 'normal';
+    }
+
+    if (val > dimensions.optimalHigh && val < dimensions.normalLow) {
+      return 'normal';
+    }
+    if (val < dimensions.optimalLow && val > dimensions.normalHigh) {
       return 'normal';
     }
   }

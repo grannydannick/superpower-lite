@@ -72,7 +72,7 @@ export const calculateChartDimensions = (
   if (!normalRange) {
     const rangeSpan = optimalHigh - optimalLow;
     const rangeExtension = rangeSpan * rangeExtensionFactor;
-    const chartMinValue = Math.min(minValue, optimalLow - rangeExtension);
+    const chartMinValue = Math.min(minValue, 0 - rangeExtension);
     const chartMaxValue = Math.max(maxValue, optimalHigh + rangeExtension);
     const totalRange = chartMaxValue - chartMinValue || 1;
 
@@ -84,12 +84,12 @@ export const calculateChartDimensions = (
       totalRange,
       optimalLow,
       optimalHigh,
-      normalLow: optimalLow,
-      normalHigh: optimalHigh,
+      normalLow: 0,
+      normalHigh: Math.max(optimalHigh, maxValue),
     };
   }
 
-  const normalLow = normalRange.low?.value ?? optimalLow;
+  const normalLow = normalRange.low?.value ?? 0;
   const normalHigh = normalRange.high?.value ?? optimalHigh;
 
   const rangeExtension = (normalHigh - normalLow) * rangeExtensionFactor;

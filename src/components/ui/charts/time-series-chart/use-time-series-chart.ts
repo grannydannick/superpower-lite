@@ -106,7 +106,7 @@ const calculateChartDimensions = (
   if (!normalRange) {
     const rangeSpan = optimalHigh - optimalLow;
     const rangeExtension = rangeSpan * rangeExtensionFactor;
-    const chartMinValue = Math.min(minValue, optimalLow - rangeExtension);
+    const chartMinValue = Math.min(minValue, 0 - rangeExtension);
     const chartMaxValue = Math.max(maxValue, optimalHigh + rangeExtension);
     const totalRange = chartMaxValue - chartMinValue || 1;
 
@@ -118,12 +118,12 @@ const calculateChartDimensions = (
       totalRange,
       optimalLow,
       optimalHigh,
-      normalLow: optimalLow,
-      normalHigh: optimalHigh,
+      normalLow: 0,
+      normalHigh: Math.max(optimalHigh, maxValue),
     };
   }
 
-  const normalLow = normalRange.low?.value ?? optimalLow;
+  const normalLow = normalRange.low?.value ?? 0;
   const normalHigh = normalRange.high?.value ?? optimalHigh;
 
   const rangeExtension = (normalHigh - normalLow) * rangeExtensionFactor;
@@ -164,6 +164,27 @@ const convertValueToY = (dimensions: ChartDimensions, val: number): number => {
   const result = 100 - percentage;
 
   return Number.isFinite(result) ? result : 50;
+};
+
+const convertYToValue = (
+  dimensions: ChartDimensions,
+  yPercent: number,
+  chartHeight: number,
+  topPadding: number,
+): number => {
+  if (!Number.isFinite(yPercent) || dimensions.totalRange === 0) {
+    return dimensions.chartMinValue + dimensions.totalRange / 2;
+  }
+
+  const adjustedY = yPercent - topPadding;
+  const percentage = (adjustedY / chartHeight) * 100;
+  const invertedPercentage = 100 - percentage;
+
+  const value =
+    dimensions.chartMinValue +
+    (invertedPercentage / 100) * dimensions.totalRange;
+
+  return Number.isFinite(value) ? value : dimensions.chartMinValue;
 };
 
 const getTimeSpan = (timestamps: string[]) => {
@@ -541,13 +562,6 @@ export const useTimeSeriesChart = ({
   const lineSegments: LineSegment[] = [];
   const boundaries = getRangeBoundaries();
 
-  const normalTopY =
-    CHART_CONFIG.TOP_PADDING +
-    (convertValueToY(dimensions, dimensions.normalHigh) / 100) * chartHeight;
-  const normalBottomY =
-    CHART_CONFIG.TOP_PADDING +
-    (convertValueToY(dimensions, dimensions.normalLow) / 100) * chartHeight;
-
   for (let i = 0; i < dataPoints.length - 1; i += 1) {
     const start = dataPoints[i];
     const end = dataPoints[i + 1];
@@ -588,26 +602,21 @@ export const useTimeSeriesChart = ({
       const segmentStart = points[j];
       const segmentEnd = points[j + 1];
 
-      const midY = (segmentStart.y + segmentEnd.y) / 2;
-
       let range: keyof typeof STATUS_TO_COLOR;
 
-      if (
-        midY >= Math.min(optimalTopY, optimalBottomY) &&
-        midY <= Math.max(optimalTopY, optimalBottomY)
-      ) {
-        range = 'optimal';
-      } else if (
-        midY >= Math.min(normalTopY, normalBottomY) &&
-        midY <= Math.max(normalTopY, normalBottomY)
-      ) {
-        range = 'normal';
-      } else if (
-        midY < Math.min(normalTopY, normalBottomY, optimalTopY, optimalBottomY)
-      ) {
-        range = 'high';
+      // This handles the case where two points with the same status should have a line of that color
+      if (j === 0 && points.length === 2 && start.status === end.status) {
+        range = start.status as keyof typeof STATUS_TO_COLOR;
       } else {
-        range = 'low';
+        // Otherwise, use the midpoint calculation
+        const midY = (segmentStart.y + segmentEnd.y) / 2;
+        const midValue = convertYToValue(
+          dimensions,
+          midY,
+          chartHeight,
+          CHART_CONFIG.TOP_PADDING,
+        );
+        range = getValueStatus(dimensions, midValue, newestValueInfo);
       }
 
       const color = getColorForRange(range);
@@ -822,7 +831,7 @@ export const useTimeSeriesChart = ({
 
   const yAxisLabels: YAxisLabel[] = processedYAxisLabels.map((label) => ({
     value: label.hoveredValue,
-    label: label.hoveredValue.toFixed(1),
+    label: label.hoveredValue.toFixed(2),
     x: 12,
     y: label.y + 14,
     key: `y-label-${label.baseValue}`,

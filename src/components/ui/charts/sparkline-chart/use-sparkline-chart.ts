@@ -241,6 +241,7 @@ export const useSparklineChart = ({
 
       if (index < sortedValues.length - 1) {
         const nextValue = sortedValues[index + 1];
+        const nextPosition = pointPositions[index + 1];
         const x2 = PADDING * 6 + (index + 1) * xStep;
         const y2 =
           (valueToY(nextValue.quantity.value) / 100) *
@@ -303,12 +304,21 @@ export const useSparklineChart = ({
           ) {
             // Continue with next iteration
           } else {
-            const segmentValue = (segment.value + nextSegment.value) / 2;
-            const segmentStatus = getValueStatus(
-              dimensions,
-              segmentValue,
-              newestValueInfo,
-            );
+            let segmentStatus: keyof typeof STATUS_TO_COLOR;
+
+            // If this is a direct line between two points (no intersections) and both points have the same status,
+            // use that status for the line
+            if (intersections.length === 2 && status === nextPosition.status) {
+              segmentStatus = status as keyof typeof STATUS_TO_COLOR;
+            } else {
+              // Otherwise, use the midpoint calculation
+              const segmentValue = (segment.value + nextSegment.value) / 2;
+              segmentStatus = getValueStatus(
+                dimensions,
+                segmentValue,
+                newestValueInfo,
+              );
+            }
 
             lines.push({
               key: `line-${v.timestamp}-${index}-${i}`,
