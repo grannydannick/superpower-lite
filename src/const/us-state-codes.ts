@@ -1,4 +1,5 @@
 export const US_STATE_CODES: string[] = [
+  'AL', //Alabama
   'AK', // Alaska
   'AZ', // Arizona
   'AR', // Arkansas
@@ -50,6 +51,7 @@ export const US_STATE_CODES: string[] = [
 ];
 
 export const US_STATES = [
+  { value: 'AL', label: 'Alabama' },
   { value: 'AK', label: 'Alaska' },
   { value: 'AZ', label: 'Arizona' },
   { value: 'AR', label: 'Arkansas' },
