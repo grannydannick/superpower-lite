@@ -2,8 +2,10 @@ import { useMemo } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import { MainErrorFallback } from '@/components/errors/main';
+import { ConciergeLayout } from '@/features/messages/layouts/concierge-layout';
 import { ProtectedRoute } from '@/lib/auth';
 
+import { ConciergeRoute } from './routes/app/concierge';
 import { AppRoot } from './routes/app/root';
 import { NotFoundRoute } from './routes/not-found';
 
@@ -150,21 +152,11 @@ export const createRouter = () =>
         },
         {
           path: 'concierge',
-          lazy: async () => {
-            const { ConciergeLayout } = await import(
-              '../features/messages/layouts/concierge-layout'
-            );
-            const { ConciergeRoute } = await import('./routes/app/concierge');
-
-            return {
-              Component: ConciergeLayout,
-              children: [
-                { index: true, Component: ConciergeRoute }, // new chat
-                { path: ':id', Component: ConciergeRoute }, // existing chat
-              ],
-            };
-          },
-          errorElement: <MainErrorFallback />,
+          element: <ConciergeLayout />,
+          children: [
+            { index: true, element: <ConciergeRoute /> }, // new chat
+            { path: ':id', element: <ConciergeRoute /> }, // existing chat
+          ],
         },
         {
           path: 'data',
