@@ -20,6 +20,7 @@ import {
 import { useCheckout } from '@/features/auth/hooks/use-checkout';
 import { useCheckoutContext } from '@/features/auth/stores';
 import { useAvailableSubscriptions } from '@/features/settings/api';
+import { useTask } from '@/features/tasks/api/get-task';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 import { getState } from '@/utils/verify-state-from-postal';
@@ -37,6 +38,9 @@ export const LegacyCheckoutRoute = () => {
   const coupon = useCheckoutContext((s) => s.coupon);
 
   const { data: user } = useUser();
+  const onboardingTask = useTask({
+    taskName: 'onboarding',
+  });
   const availableSubscriptionsQuery = useAvailableSubscriptions({
     coupon: coupon ?? undefined,
     state: getState(user?.primaryAddress?.postalCode ?? '')?.state,
@@ -62,6 +66,17 @@ export const LegacyCheckoutRoute = () => {
 
     if (user.subscribed) navigate('/');
   }, [user, navigate]);
+
+  // safety check if onboarding task already completed then they should not see it
+  useEffect(() => {
+    if (!onboardingTask.data) return;
+
+    if (onboardingTask.data.task.status === 'completed') {
+      navigate('/', {
+        replace: true,
+      });
+    }
+  }, [onboardingTask.data, navigate]);
 
   // all legacy users should have primary address
   if (!user?.primaryAddress?.postalCode)

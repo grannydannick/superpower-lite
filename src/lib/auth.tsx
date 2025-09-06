@@ -279,21 +279,32 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  if (!userQuery.data.subscribed) {
-    if (location.pathname !== '/legacy-checkout') {
-      return <Navigate to="/legacy-checkout" replace />;
-    }
-    return children;
-  }
-
+  const onLegacy = location.pathname.startsWith('/legacy-checkout');
+  const onOnboarding = location.pathname.includes('/onboarding');
   if (taskQuery.data) {
-    const task = taskQuery.data.task;
+    const { task } = taskQuery.data;
+    const isTaskIncomplete = task.status !== 'completed';
+    const isSubscribed = !!userQuery.data?.subscribed;
 
-    const needsOnboarding =
-      task.status !== 'completed' && !location.pathname.includes('onboarding');
+    let target: string | null = null;
 
-    if (needsOnboarding) {
-      return <Navigate to={`/onboarding`} replace />;
+    if (isTaskIncomplete) {
+      // highest priority: send *unsubscribed* users to legacy checkout,
+      //    but don't bounce away if they're already there.
+      if (!isSubscribed && !onLegacy) {
+        target = '/legacy-checkout';
+      }
+      // otherwise, send to onboarding (but not if already there or on legacy)
+      else if (!onOnboarding && !onLegacy) {
+        target = '/onboarding';
+      }
+    }
+
+    if (target && target !== location.pathname) {
+      console.warn(
+        `Redirecting to ${target}, current location: ${location.pathname}`,
+      );
+      return <Navigate to={target} replace />;
     }
   }
 
