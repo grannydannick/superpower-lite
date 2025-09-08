@@ -8,7 +8,7 @@ import {
 import { Body3, H2, H4 } from '@/components/ui/typography';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 
-const products: {
+const PRODUCTS: {
   title: string;
   image: string;
   description: string;
@@ -52,7 +52,7 @@ export const AffilliateHero = () => {
             width <= 1024 ? (
               <Carousel className="cursor-grab px-4 [mask-image:linear-gradient(to_right,transparent_0%,black_10%,black_90%,transparent_100%)] active:cursor-grabbing">
                 <CarouselMainContainer>
-                  {products.map((card, index) => (
+                  {PRODUCTS.map((card, index) => (
                     <SliderMainItem
                       key={index}
                       className={index > 0 ? 'px-4' : ''}
@@ -66,7 +66,7 @@ export const AffilliateHero = () => {
                   ))}
                 </CarouselMainContainer>
                 <CarouselThumbsContainer className="justify-center gap-x-1.5">
-                  {Array.from({ length: products.length }).map((_, index) => (
+                  {Array.from({ length: PRODUCTS.length }).map((_, index) => (
                     <CarouselIndicator
                       key={index}
                       index={index}
@@ -77,7 +77,7 @@ export const AffilliateHero = () => {
               </Carousel>
             ) : (
               <div className="grid w-full grid-cols-4 gap-4">
-                {products.map((card, index) => (
+                {PRODUCTS.map((card, index) => (
                   <div key={index}>
                     <ProductCard
                       title={card.title}
@@ -105,7 +105,7 @@ const ProductCard = ({
   description: string;
 }) => {
   return (
-    <div className="relative mx-auto h-56 w-full max-w-sm rounded-2xl border border-white/10 bg-zinc-400/30 p-4 backdrop-blur-xl">
+    <div className="relative mx-auto h-56 w-full max-w-sm rounded-2xl border border-white/10 bg-zinc-400/15 p-4 backdrop-blur-xl">
       <img
         src={image}
         alt={title}

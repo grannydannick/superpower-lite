@@ -15,7 +15,7 @@ export const GreetingCard = forwardRef<
     <div
       ref={ref}
       className={cn(
-        'group text-white flex h-56 w-full flex-col transition-all duration-300 justify-between outline-transparent focus:outline-1 focus:outline-white/20 overflow-hidden rounded-2xl border border-white/10 bg-zinc-400/30 p-4 backdrop-blur-xl hover:border-white/20 hover:bg-zinc-400/40',
+        'group text-white flex h-56 w-full flex-col transition-all duration-300 justify-between outline-transparent focus:outline-1 focus:outline-white/20 overflow-hidden rounded-2xl border border-white/10 bg-zinc-400/15 p-4 backdrop-blur-xl hover:border-white/20 hover:bg-zinc-400/20 ',
         isLoading ? 'cursor-progress' : null,
         className,
       )}
