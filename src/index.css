@@ -116,24 +116,24 @@
     font-family: 'nbinternationalproreg';
     src:
       local('nbinternationalproreg-webfont'),
-      url('./assets/fonts/NBInternationalPro/nbinternationalproreg-webfont.ttf')
-        format('truetype');
+      url('./assets/fonts/NBInternationalPro/nbinternationalproreg-webfont.woff2')
+        format('woff2');
   }
 
   @font-face {
     font-family: 'nbinternationalpromono';
     src:
       local('nbinternationalpromono-webfont'),
-      url('./assets/fonts/NBInternationalPro/nbinternationalpromono-webfont.ttf')
-        format('truetype');
+      url('./assets/fonts/NBInternationalPro/nbinternationalpromono-webfont.woff2')
+        format('woff2');
   }
 
   @font-face {
     font-family: 'nbinternationalproboo';
     src:
       local('nbinternationalproboo-webfont'),
-      url('./assets/fonts/NBInternationalPro/nbinternationalproboo-webfont.ttf')
-        format('truetype');
+      url('./assets/fonts/NBInternationalPro/nbinternationalproboo-webfont.woff2')
+        format('woff2');
   }
 
   * {
