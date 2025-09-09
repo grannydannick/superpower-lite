@@ -1,3 +1,4 @@
+import { Lock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import PhoneInput from 'react-phone-number-input/input';
@@ -90,15 +91,18 @@ export const YourDetailsSection = () => {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input
-                      variant={fieldState.error ? 'error' : 'default'}
-                      placeholder="Your email"
-                      autoCapitalize="none"
-                      autoComplete="email"
-                      autoCorrect="off"
-                      disabled
-                      {...field}
-                    />
+                    <div className="relative">
+                      <Input
+                        variant={fieldState.error ? 'error' : 'default'}
+                        placeholder="Your email"
+                        autoCapitalize="none"
+                        autoComplete="email"
+                        autoCorrect="off"
+                        disabled
+                        {...field}
+                      />
+                      <Lock className="absolute right-5 top-1/2 size-4 -translate-y-1/2 cursor-not-allowed text-zinc-300" />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
