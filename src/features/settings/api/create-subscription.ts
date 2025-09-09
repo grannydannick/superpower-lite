@@ -7,7 +7,7 @@ import { api } from '@/lib/api-client';
 import { MutationConfig } from '@/lib/react-query';
 import { Subscription } from '@/types/api';
 import { getAccessCode } from '@/utils/access-code';
-import { trackSubscription } from '@/utils/gtm';
+import { getReferralId } from '@/utils/referral-id';
 import { getUtmData } from '@/utils/utm-middleware';
 
 export const createSubscriptionInputSchema = z.object({
@@ -54,15 +54,11 @@ export const useCreateSubscription = ({
       try {
         track('subscription_created', {
           access_code: getAccessCode(),
-          referral_id: (window as any)?.Rewardful?.referral,
+          referral_id: getReferralId(),
           currency: 'USD',
           value: args[0].subscription.total,
           payment_method: args[1].data.paymentMethod,
         });
-        trackSubscription(
-          args[0].subscription.total,
-          args[1].data.paymentMethod,
-        );
       } catch (e) {
         console.error('Failed to track subscription:', e);
       }

@@ -22,6 +22,7 @@ import { RegisterInput, useRegister } from '@/lib/auth';
 import { getActiveLogin } from '@/lib/utils';
 import { User } from '@/types/api';
 import { getAccessCode } from '@/utils/access-code';
+import { getReferralId } from '@/utils/referral-id';
 import { getUtmData } from '@/utils/utm-middleware';
 import { getState } from '@/utils/verify-state-from-postal';
 
@@ -79,7 +80,7 @@ export const useCheckout = ({
         data: {
           state: getState(postalCode)?.state ?? 'CA',
           code: getAccessCode() ?? undefined,
-          referralId: (window as any)?.Rewardful?.referral,
+          referralId: getReferralId() ?? undefined,
           campaignData: getUtmData() ?? undefined,
           paymentMethod,
         },
