@@ -1,5 +1,5 @@
 import { CarePlanActivity } from '@medplum/fhirtypes';
-import { LucideIcon, Pencil, Pill, TestTube } from 'lucide-react';
+import { Info, LucideIcon, Pencil, Pill, TestTube } from 'lucide-react';
 import React from 'react';
 
 import { IconHighlight } from '@/components/shared/icon-highlight';
@@ -9,7 +9,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Body1, H2, H4 } from '@/components/ui/typography';
+import { Body1, Body2, H2, H4 } from '@/components/ui/typography';
 import { useProducts } from '@/features/shop/api';
 
 import { useCarePlan } from '../../context/care-plan-context';
@@ -27,6 +27,23 @@ interface ActivityGroup {
   renderActivity: (activity: CarePlanActivity, index: number) => JSX.Element;
   disclaimer?: JSX.Element;
 }
+
+const AboutDisclaimer = () => {
+  return (
+    <div className="mb-4 space-y-2 rounded-2xl border border-zinc-200 p-4">
+      <div className="flex items-center gap-2">
+        <Info className="size-4 text-vermillion-900" />
+        <Body2 className="mt-px leading-none text-vermillion-900">
+          About this action plan
+        </Body2>
+      </div>
+      <Body1 className="text-zinc-400">
+        Superpower isn’t a replacement for your primary care provider. Questions
+        or concerns? Review these results with your doctor.
+      </Body1>
+    </div>
+  );
+};
 
 export const ProtocolSection = () => {
   const { plan } = useCarePlan();
@@ -192,6 +209,7 @@ export const ProtocolSection = () => {
           </Accordion>
         )}
       </div>
+      <AboutDisclaimer />
     </section>
   );
 };
