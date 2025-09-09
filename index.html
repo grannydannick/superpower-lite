@@ -23,80 +23,6 @@
       })(window, document, 'script', 'dataLayer', 'GTM-PBS5NFXN');
     </script>
     <!-- End Google Tag Manager -->
-    
-    <!-- Segment Analytics -->
-    <script>
-      !function(){var i="analytics",analytics=window[i]=window[i]||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","screen","once","off","on","addSourceMiddleware","addIntegrationMiddleware","setAnonymousId","addDestinationMiddleware","register"];analytics.factory=function(e){return function(){if(window[i].initialized)return window[i][e].apply(window[i],arguments);var n=Array.prototype.slice.call(arguments);if(["track","screen","alias","group","page","identify"].indexOf(e)>-1){var c=document.querySelector("link[rel='canonical']");n.push({__t:"bpc",c:c&&c.getAttribute("href")||void 0,p:location.pathname,u:location.href,s:location.search,t:document.title,r:document.referrer})}n.unshift(e);analytics.push(n);return analytics}};for(var n=0;n<analytics.methods.length;n++){var key=analytics.methods[n];analytics[key]=analytics.factory(key)}analytics.load=function(key,n){var t=document.createElement("script");t.type="text/javascript";t.async=!0;t.setAttribute("data-global-segment-analytics-key",i);t.src="https://cdn.segment.com/analytics.js/v1/" + key + "/analytics.min.js";var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(t,r);analytics._loadOptions=n};analytics._writeKey="w0PDIksyqUIUPF4E6i7T398GRohWyUm9";;analytics.SNIPPET_VERSION="5.2.0";
-      analytics.load("w0PDIksyqUIUPF4E6i7T398GRohWyUm9");
-      analytics.page();
-      }}();
-    </script>
-    <!-- End Segment Analytics -->
-    
-    <!-- Campaign & Rewardful Merge-Safe Helper -->
-    <script>
-    (function () {
-      /* Parameters to capture */
-      const keys = [
-        // UTM fields
-        'utm_source','utm_medium','utm_campaign','utm_content','utm_term',
-        // Click-ID fields
-        'gclid','gbraid','wbraid',      // Google Ads / P-Max
-        'fbclid',                      // Meta / Instagram / Facebook
-        'msclkid',                     // Microsoft Ads / Bing
-        'ttclid','tt_conv_id',         // TikTok Ads
-        'li_fat_id',                   // LinkedIn Ads
-        // Beehiiv
-        'bhid','beehiiv_id',           // Beehiiv UTM params
-        // Rewardful referral
-        'rewardfulCode',
-        // Optional internal flag
-        'via'
-      ];
-
-      /* Read existing cookie */
-      const match = /(?:^|;\s*)sp_utm=([^;]+)/.exec(document.cookie);
-      let stored  = {};
-      if (match) {
-        try { stored = JSON.parse(decodeURIComponent(match[1])); }
-        catch (_) {}
-      }
-
-      /* Collect params from current URL */
-      const qs    = new URLSearchParams(location.search);
-      const fresh = {};
-      keys.forEach(k => {
-        if (qs.has(k)) {
-          fresh[k] = qs.get(k).slice(0, 512);   // truncate long values
-        }
-      });
-
-      /* Merge: new keys overwrite old ones */
-      const merged = { ...stored, ...fresh };
-
-      /* Rewrite cookie only if something changed */
-      if (Object.keys(fresh).length && JSON.stringify(merged) !== JSON.stringify(stored)) {
-        // Dynamically set the cookie domain for prod or staging
-        let cookieDomain = '.superpower.com';
-        if (location.hostname.endsWith('.superpower-staging.com')) {
-          cookieDomain = '.superpower-staging.com';
-        }
-        document.cookie =
-          'sp_utm=' + encodeURIComponent(JSON.stringify(merged)) + ';' +
-          'domain=' + cookieDomain + ';' +
-          'path=/;' +
-          'max-age=' + 60*60*24*90 + ';' +
-          'SameSite=Lax;' +
-          'Secure';
-      }
-
-      /* Register with Segment */
-      if (window.analytics && analytics.register) {
-        analytics.register({ campaign: merged });
-      }
-    })();
-    </script>
-    <!-- End Campaign & Rewardful Merge-Safe Helper -->
 
     <meta charset="utf-8" />
     <title>Superpower Health</title>
@@ -111,19 +37,6 @@
 
     <!-- main page image-->
     <link rel="preload" href="/home/default.webp" as="image">
-
-    <!-- Rewardful -->
-    <script>
-      (function (w, r) {
-        w._rwq = r;
-        w[r] =
-          w[r] ||
-          function () {
-            (w[r].q = w[r].q || []).push(arguments);
-          };
-      })(window, 'rewardful');
-    </script>
-    <script async data-rewardful="e4efd8" src="/scripts/rw.js"></script>
 
     <!-- Intercom -->
     <script>

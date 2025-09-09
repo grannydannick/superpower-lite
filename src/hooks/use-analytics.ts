@@ -1,6 +1,8 @@
 import { Properties } from 'posthog-js';
 import { usePostHog } from 'posthog-js/react';
 
+import { captureEvent } from '@/lib/gtm';
+
 export type PersonProperties = {
   email?: string;
   first_name?: string;
@@ -34,9 +36,11 @@ export const useAnalytics = () => {
    * @returns
    */
   const track = (eventName: string, properties?: TrackProperties) => {
-    if (!posthog) return;
+    if (posthog) {
+      posthog.capture(eventName, properties);
+    }
 
-    posthog.capture(eventName, properties);
+    captureEvent(eventName, properties || {});
   };
 
   /**
@@ -52,14 +56,19 @@ export const useAnalytics = () => {
       $set_once?: PersonProperties;
     },
   ): void => {
-    if (!posthog) return;
+    if (posthog) {
+      posthog.identify(userId, properties?.$set, properties?.$set_once);
+    }
 
-    posthog.identify(userId, properties?.$set, properties?.$set_once);
+    captureEvent('identify', { user_id: userId, ...properties });
   };
 
   const reset = () => {
-    if (!posthog) return;
-    posthog.reset();
+    if (posthog) {
+      posthog.reset();
+    }
+
+    captureEvent('reset', {});
   };
 
   return {

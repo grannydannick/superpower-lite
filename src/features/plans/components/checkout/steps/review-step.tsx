@@ -12,7 +12,6 @@ import { useCarePlanCart } from '@/features/plans/stores/care-plan-cart-store';
 import { useCreateCheckoutUrl } from '@/features/shop/api';
 import { cn } from '@/lib/utils';
 import { Product } from '@/types/api';
-import { trackEvent } from '@/utils/analytics';
 
 import { calculateTotals } from '../../../utils/calculate-totals';
 import { CheckoutPrice } from '../checkout-price';
@@ -51,16 +50,6 @@ export const ReviewStep = (): JSX.Element => {
   );
 
   const handleCheckout = () => {
-    trackEvent('Checkout Started', {
-      products: selectedProducts.map((p) => ({
-        id: p.id,
-        name: p.name,
-        price: p.price,
-      })),
-      total: totals.total,
-      total_savings: totals.totalSavings,
-    });
-
     // Remove the utm data from the API call
     createCheckoutUrlMutation.mutate({
       data: { products: selectedProducts },

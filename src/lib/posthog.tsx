@@ -17,6 +17,7 @@ const phClient = env.POSTHOG_KEY
         maskTextSelector: '*',
         maskAllInputs: true,
       },
+      opt_in_site_apps: true,
     })
   : null;
 

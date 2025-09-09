@@ -6,7 +6,6 @@ import { Spinner } from '@/components/ui/spinner';
 import { Body1, Body2, H1 } from '@/components/ui/typography';
 import { useInviteLink } from '@/features/affiliate/hooks/use-invite-link';
 import { useUpdateTask } from '@/features/tasks/api/update-task';
-import { trackEvent } from '@/utils/analytics';
 
 export const Share = () => {
   const { mutateAsync: updateTaskProgress, isPending } = useUpdateTask();
@@ -49,9 +48,6 @@ export const Share = () => {
         </div>
         <Button
           onClick={async () => {
-            // Track onboarding completion event with UTM context
-            trackEvent('Onboarding Completed', {});
-
             await updateTaskProgress({
               taskName: 'onboarding',
               data: { status: 'completed' },

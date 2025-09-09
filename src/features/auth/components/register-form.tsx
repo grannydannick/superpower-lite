@@ -16,7 +16,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Body1, Body2, H1 } from '@/components/ui/typography';
 import { useCheckoutContext } from '@/features/auth/stores';
-import { trackLead } from '@/features/auth/utils/registration-analytics';
 import { useAvailableSubscriptions } from '@/features/settings/api';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { RegisterInput, registerInputSchema } from '@/lib/auth';
@@ -96,9 +95,6 @@ const Step1 = ({ onNext }: { onNext: () => void }) => {
 
     if (isStepValid) {
       const email = form.getValues('email');
-
-      // Track Lead event with email and UTM data
-      trackLead({ email });
 
       // Track registration started
       track('registration_started', {
