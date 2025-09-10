@@ -31,7 +31,7 @@ export const IconList = ({
             <div className="flex items-start">
               <IconHighlight
                 icon={item.icon}
-                className="relative z-10 mr-4 mt-1 bg-white"
+                className="relative z-[5] mr-4 mt-1 bg-white"
               />
               <div className="mb-5 py-2">
                 <Body1 className="font-medium text-foreground">
