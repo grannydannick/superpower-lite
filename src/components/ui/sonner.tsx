@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertCircle, Check, Loader2, X } from 'lucide-react';
+import { AlertCircle, Check, Info, Loader2, X } from 'lucide-react';
 import React from 'react';
 import { ExternalToast, Toaster as Sonner, toast as sonnerToast } from 'sonner';
 
@@ -161,7 +161,20 @@ function createToast() {
   // toastFn.custom = sonnerToast.custom;
   // toastFn.dismiss = sonnerToast.dismiss;
   // toastFn.message = sonnerToast.message;
-  toastFn.info = sonnerToast.info;
+  toastFn.info = function (
+    message: React.ReactNode,
+    options?: ToastOptions,
+  ): string | number {
+    return sonnerToast.custom(() => (
+      <CustomToast
+        title={message}
+        type="default"
+        icon={options?.icon || <Info className="size-4" />}
+        action={options?.action}
+        closeButton={options?.closeButton}
+      />
+    ));
+  };
   // toastFn.warning = sonnerToast.warning;
 
   return toastFn;
