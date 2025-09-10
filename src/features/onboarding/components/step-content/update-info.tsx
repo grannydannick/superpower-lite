@@ -69,15 +69,19 @@ const checklistItem = {
 
 // forcing all fields to be present here
 const REQUIRED_MSG = 'This is required.';
+// regex allows English letters and spaces
+const NAME_REGEX = /^[A-Za-z ]+$/;
 export const updateUserInputSchema = z.object({
   firstName: z
     .string({ required_error: REQUIRED_MSG })
     .min(1, REQUIRED_MSG)
-    .min(2, 'Please enter your full first name.'),
+    .min(2, 'Please enter your full first name.')
+    .regex(NAME_REGEX, 'Must contain only English letters.'),
   lastName: z
     .string({ required_error: REQUIRED_MSG })
     .min(1, REQUIRED_MSG)
-    .min(2, 'Please enter your full last name.'),
+    .min(2, 'Please enter your full last name.')
+    .regex(NAME_REGEX, 'Must contain only English letters.'),
   gender: z.enum(['MALE', 'FEMALE'], { required_error: REQUIRED_MSG }),
   address: formAddressInputSchema,
 });
