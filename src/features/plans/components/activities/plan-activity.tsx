@@ -15,6 +15,7 @@ import { useProducts } from '@/features/shop/api';
 import { HealthcareService, Product, OrderStatus } from '@/types/api';
 import { getServiceImage } from '@/utils/service';
 
+import { extractCitations } from '../../utils/extract-citations';
 import { PlanMarkdown } from '../plan-markdown';
 
 import { ActivityCard } from './activity-card';
@@ -42,6 +43,7 @@ export const ServiceActivity = ({
     service.name || serviceCoding?.display || 'Unnamed Service';
   const serviceDesc =
     detail?.description || service.description || 'Book your appointment';
+  const citations = extractCitations(detail);
   const isAdvisory = serviceName === ADVISORY_CALL;
 
   const isServiceScheduled = useMemo(() => {
@@ -80,7 +82,11 @@ export const ServiceActivity = ({
   return (
     <div className="mt-8 space-y-2">
       <H4>{serviceName}</H4>
-      <PlanMarkdown content={serviceDesc} />
+      <PlanMarkdown
+        content={serviceDesc}
+        citations={citations}
+        boldVermillion
+      />
       <ActivityCard
         {...service}
         image={getServiceImage(service.name)}
@@ -110,11 +116,16 @@ const ProductActivity = ({
 }) => {
   const productName = productCoding.display || 'Unnamed Product';
   const productDesc = detail?.description || 'Recommended supplement';
+  const citations = extractCitations(detail);
 
   return (
     <div className="mt-8 space-y-2">
       <H4 className="text-lg">{productName}</H4>
-      <PlanMarkdown content={productDesc} />
+      <PlanMarkdown
+        content={productDesc}
+        citations={citations}
+        boldVermillion
+      />
       <ProductCard
         productName={productName}
         product={product}
@@ -161,5 +172,13 @@ export function PlanActivity({ activity, className }: PlanActivityProps) {
     );
   }
 
-  return <PlanMarkdown content={detail?.description || ''} />;
+  const citations = extractCitations(detail);
+
+  return (
+    <PlanMarkdown
+      content={detail?.description || ''}
+      citations={citations}
+      boldVermillion
+    />
+  );
 }

@@ -14,8 +14,10 @@ import { useProducts } from '@/features/shop/api';
 
 import { useCarePlan } from '../../context/care-plan-context';
 import { useSection } from '../../hooks/use-section';
+import { extractCitationsFromExtensions } from '../../utils/extract-citations';
 import { PlanActivity } from '../activities/plan-activity';
 import { Disclaimer } from '../plan-disclaimer';
+import { PlanMarkdown } from '../plan-markdown';
 import { SectionTitle } from '../section-title';
 
 interface ActivityGroup {
@@ -59,6 +61,8 @@ export const ProtocolSection = () => {
     hasCancerService,
     hasToxinService,
   } = categorizePlanActivities(activities, getProductsQuery.data?.products);
+
+  const planCitations = extractCitationsFromExtensions(plan?.extension);
 
   const activityGroups: ActivityGroup[] = [
     {
@@ -193,7 +197,10 @@ export const ProtocolSection = () => {
                   <AccordionContent className="px-4 pb-4">
                     <div className="space-y-3">
                       {group.titleSubtext && (
-                        <Body1>{group.titleSubtext}</Body1>
+                        <PlanMarkdown
+                          content={group.titleSubtext}
+                          citations={planCitations}
+                        />
                       )}
                       <div className="space-y-6">
                         {group.activities.map((activity, index) => (

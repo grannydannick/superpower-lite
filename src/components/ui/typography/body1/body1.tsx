@@ -2,6 +2,10 @@ import React, { forwardRef } from 'react';
 
 import { cn } from '@/lib/utils';
 
+type Body1Props = React.HTMLAttributes<HTMLParagraphElement> & {
+  as?: 'p' | 'div' | 'span';
+};
+
 /**
  * Body1 Component
  *
@@ -17,23 +21,26 @@ import { cn } from '@/lib/utils';
  * These styles align with the "Product Body/Body 1" design specifications.
  *
  * Additional classes can be passed via the `className` prop to override or extend the default styling.
+ * The `as` prop allows you to render as different HTML elements (p, div, span) while maintaining the same styling.
  *
- * @param {React.HTMLAttributes<HTMLParagraphElement>} props - The props for the paragraph element.
- * @param {React.Ref<HTMLParagraphElement>} ref - The ref to the paragraph element.
- * @returns {JSX.Element} The styled paragraph element.
+ * @param {Body1Props} props - The props for the element.
+ * @param {React.Ref<HTMLParagraphElement | HTMLDivElement | HTMLSpanElement>} ref - The ref to the element.
+ * @returns {JSX.Element} The styled element.
  */
 const Body1 = forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->((props, ref) => {
+  HTMLParagraphElement | HTMLDivElement | HTMLSpanElement,
+  Body1Props
+>(({ as = 'p', ...props }, ref) => {
+  const Component = as;
+
   return (
-    <p
+    <Component
       {...props}
-      ref={ref}
+      ref={ref as any}
       className={cn('text-base text-zinc-900', props.className)}
     >
       {props.children}
-    </p>
+    </Component>
   );
 });
 

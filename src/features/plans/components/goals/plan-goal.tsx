@@ -1,5 +1,6 @@
-import { Goal } from '@medplum/fhirtypes';
+import { Annotation, Goal } from '@medplum/fhirtypes';
 
+import { extractCitationsFromExtensions } from '../../utils/extract-citations';
 import { PlanMarkdown } from '../plan-markdown';
 
 import { PlanGoalObservation } from './plan-goal-observation';
@@ -9,19 +10,41 @@ export type PlanGoalProps = {
   index: number;
 };
 
+function getAnnotationType(note: Annotation): string {
+  return (
+    note.extension?.find(
+      (e) =>
+        e.url ===
+        'https://superpower.com/fhir/StructureDefinition/goal-annotation-type',
+    )?.valueString || 'intro'
+  );
+}
+
 export function PlanGoal({ goal }: PlanGoalProps) {
   const goalObservations =
     (goal.addresses
       ?.map((a) => a.reference?.split('/')[1])
       .filter((r) => r !== undefined) as string[]) ?? [];
 
-  const noteText = goal.note?.map((n) => n.text).join('\n\n') || '';
+  const introText =
+    goal.note
+      ?.filter((n) => getAnnotationType(n) === 'intro')
+      .map((n) => n.text)
+      .join('\n\n') || '';
+
+  const noteText =
+    goal.note
+      ?.filter((n) => getAnnotationType(n) !== 'intro')
+      .map((n) => n.text)
+      .join('\n\n') || '';
+
+  const citations = extractCitationsFromExtensions(goal.extension);
 
   return (
     <div className="space-y-6">
-      {noteText && (
+      {introText && (
         <div>
-          <PlanMarkdown content={noteText} />
+          <PlanMarkdown content={introText} citations={citations} />
         </div>
       )}
 
@@ -32,6 +55,12 @@ export function PlanGoal({ goal }: PlanGoalProps) {
               <PlanGoalObservation id={id} key={id} />
             ))}
           </div>
+        </div>
+      )}
+
+      {noteText && (
+        <div>
+          <PlanMarkdown content={noteText} citations={citations} />
         </div>
       )}
     </div>
