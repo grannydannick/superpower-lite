@@ -1,5 +1,5 @@
 import { Info } from 'lucide-react';
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -19,6 +19,44 @@ interface PlanMarkdownProps {
   citations?: Citation[];
   boldVermillion?: boolean;
 }
+
+const CitationTooltip = ({ content }: { content: string }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  // support mobile device touch to open tooltip
+  const handleClick = () => {
+    setIsOpen(!isOpen);
+  };
+
+  return (
+    <TooltipProvider>
+      <Tooltip open={isOpen} onOpenChange={setIsOpen} delayDuration={75}>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            className="mb-1 ml-0.5 inline-block size-4 cursor-help touch-manipulation select-none text-zinc-400 transition-all hover:text-zinc-600 active:text-zinc-600"
+            aria-label="Show citation details"
+            onClick={handleClick}
+          >
+            <Info className="size-4" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent
+          side="top"
+          className="max-w-xs"
+          collisionPadding={{
+            right: 8,
+            left: 8,
+            top: 8,
+            bottom: 8,
+          }}
+        >
+          <p>{content}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
 
 const CitationText = ({
   children,
@@ -48,16 +86,7 @@ const CitationText = ({
 
     if (citationContent) {
       segments.push(
-        <TooltipProvider key={keyIndex++}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Info className="mb-1 ml-0.5 inline-block size-4 cursor-help text-zinc-400 transition-all hover:text-zinc-600" />
-            </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-xs">
-              <p>{citationContent}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>,
+        <CitationTooltip key={keyIndex++} content={citationContent} />,
       );
     } else {
       segments.push(citationKey);
