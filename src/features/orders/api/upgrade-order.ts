@@ -5,7 +5,7 @@ import {
 } from '@tanstack/react-query';
 import { z } from 'zod';
 
-import { SUPERPOWER_ADVANCED_BLOOD_PANEL } from '@/const/services';
+import { isBloodPanel } from '@/const/services';
 import { getTimelineQueryOptions } from '@/features/home/api/get-timeline';
 import { getOrdersQueryOptions } from '@/features/orders/api/get-orders';
 import { getServicesQueryOptions } from '@/features/services/api';
@@ -67,22 +67,16 @@ export const useUpgradeOrder = (
       // Track upgrade order events
       const order = response.order;
 
-      // Track service order
-      track('ordered_service', {
-        service_name: order.serviceName,
-        value: order.amount,
-      });
-
-      // Track blood test orders for advanced blood panel
-      if (order.serviceName === SUPERPOWER_ADVANCED_BLOOD_PANEL) {
+      // Track blood test orders for all blood panels
+      if (isBloodPanel(order.serviceName)) {
         track('ordered_blood_test', {
           blood_test: order.serviceName,
           value: order.amount,
         });
-
-        track('scheduled_blood_draw', {
-          scheduled_date: order.startTimestamp,
-          collection_method: order.method?.[0],
+      } else {
+        // Track service order for all non-blood panel services
+        track('ordered_service', {
+          service_name: order.serviceName,
           value: order.amount,
         });
       }

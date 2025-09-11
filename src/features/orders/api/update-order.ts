@@ -1,10 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 
-import {
-  SUPERPOWER_BLOOD_PANEL,
-  SUPERPOWER_ADVANCED_BLOOD_PANEL,
-} from '@/const/services';
+import { isBloodPanel } from '@/const/services';
 import { getTimelineQueryOptions } from '@/features/home/api/get-timeline';
 import {
   consentInputSchema,
@@ -66,18 +63,15 @@ export const useUpdateOrder = ({
       const order = response.order;
 
       // Track blood draw scheduling (when status changes from DRAFT to PENDING)
-      if (variables.data.status === 'PENDING') {
-        const CORE_BLOOD_TESTS = [
-          SUPERPOWER_BLOOD_PANEL,
-          SUPERPOWER_ADVANCED_BLOOD_PANEL,
-        ];
-        if (CORE_BLOOD_TESTS.includes(order.serviceName)) {
-          track('scheduled_blood_draw', {
-            scheduled_date: variables.data.timestamp || order.startTimestamp,
-            collection_method: variables.data.method || order.method?.[0],
-            value: order.amount,
-          });
-        }
+      if (
+        variables.data.status === 'PENDING' &&
+        isBloodPanel(order.serviceName)
+      ) {
+        track('scheduled_blood_draw', {
+          scheduled_date: variables.data.timestamp || order.startTimestamp,
+          collection_method: variables.data.method || order.method?.[0],
+          value: order.amount,
+        });
       }
 
       queryClient.invalidateQueries({
