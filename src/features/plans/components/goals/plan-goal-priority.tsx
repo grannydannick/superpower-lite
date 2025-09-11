@@ -2,34 +2,36 @@ import { cva } from 'class-variance-authority';
 
 import { Body2 } from '@/components/ui/typography';
 
-const getPriorityVariant = cva('rounded-full px-2 py-0.5', {
+const getPriorityVariant = cva('shrink-0 rounded-full px-2 py-0.5', {
   variants: {
     priority: {
-      high: 'bg-pink-50 text-pink-700',
-      medium: 'bg-yellow-50 text-yellow-700',
-      low: 'bg-green-50 text-green-700',
-      default: 'bg-zinc-50 text-zinc-700',
+      'high-priority': 'bg-pink-50 text-pink-700',
+      'medium-priority': 'bg-yellow-50/20 text-yellow-700',
+      'low-priority': 'bg-green-50 text-green-700',
     },
   },
 });
 
-export const PlanGoalPriority = ({
-  priority,
-}: {
-  priority?: 'high' | 'medium' | 'low';
-}) => {
-  if (!priority) return null;
+export const PlanGoalPriority = ({ code }: { code?: string }) => {
+  // Only render if the code is one of the expected values
+  const validPriorities = ['high-priority', 'medium-priority', 'low-priority'];
+
+  if (!code || !validPriorities.includes(code)) {
+    return null;
+  }
+
+  const priority = code as 'high-priority' | 'medium-priority' | 'low-priority';
 
   const text = () => {
     switch (priority) {
-      case 'high':
+      case 'high-priority':
         return 'High priority';
-      case 'medium':
+      case 'medium-priority':
         return 'Medium priority';
-      case 'low':
+      case 'low-priority':
         return 'Low priority';
       default:
-        return 'Unknown';
+        return '';
     }
   };
 

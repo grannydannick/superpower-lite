@@ -327,7 +327,7 @@ export const MobileNavbar = () => {
     <>
       <div
         className={cn(
-          'flex justify-between lg:hidden items-center w-full p-4 fixed bottom-0 bg-white border-t border-t-zinc-100 z-10 h-[72px]',
+          'flex justify-between lg:hidden items-center w-full p-4 fixed bottom-0 bg-white border-t border-t-zinc-100 z-[51] h-[72px]',
         )}
       >
         {baseLinks.map((link, idx) => (

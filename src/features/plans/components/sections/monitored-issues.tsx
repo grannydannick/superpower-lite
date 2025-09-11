@@ -72,14 +72,16 @@ export const MonitoredIssues = () => {
                       </H4>
                       <H4
                         id="section-heading"
-                        className="line-clamp-2 font-semibold transition-colors group-hover:text-zinc-600"
+                        className="line-clamp-3 font-semibold transition-colors group-hover:text-zinc-600"
                       >
                         {goal.resource.description.text ||
                           goal.resource.description.coding?.[0].display ||
                           `Issue #${index + 1}`}
                       </H4>
                     </div>
-                    <PlanGoalPriority />
+                    <PlanGoalPriority
+                      code={goal.resource.priority?.coding?.[0].code}
+                    />
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-4 pb-4">
