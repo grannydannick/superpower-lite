@@ -27,17 +27,29 @@ export const getCollectionMethods = (
   const isBloodPanel =
     service.name === SUPERPOWER_BLOOD_PANEL ||
     service.name === CUSTOM_BLOOD_PANEL ||
-    service.name == ADVANCED_BLOOD_PANEL;
+    service.name === ADVANCED_BLOOD_PANEL;
   const INTERPRETED = getInterpretedAtHomeMethod(service);
+
+  // Helper to compute pricing text with customizable credit label
+  const getPricingText = (
+    option: CollectionOptionType,
+    hasCredit: boolean,
+    creditText: string,
+  ): string => {
+    if (option.disabled) return 'Not available';
+    if (hasCredit) return creditText;
+    if (option.price === 0) return 'Included';
+    return `+${formatMoney(option.price)}`;
+  };
 
   // Helper function to create collection method options with proper pricing
   const createInLabOption = (overrides: Partial<CollectionOptionType> = {}) => {
     const inLabOption = { ...COLLECTION_METHODS.IN_LAB, ...overrides };
-    const pricingText = hasAtHomeCredit
-      ? "Included (we'll refund your at-home fee)"
-      : inLabOption.price === 0
-        ? 'Included'
-        : `+${formatMoney(inLabOption.price)}`;
+    const pricingText = getPricingText(
+      inLabOption,
+      hasAtHomeCredit,
+      "Included (we'll refund your at-home fee)",
+    );
 
     return {
       ...inLabOption,
@@ -49,11 +61,11 @@ export const getCollectionMethods = (
     overrides: Partial<CollectionOptionType> = {},
   ) => {
     const interpretedOption = { ...INTERPRETED, ...overrides };
-    const pricingText = hasAtHomeCredit
-      ? 'Prepaid'
-      : interpretedOption.price === 0
-        ? 'Included'
-        : `+${formatMoney(interpretedOption.price)}`;
+    const pricingText = getPricingText(
+      interpretedOption,
+      hasAtHomeCredit,
+      'Prepaid',
+    );
 
     return {
       ...interpretedOption,
