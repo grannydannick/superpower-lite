@@ -62,11 +62,16 @@ export const useUpdateOrder = ({
       // Track order update events for blood draw scheduling
       const order = response.order;
 
-      // Track blood draw scheduling (when status changes from DRAFT to PENDING)
+      // Track blood draw scheduling and order (when status changes from DRAFT to PENDING)
       if (
         variables.data.status === 'PENDING' &&
         isBloodPanel(order.serviceName)
       ) {
+        track('ordered_blood_test', {
+          blood_test: order.serviceName,
+          value: order.amount,
+        });
+
         track('scheduled_blood_draw', {
           scheduled_date: variables.data.timestamp || order.startTimestamp,
           collection_method: variables.data.method || order.method?.[0],
