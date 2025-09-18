@@ -725,15 +725,13 @@ export interface ChatMessagePart {
 export interface ChatMessageAttachment {
   url: string;
   name: string;
-  contentType: string;
+  mediaType: string;
+  type: 'file';
 }
 
 export interface ChatMessage {
   id: string;
-  role: 'user' | 'data' | 'system' | 'assistant';
-  parts: ChatMessagePart[]; // JSON
-  experimental_attachments: ChatMessageAttachment[]; // JSON
-  // Note: content will soon be deprecated in @ai-sdk/react
-  content: string;
+  role: 'user' | 'system' | 'assistant';
+  parts: (ChatMessagePart | ChatMessageAttachment)[]; // JSON
   createdAt: Date;
 }

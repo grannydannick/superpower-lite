@@ -1,4 +1,4 @@
-import type { Message } from 'ai';
+import { isToolOrDynamicToolUIPart, type UIMessage } from 'ai';
 import equal from 'fast-deep-equal';
 import { CopyIcon } from 'lucide-react';
 import { memo } from 'react';
@@ -19,13 +19,13 @@ export function PureMessageActions({
   isLoading,
 }: {
   chatId: string;
-  message: Message;
+  message: UIMessage;
   isLoading: boolean;
 }) {
   const { track } = useAnalytics();
   if (isLoading) return null;
   if (message.role === 'user') return null;
-  if (message.toolInvocations && message.toolInvocations.length > 0)
+  if (message.parts.some((part) => isToolOrDynamicToolUIPart(part)))
     return null;
 
   const handleCopy = async () => {

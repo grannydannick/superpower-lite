@@ -1,6 +1,6 @@
 import { UseChatHelpers } from '@ai-sdk/react';
 import { useLocalStorage } from '@wojtekmaj/react-hooks';
-import { Attachment, Message, UIMessage } from 'ai';
+import { FileUIPart, UIMessage } from 'ai';
 import equal from 'fast-deep-equal';
 import { ArrowUpIcon } from 'lucide-react';
 import type React from 'react';
@@ -42,19 +42,18 @@ function PureMultimodalInput({
   setAttachments,
   messages,
   setMessages,
-  handleSubmit,
+  sendMessage,
 }: {
   chatId: string;
-  input: UseChatHelpers['input'];
-  setInput: UseChatHelpers['setInput'];
-  status: UseChatHelpers['status'];
+  input: string;
+  setInput: Dispatch<SetStateAction<string>>;
+  status: UseChatHelpers<UIMessage>['status'];
   stop: () => void;
-  attachments: Array<Attachment>;
-  setAttachments: Dispatch<SetStateAction<Array<Attachment>>>;
+  attachments: Array<FileUIPart>;
+  setAttachments: Dispatch<SetStateAction<Array<FileUIPart>>>;
   messages: Array<UIMessage>;
-  setMessages: UseChatHelpers['setMessages'];
-  append: UseChatHelpers['append'];
-  handleSubmit: UseChatHelpers['handleSubmit'];
+  setMessages: UseChatHelpers<UIMessage>['setMessages'];
+  sendMessage: UseChatHelpers<UIMessage>['sendMessage'];
   className?: string;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -126,8 +125,14 @@ function PureMultimodalInput({
   const submitForm = useCallback(() => {
     window.history.replaceState({}, '', `/concierge/${chatId}`);
 
-    handleSubmit(undefined, {
-      experimental_attachments: attachments,
+    // Track the AI message event
+    track('sent_message_ai', {
+      message_length: input.length,
+    });
+
+    sendMessage({
+      text: input,
+      files: attachments,
     });
 
     setAttachments([]);
@@ -139,7 +144,7 @@ function PureMultimodalInput({
     }
   }, [
     chatId,
-    handleSubmit,
+    sendMessage,
     attachments,
     setAttachments,
     setLocalStorageInput,
@@ -167,6 +172,7 @@ function PureMultimodalInput({
         }));
       } catch (error) {
         toast.error('Failed to upload files, please try again!');
+        console.error('Error uploading files!', error);
         return [];
       }
     },
@@ -203,7 +209,15 @@ function PureMultimodalInput({
 
         setAttachments((currentAttachments) => [
           ...currentAttachments,
-          ...uploadedAttachments,
+          ...uploadedAttachments.map(
+            (attachment) =>
+              ({
+                url: attachment.url,
+                filename: attachment.name,
+                type: 'file' as const,
+                mediaType: attachment.contentType,
+              }) satisfies FileUIPart,
+          ),
         ]);
       } catch (error) {
         console.error('Error uploading files!', error);
@@ -314,8 +328,9 @@ function PureMultimodalInput({
                   key={filename}
                   attachment={{
                     url: '',
-                    name: filename,
-                    contentType: '',
+                    filename: filename,
+                    mediaType: '',
+                    type: 'file',
                   }}
                   isUploading={true}
                   onRemove={() => handleRemoveAttachment(filename)}
@@ -402,7 +417,7 @@ function PureStopButton({
   setMessages,
 }: {
   stop: () => void;
-  setMessages: Dispatch<SetStateAction<Array<Message>>>;
+  setMessages: Dispatch<SetStateAction<Array<UIMessage>>>;
 }) {
   return (
     <Button

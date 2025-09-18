@@ -1,7 +1,6 @@
 import { UseChatHelpers } from '@ai-sdk/react';
 import { UIMessage } from 'ai';
-import equal from 'fast-deep-equal';
-import { memo, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom';
@@ -13,9 +12,9 @@ import { PreviewMessage, ThinkingMessage } from './message';
 
 interface MessagesProps {
   chatId: string;
-  status: UseChatHelpers['status'];
-  messages: Array<UIMessage>;
-  setMessages: UseChatHelpers['setMessages'];
+  status: UseChatHelpers<UIMessage>['status'];
+  messages: UseChatHelpers<UIMessage>['messages'];
+  setMessages: UseChatHelpers<UIMessage>['setMessages'];
 }
 
 function PureMessages({
@@ -86,11 +85,16 @@ function PureMessages({
   );
 }
 
-export const Messages = memo(PureMessages, (prevProps, nextProps) => {
-  if (prevProps.status !== nextProps.status) return false;
-  if (prevProps.status && nextProps.status) return false;
-  if (prevProps.messages.length !== nextProps.messages.length) return false;
-  if (!equal(prevProps.messages, nextProps.messages)) return false;
+export const Messages = PureMessages;
 
-  return true;
-});
+// FIXME(Kenta): memoization condition is incorrect causing unfired rerenders
+//  when text is streamed in. To be fixed.
+//  See https://github.com/superpowerdotcom/superpower-app/pull/719
+// export const Messages = memo(PureMessages, (prevProps, nextProps) => {
+//   if (prevProps.status !== nextProps.status) return false;
+//   if (prevProps.status && nextProps.status) return false;
+//   if (prevProps.messages.length !== nextProps.messages.length) return false;
+//   if (!equal(prevProps.messages, nextProps.messages)) return false;
+
+//   return true;
+// });

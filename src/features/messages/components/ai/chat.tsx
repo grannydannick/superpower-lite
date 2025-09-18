@@ -1,5 +1,5 @@
 import { useChat } from '@ai-sdk/react';
-import type { Attachment, Message } from 'ai';
+import { DefaultChatTransport, FileUIPart, type UIMessage } from 'ai';
 import { useEffect, useState } from 'react';
 
 import { toast } from '@/components/ui/sonner';
@@ -20,12 +20,13 @@ const publicErrors = [
   'Too many requests, please try again later.',
   'This chat has ended. Please start a new chat.',
 ];
+
 export function Chat({
   id,
   initialMessages,
 }: {
   id: string;
-  initialMessages: Array<Message>;
+  initialMessages: Array<UIMessage>;
 }) {
   const { refetch } = useHistory();
   const { track } = useAnalytics();
@@ -36,40 +37,42 @@ export function Chat({
   const [lastSentMessageTime, setLastSentMessageTime] = useState<number | null>(
     null,
   );
-  const {
-    messages,
-    setMessages,
-    handleSubmit,
-    input,
-    setInput,
-    append,
-    status,
-    stop,
-  } = useChat({
+  const [input, setInput] = useState('');
+  const { messages, setMessages, sendMessage, status, stop } = useChat({
     id,
-    body: { id },
-    api: `${env.API_URL}/chat`,
-    headers: {
-      Accept: 'application/json',
-      Authorization: `Bearer ${getActiveLogin()?.accessToken}`,
-    },
-    initialMessages,
+    transport: new DefaultChatTransport({
+      api: `${env.API_URL}/chat`,
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${getActiveLogin()?.accessToken}`,
+      },
+    }),
+    messages: initialMessages,
     experimental_throttle: 100,
     generateId: generateUUID,
-    onFinish: (message) => {
+    onFinish: ({ message }) => {
       refetch();
 
       // Track AI message events
       if (message.role === 'user') {
         const currentTime = Date.now();
         setLastSentMessageTime(currentTime);
+
+        const messageLength = message.parts?.reduce((acc, part) => {
+          if (part.type === 'text') {
+            acc += part.text.length;
+          }
+          return acc;
+        }, 0);
+
         track('sent_message_ai', {
-          message_length: message.content?.length || 0,
+          message_length: messageLength ?? 0,
         });
       } else if (message.role === 'assistant') {
         const responseTime = lastSentMessageTime
           ? Date.now() - lastSentMessageTime
           : null;
+
         track('received_message_ai', {
           response_time: responseTime,
         });
@@ -102,7 +105,7 @@ export function Chat({
   const incrementMessageCount = useChatStore((s) => s.incrementMessageCount);
   const addResponseTime = useChatStore((s) => s.addResponseTime);
 
-  const [attachments, setAttachments] = useState<Array<Attachment>>([]);
+  const [attachments, setAttachments] = useState<Array<FileUIPart>>([]);
 
   // Initialize session start time when component mounts for AI chat
   useEffect(() => {
@@ -150,10 +153,11 @@ export function Chat({
             chatId={id}
             input={input}
             setInput={setInput}
-            handleSubmit={(e) => {
+            sendMessage={(message, options) => {
               setLastUserMessageTime(Date.now());
               incrementMessageCount();
-              handleSubmit(e);
+              setInput('');
+              return sendMessage(message, options);
             }}
             status={status}
             stop={stop}
@@ -161,7 +165,6 @@ export function Chat({
             setAttachments={setAttachments}
             messages={messages}
             setMessages={setMessages}
-            append={append}
           />
         </form>
 

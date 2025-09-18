@@ -1,4 +1,4 @@
-import type { Attachment } from 'ai';
+import type { FileUIPart } from 'ai';
 import { FileIcon, ImageIcon, LoaderCircle, X } from 'lucide-react';
 import { Document } from 'react-pdf';
 
@@ -10,12 +10,12 @@ export const PreviewAttachment = ({
   isUploading = false,
   onRemove,
 }: {
-  attachment: Attachment;
+  attachment: FileUIPart;
   isUploading?: boolean;
   onRemove?: () => void;
 }) => {
-  const { name, url, contentType } = attachment;
-  const type = contentType?.replace('application/', '');
+  const { filename, url, mediaType } = attachment;
+  const type = mediaType?.replace('application/', '');
 
   return (
     <div className="ml-auto flex flex-col gap-2 duration-500 animate-in">
@@ -33,9 +33,9 @@ export const PreviewAttachment = ({
         <div className="flex aspect-square flex-1 shrink-0 items-center justify-center">
           {isUploading ? (
             <Loader />
-          ) : contentType?.startsWith('image') ? (
+          ) : mediaType?.startsWith('image') ? (
             <ImageIcon className="size-4 shrink-0 text-zinc-500" />
-          ) : contentType?.startsWith('application/pdf') ? (
+          ) : mediaType?.startsWith('application/pdf') ? (
             <Document
               file={url}
               loading={<Loader />}
@@ -47,7 +47,7 @@ export const PreviewAttachment = ({
           )}
         </div>
         <div className="w-20">
-          <Body2 className="line-clamp-1">{name}</Body2>
+          <Body2 className="line-clamp-1">{filename}</Body2>
           <Body2 className="line-clamp-1 uppercase text-zinc-500">{type}</Body2>
         </div>
       </div>

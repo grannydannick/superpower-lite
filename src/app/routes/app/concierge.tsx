@@ -1,4 +1,4 @@
-import { Attachment, UIMessage } from 'ai';
+import { FileUIPart, UIMessage } from 'ai';
 import { useParams } from 'react-router-dom';
 
 import { useMessages } from '@/features/messages/api/get-messages';
@@ -18,16 +18,24 @@ export const ConciergeRoute = () => {
   });
 
   function convertToUIMessages(messages: Array<ChatMessage>): Array<UIMessage> {
-    return messages.map((message) => ({
-      id: message.id,
-      parts: message.parts as UIMessage['parts'],
-      role: message.role as UIMessage['role'],
-      // Note: content will soon be deprecated in @ai-sdk/react
-      content: '',
-      createdAt: message.createdAt,
-      experimental_attachments:
-        (message.experimental_attachments as Array<Attachment>) ?? [],
-    }));
+    return messages.map(
+      (message) =>
+        ({
+          id: message.id,
+          parts: message.parts.map((part) => {
+            if (part.type === 'file') {
+              return {
+                type: 'file' as const,
+                url: part.url,
+                filename: part.name,
+                mediaType: part.mediaType,
+              } satisfies FileUIPart;
+            }
+            return part;
+          }),
+          role: message.role,
+        }) satisfies UIMessage,
+    );
   }
 
   if (getMessagesQuery.isLoading) {

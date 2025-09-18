@@ -1,4 +1,4 @@
-import { UseChatHelpers } from '@ai-sdk/react';
+import { UIMessage, UseChatHelpers } from '@ai-sdk/react';
 import { PlusIcon } from 'lucide-react';
 import { memo } from 'react';
 
@@ -15,7 +15,7 @@ function PureAttachmentsButton({
   status,
 }: {
   fileInputRef: React.MutableRefObject<HTMLInputElement | null>;
-  status: UseChatHelpers['status'];
+  status: UseChatHelpers<UIMessage>['status'];
 }) {
   return (
     <TooltipProvider>

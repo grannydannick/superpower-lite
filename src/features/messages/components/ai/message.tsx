@@ -1,10 +1,9 @@
 import { UseChatHelpers } from '@ai-sdk/react';
 import { UIMessage } from 'ai';
 import cx from 'classnames';
-import equal from 'fast-deep-equal';
 import { AnimatePresence, motion } from 'framer-motion';
 import { InfoIcon } from 'lucide-react';
-import { memo, useState } from 'react';
+import { useState } from 'react';
 
 import { AIIcon } from '@/components/icons/ai-icon';
 import { AnimatedIcon } from '@/features/messages/components/ai/animated-icon';
@@ -22,7 +21,7 @@ const PurePreviewMessage = ({
   chatId: string;
   message: UIMessage;
   isLoading: boolean;
-  setMessages: UseChatHelpers['setMessages'];
+  setMessages: UseChatHelpers<UIMessage>['setMessages'];
 }) => {
   const [mode] = useState<'view' | 'edit'>('view');
 
@@ -39,6 +38,8 @@ const PurePreviewMessage = ({
   const isEmptyMessage =
     !message.parts?.length ||
     (message.parts.length === 1 && message.parts[0].type === 'step-start');
+
+  const fileParts = message.parts?.filter((part) => part.type === 'file');
 
   return (
     <AnimatePresence>
@@ -63,17 +64,16 @@ const PurePreviewMessage = ({
           {renderIcon()}
 
           <div className="flex w-full flex-col gap-2">
-            {message.experimental_attachments &&
-              message.experimental_attachments?.length > 0 && (
-                <div className="flex shrink-0 flex-row items-center gap-2 overflow-x-scroll px-4 pt-2 duration-500 animate-in fade-in scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300 [mask-image:linear-gradient(to_right,transparent,black_2%,black_98%,transparent)] hover:scrollbar-thumb-zinc-400">
-                  {message.experimental_attachments.map((attachment) => (
-                    <PreviewAttachment
-                      key={attachment.url}
-                      attachment={attachment}
-                    />
-                  ))}
-                </div>
-              )}
+            {fileParts && fileParts?.length > 0 && (
+              <div className="flex shrink-0 flex-row items-center gap-2 overflow-x-scroll px-4 pt-2 duration-500 animate-in fade-in scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300 [mask-image:linear-gradient(to_right,transparent,black_2%,black_98%,transparent)] hover:scrollbar-thumb-zinc-400">
+                {fileParts.map((attachment) => (
+                  <PreviewAttachment
+                    key={attachment.url}
+                    attachment={attachment}
+                  />
+                ))}
+              </div>
+            )}
 
             {message.parts?.map((part, index) => {
               const { type } = part;
@@ -137,22 +137,20 @@ const PurePreviewMessage = ({
   );
 };
 
-export const PreviewMessage = memo(
-  PurePreviewMessage,
-  (prevProps, nextProps) => {
-    if (prevProps.isLoading !== nextProps.isLoading) return false;
-    if (prevProps.message.content !== nextProps.message.content) return false;
-    if (
-      !equal(
-        prevProps.message.toolInvocations,
-        nextProps.message.toolInvocations,
-      )
-    )
-      return false;
+export const PreviewMessage = PurePreviewMessage;
 
-    return true;
-  },
-);
+// FIXME(Kenta): memoization condition is incorrect causing unfired rerenders
+//  when text is streamed in. To be fixed.
+//  See https://github.com/superpowerdotcom/superpower-app/pull/719
+// export const PreviewMessage = memo(
+//   PurePreviewMessage,
+//   (prevProps, nextProps) => {
+//     if (prevProps.isLoading !== nextProps.isLoading) return false;
+//     if (!equal(prevProps.message.parts, nextProps.message.parts)) return false;
+
+//     return true;
+//   },
+// );
 
 export const ThinkingMessage = () => {
   return (

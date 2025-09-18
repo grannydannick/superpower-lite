@@ -1,12 +1,11 @@
-import { UseChatHelpers } from '@ai-sdk/react';
 import { motion } from 'framer-motion';
-import { memo } from 'react';
+import { Dispatch, memo, SetStateAction } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Body2 } from '@/components/ui/typography';
 
 interface SuggestedActionsProps {
-  setInput: UseChatHelpers['setInput'];
+  setInput: Dispatch<SetStateAction<string>>;
 }
 
 function PureSuggestedActions({ setInput }: SuggestedActionsProps) {

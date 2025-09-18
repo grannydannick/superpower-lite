@@ -197,7 +197,6 @@ export const UpsellCheckout = ({
           <H4>Total</H4>
           <H4 className="text-right text-zinc-500">
             <NumberFlow
-              currency="USD"
               format={{
                 style: 'currency',
                 currency: 'USD',
