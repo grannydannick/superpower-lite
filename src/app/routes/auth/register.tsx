@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 
 import { RegisterForm } from '@/features/auth/components/register-form';
-import { ConditionalIntercomProvider } from '@/lib/intercom';
 
 export const RegisterRoute = () => {
   // this is basic hook to prevent refreshses during checkout operation
@@ -17,9 +16,5 @@ export const RegisterRoute = () => {
     };
   }, []);
 
-  return (
-    <ConditionalIntercomProvider>
-      <RegisterForm />
-    </ConditionalIntercomProvider>
-  );
+  return <RegisterForm />;
 };
