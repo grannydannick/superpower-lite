@@ -7,7 +7,7 @@ import { TEST_STEPS } from '../const/test-steps';
 import { getNextRecommendedDay } from '../utils/get-next-recommended-day';
 
 export const PhlebotomyRecommendations = () => {
-  const { data } = useUser();
+  const { data: user } = useUser();
 
   return (
     <>
@@ -15,8 +15,8 @@ export const PhlebotomyRecommendations = () => {
         Book your test on or after {getNextRecommendedDay()} for most accurate
         results.
       </Body1>
-      {data?.gender === 'female' && (
-        <ul className="list-outside list-disc space-y-3 pb-8 pl-5 marker:text-zinc-300 md:mb-0 md:mt-4">
+      {user?.gender?.toLowerCase() === 'female' && (
+        <ul className="list-outside list-disc space-y-3 pl-5 marker:text-zinc-300 md:mb-0 md:mt-4">
           {FEMALE_RECOMMENDATIONS.map((recommendation, index) => (
             <li key={index}>
               <Body1 className="text-secondary">{recommendation}</Body1>
@@ -24,7 +24,7 @@ export const PhlebotomyRecommendations = () => {
           ))}
         </ul>
       )}
-      <IconList items={TEST_STEPS} className="my-8" />
+      <IconList items={TEST_STEPS} className="mt-8" />
     </>
   );
 };
