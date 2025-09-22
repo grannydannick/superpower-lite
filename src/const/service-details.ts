@@ -29,7 +29,7 @@ export const SERVICE_DETAILS: Record<string, ServiceDetails> = {
       {
         question: 'Pre-test considerations',
         answer:
-          '- Hydrate for 24 hours prior to sample collection and after your blood draw is completed.\n- No eating 10 hours prior to the appointment. The sample should be collected in a fasted state.\n- No caffeine 10 hours prior to your appointment -- just water.\n- Continue taking your medications and supplements as scheduled.\n- Text the Superpower SMS Concierge if you have any questions or concerns ahead of testing.',
+          '- Hydrate for 24 hours prior to sample collection and after your blood draw is completed.\n- No eating 10 hours prior to the appointment. The sample should be collected in a fasted state.\n- No caffeine 10 hours prior to your appointment -- just water.\n- Stop taking supplements containing biotin such as multivitamins, B-complex, or hair skin and nail vitamins. Continue taking prescribed medications.\n- Text the Superpower SMS Concierge if you have any questions or concerns ahead of testing.',
       },
     ],
   },
@@ -53,7 +53,7 @@ export const SERVICE_DETAILS: Record<string, ServiceDetails> = {
       {
         question: 'Pre-test considerations',
         answer:
-          '- Hydrate for 24 hours prior to sample collection and after your blood draw is completed.\n- No eating 10 hours prior to the appointment. The sample should be collected in a fasted state.\n- No caffeine 10 hours prior to your appointment -- just water.\n- Continue taking your medications and supplements as scheduled.',
+          '- Hydrate for 24 hours prior to sample collection and after your blood draw is completed.\n- No eating 10 hours prior to the appointment. The sample should be collected in a fasted state.\n- No caffeine 10 hours prior to your appointment -- just water.\n- Stop taking supplements containing biotin such as multivitamins, B-complex, or hair skin and nail vitamins. Continue taking prescribed medications.',
       },
     ],
   },
