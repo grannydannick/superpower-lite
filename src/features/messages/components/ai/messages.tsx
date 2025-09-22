@@ -3,7 +3,6 @@ import { UIMessage } from 'ai';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom';
 import { cn } from '@/lib/utils';
 
 import { useHistory } from '../../api/get-history';
@@ -26,8 +25,6 @@ function PureMessages({
   const { data: history } = useHistory();
   const navigate = useNavigate();
   const { id } = useParams();
-  const [messagesContainerRef, messagesEndRef] =
-    useScrollToBottom<HTMLDivElement>();
 
   // If the chat is ready and there are messages, navigate to the chat
   useEffect(() => {
@@ -48,10 +45,7 @@ function PureMessages({
     >
       <div className="pointer-events-none absolute top-0 z-10 h-8 w-full bg-gradient-to-t from-transparent to-zinc-50" />
       <div className="pointer-events-none absolute bottom-0 z-10 h-8 w-full bg-gradient-to-b from-transparent to-zinc-50" />
-      <div
-        ref={messagesContainerRef}
-        className="relative flex max-h-[calc(100vh-20.5rem)] min-h-32 min-w-0 flex-col gap-6 overflow-y-scroll py-4 transition-all duration-200 ease-in-out md:max-h-full lg:pb-0"
-      >
+      <div className="relative flex max-h-[calc(100vh-20.5rem)] min-h-32 min-w-0 flex-col gap-6 overflow-y-scroll py-4 transition-all duration-200 ease-in-out md:max-h-full lg:pb-0">
         {messages.map((message, index) => (
           <div
             key={message.id}
@@ -76,10 +70,7 @@ function PureMessages({
             </div>
           )}
 
-        <div
-          ref={messagesEndRef}
-          className="min-h-[24px] min-w-[24px] shrink-0"
-        />
+        <div className="min-h-[24px] min-w-[24px] shrink-0" />
       </div>
     </div>
   );
