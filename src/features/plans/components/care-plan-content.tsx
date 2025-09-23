@@ -42,7 +42,7 @@ export const CarePlanContent = () => {
           {data?.firstName}&apos;s Action Plan
         </H1>
         <Body1 className="m-0 leading-none text-secondary">
-          {moment(plan.created).format('MMM Do, YYYY')}
+          {moment(plan.period?.start).format('MMM Do, YYYY')}
         </Body1>
       </div>
       <Overview />
