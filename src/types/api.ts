@@ -175,6 +175,7 @@ export type HealthcareService = Entity<{
 export type Coupon = {
   amount_off: number | null;
   percent_off: number | null;
+  metadata?: Record<string, string>;
 };
 
 /* LABS */
@@ -327,6 +328,7 @@ export enum OrderStatus {
   revoked = 'REVOKED',
   draft = 'DRAFT',
   pending = 'PENDING',
+  active = 'ACTIVE',
 }
 
 export type CollectionMethodType =

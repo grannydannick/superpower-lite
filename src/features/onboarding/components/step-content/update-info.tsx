@@ -35,6 +35,7 @@ import { OnboardingCard } from '@/features/onboarding/components/onboarding-memb
 import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { useCreateAddress, useEditAddress } from '@/features/users/api';
 import { useUpdateUser } from '@/features/users/api/update-user';
+import { useEventDraw } from '@/hooks/use-event-draw';
 import { useUser } from '@/lib/auth';
 import { useStepper } from '@/lib/stepper';
 import { cn } from '@/lib/utils';
@@ -90,7 +91,8 @@ export type UpdateUserInput = z.infer<typeof updateUserInputSchema>;
 
 export const UpdateInfo = () => {
   const { data: user } = useUser();
-  const { activeStep, nextStep } = useStepper((s) => s);
+  const { activeStep, nextStep, jump } = useStepper((s) => s);
+  const { isEventDrawUser } = useEventDraw();
   const form = useForm<UpdateUserInput>({
     shouldUnregister: false,
     resolver: zodResolver(updateUserInputSchema),
@@ -153,7 +155,13 @@ export const UpdateInfo = () => {
       taskName: 'onboarding',
       data: { progress: activeStep + 1 },
     });
-    nextStep();
+
+    // Jump to intake step for event draw users, otherwise go to next step
+    if (isEventDrawUser) {
+      jump('intake');
+    } else {
+      nextStep();
+    }
   };
 
   const isLoading =

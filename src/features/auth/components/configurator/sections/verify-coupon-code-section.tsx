@@ -8,7 +8,13 @@ import { useValidateCode } from '@/features/auth/api';
 import { useCheckoutContext } from '@/features/auth/stores';
 import { useIsFirstRender } from '@/hooks/use-first-render';
 import { cn } from '@/lib/utils';
-import { clearManualCouponOverride, getAccessCode } from '@/utils/access-code';
+import {
+  clearManualCouponOverride,
+  getAccessCode,
+  setManualCouponOverride,
+} from '@/utils/access-code';
+
+import { EventDrawInvitationModal } from '../../event-draw-invitation-modal';
 
 const AccessCodeInputSection = () => {
   const { isFirstRender } = useIsFirstRender();
@@ -16,18 +22,37 @@ const AccessCodeInputSection = () => {
     useCheckoutContext();
 
   const [code, setCode] = useState(coupon ?? '');
+  const [showEventDrawModal, setShowEventDrawModal] = useState(false);
+
+  const handleEventDrawModalContinue = () => {
+    setCoupon(code);
+    setCode(code);
+    setShowEventDrawModal(false);
+  };
 
   const validateCodeMutation = useValidateCode({
     mutationConfig: {
       onSuccess: (data, variables) => {
         if (data.coupon) {
-          // set coupon code in onboarding context
-          setCoupon(variables.accessCode);
-          // set updated code in the input box
-          setCode(variables.accessCode);
+          setManualCouponOverride(variables.accessCode, data.coupon.metadata);
+
+          const isEventDraw = data.coupon.metadata?.event_type === 'event_draw';
+
+          if (isEventDraw) {
+            setShowEventDrawModal(true);
+          } else {
+            setCoupon(variables.accessCode);
+            setCode(variables.accessCode);
+          }
 
           toast.success('Access code successfully applied');
         }
+      },
+      onError: (error) => {
+        toast.error(error.message);
+        setCoupon(null);
+        clearManualCouponOverride();
+        setShowEventDrawModal(false);
       },
     },
   });
@@ -43,6 +68,7 @@ const AccessCodeInputSection = () => {
       clearManualCouponOverride();
       setCoupon(getAccessCode());
       validateCodeMutation.reset();
+      setShowEventDrawModal(false);
     }
   }, [code, isFirstRender]);
 
@@ -112,6 +138,12 @@ const AccessCodeInputSection = () => {
           <Body2 className="text-vermillion-700">Access code applied</Body2>
         ) : null}
       </div>
+
+      {/* Event Draw Invitation Modal */}
+      <EventDrawInvitationModal
+        isOpen={showEventDrawModal}
+        onContinue={handleEventDrawModalContinue}
+      />
     </section>
   );
 };

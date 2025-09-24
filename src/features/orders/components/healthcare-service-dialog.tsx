@@ -23,7 +23,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { getTimelineQueryOptions } from '@/features/home/api/get-timeline';
-import { getOrdersQueryOptions } from '@/features/orders/api';
+import { getOrdersQueryOptions, useOrders } from '@/features/orders/api';
 import {
   OrderStoreProvider,
   useOrder,
@@ -33,7 +33,7 @@ import { getStepsFromService } from '@/features/orders/utils/get-steps-for-servi
 import { getServicesQueryOptions } from '@/features/services/api';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { StepperStoreProvider, useStepper } from '@/lib/stepper';
-import { HealthcareService } from '@/types/api';
+import { HealthcareService, OrderStatus } from '@/types/api';
 
 /**
  * This component is the main renderer of the scheduling process for all services.
@@ -68,12 +68,21 @@ export const HealthcareServiceDialog = ({
 
   const key = steps.map((s) => s.id).join('-');
 
+  const ordersQuery = useOrders({
+    queryConfig: { refetchOnMount: 'always' },
+  });
+
+  const existingDraftOrder = ordersQuery.data?.orders
+    .filter((o) => o.status === OrderStatus.draft)
+    .find((o) => o.serviceId === healthcareService.id);
+
   return (
     <StepperStoreProvider key={key} steps={steps}>
       <OrderStoreProvider
         service={healthcareService}
         tz={moment.tz.guess()}
         isBookingModal={isBookingModal}
+        existingDraftOrder={existingDraftOrder}
       >
         <HealthcareServiceDialogConsumer onSubmit={onSubmit}>
           {children}

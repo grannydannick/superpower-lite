@@ -76,7 +76,6 @@ export const OnboardingRoute = () => {
 
 const Step = () => {
   const { steps, activeStep } = useStepper((s) => s);
-
   const currentStep = steps[activeStep];
 
   return currentStep?.content ?? null;

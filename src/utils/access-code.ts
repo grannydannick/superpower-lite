@@ -1,10 +1,29 @@
 import { getPartnerData } from './dub';
 
 // Store manual coupon override in sessionStorage
-export const setManualCouponOverride = (accessCode: string) => {
+export const setManualCouponOverride = (
+  accessCode: string,
+  metadata?: Record<string, string>,
+) => {
+  let finalMetadata = metadata;
+  if (!metadata) {
+    try {
+      const existing = sessionStorage.getItem('superpower-manual-coupon');
+      if (existing) {
+        const parsed = JSON.parse(existing);
+        if (parsed.metadata) {
+          finalMetadata = parsed.metadata;
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to parse existing coupon metadata:', error);
+    }
+  }
+
   const override = {
     code: accessCode.trim(),
     timestamp: Date.now(),
+    metadata: finalMetadata,
   };
   sessionStorage.setItem('superpower-manual-coupon', JSON.stringify(override));
 };
@@ -65,5 +84,33 @@ export const getAccessCode = (): string | null => {
     return dubCookie.discount.couponTestId;
   }
 
+  return null;
+};
+
+// Check if the current coupon is an event draw coupon
+export const isEventDrawCoupon = (): boolean => {
+  try {
+    const stored = sessionStorage.getItem('superpower-manual-coupon');
+    if (stored) {
+      const override = JSON.parse(stored);
+      return override.metadata?.event_type === 'event_draw';
+    }
+  } catch (error) {
+    clearManualCouponOverride();
+  }
+  return false;
+};
+
+// Get event draw metadata from the current coupon
+export const getEventDrawMetadata = (): Record<string, string> | null => {
+  try {
+    const stored = sessionStorage.getItem('superpower-manual-coupon');
+    if (stored) {
+      const override = JSON.parse(stored);
+      return override.metadata || null;
+    }
+  } catch (error) {
+    clearManualCouponOverride();
+  }
   return null;
 };

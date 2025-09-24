@@ -14,6 +14,7 @@ import { StepID } from '@/features/orders/types/step-id';
 import { useServices } from '@/features/services/api';
 import { useSubscriptions } from '@/features/settings/api';
 import { useUpdateTask } from '@/features/tasks/api/update-task';
+import { useEventDraw } from '@/hooks/use-event-draw';
 import { useStepper } from '@/lib/stepper';
 import { HealthcareService } from '@/types/api';
 
@@ -21,6 +22,7 @@ const Booking = ({ bloodPanel }: { bloodPanel?: HealthcareService }) => {
   const { activeStep, nextStep } = useStepper((s) => s);
   const ordersQuery = useOrders({});
   const { mutateAsync: updateTaskProgress, isError } = useUpdateTask();
+  const { isEventDrawUser } = useEventDraw();
 
   // ref to track if updateOrder has been called already
   const hasCheckedRef = useRef<boolean>(false);
@@ -69,10 +71,17 @@ const Booking = ({ bloodPanel }: { bloodPanel?: HealthcareService }) => {
     return null;
   }
 
+  const excludeSteps = [StepID.INFO, StepID.REFERRAL];
+
+  // For event draw users, also exclude phlebotomy and scheduler steps
+  if (isEventDrawUser) {
+    excludeSteps.push(StepID.PHLEBOTOMY, StepID.SCHEDULER);
+  }
+
   return (
     <HealthcareServiceDialog
       healthcareService={bloodPanel}
-      excludeSteps={[StepID.INFO, StepID.REFERRAL]}
+      excludeSteps={excludeSteps}
       onSubmit={updateStep}
       isBookingModal={false}
     />

@@ -6,6 +6,7 @@ import {
   CollectionMethodType,
   HealthcareService,
   Location,
+  Order,
   ServiceItem,
   Slot,
 } from '@/types/api';
@@ -14,6 +15,7 @@ export interface OrderStoreProps {
   service: HealthcareService;
   tz: string;
   isBookingModal?: boolean;
+  existingDraftOrder?: Order;
 }
 
 /**
@@ -57,12 +59,36 @@ const initialState = {
 };
 
 export const orderStoreCreator = (initProps: OrderStoreProps) => {
+  const getInitialCollectionMethod = (): CollectionMethodType | null => {
+    if (
+      initProps.service.name === ADVISORY_CALL ||
+      initProps.service.name === GRAIL_GALLERI_MULTI_CANCER_TEST
+    ) {
+      return 'AT_HOME';
+    }
+    return null;
+  };
+
   return createStore<OrderStore>()(
     devtools(
       (set) => ({
         ...initProps,
         ...initialState,
         isBookingModal: initProps.isBookingModal ?? false,
+
+        location: initProps.existingDraftOrder?.location || null,
+        slot: initProps.existingDraftOrder?.startTimestamp
+          ? {
+              start: initProps.existingDraftOrder.startTimestamp,
+              end:
+                initProps.existingDraftOrder.endTimestamp ||
+                initProps.existingDraftOrder.startTimestamp,
+            }
+          : null,
+        collectionMethod:
+          (initProps.existingDraftOrder?.method?.[0] as CollectionMethodType) ||
+          getInitialCollectionMethod(),
+        tz: initProps.existingDraftOrder?.timezone || initProps.tz,
 
         updateItems: (item: ServiceItem) =>
           set((state) => {
@@ -78,11 +104,6 @@ export const orderStoreCreator = (initProps: OrderStoreProps) => {
                 : [...state.items, item],
             };
           }),
-        collectionMethod:
-          initProps.service.name === ADVISORY_CALL ||
-          initProps.service.name === GRAIL_GALLERI_MULTI_CANCER_TEST
-            ? 'AT_HOME'
-            : null,
         updateCollectionMethod: (collectionMethod) => set({ collectionMethod }),
         updateLocation: (location) => set({ location }),
         setTz: (tz) => set({ tz }),

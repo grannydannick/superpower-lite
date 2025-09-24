@@ -34,7 +34,7 @@ export const IconList = ({
                 className="relative z-[5] mr-4 mt-1 bg-white"
               />
               <div className="mb-5 py-2">
-                <Body1 className="font-medium text-foreground">
+                <Body1 className="font-bold text-foreground">
                   {item.title}
                 </Body1>
                 <Body1 className="text-secondary">{item.description}</Body1>
