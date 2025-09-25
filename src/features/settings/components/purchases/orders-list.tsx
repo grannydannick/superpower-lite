@@ -125,7 +125,6 @@ const OrderRowCard = ({
   ...rest
 }: OrderRowContentProps) => {
   const navigate = useNavigate();
-  const { width } = useWindowDimensions();
   const haveInvoice =
     multiPlatformOrder.invoiceId || multiPlatformOrder.invoiceUrl;
 
@@ -144,8 +143,8 @@ const OrderRowCard = ({
       navigate('/services');
     }
 
-    if (multiPlatformOrder.invoiceUrl && width >= 768) {
-      navigate(multiPlatformOrder.invoiceUrl);
+    if (multiPlatformOrder.invoiceUrl) {
+      window.open(multiPlatformOrder.invoiceUrl, '_blank');
     }
 
     return;
