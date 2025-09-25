@@ -20,13 +20,12 @@ export const FilesHub = () => {
               <div className="flex flex-row items-center justify-between gap-4 p-12">
                 <div className="mr-12">
                   <h3 className="text-base text-primary lg:text-xl">
-                    Integrate your healthcare data into the Superpower ecosystem
+                    Upload your past Labcorp and Quest blood results (Beta)
                   </h3>
                   <p className="mt-2 text-sm text-zinc-600 lg:text-base">
-                    Upload your health record PDFs like lab results, gut tests
-                    and blood panels. We&apos;ll process them and add them to
-                    your profile—starting with full support for blood panels.
-                    More document types coming soon.
+                    We&apos;ll process your results and display them on the data
+                    page so you can see how your health evolves over time. More
+                    document types coming soon.
                   </p>
                 </div>
                 <div className="flex flex-row items-center space-x-6">
