@@ -12,14 +12,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { toast } from '@/components/ui/sonner';
-import { useSendMagicLink } from '@/features/auth/api/send-magic-link';
 import { useCheckoutContext } from '@/features/auth/stores';
 import {
   useAddPaymentMethod,
   useCreateSetupIntent,
   useCreateSubscription,
 } from '@/features/settings/api';
-import { RegisterInput, useRegister, useUser } from '@/lib/auth';
+import { RegisterInput, useRegister } from '@/lib/auth';
 import { getActiveLogin } from '@/lib/utils';
 import { User } from '@/types/api';
 import { getAccessCode } from '@/utils/access-code';
@@ -41,7 +40,6 @@ export const useCheckout = ({
     undefined,
   );
   const queryClient = useQueryClient();
-  const { data: user } = useUser();
 
   // queries / mutations
   const addPaymentMethodMutation = useAddPaymentMethod();
@@ -65,35 +63,12 @@ export const useCheckout = ({
         );
 
         await onSuccess?.();
-
-        if (user?.email) {
-          // Send magic link
-          await sendMagicLinkMutation.mutateAsync({
-            data: {
-              email: user.email,
-              origin: 'registration',
-            },
-          });
-
-          // Navigate to check email screen with email in React Router state
-          navigate('/check-email', {
-            state: {
-              email: user.email,
-              origin: 'registration',
-            },
-          });
-        } else {
-          navigate('/onboarding');
-        }
-
-        // Reset processing state after navigation to prevent UI flash
-        setProcessing(false);
+        navigate('/onboarding');
       },
     },
   });
   const setupIntentMutation = useCreateSetupIntent();
   const registerMutation = useRegister();
-  const sendMagicLinkMutation = useSendMagicLink();
 
   // register/form context
   const { membership, setProcessing, processing } = useCheckoutContext();
@@ -113,6 +88,7 @@ export const useCheckout = ({
     } catch (e) {
       console.error(e);
       toast.error((e as StripeError)?.message ?? 'An error occurred');
+    } finally {
       setProcessing(false);
     }
   };
@@ -230,6 +206,7 @@ export const useCheckout = ({
         console.error(e);
         toast.error((e as StripeError)?.message ?? 'An error occurred');
       }
+    } finally {
       setProcessing(false);
     }
   };
@@ -306,6 +283,7 @@ export const useCheckout = ({
         console.error(e);
         toast.error((e as StripeError)?.message ?? 'An error occurred');
       }
+    } finally {
       setProcessing(false);
     }
   };

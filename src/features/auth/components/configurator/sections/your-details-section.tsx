@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/form';
 import { DatetimePicker, Input } from '@/components/ui/input';
 import { H3 } from '@/components/ui/typography';
+import { AuthInput } from '@/features/auth/components/auth-input';
 import { useCheckoutContext } from '@/features/auth/stores';
 import { useGetServiceability } from '@/features/orders/api';
 import { NotServiceableDialog } from '@/features/users/components/dialogs/not-serviceable-dialog';
@@ -183,6 +184,32 @@ export const YourDetailsSection = () => {
                       maxLength={14}
                       inputComponent={Input}
                       disabled={processing}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <AuthInput
+                      variant={fieldState.error ? 'error' : 'individual'}
+                      border="bottom"
+                      id="password"
+                      placeholder="Your password"
+                      type="password"
+                      autoCapitalize="off"
+                      autoComplete="new-password"
+                      autoCorrect="off"
+                      aria-label="Password"
+                      className="scroll-pr-12 truncate pr-11"
+                      disabled={processing}
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />

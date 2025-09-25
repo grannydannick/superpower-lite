@@ -737,14 +737,3 @@ export interface ChatMessage {
   parts: (ChatMessagePart | ChatMessageAttachment)[]; // JSON
   createdAt: Date;
 }
-
-export interface VerifyEmailOTPResponse {
-  success: boolean;
-  user: User;
-  authTokens: {
-    accessToken: string;
-    refreshToken: string;
-  };
-  redirectTo?: string;
-  origin?: string;
-}

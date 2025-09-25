@@ -92,6 +92,15 @@ export const registerInputSchema = z.object({
 
     return age >= 18;
   }, 'You must be over 18 years old to register.'),
+  password: requiredString()
+    .min(8, {
+      message:
+        'Password must be at least 8 characters and include one number and one special character.',
+    })
+    .regex(/^(?=.*[0-9])(?=.*[^A-Za-z0-9])/, {
+      message:
+        'Password must be at least 8 characters and include one number and one special character.',
+    }),
   consent: z
     .boolean({ required_error: 'Please agree to the Terms to continue.' })
     .refine((v) => v === true, {
@@ -104,7 +113,7 @@ export const registerInputSchema = z.object({
 
 export type RegisterInput = z.infer<typeof registerInputSchema>;
 
-const registerUser = (
+const registerWithEmailAndPassword = (
   data: RegisterInput,
 ): Promise<LoginAuthenticationResponse> => {
   const registerData = {
@@ -137,7 +146,7 @@ const authConfig = {
     return getUser();
   },
   registerFn: async (data: RegisterInput): Promise<User> => {
-    const response = await registerUser(data);
+    const response = await registerWithEmailAndPassword(data);
 
     if (!response.code) {
       throw Error('No code found.');

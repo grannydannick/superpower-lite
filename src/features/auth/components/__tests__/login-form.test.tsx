@@ -8,22 +8,12 @@ import {
 
 import { LoginForm } from '../login-form';
 
-test('should login new user and call onSuccessWithPassword cb which should navigate the user to the app', async () => {
+test('should login new user and call onSuccess cb which should navigate the user to the app', async () => {
   const newUser = await createUser();
 
-  const onSuccessWithPassword = vi.fn();
-  const onSuccessWithMagicLink = vi.fn();
+  const onSuccess = vi.fn();
 
-  await renderApp(
-    <LoginForm
-      onSuccessWithPassword={onSuccessWithPassword}
-      onSuccessWithMagicLink={onSuccessWithMagicLink}
-    />,
-    { user: null },
-  );
-
-  // Switch to password mode first since magic link is default
-  await userEvent.click(screen.getByText(/Sign in with password instead/i));
+  await renderApp(<LoginForm onSuccess={onSuccess} />, { user: null });
 
   await userEvent.type(screen.getByPlaceholderText(/email/i), newUser.email);
   await userEvent.type(
@@ -33,5 +23,5 @@ test('should login new user and call onSuccessWithPassword cb which should navig
 
   await userEvent.click(screen.getByRole('button', { name: /Login/i }));
 
-  await waitFor(() => expect(onSuccessWithPassword).toHaveBeenCalledTimes(1));
+  await waitFor(() => expect(onSuccess).toHaveBeenCalledTimes(1));
 });

@@ -5,11 +5,16 @@ import { cn } from '@/lib/utils';
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
-  variant?: 'individual' | 'error';
+  icon?: React.ReactNode;
+  border: 'top' | 'bottom';
+  variant?: 'connected' | 'individual' | 'error';
 }
 
 const AuthInput = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, variant = 'individual', ...props }, ref) => {
+  (
+    { className, icon, type, border = 'top', variant = 'connected', ...props },
+    ref,
+  ) => {
     const [showPassword, setShowPassword] = React.useState(false);
 
     const togglePasswordVisibility = () => setShowPassword((v) => !v);
@@ -19,13 +24,19 @@ const AuthInput = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div
         className={cn(
-          'flex border relative border-input items-center rounded-xl',
-          variant === 'individual' &&
-            'shadow-sm transition-all duration-150 gap-3 h-14',
+          'flex border relative border-input items-center',
+          variant === 'connected'
+            ? border === 'top'
+              ? 'rounded-t-xl border-b-0'
+              : 'rounded-b-xl'
+            : variant === 'individual'
+              ? 'rounded-xl shadow-sm transition-all duration-150 gap-3 h-14'
+              : 'rounded-xl',
           variant === 'error' &&
             'border-pink-700 bg-pink-50 focus-within:ring-1 focus-within:ring-pink-700 transition-none duration-0',
         )}
       >
+        {icon && <div className="pl-4">{icon}</div>}
         <input
           autoCapitalize="off"
           type={

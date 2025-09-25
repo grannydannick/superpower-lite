@@ -49,20 +49,6 @@ export const createRouter = () =>
       },
     },
     {
-      path: '/check-email',
-      lazy: async () => {
-        const { CheckEmailRoute } = await import('./routes/auth/check-email');
-        return { Component: CheckEmailRoute };
-      },
-    },
-    {
-      path: '/verify-email',
-      lazy: async () => {
-        const { VerifyEmailRoute } = await import('./routes/auth/verify-email');
-        return { Component: VerifyEmailRoute };
-      },
-    },
-    {
       path: '/',
       element: (
         <ProtectedRoute>

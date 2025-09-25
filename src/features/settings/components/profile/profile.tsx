@@ -1,7 +1,6 @@
 import { Card } from '@/components/ui/card';
 import { H3 } from '@/components/ui/typography';
 import { ContactForm } from '@/features/settings/components/profile/contact-form';
-import { PasswordManagement } from '@/features/settings/components/profile/password-management';
 import { PersonalInformationForm } from '@/features/settings/components/profile/personal-informartion-form';
 
 export const Profile = () => {
@@ -18,9 +17,6 @@ export const Profile = () => {
           <H3 className="mb-4 hidden md:block">Contact</H3>
           <ContactForm />
         </Card>
-      </section>
-      <section id="password" className="md:space-y-8">
-        <PasswordManagement />
       </section>
     </div>
   );
