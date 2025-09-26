@@ -99,7 +99,10 @@ export const UpdateInfo = () => {
     defaultValues: {
       firstName: user?.firstName,
       lastName: user?.lastName,
-      gender: (user?.gender as 'MALE' | 'FEMALE') ?? undefined,
+      gender:
+        user?.gender === 'MALE' || user?.gender === 'FEMALE'
+          ? user.gender
+          : undefined,
       address: user?.primaryAddress
         ? {
             line1: user.primaryAddress.line?.[0] ?? undefined,

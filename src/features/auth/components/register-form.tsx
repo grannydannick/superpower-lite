@@ -47,7 +47,6 @@ export const RegisterForm = () => {
     mode: 'onChange',
     defaultValues: {
       postalCode: '',
-      password: '',
     },
   });
 

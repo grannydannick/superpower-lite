@@ -1,7 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Lock, Mail } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
+import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -13,27 +14,85 @@ import {
 } from '@/components/ui/form';
 import { Spinner } from '@/components/ui/spinner';
 import { Body2, H1 } from '@/components/ui/typography';
+import { useSendMagicLink } from '@/features/auth/api/send-magic-link';
 import { AuthInput } from '@/features/auth/components/auth-input';
-import { LoginInput, loginInputSchema } from '@/lib/auth';
-import { useLogin } from '@/lib/auth';
+import { LoginInput, loginInputSchema, useLogin } from '@/lib/auth';
 import { User } from '@/types/api';
 
+const magicLinkLoginSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+});
+
+const passwordLoginSchema = loginInputSchema;
+
 type LoginFormProps = {
-  onSuccess: (data: User) => void;
+  redirectTo?: string;
+  onSuccessWithPassword: (data: User) => void;
+  onSuccessWithMagicLink: (email: string) => void;
 };
 
-export const LoginForm = ({ onSuccess }: LoginFormProps) => {
+export const LoginForm = ({
+  redirectTo,
+  onSuccessWithPassword,
+  onSuccessWithMagicLink,
+}: LoginFormProps) => {
+  const [loginMode, setLoginMode] = useState<'magic-link' | 'password'>(
+    'magic-link',
+  );
+
   const loginMutation = useLogin({
-    onSuccess,
+    onSuccess: onSuccessWithPassword,
   });
 
+  const sendMagicLinkMutation = useSendMagicLink({
+    mutationConfig: {
+      onSuccess: () => {
+        const email = form.getValues('email');
+        onSuccessWithMagicLink(email);
+      },
+      onError: () => {
+        // Toast will error with message automatically
+        //  We'll switch to password if magic link fails
+        setLoginMode('password');
+      },
+    },
+  });
+
+  // Switch the resolver based on the active mode so validation matches the
+  // fields we render (email-only for magic link, email+password otherwise).
   const form = useForm<LoginInput>({
-    resolver: zodResolver(loginInputSchema),
+    resolver: zodResolver(
+      loginMode === 'magic-link' ? magicLinkLoginSchema : passwordLoginSchema,
+    ),
     defaultValues: {
       email: '',
       password: '',
     },
   });
+
+  useEffect(() => {
+    const email = form.getValues('email');
+    form.reset({ email, password: '' });
+  }, [loginMode]);
+
+  const handleSubmit = (values: LoginInput) => {
+    if (loginMode === 'magic-link') {
+      sendMagicLinkMutation.mutate({
+        data: {
+          email: values.email,
+          redirectTo: redirectTo,
+          origin: 'login',
+        },
+      });
+    } else {
+      loginMutation.mutate(values);
+    }
+  };
+
+  const isLoading =
+    loginMode === 'magic-link'
+      ? sendMagicLinkMutation.isPending
+      : loginMutation.isPending;
 
   return (
     <div className="flex flex-col gap-6">
@@ -51,45 +110,21 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
       </div>
 
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit((values) => {
-            loginMutation.mutate(values);
-          })}
-          className="space-y-8"
-        >
-          <div>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+          <div className="space-y-4">
             <FormField
               control={form.control}
               name="email"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormMessage />
+                  <Body2 className="text-secondary mb-2">Email</Body2>
                   <FormControl>
                     <AuthInput
-                      border="top"
-                      placeholder="Email"
+                      variant={fieldState.error ? 'error' : 'individual'}
+                      placeholder="Your email"
                       autoCapitalize="none"
                       autoComplete="email"
                       autoCorrect="off"
-                      icon={<Mail className="size-4 text-zinc-400" />}
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <AuthInput
-                      border="bottom"
-                      placeholder="Password"
-                      autoComplete="current-password"
-                      icon={<Lock className="size-4 text-zinc-400" />}
-                      type="password"
                       {...field}
                     />
                   </FormControl>
@@ -97,21 +132,69 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
                 </FormItem>
               )}
             />
+            {loginMode === 'password' && (
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <Body2 className="text-secondary mb-2">Password</Body2>
+                    <FormControl>
+                      <AuthInput
+                        variant={fieldState.error ? 'error' : 'individual'}
+                        placeholder="Your password"
+                        autoComplete="current-password"
+                        type="password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
           <div className="space-y-3">
-            <Button className="w-full" type="submit">
-              {loginMutation.isPending ? <Spinner /> : 'Login'}
+            <Button className="w-full" type="submit" disabled={isLoading}>
+              {isLoading ? <Spinner /> : 'Login'}
             </Button>
-            <div className="flex flex-col gap-1 sm:flex-row sm:items-center">
-              <Body2 className="text-zinc-500">
-                Forgot your login details?
-              </Body2>
-              <Link
-                to="/resetpassword"
-                className="cursor-pointer text-sm text-vermillion-900"
-              >
-                Reset password
-              </Link>
+
+            <div>
+              {loginMode === 'magic-link' ? (
+                <>
+                  <Body2 className="text-secondary">
+                    We&apos;ll email you a magic link for password-free sign in.
+                  </Body2>
+                  <button
+                    type="button"
+                    onClick={() => setLoginMode('password')}
+                    className="text-vermillion-900 text-sm font-normal hover:underline"
+                  >
+                    Sign in with password instead.
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="flex flex-col gap-1 sm:flex-row sm:items-center">
+                    <Body2 className="text-secondary">
+                      Forgot your login details?
+                    </Body2>
+                    <Link
+                      to="/resetpassword"
+                      className="cursor-pointer text-sm text-vermillion-900"
+                    >
+                      Reset password
+                    </Link>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setLoginMode('magic-link')}
+                    className="text-vermillion-900 text-sm font-normal hover:underline"
+                  >
+                    Sign in with magic link.
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </form>
