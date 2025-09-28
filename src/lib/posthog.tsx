@@ -14,8 +14,9 @@ const phClient = env.POSTHOG_KEY
       debug: env.POSTHOG_DEBUG === 'true',
       person_profiles: 'always',
       session_recording: {
-        maskTextSelector: '*',
-        maskAllInputs: true,
+        maskInputOptions: {
+          password: true,
+        },
       },
       opt_in_site_apps: true,
     })
