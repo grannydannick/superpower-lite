@@ -10,9 +10,12 @@ import {
   QuestionnaireResponseItemAnswer,
 } from '@medplum/fhirtypes';
 
+import { User } from '@/types/api';
+
 export function isQuestionEnabled(
   item: QuestionnaireItem,
   responseItems: QuestionnaireResponseItem[],
+  user?: User,
 ): boolean {
   if (!item.enableWhen) {
     return true;
@@ -20,40 +23,79 @@ export function isQuestionEnabled(
 
   const enableBehavior = item.enableBehavior ?? 'any';
 
-  for (const enableWhen of item.enableWhen) {
-    const actualAnswers = getByLinkId(
-      responseItems,
-      enableWhen.question as string,
-    );
-
-    if (
-      enableWhen.operator === 'exists' &&
-      !enableWhen.answerBoolean &&
-      !actualAnswers?.length
-    ) {
-      if (enableBehavior === 'any') {
-        return true;
-      } else {
-        continue;
+  const result = item.enableWhen.reduce(
+    (acc, enableWhen) => {
+      // early return if we already have a definitive result
+      if (acc.shouldReturn) {
+        return acc;
       }
-    }
-    const { anyMatch, allMatch } = checkAnswers(
-      enableWhen,
-      actualAnswers,
-      enableBehavior,
-    );
 
-    if (enableBehavior === 'any' && anyMatch) {
-      return true;
-    }
-    if (enableBehavior === 'all' && !allMatch) {
-      return false;
-    }
+      if (enableWhen.question === 'sex-assigned-at-birth' && user?.gender) {
+        if (typeof enableWhen.answerString !== 'string') {
+          return acc;
+        }
+        const userGenderString = user.gender === 'MALE' ? 'Male' : 'Female';
+        const expectedString = enableWhen.answerString.trim();
+
+        let matches = false;
+        if (enableWhen.operator === '=') {
+          matches = userGenderString === expectedString;
+        } else if (enableWhen.operator === '!=') {
+          matches = userGenderString !== expectedString;
+        }
+
+        if (matches) {
+          if (enableBehavior === 'any') {
+            return { shouldReturn: true, returnValue: true };
+          }
+        } else {
+          if (enableBehavior === 'all') {
+            return { shouldReturn: true, returnValue: false };
+          }
+        }
+        return acc;
+      }
+
+      const actualAnswers = getByLinkId(
+        responseItems,
+        enableWhen.question as string,
+      );
+
+      if (
+        enableWhen.operator === 'exists' &&
+        !enableWhen.answerBoolean &&
+        !actualAnswers?.length
+      ) {
+        if (enableBehavior === 'any') {
+          return { shouldReturn: true, returnValue: true };
+        } else {
+          return acc;
+        }
+      }
+
+      const { anyMatch, allMatch } = checkAnswers(
+        enableWhen,
+        actualAnswers,
+        enableBehavior,
+      );
+
+      if (enableBehavior === 'any' && anyMatch) {
+        return { shouldReturn: true, returnValue: true };
+      }
+      if (enableBehavior === 'all' && !allMatch) {
+        return { shouldReturn: true, returnValue: false };
+      }
+
+      return acc;
+    },
+    { shouldReturn: false, returnValue: false },
+  );
+
+  if (result.shouldReturn) {
+    return result.returnValue;
   }
 
-  const result = enableBehavior !== 'any';
-
-  return result;
+  return enableBehavior !== 'any';
 }
 
 function getByLinkId(

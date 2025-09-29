@@ -57,7 +57,7 @@ export const questionnaireStoreCreator = (
       buildInitialResponse(initProps.questionnaire, initProps.user);
 
     const getAllQuestions = () => {
-      const { questionnaire, response } = get();
+      const { questionnaire, response, user } = get();
       const result: Array<{
         question: QuestionnaireItem;
         group: QuestionnaireItem | null;
@@ -66,16 +66,16 @@ export const questionnaireStoreCreator = (
 
       questionnaire.item?.forEach((item) => {
         if (item.type === QuestionnaireItemType.group && item.item) {
-          if (!isQuestionEnabled(item, response?.item ?? [])) {
+          if (!isQuestionEnabled(item, response?.item ?? [], user)) {
             return;
           }
 
           item.item.forEach((subItem) => {
-            if (isQuestionEnabled(subItem, response?.item ?? [])) {
+            if (isQuestionEnabled(subItem, response?.item ?? [], user)) {
               result.push({ question: subItem, group: item });
             }
           });
-        } else if (isQuestionEnabled(item, response?.item ?? [])) {
+        } else if (isQuestionEnabled(item, response?.item ?? [], user)) {
           result.push({ question: item, group: null });
         }
       });
@@ -166,16 +166,30 @@ export const questionnaireStoreCreator = (
           }>
         >((acc, item) => {
           if (item.type === QuestionnaireItemType.group && item.item) {
-            if (!isQuestionEnabled(item, initialResponse?.item ?? [])) {
+            if (
+              !isQuestionEnabled(
+                item,
+                initialResponse?.item ?? [],
+                initProps.user,
+              )
+            ) {
               return acc;
             }
 
             item.item.forEach((subItem) => {
-              if (isQuestionEnabled(subItem, initialResponse?.item ?? [])) {
+              if (
+                isQuestionEnabled(
+                  subItem,
+                  initialResponse?.item ?? [],
+                  initProps.user,
+                )
+              ) {
                 acc.push({ question: subItem, group: item });
               }
             });
-          } else if (isQuestionEnabled(item, initialResponse?.item ?? [])) {
+          } else if (
+            isQuestionEnabled(item, initialResponse?.item ?? [], initProps.user)
+          ) {
             acc.push({ question: item, group: null });
           }
           return acc;
@@ -216,16 +230,30 @@ export const questionnaireStoreCreator = (
         }>
       >((acc, item) => {
         if (item.type === QuestionnaireItemType.group && item.item) {
-          if (!isQuestionEnabled(item, initialResponse?.item ?? [])) {
+          if (
+            !isQuestionEnabled(
+              item,
+              initialResponse?.item ?? [],
+              initProps.user,
+            )
+          ) {
             return acc;
           }
 
           item.item.forEach((subItem) => {
-            if (isQuestionEnabled(subItem, initialResponse?.item ?? [])) {
+            if (
+              isQuestionEnabled(
+                subItem,
+                initialResponse?.item ?? [],
+                initProps.user,
+              )
+            ) {
               acc.push({ question: subItem, group: item });
             }
           });
-        } else if (isQuestionEnabled(item, initialResponse?.item ?? [])) {
+        } else if (
+          isQuestionEnabled(item, initialResponse?.item ?? [], initProps.user)
+        ) {
           acc.push({ question: item, group: null });
         }
         return acc;
@@ -262,7 +290,11 @@ export const questionnaireStoreCreator = (
         const isEnabled =
           !questionnaireItem ||
           questionnaireItem.type === QuestionnaireItemType.group ||
-          isQuestionEnabled(questionnaireItem, allResponseItems);
+          isQuestionEnabled(
+            questionnaireItem,
+            allResponseItems,
+            initProps.user,
+          );
 
         if (isEnabled) {
           if (responseItem.item && responseItem.item.length > 0) {
@@ -270,7 +302,11 @@ export const questionnaireStoreCreator = (
             const currentItemDisabled =
               questionnaireItem &&
               questionnaireItem.type === QuestionnaireItemType.group &&
-              !isQuestionEnabled(questionnaireItem, allResponseItems);
+              !isQuestionEnabled(
+                questionnaireItem,
+                allResponseItems,
+                initProps.user,
+              );
 
             const cleanedNestedItems = cleanResponseWhenDisabled(
               responseItem.item,
@@ -424,8 +460,8 @@ export const questionnaireStoreCreator = (
       },
 
       checkForQuestionEnabled: (item) => {
-        const { response } = get();
-        return isQuestionEnabled(item, response?.item ?? []);
+        const { response, user } = get();
+        return isQuestionEnabled(item, response?.item ?? [], user);
       },
 
       getNumberOfPages: () => {
@@ -446,7 +482,9 @@ export const questionnaireStoreCreator = (
 
         const { question: currentQuestion } = questions[activeStep];
 
-        if (!isQuestionEnabled(currentQuestion, response?.item ?? [])) {
+        if (
+          !isQuestionEnabled(currentQuestion, response?.item ?? [], get().user)
+        ) {
           const nextStep = activeStep + 1;
 
           if (nextStep >= questions.length) {

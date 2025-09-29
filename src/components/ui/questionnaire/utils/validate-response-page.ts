@@ -4,6 +4,8 @@ import {
   QuestionnaireItem,
 } from '@medplum/fhirtypes';
 
+import { User } from '@/types/api';
+
 import { isQuestionEnabled } from './questionnaire-enablement';
 
 /**
@@ -19,6 +21,7 @@ export const validateQuestionnairePageErrors = (
   questionnaire: Questionnaire,
   responseItems: QuestionnaireResponseItem[],
   pageLinkId: string,
+  user?: User,
 ): string[] => {
   const errors: string[] = [];
 
@@ -30,7 +33,7 @@ export const validateQuestionnairePageErrors = (
   }
 
   // if page validation should not be enabled
-  if (!isQuestionEnabled(page, responseItems)) {
+  if (!isQuestionEnabled(page, responseItems, user)) {
     return [];
   }
 
@@ -39,7 +42,7 @@ export const validateQuestionnairePageErrors = (
 
   // validate all items within this page.
   if (page.item && page.item.length > 0) {
-    validateItems(page.item, responsePage?.item || [], errors);
+    validateItems(page.item, responsePage?.item || [], errors, user);
   }
 
   return errors;
@@ -57,9 +60,10 @@ const validateItems = (
   qItems: QuestionnaireItem[],
   rItems: QuestionnaireResponseItem[],
   errors: string[],
+  user?: User,
 ): void => {
   qItems.forEach((qItem) => {
-    if (!isQuestionEnabled(qItem, rItems)) {
+    if (!isQuestionEnabled(qItem, rItems, user)) {
       return;
     }
 
@@ -75,7 +79,7 @@ const validateItems = (
 
     // Recursively validate nested items (if any).
     if (qItem.item && qItem.item.length > 0) {
-      validateItems(qItem.item, rItem?.item || [], errors);
+      validateItems(qItem.item, rItem?.item || [], errors, user);
     }
   });
 };
