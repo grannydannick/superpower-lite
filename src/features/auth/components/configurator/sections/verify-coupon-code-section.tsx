@@ -123,7 +123,7 @@ const AccessCodeInputSection = () => {
           <Body2 className="text-pink-700">Invalid or expired code</Body2>
         ) : null}
         {validateCodeMutation.data?.coupon ? (
-          <Body2 className="text-vermillion-700">Access code applied</Body2>
+          <Body2 className="text-vermillion-900">Access code applied</Body2>
         ) : null}
       </div>
     </section>

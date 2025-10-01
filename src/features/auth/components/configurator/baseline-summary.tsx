@@ -147,20 +147,18 @@ export const AtHomeDrawCreditSection = ({
   return (
     <div
       className={cn(
-        'space-y-2 rounded-[20px] border border-green-200 bg-green-50 p-4 shadow-sm',
+        'w-full rounded-xl border border-zinc-200 bg-white p-3',
         className,
       )}
     >
-      <div className="flex items-center gap-3">
-        <CheckCircle className="size-5 text-green-600" />
-        <div className="flex-1">
-          <H4>Your Promo Code Has Been Applied </H4>
-          <Body2 className="text-zinc-500">
-            You&apos;ll schedule your free at-home blood draw after you&apos;ve
-            activated your membership.
-          </Body2>
-        </div>
+      <div className="mb-1 flex items-center gap-2">
+        <CheckCircle className="size-4 text-vermillion-900" />
+        <Body2>Your access code has been applied</Body2>
       </div>
+      <Body2 className="ml-6 text-zinc-500">
+        You&apos;ll schedule your free at-home blood draw after you&apos;ve
+        activated your membership.
+      </Body2>
     </div>
   );
 };
