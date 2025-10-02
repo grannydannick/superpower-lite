@@ -37,19 +37,13 @@ export const PhlebotomyScheduler = () => {
   } = useOrder((s) => s);
   const { width } = useWindowDimensions();
   const nextStep = useStepper((s) => s.nextStep);
-  const { data: user } = useUser();
+
+  const { data: user, isLoading: userLoading } = useUser();
   const routerLocation = useLocation();
 
   const isOnboardingFlow = routerLocation.pathname.includes('/onboarding');
 
   const usePrimaryAddress = shouldUsePrimaryAddress(service, collectionMethod);
-
-  // If not advisory and still no collectionMethod, throw an error
-  if (!collectionMethod) {
-    throw new Error(
-      'Collection method must be defined to use PhlebotomyScheduler',
-    );
-  }
 
   useEffect(() => {
     if (usePrimaryAddress && !location?.address && user?.primaryAddress) {
@@ -69,6 +63,7 @@ export const PhlebotomyScheduler = () => {
 
   const numDaysToShow = width > 600 ? 5 : 4;
   const instructions = getCollectionInstructions(collectionMethod);
+
   const addressToUse =
     usePrimaryAddress && user?.primaryAddress
       ? user.primaryAddress
@@ -93,6 +88,25 @@ export const PhlebotomyScheduler = () => {
   const showModalRecommendations = useMemo(() => {
     return isOnboardingFlow && isBloodTest;
   }, [isOnboardingFlow, isBloodTest]);
+
+  // If not advisory and still no collectionMethod, throw an error
+  if (!collectionMethod) {
+    throw new Error(
+      'Collection method must be defined to use PhlebotomyScheduler',
+    );
+  }
+
+  if (userLoading) {
+    return null; // TODO: add loading state
+  }
+
+  if (usePrimaryAddress && !user?.primaryAddress) {
+    return null; // TODO: add error state
+  }
+
+  if (!addressToUse) {
+    return null; // TODO: add error state
+  }
 
   if (showInlineRecommendations) {
     return (

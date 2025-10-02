@@ -1,7 +1,7 @@
 import { CollectionMethodType } from '@/types/api';
 
 export const getCollectionInstructions = (
-  collectionMethod: CollectionMethodType,
+  collectionMethod: CollectionMethodType | null,
 ) => {
   switch (collectionMethod) {
     case 'AT_HOME':
