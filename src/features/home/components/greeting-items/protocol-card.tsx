@@ -11,11 +11,12 @@ import { usePlans } from '@/features/plans/api/get-plans';
 import { ANNUAL_PLAN_PHILOSOPHY_MARKDOWN } from '@/features/plans/const/philosophy';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
+import { FhirCarePlan } from '@/types/api';
 
 import { GreetingCard } from './greeting-card';
 
-const getTimestamp = (plan: { created?: string }) =>
-  plan.created ? new Date(plan.created).getTime() : 0;
+const getTimestamp = (plan: FhirCarePlan) =>
+  plan.period?.start ? new Date(plan.period.start).getTime() : 0;
 
 export const ProtocolCard = () => {
   const navigate = useNavigate();
@@ -31,8 +32,9 @@ export const ProtocolCard = () => {
     : undefined;
 
   const startDate = latestAvailablePlan?.period?.start;
+  // Server renders in UTC, we should be consistent with this
   const startDateFormatted = startDate
-    ? moment(startDate).format('MMM DD, YYYY')
+    ? moment.utc(startDate).format('MMM DD, YYYY')
     : undefined;
 
   const description = latestAvailablePlan?.description;
@@ -65,7 +67,7 @@ export const ProtocolCard = () => {
     >
       <div className="flex h-full flex-col justify-start transition-opacity duration-500">
         <div className="flex w-full justify-between gap-4">
-          <H4 className="text-white">Your Protocol</H4>
+          <H4 className="text-white">Your Action Plan</H4>
           {latestAvailablePlan ? (
             <ArrowTopRight className="absolute right-5 top-5 text-white/50 transition-all duration-200 group-hover:right-4 group-hover:top-4 group-hover:text-white/75" />
           ) : (
@@ -84,7 +86,7 @@ export const ProtocolCard = () => {
               <div className="absolute inset-0 z-20 mb-2 flex items-center justify-center">
                 <Body2 className="relative z-10 rounded-full bg-white/10 px-4 py-3 text-white backdrop-blur-2xl">
                   <LockIcon fill="white" className="mr-2 inline-block w-4" />
-                  Protocol coming soon
+                  Action plan coming soon
                 </Body2>
               </div>
             ) : null}

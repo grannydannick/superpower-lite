@@ -37,8 +37,6 @@ export const MonitoredIssues = () => {
             Monitored issues highlight potential health concerns based on your
             test results to focus on. Think of it as a starting points for your
             health roadmap—pinpointing areas for proactive care.
-            <br /> <br />
-            We detected {goals.length} monitored issues you should be aware of.
           </Body1>
         )}
         {goals.length === 0 && (

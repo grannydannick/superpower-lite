@@ -105,22 +105,6 @@ export const ProtocolSection = () => {
 
   const activityGroups: ActivityGroup[] = [
     {
-      activities: lifestyleActivities,
-      icon: PersonStanding,
-      title: 'Lifestyle',
-      renderActivity: (activity, index) => (
-        <PlanActivity key={`lifestyle-${index}`} activity={activity} />
-      ),
-    },
-    {
-      activities: nutritionActivities,
-      icon: Apple,
-      title: 'Nutrition',
-      renderActivity: (activity, index) => (
-        <PlanActivity key={`nutrition-${index}`} activity={activity} />
-      ),
-    },
-    {
       activities: productActivities,
       icon: Pill,
       title: 'Products / Supplements',
@@ -184,6 +168,22 @@ export const ProtocolSection = () => {
             </Disclaimer>
           </div>
         ) : undefined,
+    },
+    {
+      activities: lifestyleActivities,
+      icon: PersonStanding,
+      title: 'Lifestyle',
+      renderActivity: (activity, index) => (
+        <PlanActivity key={`lifestyle-${index}`} activity={activity} />
+      ),
+    },
+    {
+      activities: nutritionActivities,
+      icon: Apple,
+      title: 'Nutrition',
+      renderActivity: (activity, index) => (
+        <PlanActivity key={`nutrition-${index}`} activity={activity} />
+      ),
     },
     {
       activities: generalActivities,

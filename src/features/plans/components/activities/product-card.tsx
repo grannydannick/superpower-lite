@@ -73,9 +73,18 @@ export const ProductCard = ({
   const productMessage = useMemo(() => {
     if (!product) return 'Product not available';
     if (isProductAvailable) {
-      return 'Available in stock';
+      return (
+        <span className="">
+          <span className="mr-2 text-zinc-500 line-through">
+            ${product.price.toFixed(2)}
+          </span>
+          <span className="font-semibold">
+            ${(product.price * (1 - product.discount / 100)).toFixed(2)}
+          </span>
+        </span>
+      );
     } else {
-      return 'Product out of stock';
+      return <span className="italic text-zinc-500">Product out of stock</span>;
     }
   }, [product, isProductAvailable]);
 
@@ -101,14 +110,29 @@ export const ProductCard = ({
     hideButton,
   ]);
 
+  const productTitle = useMemo(() => {
+    if (!product || !product.url) return productName;
+    return (
+      <a
+        href={product.url}
+        target="_blank"
+        rel="noreferrer"
+        className="decoration-transparent underline-offset-4 transition-[text-decoration-color] duration-300 hover:underline hover:decoration-zinc-900/80"
+      >
+        {productName}
+      </a>
+    );
+  }, [product, productName]);
+
   if (product) {
     return (
       <ActivityCard
         {...product}
-        name={productName}
+        name={productTitle}
+        alt={product.name}
         description={
           <div className="flex items-center gap-2 text-zinc-500">
-            <Body1 className="italic text-zinc-500">{productMessage}</Body1>
+            <Body1 className="">{productMessage}</Body1>
           </div>
         }
         actionBtn={actionButton}
@@ -123,7 +147,7 @@ export const ProductCard = ({
         <TooltipTrigger asChild>
           <div className="group relative cursor-pointer">
             <ActivityCard
-              name={productName}
+              name={productTitle}
               description={
                 <div className="flex w-full items-center gap-2 text-zinc-500">
                   <Body1 className="italic text-zinc-500">

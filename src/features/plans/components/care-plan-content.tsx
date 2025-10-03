@@ -8,15 +8,13 @@ import { useUser } from '@/lib/auth';
 import { useCarePlan } from '../context/care-plan-context';
 import { useProductAvailability } from '../hooks/use-product-availability';
 
-import { HealthReportSection } from './sections/health-report-section';
 import { MonitoredIssues } from './sections/monitored-issues';
 import { NextStepsSection } from './sections/next-steps';
-import { Overview } from './sections/overview';
 import { ProtocolSection } from './sections/protocol';
 
 export const CarePlanContent = () => {
   const { data } = useUser();
-  const { plan, isAnnualReport } = useCarePlan();
+  const { plan } = useCarePlan();
   const { track } = useAnalytics();
   const { availableProducts } = useProductAvailability();
 
@@ -41,12 +39,11 @@ export const CarePlanContent = () => {
         <H1 className="m-0 mb-4 !text-[40px] leading-none md:mb-0">
           {data?.firstName}&apos;s Action Plan
         </H1>
+        {/* Server renders in UTC, we should be consistent with this */}
         <Body1 className="m-0 leading-none text-secondary">
-          {moment(plan.period?.start).format('MMM Do, YYYY')}
+          {moment.utc(plan.period?.start).format('MMM Do, YYYY')}
         </Body1>
       </div>
-      <Overview />
-      {isAnnualReport && <HealthReportSection />}
       <MonitoredIssues />
       <ProtocolSection />
       <NextStepsSection />

@@ -7,7 +7,8 @@ import { cn } from '@/lib/utils';
 interface ActivityCardProps {
   className?: string;
   image?: string;
-  name: string;
+  name: string | ReactNode;
+  alt?: string;
   description?: string | ReactNode;
   actionBtn?: ReactNode;
 }
@@ -16,6 +17,7 @@ export function ActivityCard({
   className,
   image,
   name,
+  alt,
   description,
   actionBtn,
 }: ActivityCardProps) {
@@ -31,7 +33,7 @@ export function ActivityCard({
           <div className="ml-0.5 size-[56px] rounded-md bg-white">
             <img
               src={image}
-              alt={name}
+              alt={alt || (name as string)}
               className="size-full object-cover object-center"
               style={{
                 WebkitMask:

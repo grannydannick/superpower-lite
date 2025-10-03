@@ -198,7 +198,7 @@ const CheckoutSummary = ({
         disabled={selectedProducts.length === 0}
         className="order-1 w-full md:order-3 md:w-auto"
       >
-        Go to checkout
+        Checkout
       </Button>
     </DialogClose>
     <div className="order-3 flex flex-col items-center px-6 md:order-2 md:items-end">
@@ -206,7 +206,20 @@ const CheckoutSummary = ({
         Subtotal ({selectedProducts.length}{' '}
         {selectedProducts.length === 1 ? 'item' : 'items'})
       </Body1>
-      <Body1>${totals.total.toFixed(2)}</Body1>
+      <Body1>
+        <span
+          className={
+            totals.totalSavings > 0
+              ? 'mr-2 text-zinc-400 line-through'
+              : undefined
+          }
+        >
+          ${(totals.total + totals.totalSavings).toFixed(2)}
+        </span>
+        {totals.totalSavings > 0 && (
+          <span className="font-semibold">${totals.total.toFixed(2)}</span>
+        )}
+      </Body1>
     </div>
     <div className="order-2 md:hidden">
       <SavingsBadge totalSavings={totals.totalSavings} variant="mobile" />

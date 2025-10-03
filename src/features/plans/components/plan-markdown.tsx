@@ -114,6 +114,7 @@ export const PlanMarkdown = ({
   boldVermillion,
 }: PlanMarkdownProps) => {
   try {
+    const sanitizedContent = sanitizeMarkdown(content);
     return (
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
@@ -199,7 +200,7 @@ export const PlanMarkdown = ({
           ),
         }}
       >
-        {content}
+        {sanitizedContent}
       </ReactMarkdown>
     );
   } catch (error) {
@@ -210,3 +211,10 @@ export const PlanMarkdown = ({
     );
   }
 };
+
+function sanitizeMarkdown(input: string): string {
+  // Remove em dashes
+  // Makes it look really AI generated lol
+  // Jacob request
+  return input.replace(/\u2014/g, ' -- ');
+}
