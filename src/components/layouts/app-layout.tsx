@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import * as React from 'react';
 import { useLocation } from 'react-router-dom';
 
+import { FloatingWrapper } from '@/components/shared/floating-wrapper';
 import { NavigationProgress } from '@/components/ui/navigation-progress';
 import { WHITE_BACKGROUND_PATHS } from '@/const/white-background-paths';
 import { useThemeColor } from '@/hooks/use-theme-color';
@@ -47,6 +48,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       >
         {children}
       </motion.div>
+      <FloatingWrapper />
     </main>
   );
 }

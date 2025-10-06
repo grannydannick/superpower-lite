@@ -43,6 +43,8 @@ function PureMultimodalInput({
   messages,
   setMessages,
   sendMessage,
+  showSuggestions = true,
+  className,
 }: {
   chatId: string;
   input: string;
@@ -55,6 +57,7 @@ function PureMultimodalInput({
   setMessages: UseChatHelpers<UIMessage>['setMessages'];
   sendMessage: UseChatHelpers<UIMessage>['sendMessage'];
   className?: string;
+  showSuggestions?: boolean;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const inputWrapperRef = useRef<HTMLDivElement>(null);
@@ -75,18 +78,13 @@ function PureMultimodalInput({
       textarea.style.height = 'auto';
       const scrollHeight = Math.min(textarea.scrollHeight, MAX_HEIGHT);
       textarea.style.height = `${scrollHeight}px`;
-      inputWrapper.style.height = `${scrollHeight + (isAttachmentPresent ? 128 : 32)}px`;
+      const extra = isAttachmentPresent ? 128 : 24;
+      inputWrapper.style.height = `${scrollHeight + extra}px`;
 
       textarea.style.overflowY =
         textarea.scrollHeight > MAX_HEIGHT ? 'auto' : 'hidden';
     }
   }, [isAttachmentPresent]);
-
-  useEffect(() => {
-    if (textareaRef.current) {
-      adjustHeight();
-    }
-  }, [adjustHeight]);
 
   const resetHeight = useCallback(() => {
     if (textareaRef.current && inputWrapperRef.current) {
@@ -95,7 +93,8 @@ function PureMultimodalInput({
 
       textarea.style.height = 'auto';
       textarea.style.overflowY = 'hidden';
-      inputWrapper.style.height = '40px';
+      // Keep reset height consistent with the desired base height
+      inputWrapper.style.height = '56px';
     }
   }, []);
 
@@ -109,9 +108,21 @@ function PureMultimodalInput({
       const domValue = textareaRef.current.value;
       const finalValue = domValue || localStorageInput || '';
       setInput(finalValue);
-      adjustHeight();
+      requestAnimationFrame(() => adjustHeight());
     }
   }, [adjustHeight, localStorageInput, setInput]);
+
+  // Recalculate height when the wrapper resizes (e.g., when overlay becomes visible)
+  // This is important for the chat assistant
+  useEffect(() => {
+    const el = inputWrapperRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => {
+      adjustHeight();
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [adjustHeight]);
 
   useEffect(() => {
     setLocalStorageInput(input);
@@ -123,8 +134,6 @@ function PureMultimodalInput({
   };
 
   const submitForm = useCallback(() => {
-    window.history.replaceState({}, '', `/concierge/${chatId}`);
-
     // Track the AI message event
     track('sent_message_ai', {
       message_length: input.length,
@@ -279,6 +288,7 @@ function PureMultimodalInput({
             isAttachmentPresent
               ? 'justify-between pt-2'
               : 'justify-center pt-4',
+            className,
           )}
           style={{
             height: `56px`,
@@ -375,7 +385,7 @@ function PureMultimodalInput({
             />
           </div>
 
-          <div className="absolute right-4 flex flex-row items-end justify-end">
+          <div className="absolute bottom-[13px] right-4 flex flex-row items-end justify-end">
             <AttachmentsButton
               {...getInputProps()}
               fileInputRef={fileInputRef}
@@ -393,7 +403,8 @@ function PureMultimodalInput({
             )}
           </div>
         </div>
-        {messages.length === 0 &&
+        {showSuggestions &&
+          messages.length === 0 &&
           attachments.length === 0 &&
           uploadQueue.length === 0 && <SuggestedActions setInput={setInput} />}
       </div>

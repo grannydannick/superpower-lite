@@ -14,6 +14,7 @@ interface MessagesProps {
   status: UseChatHelpers<UIMessage>['status'];
   messages: UseChatHelpers<UIMessage>['messages'];
   setMessages: UseChatHelpers<UIMessage>['setMessages'];
+  disableAutoNavigate?: boolean;
 }
 
 function PureMessages({
@@ -21,6 +22,7 @@ function PureMessages({
   status,
   messages,
   setMessages,
+  disableAutoNavigate = false,
 }: MessagesProps) {
   const { data: history } = useHistory();
   const navigate = useNavigate();
@@ -28,13 +30,14 @@ function PureMessages({
 
   // If the chat is ready and there are messages, navigate to the chat
   useEffect(() => {
+    if (disableAutoNavigate) return;
     if (status === 'ready' && messages.length > 0 && !id) {
       const recentChat = history?.find((h) => h.id === chatId);
       if (recentChat) {
-        navigate(`/concierge/${recentChat.id}`);
+        navigate(`/concierge/${recentChat.id}`, { replace: true });
       }
     }
-  }, [status, messages, history, chatId, navigate, id]);
+  }, [status, messages, history, chatId, navigate, id, disableAutoNavigate]);
 
   return (
     <div
@@ -43,9 +46,19 @@ function PureMessages({
         messages.length === 0 && 'block h-0',
       )}
     >
-      <div className="pointer-events-none absolute top-0 z-10 h-8 w-full bg-gradient-to-t from-transparent to-zinc-50" />
-      <div className="pointer-events-none absolute bottom-0 z-10 h-8 w-full bg-gradient-to-b from-transparent to-zinc-50" />
-      <div className="relative flex max-h-[calc(100vh-20.5rem)] min-h-32 min-w-0 flex-col gap-6 overflow-y-scroll py-4 transition-all duration-200 ease-in-out md:max-h-full lg:pb-0">
+      <div
+        className="relative flex max-h-[calc(100vh-20.5rem)] min-h-32 min-w-0 flex-col gap-6 overflow-y-scroll py-4 transition-all duration-200 ease-in-out md:max-h-full lg:pb-0"
+        style={{
+          maskImage:
+            'linear-gradient(to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,1) 32px, rgba(0,0,0,1) calc(100% - 32px), rgba(0,0,0,0) 100%)',
+          WebkitMaskImage:
+            'linear-gradient(to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,1) 32px, rgba(0,0,0,1) calc(100% - 32px), rgba(0,0,0,0) 100%)',
+          maskRepeat: 'no-repeat',
+          WebkitMaskRepeat: 'no-repeat',
+          maskSize: '100% 100%',
+          WebkitMaskSize: '100% 100%',
+        }}
+      >
         {messages.map((message, index) => (
           <div
             key={message.id}
@@ -65,7 +78,7 @@ function PureMessages({
         {status === 'submitted' &&
           messages.length > 0 &&
           messages[messages.length - 1].role === 'user' && (
-            <div className="pl-4 transition-all duration-200 ease-in-out">
+            <div className="pl-0.5 transition-all duration-200 ease-in-out">
               <ThinkingMessage />
             </div>
           )}
