@@ -1,10 +1,86 @@
-import axios, { InternalAxiosRequestConfig } from 'axios';
+/**
+ * Centralised API client that handles authentication headers, refresh tokens,
+ * and transient error messaging. The goal is to ensure that a single refresh
+ * request is reused when many calls fail with 401s at the same time.
+ */
+import axios, {
+  type AxiosError,
+  type AxiosResponse,
+  type InternalAxiosRequestConfig,
+} from 'axios';
 
 import { toast } from '@/components/ui/sonner';
 import { env } from '@/config/env';
 import { clearActiveLogin, getActiveLogin, setActiveLogin } from '@/lib/utils';
 import { OAuthGrantType, TokenResponse } from '@/types/api';
 
+type ApiErrorPayload = {
+  message?: string;
+  issue?: Array<{
+    details: {
+      text: string;
+    };
+  }>;
+};
+
+type RetriableRequestConfig = InternalAxiosRequestConfig & {
+  _isRetry?: boolean;
+};
+
+// Shares a single refresh call across concurrent 401s so that only one refresh hits the server.
+let refreshPromise: Promise<string> | null = null;
+
+const redirectToSignin = () => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  if (window.location.pathname === '/signin') {
+    return;
+  }
+
+  const currentPath = `${window.location.pathname}${window.location.search}`;
+  const redirectUrl = `/signin?redirectTo=${encodeURIComponent(currentPath)}`;
+
+  window.location.replace(redirectUrl);
+};
+
+// Performs the OAuth refresh token grant and persists the new login state.
+const refreshAccessToken = async (): Promise<string> => {
+  const refreshToken = getActiveLogin()?.refreshToken;
+  if (!refreshToken) {
+    throw new Error('Missing refresh token');
+  }
+
+  const formBody = new URLSearchParams();
+  // Standard OAuth refresh token payload.
+  formBody.set('grant_type', OAuthGrantType.RefreshToken);
+  formBody.set('refresh_token', refreshToken);
+
+  const response = await axios.post<TokenResponse>(
+    `${env.API_URL}/oauth2/token`,
+    formBody,
+    {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      withCredentials: true,
+    },
+  );
+
+  const accessToken = response.data.access_token;
+
+  // Persist the updated tokens so queued requests can pick them up.
+  setActiveLogin({
+    accessToken,
+    refreshToken: response.data.refresh_token,
+    profile: {
+      userId: response.data.profile.userId,
+    },
+  });
+
+  return accessToken;
+};
+
+// Automatically ensure every request includes auth + the expected content type.
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   if (config.headers) {
     config.headers.Accept = 'application/json';
@@ -22,26 +98,31 @@ export const api = axios.create({
 api.interceptors.request.use(authRequestInterceptor);
 
 api.interceptors.response.use(
-  (config) => {
+  (config: AxiosResponse) => {
     return config.data;
   },
-  async (error) => {
-    const originalRequest = error.config;
+  async (error: AxiosError<ApiErrorPayload>) => {
+    const originalRequest = error.config as RetriableRequestConfig | undefined;
+    const response = error.response;
 
-    // Check if toast notifications should be hidden for this request
-    const hideToast = originalRequest?.headers?.['x-hide-toast'] === 'true';
+    if (!response || !originalRequest) {
+      throw error;
+    }
+
+    // Individual requests can opt-out of global toasts by setting the header.
+    const hideToast = originalRequest.headers?.['x-hide-toast'] === 'true';
 
     // Handle non-authentication errors
-    if (error.response.status !== 401) {
-      if (!hideToast && error.response.data) {
-        const apiError = error.response.data;
+    if (response.status !== 401) {
+      if (!hideToast && response.data) {
+        const apiError = response.data as ApiErrorPayload;
 
-        /**
-         * If we have issue inside then API error is of type OperationOutcome
-         */
-        if (apiError.issue) {
+        // OperationOutcome style errors ship issues; fall back to message otherwise.
+        if (apiError.issue?.length) {
           for (const issue of apiError.issue) {
-            toast.error(issue.details.text);
+            if (issue.details?.text) {
+              toast.error(issue.details.text);
+            }
           }
         } else if (apiError.message) {
           toast.error(apiError.message);
@@ -51,58 +132,49 @@ api.interceptors.response.use(
       }
     }
 
-    if (originalRequest.url.includes('/oauth2/token')) {
+    if (originalRequest.url?.includes('/oauth2/token')) {
       clearActiveLogin();
-      window.location.reload();
+      redirectToSignin();
       throw error;
     }
 
-    if (
-      error.response.status === 401 &&
-      error.config &&
-      !error.config._isRetry
-    ) {
-      originalRequest._isRetry = true;
-      try {
-        const refreshToken = getActiveLogin()?.refreshToken;
-
-        if (refreshToken) {
-          /*
-           * we are not reusing auth.tsx functions here
-           * because we need to make this request from different
-           * axios instance (that is not api)
-           * */
-          const formBody = new URLSearchParams();
-          formBody.set('grant_type', OAuthGrantType.RefreshToken);
-          formBody.set('refresh_token', refreshToken);
-
-          const tokens = await axios.post<TokenResponse>(
-            `${env.API_URL}/oauth2/token`,
-            formBody,
-            {
-              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-              withCredentials: true,
-            },
-          );
-
-          const token = tokens.data.access_token;
-
-          setActiveLogin({
-            accessToken: token,
-            refreshToken: tokens.data.refresh_token,
-            profile: {
-              userId: tokens.data.profile.userId,
-            },
-          });
-
-          originalRequest.headers.Authorization = `Bearer ${token}`;
-          return api.request(originalRequest);
-        }
-      } catch (err) {
-        console.log('Not authorized');
-
+    if (response.status === 401 && !originalRequest._isRetry) {
+      if (!getActiveLogin()?.refreshToken) {
         clearActiveLogin();
-        window.location.reload();
+        redirectToSignin();
+        throw error;
+      }
+
+      originalRequest._isRetry = true;
+
+      if (!refreshPromise) {
+        refreshPromise = (async () => {
+          try {
+            return await refreshAccessToken();
+          } catch (err) {
+            clearActiveLogin();
+            throw err;
+          } finally {
+            refreshPromise = null;
+          }
+        })();
+      }
+
+      try {
+        // Each 401 waits for the shared refresh to settle before retrying the original request.
+        const token = await refreshPromise;
+        const headers = originalRequest.headers ?? {};
+        originalRequest.headers = headers;
+        // Support both AxiosHeaders (with set) and plain objects (tests, mocks).
+        if ('set' in headers && typeof (headers as any).set === 'function') {
+          (headers as any).set('Authorization', `Bearer ${token}`);
+        } else {
+          (headers as any).Authorization = `Bearer ${token}`;
+        }
+        return api.request(originalRequest);
+      } catch (err) {
+        redirectToSignin();
+        throw err;
       }
     }
     throw error;
