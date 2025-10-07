@@ -46,14 +46,14 @@ export const useBiomarkers = ({ queryConfig }: UseBiomarkersOptions = {}) => {
         ...query.data,
         biomarkers: query.data.biomarkers.filter((biomarker) => {
           if (
-            user?.gender === 'female' &&
+            user?.gender.toLowerCase() === 'female' &&
             FILTERED_FEMALE_BIOMARKERS.includes(biomarker.name)
           ) {
             return false;
           }
 
           if (
-            user?.gender === 'male' &&
+            user?.gender.toLowerCase() === 'male' &&
             FILTERED_MALE_BIOMARKERS.includes(biomarker.name)
           ) {
             return false;
