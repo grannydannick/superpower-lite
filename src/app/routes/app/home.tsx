@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dropdown';
 import { Greeting } from '@/features/home/components/greeting';
 import { TimelineList } from '@/features/home/components/timeline-list';
+import { CarePlanModal } from '@/features/plans/components/care-plan-modal';
 
 export const HomeRoute = () => {
   const [tab, setTab] = useState<'timeline' | 'twin'>('timeline');
@@ -68,6 +69,7 @@ export const HomeRoute = () => {
         </div>
         {tab === 'timeline' && <TimelineList />}
       </div>
+      <CarePlanModal />
     </ContentLayout>
   );
 };
