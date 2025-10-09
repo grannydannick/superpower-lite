@@ -26,6 +26,9 @@ export const Panels = () => {
     serviceName: service.name,
   });
 
+  const isDisabled =
+    [...addOnIds, ...(credit?.addOnServiceIds ?? [])].length === 0;
+
   return (
     <>
       <div
@@ -38,7 +41,7 @@ export const Panels = () => {
           setSelectedIds={updateAddOnIds}
         />
       </div>
-      <HealthcareServiceFooter />
+      <HealthcareServiceFooter nextBtnDisabled={isDisabled} />
     </>
   );
 };
