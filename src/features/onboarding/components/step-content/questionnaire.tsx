@@ -1,19 +1,15 @@
 import { IntakeQuestionnaire } from '@/features/questionnaires/components/intake-questionnaire';
-import { ScreeningQuestionnaire } from '@/features/questionnaires/components/screening-questionnaire';
 import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { useStepper } from '@/lib/stepper/stepper';
 
 interface QuestionnaireStepProps {
-  type: 'intake' | 'screening';
   showIntro?: boolean;
 }
 
 export const QuestionnaireStep = ({
-  type,
   showIntro = true,
 }: QuestionnaireStepProps) => {
   const { nextStep, activeStep } = useStepper((s) => s);
-
   const { mutateAsync: updateTaskProgress, isError } = useUpdateTask();
 
   const updateStep = async () => {
@@ -27,14 +23,5 @@ export const QuestionnaireStep = ({
     }
   };
 
-  switch (type) {
-    case 'intake':
-      return (
-        <IntakeQuestionnaire showIntro={showIntro} onSubmit={updateStep} />
-      );
-    case 'screening':
-      return <ScreeningQuestionnaire onSubmit={updateStep} showIntro={false} />;
-    default:
-      return null;
-  }
+  return <IntakeQuestionnaire showIntro={showIntro} onSubmit={updateStep} />;
 };
