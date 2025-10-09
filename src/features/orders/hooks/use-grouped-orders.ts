@@ -1,19 +1,12 @@
 import { useMemo } from 'react';
 
-import { getOrdersQueryOptions, useOrders } from '@/features/orders/api';
-import { getServicesQueryOptions, useServices } from '@/features/services/api';
-import { QueryConfig } from '@/lib/react-query';
+import { useOrders } from '@/features/orders/api';
+import { useServices } from '@/features/services/api';
 import { HealthcareService, Order } from '@/types/api';
 
-export const useGroupedOrders = ({
-  servicesQueryConfig,
-  ordersQueryConfig,
-}: {
-  servicesQueryConfig?: QueryConfig<typeof getServicesQueryOptions>;
-  ordersQueryConfig?: QueryConfig<typeof getOrdersQueryOptions>;
-} = {}) => {
-  const getOrdersQuery = useOrders({ queryConfig: ordersQueryConfig });
-  const getServicesQuery = useServices({ queryConfig: servicesQueryConfig });
+export const useGroupedOrders = () => {
+  const getOrdersQuery = useOrders();
+  const getServicesQuery = useServices();
 
   return useMemo(() => {
     const all = getOrdersQuery.data?.orders ?? [];

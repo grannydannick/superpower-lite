@@ -3,6 +3,8 @@ import { z } from 'zod';
 
 import { checkLabOrderSupport } from '@/const';
 import { getTimelineQueryOptions } from '@/features/home/api/get-timeline';
+import { getOrdersQueryOptions } from '@/features/orders/api/get-orders';
+import { getServicesQueryOptions } from '@/features/services/api';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { api } from '@/lib/api-client';
 import { useUser } from '@/lib/auth';
@@ -43,6 +45,12 @@ export const useUpgradeOrder = ({
 
       queryClient.invalidateQueries({
         queryKey: getTimelineQueryOptions().queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: getOrdersQueryOptions().queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: getServicesQueryOptions().queryKey,
       });
       onSuccess?.(response, variables, context);
 

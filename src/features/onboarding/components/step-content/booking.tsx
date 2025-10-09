@@ -78,7 +78,7 @@ export const BookingStep = () => {
 
   return (
     <div className="flex min-h-dvh w-full flex-col">
-      {/*<FloatingLogDebug debugInfo={draftOrder} />*/}
+      {/*<FloatingLogDebug debugInfo={{ draftOrder, stableService }} />*/}
       {groupedOrdersLoading ? (
         <Loader />
       ) : stableService ? (
