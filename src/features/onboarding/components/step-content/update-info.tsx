@@ -30,9 +30,9 @@ import {
 } from '@/components/ui/select';
 import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner';
 import { Body2, H3, H4 } from '@/components/ui/typography';
-import { US_STATES } from '@/const';
-import { useCheckoutContext } from '@/features/auth/stores/register-store';
+import { ADVANCED_BLOOD_PANEL, US_STATES } from '@/const';
 import { OnboardingCard } from '@/features/onboarding/components/onboarding-membership-card';
+import { useHasCredit } from '@/features/orders/hooks';
 import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { useCreateAddress, useEditAddress } from '@/features/users/api';
 import { useUpdateUser } from '@/features/users/api/update-user';
@@ -91,7 +91,9 @@ export type UpdateUserInput = z.infer<typeof updateUserInputSchema>;
 
 export const UpdateInfo = () => {
   const { data: user } = useUser();
-  const { couponMetadata } = useCheckoutContext();
+  const { credit: advancedDrawCredit } = useHasCredit({
+    serviceName: ADVANCED_BLOOD_PANEL,
+  });
   const { jump, getStepIndexById } = useStepper((s) => s);
   const form = useForm<UpdateUserInput>({
     shouldUnregister: false,
@@ -154,10 +156,7 @@ export const UpdateInfo = () => {
       },
     });
 
-    const hasAdvancedDrawCredit =
-      couponMetadata?.event_type === 'advanced_draw_credit';
-
-    const nextStepIndex = hasAdvancedDrawCredit
+    const nextStepIndex = advancedDrawCredit
       ? getStepIndexById('intake')
       : getStepIndexById('advanced-upgrade');
 
@@ -166,7 +165,7 @@ export const UpdateInfo = () => {
       data: { progress: nextStepIndex },
     });
 
-    const nextStepId = hasAdvancedDrawCredit ? 'intake' : 'advanced-upgrade';
+    const nextStepId = advancedDrawCredit ? 'intake' : 'advanced-upgrade';
 
     jump(nextStepId);
   };
