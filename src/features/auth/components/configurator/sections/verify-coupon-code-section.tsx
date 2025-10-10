@@ -36,8 +36,7 @@ const AccessCodeInputSection = () => {
           toast.success('Access code successfully applied');
         }
       },
-      onError: (error) => {
-        toast.error(error.message);
+      onError: () => {
         setCoupon(null);
         clearManualCouponOverride();
         setCouponMetadata(null);
