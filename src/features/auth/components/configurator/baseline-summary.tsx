@@ -18,7 +18,6 @@ import { formatMoney } from '@/utils/format-money';
 export const BaselineSummary = ({ postalCode }: { postalCode: string }) => {
   const { couponMetadata } = useCheckoutContext();
   const atHomeDrawCredit =
-    couponMetadata?.event_type === 'at_home_draw_credit' ||
     couponMetadata?.blood_draw_method === COLLECTION_METHODS.AT_HOME.value;
 
   return (
@@ -162,7 +161,6 @@ export const AtHomeDrawCreditSection = ({
 }) => {
   const { couponMetadata } = useCheckoutContext();
   const atHomeDrawCredit =
-    couponMetadata?.event_type === 'at_home_draw_credit' ||
     couponMetadata?.blood_draw_method === COLLECTION_METHODS.AT_HOME.value;
 
   if (!atHomeDrawCredit) {

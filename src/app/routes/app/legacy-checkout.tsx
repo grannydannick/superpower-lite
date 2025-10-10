@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { AnimatedCheckbox } from '@/components/ui/checkbox';
 import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner';
 import { Body1, Body2, H3 } from '@/components/ui/typography';
+import { COLLECTION_METHODS } from '@/const';
 import {
   AtHomeDrawCreditSection,
   BaselineSummary,
@@ -104,7 +105,8 @@ export const BillingInfo = ({ postalCode }: { postalCode: string }) => {
   const { membership, processing, couponMetadata } = useCheckoutContext();
   const [expressAvailable, setExpressAvailable] = useState(false);
   const [consentGiven, setConsentGiven] = useState(false);
-  const atHomeDrawCredit = couponMetadata?.event_type === 'at_home_draw_credit';
+  const atHomeDrawCredit =
+    couponMetadata?.blood_draw_method === COLLECTION_METHODS.AT_HOME.value;
 
   const {
     handleCardNumberPayment,
