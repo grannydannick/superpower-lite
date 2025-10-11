@@ -1,17 +1,20 @@
 import NumberFlow from '@number-flow/react';
 import { motion } from 'framer-motion';
+import { CircleCheckBig } from 'lucide-react';
 import moment from 'moment';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { TestimonialCarousel } from '@/components/shared/testimonials/components/testimonial-carousel';
 import { Button } from '@/components/ui/button';
+import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner';
 import { TextShimmer } from '@/components/ui/text-shimmer';
 import { H3, H4 } from '@/components/ui/typography';
 import { ServiceWithMetadata } from '@/features/onboarding/hooks/use-upsell-services';
 import { useCreateBulkOrders } from '@/features/orders/api/create-bulk-orders';
 import { CreateOrderInput } from '@/features/orders/api/create-order';
 import { getDefaultCollectionMethod } from '@/features/orders/utils/get-default-collection-method';
+import { usePaymentMethodSelection } from '@/features/settings/hooks';
 import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { CurrentPaymentMethodCard } from '@/features/users/components/current-payment-method-card';
 import { useAnalytics } from '@/hooks/use-analytics';
@@ -40,6 +43,19 @@ export const UpsellCheckout = ({
   const { mutateAsync: updateTaskProgress, isError } = useUpdateTask();
 
   const { jump, getStepIndexById } = useStepper((s) => s);
+  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<
+    string | undefined
+  >();
+
+  const {
+    isFlexSelected,
+    hasFlexPaymentMethod,
+    setProcessingPaymentType,
+    isProcessingDefault,
+    isProcessingFlex,
+    primaryPaymentMethodId,
+    flexPaymentMethodId,
+  } = usePaymentMethodSelection(selectedPaymentMethodId, isPending);
 
   const totalPrice = useMemo(() => {
     return selectedServices.reduce((acc, service) => acc + service.price, 0);
@@ -50,10 +66,7 @@ export const UpsellCheckout = ({
       taskName: 'onboarding',
       data: { progress: activeStep },
     });
-
-    if (!isError) {
-      nextStep();
-    }
+    if (!isError) nextStep();
   }, [activeStep, isError, nextStep, updateTaskProgress]);
 
   const skipStep = async () => {
@@ -67,61 +80,79 @@ export const UpsellCheckout = ({
       data: { progress: stepToJump },
     });
 
-    if (!isError) {
-      jump('booking');
-    }
+    if (!isError) jump('booking');
   };
 
-  const createBulkOrdersFromServices = useCallback(async () => {
-    if (!user) return;
-    const orders: CreateOrderInput[] = [];
+  const createBulkOrdersFromServices = useCallback(
+    async (paymentType: 'stripe' | 'flex') => {
+      if (!user) return;
 
-    for (const service of selectedServices) {
-      const collectionMethod = getDefaultCollectionMethod(service);
+      const paymentMethodId =
+        paymentType === 'flex' ? flexPaymentMethodId : primaryPaymentMethodId;
 
-      const data: CreateOrderInput = {
-        serviceId: service.id,
-        location: {},
-        timestamp: new Date().toISOString(),
-        timezone: moment.tz.guess(),
-        method: collectionMethod ?? undefined,
-        status: OrderStatus.draft,
-      };
+      const orders: CreateOrderInput[] = selectedServices.map((service) => {
+        const collectionMethod = getDefaultCollectionMethod(service);
+        return {
+          serviceId: service.id,
+          location: {},
+          timestamp: new Date().toISOString(),
+          timezone: moment.tz.guess(),
+          method: collectionMethod ?? undefined,
+          status: OrderStatus.draft,
+          paymentMethodId,
+        };
+      });
 
-      orders.push(data);
-    }
+      await mutateAsync({ data: orders });
 
-    await mutateAsync({ data: orders });
+      track('upsell_checkout_completed', {
+        number_of_services: selectedServices.length,
+        value: totalPrice,
+        currency: 'USD',
+        services: selectedServices.map((service) => service.name),
+        service_ids: selectedServices.map((service) => service.id),
+        payment_provider: paymentMethodId?.startsWith('fpm_')
+          ? 'flex'
+          : 'stripe',
+      });
 
-    track('upsell_checkout_completed', {
-      number_of_services: selectedServices.length,
-      value: totalPrice,
-      currency: 'USD',
-      services: selectedServices.map((service) => service.name),
-      service_ids: selectedServices.map((service) => service.id),
-    });
-
-    return updateStep();
-  }, [user, mutateAsync, selectedServices, updateStep, totalPrice, track]);
+      return updateStep();
+    },
+    [
+      user,
+      mutateAsync,
+      selectedServices,
+      updateStep,
+      totalPrice,
+      track,
+      primaryPaymentMethodId,
+      flexPaymentMethodId,
+    ],
+  );
 
   const existingOrders = useMemo(() => {
     return services.some((service) => service.order);
   }, [services]);
 
-  const handleBooking = () => {
+  const handleBooking = async (paymentType: 'stripe' | 'flex') => {
     if (existingOrders && !selectedServices?.length) {
       return updateStep();
     }
 
     if (!selectedServices?.length) {
-      skipStep();
-    } else {
-      createBulkOrdersFromServices();
+      return skipStep();
+    }
+
+    setProcessingPaymentType(paymentType);
+    try {
+      await createBulkOrdersFromServices(paymentType);
+    } finally {
+      setProcessingPaymentType(null);
     }
   };
 
   const buttonText = useMemo(() => {
-    if (isPending) {
+    if (isProcessingDefault) {
       return (
         <TextShimmer
           className="line-clamp-1 text-base [--base-color:white] [--base-gradient-color:#a1a1aa]"
@@ -145,7 +176,7 @@ export const UpsellCheckout = ({
     }
 
     return '';
-  }, [isPending, selectedServices.length, existingOrders]);
+  }, [isProcessingDefault, selectedServices.length, existingOrders]);
 
   return (
     <>
@@ -218,6 +249,8 @@ export const UpsellCheckout = ({
 
             <CurrentPaymentMethodCard
               className="bg-white"
+              selectedPaymentMethodId={selectedPaymentMethodId}
+              onPaymentMethodSelect={setSelectedPaymentMethodId}
               error={
                 error
                   ? 'There was an issue with your payment method. Please try again'
@@ -231,14 +264,37 @@ export const UpsellCheckout = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.5, ease: 'easeOut' }}
+          className="space-y-4 pb-4"
         >
           <Button
-            onClick={handleBooking}
+            onClick={() => handleBooking('stripe')}
             disabled={isPending}
-            className="sticky top-[calc(100dvh-4.5rem)] z-30 order-first my-8 w-full hover:bg-zinc-800 disabled:bg-zinc-700 disabled:opacity-100 lg:static lg:order-none"
+            className="w-full hover:bg-zinc-800 disabled:bg-zinc-700 disabled:opacity-100"
           >
             {buttonText}
           </Button>
+          {hasFlexPaymentMethod && selectedServices.length > 0 && (
+            <Button
+              onClick={() => handleBooking('flex')}
+              disabled={!isFlexSelected || isPending}
+              variant="outline"
+              className="w-full bg-white"
+            >
+              {isProcessingFlex ? (
+                <TransactionSpinner
+                  variant="primary"
+                  className="flex justify-center"
+                />
+              ) : (
+                <>
+                  <CircleCheckBig className="mr-2 size-[20px] text-zinc-700" />
+                  {isFlexSelected
+                    ? 'Book with HSA/FSA'
+                    : 'Select an HSA/FSA card'}
+                </>
+              )}
+            </Button>
+          )}
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}

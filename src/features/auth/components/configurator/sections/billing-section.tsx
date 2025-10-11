@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
+import { HSAFSACheckoutButton } from '@/components/shared/hsa-fsa-checkout-button';
 import { PaymentDetails } from '@/components/shared/payment-details';
 import { StripeCardElement } from '@/components/shared/stripe-card-element';
 import { StripeExpressCheckoutElement } from '@/components/shared/stripe-express-checkout-element';
@@ -11,22 +12,25 @@ import { Body1, Body2, H3 } from '@/components/ui/typography';
 import { useCheckout } from '@/features/auth/hooks/use-checkout';
 import { useCheckoutContext } from '@/features/auth/stores';
 import { RegisterInput } from '@/lib/auth';
+import { getAccessCode } from '@/utils/access-code';
+import { getState } from '@/utils/verify-state-from-postal';
 
 import { VerifyCouponCodeSection } from './verify-coupon-code-section';
 
 export const BillingSection = () => {
   const form = useFormContext<RegisterInput>();
-  const postalCode = form.watch('postalCode');
   const { membership, processing } = useCheckoutContext();
   const [expressAvailable, setExpressAvailable] = useState(false);
+  const formValues = form.watch();
 
   const {
     handleCardNumberPayment,
     handleDigitalWalletPayment,
+    handleHSAFSAPayment,
     stripeError,
     setStripeError,
     isMutationPending,
-  } = useCheckout({ postalCode });
+  } = useCheckout({ postalCode: formValues.postalCode });
 
   return (
     <div className="space-y-8">
@@ -54,15 +58,35 @@ export const BillingSection = () => {
           processing={processing || isMutationPending}
           onAvailabilityChange={setExpressAvailable}
         />
-        {expressAvailable ? (
-          <div className="flex items-center">
-            <div className="h-px flex-1 bg-zinc-200" />
-            <Body1 className="mx-4 text-center text-base text-zinc-500">
-              or pay by card
-            </Body1>
-            <div className="h-px flex-1 bg-zinc-200" />
-          </div>
-        ) : null}
+        <HSAFSACheckoutButton
+          onClick={async (event) => {
+            const isValid = await form.trigger(undefined, {
+              shouldFocus: true,
+            });
+            if (isValid) {
+              event.resolve();
+            } else {
+              toast.error('Please complete all required fields.');
+            }
+          }}
+          onPaymentSuccess={(paymentData) =>
+            form.handleSubmit((data) =>
+              handleHSAFSAPayment(paymentData, data),
+            )()
+          }
+          disabled={processing || isMutationPending}
+          state={getState(formValues.postalCode)?.state ?? 'CA'}
+          coupon={getAccessCode() || undefined}
+          email={formValues.email}
+          phone={formValues.phone}
+        />
+        <div className="flex items-center">
+          <div className="h-px flex-1 bg-zinc-200" />
+          <Body1 className="mx-4 text-center text-base text-zinc-500">
+            or pay by card
+          </Body1>
+          <div className="h-px flex-1 bg-zinc-200" />
+        </div>
         <PaymentDetails />
         <StripeCardElement
           processing={processing || isMutationPending}

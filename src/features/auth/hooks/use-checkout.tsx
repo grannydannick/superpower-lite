@@ -98,7 +98,10 @@ export const useCheckout = ({
   // register/form context
   const { membership, setProcessing, processing } = useCheckoutContext();
 
-  const createSubscription = async (paymentMethod: string) => {
+  const createSubscription = async (
+    paymentMethod: string,
+    hsaFsaCheckoutSessionId?: string,
+  ) => {
     setProcessing(true);
     try {
       await createSubscriptionMutation.mutateAsync({
@@ -108,6 +111,7 @@ export const useCheckout = ({
           referralId: getReferralId() ?? undefined,
           campaignData: getUtmData() ?? undefined,
           paymentMethod,
+          hsaFsaCheckoutSessionId,
         },
       });
     } catch (e) {
@@ -310,9 +314,115 @@ export const useCheckout = ({
     }
   };
 
+  const handleHSAFSAPayment = async (
+    paymentData: any,
+    data?: RegisterInput,
+  ) => {
+    if (processing) return;
+
+    if (!membership) {
+      toast.error('No memberships available for your state. Contact support.');
+      return;
+    }
+
+    const checkoutSessionId =
+      paymentData?.object?.checkout_session?.checkout_session_id;
+
+    if (!checkoutSessionId) {
+      toast.error('Something went wrong. Please try again.');
+      return;
+    }
+
+    setProcessing(true);
+
+    try {
+      // Create user if data was passed
+      await createUserIfRequired(data);
+
+      // Create subscription with HSA/FSA checkout session ID so backend can process accordingly
+      await createSubscription('hsa_fsa', checkoutSessionId);
+    } catch (e: any) {
+      toast.error('Something went wrong. Please try again.');
+    }
+  };
+
+  /**
+   * Adds a payment method without creating a subscription (for backup payment methods on the update-info screen)
+   */
+  const handleAddPaymentMethod = async () => {
+    if (!stripe || !elements) {
+      toast.error('Payment provider is not ready yet.');
+      return false;
+    }
+
+    const cardNumber = elements.getElement(CardNumberElement);
+    if (!cardNumber) {
+      return false;
+    }
+
+    try {
+      const { error, paymentMethod } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: cardNumber,
+      });
+
+      if (error) {
+        setStripeError(error);
+        return;
+      }
+
+      // Create setup intent to validate the card
+      const { client_secret } =
+        await setupIntentMutation.mutateAsync(undefined);
+
+      const { error: confirmSetupError, setupIntent } =
+        await stripe.confirmSetup({
+          clientSecret: client_secret,
+          confirmParams: {
+            return_url: `${window.location.origin}`,
+            payment_method: paymentMethod?.id,
+          },
+          redirect: 'if_required',
+        });
+
+      const isValidSetupIntent =
+        setupIntent?.status === 'succeeded' ||
+        setupIntent?.status === 'processing';
+
+      if (confirmSetupError || !isValidSetupIntent) {
+        throw confirmSetupError;
+      }
+
+      const intentPm = setupIntent?.payment_method as string;
+
+      if (!intentPm) {
+        throw new Error('No payment method found in setup intent');
+      }
+
+      // Add payment method to user
+      const { success } = await addPaymentMethodMutation.mutateAsync({
+        data: { paymentMethodId: intentPm },
+      });
+
+      if (!success) {
+        throw new Error('Failed to save payment method');
+      }
+
+      return true;
+    } catch (error: any) {
+      setProcessing(false);
+      toast.error(
+        'Something went wrong when adding your card. Please try again.',
+      );
+      return false;
+    }
+  };
+
   return {
     handleDigitalWalletPayment,
     handleCardNumberPayment,
+    handleHSAFSAPayment,
+    handleAddPaymentMethod,
     stripeError,
     setStripeError,
     isMutationPending:

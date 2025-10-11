@@ -78,7 +78,7 @@ export const HealthcareServiceFooter = ({
         className,
       )}
     >
-      <div className="flex w-full gap-2">
+      <div className="flex w-full flex-col-reverse justify-end gap-4 md:flex-row md:gap-2">
         {renderPrevButton()}
         {renderNextButton()}
       </div>

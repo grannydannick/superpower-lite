@@ -16,6 +16,7 @@ export const createSubscriptionInputSchema = z.object({
   campaignData: z.record(z.string(), z.any()).optional(),
   state: z.string(),
   paymentMethod: z.string().optional(),
+  hsaFsaCheckoutSessionId: z.string().optional(),
 });
 
 export type CreateSubscriptionInput = z.infer<

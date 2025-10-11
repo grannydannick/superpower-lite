@@ -3,7 +3,6 @@ import { z } from 'zod';
 
 import { checkLabOrderSupport } from '@/const';
 import { getTimelineQueryOptions } from '@/features/home/api/get-timeline';
-import { getOrdersQueryOptions } from '@/features/orders/api/get-orders';
 import { getServicesQueryOptions } from '@/features/services/api';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { api } from '@/lib/api-client';
@@ -12,9 +11,12 @@ import { MutationConfig } from '@/lib/react-query';
 import { Order } from '@/types/api';
 import { getUpgradePrice } from '@/utils/get-upgrade-price';
 
+import { getOrdersQueryOptions } from './get-orders';
+
 export const upgradeOrderInputSchema = z.object({
   upgradeType: z.enum(['advanced', 'custom-panel']),
   addOnServiceIds: z.array(z.string().min(1, 'This is required.')).optional(),
+  paymentMethodId: z.string().optional(),
 });
 
 export type UpgradeOrderInput = z.infer<typeof upgradeOrderInputSchema>;

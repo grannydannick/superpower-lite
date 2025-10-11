@@ -51,6 +51,7 @@ export const createOrderInputSchema = z.object({
     ])
     .optional(),
   informedConsent: consentInputSchema.optional(),
+  paymentMethodId: z.string().optional(),
 });
 
 export type CreateOrderInput = z.infer<typeof createOrderInputSchema>;

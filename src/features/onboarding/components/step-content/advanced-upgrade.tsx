@@ -1,4 +1,5 @@
-import { ArrowRight, ChevronDown } from 'lucide-react';
+import { ArrowRight, ChevronDown, CircleCheckBig } from 'lucide-react';
+import { useState } from 'react';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { SplitScreenLayout } from '@/components/layouts';
@@ -16,6 +17,7 @@ import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner'
 import { Body1, Body2, H2, H3, H4 } from '@/components/ui/typography';
 import { UPGRADE_INFO } from '@/const';
 import { useUpgradeOrder } from '@/features/orders/api/upgrade-order';
+import { usePaymentMethodSelection } from '@/features/settings/hooks';
 import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { CurrentPaymentMethodCard } from '@/features/users/components/current-payment-method-card';
 import { useUser } from '@/lib/auth';
@@ -33,6 +35,22 @@ const AdvancedUpgrade = () => {
   } = useUpdateTask();
   const upgradeOrderMutation = useUpgradeOrder();
   const { data: user } = useUser();
+  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<
+    string | undefined
+  >();
+
+  const {
+    isFlexSelected,
+    hasFlexPaymentMethod,
+    setProcessingPaymentType,
+    isProcessingDefault,
+    isProcessingFlex,
+    primaryPaymentMethodId,
+    flexPaymentMethodId,
+  } = usePaymentMethodSelection(
+    selectedPaymentMethodId,
+    upgradeOrderMutation.isPending,
+  );
 
   const price = getUpgradePrice(user);
 
@@ -41,18 +59,25 @@ const AdvancedUpgrade = () => {
       taskName: 'onboarding',
       data: { progress: activeStep + 1 },
     });
-
-    if (!isError) {
-      nextStep();
-    }
+    if (!isError) nextStep();
   };
 
-  const upgradeOrder = async () => {
-    await upgradeOrderMutation.mutateAsync({
-      data: { upgradeType: 'advanced' },
-    });
+  const upgradeOrder = async (paymentType: 'stripe' | 'flex') => {
+    setProcessingPaymentType(paymentType);
+    const paymentMethodId =
+      paymentType === 'flex' ? flexPaymentMethodId : primaryPaymentMethodId;
 
-    await goToNextStep();
+    try {
+      await upgradeOrderMutation.mutateAsync({
+        data: {
+          upgradeType: 'advanced',
+          paymentMethodId,
+        },
+      });
+      await goToNextStep();
+    } finally {
+      setProcessingPaymentType(null);
+    }
   };
 
   return (
@@ -101,21 +126,51 @@ const AdvancedUpgrade = () => {
         ))}
         <div className="space-y-4">
           <PaymentDetails />
-          <CurrentPaymentMethodCard />
+          <CurrentPaymentMethodCard
+            className="!bg-white"
+            selectedPaymentMethodId={selectedPaymentMethodId}
+            onPaymentMethodSelect={setSelectedPaymentMethodId}
+          />
         </div>
         <div className="flex flex-col gap-2">
           <Button
             disabled={isTaskUpdating || upgradeOrderMutation.isPending}
-            onClick={upgradeOrder}
+            onClick={() => upgradeOrder('stripe')}
           >
-            {upgradeOrderMutation.isPending ? (
+            {isProcessingDefault ? (
               <TransactionSpinner className="flex justify-center" />
             ) : (
               <>Upgrade to Advanced (+{formatMoney(price)})</>
             )}
           </Button>
+          {hasFlexPaymentMethod && (
+            <Button
+              variant="outline"
+              className="bg-white"
+              disabled={
+                !isFlexSelected ||
+                isTaskUpdating ||
+                upgradeOrderMutation.isPending
+              }
+              onClick={() => upgradeOrder('flex')}
+            >
+              {isProcessingFlex ? (
+                <TransactionSpinner
+                  variant="primary"
+                  className="flex justify-center"
+                />
+              ) : (
+                <>
+                  <CircleCheckBig className="mr-2 size-[20px] text-zinc-700" />
+                  {isFlexSelected
+                    ? `Upgrade with HSA/FSA (+${formatMoney(price)})`
+                    : 'Select an HSA/FSA card'}
+                </>
+              )}
+            </Button>
+          )}
           <Button
-            variant="outline"
+            variant={hasFlexPaymentMethod ? 'white' : 'outline'}
             className="bg-white"
             onClick={goToNextStep}
             disabled={isTaskUpdating || upgradeOrderMutation.isPending}

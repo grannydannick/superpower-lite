@@ -1,3 +1,4 @@
+import { CircleCheckBig } from 'lucide-react';
 import { useState } from 'react';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
@@ -9,22 +10,51 @@ import { SUPERPOWER_BLOOD_PANEL } from '@/const';
 import { useUpgradeOrder } from '@/features/orders/api/upgrade-order';
 import { AddOnPanelsSelect } from '@/features/orders/components/steps';
 import { useHasCredit } from '@/features/orders/hooks';
+import { usePaymentMethodSelection } from '@/features/settings/hooks';
 import { CurrentPaymentMethodCard } from '@/features/users/components/current-payment-method-card';
 
 export const UpsellAddOn = ({ goToNext }: { goToNext: () => void }) => {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<
+    string | undefined
+  >();
+
   const { credit } = useHasCredit({
     serviceName: SUPERPOWER_BLOOD_PANEL,
   });
 
   const upgradeOrderMutation = useUpgradeOrder();
 
-  const upgradeOrder = async () => {
-    await upgradeOrderMutation.mutateAsync({
-      data: { upgradeType: 'custom-panel', addOnServiceIds: [...selectedIds] },
-    });
+  const {
+    isFlexSelected,
+    hasFlexPaymentMethod,
+    setProcessingPaymentType,
+    isProcessingDefault,
+    isProcessingFlex,
+    primaryPaymentMethodId,
+    flexPaymentMethodId,
+  } = usePaymentMethodSelection(
+    selectedPaymentMethodId,
+    upgradeOrderMutation.isPending,
+  );
 
-    goToNext();
+  const upgradeOrder = async (paymentType: 'stripe' | 'flex') => {
+    setProcessingPaymentType(paymentType);
+    const paymentMethodId =
+      paymentType === 'flex' ? flexPaymentMethodId : primaryPaymentMethodId;
+
+    try {
+      await upgradeOrderMutation.mutateAsync({
+        data: {
+          upgradeType: 'custom-panel',
+          addOnServiceIds: [...selectedIds],
+          paymentMethodId,
+        },
+      });
+      goToNext();
+    } finally {
+      setProcessingPaymentType(null);
+    }
   };
 
   return (
@@ -51,21 +81,50 @@ export const UpsellAddOn = ({ goToNext }: { goToNext: () => void }) => {
         </div>
         <div className="space-y-4">
           <PaymentDetails />
-          <CurrentPaymentMethodCard />
+          <CurrentPaymentMethodCard
+            selectedPaymentMethodId={selectedPaymentMethodId}
+            onPaymentMethodSelect={setSelectedPaymentMethodId}
+          />
         </div>
         <div className="flex flex-col gap-2">
           <Button
             disabled={upgradeOrderMutation.isPending || selectedIds.size === 0}
-            onClick={upgradeOrder}
+            onClick={() => upgradeOrder('stripe')}
           >
-            {upgradeOrderMutation.isPending ? (
+            {isProcessingDefault ? (
               <TransactionSpinner className="flex justify-center" />
             ) : (
               <>Purchase</>
             )}
           </Button>
+          {hasFlexPaymentMethod && (
+            <Button
+              variant="outline"
+              className="bg-white"
+              disabled={
+                !isFlexSelected ||
+                upgradeOrderMutation.isPending ||
+                selectedIds.size === 0
+              }
+              onClick={() => upgradeOrder('flex')}
+            >
+              {isProcessingFlex ? (
+                <TransactionSpinner
+                  variant="primary"
+                  className="flex justify-center"
+                />
+              ) : (
+                <>
+                  <CircleCheckBig className="mr-2 size-[20px] text-zinc-700" />
+                  {isFlexSelected
+                    ? 'Purchase with HSA/FSA'
+                    : 'Select an HSA/FSA card'}
+                </>
+              )}
+            </Button>
+          )}
           <Button
-            variant="outline"
+            variant={hasFlexPaymentMethod ? 'white' : 'outline'}
             className="bg-white"
             disabled={upgradeOrderMutation.isPending}
             onClick={goToNext}

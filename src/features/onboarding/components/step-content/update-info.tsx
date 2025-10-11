@@ -8,6 +8,10 @@ import { z } from 'zod';
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { SplitScreenLayout } from '@/components/layouts';
 import { AvailableBiomarkersDialog } from '@/components/shared/available-biomarkers';
+import {
+  BackupPaymentMethod,
+  useNeedsBackupPaymentMethod,
+} from '@/components/shared/backup-payment-method';
 import { AddressAutocomplete } from '@/components/ui/address-autocomplete';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -31,6 +35,7 @@ import {
 import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner';
 import { Body2, H3, H4 } from '@/components/ui/typography';
 import { ADVANCED_BLOOD_PANEL, US_STATES } from '@/const';
+import { useCheckout } from '@/features/auth/hooks/use-checkout';
 import { OnboardingCard } from '@/features/onboarding/components/onboarding-membership-card';
 import { useHasCredit } from '@/features/orders/hooks';
 import { useUpdateTask } from '@/features/tasks/api/update-task';
@@ -95,6 +100,17 @@ export const UpdateInfo = () => {
     serviceName: ADVANCED_BLOOD_PANEL,
   });
   const { jump, getStepIndexById } = useStepper((s) => s);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { needsBackup } = useNeedsBackupPaymentMethod();
+  const {
+    handleAddPaymentMethod,
+    stripeError,
+    setStripeError,
+    isMutationPending,
+  } = useCheckout({
+    postalCode: user?.primaryAddress?.postalCode || '',
+  });
+
   const form = useForm<UpdateUserInput>({
     shouldUnregister: false,
     resolver: zodResolver(updateUserInputSchema),
@@ -124,6 +140,16 @@ export const UpdateInfo = () => {
 
   const onSubmit = async (data: UpdateUserInput) => {
     if (!data.address) return;
+    setIsSubmitting(true);
+
+    // If user needs backup payment method, add it first
+    if (needsBackup) {
+      const paymentMethodAdded = await handleAddPaymentMethod();
+      if (!paymentMethodAdded) {
+        setIsSubmitting(false);
+        return;
+      }
+    }
 
     const line = [data.address.line1];
 
@@ -164,6 +190,7 @@ export const UpdateInfo = () => {
       taskName: 'onboarding',
       data: { progress: nextStepIndex },
     });
+    setIsSubmitting(false);
 
     const nextStepId = advancedDrawCredit ? 'intake' : 'advanced-upgrade';
 
@@ -173,7 +200,9 @@ export const UpdateInfo = () => {
   const isLoading =
     addAddressMutation.isPending ||
     updateTaskMutation.isPending ||
-    updateUserMutation.isPending;
+    updateUserMutation.isPending ||
+    isMutationPending ||
+    isSubmitting;
 
   return (
     <>
@@ -265,6 +294,11 @@ export const UpdateInfo = () => {
                 )}
               />
               <PrimaryAddressForm />
+              <BackupPaymentMethod
+                isLoading={isLoading}
+                stripeError={stripeError}
+                setStripeError={setStripeError}
+              />
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? <TransactionSpinner /> : 'Update'}
               </Button>

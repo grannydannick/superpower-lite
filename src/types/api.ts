@@ -419,6 +419,8 @@ export type UserIdentityVerificationSession = Entity<{
 
 /* PAYMENTS */
 
+export type PaymentProvider = 'stripe' | 'flex';
+
 export type PaymentMethod = {
   stripePaymentMethodId: string;
   stripeCustomerId: string;
@@ -434,6 +436,8 @@ export type PaymentMethod = {
   };
   created: number;
   default: boolean;
+  paymentProvider: PaymentProvider;
+  externalPaymentMethodId: string;
 };
 
 /* INVOICES */

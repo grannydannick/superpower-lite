@@ -32,6 +32,7 @@ export const updateOrderInputSchema = z.object({
       'ACTIVE',
     ])
     .optional(),
+  paymentMethodId: z.string().optional(),
 });
 
 export type UpdateOrderInput = z.infer<typeof updateOrderInputSchema>;

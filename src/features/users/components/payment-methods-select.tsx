@@ -1,4 +1,4 @@
-import { MoreVertical, Plus } from 'lucide-react';
+import { CircleCheckBig, MoreVertical, Plus } from 'lucide-react';
 import { ReactNode } from 'react';
 
 import { DotIcon } from '@/components/icons/dot';
@@ -22,13 +22,21 @@ import { capitalize } from '@/utils/format';
 export const PaymentMethodsSelect = ({
   onPaymentMethodAdd,
   closeBtn,
+  selectedPaymentMethodId,
+  onPaymentMethodSelect,
 }: {
   onPaymentMethodAdd?: () => void;
   closeBtn?: ReactNode;
+  selectedPaymentMethodId?: string;
+  onPaymentMethodSelect?: (paymentMethodId: string) => void;
 }) => {
   const paymentMethodsQuery = usePaymentMethods({});
-
   const paymentMethods = paymentMethodsQuery.data?.paymentMethods ?? [];
+
+  const handleCardClick = (paymentMethodId: string) => {
+    if (!onPaymentMethodSelect) return;
+    onPaymentMethodSelect(paymentMethodId);
+  };
 
   return (
     <div className="space-y-2">
@@ -45,48 +53,97 @@ export const PaymentMethodsSelect = ({
       <div className="rounded-xl border border-zinc-200 bg-white">
         {paymentMethods.length > 0 && (
           <div className="p-2">
-            {paymentMethods.map((paymentMethod, i) => (
-              <div
-                className={cn(
-                  'flex items-center justify-between rounded-[8px] p-4 hover:bg-zinc-50',
-                  paymentMethod?.default ? 'bg-zinc-50' : null,
-                )}
-                key={i}
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Body1 className="text-zinc-600">
-                      {capitalize(paymentMethod.card.brand ?? '')} ****
-                      {paymentMethod.card.last4}
-                    </Body1>
-                    {paymentMethod.default ? (
-                      <div className="hidden items-center gap-2 md:flex">
-                        <DotIcon className="text-zinc-500" />
-                        <Body3 className="text-zinc-500">Default method</Body3>
+            {paymentMethods.map((paymentMethod, i) => {
+              const isFlexCard =
+                paymentMethod.paymentProvider.toLowerCase() === 'flex';
+              const isSelected =
+                selectedPaymentMethodId ===
+                paymentMethod.externalPaymentMethodId;
+              const isClickable = onPaymentMethodSelect;
+
+              return (
+                <div
+                  role="button"
+                  tabIndex={0}
+                  className={cn(
+                    'flex w-full items-center justify-between rounded-[8px] p-4 text-left',
+                    isClickable && 'cursor-pointer',
+                    isSelected
+                      ? 'bg-zinc-100 hover:bg-zinc-100'
+                      : 'hover:bg-zinc-100',
+                  )}
+                  key={i}
+                  onClick={() =>
+                    handleCardClick(paymentMethod.externalPaymentMethodId)
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleCardClick(paymentMethod.externalPaymentMethodId);
+                    }
+                  }}
+                >
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Body1 className="text-zinc-600">
+                        {capitalize(paymentMethod.card.brand ?? '')} ****
+                        {paymentMethod.card.last4}
+                      </Body1>
+                      <div className="flex items-center gap-1.5">
+                        {paymentMethod.default && (
+                          <>
+                            <DotIcon className="text-zinc-500" />
+                            <Body3 className="text-zinc-500">
+                              Default method
+                            </Body3>
+                          </>
+                        )}
+                        {isFlexCard && (
+                          <>
+                            <DotIcon className="text-zinc-500" />
+                            <div className="flex items-center gap-1 rounded-full border px-1.5 py-1">
+                              <CircleCheckBig
+                                className="size-3 text-secondary"
+                                strokeWidth={2.5}
+                              />
+                              <Body3 className="leading-none text-secondary">
+                                HSA/FSA
+                              </Body3>
+                            </div>
+                          </>
+                        )}
                       </div>
-                    ) : null}
+                    </div>
+                    <Body3 className="text-zinc-400">
+                      Expires on {paymentMethod.card.exp_month}/
+                      {paymentMethod.card.exp_year}
+                    </Body3>
                   </div>
-                  <Body3 className="text-zinc-400">
-                    Expires on {paymentMethod.card.exp_month}/
-                    {paymentMethod.card.exp_year}
-                  </Body3>
+                  {!isFlexCard && !paymentMethod.default && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          type="button"
+                          className="flex items-center justify-center"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                        >
+                          <MoreVertical className="size-4 cursor-pointer text-zinc-400" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="rounded-2xl p-2">
+                        <SetDefaultPaymentMethodMenuItem
+                          paymentMethodId={paymentMethod.stripePaymentMethodId}
+                          setDefault={!paymentMethod.default}
+                        />
+                        <DeletePaymentMethodMenuItem {...paymentMethod} />
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
                 </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    {!paymentMethod.default ? (
-                      <MoreVertical className="size-4 cursor-pointer text-zinc-400" />
-                    ) : null}
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="rounded-2xl p-2">
-                    <SetDefaultPaymentMethodMenuItem
-                      paymentMethodId={paymentMethod.stripePaymentMethodId}
-                      setDefault={!paymentMethod.default}
-                    />
-                    <DeletePaymentMethodMenuItem {...paymentMethod} />
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
         <div

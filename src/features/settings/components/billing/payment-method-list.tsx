@@ -1,4 +1,4 @@
-import { MoreVertical } from 'lucide-react';
+import { CircleCheckBig, MoreVertical } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -65,6 +65,7 @@ export function PaymentMethodCard({
   paymentMethod: PaymentMethod;
   defaultMethod: boolean;
 }): JSX.Element {
+  const isFlexCard = paymentMethod.paymentProvider.toLowerCase() === 'flex';
   return (
     <div
       className={cn(
@@ -74,11 +75,24 @@ export function PaymentMethodCard({
     >
       <div className="flex w-full flex-col justify-between gap-3">
         <div className="flex items-center justify-between">
-          <h4 className="text-2xl text-primary">
-            {capitalize(paymentMethod.card?.brand ?? '')} ****
-            {paymentMethod.card?.last4}
-          </h4>
-          {!defaultMethod && (
+          <div className="flex items-baseline gap-2">
+            <h4 className="text-2xl text-primary">
+              {capitalize(paymentMethod.card?.brand ?? '')} ****
+              {paymentMethod.card?.last4}
+            </h4>
+            {isFlexCard && (
+              <div className="flex items-center gap-1 rounded-full border px-2 py-1">
+                <CircleCheckBig
+                  className="size-4 text-secondary"
+                  strokeWidth={2.5}
+                />
+                <span className="text-sm font-medium leading-none text-secondary">
+                  HSA/FSA
+                </span>
+              </div>
+            )}
+          </div>
+          {!defaultMethod && !isFlexCard && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
