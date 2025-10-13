@@ -1,8 +1,9 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { RxQuestionnaireName, RX_ASSESSMENTS } from '@/const/questionnaire';
 import { IntakeQuestionnaire } from '@/features/questionnaires/components/intake-questionnaire';
-import { RxIntakeQuestionnaire } from '@/features/questionnaires/components/rx-intake-questionnaire';
+import { RxQuestionnaire } from '@/features/questionnaires/components/rx-questionnaire';
 
 export const QuestionnaireRoute = () => {
   const { type } = useParams();
@@ -13,8 +14,10 @@ export const QuestionnaireRoute = () => {
     navigate('/');
   };
 
-  if (type === 'rx-intake') {
-    return <RxIntakeQuestionnaire onSubmit={onSubmit} />;
+  if (RX_ASSESSMENTS.includes(type as RxQuestionnaireName)) {
+    return (
+      <RxQuestionnaire onSubmit={onSubmit} name={type as RxQuestionnaireName} />
+    );
   }
 
   // default (covers `/questionnaire` and `/questionnaire/intake`)

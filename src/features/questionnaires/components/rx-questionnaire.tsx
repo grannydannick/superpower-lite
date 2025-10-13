@@ -1,25 +1,28 @@
 import { QuestionnaireForm } from '@/components/ui/questionnaire';
 import { Spinner } from '@/components/ui/spinner';
-import { RX_ASSESSMENT_GHK_CU } from '@/const/questionnaire';
 import { useQuestionnaire } from '@/features/questionnaires/api/get-questionnaire';
 import { useQuestionnaireResponse } from '@/features/questionnaires/api/get-questionnaire-response';
 import { useUpdateQuestionnaireResponse } from '@/features/questionnaires/api/update-questionnaire-response';
+import { QuestionnaireName } from '@/types/api';
 
-export const RxIntakeQuestionnaire = ({
+export const RxQuestionnaire = ({
   showIntro = false,
+  name,
   onSubmit,
 }: {
   showIntro?: boolean;
+  name: QuestionnaireName;
   onSubmit?: () => void;
 }) => {
   const updateQuestionnaireResponseMutation = useUpdateQuestionnaireResponse();
 
   const getQuestionnaireQuery = useQuestionnaire({
-    questionnaireName: RX_ASSESSMENT_GHK_CU,
+    questionnaireName: name,
   });
 
   const getQuestionnaireResponseQuery = useQuestionnaireResponse({
-    questionnaireName: RX_ASSESSMENT_GHK_CU,
+    questionnaireName: name,
+    statuses: ['in-progress', 'stopped'],
   });
 
   if (
@@ -46,13 +49,13 @@ export const RxIntakeQuestionnaire = ({
       onSave={(item) => {
         updateQuestionnaireResponseMutation.mutate({
           data: { item, status: 'in-progress' },
-          questionnaireName: RX_ASSESSMENT_GHK_CU,
+          questionnaireName: name,
         });
       }}
       onSubmit={(item) => {
         updateQuestionnaireResponseMutation.mutate({
           data: { item, status: 'completed' },
-          questionnaireName: RX_ASSESSMENT_GHK_CU,
+          questionnaireName: name,
         });
         onSubmit && onSubmit();
       }}
