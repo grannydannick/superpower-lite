@@ -20,6 +20,7 @@ export interface OrderStoreProps {
 
   onSuccess?: () => void;
   infoFlowBtn?: () => ReactNode;
+  preselectedAddOnIds?: string[];
 }
 
 export interface OrderStore extends OrderStoreProps {
@@ -72,6 +73,7 @@ export const orderStoreCreator = (initProps: OrderStoreProps) => {
         ...initProps,
         ...initialState,
         collectionMethod: getInitialCollectionMethod(),
+        addOnIds: new Set(initProps.preselectedAddOnIds ?? []),
         updateCollectionMethod: (collectionMethod) => set({ collectionMethod }),
         updateLocation: (location) => set({ location }),
         setTz: (tz) => set({ tz }),
@@ -83,13 +85,14 @@ export const orderStoreCreator = (initProps: OrderStoreProps) => {
           });
         },
 
-        // Update consent and set the agreedAt date when consent is given
         updateInformedConsent: (informedConsent: boolean) =>
           set({ informedConsent }),
         updateAddOnIds: (updater) => {
           const prev = get().addOnIds;
           const next =
-            typeof updater === 'function' ? (updater as any)(prev) : updater;
+            typeof updater === 'function'
+              ? (updater as (prev: Set<string>) => Set<string>)(prev)
+              : updater;
           set({ addOnIds: new Set(next) });
         },
 

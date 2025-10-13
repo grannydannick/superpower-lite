@@ -53,16 +53,9 @@ export const HEALTHCARE_SERVICE_DIALOG_CONTAINER_STYLE = 'px-6 md:px-16';
  * @param infoFlowBtn - Will replace regular footer on the info step
  * @param onSuccess - Called when order is either created or updated
  * @param onClose - Called when "Done" button is clicked or used closed the modal
+ * @param initialAddOnIds - Initial add-on IDs to be selected
  */
-export const HealthcareServiceDialog = ({
-  healthcareService,
-  excludeSteps,
-  onSuccess,
-  onClose,
-  children,
-  flow = 'full',
-  infoFlowBtn,
-}: {
+type HealthcareServiceDialogProps = {
   healthcareService: HealthcareService;
   excludeSteps?: BookingStepID[];
   onSuccess?: () => void;
@@ -70,6 +63,20 @@ export const HealthcareServiceDialog = ({
   children?: ReactNode;
   flow?: 'full' | 'info';
   infoFlowBtn?: () => ReactNode;
+  initialAddOnIds?: undefined | string[];
+};
+
+export const HealthcareServiceDialog: React.FC<
+  HealthcareServiceDialogProps
+> = ({
+  healthcareService,
+  excludeSteps,
+  onSuccess,
+  onClose,
+  children,
+  flow = 'full',
+  infoFlowBtn,
+  initialAddOnIds,
 }) => {
   let steps = getStepsFromService(healthcareService);
 
@@ -101,6 +108,7 @@ export const HealthcareServiceDialog = ({
         onSuccess={onSuccess}
         flow={flow}
         infoFlowBtn={infoFlowBtn}
+        preselectedAddOnIds={initialAddOnIds}
       >
         <HealthcareServiceDialogConsumer onClose={onClose}>
           {children}

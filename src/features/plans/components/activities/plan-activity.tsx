@@ -6,8 +6,9 @@ import {
 import { useMemo } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, H4 } from '@/components/ui/typography';
-import { ADVISORY_CALL } from '@/const';
+import { ADVISORY_CALL, CUSTOM_BLOOD_PANEL } from '@/const';
 import { getRxPricing } from '@/const/rx-pricing';
 import { useOrders } from '@/features/orders/api';
 import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
@@ -39,7 +40,12 @@ export const ServiceActivity = ({
   detail?: CarePlanActivityDetail;
   className?: string;
 }) => {
-  const { data: ordersData } = useOrders();
+  const ordersQuery = useOrders();
+  const ordersData = ordersQuery.data;
+  const { data: servicesData } = useServices();
+  const { data: addOnServicesData } = useServices({
+    group: 'blood-panel-addon',
+  });
 
   const serviceName =
     service.name || serviceCoding?.display || 'Unnamed Service';
@@ -72,14 +78,34 @@ export const ServiceActivity = ({
 
   const actionButton = useMemo(() => {
     if (isAdvisory || isServiceScheduled) return null;
+    const addOnServices = new Set(
+      (addOnServicesData?.services ?? []).map((s) => s.id),
+    );
+    const isAddOn = addOnServices.has(service.id);
+    const customPanelService = (servicesData?.services ?? []).find(
+      (s) => s.name === CUSTOM_BLOOD_PANEL,
+    );
+    const bookingService =
+      isAddOn && customPanelService ? customPanelService : service;
+    const preselectedAddOnIds = isAddOn ? [service.id] : undefined;
     return (
-      <HealthcareServiceDialog healthcareService={service}>
+      <HealthcareServiceDialog
+        healthcareService={bookingService}
+        initialAddOnIds={preselectedAddOnIds}
+      >
         <Button size="medium">
-          {shouldShowEarlyAccess ? 'Request' : 'Book'}
+          {shouldShowEarlyAccess ? 'Request' : 'Book now'}
         </Button>
       </HealthcareServiceDialog>
     );
-  }, [isAdvisory, isServiceScheduled, service, shouldShowEarlyAccess]);
+  }, [
+    isAdvisory,
+    isServiceScheduled,
+    service,
+    shouldShowEarlyAccess,
+    addOnServicesData?.services,
+    servicesData?.services,
+  ]);
 
   return (
     <div className="mt-8 space-y-2">
@@ -95,7 +121,11 @@ export const ServiceActivity = ({
         name={serviceName}
         description={
           <div className="flex items-center gap-2 text-zinc-500">
-            <Body1 className="italic text-zinc-500">{serviceMessage}</Body1>
+            {ordersQuery.isLoading ? (
+              <Skeleton className="h-4 w-40" />
+            ) : (
+              <Body1 className="italic text-zinc-500">{serviceMessage}</Body1>
+            )}
           </div>
         }
         className={className}
@@ -189,6 +219,9 @@ export function PlanActivity({ activity, className }: PlanActivityProps) {
   const { detail } = activity;
   const { data: productsData } = useProducts({});
   const { data: servicesData } = useServices();
+  const { data: addOnServicesData } = useServices({
+    group: 'blood-panel-addon',
+  });
 
   const productCoding = detail?.productCodeableConcept?.coding?.[0];
   const serviceCoding = detail?.code?.coding?.[0];
@@ -203,9 +236,18 @@ export function PlanActivity({ activity, className }: PlanActivityProps) {
   const product = productsData?.products?.find(
     (p) => p.id === productCoding?.code,
   );
-  const service = servicesData?.services?.find(
-    (s) => s.id === serviceCoding?.code,
-  );
+  const allServices = [
+    ...(servicesData?.services ?? []),
+    ...(addOnServicesData?.services ?? []),
+  ];
+
+  const service =
+    allServices.find((s) => s.id === serviceCoding?.code) ||
+    (serviceCoding?.display
+      ? allServices.find(
+          (s) => s.name.toLowerCase() === serviceCoding.display?.toLowerCase(),
+        )
+      : undefined);
 
   // Handle prescription activities
   if (productCoding && isPrescription) {
