@@ -4,6 +4,7 @@ import { extractCitationsFromExtensions } from '../../utils/extract-citations';
 import { PlanMarkdown } from '../plan-markdown';
 
 import { PlanGoalObservation } from './plan-goal-observation';
+import { PlanGoalProducts } from './plan-goal-products';
 
 export type PlanGoalProps = {
   goal: Goal;
@@ -63,6 +64,8 @@ export function PlanGoal({ goal }: PlanGoalProps) {
           <PlanMarkdown content={noteText} citations={citations} />
         </div>
       )}
+
+      <PlanGoalProducts goal={goal} />
     </div>
   );
 }
