@@ -63,23 +63,25 @@ export const MonitoredIssues = () => {
                 value={`goal-${goal.resource.id}`}
               >
                 <AccordionTrigger className="group flex flex-1 items-center justify-between py-4 font-medium text-zinc-900 transition-colors hover:text-zinc-600 [&[data-state=open]>svg]:rotate-180">
-                  <div className="flex w-full items-center justify-between gap-1 pr-2">
+                  <div className="flex w-full flex-col items-start justify-between gap-1.5 pr-2 md:flex-row-reverse md:items-center">
+                    <div className="ml-5 shrink-0">
+                      <PlanGoalPriority
+                        code={goal.resource.priority?.coding?.[0]?.code}
+                      />
+                    </div>
                     <div className="flex items-start gap-2 pr-12 text-left">
                       <H4 className="transition-colors group-hover:text-zinc-600">
                         {index + 1}.
                       </H4>
                       <H4
                         id="section-heading"
-                        className="line-clamp-3 font-semibold transition-colors group-hover:text-zinc-600"
+                        className="font-semibold transition-colors group-hover:text-zinc-600"
                       >
                         {goal.resource.description.text ||
                           goal.resource.description.coding?.[0].display ||
                           `Issue #${index + 1}`}
                       </H4>
                     </div>
-                    <PlanGoalPriority
-                      code={goal.resource.priority?.coding?.[0].code}
-                    />
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-4 pb-4">
