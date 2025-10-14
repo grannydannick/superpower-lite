@@ -22,7 +22,7 @@ export const useNeedsBackupPaymentMethod = () => {
 
   const needsBackup =
     paymentMethods.length > 0 &&
-    !paymentMethods.some((pm) => pm.paymentProvider.toLowerCase() !== 'flex');
+    !paymentMethods.some((pm) => pm.paymentProvider?.toLowerCase() !== 'flex');
 
   return { needsBackup, paymentMethods };
 };
