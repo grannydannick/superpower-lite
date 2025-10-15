@@ -18,6 +18,8 @@ export const UpsellAddOn = ({ goToNext }: { goToNext: () => void }) => {
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<
     string | undefined
   >();
+  const [isSelectingPaymentMethod, setIsSelectingPaymentMethod] =
+    useState(false);
 
   const { credit } = useHasCredit({
     serviceName: SUPERPOWER_BLOOD_PANEL,
@@ -25,36 +27,23 @@ export const UpsellAddOn = ({ goToNext }: { goToNext: () => void }) => {
 
   const upgradeOrderMutation = useUpgradeOrder();
 
-  const {
-    isFlexSelected,
-    hasFlexPaymentMethod,
-    setProcessingPaymentType,
-    isProcessingDefault,
-    isProcessingFlex,
-    primaryPaymentMethodId,
-    flexPaymentMethodId,
-  } = usePaymentMethodSelection(
-    selectedPaymentMethodId,
-    upgradeOrderMutation.isPending,
-  );
+  const { isFlexSelected, hasFlexPaymentMethod, activePaymentMethod } =
+    usePaymentMethodSelection(selectedPaymentMethodId);
 
-  const upgradeOrder = async (paymentType: 'stripe' | 'flex') => {
-    setProcessingPaymentType(paymentType);
-    const paymentMethodId =
-      paymentType === 'flex' ? flexPaymentMethodId : primaryPaymentMethodId;
+  const handlePaymentMethodSelect = (id: string) => {
+    setSelectedPaymentMethodId(id);
+    setIsSelectingPaymentMethod(false);
+  };
 
-    try {
-      await upgradeOrderMutation.mutateAsync({
-        data: {
-          upgradeType: 'custom-panel',
-          addOnServiceIds: [...selectedIds],
-          paymentMethodId,
-        },
-      });
-      goToNext();
-    } finally {
-      setProcessingPaymentType(null);
-    }
+  const upgradeOrder = async () => {
+    await upgradeOrderMutation.mutateAsync({
+      data: {
+        upgradeType: 'custom-panel',
+        addOnServiceIds: [...selectedIds],
+        paymentMethodId: activePaymentMethod?.externalPaymentMethodId,
+      },
+    });
+    goToNext();
   };
 
   return (
@@ -83,48 +72,39 @@ export const UpsellAddOn = ({ goToNext }: { goToNext: () => void }) => {
           <PaymentDetails />
           <CurrentPaymentMethodCard
             selectedPaymentMethodId={selectedPaymentMethodId}
-            onPaymentMethodSelect={setSelectedPaymentMethodId}
+            onPaymentMethodSelect={handlePaymentMethodSelect}
+            isEditing={isSelectingPaymentMethod}
+            setIsEditing={setIsSelectingPaymentMethod}
           />
         </div>
         <div className="flex flex-col gap-2">
           <Button
             disabled={upgradeOrderMutation.isPending || selectedIds.size === 0}
-            onClick={() => upgradeOrder('stripe')}
+            onClick={upgradeOrder}
           >
-            {isProcessingDefault ? (
+            {upgradeOrderMutation.isPending ? (
               <TransactionSpinner className="flex justify-center" />
             ) : (
-              <>Purchase</>
+              <>
+                {isFlexSelected && (
+                  <CircleCheckBig className="mr-2 size-[20px]" />
+                )}
+                Purchase{isFlexSelected ? ' with HSA/FSA' : ''}
+              </>
             )}
           </Button>
-          {hasFlexPaymentMethod && (
+          {hasFlexPaymentMethod && !selectedPaymentMethodId && (
             <Button
               variant="outline"
               className="bg-white"
-              disabled={
-                !isFlexSelected ||
-                upgradeOrderMutation.isPending ||
-                selectedIds.size === 0
-              }
-              onClick={() => upgradeOrder('flex')}
+              onClick={() => setIsSelectingPaymentMethod(true)}
             >
-              {isProcessingFlex ? (
-                <TransactionSpinner
-                  variant="primary"
-                  className="flex justify-center"
-                />
-              ) : (
-                <>
-                  <CircleCheckBig className="mr-2 size-[20px] text-zinc-700" />
-                  {isFlexSelected
-                    ? 'Purchase with HSA/FSA'
-                    : 'Select an HSA/FSA card'}
-                </>
-              )}
+              <CircleCheckBig className="mr-2 size-[20px] text-zinc-700" />
+              Select HSA/FSA card
             </Button>
           )}
           <Button
-            variant={hasFlexPaymentMethod ? 'white' : 'outline'}
+            variant={selectedPaymentMethodId ? 'outline' : 'white'}
             className="bg-white"
             disabled={upgradeOrderMutation.isPending}
             onClick={goToNext}

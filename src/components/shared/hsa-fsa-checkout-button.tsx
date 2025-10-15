@@ -91,9 +91,7 @@ export const HSAFSACheckoutButton = ({
       setCheckoutUrl(checkoutSession.redirectUrl);
       setIsModalOpen(true);
     } catch (error) {
-      toast.error(
-        'Something went wrong. Please try again. Please checkout with credit card instead.',
-      );
+      // API will show toast if there is an error
       setIsModalOpen(false);
     }
   };

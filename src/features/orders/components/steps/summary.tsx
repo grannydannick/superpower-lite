@@ -8,7 +8,6 @@ import { toast } from '@/components/ui/sonner';
 import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner';
 import { Body1, Body2, H2 } from '@/components/ui/typography';
 import { useCreateOrder, useUpdateOrder } from '@/features/orders/api';
-import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
 import { OrderAppointmentDetails } from '@/features/orders/components/order-appointment-details';
 import { HEALTHCARE_SERVICE_DIALOG_CONTAINER_STYLE } from '@/features/orders/const/config';
 import { useHasCredit } from '@/features/orders/hooks';
@@ -38,6 +37,8 @@ export function OrderSummary(): ReactNode {
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<
     string | undefined
   >();
+  const [isSelectingPaymentMethod, setIsSelectingPaymentMethod] =
+    useState(false);
 
   const createOrderMutation = useCreateOrder({
     mutationConfig: {
@@ -62,12 +63,13 @@ export function OrderSummary(): ReactNode {
     defaultPaymentMethod,
     isFlexSelected,
     hasFlexPaymentMethod,
-    setProcessingPaymentType,
-    isProcessingDefault,
-    isProcessingFlex,
-    primaryPaymentMethodId,
-    flexPaymentMethodId,
-  } = usePaymentMethodSelection(selectedPaymentMethodId, isMutationLoading);
+    activePaymentMethod,
+  } = usePaymentMethodSelection(selectedPaymentMethodId);
+
+  const handlePaymentMethodSelect = (id: string) => {
+    setSelectedPaymentMethodId(id);
+    setIsSelectingPaymentMethod(false);
+  };
 
   const serviceQuery = useService({
     serviceId: service.id,
@@ -83,49 +85,33 @@ export function OrderSummary(): ReactNode {
 
   const price = serviceQuery.data?.service.price;
 
-  const createOrderFn = async (
-    paymentType: 'stripe' | 'flex',
-  ): Promise<void> => {
+  const createOrderFn = async (): Promise<void> => {
     if (service === null)
       throw Error('There was a problem creating the order.');
 
-    setProcessingPaymentType(paymentType);
     const data = buildCreateOrderData();
-    data.paymentMethodId =
-      paymentType === 'flex' ? flexPaymentMethodId : primaryPaymentMethodId;
+    data.paymentMethodId = activePaymentMethod?.externalPaymentMethodId;
 
-    try {
-      const response = await createOrderMutation.mutateAsync({ data });
-      if (response.order) {
-        nextStep();
-      }
-    } finally {
-      setProcessingPaymentType(null);
+    const response = await createOrderMutation.mutateAsync({ data });
+    if (response.order) {
+      nextStep();
     }
   };
 
-  const updateOrderFn = async (
-    paymentType: 'stripe' | 'flex',
-  ): Promise<void> => {
+  const updateOrderFn = async (): Promise<void> => {
     if (!credit) {
       toast('No orderId found for previous order. Contact support.');
       return;
     }
 
-    setProcessingPaymentType(paymentType);
     const data = buildUpdateOrderData();
-    data.paymentMethodId =
-      paymentType === 'flex' ? flexPaymentMethodId : primaryPaymentMethodId;
+    data.paymentMethodId = activePaymentMethod?.externalPaymentMethodId;
 
-    try {
-      await updateOrderMutation.mutateAsync({
-        orderId: credit.id,
-        data,
-      });
-      nextStep();
-    } finally {
-      setProcessingPaymentType(null);
-    }
+    await updateOrderMutation.mutateAsync({
+      orderId: credit.id,
+      data,
+    });
+    nextStep();
   };
 
   return (
@@ -169,7 +155,9 @@ export function OrderSummary(): ReactNode {
             {price && price > 0 ? (
               <CurrentPaymentMethodCard
                 selectedPaymentMethodId={selectedPaymentMethodId}
-                onPaymentMethodSelect={setSelectedPaymentMethodId}
+                onPaymentMethodSelect={handlePaymentMethodSelect}
+                isEditing={isSelectingPaymentMethod}
+                setIsEditing={setIsSelectingPaymentMethod}
               />
             ) : null}
           </div>
@@ -181,69 +169,54 @@ export function OrderSummary(): ReactNode {
           </div>
         ) : null}
       </div>
-      <HealthcareServiceFooter
-        prevBtn={
+      <div className="bottom-0 z-50 flex items-center px-6 py-4 md:py-8 md:px-16 [.overflow-auto_&]:sticky [.overflow-y-scroll_&]:sticky">
+        <div className="flex w-full flex-col-reverse justify-end gap-4 md:flex-row md:gap-2">
           <Button
-            variant={hasFlexPaymentMethod ? 'white' : 'outline'}
+            variant="outline"
             className="w-full bg-white md:w-auto"
             onClick={prevStep}
             disabled={isMutationLoading}
           >
             Back
           </Button>
-        }
-        nextBtn={
-          <div className="flex flex-col-reverse gap-4 md:flex-row md:gap-2">
-            {hasFlexPaymentMethod && price !== undefined && price > 0 && (
-              <Button
-                variant="outline"
-                className="w-full bg-white md:w-auto"
-                disabled={
-                  !isFlexSelected ||
-                  isMutationLoading ||
-                  price === undefined ||
-                  isQueryLoading
-                }
-                onClick={() =>
-                  credit ? updateOrderFn('flex') : createOrderFn('flex')
-                }
-              >
-                {isProcessingFlex ? (
-                  <TransactionSpinner
-                    variant="primary"
-                    className="flex justify-center"
-                  />
-                ) : (
-                  <>
-                    <CircleCheckBig className="mr-2 size-[20px] text-zinc-700" />
-                    {isFlexSelected
-                      ? 'Confirm with HSA/FSA'
-                      : 'Select an HSA/FSA card'}
-                  </>
-                )}
-              </Button>
-            )}
-            <Button
-              onClick={() =>
-                credit ? updateOrderFn('stripe') : createOrderFn('stripe')
-              }
-              className="w-full md:w-auto"
-              disabled={
-                isMutationLoading ||
+          <Button
+            variant="outline"
+            className={cn(
+              'w-full bg-white md:w-auto',
+              (!hasFlexPaymentMethod ||
+                selectedPaymentMethodId ||
                 price === undefined ||
-                isQueryLoading ||
-                !primaryPaymentMethodId
-              }
-            >
-              {isProcessingDefault ? (
-                <TransactionSpinner className="flex justify-center" />
-              ) : (
-                'Confirm'
-              )}
-            </Button>
-          </div>
-        }
-      />
+                price <= 0) &&
+                'hidden',
+            )}
+            onClick={() => setIsSelectingPaymentMethod(true)}
+          >
+            <CircleCheckBig className="mr-2 size-[20px] text-zinc-700" />
+            Select HSA/FSA card
+          </Button>
+          <Button
+            onClick={credit ? updateOrderFn : createOrderFn}
+            className="w-full md:w-auto"
+            disabled={
+              isMutationLoading ||
+              price === undefined ||
+              isQueryLoading ||
+              !activePaymentMethod?.externalPaymentMethodId
+            }
+          >
+            {isMutationLoading ? (
+              <TransactionSpinner className="flex justify-center" />
+            ) : (
+              <>
+                {isFlexSelected && (
+                  <CircleCheckBig className="mr-2 size-[20px]" />
+                )}
+                Confirm{isFlexSelected ? ' with HSA/FSA' : ''}
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
     </>
   );
 }

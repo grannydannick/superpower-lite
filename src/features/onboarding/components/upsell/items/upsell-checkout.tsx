@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 
 import { TestimonialCarousel } from '@/components/shared/testimonials/components/testimonial-carousel';
 import { Button } from '@/components/ui/button';
-import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner';
 import { TextShimmer } from '@/components/ui/text-shimmer';
 import { H3, H4 } from '@/components/ui/typography';
 import { ServiceWithMetadata } from '@/features/onboarding/hooks/use-upsell-services';
@@ -46,16 +45,16 @@ export const UpsellCheckout = ({
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<
     string | undefined
   >();
+  const [isSelectingPaymentMethod, setIsSelectingPaymentMethod] =
+    useState(false);
 
-  const {
-    isFlexSelected,
-    hasFlexPaymentMethod,
-    setProcessingPaymentType,
-    isProcessingDefault,
-    isProcessingFlex,
-    primaryPaymentMethodId,
-    flexPaymentMethodId,
-  } = usePaymentMethodSelection(selectedPaymentMethodId, isPending);
+  const { isFlexSelected, hasFlexPaymentMethod, activePaymentMethod } =
+    usePaymentMethodSelection(selectedPaymentMethodId);
+
+  const handlePaymentMethodSelect = (id: string) => {
+    setSelectedPaymentMethodId(id);
+    setIsSelectingPaymentMethod(false);
+  };
 
   const totalPrice = useMemo(() => {
     return selectedServices.reduce((acc, service) => acc + service.price, 0);
@@ -83,58 +82,49 @@ export const UpsellCheckout = ({
     if (!isError) jump('booking');
   };
 
-  const createBulkOrdersFromServices = useCallback(
-    async (paymentType: 'stripe' | 'flex') => {
-      if (!user) return;
+  const createBulkOrdersFromServices = useCallback(async () => {
+    if (!user) return;
 
-      const paymentMethodId =
-        paymentType === 'flex' ? flexPaymentMethodId : primaryPaymentMethodId;
+    const orders: CreateOrderInput[] = selectedServices.map((service) => {
+      const collectionMethod = getDefaultCollectionMethod(service);
+      return {
+        serviceId: service.id,
+        location: {},
+        timestamp: new Date().toISOString(),
+        timezone: moment.tz.guess(),
+        method: collectionMethod ?? undefined,
+        status: OrderStatus.draft,
+        paymentMethodId: activePaymentMethod?.externalPaymentMethodId,
+      };
+    });
 
-      const orders: CreateOrderInput[] = selectedServices.map((service) => {
-        const collectionMethod = getDefaultCollectionMethod(service);
-        return {
-          serviceId: service.id,
-          location: {},
-          timestamp: new Date().toISOString(),
-          timezone: moment.tz.guess(),
-          method: collectionMethod ?? undefined,
-          status: OrderStatus.draft,
-          paymentMethodId,
-        };
-      });
+    await mutateAsync({ data: orders });
 
-      await mutateAsync({ data: orders });
+    track('upsell_checkout_completed', {
+      number_of_services: selectedServices.length,
+      value: totalPrice,
+      currency: 'USD',
+      services: selectedServices.map((service) => service.name),
+      service_ids: selectedServices.map((service) => service.id),
+      payment_provider: activePaymentMethod?.paymentProvider.toLowerCase(),
+    });
 
-      track('upsell_checkout_completed', {
-        number_of_services: selectedServices.length,
-        value: totalPrice,
-        currency: 'USD',
-        services: selectedServices.map((service) => service.name),
-        service_ids: selectedServices.map((service) => service.id),
-        payment_provider: paymentMethodId?.startsWith('fpm_')
-          ? 'flex'
-          : 'stripe',
-      });
-
-      return updateStep();
-    },
-    [
-      user,
-      mutateAsync,
-      selectedServices,
-      updateStep,
-      totalPrice,
-      track,
-      primaryPaymentMethodId,
-      flexPaymentMethodId,
-    ],
-  );
+    return updateStep();
+  }, [
+    user,
+    mutateAsync,
+    selectedServices,
+    updateStep,
+    totalPrice,
+    track,
+    activePaymentMethod,
+  ]);
 
   const existingOrders = useMemo(() => {
     return services.some((service) => service.order);
   }, [services]);
 
-  const handleBooking = async (paymentType: 'stripe' | 'flex') => {
+  const handleBooking = async () => {
     if (existingOrders && !selectedServices?.length) {
       return updateStep();
     }
@@ -143,16 +133,11 @@ export const UpsellCheckout = ({
       return skipStep();
     }
 
-    setProcessingPaymentType(paymentType);
-    try {
-      await createBulkOrdersFromServices(paymentType);
-    } finally {
-      setProcessingPaymentType(null);
-    }
+    await createBulkOrdersFromServices();
   };
 
-  const buttonText = useMemo(() => {
-    if (isProcessingDefault) {
+  const buttonContent = useMemo(() => {
+    if (isPending) {
       return (
         <TextShimmer
           className="line-clamp-1 text-base [--base-color:white] [--base-gradient-color:#a1a1aa]"
@@ -163,20 +148,22 @@ export const UpsellCheckout = ({
       );
     }
 
+    let text = '';
     if (selectedServices.length > 0) {
-      return 'Book additional tests';
+      text = `Book additional tests${isFlexSelected ? ' with HSA/FSA' : ''}`;
+    } else if (existingOrders) {
+      text = 'Confirm booking details';
+    } else {
+      text = 'Continue without additional tests';
     }
 
-    if (existingOrders && selectedServices.length === 0) {
-      return 'Confirm booking details';
-    }
-
-    if (!existingOrders && selectedServices.length === 0) {
-      return 'Continue without additional tests';
-    }
-
-    return '';
-  }, [isProcessingDefault, selectedServices.length, existingOrders]);
+    return (
+      <>
+        {isFlexSelected && <CircleCheckBig className="mr-2 size-[20px]" />}
+        {text}
+      </>
+    );
+  }, [isPending, selectedServices.length, existingOrders, isFlexSelected]);
 
   return (
     <>
@@ -250,7 +237,9 @@ export const UpsellCheckout = ({
             <CurrentPaymentMethodCard
               className="bg-white"
               selectedPaymentMethodId={selectedPaymentMethodId}
-              onPaymentMethodSelect={setSelectedPaymentMethodId}
+              onPaymentMethodSelect={handlePaymentMethodSelect}
+              isEditing={isSelectingPaymentMethod}
+              setIsEditing={setIsSelectingPaymentMethod}
               error={
                 error
                   ? 'There was an issue with your payment method. Please try again'
@@ -267,34 +256,24 @@ export const UpsellCheckout = ({
           className="space-y-4 pb-4"
         >
           <Button
-            onClick={() => handleBooking('stripe')}
+            onClick={handleBooking}
             disabled={isPending}
             className="w-full hover:bg-zinc-800 disabled:bg-zinc-700 disabled:opacity-100"
           >
-            {buttonText}
+            {buttonContent}
           </Button>
-          {hasFlexPaymentMethod && selectedServices.length > 0 && (
-            <Button
-              onClick={() => handleBooking('flex')}
-              disabled={!isFlexSelected || isPending}
-              variant="outline"
-              className="w-full bg-white"
-            >
-              {isProcessingFlex ? (
-                <TransactionSpinner
-                  variant="primary"
-                  className="flex justify-center"
-                />
-              ) : (
-                <>
-                  <CircleCheckBig className="mr-2 size-[20px] text-zinc-700" />
-                  {isFlexSelected
-                    ? 'Book with HSA/FSA'
-                    : 'Select an HSA/FSA card'}
-                </>
-              )}
-            </Button>
-          )}
+          {hasFlexPaymentMethod &&
+            selectedServices.length > 0 &&
+            !selectedPaymentMethodId && (
+              <Button
+                onClick={() => setIsSelectingPaymentMethod(true)}
+                variant="outline"
+                className="w-full bg-white"
+              >
+                <CircleCheckBig className="mr-2 size-[20px] text-zinc-700" />
+                Select HSA/FSA card
+              </Button>
+            )}
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}

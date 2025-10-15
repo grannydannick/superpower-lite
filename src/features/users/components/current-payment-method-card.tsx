@@ -1,5 +1,4 @@
 import { CircleCheckBig, Pencil, X } from 'lucide-react';
-import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Body1, Body2, Body3 } from '@/components/ui/typography';
@@ -13,14 +12,16 @@ export const CurrentPaymentMethodCard = ({
   className,
   selectedPaymentMethodId,
   onPaymentMethodSelect,
+  isEditing = false,
+  setIsEditing,
 }: {
   error?: string;
   className?: string;
   selectedPaymentMethodId?: string;
-  onPaymentMethodSelect?: (paymentMethodId: string) => void;
+  onPaymentMethodSelect: (paymentMethodId: string) => void;
+  isEditing: boolean;
+  setIsEditing: (isEditing: boolean) => void;
 }) => {
-  const [isEditing, setIsEditing] = useState(false);
-
   const { defaultPaymentMethod, activePaymentMethod, isFlexSelected } =
     usePaymentMethodSelection(selectedPaymentMethodId);
 
@@ -32,7 +33,7 @@ export const CurrentPaymentMethodCard = ({
           defaultPaymentMethod?.externalPaymentMethodId
         }
         onPaymentMethodSelect={(id) => {
-          onPaymentMethodSelect?.(id);
+          onPaymentMethodSelect(id);
           setIsEditing(false);
         }}
         closeBtn={
