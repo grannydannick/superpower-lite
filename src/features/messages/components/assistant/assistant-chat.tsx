@@ -25,14 +25,24 @@ export function AssistantChat({ chatId }: { chatId: string }) {
   const [input, setInput] = useState('');
   const [attachments, setAttachments] = useState<Array<FileUIPart>>([]);
 
+  const transportHeaders: Record<string, string> = {
+    Accept: 'application/json',
+  };
+  const accessToken = getActiveLogin()?.accessToken;
+  if (accessToken) {
+    transportHeaders.Authorization = `Bearer ${accessToken}`;
+  }
+
   const { messages, setMessages, sendMessage, status, stop } = useChat({
     id,
     transport: new DefaultChatTransport({
       api: `${env.API_URL}/chat`,
-      headers: {
-        Accept: 'application/json',
-        Authorization: `Bearer ${getActiveLogin()?.accessToken}`,
-      },
+      headers: transportHeaders,
+      fetch: (input, init) =>
+        fetch(input, {
+          ...init,
+          credentials: 'include',
+        }),
     }),
     messages: [],
     experimental_throttle: 100,

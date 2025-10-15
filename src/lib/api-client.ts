@@ -99,7 +99,12 @@ const refreshAccessToken = async (): Promise<string> => {
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   if (config.headers) {
     config.headers.Accept = 'application/json';
-    config.headers.Authorization = `Bearer ${getActiveLogin()?.accessToken}`;
+    const token = getActiveLogin()?.accessToken;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    } else if ('Authorization' in config.headers) {
+      delete (config.headers as Record<string, any>).Authorization;
+    }
   }
 
   config.withCredentials = true;
