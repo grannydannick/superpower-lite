@@ -18,7 +18,8 @@ export const getCollectionMethods = (
   isAdmin = false,
   hasAtHomeCredit = false,
 ): CollectionOptionType[] => {
-  const INTERPRETED = getInterpretedAtHomeMethod(service);
+  const state = primaryAddress?.state;
+  const INTERPRETED = getInterpretedAtHomeMethod(service, state);
 
   // helper to compute pricing text with customizable credit label
   const getPricingText = (

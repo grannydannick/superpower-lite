@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Body1 } from '@/components/ui/typography';
+import { getAtHomePrice } from '@/const';
 import { cn } from '@/lib/utils';
 import {
   Address,
@@ -9,6 +10,7 @@ import {
   HealthcareService,
   Slot,
 } from '@/types/api';
+import { formatMoney } from '@/utils/format-money';
 
 import { SchedulerDays, SchedulerHeading, SchedulerTimes } from './components';
 import { SchedulerStoreProvider, useScheduler } from './stores/scheduler';
@@ -56,6 +58,7 @@ export function Scheduler(props: Props) {
         className={className}
         displayCancellationNote={displayCancellationNote}
         showCreateBtn={showCreateBtn}
+        address={address}
       />
     </SchedulerStoreProvider>
   );
@@ -65,10 +68,12 @@ function SchedulerConsumer({
   className,
   displayCancellationNote = false,
   showCreateBtn = false,
+  address,
 }: {
   className?: string;
   displayCancellationNote?: boolean;
   showCreateBtn?: boolean;
+  address: Address;
 }): JSX.Element {
   const { selectedSlot, slots, onSlotUpdate, fetchSlots, tz, startRange } =
     useScheduler((s) => s);
@@ -76,6 +81,8 @@ function SchedulerConsumer({
   useEffect(() => {
     fetchSlots();
   }, [fetchSlots, startRange]);
+
+  const atHomePrice = getAtHomePrice(address.state);
 
   return (
     <div className={cn('w-full space-y-10', className)}>
@@ -89,8 +96,8 @@ function SchedulerConsumer({
           <div className="mt-6">
             <Body1 className="text-zinc-500">
               Rescheduling or cancelling less than 24 hours in advance of your
-              scheduled appointment will result in a $99 re-booking fee. Refer
-              to our Terms of Service for more details.
+              scheduled appointment will result in a {formatMoney(atHomePrice)}{' '}
+              re-booking fee. Refer to our Terms of Service for more details.
             </Body1>
           </div>
         ) : null}

@@ -1,8 +1,10 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { Body1, H2 } from '@/components/ui/typography';
+import { getAtHomePrice } from '@/const';
 import { RescheduleDialogMode } from '@/features/orders/types/reschedule-dialog-mode';
 import { Order } from '@/types/api';
+import { formatMoney } from '@/utils/format-money';
 import { getServiceImage } from '@/utils/service';
 
 export const HealthcareServiceRescheduleConfirmation = ({
@@ -20,10 +22,13 @@ export const HealthcareServiceRescheduleConfirmation = ({
 
   const isAtHomeAppointment = order.collectionMethod === 'AT_HOME';
 
+  const atHomePrice = getAtHomePrice(order.location.address?.state);
+
   const lateFeeMessage = (() => {
+    const formattedPrice = formatMoney(atHomePrice);
     return mode === 'reschedule'
-      ? 'Your appointment is within 24 hours. As you are rescheduling within 24 hours of your appointment, your $99 booking fee is non-refundable.'
-      : 'Your appointment is within 24 hours. As you are cancelling within 24 hours of your appointment, your $99 booking fee is non-refundable.';
+      ? `Your appointment is within 24 hours. As you are rescheduling within 24 hours of your appointment, your ${formattedPrice} booking fee is non-refundable.`
+      : `Your appointment is within 24 hours. As you are cancelling within 24 hours of your appointment, your ${formattedPrice} booking fee is non-refundable.`;
   })();
 
   return (
