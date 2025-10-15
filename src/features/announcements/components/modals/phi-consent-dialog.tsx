@@ -130,9 +130,9 @@ export const PhiConsentDialog = ({ onFinished }: PhiConsentDialogProps) => {
         </div>
         <div className="space-y-6">
           <div className="mx-auto max-w-sm space-y-2">
-            <H3 className="text-center">Receive personalised offers</H3>
+            <H3 className="text-center">Get personalized guidance</H3>
             <Body1 className="text-center text-secondary">
-              Receive personalised offers & reminders based on your Action Plan
+              Receive personalized offers & reminders based on your Action Plan
               & Lab results. Superpower will use your health data for this. Opt
               out anytime.
             </Body1>
