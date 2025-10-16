@@ -1,4 +1,5 @@
 import moment, { Moment } from 'moment';
+import 'moment-timezone';
 import { createStore } from 'zustand';
 
 import { api } from '@/lib/api-client';
@@ -69,17 +70,73 @@ export const schedulerStoreCreator = (initProps: SchedulerProps) => {
 
       if (!response.slots.length) return;
 
-      if (!response.timezone) return;
+      // Always set timezone if provided
+      if (response.timezone) {
+        set({ tz: response.timezone });
+      }
 
-      const convertedMoment = moment
-        .utc(response.slots[0].start)
-        .tz(response.timezone);
-      if (moment(convertedMoment).isAfter(startRange)) {
+      const tz = response.timezone || get().tz;
+
+      const convertedMoment = moment.utc(response.slots[0].start).tz(tz);
+      if (startRange && moment(convertedMoment).isAfter(startRange)) {
+        const currentSelectedDay = get().selectedDay;
+
+        // if user had selected a day already and it's before the new range,
+        // move selection to the first available day. Otherwise, keep it.
+        const nextSelectedDay = currentSelectedDay
+          ? currentSelectedDay.isBefore(convertedMoment, 'day')
+            ? convertedMoment
+            : currentSelectedDay
+          : undefined;
+
         set({
           startRange: convertedMoment,
-          selectedDay: undefined,
-          tz: response.timezone,
+          selectedDay: nextSelectedDay,
         });
+      }
+
+      // as a fallback - ensure selectedDay/selectedSlot are valid with new data
+      const stateAfter = get();
+      const currentSelectedDay = stateAfter.selectedDay;
+      const currentSelectedSlot = stateAfter.selectedSlot;
+      const allSlots = response.slots;
+
+      const toMoment = (s: Slot) => moment(s.start).tz(tz);
+
+      let finalSelectedDay = currentSelectedDay;
+
+      if (currentSelectedDay) {
+        const hasSlotsOnSelected = allSlots.some((s) =>
+          currentSelectedDay.isSame(toMoment(s), 'day'),
+        );
+        if (!hasSlotsOnSelected) {
+          const nextDay = allSlots
+            .map((s) => toMoment(s))
+            .filter((m) => m.isSameOrAfter(currentSelectedDay, 'day'))
+            .sort((a, b) => a.valueOf() - b.valueOf())[0];
+          if (nextDay) {
+            finalSelectedDay = nextDay.clone();
+            set({ selectedDay: finalSelectedDay });
+          }
+        }
+      }
+
+      // preselect earliest slot on the chosen day if needed
+      if (finalSelectedDay) {
+        const daySlots = allSlots
+          .filter((s) => finalSelectedDay?.isSame(toMoment(s), 'day'))
+          .sort((a, b) => toMoment(a).valueOf() - toMoment(b).valueOf());
+
+        if (daySlots.length) {
+          const currentSlotMatchesDay = currentSelectedSlot
+            ? finalSelectedDay.isSame(toMoment(currentSelectedSlot), 'day')
+            : false;
+          if (!currentSelectedSlot || !currentSlotMatchesDay) {
+            set({ selectedSlot: daySlots[0] });
+          }
+        } else {
+          set({ selectedSlot: undefined });
+        }
       }
     },
     selectedDay: undefined,
