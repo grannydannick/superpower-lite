@@ -52,24 +52,40 @@ export const ServiceSelectCard = ({
     <div
       className={cn(
         'w-full overflow-hidden rounded-[20px] border border-zinc-200 bg-white text-left transition',
-        'hover:border-zinc-300',
+        'hover:border-zinc-300 hover:bg-zinc-50',
         'flex flex-col',
         isExpanded && 'border-zinc-300',
         disabled && 'cursor-not-allowed opacity-50',
       )}
     >
-      <div className="flex w-full items-center gap-4 p-4">
+      <div
+        className="flex w-full items-center gap-4 p-4"
+        role="button"
+        tabIndex={disabled ? -1 : 0}
+        aria-disabled={disabled}
+        onClick={() => {
+          if (!disabled) toggle(service);
+        }}
+        onKeyDown={(e) => {
+          if (disabled) return;
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggle(service);
+          }
+        }}
+      >
         <AnimatedCheckbox
           className="size-5 border"
           checked={checked}
           disabled={disabled}
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             if (!disabled) toggle(service);
           }}
         />
         <img
           src={getServiceImage(service.name)}
-          className="size-16 object-cover"
+          className="size-16 rounded-lg object-cover"
           alt={service.name}
         />
         <div className="flex flex-1 flex-col items-start">
@@ -93,8 +109,15 @@ export const ServiceSelectCard = ({
         )}
       </div>
 
-      {detailsResult?.content && isExpanded ? (
-        <div className="ml-0 flex-1 border-t border-zinc-200 p-4 md:ml-32 md:mr-4 md:px-0">
+      {detailsResult?.content ? (
+        <div
+          className={cn(
+            'ml-0 flex-1 border-t border-zinc-200 p-4 md:ml-32 md:mr-4 md:px-0 transition-all',
+            isExpanded
+              ? 'max-h-screen overflow-y-auto'
+              : 'max-h-0 overflow-hidden opacity-0 pointer-events-none p-0',
+          )}
+        >
           {detailsResult?.content}
         </div>
       ) : null}

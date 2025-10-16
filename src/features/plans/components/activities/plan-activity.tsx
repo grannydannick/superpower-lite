@@ -3,26 +3,21 @@ import {
   CarePlanActivityDetail,
   Coding,
 } from '@medplum/fhirtypes';
-import { useMemo } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Body1, H4 } from '@/components/ui/typography';
-import { ADVISORY_CALL, CUSTOM_BLOOD_PANEL } from '@/const';
+import { Body2, H4 } from '@/components/ui/typography';
 import { getRxPricing } from '@/const/rx-pricing';
-import { useOrders } from '@/features/orders/api';
-import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
 import { useServices } from '@/features/services/api';
 import { useProducts } from '@/features/shop/api';
-import { HealthcareService, Product, OrderStatus } from '@/types/api';
-import { getServiceImage } from '@/utils/service';
+import { HealthcareService, Product } from '@/types/api';
 
-import { CARE_PLAN_ACTIVITY_TYPE_EXTENSION } from '../../api';
+import { CARE_PLAN_ACTIVITY_TYPE_EXTENSION } from '../../const/extension-types';
 import { extractCitations } from '../../utils/extract-citations';
 import { PlanMarkdown } from '../plan-markdown';
 
 import { ActivityCard } from './activity-card';
 import { ProductCard } from './product-card';
+import { ServiceCard } from './service-card';
 
 interface PlanActivityProps {
   activity: CarePlanActivity;
@@ -40,71 +35,11 @@ export const ServiceActivity = ({
   detail?: CarePlanActivityDetail;
   className?: string;
 }) => {
-  const ordersQuery = useOrders();
-  const ordersData = ordersQuery.data;
-  const { data: servicesData } = useServices();
-  const { data: addOnServicesData } = useServices({
-    group: 'blood-panel-addon',
-  });
-
   const serviceName =
     service.name || serviceCoding?.display || 'Unnamed Service';
   const serviceDesc =
     detail?.description || service.description || 'Book your appointment';
   const citations = extractCitations(detail);
-  const isAdvisory = serviceName === ADVISORY_CALL;
-
-  const isServiceScheduled = useMemo(() => {
-    if (!ordersData?.orders) return false;
-    return ordersData.orders.some(
-      (order) =>
-        order.serviceId === service.id &&
-        (order.status === OrderStatus.upcoming ||
-          order.status === OrderStatus.pending),
-    );
-  }, [ordersData?.orders, service.id]);
-
-  const shouldShowEarlyAccess = useMemo(() => {
-    return !service.active;
-  }, [service.active]);
-
-  const serviceMessage = useMemo(() => {
-    if (isAdvisory) return 'Not currently available.';
-    if (isServiceScheduled) return 'Service scheduled';
-    if (shouldShowEarlyAccess) return 'Request Early Access';
-    return 'Available for booking';
-  }, [isAdvisory, isServiceScheduled, shouldShowEarlyAccess]);
-
-  const actionButton = useMemo(() => {
-    if (isAdvisory || isServiceScheduled) return null;
-    const addOnServices = new Set(
-      (addOnServicesData?.services ?? []).map((s) => s.id),
-    );
-    const isAddOn = addOnServices.has(service.id);
-    const customPanelService = (servicesData?.services ?? []).find(
-      (s) => s.name === CUSTOM_BLOOD_PANEL,
-    );
-    const bookingService =
-      isAddOn && customPanelService ? customPanelService : service;
-    const preselectedAddOnIds = isAddOn ? [service.id] : undefined;
-    return (
-      <HealthcareServiceDialog
-        healthcareService={bookingService}
-        initialAddOnIds={preselectedAddOnIds}
-      >
-        <Button size="medium">
-          {shouldShowEarlyAccess ? 'Request' : 'Book now'}
-        </Button>
-      </HealthcareServiceDialog>
-    );
-  }, [
-    isAdvisory,
-    isServiceScheduled,
-    service,
-    shouldShowEarlyAccess,
-    addOnServicesData?.services,
-    servicesData?.services,
-  ]);
 
   return (
     <div className="mt-8 space-y-2">
@@ -114,21 +49,10 @@ export const ServiceActivity = ({
         citations={citations}
         boldVermillion
       />
-      <ActivityCard
-        {...service}
-        image={getServiceImage(service.name)}
-        name={serviceName}
-        description={
-          <div className="flex items-center gap-2 text-zinc-500">
-            {ordersQuery.isLoading ? (
-              <Skeleton className="h-4 w-40" />
-            ) : (
-              <Body1 className="italic text-zinc-500">{serviceMessage}</Body1>
-            )}
-          </div>
-        }
+      <ServiceCard
+        service={service}
+        serviceCoding={serviceCoding}
         className={className}
-        actionBtn={actionButton}
       />
     </div>
   );
@@ -194,15 +118,15 @@ const PrescriptionActivity = ({
         link={rxLink}
         description={
           rxPricing && (
-            <Body1 className="italic text-zinc-500">
+            <Body2 className="italic text-zinc-500">
               Starting at ${rxPricing.price}
-            </Body1>
+            </Body2>
           )
         }
         className={className}
         actionBtn={
           rxPricing ? (
-            <Button size="medium" asChild>
+            <Button size="medium" asChild className="w-full flex-1 lg:w-auto">
               <a href={rxLink} target="_blank" rel="noopener noreferrer">
                 Get Started
               </a>

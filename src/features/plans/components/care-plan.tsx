@@ -65,7 +65,7 @@ export function CarePlan({ id }: { id: string }) {
   return (
     <div className="mt-6 w-full bg-zinc-50">
       <CarePlanProvider plan={actionPlan} isAnnualReport={isAnnualReport}>
-        <div className="relative mx-auto flex size-full h-full max-w-6xl flex-col px-6 lg:flex-row lg:gap-20 lg:px-0">
+        <div className="relative mx-auto flex size-full h-full max-w-6xl flex-col px-6 lg:flex-row lg:gap-10 lg:px-0">
           <CarePlanSidebar />
           <div className="flex flex-1 flex-col pt-10">
             <CarePlanContent />

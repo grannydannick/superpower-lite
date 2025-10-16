@@ -1,15 +1,16 @@
+import { VariantProps } from 'class-variance-authority';
 import { HelpCircle } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Body1 } from '@/components/ui/typography';
+import { Body2 } from '@/components/ui/typography';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { cn } from '@/lib/utils';
 import { Product } from '@/types/api';
@@ -21,15 +22,19 @@ import { ActivityCard } from './activity-card';
 interface ProductCardProps {
   productName: string;
   product?: Product;
+  description?: string;
   className?: string;
   hideButton?: boolean;
+  buttonVariant?: VariantProps<typeof buttonVariants>['variant'];
 }
 
 export const ProductCard = ({
   productName,
   product,
+  description,
   className,
   hideButton = false,
+  buttonVariant,
 }: ProductCardProps) => {
   const [, setSearchParams] = useSearchParams();
   const { addProduct, removeProduct, isProductSelected } = useCarePlanCart();
@@ -95,10 +100,11 @@ export const ProductCard = ({
     return (
       <Button
         size="medium"
+        className="w-full flex-1 lg:w-auto"
         onClick={isSelected ? handleRemoveFromCart : handleAddToCart}
-        variant={isSelected ? 'outline' : 'default'}
+        variant={isSelected ? 'outline' : buttonVariant}
       >
-        {isSelected ? 'Remove from Cart' : 'Add to Cart'}
+        {isSelected ? 'Remove' : 'Add'}
       </Button>
     );
   }, [
@@ -110,33 +116,21 @@ export const ProductCard = ({
     hideButton,
   ]);
 
-  const productTitle = useMemo(() => {
-    if (!product || !product.url) return productName;
-    return (
-      <a
-        href={product.url}
-        target="_blank"
-        rel="noreferrer"
-        className="decoration-transparent underline-offset-4 transition-[text-decoration-color] duration-300 hover:underline hover:decoration-zinc-900/80"
-      >
-        {productName}
-      </a>
-    );
-  }, [product, productName]);
-
   if (product) {
     return (
       <ActivityCard
         {...product}
-        name={productTitle}
+        name={productName}
         alt={product.name}
         description={
-          <div className="flex items-center gap-2 text-zinc-500">
-            <Body1 className="">{productMessage}</Body1>
+          <div className="flex items-center gap-2">
+            <Body2 className="text-secondary">{description}</Body2>
           </div>
         }
+        message={productMessage}
         actionBtn={actionButton}
         className={className}
+        link={product.url}
       />
     );
   }
@@ -147,12 +141,12 @@ export const ProductCard = ({
         <TooltipTrigger asChild>
           <div className="group relative cursor-pointer">
             <ActivityCard
-              name={productTitle}
+              name={productName}
               description={
                 <div className="flex w-full items-center gap-2 text-zinc-500">
-                  <Body1 className="italic text-zinc-500">
+                  <Body2 className="italic text-zinc-500">
                     Product not available
-                  </Body1>
+                  </Body2>
                   <HelpCircle size={16} />
                 </div>
               }

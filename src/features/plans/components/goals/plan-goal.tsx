@@ -3,8 +3,8 @@ import { Annotation, Goal } from '@medplum/fhirtypes';
 import { extractCitationsFromExtensions } from '../../utils/extract-citations';
 import { PlanMarkdown } from '../plan-markdown';
 
+import { PlanGoalActivities } from './plan-goal-activities';
 import { PlanGoalObservation } from './plan-goal-observation';
-import { PlanGoalProducts } from './plan-goal-products';
 
 export type PlanGoalProps = {
   goal: Goal;
@@ -65,7 +65,7 @@ export function PlanGoal({ goal }: PlanGoalProps) {
         </div>
       )}
 
-      <PlanGoalProducts goal={goal} />
+      <PlanGoalActivities goal={goal} />
     </div>
   );
 }

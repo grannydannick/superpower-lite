@@ -21,7 +21,7 @@ export const MonitoredIssues = () => {
     <section id="monitored-issues" className="space-y-4">
       <SectionTitle
         style={{
-          backgroundImage: 'url(/action-plan/sections/grey-background.webp)',
+          backgroundImage: 'url(/action-plan/sections/golden-background.webp)',
         }}
       >
         <Body1 className="text-white">
@@ -48,49 +48,85 @@ export const MonitoredIssues = () => {
             </Body1>
           </div>
         )}
-        <Accordion
-          type="multiple"
-          defaultValue={
-            goals.length > 0 && goals[0].resource
-              ? [`goal-${goals[0].resource.id}`]
-              : []
-          }
-        >
-          {goals.map((goal, index) =>
-            goal.resource ? (
+        {goals.length > 0 && goals[0].resource && (
+          <div className="space-y-4">
+            <H2>Your top health priority</H2>
+            <Accordion
+              type="multiple"
+              defaultValue={[`goal-${goals[0].resource.id}`]}
+            >
               <AccordionItem
-                key={goal.resource.id}
-                value={`goal-${goal.resource.id}`}
+                key={goals[0].resource.id}
+                value={`goal-${goals[0].resource.id}`}
               >
                 <AccordionTrigger className="group flex flex-1 items-center justify-between py-4 font-medium text-zinc-900 transition-colors hover:text-zinc-600 [&[data-state=open]>svg]:rotate-180">
                   <div className="flex w-full flex-col items-start justify-between gap-1.5 pr-2 md:flex-row-reverse md:items-center">
                     <div className="ml-5 shrink-0">
                       <PlanGoalPriority
-                        code={goal.resource.priority?.coding?.[0]?.code}
+                        code={goals[0].resource.priority?.coding?.[0]?.code}
                       />
                     </div>
                     <div className="flex items-start gap-2 pr-12 text-left">
                       <H4 className="transition-colors group-hover:text-zinc-600">
-                        {index + 1}.
+                        1.
                       </H4>
                       <H4
                         id="section-heading"
                         className="font-semibold transition-colors group-hover:text-zinc-600"
                       >
-                        {goal.resource.description.text ||
-                          goal.resource.description.coding?.[0].display ||
-                          `Issue #${index + 1}`}
+                        {goals[0].resource.description.text ||
+                          goals[0].resource.description.coding?.[0].display ||
+                          `Issue #1`}
                       </H4>
                     </div>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="px-4 pb-4">
-                  <PlanGoal goal={goal.resource} index={index + 1} />
+                <AccordionContent className="pb-4">
+                  <PlanGoal goal={goals[0].resource} index={1} />
                 </AccordionContent>
               </AccordionItem>
-            ) : null,
-          )}
-        </Accordion>
+            </Accordion>
+          </div>
+        )}
+
+        {goals.length > 1 && (
+          <div className="space-y-4">
+            <H2>Additional Issues to monitor</H2>
+            <Accordion type="multiple">
+              {goals.slice(1).map((goal, idx) =>
+                goal.resource ? (
+                  <AccordionItem
+                    key={goal.resource.id}
+                    value={`goal-${goal.resource.id}`}
+                  >
+                    <AccordionTrigger className="group flex flex-1 items-center justify-between py-4 font-medium text-zinc-900 transition-colors hover:text-zinc-600 [&[data-state=open]>svg]:rotate-180">
+                      <div className="flex w-full flex-col items-start justify-between gap-1.5 pr-2 md:flex-row-reverse md:items-center">
+                        <div className="ml-5 shrink-0">
+                          <PlanGoalPriority
+                            code={goal.resource.priority?.coding?.[0]?.code}
+                          />
+                        </div>
+                        <div className="flex items-start gap-2 pr-12 text-left">
+                          <H4 className="transition-colors group-hover:text-zinc-600">
+                            {idx + 2}.
+                          </H4>
+                          <H4 className="font-semibold transition-colors group-hover:text-zinc-600">
+                            {goal.resource.description.text ||
+                              goal.resource.description.coding?.[0].display ||
+                              `Issue #${idx + 2}`}
+                          </H4>
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4">
+                      <PlanGoal goal={goal.resource} index={idx + 2} />
+                    </AccordionContent>
+                  </AccordionItem>
+                ) : null,
+              )}
+            </Accordion>
+          </div>
+        )}
       </div>
     </section>
   );

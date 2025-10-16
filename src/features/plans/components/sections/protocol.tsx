@@ -23,7 +23,7 @@ import { Body1, Body2, H2, H4 } from '@/components/ui/typography';
 import { useProducts } from '@/features/shop/api';
 import { useAnalytics } from '@/hooks/use-analytics';
 
-import { CARE_PLAN_ACTIVITY_TYPE_EXTENSION } from '../../api';
+import { CARE_PLAN_ACTIVITY_TYPE_EXTENSION } from '../../const/extension-types';
 import { useCarePlan } from '../../context/care-plan-context';
 import { useSection } from '../../hooks/use-section';
 import { extractCitationsFromExtensions } from '../../utils/extract-citations';

@@ -249,7 +249,9 @@ const PanelInfoCard = ({
         trigger: (
           <button
             type="button"
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
+
               if (disabled) return;
               toggleDetails();
             }}
