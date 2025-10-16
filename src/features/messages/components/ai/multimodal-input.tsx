@@ -373,6 +373,11 @@ function PureMultimodalInput({
                 ) {
                   event.preventDefault();
 
+                  // same as send button disabled logic: block when input is empty/whitespace
+                  if (input.trim().length === 0 || uploadQueue.length > 0) {
+                    return;
+                  }
+
                   if (status !== 'ready') {
                     toast.info(
                       'Please wait for the model to finish its response!',
