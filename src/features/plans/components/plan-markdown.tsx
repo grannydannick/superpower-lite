@@ -1,5 +1,5 @@
 import { Info } from 'lucide-react';
-import React, { Fragment, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -20,13 +20,16 @@ interface PlanMarkdownProps {
   boldVermillion?: boolean;
 }
 
-const CitationTooltip = ({ content }: { content: string }) => {
+const CitationHoverText = ({
+  label,
+  content,
+}: {
+  label: string;
+  content: string;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // support mobile device touch to open tooltip
-  const handleClick = () => {
-    setIsOpen(!isOpen);
-  };
+  const handleClick = () => setIsOpen(!isOpen);
 
   return (
     <TooltipProvider>
@@ -34,22 +37,17 @@ const CitationTooltip = ({ content }: { content: string }) => {
         <TooltipTrigger asChild>
           <button
             type="button"
-            className="mb-1 ml-0.5 inline-block size-4 cursor-help touch-manipulation select-none text-zinc-400 transition-all hover:text-zinc-600 active:text-zinc-600"
+            className="cursor-help touch-manipulation select-none text-secondary decoration-zinc-300 underline-offset-4 transition-all duration-150 hover:text-primary hover:underline hover:decoration-dotted"
             aria-label="Show citation details"
             onClick={handleClick}
           >
-            <Info className="size-4" />
+            {label}
           </button>
         </TooltipTrigger>
         <TooltipContent
           side="top"
           className="max-w-xs"
-          collisionPadding={{
-            right: 8,
-            left: 8,
-            top: 8,
-            bottom: 8,
-          }}
+          collisionPadding={{ right: 8, left: 8, top: 8, bottom: 8 }}
         >
           <p>{content}</p>
         </TooltipContent>
@@ -58,150 +56,97 @@ const CitationTooltip = ({ content }: { content: string }) => {
   );
 };
 
-const CitationText = ({
-  children,
-  citations,
-}: {
-  children: string;
-  citations?: Citation[];
-}) => {
-  if (!citations || citations.length === 0) {
-    return <span>{children}</span>;
-  }
-
-  const citationMap = new Map(citations.map((c) => [c.key, c.content]));
-  const citationRegex = /\[\^(\d+)\]/g;
-  const segments: React.ReactNode[] = [];
-  let lastEnd = 0;
-  let match;
-  let keyIndex = 0;
-
-  while ((match = citationRegex.exec(children)) !== null) {
-    if (match.index > lastEnd) {
-      segments.push(children.slice(lastEnd, match.index));
-    }
-
-    const citationKey = `[^${match[1]}]`;
-    const citationContent = citationMap.get(citationKey);
-
-    if (citationContent) {
-      segments.push(
-        <CitationTooltip key={keyIndex++} content={citationContent} />,
-      );
-    } else {
-      segments.push(citationKey);
-    }
-
-    lastEnd = match.index + match[0].length;
-  }
-
-  if (lastEnd < children.length) {
-    segments.push(children.slice(lastEnd));
-  }
-
-  return (
-    <span>
-      {segments.map((segment, i) => (
-        <Fragment key={i}>{segment}</Fragment>
-      ))}
-    </span>
-  );
-};
-
 export const PlanMarkdown = ({
   content,
   citations,
   boldVermillion,
 }: PlanMarkdownProps) => {
+  // Sort citations by numeric key order (e.g., [^1], [^2])
+  const sortedCitations = useMemo(() => {
+    if (!citations || citations.length === 0) return [] as Citation[];
+    return [...citations].sort((a, b) => {
+      const na = parseInt(a.key.replace(/\D/g, ''), 10) || 0;
+      const nb = parseInt(b.key.replace(/\D/g, ''), 10) || 0;
+      return na - nb;
+    });
+  }, [citations]);
+
   try {
     const sanitizedContent = sanitizeMarkdown(content);
+
     return (
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        components={{
-          p: (props) => {
-            return (
-              <Body1 as="div" className="mb-4 break-words text-primary">
-                {typeof props.children === 'string' ? (
-                  <CitationText citations={citations}>
-                    {props.children}
-                  </CitationText>
-                ) : Array.isArray(props.children) ? (
-                  props.children.map((child, index) =>
-                    typeof child === 'string' ? (
-                      <CitationText key={index} citations={citations}>
-                        {child}
-                      </CitationText>
-                    ) : (
-                      child
-                    ),
-                  )
-                ) : (
-                  props.children
-                )}
-              </Body1>
-            );
-          },
-          h1: (props) => <H1 className="mb-2 break-words" {...props} />,
-          h2: (props) => <H2 className="mb-2 break-words" {...props} />,
-          h3: (props) => <H3 className="mb-2 break-words" {...props} />,
-          h4: (props) => <H4 className="mb-2 break-words" {...props} />,
-          ul: (props) => (
-            <ul
-              className="relative z-10 mb-4 ml-3 list-outside list-disc space-y-1 font-sans text-base [&_li::marker]:text-zinc-300"
-              {...props}
-            />
-          ),
-          ol: (props) => (
-            <ol
-              className="mb-4 ml-5 list-decimal text-base text-primary [&_li:has(strong)::marker]:text-vermillion-900 [&_strong]:text-vermillion-900"
-              {...props}
-            />
-          ),
-          li: (props) => (
-            <li className="mb-1 break-words font-sans text-primary">
-              {typeof props.children === 'string' ? (
-                <CitationText citations={citations}>
+      <div>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          components={{
+            p: (props) => {
+              return (
+                <Body1 as="div" className="mb-4 break-words text-primary">
                   {props.children}
-                </CitationText>
-              ) : Array.isArray(props.children) ? (
-                props.children.map((child, index) =>
-                  typeof child === 'string' ? (
-                    <CitationText key={index} citations={citations}>
-                      {child}
-                    </CitationText>
-                  ) : (
-                    child
-                  ),
-                )
-              ) : (
-                props.children
-              )}
-            </li>
-          ),
-          strong: (props) => (
-            <strong
-              className={cn(
-                'break-words font-bold',
-                boldVermillion && 'text-vermillion-900',
-              )}
-              {...props}
-            />
-          ),
-          a: (props) => (
-            <a
-              className="break-all text-vermillion-900 hover:underline"
-              target="_blank"
-              rel="noreferrer"
-              {...props}
-            >
-              {props.children}
-            </a>
-          ),
-        }}
-      >
-        {sanitizedContent}
-      </ReactMarkdown>
+                </Body1>
+              );
+            },
+            h1: (props) => <H1 className="mb-2 break-words" {...props} />,
+            h2: (props) => <H2 className="mb-2 break-words" {...props} />,
+            h3: (props) => <H3 className="mb-2 break-words" {...props} />,
+            h4: (props) => <H4 className="mb-2 break-words" {...props} />,
+            ul: (props) => (
+              <ul
+                className="relative z-10 mb-4 ml-3 list-outside list-disc space-y-1 font-sans text-base [&_li::marker]:text-zinc-300"
+                {...props}
+              />
+            ),
+            ol: (props) => (
+              <ol
+                className="mb-4 ml-5 list-decimal text-base text-primary [&_li:has(strong)::marker]:text-vermillion-900 [&_strong]:text-vermillion-900"
+                {...props}
+              />
+            ),
+            li: (props) => (
+              <li className="mb-1 break-words font-sans text-primary">
+                {props.children}
+              </li>
+            ),
+            strong: (props) => (
+              <strong
+                className={cn(
+                  'break-words font-bold',
+                  boldVermillion && 'text-vermillion-900',
+                )}
+                {...props}
+              />
+            ),
+            a: (props) => (
+              <a
+                className="break-all text-vermillion-900 hover:underline"
+                target="_blank"
+                rel="noreferrer"
+                {...props}
+              >
+                {props.children}
+              </a>
+            ),
+          }}
+        >
+          {sanitizedContent}
+        </ReactMarkdown>
+
+        {sortedCitations.length > 0 && (
+          <Body1 as="div" className="mt-2 break-words text-secondary">
+            <Info size={16} className="mb-1 mr-1.5 inline" />
+            <span>Evidence & Research: </span>
+            {sortedCitations.map((c, idx) => {
+              const label = `Source ${idx + 1}`;
+              return (
+                <span key={c.key}>
+                  <CitationHoverText label={label} content={c.content} />
+                  {idx < sortedCitations.length - 1 ? ', ' : ''}
+                </span>
+              );
+            })}
+          </Body1>
+        )}
+      </div>
     );
   } catch (error) {
     return (
@@ -216,5 +161,6 @@ function sanitizeMarkdown(input: string): string {
   // Remove em dashes
   // Makes it look really AI generated lol
   // Jacob request
-  return input.replace(/\u2014/g, ' -- ');
+  // Also remove inline citation markers like [^1], [^2]
+  return input.replace(/\u2014/g, ' -- ').replace(/\[\^\d+\]/g, '');
 }
