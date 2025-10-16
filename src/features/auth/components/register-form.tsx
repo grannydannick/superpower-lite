@@ -18,7 +18,12 @@ import { Body1, Body2, H1 } from '@/components/ui/typography';
 import { useCheckoutContext } from '@/features/auth/stores';
 import { useAvailableSubscriptions } from '@/features/settings/api';
 import { useAnalytics } from '@/hooks/use-analytics';
-import { RegisterInput, registerInputSchema } from '@/lib/auth';
+import {
+  RegisterInput,
+  registerInputSchema,
+  useLogout,
+  useUser,
+} from '@/lib/auth';
 import { getState } from '@/utils/verify-state-from-postal';
 
 import { BaselineSummary } from './configurator/baseline-summary';
@@ -89,11 +94,21 @@ export const RegisterForm = () => {
 const Step1 = ({ onNext }: { onNext: () => void }) => {
   const form = useFormContext<RegisterInput>();
   const { track } = useAnalytics();
+
+  const userQuery = useUser();
+  const logout = useLogout();
+
   const handleNext = async () => {
     const isStepValid = await form.trigger();
 
     if (isStepValid) {
       const email = form.getValues('email');
+
+      if (userQuery.data && userQuery.data.email !== email) {
+        console.log('Logging out user with different email');
+        // If the user is logged in and the email is different, log them out
+        await logout.mutateAsync({});
+      }
 
       // Track registration started
       track('registration_started', {
