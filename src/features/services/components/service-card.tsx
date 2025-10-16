@@ -7,6 +7,7 @@ import { Body1, Body2, H4 } from '@/components/ui/typography';
 import { ADVANCED_BLOOD_PANEL, CUSTOM_BLOOD_PANEL } from '@/const';
 import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
 import { HealthcareService, Order } from '@/types/api';
+import { customDisplayNameForService } from '@/utils/display-name-for-service';
 import { getServiceImage } from '@/utils/service';
 
 export const ServiceCard = ({
@@ -57,6 +58,10 @@ const DesktopCard = ({
     );
   };
 
+  // WC: 2025-10-15 - This is a temporary function to display the custom display name for the service.
+  // THIS IS AN UGLY HACK AND SHOULD BE REMOVED ASAP.
+  const displayName = customDisplayNameForService(service);
+
   return (
     <div className="relative hidden h-[386px] flex-col items-start overflow-hidden rounded-3xl border border-zinc-100 bg-zinc-100 sm:flex">
       {[ADVANCED_BLOOD_PANEL, CUSTOM_BLOOD_PANEL].includes(service.name) && (
@@ -71,7 +76,7 @@ const DesktopCard = ({
       />
       <div className="flex w-full flex-1 flex-col justify-between sm:p-5">
         <div className="space-y-1">
-          <H4 className="line-clamp-2 text-wrap">{service.name}</H4>
+          <H4 className="line-clamp-2 text-wrap">{displayName}</H4>
           <Body2 className="line-clamp-2 text-wrap text-zinc-500">
             {service.description}
           </Body2>
@@ -86,6 +91,9 @@ const DesktopCard = ({
 };
 
 const MobileCard = ({ service }: { service: HealthcareService }) => {
+  // WC: 2025-10-15 - This is a temporary function to display the custom display name for the service.
+  // THIS IS AN UGLY HACK AND SHOULD BE REMOVED ASAP.
+  const displayName = customDisplayNameForService(service);
   return (
     <HealthcareServiceDialog healthcareService={service}>
       <div className="flex items-center justify-between gap-3 rounded-[20px] bg-zinc-100 px-5 py-4 sm:hidden">
@@ -95,7 +103,7 @@ const MobileCard = ({ service }: { service: HealthcareService }) => {
           className="size-9 rounded-lg object-cover"
         />
         <div>
-          <Body1 className="line-clamp-1">{service.name}</Body1>
+          <Body1 className="line-clamp-1">{displayName}</Body1>
           <Body2 className="line-clamp-1 text-zinc-500">
             {service.description}
           </Body2>

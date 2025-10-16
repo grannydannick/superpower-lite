@@ -8,6 +8,7 @@ import { useHasCredit } from '@/features/orders/hooks';
 import { useOrder } from '@/features/orders/stores/order-store';
 import { ServiceFaqs } from '@/features/services/components/service-faqs';
 import { cn } from '@/lib/utils';
+import { customDisplayNameForService } from '@/utils/display-name-for-service';
 import { getHealthcareServicePriceLabel } from '@/utils/format-money';
 import {
   getSampleReportLinkForService,
@@ -18,6 +19,10 @@ export const HealthcareServiceDetails = () => {
   const { service } = useOrder((s) => s);
   const { hasCredit } = useHasCredit({ serviceName: service.name });
   const sampleReportLink = getSampleReportLinkForService(service.name);
+
+  // WC: 2025-10-15 - This is a temporary function to display the custom display name for the service.
+  // THIS IS AN UGLY HACK AND SHOULD BE REMOVED ASAP.
+  const displayName = customDisplayNameForService(service);
 
   return (
     <div>
@@ -34,7 +39,7 @@ export const HealthcareServiceDetails = () => {
             alt={service.name}
           />
           <div className="max-w-[220px] space-y-4 md:max-w-none">
-            <H2 className="text-zinc-900">{service.name}</H2>
+            <H2 className="text-zinc-900">{displayName}</H2>
             <Body2 className="text-zinc-500">
               {hasCredit ? 'Included' : getHealthcareServicePriceLabel(service)}
             </Body2>
