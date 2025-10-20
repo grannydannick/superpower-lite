@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/sheet';
 import { Body2 } from '@/components/ui/typography';
 import { BiomarkerDialog } from '@/features/biomarkers/components/biomarker-dialog/biomarker-dialog';
+import { useAnalytics } from '@/hooks/use-analytics';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { Biomarker } from '@/types/api';
 
@@ -22,9 +23,20 @@ export function BiomarkerTableDialogRow({
   biomarker: Biomarker;
 }): JSX.Element {
   const { width } = useWindowDimensions();
+  const { track } = useAnalytics();
+
+  const handleOpenChange = (open: boolean) => {
+    if (open) {
+      track('viewed_biomarker', {
+        biomarker_name: biomarker.name,
+        biomarker_interpretation: biomarker.status,
+      });
+    }
+  };
+
   if (width <= 768) {
     return (
-      <Sheet>
+      <Sheet onOpenChange={handleOpenChange}>
         <SheetTrigger asChild>{children}</SheetTrigger>
         <SheetContent className="flex max-h-full flex-col rounded-t-[10px]">
           <div className="flex items-center justify-between px-4 pt-16 md:pb-4">
@@ -45,7 +57,7 @@ export function BiomarkerTableDialogRow({
   }
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <BiomarkerDialog biomarker={biomarker} />

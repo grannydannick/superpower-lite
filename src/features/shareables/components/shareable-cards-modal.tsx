@@ -14,6 +14,7 @@ import {
 import { dialogVariants } from '@/components/ui/dialog/utils/dialog-variants';
 import { SimpleTabs, SimpleTabsContent } from '@/components/ui/simple-tabs';
 import { Body1 } from '@/components/ui/typography';
+import { useAnalytics } from '@/hooks/use-analytics';
 import { cn } from '@/lib/utils';
 
 import { AgeShareCard } from './cards/age-share-card';
@@ -40,6 +41,7 @@ export const ShareableCardsModal = ({
   disabled?: boolean;
 }) => {
   const [open, setOpen] = useState(false);
+  const { track } = useAnalytics();
   // const [sharingOptionsOpen, setSharingOptionsOpen] = useState(false);
 
   // State needed for showing appropriate share card
@@ -57,9 +59,12 @@ export const ShareableCardsModal = ({
       setOpen(newOpen);
       if (newOpen) {
         setSelectedTab(preselectedTab);
+        track('viewed_shareable_card', {
+          card_type: preselectedTab,
+        });
       }
     },
-    [preselectedTab],
+    [preselectedTab, track],
   );
 
   return (
