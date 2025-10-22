@@ -6,13 +6,12 @@ import { cn } from '@/lib/utils';
 import { formatMoney } from '@/utils/format-money';
 import { getState } from '@/utils/verify-state-from-postal';
 
-const NOTICE_STATES = ['NY', 'NJ', 'AZ'];
+const NOTICE_STATES = ['NY', 'NJ'];
 const SURCHARGE_STATES = ['NY', 'NJ'];
 
 // This component is used to display a notice about the additional lab fee required for at-home collection
 export const AtHomeNoticeSection = ({
   postalCode,
-  atHomeDrawCredit = false,
   className,
 }: {
   postalCode: string;
@@ -22,7 +21,6 @@ export const AtHomeNoticeSection = ({
   const state = getState(postalCode);
   if (!state) return null;
   if (!NOTICE_STATES.includes(state.state)) return null;
-  if (state.state === 'AZ' && atHomeDrawCredit) return null;
 
   const stateName = US_STATES.find((s) => s.value === state.state)?.label;
   if (!stateName) return null;
@@ -39,14 +37,6 @@ export const AtHomeNoticeSection = ({
       when scheduling your blood draw in a few steps.
     </Body2>
   );
-  const azNotice = (
-    <Body2 className="ml-6 text-zinc-400">
-      Our Lab partner in {stateName} requires blood tests to be done in the
-      comfort of your own home. An at home draw is an additional{' '}
-      {formatMoney(atHomePrice)} which you will pay when scheduling your blood
-      draw in a few steps.
-    </Body2>
-  );
 
   return (
     <div
@@ -60,7 +50,6 @@ export const AtHomeNoticeSection = ({
         <Body2>Additional charge required for {stateName} State</Body2>
       </div>
       {state.state === 'NY' || state.state === 'NJ' ? nynjNotice : null}
-      {state.state === 'AZ' ? azNotice : null}
     </div>
   );
 };

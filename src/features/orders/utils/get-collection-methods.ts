@@ -85,18 +85,6 @@ export const getCollectionMethods = (
         createInterpretedOption(),
       ];
     }
-
-    // For AZ, only allow at-home appointments
-    if (state === 'AZ') {
-      return [
-        createInLabOption({
-          disabled: true,
-          description:
-            'We currently support at-home appointments only in Arizona (AZ).',
-        }),
-        createInterpretedOption(),
-      ];
-    }
   }
 
   if (!service.supportsLabOrder) {

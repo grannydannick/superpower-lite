@@ -62,7 +62,7 @@ const LocationListOptions = ({
 
   return (
     <RadioGroup
-      className="flex h-80 flex-col gap-2 overflow-y-auto p-1 scrollbar scrollbar-thumb-zinc-300 [overflow:overlay] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar]:w-2"
+      className="flex max-h-80 flex-col gap-2 overflow-y-auto p-1 scrollbar scrollbar-thumb-zinc-300 [overflow:overlay] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar]:w-2"
       defaultValue={formatAddress(location?.address)}
     >
       {locations.map((option, index) => (
@@ -127,9 +127,16 @@ const LocationListOption = ({
         <div className="flex items-center gap-2">
           <Body1>{locationName}</Body1>
           {!option?.capabilities.includes('APPOINTMENT_SCHEDULING') ? (
-            <Badge variant="vermillion">WALK IN</Badge>
+            <Badge variant="vermillion" className="hidden sm:inline-flex">
+              WALK IN
+            </Badge>
           ) : null}
         </div>
+        {!option?.capabilities.includes('APPOINTMENT_SCHEDULING') ? (
+          <Badge variant="vermillion" className="inline-flex sm:hidden">
+            WALK IN
+          </Badge>
+        ) : null}
         <Body1 className="text-secondary">{locationDetails}</Body1>
       </div>
       <TooltipProvider>
