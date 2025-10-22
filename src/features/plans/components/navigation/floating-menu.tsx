@@ -1,11 +1,15 @@
 import NumberFlow from '@number-flow/react';
 import { List, ShoppingBag } from 'lucide-react';
-import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 
 import { Body1 } from '@/components/ui/typography';
+import { useBiomarkers } from '@/features/biomarkers/api';
+import { useProducts } from '@/features/shop/api';
+import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 
+import { usePlan } from '../../api/get-plan';
 import { useTableOfContents } from '../../hooks/use-table-of-contents';
 import { NotificationDot } from '../notification-dot';
 
@@ -14,23 +18,69 @@ import { TableOfContents } from './table-of-contents';
 const Contents = ({
   isOpen,
   setIsOpen,
+  planId,
 }: {
   isOpen: boolean;
-  setIsOpen: (value: boolean) => void;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  planId: string;
 }) => {
   const [showContents, setShowContents] = useState(false);
+  const [isDelayed, setIsDelayed] = useState<boolean>(false);
   const { scrollPercentage } = useTableOfContents();
 
+  // Contents replicates logic that is being used in @care-plan.tsx and the app provider as tableOfContents needs a fully loaded app in order to render and observe elements
+  const userQuery = useUser();
+  const planQuery = usePlan({
+    id: planId,
+    queryConfig: {
+      enabled: Boolean(planId) && userQuery.isFetched && isDelayed,
+    },
+  });
+
+  const productsQuery = useProducts({
+    queryConfig: {
+      enabled: Boolean(planId) && userQuery.isFetched && isDelayed,
+    },
+  });
+  const biomarkersQuery = useBiomarkers({
+    queryConfig: {
+      enabled: Boolean(planId) && userQuery.isFetched && isDelayed,
+    },
+  });
+
+  const isLoading =
+    planQuery.isLoading || productsQuery.isLoading || biomarkersQuery.isLoading;
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+
+    if (userQuery.isFetched) {
+      timer = setTimeout(() => {
+        setIsDelayed(true);
+      }, 1000);
+    }
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [userQuery.isFetched]);
+
   return (
-    <button
-      onClick={() => setShowContents(!showContents)}
+    <div
       className={cn(
-        'flex flex-col w-full rounded-3xl pointer-events-auto overflow-hidden absolute right-4 justify-start border border-zinc-200 bg-white px-4 py-3 shadow-lg transition-all duration-300 ease-in-out',
+        'flex flex-col w-full rounded-3xl pointer-events-auto overflow-hidden absolute justify-start border border-zinc-200 bg-white px-4 py-3 shadow-lg transition-all duration-300 ease-in-out',
         isOpen ? 'max-w-64 bottom-28' : 'max-w-12 bottom-0 opacity-0 scale-95',
         showContents ? (isOpen ? 'max-h-[70vh]' : 'max-h-12') : 'max-h-12',
       )}
     >
-      <div className="relative z-10 flex w-full items-center justify-between pb-2">
+      <button
+        type="button"
+        disabled={isLoading}
+        onClick={() => setShowContents((v) => !v)}
+        className="relative z-10 flex w-full items-center justify-between pb-2"
+      >
         <Body1 className="flex items-center gap-1 whitespace-nowrap">
           <span className="truncate">Contents ⋅</span>
           <span className="min-w-[4ch] shrink-0 text-left">
@@ -38,23 +88,28 @@ const Contents = ({
           </span>
         </Body1>
         <List className="size-5 shrink-0 text-zinc-500" />
-      </div>
+      </button>
       <button
-        onClick={() => setIsOpen(false)}
         className={cn(
           'transition-all overflow-y-auto scrollbar-none',
           isOpen && 'delay-75',
           showContents ? 'max-h-[70vh]' : 'max-h-0 opacity-0 overflow-hidden',
         )}
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsOpen(false);
+        }}
       >
-        <TableOfContents />
+        <div>{!isLoading && <TableOfContents />}</div>
       </button>
-    </button>
+    </div>
   );
 };
 
 export const FloatingMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { id } = useParams();
+  const planId = id ?? '';
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setSearchParams] = useSearchParams();
 
@@ -66,8 +121,8 @@ export const FloatingMenu = () => {
   };
 
   return (
-    <div className="pointer-events-none sticky bottom-20 z-10 ml-auto flex w-full flex-col items-end justify-end px-4 lg:hidden">
-      <Contents isOpen={isOpen} setIsOpen={setIsOpen} />
+    <div className="pointer-events-none relative z-10 ml-auto flex w-full flex-col items-end justify-end lg:hidden">
+      <Contents isOpen={isOpen} setIsOpen={setIsOpen} planId={planId} />
       <NotificationDot
         className={cn(
           isOpen ? 'bottom-24' : 'bottom-10',
@@ -77,7 +132,7 @@ export const FloatingMenu = () => {
       <button
         onClick={handleProtocolItemsClick}
         className={cn(
-          'flex w-full h-12 pointer-events-auto overflow-hidden absolute items-center right-4 justify-between rounded-full border border-zinc-200 bg-white px-4 py-3 shadow-lg duration-200 transition-all ease-in-out',
+          'flex w-full h-12 pointer-events-auto overflow-hidden absolute items-center justify-between rounded-full border border-zinc-200 bg-white px-4 py-3 shadow-lg duration-200 transition-all ease-in-out',
           isOpen
             ? 'max-w-64 bottom-14'
             : 'max-w-12 bottom-0 opacity-0 scale-95 delay-75',

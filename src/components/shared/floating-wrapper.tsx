@@ -10,6 +10,8 @@ import { useLocation } from 'react-router-dom';
 import { AssistantModal } from '@/features/messages/components/assistant/assistant-modal';
 // eslint-disable-next-line import/no-restricted-paths
 import { DesktopCheckout } from '@/features/plans/components/desktop-checkout';
+// eslint-disable-next-line import/no-restricted-paths
+import { FloatingMenu } from '@/features/plans/components/navigation/floating-menu';
 import { cn } from '@/lib/utils';
 
 const HIDE_WRAPPER_PATHNAMES = ['/concierge', '/onboarding', '/questionnaire'];
@@ -26,7 +28,10 @@ export const FloatingWrapper = () => {
       )}
     >
       {(pathname === '/plans' || pathname.startsWith('/plans/')) && (
-        <DesktopCheckout />
+        <>
+          <DesktopCheckout />
+          <FloatingMenu />
+        </>
       )}
       <AssistantModal />
     </div>
