@@ -26,7 +26,9 @@ export const HealthcareServiceRescheduleFooter = ({
   onClose?: () => void;
 }) => {
   const cancelOrderMutation = useCancelOrder();
-  const isPastAppointment = new Date(order.startTimestamp) < new Date();
+  const isPastAppointment = order.startTimestamp
+    ? new Date(order.startTimestamp) < new Date()
+    : false;
   const canReschedule =
     healthcareService?.name !== GRAIL_GALLERI_MULTI_CANCER_TEST;
 

@@ -140,12 +140,14 @@ export const OrderCardDetails = React.memo(
   ({ startTimestamp, timezone, location }: Order): JSX.Element => {
     return (
       <div className="flex flex-col gap-0.5">
-        <Body2 className="text-zinc-500">
-          <TimestampDisplay
-            timestamp={new Date(startTimestamp)}
-            timezone={timezone}
-          />
-        </Body2>
+        {startTimestamp ? (
+          <Body2 className="text-zinc-500">
+            <TimestampDisplay
+              timestamp={new Date(startTimestamp)}
+              timezone={timezone}
+            />
+          </Body2>
+        ) : null}
         <Body2 className="line-clamp-1 text-zinc-400">
           {location.address?.line.join(', ')}
         </Body2>

@@ -17,7 +17,11 @@ export const ConfirmAddress = () => {
       return;
     }
 
-    updateLocation({ address: user.primaryAddress });
+    updateLocation({
+      address: user.primaryAddress,
+      capabilities: ['APPOINTMENT_SCHEDULING'],
+      name: '',
+    });
   }, [user?.primaryAddress]);
 
   return (

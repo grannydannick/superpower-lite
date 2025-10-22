@@ -1,5 +1,4 @@
-import { ServiceLabTypeEnum } from '@/const';
-import { PhlebotomyLocation } from '@/types/api';
+import { PhlebotomyLocation, ServiceLabTypeEnum } from '@/types/api';
 import { formatAddress } from '@/utils/format';
 
 export const openInMaps = (

@@ -46,6 +46,10 @@ export const Success = () => {
 
     return (
       <>
+        <Body3 className="text-zinc-400">
+          Invites are sent automatically. Otherwise add the event to your
+          calendar below.
+        </Body3>
         <AppleCalendarButton
           address={location.address}
           slot={slot}
@@ -88,12 +92,6 @@ export const Success = () => {
         prevBtn={null}
         nextBtn={
           <div className="w-full space-y-2">
-            {service.supportsLabOrder ? (
-              <Body3 className="text-zinc-400">
-                Invites are sent automatically. Otherwise add the event to your
-                calendar below.
-              </Body3>
-            ) : null}
             {renderCalendarButtons()}
             <DialogClose asChild>
               <Button className="w-full" onClick={handleClose}>

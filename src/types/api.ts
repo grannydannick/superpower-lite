@@ -333,6 +333,21 @@ export enum OrderStatus {
   pending = 'PENDING',
 }
 
+export type AppointmentType = 'SCHEDULED' | 'UNSCHEDULED';
+
+export enum ServiceTypeEnum {
+  Baseline = 'v2-baseline',
+  Advanced = 'v2-advanced',
+}
+export type ServiceType = ServiceTypeEnum;
+
+export enum ServiceLabTypeEnum {
+  Labcorp = 'labcorp',
+  Quest = 'quest',
+  Bioref = 'bioref',
+}
+export type ServiceLabType = ServiceLabTypeEnum;
+
 export type CollectionMethodType =
   | 'AT_HOME'
   | 'IN_LAB'
@@ -340,18 +355,20 @@ export type CollectionMethodType =
   | 'EVENT';
 
 export type Order = Entity<{
-  serviceId: string;
   serviceName: string;
+  serviceId: string;
   addOnServiceIds?: string[];
+  collectionMethod?: CollectionMethodType;
   status: OrderStatus;
   location: Location;
-  startTimestamp: string;
-  endTimestamp: string;
-  timezone: string;
-  collectionMethod?: CollectionMethodType;
-  createdAt: string;
+  startTimestamp?: string;
+  endTimestamp?: string;
+  timezone?: string;
+  createdAt?: string;
   externalId?: string;
   fileId?: string;
+  performer?: ServiceLabType;
+  appointmentType?: AppointmentType;
 }>;
 
 export type Location = {
@@ -380,8 +397,23 @@ export type WebAddressDTO = {
 
 export type PhlebotomyLocation = {
   name: string;
-  distance: number;
   address: Address;
+  distance?: number;
+  phone?: string;
+  capabilities: LabCapability[];
+  hours?: LabHours;
+};
+
+export type LabCapability = 'APPOINTMENT_SCHEDULING' | 'WALK_IN';
+
+export type LabHours = {
+  Mon: string | null;
+  Tue: string | null;
+  Wed: string | null;
+  Thu: string | null;
+  Fri: string | null;
+  Sat: string | null;
+  Sun: string | null;
 };
 
 export type NotServiceableReason =

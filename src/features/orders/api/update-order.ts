@@ -33,6 +33,7 @@ export const updateOrderInputSchema = z.object({
     ])
     .optional(),
   paymentMethodId: z.string().optional(),
+  appointmentType: z.enum(['SCHEDULED', 'UNSCHEDULED']).optional(),
 });
 
 export type UpdateOrderInput = z.infer<typeof updateOrderInputSchema>;

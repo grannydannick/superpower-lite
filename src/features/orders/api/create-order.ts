@@ -35,9 +35,9 @@ export const createOrderInputSchema = z.object({
   serviceId: z.string().min(1, 'This is required.'),
   addOnServiceIds: z.array(z.string().min(1, 'This is required.')).optional(),
   location: locationInputSchema,
-  timestamp: z.string().min(1, 'This is required.'),
+  timestamp: z.string().min(1, 'This is required.').optional(),
   externalId: z.string().optional(),
-  timezone: z.string().min(1, 'This is required.'),
+  timezone: z.string().min(1, 'This is required.').optional(),
   method: z.enum(['AT_HOME', 'IN_LAB', 'PHLEBOTOMY_KIT', 'EVENT']).optional(),
   status: z
     .enum([
@@ -50,6 +50,7 @@ export const createOrderInputSchema = z.object({
       'ACTIVE',
     ])
     .optional(),
+  appointmentType: z.enum(['SCHEDULED', 'UNSCHEDULED']).optional(),
   informedConsent: consentInputSchema.optional(),
   paymentMethodId: z.string().optional(),
 });

@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 
+import { IconList } from '@/components/shared/icon-list';
 import { Scheduler } from '@/components/shared/scheduler';
-import { Body1, H2 } from '@/components/ui/typography';
+import { Body1, H2, H4 } from '@/components/ui/typography';
 import { ADVISORY_CALL } from '@/const';
 import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
 import { HEALTHCARE_SERVICE_DIALOG_CONTAINER_STYLE } from '@/features/orders/const/config';
@@ -13,13 +14,15 @@ import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 import { Address, Slot } from '@/types/api';
 
+import { WALK_IN_TEST_STEPS } from '../../const/test-steps';
+
 export const PhlebotomyScheduler = () => {
   const {
     service,
     location,
     collectionMethod,
     updateSlot,
-    setTz,
+    updateTz,
     slot,
     updateLocation,
   } = useOrder((s) => s);
@@ -30,7 +33,11 @@ export const PhlebotomyScheduler = () => {
 
   useEffect(() => {
     if (usePrimaryAddress && !location?.address && user?.primaryAddress) {
-      updateLocation({ address: user.primaryAddress });
+      updateLocation({
+        address: user.primaryAddress,
+        name: 'home',
+        capabilities: ['APPOINTMENT_SCHEDULING'],
+      });
     }
   }, [
     usePrimaryAddress,
@@ -47,8 +54,9 @@ export const PhlebotomyScheduler = () => {
   }
 
   const onSlotUpdate = (selectedSlot: Slot | null, tz?: string) => {
+    console.log(selectedSlot, tz);
     if (selectedSlot) updateSlot(selectedSlot);
-    if (tz) setTz(tz);
+    if (tz) updateTz(tz);
   };
 
   const numDaysToShow = width > 600 ? 5 : 4;
@@ -58,6 +66,9 @@ export const PhlebotomyScheduler = () => {
     usePrimaryAddress && user?.primaryAddress
       ? user.primaryAddress
       : location?.address;
+
+  if (!location?.capabilities.includes('APPOINTMENT_SCHEDULING'))
+    return <WalkInScheduler />;
 
   return (
     <>
@@ -85,6 +96,65 @@ export const PhlebotomyScheduler = () => {
         </div>
       </div>
       <HealthcareServiceFooter nextBtnDisabled={!slot} />
+    </>
+  );
+};
+
+const DAYS = [
+  ['Mon', 'Monday'],
+  ['Tue', 'Tuesday'],
+  ['Wed', 'Wednesday'],
+  ['Thu', 'Thursday'],
+  ['Fri', 'Friday'],
+  ['Sat', 'Saturday'],
+  ['Sun', 'Sunday'],
+] as const;
+
+const WalkInScheduler = () => {
+  const { location, updateSlot, updateTz } = useOrder((s) => s);
+
+  useEffect(() => {
+    if (!location) return;
+
+    if (!location.capabilities.includes('APPOINTMENT_SCHEDULING')) {
+      updateSlot(null);
+      updateTz(null);
+    }
+  }, [location, updateSlot, updateTz]);
+  return (
+    <>
+      <div
+        className={cn(HEALTHCARE_SERVICE_DIALOG_CONTAINER_STYLE, 'space-y-8')}
+      >
+        <div className="space-y-2">
+          <H2>Visit during opening hours</H2>
+          <Body1 className="text-zinc-500">
+            No booking is required for your selected lab. You can walk in
+            anytime during their opening hours. The visit takes about 15
+            minutes. For best results, come within 2 hours after waking up
+          </Body1>
+        </div>
+        <IconList items={WALK_IN_TEST_STEPS} />
+        <div className="w-full space-y-4">
+          <H4>Opening hours</H4>
+          <div className="rounded-2xl border bg-white p-2 shadow-[0.2]">
+            {DAYS.map(([key, label]) => {
+              const hours = location?.hours?.[key] ?? 'Closed';
+
+              return (
+                <div
+                  key={key}
+                  className="flex items-center justify-between border-b px-2 py-4 last:border-0"
+                >
+                  <Body1>{label}</Body1>
+                  <Body1 className={'text-secondary'}>{hours}</Body1>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+      <HealthcareServiceFooter />
     </>
   );
 };

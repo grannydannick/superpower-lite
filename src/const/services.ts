@@ -51,19 +51,6 @@ export const NUTRIENT_AND_ANTIOXIDANT_PANEL = 'Nutrient & Antioxidant Panel';
 
 export const READY_NUM_HOURS_BEFORE_ADVISORY = 2;
 
-export enum ServiceTypeEnum {
-  Baseline = 'v2-baseline',
-  Advanced = 'v2-advanced',
-}
-export type ServiceType = ServiceTypeEnum;
-
-export enum ServiceLabTypeEnum {
-  Labcorp = 'labcorp',
-  Quest = 'quest',
-  Bioref = 'bioref',
-}
-export type ServiceLabType = ServiceLabTypeEnum;
-
 // side note we dont have a good way right now to get individual charge items from server
 // so we just stick to that approach
 export const UPGRADE_PRICE = 18900;

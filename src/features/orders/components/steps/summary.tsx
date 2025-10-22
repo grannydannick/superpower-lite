@@ -1,5 +1,4 @@
 import { CircleCheckBig } from 'lucide-react';
-import moment from 'moment';
 import { ReactNode, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -121,14 +120,19 @@ export function OrderSummary(): ReactNode {
       >
         <div className="space-y-1">
           <H2>Order Summary</H2>
-          {process.env.NODE_ENV === 'development' ? (
-            <Body2 className="text-pink-700">
-              DEBUG (not visible in prod):&nbsp;
-              {credit
-                ? `using existing draft order ${credit.id}`
-                : 'creating new order, no existing credit found'}
-            </Body2>
-          ) : null}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mt-3 rounded-lg border border-pink-300 bg-pink-50 p-3">
+              <Body2 className="text-pink-800">
+                <strong>DEBUG (not visibile in prod)</strong>
+                <p>
+                  {credit
+                    ? `Using existing draft order (${credit.id})`
+                    : 'Creating new order — no existing credit found'}
+                </p>
+                <p>{tz && `TZ: ${tz}`}</p>
+              </Body2>
+            </div>
+          )}
           <Body1 className="text-secondary">
             Confirm your order details below.
           </Body1>
@@ -145,7 +149,7 @@ export function OrderSummary(): ReactNode {
             <OrderAppointmentDetails
               collectionMethod={collectionMethod ?? undefined}
               slot={slot ?? undefined}
-              timezone={tz ?? moment.tz.guess()}
+              timezone={tz ?? undefined}
               location={location ?? undefined}
               isPhlebotomy={service.phlebotomy}
               serviceName={service.name}
@@ -169,11 +173,11 @@ export function OrderSummary(): ReactNode {
           </div>
         ) : null}
       </div>
-      <div className="bottom-0 z-50 flex items-center px-6 py-4 md:py-8 md:px-16 [.overflow-auto_&]:sticky [.overflow-y-scroll_&]:sticky">
+      <div className="bottom-0 z-50 flex items-center px-6 py-4 md:px-16 md:py-8 [.overflow-auto_&]:sticky [.overflow-y-scroll_&]:sticky">
         <div className="flex w-full flex-col-reverse justify-end gap-4 md:flex-row md:gap-2">
           <Button
             variant="outline"
-            className="w-full bg-white md:w-auto"
+            className="w-full bg-white"
             onClick={prevStep}
             disabled={isMutationLoading}
           >
@@ -196,7 +200,7 @@ export function OrderSummary(): ReactNode {
           </Button>
           <Button
             onClick={credit ? updateOrderFn : createOrderFn}
-            className="w-full md:w-auto"
+            className="w-full"
             disabled={
               isMutationLoading ||
               price === undefined ||

@@ -35,7 +35,7 @@ export const PhlebotomyLocationSelect = () => {
         <div className="space-y-2">
           <H2>Where would you like to get tested?</H2>
           <Body1 className="text-secondary">
-            Either select an in-person lab test or at-home visit.
+            Select an in-person lab test or at-home visit.
           </Body1>
         </div>
         <div className="space-y-4">
@@ -91,15 +91,14 @@ function CreateOrderPhlebotomyInLab(): JSX.Element {
 
   const errorMessage = isApiError
     ? 'Error loading locations. Please try again.'
-    : 'No locations found. Please enter a new zip code.';
+    : 'No locations found. Please enter a new ZIP code.';
 
   return (
     <div className="space-y-6">
       <div className="space-y-1">
         <H4>We will find a lab for you</H4>
         <Body1 className="text-zinc-500">
-          Please provide us your zip code, a concierge will contact you when a
-          nearby testing lab is found.
+          Please provide us your ZIP code.
         </Body1>
       </div>
       <div className="space-y-2">
@@ -120,7 +119,7 @@ function CreateOrderPhlebotomyInLab(): JSX.Element {
             inputMode="numeric"
             pattern="[0-9]*"
             maxLength={5}
-            placeholder="5-digit zip code"
+            placeholder="5-digit ZIP code"
             aria-invalid={hasError}
             variant={hasError ? 'error' : 'default'}
             aria-describedby={hasError ? 'zip-code-error' : undefined}
@@ -170,7 +169,11 @@ function CreateOrderPhlebotomyAtHome(): JSX.Element {
       });
 
       if (response.serviceable) {
-        updateLocation({ address: user.primaryAddress });
+        updateLocation({
+          address: user.primaryAddress,
+          name: 'home',
+          capabilities: ['APPOINTMENT_SCHEDULING'],
+        });
       } else {
         updateLocation(null);
       }

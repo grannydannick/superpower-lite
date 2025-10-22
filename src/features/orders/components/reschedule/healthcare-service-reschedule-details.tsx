@@ -15,7 +15,9 @@ export function HealthcareServiceRescheduleDetails({
   healthcareService?: HealthcareService;
   order: Order;
 }) {
-  const isPastAppointment = new Date(order.startTimestamp) < new Date();
+  const isPastAppointment = order.startTimestamp
+    ? new Date(order.startTimestamp) < new Date()
+    : false;
 
   return (
     <div>
@@ -46,12 +48,30 @@ export function HealthcareServiceRescheduleDetails({
         <OrderAppointmentDetails
           serviceName={order.serviceName}
           collectionMethod={order?.collectionMethod}
-          slot={{
-            start: order.startTimestamp,
-            end: order.endTimestamp,
-          }}
+          slot={
+            order.startTimestamp && order.endTimestamp
+              ? {
+                  start: order.startTimestamp,
+                  end: order.endTimestamp,
+                }
+              : undefined
+          }
           timezone={order.timezone}
-          location={order.location}
+          location={
+            order.location?.address
+              ? {
+                  address: order.location?.address,
+                  capabilities: order.appointmentType
+                    ? [
+                        order.appointmentType === 'UNSCHEDULED'
+                          ? 'WALK_IN'
+                          : 'APPOINTMENT_SCHEDULING',
+                      ]
+                    : [],
+                  name: '',
+                }
+              : undefined
+          }
           orderId={order.id}
           selectedPanels={order.addOnServiceIds}
         />

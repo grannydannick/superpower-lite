@@ -15,6 +15,8 @@ export const HealthcareServiceRescheduleConfirmation = ({
   order: Order;
 }) => {
   const isWithin24Hours = useMemo(() => {
+    if (!order.startTimestamp) return false;
+
     const startTimestamp = new Date(order.startTimestamp).getTime();
     const now = new Date().getTime();
     return startTimestamp - now < 24 * 60 * 60 * 1000;
@@ -51,10 +53,19 @@ export const HealthcareServiceRescheduleConfirmation = ({
           </Body1>
         )}
       {mode === 'cancel' ? (
-        <Body1 className="text-zinc-500">
-          You can schedule a new appointment from the services page of the
-          Superpower app.
-        </Body1>
+        order.appointmentType === 'UNSCHEDULED' ? (
+          <Body1 className="text-zinc-500">
+            If you’ve already completed your lab visit, please don’t cancel —
+            your order will automatically update once we receive your results.
+            Canceling after your visit may delay or prevent your results from
+            appearing in your portal.
+          </Body1>
+        ) : (
+          <Body1 className="text-zinc-500">
+            You can schedule a new appointment from the services page of the
+            Superpower app.
+          </Body1>
+        )
       ) : null}
     </div>
   );

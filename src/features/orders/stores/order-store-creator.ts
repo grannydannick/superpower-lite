@@ -1,4 +1,3 @@
-import moment from 'moment/moment';
 import { ReactNode } from 'react';
 import { createStore } from 'zustand';
 import { devtools } from 'zustand/middleware';
@@ -8,14 +7,14 @@ import { CreateOrderInput, UpdateOrderInput } from '@/features/orders/api';
 import {
   CollectionMethodType,
   HealthcareService,
-  Location,
+  PhlebotomyLocation,
   OrderStatus,
   Slot,
+  AppointmentType,
 } from '@/types/api';
 
 export interface OrderStoreProps {
   service: HealthcareService;
-  tz: string;
   flow: 'full' | 'info';
 
   onSuccess?: () => void;
@@ -32,9 +31,10 @@ export interface OrderStore extends OrderStoreProps {
   addOnIds: Set<string>;
   // react dispatch on purpose to support both store and regular use state in component
   updateAddOnIds: React.Dispatch<React.SetStateAction<Set<string>>>;
-  location: Location | null;
-  updateLocation: (location: Location | null) => void;
-  setTz: (tz: string) => void;
+  location: PhlebotomyLocation | null;
+  updateLocation: (location: PhlebotomyLocation | null) => void;
+  tz: string | null;
+  updateTz: (tz: string | null) => void;
   slot: Slot | null;
   updateSlot: (slot: Slot | null) => void;
   reset: () => void;
@@ -52,6 +52,7 @@ export type OrderStoreApi = ReturnType<typeof orderStoreCreator>;
 const initialState = {
   location: null,
   slot: null,
+  tz: null,
   informedConsent: null,
   addOnIds: new Set<string>(),
 };
@@ -76,7 +77,7 @@ export const orderStoreCreator = (initProps: OrderStoreProps) => {
         addOnIds: new Set(initProps.preselectedAddOnIds ?? []),
         updateCollectionMethod: (collectionMethod) => set({ collectionMethod }),
         updateLocation: (location) => set({ location }),
-        setTz: (tz) => set({ tz }),
+        updateTz: (tz) => set({ tz }),
         updateSlot: (slot) => set({ slot }),
         reset: () => {
           set({
@@ -104,14 +105,25 @@ export const orderStoreCreator = (initProps: OrderStoreProps) => {
           const location = get().location;
           const addOnServiceIds = get().addOnIds;
 
+          let appointmentType: AppointmentType | undefined = undefined;
+
+          if (location) {
+            if (!location.capabilities.includes('APPOINTMENT_SCHEDULING')) {
+              appointmentType = 'UNSCHEDULED';
+            } else {
+              appointmentType = 'SCHEDULED';
+            }
+          }
+
           const data: UpdateOrderInput = {
             location: location ? location : {},
-            timezone: tz || moment.tz.guess(),
+            timestamp: slot ? slot.start : undefined,
+            timezone: tz ? tz : undefined,
             method: collectionMethod ? collectionMethod : undefined,
-            timestamp: slot ? slot.start : new Date().toISOString(),
             status: OrderStatus.pending,
             addOnServiceIds:
               addOnServiceIds.size > 0 ? [...addOnServiceIds] : undefined,
+            appointmentType,
           };
 
           if (informedConsent) {
@@ -130,15 +142,26 @@ export const orderStoreCreator = (initProps: OrderStoreProps) => {
           const service = get().service;
           const addOnServiceIds = get().addOnIds;
 
-          console.log(tz);
+          let appointmentType: AppointmentType | undefined = undefined;
+
+          if (location) {
+            if (!location.capabilities.includes('APPOINTMENT_SCHEDULING')) {
+              appointmentType = 'UNSCHEDULED';
+            } else {
+              appointmentType = 'SCHEDULED';
+            }
+          }
+
           const data: CreateOrderInput = {
             serviceId: service.id,
             addOnServiceIds:
               addOnServiceIds.size > 0 ? [...addOnServiceIds] : undefined,
             location: location ? location : {},
-            timestamp: slot ? slot.start : new Date().toISOString(),
-            timezone: tz || moment.tz.guess(),
+            // undefined if no slot selected (walk in)
+            timestamp: slot ? slot.start : undefined,
+            timezone: tz ? tz : undefined,
             method: collectionMethod ?? undefined,
+            appointmentType,
           };
 
           if (informedConsent) {

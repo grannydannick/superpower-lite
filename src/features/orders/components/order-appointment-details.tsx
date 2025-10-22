@@ -1,7 +1,6 @@
 import {
   Calendar,
   MapPin,
-  FileIcon,
   HomeIcon,
   VideoIcon,
   ArrowRight,
@@ -13,6 +12,7 @@ import React, { useMemo } from 'react';
 import { PdfFileIcon } from '@/components/icons';
 import { DotIcon } from '@/components/icons/dot';
 import { AddToCalendar } from '@/components/shared/add-to-calendar-button';
+import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, H4 } from '@/components/ui/typography';
 import { ADVISORY_CALL } from '@/const';
@@ -22,18 +22,17 @@ import { downloadBlob } from '@/features/files/utils/download-blob';
 import { openInMaps } from '@/features/orders/utils/open-in-maps';
 import { useServices } from '@/features/services/api';
 import {
-  Location,
   CollectionMethodType,
   Slot,
-  Address,
   HealthcareService,
+  PhlebotomyLocation,
 } from '@/types/api';
 import { isIOS } from '@/utils/browser-detection';
 
 interface OrderAppointmentDetailsProps {
   slot?: Slot;
-  timezone: string;
-  location?: Location | null;
+  timezone?: string;
+  location?: PhlebotomyLocation | null;
   collectionMethod?: CollectionMethodType;
   serviceName?: string;
   orderId?: string;
@@ -60,12 +59,13 @@ function OrderFileLinkFromFiles({ orderId }: { orderId: string }) {
   if (isLoading || !file) return null;
 
   return (
-    <div className="flex gap-4 px-4 py-6">
-      <FileIcon className="size-5 text-zinc-500" />
+    <div className="flex gap-4 py-6">
       <div className="space-y-1">
-        <span className="text-sm text-zinc-500">Lab Order</span>
         <div className="flex items-center gap-2">
-          <PdfFileIcon className="size-5 text-vermillion-900" />
+          <PdfFileIcon className="-mt-0.5 size-4 text-vermillion-900" />
+          <Body1 className="text-secondary">Lab Order</Body1>
+        </div>
+        <div className="pl-6">
           <a
             href="#"
             onClick={handleDownload}
@@ -118,7 +118,7 @@ export function OrderAppointmentDetails({
 
   const collectionMethodLabel = (() => {
     if (isAdvisoryCall) return 'Video call';
-    return method === 'AT_HOME' ? 'At home visit' : 'In lab visit';
+    return 'Address';
   })();
 
   const collectionMethodIcon = (() => {
@@ -135,7 +135,7 @@ export function OrderAppointmentDetails({
       <H4>{isPhlebotomy ? 'Appointment details' : 'Details'}</H4>
 
       {orderId ? <OrderFileLinkFromFiles orderId={orderId} /> : null}
-      {isPhlebotomy && slot ? (
+      {isPhlebotomy && slot && timezone ? (
         <div className="flex gap-4 py-6">
           <div className="flex flex-1 flex-col sm:flex-row sm:items-center sm:gap-4">
             <div className="space-y-1">
@@ -175,7 +175,12 @@ export function OrderAppointmentDetails({
             </div>
             <div className="pl-6">
               <div>
-                <Body1>{location.address.line.join(' ')}</Body1>
+                <div className="flex items-center gap-2">
+                  <Body1>{location.address.line.join(' ')}</Body1>
+                  {!location.capabilities.includes('APPOINTMENT_SCHEDULING') ? (
+                    <Badge variant="vermillion">WALK IN</Badge>
+                  ) : null}
+                </div>
                 <Body1>
                   {location.address.city}, {location.address.state},{' '}
                   {location.address.postalCode}
@@ -189,12 +194,7 @@ export function OrderAppointmentDetails({
                     onClick={(e) => {
                       e.preventDefault();
                       const mapType = isIOS() ? 'apple' : 'google';
-                      const phlebotomyLocation = {
-                        name: location.name || 'Location',
-                        distance: 0,
-                        address: location.address as Address,
-                      };
-                      openInMaps(phlebotomyLocation, mapType);
+                      openInMaps(location, mapType);
                     }}
                   >
                     <>

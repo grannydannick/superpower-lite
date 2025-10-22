@@ -28,8 +28,8 @@ export function useVisibleOrders() {
 
     // if same status, soonest start first
     return (
-      new Date(a.startTimestamp).getTime() -
-      new Date(b.startTimestamp).getTime()
+      (a.startTimestamp ? new Date(a.startTimestamp).getTime() : Infinity) -
+      (b.startTimestamp ? new Date(b.startTimestamp).getTime() : Infinity)
     );
   });
 

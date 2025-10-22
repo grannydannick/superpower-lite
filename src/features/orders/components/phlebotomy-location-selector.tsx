@@ -18,6 +18,7 @@ export const CreateOrderPhlebotomyLocationSelector = () => {
     updateCollectionMethod,
     updateLocation,
     updateSlot,
+    updateTz,
   } = useOrder((s) => s);
   const { data: user } = useUser();
   const { checkAdminActorAccess } = useAuthorization();
@@ -33,6 +34,7 @@ export const CreateOrderPhlebotomyLocationSelector = () => {
     );
     updateLocation(null);
     updateSlot(null);
+    updateTz(null);
   };
 
   // Check if user has an AT_HOME credit from a draft order

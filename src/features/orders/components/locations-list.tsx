@@ -1,5 +1,6 @@
 import { CornerUpRight, ExternalLink } from 'lucide-react';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -49,13 +50,7 @@ export const LocationList = ({
     );
   }
 
-  return (
-    <div className="overflow-hidden">
-      <div className="min-h-24 overflow-y-auto scrollbar scrollbar-thumb-zinc-300 [overflow:overlay] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar]:w-2">
-        <LocationListOptions locations={locations} />
-      </div>
-    </div>
-  );
+  return <LocationListOptions locations={locations} />;
 };
 
 const LocationListOptions = ({
@@ -67,7 +62,7 @@ const LocationListOptions = ({
 
   return (
     <RadioGroup
-      className="flex h-full flex-col gap-2 p-1"
+      className="flex h-80 flex-col gap-2 overflow-y-auto p-1 scrollbar scrollbar-thumb-zinc-300 [overflow:overlay] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar]:w-2"
       defaultValue={formatAddress(location?.address)}
     >
       {locations.map((option, index) => (
@@ -129,7 +124,12 @@ const LocationListOption = ({
         variant="vermillion"
       />
       <div className="flex grow flex-col items-start gap-1">
-        <Body1>{locationName}</Body1>
+        <div className="flex items-center gap-2">
+          <Body1>{locationName}</Body1>
+          {!option?.capabilities.includes('APPOINTMENT_SCHEDULING') ? (
+            <Badge variant="vermillion">WALK IN</Badge>
+          ) : null}
+        </div>
         <Body1 className="text-secondary">{locationDetails}</Body1>
       </div>
       <TooltipProvider>

@@ -49,7 +49,7 @@ export const COLLECTION_METHODS: Record<
     name: 'Let us come to you',
     value: 'AT_HOME',
     description:
-      'A licensed nurse will meet you when you’re ready at home, work, or wherever you are to perform your blood draw.',
+      'A licensed nurse will meet you at home, work, or wherever you are to perform your blood draw.',
     cancelationText: 'Late cancellation or rescheduling fees apply.',
     price: AT_HOME_PRICE_DEFAULT, // Default price, should be overridden with getAtHomePrice(state)
     disabled: false,

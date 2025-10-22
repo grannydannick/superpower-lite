@@ -28,8 +28,8 @@ const Recommendations = () => {
   return (
     <>
       <Body1 className="text-secondary">
-        Book your test on or after {getNextRecommendedDay()} for most accurate
-        results.
+        Book your test on or after {getNextRecommendedDay()} for the most
+        accurate results.
       </Body1>
       {user?.gender?.toLowerCase() === 'female' && (
         <ul className="list-outside list-disc space-y-3 pl-5 marker:text-zinc-300 md:mb-0 md:mt-4">

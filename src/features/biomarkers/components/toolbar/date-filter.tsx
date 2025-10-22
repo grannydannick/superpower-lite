@@ -48,6 +48,16 @@ export function DateFilter<TData>({
 
   const selectedOrder = orders.find((o) => o.id === orderFilter);
 
+  const getDateText = () => {
+    if (selectedOrder?.startTimestamp && selectedOrder?.timezone) {
+      const m = moment(selectedOrder.startTimestamp).tz(selectedOrder.timezone);
+
+      return m.isValid() ? m.format('MM/DD/YYYY') : 'Date unavailable';
+    }
+
+    return 'Date unavailable';
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -60,11 +70,7 @@ export function DateFilter<TData>({
           )}
         >
           <Body2 className="text-zinc-500">
-            {selectedOrder
-              ? moment(selectedOrder.startTimestamp)
-                  .tz(selectedOrder.timezone)
-                  .format('MM/DD/YYYY')
-              : 'All results'}
+            {selectedOrder ? getDateText() : 'All results'}
           </Body2>
           <ChevronDown
             className={cn(
@@ -96,19 +102,27 @@ export function DateFilter<TData>({
             </div>
           </div>
           <div className="grid gap-x-6 gap-y-2.5">
-            {orders.map((o) => (
-              <Button
-                variant="ghost"
-                className={cn(
-                  'justify-start px-4 py-2.5 hover:bg-zinc-50 text-sm',
-                  orderFilter === o.id ? 'bg-zinc-50' : null,
-                )}
-                key={o.id}
-                onClick={() => table.getColumn('orderId')?.setFilterValue(o.id)}
-              >
-                {moment(o.startTimestamp).tz(o.timezone).format('MM/DD/YYYY')}
-              </Button>
-            ))}
+            {orders.map((o) => {
+              return (
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    'justify-start px-4 py-2.5 hover:bg-zinc-50 text-sm',
+                    orderFilter === o.id ? 'bg-zinc-50' : null,
+                  )}
+                  key={o.id}
+                  onClick={() =>
+                    table.getColumn('orderId')?.setFilterValue(o.id)
+                  }
+                >
+                  {o?.startTimestamp && o?.timezone
+                    ? moment(o.startTimestamp)
+                        .tz(o.timezone)
+                        .format('MM/DD/YYYY')
+                    : 'Date unavailable'}
+                </Button>
+              );
+            })}
           </div>
         </div>
       </PopoverContent>

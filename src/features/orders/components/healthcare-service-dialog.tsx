@@ -1,6 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { X } from 'lucide-react';
-import moment from 'moment-timezone';
 import React, { ReactNode } from 'react';
 
 import {
@@ -104,7 +103,6 @@ export const HealthcareServiceDialog: React.FC<
     <StepperStoreProvider key={key} steps={steps}>
       <OrderStoreProvider
         service={healthcareService}
-        tz={moment.tz.guess()}
         onSuccess={onSuccess}
         flow={flow}
         infoFlowBtn={infoFlowBtn}
