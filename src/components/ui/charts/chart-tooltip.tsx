@@ -72,6 +72,29 @@ export const ChartTooltip = ({
       }
     };
   }, [isOpen, children, displayedContent]);
+
+  // dismiss the tooltip on any scroll/wheel/touch while open to avoid sticky tooltips
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const hide = () => {
+      onMouseLeave?.();
+    };
+
+    window.addEventListener('scroll', hide, { capture: true, passive: true });
+    window.addEventListener('wheel', hide, { capture: true, passive: true });
+    window.addEventListener('touchstart', hide, {
+      capture: true,
+      passive: true,
+    });
+
+    return () => {
+      window.removeEventListener('scroll', hide, { capture: true });
+      window.removeEventListener('wheel', hide, { capture: true });
+      window.removeEventListener('touchstart', hide, { capture: true });
+    };
+  }, [isOpen, onMouseLeave]);
+
   return (
     <div
       className="pointer-events-none absolute z-[53] transition-all duration-200 ease-in-out"
