@@ -99,7 +99,21 @@ export const ServiceSelectCard = ({
             </Body2>
           )}
           {detailsResult?.trigger ? (
-            <div className="mt-1">{detailsResult.trigger}</div>
+            /* eslint-disable-next-line jsx-a11y/no-static-element-interactions */
+            <div
+              className="mt-1"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+              onKeyDown={(e) => {
+                // we prevent keyboard triggers as well
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.stopPropagation();
+                }
+              }}
+            >
+              {detailsResult.trigger}
+            </div>
           ) : null}
         </div>
         {service.price > 0 && !disabled && (
