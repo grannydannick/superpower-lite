@@ -55,15 +55,31 @@ export function SchedulerHeading(): JSX.Element {
 
   const initialStartRange = initialStartRangeRef.current;
 
-  const handleClick = async (numDays: number) => {
+  // Only adjust the back button to go to the previous ISO week start.
+  const handlePrev = async () => {
+    if (!startRange) return;
+
+    const target = startRange
+      .clone()
+      .startOf('isoWeek')
+      .subtract(1, 'week')
+      .tz(tz);
+
+    updateStartRange(target);
+    updateSelectedDay(undefined);
+    updateSelectedSlot(undefined);
+
+    onSlotUpdate && !showCreateBtn && onSlotUpdate(null, tz);
+  };
+
+  // Keep forward navigation as-is (step by numDays and clamp to today)
+  const handleNext = async (numDays: number) => {
     if (!startRange) return;
 
     const newStartRange = startRange.clone().add(numDays, 'days').tz(tz);
-
     const currentDate = moment().tz(tz);
 
     if (newStartRange.isBefore(currentDate)) {
-      //  automatically adjust the newStartRange to the current date
       updateStartRange(currentDate);
     } else {
       updateStartRange(newStartRange);
@@ -71,7 +87,6 @@ export function SchedulerHeading(): JSX.Element {
     updateSelectedDay(undefined);
     updateSelectedSlot(undefined);
 
-    // additional callback if native button is hidden
     onSlotUpdate && !showCreateBtn && onSlotUpdate(null, tz);
   };
 
@@ -189,15 +204,13 @@ export function SchedulerHeading(): JSX.Element {
               !prevRangeEnd ||
               prevRangeEnd.isBefore(initialStartRange, 'day')
             }
-            onClick={() => {
-              numDays && handleClick(-numDays);
-            }}
+            onClick={handlePrev}
           />
           <RangeSelectButton
             icon={<ChevronRight className="size-4" />}
             disabled={loading}
             onClick={() => {
-              numDays && handleClick(numDays);
+              numDays && handleNext(numDays);
             }}
           />
         </div>
