@@ -1,5 +1,4 @@
 import { UseChatHelpers } from '@ai-sdk/react';
-import { useLocalStorage } from '@wojtekmaj/react-hooks';
 import { FileUIPart, UIMessage } from 'ai';
 import equal from 'fast-deep-equal';
 import { ArrowUpIcon } from 'lucide-react';
@@ -98,19 +97,10 @@ function PureMultimodalInput({
     }
   }, []);
 
-  const [localStorageInput, setLocalStorageInput] = useLocalStorage(
-    'input',
-    '',
-  );
-
+  // Adjust height on mount and whenever input changes
   useEffect(() => {
-    if (textareaRef.current) {
-      const domValue = textareaRef.current.value;
-      const finalValue = domValue || localStorageInput || '';
-      setInput(finalValue);
-      requestAnimationFrame(() => adjustHeight());
-    }
-  }, [adjustHeight, localStorageInput, setInput]);
+    requestAnimationFrame(() => adjustHeight());
+  }, [adjustHeight, input]);
 
   // Recalculate height when the wrapper resizes (e.g., when overlay becomes visible)
   // This is important for the chat assistant
@@ -123,10 +113,6 @@ function PureMultimodalInput({
     ro.observe(el);
     return () => ro.disconnect();
   }, [adjustHeight]);
-
-  useEffect(() => {
-    setLocalStorageInput(input);
-  }, [input, setLocalStorageInput]);
 
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);
@@ -145,7 +131,6 @@ function PureMultimodalInput({
     });
 
     setAttachments([]);
-    setLocalStorageInput('');
     resetHeight();
 
     if (width && width > 768) {
@@ -156,7 +141,6 @@ function PureMultimodalInput({
     sendMessage,
     attachments,
     setAttachments,
-    setLocalStorageInput,
     resetHeight,
     width,
     track,
