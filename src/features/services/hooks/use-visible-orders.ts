@@ -1,4 +1,5 @@
 import { useOrders } from '@/features/orders/api';
+import { useAuthorization } from '@/lib/authorization';
 import { OrderStatus, Order } from '@/types/api';
 
 const DEFAULT_VISIBLE = 12;
@@ -6,9 +7,17 @@ const DEFAULT_VISIBLE = 12;
 export function useVisibleOrders() {
   const { data, isLoading } = useOrders();
   const orders: Order[] = data?.orders ?? [];
+  const { checkAdminActorAccess } = useAuthorization();
+
+  const isAdmin = checkAdminActorAccess();
 
   // 1) filter out drafts
-  const filtered = orders.filter((order) => order.status !== OrderStatus.draft);
+  const filtered = isAdmin
+    ? orders
+    : orders.filter(
+        (order) =>
+          ![OrderStatus.draft, OrderStatus.cancelled].includes(order.status),
+      );
 
   // 2) define status-priority map
   const statusPriority: Record<OrderStatus, number> = {

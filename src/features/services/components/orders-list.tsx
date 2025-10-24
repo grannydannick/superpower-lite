@@ -10,21 +10,13 @@ import {
 } from '@/components/ui/collapsible';
 import { Spinner } from '@/components/ui/spinner';
 import { Body1 } from '@/components/ui/typography';
-import { HealthcareServiceRescheduleDialog } from '@/features/orders/components/reschedule/healthcare-service-reschedule-dialog';
 import { OrderCard } from '@/features/services/components/order-card';
 import { cn } from '@/lib/utils';
-import { HealthcareService, Order } from '@/types/api';
 
 import { useVisibleOrders } from '../hooks/use-visible-orders';
 
 export const OrdersList = React.memo((): JSX.Element => {
   const [collapsibleOpen, setCollapsibleOpen] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [rescheduleDialog, setRescheduleDialog] = useState<{
-    order: Order;
-    service?: HealthcareService;
-  } | null>(null);
-
   const {
     isLoading,
     visibleOrders,
@@ -32,23 +24,6 @@ export const OrdersList = React.memo((): JSX.Element => {
     restOrders,
     defaultVisible,
   } = useVisibleOrders();
-
-  const handleReschedule = (order: Order, service?: HealthcareService) => {
-    setRescheduleDialog({ order, service });
-    setDialogOpen(true);
-  };
-
-  const handleRescheduleClose = (open: boolean) => {
-    setDialogOpen(open);
-    if (!open) {
-      setRescheduleDialog(null);
-    }
-  };
-
-  const handleSubmit = () => {
-    setDialogOpen(false);
-    setRescheduleDialog(null);
-  };
 
   if (isLoading) {
     return (
@@ -65,22 +40,14 @@ export const OrdersList = React.memo((): JSX.Element => {
       <Collapsible open={collapsibleOpen} onOpenChange={setCollapsibleOpen}>
         <div className="grid gap-5 lg:grid-cols-2">
           {visibleOrders.map((order) => (
-            <OrderCard
-              key={order.id}
-              order={order}
-              onReschedule={handleReschedule}
-            />
+            <OrderCard key={order.id} order={order} />
           ))}
         </div>
 
         <CollapsibleContent>
           <div className="mt-5 grid gap-5 md:grid-cols-2">
             {restOrders.map((order) => (
-              <OrderCard
-                key={order.id}
-                order={order}
-                onReschedule={handleReschedule}
-              />
+              <OrderCard key={order.id} order={order} />
             ))}
           </div>
         </CollapsibleContent>
@@ -112,18 +79,6 @@ export const OrdersList = React.memo((): JSX.Element => {
           </CollapsibleTrigger>
         )}
       </Collapsible>
-
-      {rescheduleDialog && (
-        <HealthcareServiceRescheduleDialog
-          order={rescheduleDialog.order}
-          healthcareService={rescheduleDialog.service}
-          open={dialogOpen}
-          onOpenChange={handleRescheduleClose}
-          onSubmit={handleSubmit}
-        >
-          <div />
-        </HealthcareServiceRescheduleDialog>
-      )}
     </>
   );
 });

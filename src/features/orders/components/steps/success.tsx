@@ -1,6 +1,3 @@
-import React, { useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-
 import {
   AppleCalendarButton,
   GoogleCalendarButton,
@@ -20,15 +17,7 @@ import { AnimatedTimeline } from 'src/components/ui/animated-timeline';
 export const Success = () => {
   const { slot, service, collectionMethod, location } = useOrder((s) => s);
   const timelineSteps = getServiceTimeline(service, collectionMethod);
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
   const { data: user, isLoading } = useUser();
-
-  const handleClose = useCallback(() => {
-    if (pathname === '/services') {
-      navigate('/services?tab=orders');
-    }
-  }, [navigate, pathname]);
 
   const renderCalendarButtons = () => {
     if (!location?.address) {
@@ -94,9 +83,7 @@ export const Success = () => {
           <div className="w-full space-y-2">
             {renderCalendarButtons()}
             <DialogClose asChild>
-              <Button className="w-full" onClick={handleClose}>
-                Done
-              </Button>
+              <Button className="w-full">Done</Button>
             </DialogClose>
           </div>
         }

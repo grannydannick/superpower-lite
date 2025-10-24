@@ -43,7 +43,7 @@ export const HomeRoute = () => {
                 onClick={() => scrollTo({ top: 0, behavior: 'smooth' })}
                 asChild
               >
-                <Link to="./services?tab=all">Book service</Link>
+                <Link to="./marketplace?tab=tests">Book service</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link

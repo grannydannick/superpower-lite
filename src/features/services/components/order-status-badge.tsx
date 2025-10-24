@@ -20,7 +20,6 @@ const orderStatusBadgeVariants = cva('', {
 
 export interface OrderStatusBadgeProps
   extends React.HTMLAttributes<HTMLDivElement> {
-  actions: { label: string; onClick: () => void }[];
   order: Order;
 }
 

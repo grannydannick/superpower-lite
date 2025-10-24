@@ -17,6 +17,7 @@ import {
 } from '@/const';
 import { useOrders } from '@/features/orders/api';
 import { cn } from '@/lib/utils';
+import { OrderStatus } from '@/types/api';
 
 interface DataTableFacetedFilter<TData> {
   table: Table<TData>;
@@ -36,7 +37,7 @@ export function DateFilter<TData>({
           SUPERPOWER_BLOOD_PANEL,
           ADVANCED_BLOOD_PANEL,
           CUSTOM_BLOOD_PANEL,
-        ].includes(o.serviceName) && o.status === 'COMPLETED',
+        ].includes(o.serviceName) && o.status === OrderStatus.completed,
     ) ?? [];
 
   // Member has one blood test => Date filter is not available

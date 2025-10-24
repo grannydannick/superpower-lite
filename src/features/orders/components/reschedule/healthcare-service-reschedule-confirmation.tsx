@@ -34,7 +34,7 @@ export const HealthcareServiceRescheduleConfirmation = ({
   })();
 
   return (
-    <div className="flex flex-col justify-center gap-4 px-6 md:max-w-none md:px-10">
+    <div className="flex flex-col justify-center gap-4 px-4 md:max-w-none">
       <img
         src={getServiceImage(order.serviceName)}
         className="block size-[70px] rounded-2xl border border-zinc-200 bg-white  object-cover"

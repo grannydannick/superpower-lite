@@ -78,6 +78,20 @@ export const createRouter = () =>
           },
         },
         {
+          path: 'services/:id',
+          lazy: async () => {
+            const { ServiceRoute } = await import('./routes/app/service');
+            return { Component: ServiceRoute };
+          },
+        },
+        {
+          path: 'orders/:id',
+          lazy: async () => {
+            const { OrderRoute } = await import('./routes/app/order');
+            return { Component: OrderRoute };
+          },
+        },
+        {
           path: 'invite',
           lazy: async () => {
             const { AffiliateRoute } = await import('./routes/app/affiliate');
@@ -85,7 +99,7 @@ export const createRouter = () =>
           },
         },
         {
-          path: 'questionnaire/:type?',
+          path: 'questionnaire/:type',
           lazy: async () => {
             const { QuestionnaireRoute } = await import(
               './routes/app/questionnaire'

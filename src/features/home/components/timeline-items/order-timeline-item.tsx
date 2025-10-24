@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -11,8 +12,6 @@ import {
 } from '@/components/ui/timeline';
 import { GUT_MICROBIOME_ANALYSIS, TOTAL_TOXIN_TEST } from '@/const';
 import { useOrders } from '@/features/orders/api';
-import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
-import { HealthcareServiceRescheduleDialog } from '@/features/orders/components/reschedule';
 import { useServices } from '@/features/services/api';
 import { TimelineItem as TimelineItemType } from '@/types/api';
 import { getServiceImage } from '@/utils/service';
@@ -36,6 +35,7 @@ const OrderTimelineItem = ({
   shouldRenderNextConnector: boolean;
   timelineItem: TimelineItemType;
 }) => {
+  const navigate = useNavigate();
   const servicesQuery = useServices();
   const getOrdersQuery = useOrders();
 
@@ -77,23 +77,26 @@ const OrderTimelineItem = ({
         if (!service) return;
 
         return (
-          <HealthcareServiceDialog healthcareService={service}>
-            <Button className="bg-white" size="medium" variant="outline">
-              Book
-            </Button>
-          </HealthcareServiceDialog>
+          <Button
+            className="bg-white"
+            size="medium"
+            variant="outline"
+            onClick={() => navigate(`/services/${service.id}`)}
+          >
+            Book
+          </Button>
         );
       }
       case 'CURRENT':
         return (
-          <HealthcareServiceRescheduleDialog
-            healthcareService={service}
-            order={order}
+          <Button
+            className="bg-white"
+            size="medium"
+            variant="outline"
+            onClick={() => navigate(`./orders/${timelineItem.id}`)}
           >
-            <Button className="bg-white" size="medium" variant="outline">
-              More details
-            </Button>
-          </HealthcareServiceRescheduleDialog>
+            More details
+          </Button>
         );
       default:
         return null;

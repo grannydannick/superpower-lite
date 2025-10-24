@@ -1,9 +1,9 @@
-import { Clock4Icon } from 'lucide-react';
+import { Check, Clock4Icon, X } from 'lucide-react';
 
 import { Body1, Body2, H2 } from '@/components/ui/typography';
 import { ADVISORY_CALL } from '@/const';
 import { ServiceFaqs } from '@/features/services/components/service-faqs';
-import { HealthcareService, Order } from '@/types/api';
+import { HealthcareService, Order, OrderStatus } from '@/types/api';
 import { getServiceImage } from '@/utils/service';
 
 import { OrderAppointmentDetails } from '../order-appointment-details';
@@ -21,7 +21,7 @@ export function HealthcareServiceRescheduleDetails({
 
   return (
     <div>
-      <div className="space-y-8 px-6 md:px-10">
+      <div className="space-y-8 px-4">
         <div className="flex flex-col justify-center gap-4 md:max-w-none">
           <img
             src={getServiceImage(order.serviceName)}
@@ -34,6 +34,19 @@ export function HealthcareServiceRescheduleDetails({
               <Body2 className="text-vermillion-900">Results in progress</Body2>
             </div>
           ) : null}
+          {order.status === OrderStatus.cancelled ? (
+            <div className="inline-flex items-center space-x-1 self-start rounded-lg bg-pink-100 px-2 py-1">
+              <X className="size-4 text-pink-900" />
+              <Body2 className="text-pink-900">Order cancelled</Body2>
+            </div>
+          ) : null}
+          {order.status === OrderStatus.completed ? (
+            <div className="inline-flex items-center space-x-1 self-start rounded-lg bg-emerald-100 px-2 py-1">
+              <Check className="size-4 text-emerald-900" />
+              <Body2 className="text-emerald-900">Order completed</Body2>
+            </div>
+          ) : null}
+
           <div className="max-w-[220px] space-y-4 md:max-w-none">
             <H2 className="text-zinc-900">{order.serviceName}</H2>
           </div>
@@ -67,7 +80,8 @@ export function HealthcareServiceRescheduleDetails({
                           ? 'WALK_IN'
                           : 'APPOINTMENT_SCHEDULING',
                       ]
-                    : [],
+                    : // fallback for legacy to always appointment schedyuling
+                      ['APPOINTMENT_SCHEDULING'],
                   name: '',
                 }
               : undefined
@@ -77,7 +91,7 @@ export function HealthcareServiceRescheduleDetails({
         />
       </div>
 
-      <div className="px-6 md:px-10">
+      <div className="px-4">
         <ServiceFaqs
           filter={(faq) =>
             faq.question !== 'sampleReportLink' &&
