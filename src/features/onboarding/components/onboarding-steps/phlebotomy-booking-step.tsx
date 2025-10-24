@@ -51,21 +51,34 @@ export const PhlebotomyBookingStep = () => {
   const { mutateAsync: updateTaskProgress } = useUpdateTask();
   const { buckets, groupedOrdersLoading } = useGroupedOrders();
   const navigate = useNavigate();
+
+  // WC: ACKNOWLEDGING MESSY LOGIC HERE - WILL PRIORITIZE A "CORRECT" FIX
   // this is going to be replaced in custom panels v1 but right now we need to assume
   // that there can be 3 credits:
   // 1. regular baseline with membership
   // 2. advanced upgraded credit
   // 3. add on upgraded credit
-  const draftOrder = buckets.drafts.find((d) =>
+  // Find all available draft orders, then prioritize ADVANCED_BLOOD_PANEL AND CUSTOM_BLOOD_PANEL first
+  // If a user has booked additional baseline credits AND custom OR advanced, we will use the advanced or custom credit
+  const availableDraftOrders = buckets.drafts.filter((d) =>
     [ADVANCED_BLOOD_PANEL, SUPERPOWER_BLOOD_PANEL, CUSTOM_BLOOD_PANEL].includes(
       d.order.serviceName,
     ),
   );
+  const draftOrder =
+    availableDraftOrders.find((d) =>
+      [ADVANCED_BLOOD_PANEL, CUSTOM_BLOOD_PANEL].includes(d.order.serviceName),
+    ) || availableDraftOrders[0];
 
-  // If a user doesn't fully complete onboarding, they will have an upcoming order
+  // If a user doesn't fully complete onboarding, they will have an upcoming order or completed order
   // 1. We use this to determine if the user has completed booking and has returned to onboarding
   // 2. If so, we complete the onboarding task and navigate to the home page
   const scheduledOrder = buckets.upcoming.find((a) =>
+    [ADVANCED_BLOOD_PANEL, SUPERPOWER_BLOOD_PANEL, CUSTOM_BLOOD_PANEL].includes(
+      a.order.serviceName,
+    ),
+  );
+  const completedOrder = buckets.completed.find((a) =>
     [ADVANCED_BLOOD_PANEL, SUPERPOWER_BLOOD_PANEL, CUSTOM_BLOOD_PANEL].includes(
       a.order.serviceName,
     ),
@@ -86,11 +99,17 @@ export const PhlebotomyBookingStep = () => {
       });
     };
 
-    if (!stableService && scheduledOrder) {
+    if (!stableService && (scheduledOrder || completedOrder)) {
       completeTask();
       navigate('/');
     }
-  }, [navigate, scheduledOrder, stableService, updateTaskProgress]);
+  }, [
+    navigate,
+    scheduledOrder,
+    completedOrder,
+    stableService,
+    updateTaskProgress,
+  ]);
 
   return (
     <div className="flex min-h-dvh w-full flex-col">
