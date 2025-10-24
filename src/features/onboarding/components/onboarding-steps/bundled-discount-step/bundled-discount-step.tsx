@@ -58,10 +58,18 @@ const BundledDiscountCard = ({
     <div className="space-y-4 rounded-3xl bg-zinc-50 shadow-sm">
       {/* Main Card with Orange Border */}
       <div
+        role="button"
+        tabIndex={0}
         className={cn(
-          'relative rounded-3xl border border-zinc-200 bg-white p-6',
+          'relative rounded-3xl border border-zinc-200 bg-white p-6 cursor-pointer transition-colors hover:bg-zinc-50',
           selected && 'border-vermillion-900',
         )}
+        onClick={() => onToggle(bundledDiscount)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            onToggle(bundledDiscount);
+          }
+        }}
       >
         <div className="flex items-center gap-6">
           {/* Radio Button */}
@@ -71,7 +79,7 @@ const BundledDiscountCard = ({
               value={bundledDiscount.title}
               variant="vermillion"
               className="size-5"
-              onClick={() => onToggle(bundledDiscount)}
+              onClick={(e) => e.stopPropagation()}
               checked={selected}
             />
           </RadioGroup>
@@ -157,7 +165,7 @@ const BundledDiscountContent = () => {
       },
     });
     toast.success(
-      `Purchase of ${selectedBundledDiscount.quantity} additional test${selectedBundledDiscount.quantity > 1 ? 's' : ''} successful! You will be able to schedule your test${selectedBundledDiscount.quantity > 1 ? 's' : ''} after you complete onboarding.`,
+      `Purchase of ${selectedBundledDiscount.quantity} additional test${selectedBundledDiscount.quantity > 1 ? 's' : ''} successful!`,
     );
     setTimeout(() => {
       next();

@@ -19,7 +19,7 @@ const BUNDLED_DISCOUNTS = [
       'Great for members just starting their health journey or checking in once more this year.',
       "We'll let you know when it's time to retest and update your plan based on new results.",
     ],
-    image: '/onboarding/upgrade/test-tubes.webp',
+    image: '/onboarding/upgrade/test-tube.webp',
   },
   {
     id: 'add-3-tests',

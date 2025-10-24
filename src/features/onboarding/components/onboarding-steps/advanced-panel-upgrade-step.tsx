@@ -55,9 +55,7 @@ const AdvancedPanelUpgradeContent = () => {
         paymentMethodId: activePaymentMethod?.externalPaymentMethodId,
       },
     });
-    toast.success(
-      `One-time Advanced Panel upgrade successful! You will be able to schedule your test after your intake is completed in the next step.`,
-    );
+    toast.success(`One-time Advanced Panel upgrade successful!`);
     setTimeout(() => {
       next();
     }, 3000);

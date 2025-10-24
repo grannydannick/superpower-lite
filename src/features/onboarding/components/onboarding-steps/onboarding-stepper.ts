@@ -10,8 +10,8 @@ import { useUser } from '@/lib/auth';
 
 export const ONBOARDING_STEPS = {
   UPDATE_INFO: 'update-info',
-  BUNDLED_DISCOUNT: 'bundled-discount',
   ADVANCED_UPGRADE: 'advanced-upgrade',
+  BUNDLED_DISCOUNT: 'bundled-discount',
   HEARD_ABOUT_US: 'heard-about-us',
   INTAKE: 'intake',
   ADD_ON_PANELS: 'add-on-panels',
@@ -22,8 +22,8 @@ export const ONBOARDING_STEPS = {
 
 export const OnboardingStepper = defineStepper(
   { id: ONBOARDING_STEPS.UPDATE_INFO },
-  { id: ONBOARDING_STEPS.BUNDLED_DISCOUNT },
   { id: ONBOARDING_STEPS.ADVANCED_UPGRADE },
+  { id: ONBOARDING_STEPS.BUNDLED_DISCOUNT },
   { id: ONBOARDING_STEPS.HEARD_ABOUT_US },
   { id: ONBOARDING_STEPS.INTAKE },
   { id: ONBOARDING_STEPS.ADD_ON_PANELS },

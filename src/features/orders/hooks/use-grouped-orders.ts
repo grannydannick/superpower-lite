@@ -14,13 +14,13 @@ export const useGroupedOrders = () => {
     const buckets: {
       drafts: { order: Order; service?: HealthcareService }[];
       pending: { order: Order; service?: HealthcareService }[];
-      active: { order: Order; service?: HealthcareService }[];
+      upcoming: { order: Order; service?: HealthcareService }[];
       completed: { order: Order; service?: HealthcareService }[];
       canceled: { order: Order; service?: HealthcareService }[];
     } = {
       drafts: [],
       pending: [],
-      active: [],
+      upcoming: [],
       completed: [],
       canceled: [],
     };
@@ -35,6 +35,9 @@ export const useGroupedOrders = () => {
           break;
         case 'PENDING':
           buckets.pending.push({ order: o, service: s });
+          break;
+        case 'UPCOMING':
+          buckets.upcoming.push({ order: o, service: s });
           break;
         case 'COMPLETED':
           buckets.completed.push({ order: o, service: s });

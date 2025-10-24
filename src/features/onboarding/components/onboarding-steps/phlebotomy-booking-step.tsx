@@ -1,4 +1,5 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { Spinner } from '@/components/ui/spinner';
 import { Body1 } from '@/components/ui/typography';
@@ -10,6 +11,7 @@ import {
 import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
 import { useGroupedOrders } from '@/features/orders/hooks/use-grouped-orders';
 import { BookingStepID } from '@/features/orders/utils/get-steps-for-service';
+import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { HealthcareService } from '@/types/api';
 
 import { useOnboardingStepper } from './onboarding-stepper';
@@ -46,8 +48,9 @@ const Loader = () => {
 };
 
 export const PhlebotomyBookingStep = () => {
+  const { mutateAsync: updateTaskProgress } = useUpdateTask();
   const { buckets, groupedOrdersLoading } = useGroupedOrders();
-
+  const navigate = useNavigate();
   // this is going to be replaced in custom panels v1 but right now we need to assume
   // that there can be 3 credits:
   // 1. regular baseline with membership
@@ -59,11 +62,35 @@ export const PhlebotomyBookingStep = () => {
     ),
   );
 
+  // If a user doesn't fully complete onboarding, they will have an upcoming order
+  // 1. We use this to determine if the user has completed booking and has returned to onboarding
+  // 2. If so, we complete the onboarding task and navigate to the home page
+  const scheduledOrder = buckets.upcoming.find((a) =>
+    [ADVANCED_BLOOD_PANEL, SUPERPOWER_BLOOD_PANEL, CUSTOM_BLOOD_PANEL].includes(
+      a.order.serviceName,
+    ),
+  );
+
   // TODO: this is temp hack
   // reason we need it is after we complete booking we no longer have draft order
   // therefore cache gets refreshed and we no longer can find draft credit / service
   // this makes sure we "freeze" initial service until we leave the page
   const stableService = useStableById(draftOrder?.service);
+
+  // If the user has a scheduled order, but no draft order, we complete the onboarding task and navigate to the home page
+  useEffect(() => {
+    const completeTask = async () => {
+      await updateTaskProgress({
+        taskName: 'onboarding',
+        data: { status: 'completed' },
+      });
+    };
+
+    if (!stableService && scheduledOrder) {
+      completeTask();
+      navigate('/');
+    }
+  }, [navigate, scheduledOrder, stableService, updateTaskProgress]);
 
   return (
     <div className="flex min-h-dvh w-full flex-col">

@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { H1, H4 } from '@/components/ui/typography';
-import { GUT_MICROBIOME_ANALYSIS_ID } from '@/const';
+import { GUT_MICROBIOME_ANALYSIS } from '@/const';
 import { useHasCredit } from '@/features/orders/hooks';
 
 import { TEST_KIT_STEPS, TestKitStepper } from './test-kit-stepper';
@@ -11,7 +11,7 @@ import { TEST_KIT_STEPS, TestKitStepper } from './test-kit-stepper';
 export const CoverStep = () => {
   const { next, goTo } = TestKitStepper.useStepper();
   const { hasCredit: hasGutCredit } = useHasCredit({
-    serviceName: GUT_MICROBIOME_ANALYSIS_ID,
+    serviceName: GUT_MICROBIOME_ANALYSIS,
   });
 
   // if user has gut credit, go to select toxins step
