@@ -7,6 +7,7 @@ import {
   Supplements,
   Tests,
 } from '@/components/icons/marketplace';
+import { Prescriptions } from '@/components/icons/marketplace/prescriptions';
 import {
   TabsContent,
   TabsList,
@@ -162,6 +163,16 @@ export const MarketplaceTabs = () => {
                   </TabsTrigger>
                 );
               })}
+            <a
+              className="relative z-10 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 py-1.5 text-base font-medium text-secondary transition-colors duration-200 hover:text-primary"
+              href="https://clinic.superpower.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Prescriptions"
+            >
+              <Prescriptions className="size-5" />
+              <span className="hidden sm:inline">Prescriptions</span>
+            </a>
           </TabsList>
 
           {activeTab !== 'orders' && (
