@@ -82,11 +82,11 @@ const DesktopCard = ({
       </div>
 
       <div className="flex flex-col gap-1">
-        <div className="flex items-start justify-between gap-2">
-          <H4>{displayName}</H4>
+        <div className="flex justify-between gap-2">
+          <H4 className="truncate">{displayName}</H4>
           {service.price > 0 ? <H4>{formatMoney(service.price)}</H4> : null}
         </div>
-        <Body1 className="text-secondary">
+        <Body1 className="text-left text-secondary">
           {service.additionalClassification[0]}
         </Body1>
       </div>
@@ -118,12 +118,14 @@ const MobileCard = ({
       />
 
       <div className="flex flex-col gap-1">
-        <Body3 className="text-secondary">
+        <Body3 className="text-left text-secondary">
           {service.additionalClassification[0]}
         </Body3>
-        <Body2 className="line-clamp-1">{displayName}</Body2>
+        <Body2 className="line-clamp-1 text-left">{displayName}</Body2>
 
-        {service.price > 0 ? <Body2>{formatMoney(service.price)}</Body2> : null}
+        {service.price > 0 ? (
+          <Body2 className="text-left">{formatMoney(service.price)}</Body2>
+        ) : null}
       </div>
       {draftOrder ? (
         <Button className="flex w-full" size="medium">

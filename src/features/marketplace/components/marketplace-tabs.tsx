@@ -183,7 +183,7 @@ export const MarketplaceTabs = () => {
             />
           )}
         </div>
-        {activeTab !== 'orders' && activeTab !== 'tests' && (
+        {activeTab !== 'orders' && (
           <MarketplaceFilters
             activeTab={activeTab}
             value={filter}
