@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import {
   FormItem,
   FormMessage,
 } from '@/components/ui/form';
+import { toast } from '@/components/ui/sonner';
 import { Spinner } from '@/components/ui/spinner';
 import { Body2, H1 } from '@/components/ui/typography';
 import { useSendMagicLink } from '@/features/auth/api/send-magic-link';
@@ -40,6 +41,9 @@ export const LoginForm = ({
     'magic-link',
   );
 
+  const [searchParams] = useSearchParams();
+  const defaultEmail = searchParams.get('email');
+
   const loginMutation = useLogin({
     onSuccess: onSuccessWithPassword,
   });
@@ -65,7 +69,7 @@ export const LoginForm = ({
       loginMode === 'magic-link' ? magicLinkLoginSchema : passwordLoginSchema,
     ),
     defaultValues: {
-      email: '',
+      email: defaultEmail || '',
       password: '',
     },
   });
@@ -74,6 +78,14 @@ export const LoginForm = ({
     const email = form.getValues('email');
     form.reset({ email, password: '' });
   }, [loginMode]);
+
+  useEffect(() => {
+    if (defaultEmail) {
+      toast.info(
+        `An account with the email ${defaultEmail} already exists. Please login.`,
+      );
+    }
+  }, [defaultEmail]);
 
   const handleSubmit = (values: LoginInput) => {
     if (loginMode === 'magic-link') {
