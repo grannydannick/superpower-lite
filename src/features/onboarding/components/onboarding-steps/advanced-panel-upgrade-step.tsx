@@ -13,6 +13,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { Separator } from '@/components/ui/separator';
+import { toast } from '@/components/ui/sonner';
 import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner';
 import { Body1, Body2, H2, H3, H4 } from '@/components/ui/typography';
 import { UPGRADE_INFO } from '@/const';
@@ -54,7 +55,12 @@ const AdvancedPanelUpgradeContent = () => {
         paymentMethodId: activePaymentMethod?.externalPaymentMethodId,
       },
     });
-    next();
+    toast.success(
+      `One-time Advanced Panel upgrade successful! You will be able to schedule your test after your intake is completed in the next step.`,
+    );
+    setTimeout(() => {
+      next();
+    }, 3000);
   };
 
   return (
@@ -116,7 +122,8 @@ const AdvancedPanelUpgradeContent = () => {
             disabled={upgradeOrderMutation.isPending}
             onClick={upgradeOrder}
           >
-            {upgradeOrderMutation.isPending ? (
+            {upgradeOrderMutation.isPending ||
+            upgradeOrderMutation.isSuccess ? (
               <TransactionSpinner className="flex justify-center" />
             ) : (
               <>

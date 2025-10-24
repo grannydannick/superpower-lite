@@ -14,9 +14,10 @@ import { getUpgradePrice } from '@/utils/get-upgrade-price';
 import { getOrdersQueryOptions } from './get-orders';
 
 export const upgradeOrderInputSchema = z.object({
-  upgradeType: z.enum(['advanced', 'custom-panel']),
+  upgradeType: z.enum(['advanced', 'custom-panel', 'baseline-bundle']),
   addOnServiceIds: z.array(z.string().min(1, 'This is required.')).optional(),
   paymentMethodId: z.string().optional(),
+  quantity: z.number().optional(),
 });
 
 export type UpgradeOrderInput = z.infer<typeof upgradeOrderInputSchema>;
@@ -59,6 +60,8 @@ export const useUpgradeOrder = ({
       // TODO: adjust to also work with custom panels?
       // TODO: we can likely grab service info from query client cache as well
       track('order_upgraded', {
+        upgrade_type: variables.data.upgradeType,
+        upgrade_quantity: variables.data.quantity || 1,
         order_id: order.id,
         order_name: order.serviceName,
         order_status: order.status,

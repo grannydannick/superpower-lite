@@ -10,6 +10,7 @@ import { useUser } from '@/lib/auth';
 
 export const ONBOARDING_STEPS = {
   UPDATE_INFO: 'update-info',
+  BUNDLED_DISCOUNT: 'bundled-discount',
   ADVANCED_UPGRADE: 'advanced-upgrade',
   HEARD_ABOUT_US: 'heard-about-us',
   INTAKE: 'intake',
@@ -21,6 +22,7 @@ export const ONBOARDING_STEPS = {
 
 export const OnboardingStepper = defineStepper(
   { id: ONBOARDING_STEPS.UPDATE_INFO },
+  { id: ONBOARDING_STEPS.BUNDLED_DISCOUNT },
   { id: ONBOARDING_STEPS.ADVANCED_UPGRADE },
   { id: ONBOARDING_STEPS.HEARD_ABOUT_US },
   { id: ONBOARDING_STEPS.INTAKE },
@@ -80,6 +82,8 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
 
     if (intakeQuestionnaireCompleted) {
       excludedSteps.push(
+        ONBOARDING_STEPS.ADVANCED_UPGRADE,
+        ONBOARDING_STEPS.BUNDLED_DISCOUNT,
         ONBOARDING_STEPS.HEARD_ABOUT_US,
         ONBOARDING_STEPS.INTAKE,
       );
@@ -93,7 +97,11 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
     }
 
     if (userHasCustomPanels) {
-      excludedSteps.push(ONBOARDING_STEPS.ADVANCED_UPGRADE);
+      excludedSteps.push(
+        ONBOARDING_STEPS.ADD_ON_PANELS,
+        ONBOARDING_STEPS.ADVANCED_UPGRADE,
+        ONBOARDING_STEPS.BUNDLED_DISCOUNT,
+      );
     }
 
     return excludedSteps;

@@ -49,6 +49,9 @@ const OnboardingStepsContent = (): React.ReactElement => {
       <React.Fragment>
         {methods.switch({
           [ONBOARDING_STEPS.UPDATE_INFO]: () => <Steps.UpdateInfoStep />,
+          [ONBOARDING_STEPS.BUNDLED_DISCOUNT]: () => (
+            <Steps.BundledDiscountStep />
+          ),
           [ONBOARDING_STEPS.ADVANCED_UPGRADE]: () => (
             <Steps.AdvancedPanelUpgradeStep />
           ),
