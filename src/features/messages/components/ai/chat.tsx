@@ -1,4 +1,5 @@
 import { useChat } from '@ai-sdk/react';
+import { useQueryClient } from '@tanstack/react-query';
 import { DefaultChatTransport, FileUIPart, type UIMessage } from 'ai';
 import { useEffect, useState } from 'react';
 
@@ -28,6 +29,7 @@ export function Chat({
   id: string;
   initialMessages: Array<UIMessage>;
 }) {
+  const queryClient = useQueryClient();
   const { refetch } = useHistory();
   const { track } = useAnalytics();
 
@@ -63,6 +65,10 @@ export function Chat({
     generateId: generateUUID,
     onFinish: ({ message }) => {
       refetch();
+
+      // make sure that the chat message cache is fresh here
+      // e.g. so that navigating away and back shows the latest messages.
+      queryClient.invalidateQueries({ queryKey: ['chat', id] });
 
       // Track AI message events
       if (message.role === 'user') {
