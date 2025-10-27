@@ -11,7 +11,7 @@ const BUNDLED_DISCOUNTS = [
         originalPrice: 39900,
       },
       DEFAULT: {
-        price: 14900,
+        price: 16900,
         originalPrice: 19900,
       },
     },
