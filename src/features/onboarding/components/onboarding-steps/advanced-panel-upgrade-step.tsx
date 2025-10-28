@@ -202,7 +202,7 @@ const CardInfo = ({
       <div className="hidden lg:block">
         <H4>Advanced Panel</H4>
         <Body2 className="text-zinc-500">
-          30+ biomarkers for deep insights across health optimization,
+          20+ biomarkers for deep insights across health optimization,
           prevention, and complex symptoms
         </Body2>
       </div>
@@ -233,7 +233,7 @@ const CardInfo = ({
           </div>
           <CollapsibleContent className="space-y-2">
             <Body1 className="text-zinc-500">
-              130+ biomarkers for deep insights across health optimization,
+              120+ biomarkers for deep insights across health optimization,
               prevention, and complex symptoms
             </Body1>
             <TotalInfo price={price} />
