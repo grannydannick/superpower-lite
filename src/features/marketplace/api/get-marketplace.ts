@@ -8,6 +8,7 @@ import {
   MarketplaceApiResponse,
   MarketplaceData,
   Product,
+  Rx,
 } from '@/types/api';
 
 const toProduct = (product: Marketplace): Product => {
@@ -21,6 +22,19 @@ const toProduct = (product: Marketplace): Product => {
     image: product.image ?? undefined,
     additionalClassification: product.additionalClassification ?? [],
     vendor: product.vendor ?? undefined,
+  };
+};
+
+const toRx = (product: Marketplace): Rx => {
+  return {
+    id: product.id,
+    url: product.url,
+    type: product.type,
+    name: product.name,
+    description: product.description,
+    price: product.price,
+    active: product.active,
+    additionalClassification: product.additionalClassification,
   };
 };
 
@@ -45,7 +59,7 @@ export const getMarketplace = async (): Promise<MarketplaceData> => {
 
   return {
     supplements: response.supplements.map(toProduct),
-    prescriptions: response.prescriptions.map(toProduct),
+    prescriptions: response.prescriptions.map(toRx),
     services: response.services.map(toHealthcareService),
   };
 };

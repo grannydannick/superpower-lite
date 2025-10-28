@@ -1,5 +1,5 @@
-import { useCallback, useMemo, useState } from 'react';
 import type { ComponentType, ReactNode, SVGProps } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import {
@@ -24,6 +24,7 @@ import {
 import { MarketplaceList } from '@/features/marketplace/components/marketplace-list';
 import { MarketplaceSearch } from '@/features/marketplace/components/marketplace-search';
 import { useMarketplaceSearch } from '@/features/marketplace/hooks/use-marketplace-search';
+import { PrescriptionsList } from '@/features/prescriptions/components/prescription-list';
 import { FinishScheduleList } from '@/features/services/components/finish-schedule-list';
 import { OrdersList } from '@/features/services/components/orders-list';
 import { ServicesList } from '@/features/services/components/services-list';
@@ -42,7 +43,10 @@ export const MarketplaceTabs = () => {
   const [searchParams] = useSearchParams();
   const rawTab = searchParams.get('tab');
   const activeTab: MarketplaceTabValue =
-    rawTab === 'tests' || rawTab === 'supplements' || rawTab === 'orders'
+    rawTab === 'tests' ||
+    rawTab === 'supplements' ||
+    rawTab === 'prescriptions' ||
+    rawTab === 'orders'
       ? rawTab
       : 'all';
   const [filter, setFilter] = useState<MarketplaceFilter>('all');
@@ -53,6 +57,12 @@ export const MarketplaceTabs = () => {
     isSearching,
   } = useMarketplaceSearch();
 
+  useEffect(() => {
+    if (activeTab === 'prescriptions' && filter !== 'all') {
+      setFilter('all');
+    }
+  }, [activeTab, filter, setFilter]);
+
   const handleClearSearch = useCallback(() => {
     setSearchQuery('');
   }, [setSearchQuery]);
@@ -62,6 +72,7 @@ export const MarketplaceTabs = () => {
       <MarketplaceList
         services={data?.services}
         supplements={data?.supplements}
+        prescriptions={data?.prescriptions}
         isLoading={isLoading}
         filter={filter}
         query={query}
@@ -119,6 +130,27 @@ export const MarketplaceTabs = () => {
           );
         },
       },
+      /* PRESCRIPTIONS */
+      {
+        value: 'prescriptions',
+        label: 'Prescriptions',
+        icon: Prescriptions,
+        contentTitle: searchTitle,
+        render: () => {
+          if (isSearching) {
+            return render();
+          }
+
+          return (
+            <PrescriptionsList
+              prescriptions={data?.prescriptions}
+              isLoading={isLoading}
+              filter={filter}
+              query={query}
+            />
+          );
+        },
+      },
       /* ORDERS - Hidden */
       {
         value: 'orders',
@@ -135,6 +167,8 @@ export const MarketplaceTabs = () => {
     query,
     searchTitle,
   ]);
+
+  const showFilters = activeTab !== 'orders' && activeTab !== 'prescriptions';
 
   return (
     <URLTabs>
@@ -163,16 +197,6 @@ export const MarketplaceTabs = () => {
                   </TabsTrigger>
                 );
               })}
-            <a
-              className="relative z-10 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 py-1.5 text-base font-medium text-secondary transition-colors duration-200 hover:text-primary"
-              href="https://clinic.superpower.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Prescriptions"
-            >
-              <Prescriptions className="size-5" />
-              <span className="hidden sm:inline">Prescriptions</span>
-            </a>
           </TabsList>
 
           {activeTab !== 'orders' && (
@@ -183,7 +207,7 @@ export const MarketplaceTabs = () => {
             />
           )}
         </div>
-        {activeTab !== 'orders' && (
+        {showFilters && (
           <MarketplaceFilters
             activeTab={activeTab}
             value={filter}

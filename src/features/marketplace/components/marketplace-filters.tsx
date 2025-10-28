@@ -7,6 +7,7 @@ const MARKETPLACE_FILTER_LABELS = {
     all: 'All products',
     tests: 'All tests',
     supplements: 'All supplements',
+    prescriptions: 'All prescriptions',
     orders: 'All orders',
   },
 } as const;
@@ -20,7 +21,12 @@ export const MARKETPLACE_FILTER_OPTIONS = [
 
 export type MarketplaceFilter = (typeof MARKETPLACE_FILTER_OPTIONS)[number];
 
-export type MarketplaceTabValue = 'all' | 'tests' | 'supplements' | 'orders';
+export type MarketplaceTabValue =
+  | 'all'
+  | 'tests'
+  | 'supplements'
+  | 'prescriptions'
+  | 'orders';
 
 type MarketplaceFiltersProps = {
   activeTab: MarketplaceTabValue;

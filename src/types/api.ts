@@ -530,6 +530,20 @@ export type Product = {
   vendor?: string;
 };
 
+/* RX */
+
+export type Rx = {
+  id: string;
+  url?: string | null;
+  type?: string | null;
+  name: string;
+  description?: string | null;
+  price?: number | null;
+  active?: boolean | null;
+  source?: string | null;
+  additionalClassification?: string[] | null;
+};
+
 /* MARKETPLACE */
 
 export type Marketplace = {
@@ -564,7 +578,7 @@ export type MarketplaceApiResponse = MarketplaceResponse;
 
 export type MarketplaceData = MarketplaceResponse<
   Product,
-  Product,
+  Rx,
   HealthcareService
 >;
 

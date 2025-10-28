@@ -3,7 +3,7 @@ import { filterByCategory } from '@/features/marketplace/utils/filter-by-categot
 
 type MarketplaceEntity = {
   name: string;
-  additionalClassification?: string[];
+  additionalClassification?: string[] | null;
 };
 
 export const matchesMarketplaceQuery = <T extends MarketplaceEntity>(
