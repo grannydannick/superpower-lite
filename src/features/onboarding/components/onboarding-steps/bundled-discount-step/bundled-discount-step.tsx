@@ -183,7 +183,7 @@ const BundledDiscountContent = () => {
   return (
     <React.Fragment>
       {/* Bundled Discounts Panel */}
-      <div className="w-full space-y-6 p-4 md:space-y-8 md:rounded-3xl md:border md:bg-white md:px-8 md:shadow-sm">
+      <div className="order-1 w-full space-y-6 p-4 md:order-2 md:space-y-8 md:rounded-3xl md:border md:bg-white md:px-8 md:shadow-sm">
         <ProgressHeader className="flex md:hidden" />
         <div>
           <H4>Stay on top of your health</H4>
@@ -221,7 +221,7 @@ const BundledDiscountContent = () => {
       </div>
 
       {/* Payment Details Panel */}
-      <div className="w-full flex-col gap-4 p-4 md:p-10 lg:sticky lg:top-8 lg:flex lg:h-[calc(100svh-4rem)] lg:max-h-[calc(100svh-4rem)] lg:overflow-auto">
+      <div className="order-2 w-full flex-col gap-4 p-4 md:order-1 md:p-10 lg:sticky lg:top-8 lg:flex lg:h-[calc(100svh-4rem)] lg:max-h-[calc(100svh-4rem)] lg:overflow-auto">
         <ProgressHeader className="hidden md:flex" />
         <div className="mt-8 space-y-4">
           <H3 className="hidden text-zinc-900 md:block">Payment details</H3>
