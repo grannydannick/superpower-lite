@@ -59,7 +59,7 @@ export const ServiceSelectCard = ({
       )}
     >
       <div
-        className="flex w-full items-center gap-4 p-4"
+        className="flex w-full items-center gap-4 p-4 focus-visible:outline-zinc-500 focus-visible:outline-2 outline-0 -outline-offset-1 transition-all duration-150 rounded-[20px]"
         role="button"
         tabIndex={disabled ? -1 : 0}
         aria-disabled={disabled}
@@ -75,7 +75,7 @@ export const ServiceSelectCard = ({
         }}
       >
         <AnimatedCheckbox
-          className="size-5 border"
+          className="size-5 border border-zinc-200 bg-white data-[state='checked']:border-transparent"
           checked={checked}
           disabled={disabled}
           onClick={(e) => {
@@ -94,7 +94,7 @@ export const ServiceSelectCard = ({
             <Body1 className="md:hidden">{formatMoney(service.price)}</Body1>
           )}
           {service.description && (
-            <Body2 className="line-clamp-2 text-secondary">
+            <Body2 className="line-clamp-2 text-secondary text-balance">
               {service.description}
             </Body2>
           )}

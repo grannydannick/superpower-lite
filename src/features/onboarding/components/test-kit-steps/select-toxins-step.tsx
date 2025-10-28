@@ -1,5 +1,4 @@
 import NumberFlow from '@number-flow/react';
-import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { useMemo } from 'react';
 
@@ -13,6 +12,7 @@ import {
   MYCOTOXINS_TEST_ID,
 } from '@/const/services';
 import { useTestKitServices } from '@/features/onboarding/hooks/use-test-kits';
+import { cn } from '@/lib/utils';
 
 import { ItemPreviews } from '../shared/item-previews';
 import { UpsellServiceCard } from '../shared/upsell-service-card';
@@ -49,6 +49,11 @@ const SelectToxinsStepContent = () => {
     );
   }, [selectedServices]);
 
+  const totalPriceCents = useMemo(
+    () => selectedToxServices.reduce((acc, service) => acc + service.price, 0),
+    [selectedToxServices],
+  );
+
   return (
     <>
       <div className="mx-auto mb-16 flex size-full flex-col items-start space-y-6 px-6 md:mt-0 lg:max-w-[700px] lg:pt-16">
@@ -77,92 +82,38 @@ const SelectToxinsStepContent = () => {
         </div>
 
         {/* Bottom sections container */}
-        <motion.div
-          layout
-          transition={{ duration: 0.3, ease: 'easeOut' }}
-          className="w-full space-y-4"
-        >
-          {/* Total */}
-          <AnimatePresence>
-            {selectedToxServices.length && (
-              <motion.div
-                initial={{
-                  opacity: 0,
-                  scaleY: 0,
-                }}
-                animate={{
-                  opacity: 1,
-                  scaleY: 1,
-                }}
-                exit={{
-                  opacity: 0,
-                  scaleY: 0,
-                }}
-                transition={{ duration: 0.2, ease: 'easeOut' }}
-                style={{ transformOrigin: 'top' }}
-                className="flex justify-between gap-4 py-8"
-              >
-                <H4>Total</H4>
-                <NumberFlow
-                  format={{
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 0,
-                  }}
-                  value={Math.floor(
-                    selectedToxServices.reduce(
-                      (acc, service) => acc + service.price,
-                      0,
-                    ) / 100,
-                  )}
-                  className="text-base"
-                />
-              </motion.div>
+        <div className="w-full space-y-4">
+          <div
+            className={cn(
+              'transition-all duration-300 ease-out overflow-hidden',
+              selectedToxServices.length > 0
+                ? ''
+                : '-mt-4 max-h-0 pointer-events-none blur-[2px] opacity-0',
             )}
-          </AnimatePresence>
+          >
+            {/* Total */}
+            <div className="flex justify-between gap-4 py-8">
+              <H4>Total</H4>
+              <NumberFlow
+                className="text-base"
+                prefix="$"
+                value={Number(totalPriceCents / 100)}
+              />
+            </div>
 
-          {/* Add to cart */}
-          <AnimatePresence>
-            {selectedToxServices.length && (
-              <motion.div
-                initial={{
-                  opacity: 0,
-                  scaleY: 0,
-                }}
-                animate={{
-                  opacity: 1,
-                  scaleY: 1,
-                }}
-                exit={{
-                  opacity: 0,
-                  scaleY: 0,
-                }}
-                transition={{ duration: 0.2, ease: 'easeOut' }}
-                style={{ transformOrigin: 'top' }}
+            {/* Add to cart */}
+            <div>
+              <Button
+                onClick={onAddToCart}
+                className="sticky top-[calc(100dvh-4.5rem)] z-30 order-first w-full hover:bg-zinc-800 disabled:bg-zinc-700 disabled:opacity-100 lg:static lg:order-none"
               >
-                <Button
-                  onClick={onAddToCart}
-                  className="sticky top-[calc(100dvh-4.5rem)] z-30 order-first w-full hover:bg-zinc-800 disabled:bg-zinc-700 disabled:opacity-100 lg:static lg:order-none"
-                >
-                  {`Add ${selectedToxServices.length === 1 ? 'test' : 'tests'} to cart`}
-                </Button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                {`Add ${selectedToxServices.length === 1 ? 'test' : 'tests'} to cart`}
+              </Button>
+            </div>
+          </div>
 
           {/* Skip */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            transition={{
-              duration: 0.3,
-              delay: selectedToxServices.length ? 0.1 : 0.3,
-              ease: 'easeOut',
-            }}
-          >
+          <div>
             <Button
               onClick={next}
               variant="ghost"
@@ -173,8 +124,8 @@ const SelectToxinsStepContent = () => {
                 <ChevronRight size={18} className="ml-0.5 size-4" />
               </div>
             </Button>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
         <div className="h-24 md:hidden" />
       </div>
 

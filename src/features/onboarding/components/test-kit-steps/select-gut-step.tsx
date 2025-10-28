@@ -4,6 +4,7 @@ import { SplitScreenLayout } from '@/components/layouts/split-screen-layout';
 import { StyledMarkdown } from '@/components/shared/styled-markdown';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from '@/components/ui/sonner';
 import { Body1, H3, H4 } from '@/components/ui/typography';
 import { GUT_MICROBIOME_ANALYSIS_ID } from '@/const/services';
@@ -23,7 +24,7 @@ import { TestKitStepper } from './test-kit-stepper';
 
 const SelectGutStepContent = () => {
   const { next } = TestKitStepper.useStepper();
-  const { services, selectService } = useTestKitServices();
+  const { services, selectService, isLoading } = useTestKitServices();
 
   const { isScrolled } = useScrollDetection({
     threshold: 180,
@@ -34,8 +35,26 @@ const SelectGutStepContent = () => {
     (service) => service.id === GUT_MICROBIOME_ANALYSIS_ID,
   );
 
-  if (!gutService) {
-    return null;
+  if (isLoading || !gutService) {
+    return (
+      <>
+        <div className="mx-auto size-full max-w-2xl space-y-16 px-4 lg:px-0">
+          <div className="space-y-8">
+            <Skeleton className="h-16 w-full rounded-xl" />
+            <Skeleton className="h-12 w-1/2 rounded-xl" />
+          </div>
+          <div className="space-y-4">
+            <Skeleton className="h-12 w-2/3 rounded-xl" />
+            <Skeleton className="h-12 w-1/3 rounded-xl" />
+            <Skeleton className="h-12 w-1/2 rounded-xl" />
+            <Skeleton className="h-12 w-2/3 rounded-xl" />
+          </div>
+        </div>
+        <div className="size-full px-4 lg:px-0">
+          <Skeleton className="aspect-square w-full rounded-3xl" />
+        </div>
+      </>
+    );
   }
 
   const serviceDetails = getDetailsForService(gutService.name);

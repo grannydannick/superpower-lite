@@ -83,9 +83,11 @@ export const UpsellServiceCard = ({
               </DialogClose>
             )}
           >
-            <div className="flex cursor-pointer items-center gap-2">
-              <Body2 className="line-clamp-2 text-secondary">Learn more</Body2>
-              <InfoIcon className="w-[14px] text-zinc-400" />
+            <div className="flex cursor-pointer items-center gap-1.5 group">
+              <Body2 className="line-clamp-2 text-secondary group-hover:text-zinc-700 transition-all duration-200">
+                Learn more
+              </Body2>
+              <InfoIcon className="size-4 text-zinc-400 group-hover:text-zinc-500 transition-all duration-200" />
             </div>
           </HealthcareServiceDialog>
         ),
