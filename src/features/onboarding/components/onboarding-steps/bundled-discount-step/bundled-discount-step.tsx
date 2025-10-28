@@ -29,7 +29,7 @@ import {
 const ProgressHeader = ({ className }: { className?: string }) => {
   return (
     <div className={cn('flex-col', className)}>
-      <div className="flex items-center justify-start md:justify-end">
+      <div className="flex items-center">
         <SuperpowerLogo />
       </div>
       <H2 className="mt-8 text-zinc-900">Track your progress</H2>
@@ -183,7 +183,7 @@ const BundledDiscountContent = () => {
   return (
     <React.Fragment>
       {/* Bundled Discounts Panel */}
-      <div className="order-1 w-full space-y-6 p-4 md:order-2 md:space-y-8 md:rounded-3xl md:border md:bg-white md:px-8 md:shadow-sm">
+      <div className="order-1 w-full space-y-8 p-4 md:order-2 md:rounded-3xl md:border md:bg-white md:px-8 md:shadow-sm">
         <ProgressHeader className="flex md:hidden" />
         <div>
           <H4>Stay on top of your health</H4>

@@ -63,7 +63,7 @@ const AdvancedPanelUpgradeContent = () => {
 
   return (
     <>
-      <div className="w-full space-y-8 px-4 md:px-8">
+      <div className="w-full space-y-8 p-4 md:p-10">
         <SuperpowerLogo />
         <div className="space-y-2">
           <H2>Upgrade your Baseline Test</H2>
