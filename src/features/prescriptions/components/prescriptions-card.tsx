@@ -30,7 +30,7 @@ const DesktopCard = ({ prescription }: { prescription: Rx }) => {
       className="group relative hidden cursor-pointer flex-col gap-4 overflow-hidden sm:flex"
       onClick={() => navigateToProduct(prescription.name)}
     >
-      <div className="relative flex aspect-[456/501] items-center rounded-[20px] bg-zinc-50">
+      <div className="relative flex aspect-square items-center rounded-[20px] bg-zinc-50">
         {/* The bg-zinc-50 helps prevent strobing on transparent images; see comment in progressive-image.tsx */}
         <ProgressiveImage
           src={getPrescriptionImage(prescription.name)}

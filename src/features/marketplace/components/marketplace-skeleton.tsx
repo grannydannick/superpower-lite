@@ -12,7 +12,7 @@ export const MarketplaceSkeleton = () => {
           .fill(0)
           .map((_, i) => (
             <Skeleton
-              className="aspect-square w-full rounded-[20px] md:aspect-[456/501] md:h-full"
+              className="aspect-square w-full rounded-[20px] md:h-full"
               key={i}
             />
           ))}
