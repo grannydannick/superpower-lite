@@ -7,7 +7,7 @@ const BUNDLED_DISCOUNTS = [
     quantity: 1,
     pricing: {
       GET_LABS: {
-        price: 29900,
+        price: 34900,
         originalPrice: 39900,
       },
       DEFAULT: {
@@ -27,7 +27,7 @@ const BUNDLED_DISCOUNTS = [
     quantity: 3,
     pricing: {
       GET_LABS: {
-        price: 87700,
+        price: 94900,
         originalPrice: 119700,
       },
       DEFAULT: {
