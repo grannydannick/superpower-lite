@@ -54,7 +54,6 @@ export const PhlebotomyScheduler = () => {
   }
 
   const onSlotUpdate = (selectedSlot: Slot | null, tz?: string) => {
-    console.log(selectedSlot, tz);
     if (selectedSlot) updateSlot(selectedSlot);
     if (tz) updateTz(tz);
   };

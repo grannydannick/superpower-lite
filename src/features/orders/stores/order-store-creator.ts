@@ -59,12 +59,14 @@ const initialState = {
 
 export const orderStoreCreator = (initProps: OrderStoreProps) => {
   const getInitialCollectionMethod = (): CollectionMethodType | null => {
-    if (
-      initProps.service.name === ADVISORY_CALL ||
-      initProps.service.name === GRAIL_GALLERI_MULTI_CANCER_TEST
-    ) {
+    if (initProps.service.name === ADVISORY_CALL) {
       return 'AT_HOME';
     }
+
+    if (initProps.service.name === GRAIL_GALLERI_MULTI_CANCER_TEST) {
+      return 'PHLEBOTOMY_KIT';
+    }
+
     return null;
   };
 
@@ -103,11 +105,12 @@ export const orderStoreCreator = (initProps: OrderStoreProps) => {
           const collectionMethod = get().collectionMethod;
           const informedConsent = get().informedConsent;
           const location = get().location;
+          const service = get().service;
           const addOnServiceIds = get().addOnIds;
 
           let appointmentType: AppointmentType | undefined = undefined;
 
-          if (location) {
+          if (location && service.supportsLabOrder) {
             if (!location.capabilities.includes('APPOINTMENT_SCHEDULING')) {
               appointmentType = 'UNSCHEDULED';
             } else {
@@ -144,7 +147,7 @@ export const orderStoreCreator = (initProps: OrderStoreProps) => {
 
           let appointmentType: AppointmentType | undefined = undefined;
 
-          if (location) {
+          if (location && service.supportsLabOrder) {
             if (!location.capabilities.includes('APPOINTMENT_SCHEDULING')) {
               appointmentType = 'UNSCHEDULED';
             } else {

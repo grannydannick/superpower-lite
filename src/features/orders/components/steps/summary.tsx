@@ -130,6 +130,7 @@ export function OrderSummary(): ReactNode {
                     : 'Creating new order — no existing credit found'}
                 </p>
                 <p>{tz && `TZ: ${tz}`}</p>
+                <p>{collectionMethod && `CM: ${collectionMethod}`}</p>
               </Body2>
             </div>
           )}

@@ -11,7 +11,6 @@ import { H3, H4 } from '@/components/ui/typography';
 import { useTestKitServices } from '@/features/onboarding/hooks/use-test-kits';
 import { useCreateBulkOrders } from '@/features/orders/api/create-bulk-orders';
 import { CreateOrderInput } from '@/features/orders/api/create-order';
-import { getDefaultCollectionMethod } from '@/features/orders/utils/get-default-collection-method';
 import { usePaymentMethodSelection } from '@/features/settings/hooks';
 import { CurrentPaymentMethodCard } from '@/features/users/components/current-payment-method-card';
 import { useAnalytics } from '@/hooks/use-analytics';
@@ -55,13 +54,11 @@ const CheckoutStepContent = () => {
     if (!user) return;
 
     const orders: CreateOrderInput[] = selectedServices.map((service) => {
-      const collectionMethod = getDefaultCollectionMethod(service);
       return {
         serviceId: service.id,
         location: {},
         timestamp: new Date().toISOString(),
         timezone: moment.tz.guess(),
-        method: collectionMethod ?? undefined,
         status: OrderStatus.draft,
         paymentMethodId: activePaymentMethod?.externalPaymentMethodId,
       };

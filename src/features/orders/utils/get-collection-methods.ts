@@ -1,5 +1,4 @@
 import { COLLECTION_METHODS, type CollectionOptionType } from '@/const';
-import { getInterpretedAtHomeMethod } from '@/features/orders/utils/get-interpreted-method';
 import { Address, HealthcareService } from '@/types/api';
 import { formatMoney } from '@/utils/format-money';
 
@@ -18,9 +17,6 @@ export const getCollectionMethods = (
   isAdmin = false,
   hasAtHomeCredit = false,
 ): CollectionOptionType[] => {
-  const state = primaryAddress?.state;
-  const INTERPRETED = getInterpretedAtHomeMethod(service, state);
-
   // helper to compute pricing text with customizable credit label
   const getPricingText = (
     option: CollectionOptionType,
@@ -50,18 +46,19 @@ export const getCollectionMethods = (
   };
 
   // helper
-  const createInterpretedOption = (
+  const createAtHomedOption = (
     overrides: Partial<CollectionOptionType> = {},
   ) => {
-    const interpretedOption = { ...INTERPRETED, ...overrides };
+    const atHomeOption = { ...COLLECTION_METHODS.AT_HOME, ...overrides };
+
     const pricingText = getPricingText(
-      interpretedOption,
+      atHomeOption,
       hasAtHomeCredit,
       'Prepaid',
     );
 
     return {
-      ...interpretedOption,
+      ...atHomeOption,
       pricingText,
     };
   };
@@ -71,7 +68,7 @@ export const getCollectionMethods = (
 
     // If user is admin, allow in-lab options regardless of state
     if (isAdmin) {
-      return [createInLabOption(), createInterpretedOption()];
+      return [createInLabOption(), createAtHomedOption()];
     }
 
     // For NY and NJ, only allow at-home appointments
@@ -82,7 +79,7 @@ export const getCollectionMethods = (
           description:
             'We currently support at-home appointments only in New York (NY) and New Jersey (NJ).',
         }),
-        createInterpretedOption(),
+        createAtHomedOption(),
       ];
     }
   }
@@ -93,9 +90,9 @@ export const getCollectionMethods = (
         disabled: true,
         description: "This service doesn't support in-lab",
       }),
-      createInterpretedOption(),
+      createAtHomedOption(),
     ];
   }
 
-  return [createInLabOption(), createInterpretedOption()];
+  return [createInLabOption(), createAtHomedOption()];
 };

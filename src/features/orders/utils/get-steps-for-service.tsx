@@ -121,6 +121,7 @@ export const getStepsFromService = (
           content: <HealthcareServiceDetails />,
         },
         { id: BookingStepID.INFORMED_CONSENT, content: <InformedConsent /> },
+        { id: BookingStepID.CONFIRM_ADDRESS, content: <ConfirmAddress /> },
         { id: BookingStepID.SCHEDULER, content: <PhlebotomyScheduler /> },
         { id: BookingStepID.SUMMARY, content: <OrderSummary /> },
         { id: BookingStepID.SUCCESS, content: <Success /> },
