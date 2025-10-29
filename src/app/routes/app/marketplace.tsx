@@ -1,6 +1,6 @@
 import { ContentLayout } from '@/components/layouts';
 import { Header } from '@/components/shared/header';
-import { MarketplaceOrdersButton } from '@/features/marketplace/components/marketplace-orders-button';
+import { MarketplaceCta } from '@/features/marketplace/components/marketplace-cta';
 import { MarketplaceTabs } from '@/features/marketplace/components/marketplace-tabs';
 
 export const MarketplaceRoute = () => {
@@ -11,7 +11,7 @@ export const MarketplaceRoute = () => {
     >
       <Header
         title="Marketplace"
-        callToAction={<MarketplaceOrdersButton />}
+        callToAction={<MarketplaceCta />}
         className="hidden md:flex"
       />
       <section id="marketplace" className="space-y-6">
