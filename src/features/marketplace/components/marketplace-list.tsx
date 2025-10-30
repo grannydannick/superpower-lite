@@ -10,7 +10,6 @@ import { getRecommendedPrescriptions } from '@/features/prescriptions/utils/get-
 import { ServiceCard } from '@/features/services/components/service-card';
 import { ServiceCategory } from '@/features/services/components/service-category';
 import { getRecommendedServices } from '@/features/services/utils/get-recommended-services';
-import { isAdvisoryCall } from '@/features/services/utils/is-advisory-call';
 import { SupplementCard } from '@/features/supplements/components/supplement-card';
 import { SupplementCategory } from '@/features/supplements/components/supplement-category';
 import { getRecomendedSupplements } from '@/features/supplements/utils/get-recommended-supplements';
@@ -46,15 +45,9 @@ export const MarketplaceList = ({
     resultsSubtitle,
   } = getMarketplaceSearchMeta(query, filter);
 
-  const filteredServices = (services ?? [])
-    .filter((service) =>
-      matchesMarketplaceQuery(service, filter, normalizedQuery),
-    )
-    .filter((service) => {
-      if (!isSearching) return true;
-
-      return !isAdvisoryCall(service);
-    });
+  const filteredServices = (services ?? []).filter((service) =>
+    matchesMarketplaceQuery(service, filter, normalizedQuery),
+  );
 
   const filteredSupplements = (supplements ?? []).filter((product) =>
     matchesMarketplaceQuery(product, filter, normalizedQuery),

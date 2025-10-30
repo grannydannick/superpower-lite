@@ -3,7 +3,6 @@ import { MarketplaceSkeleton } from '@/features/marketplace/components/marketpla
 import { getMarketplaceSearchMeta } from '@/features/marketplace/helper/get-marketplace-search-meta';
 import { matchesMarketplaceQuery } from '@/features/marketplace/utils/matches-marketplace-query';
 import { getRecommendedServices } from '@/features/services/utils/get-recommended-services';
-import { isAdvisoryCall } from '@/features/services/utils/is-advisory-call';
 import { HealthcareService } from '@/types/api';
 
 import { ServiceCategory } from './service-category';
@@ -33,15 +32,9 @@ export const ServicesList = ({
     subtitleOverride,
   } = getMarketplaceSearchMeta(query, filter);
 
-  const filteredServices = services
-    .filter((service) =>
-      matchesMarketplaceQuery(service, filter, normalizedQuery),
-    )
-    .filter((service) => {
-      if (!isSearching) return true;
-
-      return !isAdvisoryCall(service);
-    });
+  const filteredServices = services.filter((service) =>
+    matchesMarketplaceQuery(service, filter, normalizedQuery),
+  );
 
   let sections: {
     title: string;
@@ -61,9 +54,6 @@ export const ServicesList = ({
     }
   } else {
     const recommended = getRecommendedServices(filteredServices);
-    const items = filteredServices.filter(
-      (service) => !isAdvisoryCall(service),
-    );
 
     sections = [
       {
@@ -73,11 +63,11 @@ export const ServicesList = ({
       },
       {
         title: 'Blood test',
-        services: items.filter((service) => service.phlebotomy),
+        services: filteredServices.filter((service) => service.phlebotomy),
       },
       {
         title: 'Other tests',
-        services: items.filter((service) => !service.phlebotomy),
+        services: filteredServices.filter((service) => !service.phlebotomy),
       },
     ].filter(({ services }) => services.length > 0);
   }
