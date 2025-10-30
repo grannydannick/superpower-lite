@@ -1,6 +1,7 @@
-import { CircleCheckBig } from 'lucide-react';
+import { AlertCircleIcon, CircleCheckBig } from 'lucide-react';
 import { ReactNode, useState } from 'react';
 
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from '@/components/ui/sonner';
@@ -17,6 +18,7 @@ import { usePaymentMethodSelection } from '@/features/settings/hooks';
 import { CurrentPaymentMethodCard } from '@/features/users/components/current-payment-method-card';
 import { useStepper } from '@/lib/stepper';
 import { cn } from '@/lib/utils';
+import { Order } from '@/types/api';
 import { formatMoney } from '@/utils/format-money';
 import { getServiceImage } from '@/utils/service';
 
@@ -98,7 +100,7 @@ export function OrderSummary(): ReactNode {
   };
 
   const updateOrderFn = async (): Promise<void> => {
-    if (!credit) {
+    if (!credit || credit.serviceId !== service.id) {
       toast('No orderId found for previous order. Contact support.');
       return;
     }
@@ -119,21 +121,21 @@ export function OrderSummary(): ReactNode {
         className={cn('space-y-8', HEALTHCARE_SERVICE_DIALOG_CONTAINER_STYLE)}
       >
         <div className="space-y-1">
-          <H2>Order Summary</H2>
           {process.env.NODE_ENV === 'development' && (
             <div className="mt-3 rounded-lg border border-pink-300 bg-pink-50 p-3">
               <Body2 className="text-pink-800">
                 <strong>DEBUG (not visibile in prod)</strong>
                 <p>
-                  {credit
-                    ? `Using existing draft order (${credit.id})`
-                    : 'Creating new order — no existing credit found'}
+                  {credit?.serviceId === service.id
+                    ? `Updating order ${credit.id}`
+                    : 'Fresh order'}
                 </p>
                 <p>{tz && `TZ: ${tz}`}</p>
                 <p>{collectionMethod && `CM: ${collectionMethod}`}</p>
               </Body2>
             </div>
           )}
+          <H2>Order Summary</H2>
           <Body1 className="text-secondary">
             Confirm your order details below.
           </Body1>
@@ -146,6 +148,7 @@ export function OrderSummary(): ReactNode {
         ) : null}
         {defaultPaymentMethod && !isQueryLoading ? (
           <div className="space-y-6 md:space-y-10">
+            <CreateOrderCreditIssueNotice credit={credit} />
             <CreateOrderSummaryItem price={price} />
             <OrderAppointmentDetails
               collectionMethod={collectionMethod ?? undefined}
@@ -200,7 +203,9 @@ export function OrderSummary(): ReactNode {
             Select HSA/FSA card
           </Button>
           <Button
-            onClick={credit ? updateOrderFn : createOrderFn}
+            onClick={
+              credit?.serviceId === service.id ? updateOrderFn : createOrderFn
+            }
             className="w-full"
             disabled={
               isMutationLoading ||
@@ -254,3 +259,24 @@ function CreateOrderSummaryItem({
     </div>
   );
 }
+
+const CreateOrderCreditIssueNotice = ({ credit }: { credit?: Order }) => {
+  const service = useOrder((s) => s.service);
+
+  if (credit && service.id !== credit?.serviceId) {
+    return (
+      <Alert variant="destructive">
+        <AlertCircleIcon className="size-4" />
+        <AlertTitle>
+          Your blood panel is available to book in your primary state
+        </AlertTitle>
+        <AlertDescription>
+          Looks like you are trying to book in a state with a different lab
+          partner. Please contact concierge for help.
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
+  return null;
+};

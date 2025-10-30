@@ -1,5 +1,5 @@
 import { COLLECTION_METHODS, type CollectionOptionType } from '@/const';
-import { Address, HealthcareService } from '@/types/api';
+import { Address, HealthcareService, Order } from '@/types/api';
 import { formatMoney } from '@/utils/format-money';
 
 /**
@@ -8,14 +8,14 @@ import { formatMoney } from '@/utils/format-money';
  * @param {HealthcareService} service - The healthcare service for which to get the collection methods.
  * @param primaryAddress - Primary address of user
  * @param isAdmin - Whether the user is an admin
- * @param hasAtHomeCredit - Whether the user has an AT_HOME credit from a draft order
+ * @param credit - Existing credit
  * @returns {CollectionOptionType[]} An array of available collection methods.
  */
 export const getCollectionMethods = (
   service: HealthcareService,
   primaryAddress?: Address,
+  credit?: Order,
   isAdmin = false,
-  hasAtHomeCredit = false,
 ): CollectionOptionType[] => {
   // helper to compute pricing text with customizable credit label
   const getPricingText = (
@@ -33,11 +33,7 @@ export const getCollectionMethods = (
   // helper function to create collection method options with proper pricing
   const createInLabOption = (overrides: Partial<CollectionOptionType> = {}) => {
     const inLabOption = { ...COLLECTION_METHODS.IN_LAB, ...overrides };
-    const pricingText = getPricingText(
-      inLabOption,
-      hasAtHomeCredit,
-      'Included',
-    );
+    const pricingText = getPricingText(inLabOption, !!credit, 'Included');
 
     return {
       ...inLabOption,
@@ -53,7 +49,7 @@ export const getCollectionMethods = (
 
     const pricingText = getPricingText(
       atHomeOption,
-      hasAtHomeCredit,
+      credit?.collectionMethod === 'AT_HOME',
       'Prepaid',
     );
 

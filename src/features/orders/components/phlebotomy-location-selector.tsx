@@ -22,9 +22,8 @@ export const CreateOrderPhlebotomyLocationSelector = () => {
   } = useOrder((s) => s);
   const { data: user } = useUser();
   const { checkAdminActorAccess } = useAuthorization();
-  const { hasCredit } = useHasCredit({
+  const { credit } = useHasCredit({
     serviceName: service.name,
-    collectionMethod: 'AT_HOME',
   });
   const isAdmin = checkAdminActorAccess();
 
@@ -39,9 +38,8 @@ export const CreateOrderPhlebotomyLocationSelector = () => {
 
   // Check if user has an AT_HOME credit from a draft order
   const options = useMemo(
-    () =>
-      getCollectionMethods(service, user?.primaryAddress, isAdmin, hasCredit),
-    [service, user?.primaryAddress, isAdmin, hasCredit],
+    () => getCollectionMethods(service, user?.primaryAddress, credit, isAdmin),
+    [service, user?.primaryAddress, isAdmin, credit],
   );
 
   return (

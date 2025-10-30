@@ -5,6 +5,7 @@ import {
   VideoIcon,
   ArrowRight,
   TestTube,
+  FlaskConical,
 } from 'lucide-react';
 import moment from 'moment';
 import React, { useMemo } from 'react';
@@ -26,8 +27,10 @@ import {
   Slot,
   HealthcareService,
   PhlebotomyLocation,
+  ServiceLabType,
 } from '@/types/api';
 import { isIOS } from '@/utils/browser-detection';
+import { capitalize } from '@/utils/format';
 
 interface OrderAppointmentDetailsProps {
   slot?: Slot;
@@ -39,6 +42,7 @@ interface OrderAppointmentDetailsProps {
   isPhlebotomy?: boolean;
   supportsLabOrder?: boolean;
   selectedPanels?: string[];
+  performer?: ServiceLabType;
 }
 
 function OrderFileLinkFromFiles({ orderId }: { orderId: string }) {
@@ -59,7 +63,7 @@ function OrderFileLinkFromFiles({ orderId }: { orderId: string }) {
   if (isLoading || !file) return null;
 
   return (
-    <div className="flex gap-4 py-6">
+    <div className="flex gap-4">
       <div className="space-y-1">
         <div className="flex items-center gap-2">
           <PdfFileIcon className="-mt-0.5 size-4 text-vermillion-900" />
@@ -89,6 +93,7 @@ export function OrderAppointmentDetails({
   isPhlebotomy,
   supportsLabOrder,
   selectedPanels,
+  performer,
 }: OrderAppointmentDetailsProps): React.ReactNode {
   if (!location?.address) {
     return null;
@@ -131,86 +136,104 @@ export function OrderAppointmentDetails({
   })();
 
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       <H4>{isPhlebotomy ? 'Appointment details' : 'Details'}</H4>
-
-      {orderId ? <OrderFileLinkFromFiles orderId={orderId} /> : null}
-      {isPhlebotomy && slot && timezone ? (
-        <div className="flex gap-4 py-6">
-          <div className="flex flex-1 flex-col sm:flex-row sm:items-center sm:gap-4">
+      <div className="flex flex-col gap-4">
+        {orderId ? <OrderFileLinkFromFiles orderId={orderId} /> : null}
+        {performer ? (
+          <div className="flex gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <Calendar className="-mt-0.5 size-4 text-secondary" />
-                <Body1 className="text-secondary">
-                  {collectionMethod === 'IN_LAB' ? 'In lab' : 'At home'}{' '}
-                  appointment
-                </Body1>
+                <FlaskConical className="-mt-0.5 size-4 text-secondary" />
+                <Body1 className="text-secondary">Lab provider</Body1>
               </div>
-              <div className="space-y-2 pl-6">
-                <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center">
-                  <Body1>
-                    {moment(slot.start).tz(timezone).format('MMM Do, YYYY')}
-                  </Body1>
-                  <DotIcon
-                    fill="currentColor"
-                    className="hidden text-zinc-300 sm:block"
-                  />
-                  <Body1>
-                    {moment(slot.start).tz(timezone).format('h:mma')}-{' '}
-                    {moment(slot.end).tz(timezone).format('h:mma z')}
-                  </Body1>
-                </div>
-                {renderAddToCalendar()}
+              <div className="pl-6">
+                <Body1>{capitalize(performer)}</Body1>
               </div>
             </div>
           </div>
-        </div>
-      ) : null}
-      {location?.address ? (
-        <div className="flex gap-4 py-6">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              {collectionMethodIcon}
-              <Body1 className="text-secondary">{collectionMethodLabel}</Body1>
-            </div>
-            <div className="pl-6">
-              <div>
+        ) : null}
+        {isPhlebotomy && slot && timezone ? (
+          <div className="flex gap-4">
+            <div className="flex flex-1 flex-col sm:flex-row sm:items-center sm:gap-4">
+              <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <Body1>{location.address.line.join(' ')}</Body1>
-                  {!location.capabilities.includes('APPOINTMENT_SCHEDULING') ? (
-                    <Badge variant="vermillion">WALK IN</Badge>
-                  ) : null}
+                  <Calendar className="-mt-0.5 size-4 text-secondary" />
+                  <Body1 className="text-secondary">
+                    {collectionMethod === 'IN_LAB' ? 'In lab' : 'At home'}{' '}
+                    appointment
+                  </Body1>
                 </div>
-                <Body1>
-                  {location.address.city}, {location.address.state},{' '}
-                  {location.address.postalCode}
-                </Body1>
+                <div className="space-y-2 pl-6">
+                  <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center">
+                    <Body1>
+                      {moment(slot.start).tz(timezone).format('MMM Do, YYYY')}
+                    </Body1>
+                    <DotIcon
+                      fill="currentColor"
+                      className="hidden text-zinc-300 sm:block"
+                    />
+                    <Body1>
+                      {moment(slot.start).tz(timezone).format('h:mma')}-{' '}
+                      {moment(slot.end).tz(timezone).format('h:mma z')}
+                    </Body1>
+                  </div>
+                  {renderAddToCalendar()}
+                </div>
               </div>
-              {location?.address && method !== 'AT_HOME' && (
-                <div className="mt-2">
-                  <button
-                    type="button"
-                    className="flex items-center gap-1 text-sm font-medium text-vermillion-900 transition-all duration-200 hover:opacity-75"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      const mapType = isIOS() ? 'apple' : 'google';
-                      openInMaps(location, mapType);
-                    }}
-                  >
-                    <>
-                      View directions{' '}
-                      <ArrowRight className="mb-0.5 size-[15px]" />
-                    </>
-                  </button>
-                </div>
-              )}
             </div>
           </div>
-        </div>
-      ) : null}
-      {selectedPanels && selectedPanels.length > 0 ? (
-        <OrderSelectedPanels selectedPanels={selectedPanels} />
-      ) : null}
+        ) : null}
+        {location?.address ? (
+          <div className="flex gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                {collectionMethodIcon}
+                <Body1 className="text-secondary">
+                  {collectionMethodLabel}
+                </Body1>
+              </div>
+              <div className="pl-6">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Body1>{location.address.line.join(' ')}</Body1>
+                    {!location.capabilities.includes(
+                      'APPOINTMENT_SCHEDULING',
+                    ) ? (
+                      <Badge variant="vermillion">WALK IN</Badge>
+                    ) : null}
+                  </div>
+                  <Body1>
+                    {location.address.city}, {location.address.state},{' '}
+                    {location.address.postalCode}
+                  </Body1>
+                </div>
+                {location?.address && method !== 'AT_HOME' && (
+                  <div className="mt-2">
+                    <button
+                      type="button"
+                      className="flex items-center gap-1 text-sm font-medium text-vermillion-900 transition-all duration-200 hover:opacity-75"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const mapType = isIOS() ? 'apple' : 'google';
+                        openInMaps(location, mapType);
+                      }}
+                    >
+                      <>
+                        View directions{' '}
+                        <ArrowRight className="mb-0.5 size-[15px]" />
+                      </>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : null}
+        {selectedPanels && selectedPanels.length > 0 ? (
+          <OrderSelectedPanels selectedPanels={selectedPanels} />
+        ) : null}
+      </div>
     </div>
   );
 }
@@ -237,7 +260,7 @@ const OrderSelectedPanels = ({
   }, [servicesQuery.data?.services, servicesQuery.isLoading, selectedPanels]);
 
   return (
-    <div className="flex gap-4 py-6">
+    <div className="flex gap-4">
       <div className="space-y-1">
         <div className="flex items-center gap-2">
           <TestTube className="-mt-0.5 size-4 text-secondary" />

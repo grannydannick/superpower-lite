@@ -1,27 +1,22 @@
 import { useOrders } from '@/features/orders/api';
-import { CollectionMethodType, OrderStatus } from '@/types/api';
 
 interface UseHasCreditProps {
   serviceName: string;
-  collectionMethod?: CollectionMethodType;
 }
 
-export const useHasCredit = ({
-  serviceName,
-  collectionMethod,
-}: UseHasCreditProps) => {
+/**
+ *
+ * @param serviceName - Name of the service
+ * @param serviceId - Optional serviceId for strict checks
+ * @param collectionMethod - Optional collectionMethod for strict checks
+ * @returns
+ */
+export const useHasCredit = ({ serviceName }: UseHasCreditProps) => {
   const ordersQuery = useOrders({});
 
-  const existingDraftOrder = ordersQuery.data?.orders?.find((o) => {
-    if (o.status !== OrderStatus.draft) return false;
-    if (o.serviceName !== serviceName) return false;
-    if (
-      collectionMethod !== undefined &&
-      o.collectionMethod !== collectionMethod
-    )
-      return false;
-    return true;
-  });
+  const existingDraftOrder = ordersQuery.data?.orders?.find(
+    (o) => o.serviceName === serviceName,
+  );
 
   return {
     isCreditLoading: ordersQuery.isLoading,

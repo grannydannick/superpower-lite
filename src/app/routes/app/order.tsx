@@ -29,7 +29,7 @@ export const OrderRoute = () => {
     (s) => s.id === order?.serviceId,
   );
 
-  if (!order || !service) {
+  if (!order) {
     return <NotFoundRoute />;
   }
 
