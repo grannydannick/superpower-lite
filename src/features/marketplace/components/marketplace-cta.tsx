@@ -9,7 +9,7 @@ import { useGroupedOrders } from '@/features/orders/hooks/use-grouped-orders';
 import { cn } from '@/lib/utils';
 
 const SUBSCRIPTIONS_URL =
-  'https://products.superpower.com/apps/retextion#/login';
+  'https://products.superpower.com/apps/retextion/login';
 
 export const MarketplaceCta = () => {
   const [searchParams] = useSearchParams();
