@@ -22,6 +22,7 @@ import {
 import { Body1, Body2, H2, H4 } from '@/components/ui/typography';
 import { useProducts } from '@/features/supplements/api';
 import { useAnalytics } from '@/hooks/use-analytics';
+import { FeatureFlags } from '@/lib/posthog';
 
 import { CARE_PLAN_ACTIVITY_TYPE_EXTENSION } from '../../const/extension-types';
 import { useCarePlan } from '../../context/care-plan-context';
@@ -70,7 +71,7 @@ export const ProtocolSection = () => {
 
   // Check feature flag for prescription recommendations
   const isPrescriptionRecommendationsEnabled = posthog?.isFeatureEnabled(
-    'aiap-rx-experimental-recommendations',
+    FeatureFlags.AIAP_RX_EXPERIMENTAL_RECOMMENDATIONS,
   );
 
   const {

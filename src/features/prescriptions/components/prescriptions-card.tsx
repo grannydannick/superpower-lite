@@ -1,6 +1,9 @@
+import { usePostHog } from 'posthog-js/react';
+
 import { Button } from '@/components/ui/button';
 import { ProgressiveImage } from '@/components/ui/progressive-image';
 import { Body1, Body2, Body3, H4 } from '@/components/ui/typography';
+import { FeatureFlags } from '@/lib/posthog';
 import { Rx } from '@/types/api';
 import { getPrescriptionImage, navigateToProduct } from '@/utils/prescription';
 
@@ -14,6 +17,10 @@ export const PrescriptionCard = ({ prescription }: { prescription: Rx }) => {
 };
 
 const DesktopCard = ({ prescription }: { prescription: Rx }) => {
+  const posthog = usePostHog();
+
+  const isRxV0Enabled = posthog?.isFeatureEnabled(FeatureFlags.RX_V0);
+
   const renderButton = () => {
     return (
       <Button
@@ -28,7 +35,11 @@ const DesktopCard = ({ prescription }: { prescription: Rx }) => {
   return (
     <button
       className="group relative hidden cursor-pointer flex-col gap-4 overflow-hidden sm:flex"
-      onClick={() => navigateToProduct(prescription.name)}
+      onClick={() =>
+        isRxV0Enabled
+          ? window.open(prescription.url as string, '_blank')
+          : navigateToProduct(prescription.name)
+      }
     >
       <div className="relative flex aspect-square items-center rounded-[20px] bg-zinc-50">
         {/* The bg-zinc-50 helps prevent strobing on transparent images; see comment in progressive-image.tsx */}
@@ -54,10 +65,18 @@ const DesktopCard = ({ prescription }: { prescription: Rx }) => {
 };
 
 const MobileCard = ({ prescription }: { prescription: Rx }) => {
+  const posthog = usePostHog();
+
+  const isRxV0Enabled = posthog?.isFeatureEnabled(FeatureFlags.RX_V0);
+
   return (
     <button
       className="flex flex-col gap-2 sm:hidden"
-      onClick={() => navigateToProduct(prescription.name)}
+      onClick={() =>
+        isRxV0Enabled
+          ? window.open(prescription.url as string, '_blank')
+          : navigateToProduct(prescription.name)
+      }
     >
       <ProgressiveImage
         src={getPrescriptionImage(prescription.name)}

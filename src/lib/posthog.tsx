@@ -50,3 +50,8 @@ export function PHProvider({
 
   return <PostHogProvider client={phClient}>{children}</PostHogProvider>;
 }
+
+export const FeatureFlags = {
+  AIAP_RX_EXPERIMENTAL_RECOMMENDATIONS: 'aiap-rx-experimental-recommendations',
+  RX_V0: 'rx-v0',
+};

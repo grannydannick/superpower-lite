@@ -14,6 +14,7 @@ import {
 import { Body1, Body2, H3, H4 } from '@/components/ui/typography';
 import { getRxPricing } from '@/const/rx-pricing';
 import { useProducts } from '@/features/supplements/api';
+import { FeatureFlags } from '@/lib/posthog';
 import { cn } from '@/lib/utils';
 
 import {
@@ -41,7 +42,7 @@ export function PlanGoalActivities({ goal }: PlanGoalActivitiesProps) {
 
   // Feature flag to control prescription recommendations visibility
   const isPrescriptionRecommendationsEnabled = posthog?.isFeatureEnabled(
-    'aiap-rx-experimental-recommendations',
+    FeatureFlags.AIAP_RX_EXPERIMENTAL_RECOMMENDATIONS,
   );
 
   const goalId = goal.id;
