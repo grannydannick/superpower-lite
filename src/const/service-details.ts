@@ -60,7 +60,7 @@ export const SERVICE_DETAILS: Record<string, ServiceDetails> = {
       {
         question: 'Why is this test important?',
         answer:
-          "Proactive laboratory testing can provide targeted insight into you body's current health status, identifying areas of optimal and suboptimal physiologic function. The advanced panel dives into further areas of health that are not covered in our baseline panel, including heavy metal testing, certain key nutrients like omega fatty acids, and even critical hormones like cortisol that may be causing you stress. Furthermore, this test can serve to track how your body is responding to your Superpower action plan.",
+          "Proactive laboratory testing can provide targeted insight into you body's current health status, identifying areas of optimal and suboptimal physiologic function. The advanced panel dives into further areas of health that are not covered in our baseline panel, including in-depth hormone testing, genetic heart risk and nutrient status. Furthermore, this test can serve to track how your body is responding to your Superpower action plan.",
       },
       {
         question: 'Test Process',
