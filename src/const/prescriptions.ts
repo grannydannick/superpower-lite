@@ -7,7 +7,7 @@ export const OXYTOCIN_BREMELANOTIDE_TADALAFIL_TROCHES =
   'Oxytocin/Bremelanotide/Tadalafil Troches';
 export const TADALAFIL = 'Tadalafil';
 export const METFORMIN = 'Metformin';
-export const TRETINOIN = 'Tretinoin';
+export const TRETINOIN = 'Tretinoin / Aloe Vera';
 export const HCG = 'hCG';
 export const LOW_DOSE_NALTREXONE = 'Low Dose Naltrexone';
 export const VITAMIN_B12_INJECTION = 'Vitamin B12 Injection';
