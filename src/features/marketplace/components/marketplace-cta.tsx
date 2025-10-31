@@ -5,16 +5,31 @@ import { Subscriptions } from '@/components/icons/marketplace/subscriptions';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Body1 } from '@/components/ui/typography/body1/body1';
+import { SUPPLEMENTS_MARKETPLACE_URL } from '@/const/marketplaces';
 import { useGroupedOrders } from '@/features/orders/hooks/use-grouped-orders';
+import { useGetMultipassUrl } from '@/features/supplements/api';
+import { useAnalytics } from '@/hooks/use-analytics';
 import { cn } from '@/lib/utils';
-
-const SUBSCRIPTIONS_URL =
-  'https://products.superpower.com/apps/retextion/login';
 
 export const MarketplaceCta = () => {
   const [searchParams] = useSearchParams();
   const isOrdersTab = searchParams.get('tab') === 'orders';
   const { buckets, groupedOrdersLoading } = useGroupedOrders();
+  const { data: multipassData, isLoading } = useGetMultipassUrl();
+  const { track } = useAnalytics();
+
+  // TODO: BE logic to handle proper url: "https://products.superpower.com/apps/retextion/login"
+
+  const handleMarketplaceClick = () => {
+    track('click_products_marketplace');
+
+    const fallbackUrl = !isLoading ? SUPPLEMENTS_MARKETPLACE_URL : undefined;
+    const targetUrl = multipassData?.url ?? fallbackUrl;
+
+    if (!targetUrl) return;
+
+    window.open(targetUrl, '_blank', 'noopener,noreferrer');
+  };
 
   if (groupedOrdersLoading)
     return (
@@ -31,16 +46,14 @@ export const MarketplaceCta = () => {
 
   return (
     <div className="flex items-center gap-4">
-      <Button asChild variant="ghost" className="p-0">
-        <a
-          href={SUBSCRIPTIONS_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-primary [&>*]:text-primary [&>*]:transition-colors [&>*]:duration-150 [&>*]:ease-in-out [&>*]:hover:text-secondary"
-        >
-          <Subscriptions aria-hidden className="size-4" />
-          <Body1 as="span">Manage Subscriptions</Body1>
-        </a>
+      <Button
+        variant="ghost"
+        className="inline-flex items-center gap-2 p-0 text-primary [&>*]:text-primary [&>*]:transition-colors [&>*]:duration-150 [&>*]:ease-in-out [&>*]:hover:text-secondary"
+        onClick={handleMarketplaceClick}
+        type="button"
+      >
+        <Subscriptions aria-hidden className="size-4" />
+        <Body1 as="span">Manage Subscriptions</Body1>
       </Button>
       <Button asChild variant="ghost" className="p-0">
         <NavLink
