@@ -6,12 +6,14 @@ import {
 } from '@medplum/fhirtypes';
 import { useEffect, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Body1 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 
+import { RX_CONSENT_PAYMENT_LINKID } from './const/special-linkids';
 import { QuestionnaireErrorWrapper } from './questionnaire-error-wrapper';
 import { getCurrentAnswer } from './questionnaire-types/common';
 import {
@@ -140,6 +142,50 @@ export const QuestionnaireFormItem = ({
       { type: 'QuestionnaireItemInitial', value: initial },
       'value',
     );
+
+  // Special case: render a single confirm action as a submit button
+  const isConsentPaymentSingleConfirm =
+    item.linkId === RX_CONSENT_PAYMENT_LINKID &&
+    Array.isArray(item.answerOption) &&
+    item.answerOption.length === 1 &&
+    !!item.answerOption[0].valueString;
+
+  if (isConsentPaymentSingleConfirm) {
+    const confirmLabel = item.answerOption?.[0].valueString as string;
+    return (
+      <QuestionnaireErrorWrapper isError={localError}>
+        <Button
+          type="button"
+          className="w-full"
+          // The following logic prevents race condition between consent payment answer being set and the form being submitted (resulting in form requiring >1 click to submit)
+          onClick={(e) => {
+            // 1) set the answer
+            onChangeAnswer({ valueString: confirmLabel });
+
+            // 2) submit on the next microtask so the store has the new answer
+            const formEl =
+              (e.currentTarget.closest('form') as HTMLFormElement | null) ??
+              (document.querySelector('form') as HTMLFormElement | null);
+
+            queueMicrotask(() => {
+              if (!formEl) return;
+              const maybeRequestSubmit = (formEl as HTMLFormElement)
+                .requestSubmit;
+              if (typeof maybeRequestSubmit === 'function') {
+                (formEl as HTMLFormElement).requestSubmit();
+              } else {
+                formEl.dispatchEvent(
+                  new Event('submit', { bubbles: true, cancelable: true }),
+                );
+              }
+            });
+          }}
+        >
+          {confirmLabel}
+        </Button>
+      </QuestionnaireErrorWrapper>
+    );
+  }
 
   // Helpers to extract values and check if we have a rating scale
   const hasAnswerOptions = item.answerOption && item.answerOption.length > 0;

@@ -58,10 +58,13 @@ export function RadioButtons({
   const answerLinkId = getCurrentRadioAnswer(formattedOptions, currentAnswer);
 
   const nextStep = useQuestionnaireStore((s) => s.nextStep);
-  const currentQuestion = useQuestionnaireStore((s) => s.currentQuestion);
+  const getCurrentQuestion = useQuestionnaireStore((s) => s.getCurrentQuestion);
 
   const autoAdvance = useCallback(
     (timeout = 0) => {
+      // Get fresh current question from store (calls getAllQuestions() each time)
+      const currentQuestion = getCurrentQuestion();
+
       // Check if the current question/page is a group type with multiple questions/items
       const isGroupPage =
         currentQuestion?.type === 'group' &&
@@ -80,7 +83,7 @@ export function RadioButtons({
         setSelectedAnswer(null);
       }, timeout);
     },
-    [nextStep, currentQuestion],
+    [nextStep, getCurrentQuestion],
   );
 
   const handleSelect = useCallback(

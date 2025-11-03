@@ -9,8 +9,18 @@ import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Body1, Body2, H2 } from '@/components/ui/typography';
+// TODO: move User address components to a shared location so i don't have to do this hack.
+// it's quite a lift so if someone could do this it would be greatly appreciated <3 ~A.S 11-03-2025
+// eslint-disable-next-line import/no-restricted-paths
+import { CurrentAddressCard } from '@/features/users/components/current-address-card';
 import { cn } from '@/lib/utils';
 
+import {
+  RX_CONSENT_PAYMENT_LINKID,
+  RX_SAFETY_ADDRESS_LINKID,
+  RX_SAFETY_INTRO_LINKID,
+} from './const/special-linkids';
+import { SUPERPOWER_QUESTIONNAIRE_DESCRIPTION_EXTENSION_URL } from './const/system-urls';
 import { QuestionnaireFormRepeatableItem } from './questionnaire-repeatable-item';
 import { useQuestionnaireStore } from './stores/questionnaire-store';
 import {
@@ -80,11 +90,10 @@ export const QuestionnaireQuestion = ({
 
   // If https://superpower.com/fhir/StructureDefinition/questionnaire-description is available in the extension array, use it as the description
   const description = item.extension?.find(
-    (e) =>
-      e.url ===
-      'https://superpower.com/fhir/StructureDefinition/questionnaire-description',
+    (e) => e.url === SUPERPOWER_QUESTIONNAIRE_DESCRIPTION_EXTENSION_URL,
   )?.valueString;
-  const isRxSafetyIntroQuestion = item.linkId === 'safety.intro';
+  const isRxSafetyIntroQuestion = item.linkId === RX_SAFETY_INTRO_LINKID;
+  const isRxSafetyAddressQuestion = item.linkId === RX_SAFETY_ADDRESS_LINKID;
 
   const handleNextStep = () => {
     if (hasValidationErrors) {
@@ -183,11 +192,19 @@ export const QuestionnaireQuestion = ({
     return (
       <div className="space-y-6">
         <div className="mb-10">
-          <Body1 className={cn('text-2xl', description ? 'mb-3' : 'mb-5')}>
-            {item.text}
-          </Body1>
+          <Body1
+            className={cn('text-2xl', description ? 'mb-3' : 'mb-5')}
+            // We need this to render hyperlinks
+            // I don't see a case for XSS because the only way to edit this is in Medplum
+            dangerouslySetInnerHTML={{ __html: item.text ?? '' }}
+          />
           {description && (
-            <Body2 className="text-secondary">{description}</Body2>
+            <Body2
+              className="text-secondary"
+              // We need this to render hyperlinks
+              // I don't see a case for XSS because the only way to edit this is in Medplum
+              dangerouslySetInnerHTML={{ __html: description }}
+            />
           )}
         </div>
         <div
@@ -244,14 +261,22 @@ export const QuestionnaireQuestion = ({
           'mb-8 text-sm text-zinc-500',
           isRxSafetyIntroQuestion && 'text-base text-primary',
         )}
-      >
-        {item.text}
-      </Body1>
+        // We need this to render hyperlinks
+        // I don't see a case for XSS because the only way to edit this is in Medplum
+        dangerouslySetInnerHTML={{ __html: item.text ?? '' }}
+      />
       {isRxSafetyIntroQuestion && (
         <img src="/onboarding/rx.webp" alt="Superpower experience preview" />
       )}
+      {/* NOTE: we don't want members editing address mid-Rx questionnaire */}
+      {isRxSafetyAddressQuestion && <CurrentAddressCard disableEdit={true} />}
       {description && (
-        <Body2 className="mb-10 text-secondary">{description}</Body2>
+        <Body2
+          className="mb-10 text-secondary"
+          // We need this to render hyperlinks
+          // I don't see a case for XSS because the only way to edit this is in Medplum
+          dangerouslySetInnerHTML={{ __html: description }}
+        />
       )}
     </div>
   );
@@ -279,13 +304,15 @@ export const QuestionnaireQuestion = ({
           </button>
         )}
         {isLastQuestion ? (
-          <Button
-            type="submit"
-            className="ml-auto w-full md:w-[108px]"
-            disabled={disableAdvance}
-          >
-            Submit
-          </Button>
+          item.linkId === RX_CONSENT_PAYMENT_LINKID ? null : (
+            <Button
+              type="submit"
+              className="ml-auto w-full md:w-[108px]"
+              disabled={disableAdvance}
+            >
+              Submit
+            </Button>
+          )
         ) : (
           <div
             className={cn(

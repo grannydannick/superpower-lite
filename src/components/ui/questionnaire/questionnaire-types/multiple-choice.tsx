@@ -8,11 +8,9 @@ import { AnimatedCheckbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
+import { OPTION_EXCLUSIVE_EXTENSION_URL } from '../const/system-urls';
 import { QuestionnaireErrorWrapper } from '../questionnaire-error-wrapper';
 import { useQuestionnaireStore } from '../stores/questionnaire-store';
-
-const OPTION_EXCLUSIVE_EXTENSION =
-  'http://hl7.org/fhir/StructureDefinition/questionnaire-optionExclusive';
 
 interface MultipleChoiceProps {
   item: QuestionnaireItem;
@@ -24,7 +22,7 @@ interface MultipleChoiceProps {
 function hasOptionExclusiveExtension(option: any): boolean {
   return option.extension?.some(
     (ext: any) =>
-      ext.url === OPTION_EXCLUSIVE_EXTENSION && ext.valueBoolean === true,
+      ext.url === OPTION_EXCLUSIVE_EXTENSION_URL && ext.valueBoolean === true,
   );
 }
 
@@ -58,10 +56,13 @@ export function MultipleChoice({
   const activeStep = useQuestionnaireStore((s) => s.activeStep);
   const questionnaire = useQuestionnaireStore((s) => s.questionnaire);
   const getNumberOfPages = useQuestionnaireStore((s) => s.getNumberOfPages);
-  const currentQuestion = useQuestionnaireStore((s) => s.currentQuestion);
+  const getCurrentQuestion = useQuestionnaireStore((s) => s.getCurrentQuestion);
   const isLastQuestion = activeStep === getNumberOfPages() - 1;
 
   const autoAdvance = () => {
+    // Get fresh current question from store (calls getAllQuestions() each time)
+    const currentQuestion = getCurrentQuestion();
+
     // Check if the current question/page is a group type with multiple questions/items
     const isGroupPage =
       currentQuestion?.type === 'group' &&
@@ -73,6 +74,7 @@ export function MultipleChoice({
     if (isGroupPage) {
       return;
     }
+
     const currentPage = questionnaire.item?.[activeStep];
 
     // Case 1: Check if this is the only question in a group

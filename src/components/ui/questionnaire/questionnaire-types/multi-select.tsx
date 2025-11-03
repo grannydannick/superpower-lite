@@ -85,7 +85,7 @@ export function QuestionnaireChoiceDropDownInput(
   };
 
   if (!item.answerOption?.length) {
-    return <NoAnswerDisplay />;
+    return <></>;
   }
 
   if (item.repeats) {
@@ -158,7 +158,7 @@ export function QuestionnaireChoiceSetInput(
   const { name, item, onChangeAnswer, response, isError } = props;
 
   if (!item.answerOption?.length && !item.answerValueSet) {
-    return <NoAnswerDisplay />;
+    return <></>;
   }
 
   if (item.answerValueSet) {
@@ -173,13 +173,6 @@ export function QuestionnaireChoiceSetInput(
       response={response}
       onChangeAnswer={onChangeAnswer}
     />
-  );
-}
-
-// Helper functions
-function NoAnswerDisplay(): JSX.Element {
-  return (
-    <input className="rounded-md" disabled placeholder="No Answers Defined" />
   );
 }
 

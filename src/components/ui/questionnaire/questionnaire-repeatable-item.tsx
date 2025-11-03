@@ -6,6 +6,10 @@ import {
 import { Body1, Body2 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 
+import {
+  SUPERPOWER_QUESTIONNAIRE_DESCRIPTION_EXTENSION_URL,
+  QUESTIONNAIRE_ITEM_CONTROL_EXTENSION_URL,
+} from './const/system-urls';
 import { QuestionnaireFormItem } from './questionnaire-item';
 import { useQuestionnaireStore } from './stores/questionnaire-store';
 import { QuestionnaireItemType } from './utils';
@@ -40,16 +44,12 @@ export const QuestionnaireFormRepeatableItem = ({
 
   // If https://superpower.com/fhir/StructureDefinition/questionnaire-description is available in the extension array, use it as the description
   const description = item.extension?.find(
-    (e) =>
-      e.url ===
-      'https://superpower.com/fhir/StructureDefinition/questionnaire-description',
+    (e) => e.url === SUPERPOWER_QUESTIONNAIRE_DESCRIPTION_EXTENSION_URL,
   )?.valueString;
 
   // If http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl is available in the extension, it is a multiple choice question
   const isMultipleChoice = item.extension?.find(
-    (e) =>
-      e.url ===
-      'http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl',
+    (e) => e.url === QUESTIONNAIRE_ITEM_CONTROL_EXTENSION_URL,
   )?.valueCodeableConcept;
 
   if (!checkForQuestionEnabled(item)) {
@@ -94,10 +94,16 @@ export const QuestionnaireFormRepeatableItem = ({
           // I don't see a case for XSS because the only way to edit this is in Medplum
           dangerouslySetInnerHTML={{ __html: item.text ?? '' }}
         />
-        {(description || isMultipleChoice) && (
-          <Body2 className="text-secondary">
-            {description ?? (isMultipleChoice && 'Select all that apply.')}
-          </Body2>
+        {description && (
+          <Body2
+            className="text-secondary"
+            // This is needed to allow for HTML tags in the description
+            // Again, I don't see a case for XSS because the only way to edit this is in Medplum
+            dangerouslySetInnerHTML={{ __html: description }}
+          />
+        )}
+        {!description && isMultipleChoice && (
+          <Body2 className="text-secondary">Select all that apply.</Body2>
         )}
       </div>
 

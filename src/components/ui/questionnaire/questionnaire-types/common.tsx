@@ -1,15 +1,6 @@
 import { TypedValue, getTypedPropertyValue, formatCoding } from '@medplum/core';
 import { QuestionnaireResponseItem } from '@medplum/fhirtypes';
 
-import { Input } from '@/components/ui/input';
-
-/**
- * NoAnswerDisplay component shown when no answers are defined
- */
-export function NoAnswerDisplay(): JSX.Element {
-  return <Input disabled placeholder="No Answers Defined" />;
-}
-
 /**
  * Get the typed value from a questionnaire answer
  */
