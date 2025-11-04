@@ -59,7 +59,7 @@ export const SupplementsList = ({
     if (recommended.length) {
       sections.push({
         title: 'Top supplements for you',
-        subtitle: 'According to your recent result',
+        subtitle: 'Most recommended',
         products: recommended,
       });
     }

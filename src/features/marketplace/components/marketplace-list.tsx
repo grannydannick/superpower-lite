@@ -117,7 +117,7 @@ export const MarketplaceList = ({
       {recommendedSupplements.length > 0 && (
         <SupplementCategory
           title="Top supplements for you"
-          subtitle="According to your recent results"
+          subtitle="Most recommended"
           products={recommendedSupplements}
           path="?tab=supplements"
         />
@@ -125,7 +125,7 @@ export const MarketplaceList = ({
       {recommendedPrescriptions.length > 0 && (
         <PrescriptionsCategory
           title="Top prescriptions for you"
-          subtitle="According to your recent results"
+          subtitle="Most recommended"
           prescriptions={recommendedPrescriptions}
           path="?tab=prescriptions"
         />

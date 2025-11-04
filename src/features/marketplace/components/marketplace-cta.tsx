@@ -18,8 +18,6 @@ export const MarketplaceCta = () => {
   const { data: multipassData, isLoading } = useGetMultipassUrl();
   const { track } = useAnalytics();
 
-  // TODO: BE logic to handle proper url: "https://products.superpower.com/apps/retextion/login"
-
   const handleMarketplaceClick = () => {
     track('click_products_marketplace');
 
