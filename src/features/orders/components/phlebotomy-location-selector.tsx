@@ -6,6 +6,7 @@ import { Body1, Body2 } from '@/components/ui/typography';
 import { useHasCredit } from '@/features/orders/hooks';
 import { useOrder } from '@/features/orders/stores/order-store';
 import { getCollectionMethods } from '@/features/orders/utils/get-collection-methods';
+import { CurrentAddressEditSuggestion } from '@/features/users/components/current-address-card';
 import { useUser } from '@/lib/auth';
 import { useAuthorization } from '@/lib/authorization';
 import { cn } from '@/lib/utils';
@@ -47,6 +48,12 @@ export const CreateOrderPhlebotomyLocationSelector = () => {
       defaultValue={collectionMethod ?? 'AT_HOME'}
       className="flex flex-col"
     >
+      {options.length === 0 ? (
+        <div className="flex flex-col items-center gap-4 rounded-xl border border-zinc-200 bg-white p-6">
+          <p className="text-zinc-500">No primary address found.</p>
+          <CurrentAddressEditSuggestion />
+        </div>
+      ) : null}
       {options.map((option) => (
         <div
           key={option.value}

@@ -59,25 +59,27 @@ export const getCollectionMethods = (
     };
   };
 
-  if (primaryAddress) {
-    const state = primaryAddress.state;
+  if (!primaryAddress?.state) {
+    return [];
+  }
 
-    // If user is admin, allow in-lab options regardless of state
-    if (isAdmin) {
-      return [createInLabOption(), createAtHomedOption()];
-    }
+  const state = primaryAddress.state;
 
-    // For NY and NJ, only allow at-home appointments
-    if (state === 'NY' || state === 'NJ') {
-      return [
-        createInLabOption({
-          disabled: true,
-          description:
-            'We currently support at-home appointments only in New York (NY) and New Jersey (NJ).',
-        }),
-        createAtHomedOption(),
-      ];
-    }
+  // If user is admin, allow in-lab options regardless of state
+  if (isAdmin) {
+    return [createInLabOption(), createAtHomedOption()];
+  }
+
+  // For NY and NJ, only allow at-home appointments
+  if (state === 'NY' || state === 'NJ') {
+    return [
+      createInLabOption({
+        disabled: true,
+        description:
+          'We currently support at-home appointments only in New York (NY) and New Jersey (NJ).',
+      }),
+      createAtHomedOption(),
+    ];
   }
 
   if (!service.supportsLabOrder) {

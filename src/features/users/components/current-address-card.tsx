@@ -1,5 +1,6 @@
 import { Pencil } from 'lucide-react';
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import { Body1, Body2, Body3 } from '@/components/ui/typography';
@@ -71,20 +72,34 @@ export const CurrentAddressCard = ({
           </Body1>
         </div>
       ) : (
-        <div>
-          <Body1 className="text-primary">
-            Primary address not found
-            {disableEdit && (
-              <span>
-                ,&nbsp; add in&nbsp;
-                <a className="text-vermillion-900 underline" href="/settings">
-                  settings
-                </a>
-              </span>
-            )}
-          </Body1>
+        <div className="flex flex-col gap-4">
+          <Body1 className="text-primary">Primary address not found</Body1>
+          {disableEdit && <CurrentAddressEditSuggestion />}
         </div>
       )}
     </div>
+  );
+};
+
+export const CurrentAddressEditSuggestion = () => {
+  const location = useLocation();
+
+  return location.pathname.includes('onboarding') ? (
+    <span>
+      Contact concierge at{' '}
+      <a
+        className="text-vermillion-900 underline"
+        href="mailto:concierge@superpower.com"
+      >
+        concierge@superpower.com
+      </a>
+    </span>
+  ) : (
+    <span>
+      Add in&nbsp;
+      <a className="text-vermillion-900 underline" href="/settings">
+        settings
+      </a>
+    </span>
   );
 };
