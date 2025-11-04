@@ -15,7 +15,7 @@ const MARKETPLACE_FILTER_LABELS = {
 export const MARKETPLACE_FILTER_OPTIONS = [
   'all',
   'Metabolic health',
-  'Gut Health',
+  'Gut health',
   'Heart health',
 ] as const;
 
