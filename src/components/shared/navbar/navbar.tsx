@@ -73,6 +73,7 @@ export const Navbar = () => {
 };
 
 const lightNavPaths = ['/', '/invite'];
+const marketplace = ['/marketplace', '/prescriptions'];
 const blurThresholds: Record<string, number> = {
   '/': 621,
   '/invite': 500,
@@ -83,7 +84,9 @@ export const DesktopNavbar = () => {
   const { pathname } = useLocation();
 
   const isLight = lightNavPaths.includes(pathname);
-  const isMarketplace = pathname.startsWith('/marketplace');
+  const isMarketplace = marketplace.some((prefix) =>
+    pathname.startsWith(prefix),
+  );
   const isBlurred = useScrollThreshold({
     thresholdPx: blurThresholds[pathname] || 10,
   });

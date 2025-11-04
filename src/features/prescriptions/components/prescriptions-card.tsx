@@ -1,11 +1,11 @@
 import { usePostHog } from 'posthog-js/react';
+import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import { ProgressiveImage } from '@/components/ui/progressive-image';
 import { Body1, Body2, Body3, H4 } from '@/components/ui/typography';
-import { FeatureFlags } from '@/lib/posthog';
 import { Rx } from '@/types/api';
-import { getPrescriptionImage, navigateToProduct } from '@/utils/prescription';
+import { getPrescriptionImage } from '@/utils/prescription';
 
 export const PrescriptionCard = ({ prescription }: { prescription: Rx }) => {
   return (
@@ -18,8 +18,7 @@ export const PrescriptionCard = ({ prescription }: { prescription: Rx }) => {
 
 const DesktopCard = ({ prescription }: { prescription: Rx }) => {
   const posthog = usePostHog();
-
-  const isRxV0Enabled = posthog?.isFeatureEnabled(FeatureFlags.RX_V0);
+  const navigate = useNavigate();
 
   const renderButton = () => {
     return (
@@ -35,11 +34,12 @@ const DesktopCard = ({ prescription }: { prescription: Rx }) => {
   return (
     <button
       className="group relative hidden cursor-pointer flex-col gap-4 overflow-hidden sm:flex"
-      onClick={() =>
-        isRxV0Enabled
-          ? window.open(prescription.url as string, '_blank')
-          : navigateToProduct(prescription.name)
-      }
+      onClick={() => {
+        posthog?.capture('prescription_card_clicked', {
+          prescriptionId: prescription.id,
+        });
+        navigate(`/prescriptions/${prescription.id}`);
+      }}
     >
       <div className="relative flex aspect-square items-center rounded-[20px] bg-zinc-50">
         {/* The bg-zinc-50 helps prevent strobing on transparent images; see comment in progressive-image.tsx */}
@@ -66,17 +66,17 @@ const DesktopCard = ({ prescription }: { prescription: Rx }) => {
 
 const MobileCard = ({ prescription }: { prescription: Rx }) => {
   const posthog = usePostHog();
-
-  const isRxV0Enabled = posthog?.isFeatureEnabled(FeatureFlags.RX_V0);
+  const navigate = useNavigate();
 
   return (
     <button
       className="flex flex-col gap-2 sm:hidden"
-      onClick={() =>
-        isRxV0Enabled
-          ? window.open(prescription.url as string, '_blank')
-          : navigateToProduct(prescription.name)
-      }
+      onClick={() => {
+        posthog?.capture('prescription_card_clicked', {
+          prescriptionId: prescription.id,
+        });
+        navigate(`/prescriptions/${prescription.id}`);
+      }}
     >
       <ProgressiveImage
         src={getPrescriptionImage(prescription.name)}

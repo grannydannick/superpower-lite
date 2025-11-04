@@ -39,8 +39,9 @@ export const PRESCRIPTION_SLUGS: Record<string, string> = {
 };
 
 export const RECOMMENDED_PRESCRIPTIONS = [
-  'Semaglutide',
-  'Enclomiphene',
-  'NAD+ Intranasal',
-  'Sermorelin Injection',
+  SEMAGLUTIDE,
+  ENCLOMIPHENE,
+  NAD_INTRANASAL,
+  SERMORELIN_INJECTION,
+  NAD_INJECTION,
 ];

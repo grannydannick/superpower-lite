@@ -146,6 +146,15 @@ export const createRouter = () =>
           },
         },
         {
+          path: 'prescriptions/:id',
+          lazy: async () => {
+            const { PrescriptionRoute } = await import(
+              './routes/app/prescription'
+            );
+            return { Component: PrescriptionRoute };
+          },
+        },
+        {
           path: 'legacy-checkout',
           lazy: async () => {
             const { LegacyCheckoutRoute } = await import(

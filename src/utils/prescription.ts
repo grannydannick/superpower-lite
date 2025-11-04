@@ -16,10 +16,7 @@ import {
   VIP_NASAL_SPRAY,
   VITAMIN_B12_INJECTION,
 } from '@/const';
-import {
-  CLINIC_PRODUCT_BASE_URL,
-  PRESCRIPTION_SLUGS,
-} from '@/const/prescriptions';
+import * as PrescriptionInfoData from '@/const/prescription-info';
 
 const prescriptionImages: Record<string, string> = {
   SermorelinInjection: '/rx/transparent/sermorelin-injection.webp',
@@ -96,20 +93,31 @@ export const getPrescriptionImage = (name: string): string => {
   }
 };
 
-export const getProductLink = (prescriptionName?: string | null) => {
-  if (!prescriptionName) return null;
+type PrescriptionInfoKey = keyof typeof PrescriptionInfoData;
+type PrescriptionInfo = (typeof PrescriptionInfoData)[PrescriptionInfoKey];
 
-  const slug = PRESCRIPTION_SLUGS[prescriptionName];
-  if (!slug) return null;
-
-  return `${CLINIC_PRODUCT_BASE_URL}/${slug}`;
+const prescriptionInfoMap: Record<string, PrescriptionInfo> = {
+  [NAD_INTRANASAL]: PrescriptionInfoData.NAD_INTRANASAL,
+  [SERMORELIN_INJECTION]: PrescriptionInfoData.SERMORELIN_INJECTION,
+  [VIP_NASAL_SPRAY]: PrescriptionInfoData.VIP_NASAL_SPRAY,
+  [SEMAGLUTIDE]: PrescriptionInfoData.SEMAGLUTIDE,
+  [GONADORELIN]: PrescriptionInfoData.GONADORELIN,
+  [OXYTOCIN_BREMELANOTIDE_TADALAFIL_TROCHES]:
+    PrescriptionInfoData.OXYTOCIN_BREMELANOTIDE_TADALAFIL_TROCHES,
+  [TADALAFIL]: PrescriptionInfoData.TADALAFIL,
+  [METFORMIN]: PrescriptionInfoData.METFORMIN,
+  [TRETINOIN]: PrescriptionInfoData.TRETINOIN,
+  [HCG]: PrescriptionInfoData.HCG,
+  [LOW_DOSE_NALTREXONE]: PrescriptionInfoData.LOW_DOSE_NALTREXONE,
+  [VITAMIN_B12_INJECTION]: PrescriptionInfoData.VITAMIN_B12_INJECTION,
+  [GHK_CU_CREAM]: PrescriptionInfoData.GHK_CU_CREAM,
+  [NAD_INJECTION]: PrescriptionInfoData.NAD_INJECTION,
+  [ENCLOMIPHENE]: PrescriptionInfoData.ENCLOMIPHENE,
+  [SERMORELIN_TROCHES]: PrescriptionInfoData.SERMORELIN_TROCHES,
 };
 
-export const navigateToProduct = (prescriptionName?: string | null) => {
-  const link = getProductLink(prescriptionName);
-  if (!link) return false;
-  if (typeof window === 'undefined') return false;
-
-  window.open(link, '_blank', 'noopener,noreferrer');
-  return true;
+export const getPrescriptionInfo = (
+  prescriptionName: string,
+): PrescriptionInfo | null => {
+  return prescriptionInfoMap[prescriptionName] ?? null;
 };

@@ -1,5 +1,5 @@
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Minus, Plus } from 'lucide-react';
 import * as React from 'react';
 
 import { cn } from '@/lib/utils';
@@ -18,21 +18,46 @@ const AccordionItem = React.forwardRef<
 ));
 AccordionItem.displayName = 'AccordionItem';
 
+type AccordionTriggerProps = React.ComponentPropsWithoutRef<
+  typeof AccordionPrimitive.Trigger
+> & {
+  variant?: 'default' | 'plusMinus';
+};
+
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
+  AccordionTriggerProps
+>(({ className, children, variant = 'default', ...props }, ref) => (
   <AccordionPrimitive.Header className="flex">
     <AccordionPrimitive.Trigger
       ref={ref}
       className={cn(
-        'flex flex-1 items-center justify-between py-4 font-medium transition-all [&[data-state=open]>svg]:rotate-180',
+        'group flex flex-1 items-center justify-between py-4 text-left font-medium transition-all',
+        variant === 'plusMinus'
+          ? '[&>span>svg:last-child]:absolute [&>span>svg:last-child]:opacity-0 [&>span>svg:last-child]:rotate-90 [&>span>svg]:transition-all [&>span>svg]:duration-250 [&>span>svg]:ease-in-out [&[data-state=open]>span>svg:first-child]:-rotate-90 [&[data-state=open]>span>svg:first-child]:opacity-0 [&[data-state=open]>span>svg:last-child]:opacity-100 [&[data-state=open]>span>svg:last-child]:rotate-0'
+          : '[&[data-state=open]>svg]:rotate-180',
         className,
       )}
       {...props}
     >
       {children}
-      <ChevronDown className="size-4 shrink-0 transition-transform duration-200" />
+      {variant === 'plusMinus' ? (
+        <span className="relative inline-flex size-5 items-center justify-center">
+          <Plus
+            aria-hidden="true"
+            className="size-4 text-secondary transition-all duration-300 ease-in-out"
+          />
+          <Minus
+            aria-hidden="true"
+            className="size-4 text-vermillion-900 transition-all duration-300 ease-in-out"
+          />
+        </span>
+      ) : (
+        <ChevronDown
+          aria-hidden="true"
+          className="size-4 shrink-0 text-secondary transition-transform duration-200"
+        />
+      )}
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 ));
