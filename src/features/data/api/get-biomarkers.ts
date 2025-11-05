@@ -11,25 +11,20 @@ import {
 } from '../const/filters';
 
 export const getBiomarkers = async ({
-  dateOfBirth,
   category,
 }: {
-  dateOfBirth?: string;
   gender?: string;
   category?: string;
 }): Promise<{ biomarkers: Biomarker[] }> => {
   return await api.get('/biomarkers', {
-    params: { dateOfBirth, category },
+    params: { category },
   });
 };
 
-export const getBiomarkersQueryOptions = (
-  dateOfBirth?: string,
-  category?: string,
-) => {
+export const getBiomarkersQueryOptions = (category?: string) => {
   return queryOptions({
-    queryKey: ['biomarkers', { dateOfBirth, category }],
-    queryFn: () => getBiomarkers({ dateOfBirth, category }),
+    queryKey: ['biomarkers', category],
+    queryFn: () => getBiomarkers({ category }),
   });
 };
 
@@ -45,7 +40,7 @@ export const useBiomarkers = ({
   const { data: user } = useUser();
 
   const query = useQuery({
-    ...getBiomarkersQueryOptions(user?.dateOfBirth, category),
+    ...getBiomarkersQueryOptions(category),
     ...queryConfig,
   });
 
