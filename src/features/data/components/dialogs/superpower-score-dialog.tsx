@@ -61,9 +61,10 @@ export const SuperpowerScoreDialog = ({
   );
 
   // if we have category biomarker IDs, filter by those
-  const categoryBiomarkers = biomarkersData?.biomarkers.filter((b) =>
-    b.value?.some((v) => v.id && relatedBiomarkerIds.has(v.id)),
-  );
+  const categoryBiomarkers =
+    biomarkersData?.biomarkers.filter((b) =>
+      b.value?.some((v) => v.id && relatedBiomarkerIds.has(v.id)),
+    ) ?? [];
 
   return (
     <>
@@ -127,7 +128,7 @@ export const SuperpowerScoreDialog = ({
             <BiomarkerContentTabs biomarker={superpowerScoreMarker} />
           )}
 
-          {latestScore && (
+          {categoryBiomarkers.length > 0 && (
             <div className="mt-4">
               <H3 className="mb-2">
                 Which biomarkers influence your Health Score?
