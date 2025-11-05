@@ -46,7 +46,7 @@ export const AssistantModal = () => {
             <div
               // top ghost element to resize
               ref={ref as unknown as Ref<HTMLDivElement>}
-              className="absolute inset-x-0 -top-1 h-6 w-full cursor-ns-resize bg-transparent"
+              className="absolute inset-x-0 -top-1 h-4 w-full cursor-ns-resize bg-transparent"
             />
           );
         }

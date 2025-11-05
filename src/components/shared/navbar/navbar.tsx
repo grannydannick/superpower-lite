@@ -106,7 +106,7 @@ export const DesktopNavbar = () => {
   return (
     <nav
       className={cn(
-        'sticky top-0 z-[49] hidden w-full lg:block transition-colors duration-200 px-16',
+        'sticky top-0 z-[49] hidden w-full lg:block transition-colors duration-200',
         isBlurred
           ? 'bg-opacity-10 bg-white backdrop-blur-sm rounded-b-2xl'
           : null,

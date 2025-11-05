@@ -12,7 +12,7 @@ function PureSuggestedActions({ setInput }: SuggestedActionsProps) {
   const { suggestions } = useSuggestions({ enabled: true, max: 3 });
 
   return (
-    <div className="flex min-h-10 w-full items-start justify-start gap-2">
+    <div className="flex min-h-10 w-full flex-col items-end justify-start gap-2 lg:flex-row lg:items-start">
       {suggestions.map((s, index) => (
         <motion.div
           initial={{ opacity: 0, y: 20 }}

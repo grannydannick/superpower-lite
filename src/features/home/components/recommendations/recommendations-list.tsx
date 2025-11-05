@@ -64,7 +64,7 @@ export const RecommendationCard: React.FC<{
 
   return (
     <NavLink to={link} onClick={handleClick}>
-      <div className="relative flex cursor-pointer justify-between gap-4 rounded-3xl px-5 py-4 shadow-md">
+      <div className="group relative flex cursor-pointer justify-between gap-4 rounded-3xl border border-zinc-200 px-5 py-4 shadow-md shadow-black/[.04]">
         <div className="relative my-auto size-24 shrink-0">
           <motion.img
             src="/home/rx.webp"
@@ -105,7 +105,7 @@ export const RecommendationCard: React.FC<{
           </div>
         </div>
         <div className="hidden flex-col justify-center py-5 md:flex">
-          <ChevronRightIcon className="size-6 text-zinc-500" />
+          <ChevronRightIcon className="size-6 text-zinc-500 transition-all group-hover:-mr-1" />
         </div>
       </div>
     </NavLink>

@@ -119,18 +119,6 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
   const [search, setSearch] = useState('');
   const [isOpen, setIsOpen] = useState(true);
 
-  const isSidebarOpen = useMemo(() => {
-    if (type === 'concierge') {
-      return false;
-    }
-
-    if (isOpen) {
-      return true;
-    }
-
-    return false;
-  }, [type, isOpen]);
-
   const filteredChats = useMemo(() => {
     return history?.filter((chat) =>
       chat.title.toLowerCase().includes(search.toLowerCase()),
@@ -190,187 +178,198 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
         return (
           <div
             className={cn(
-              'relative transition-all duration-500 ease-in-out',
-              isSidebarOpen ? 'w-full lg:max-w-[259px]' : 'max-w-0',
+              'xl:w-full xl:max-w-[259px]',
+              type === 'concierge' && 'lg:max-w-0',
             )}
           >
-            {type !== 'concierge' && (
-              <div
-                className={cn(
-                  'absolute top-1 hidden items-center gap-2 transition-all duration-500 lg:flex',
-                  isSidebarOpen ? 'right-0' : '-right-14',
-                )}
-              >
-                <TooltipProvider delayDuration={0}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        disabled={!id}
-                        className={cn(
-                          'rounded-md p-1 text-zinc-400 transition-all hover:text-zinc-700',
-                          isSidebarOpen
-                            ? 'pointer-events-none hidden opacity-0'
-                            : 'opacity-100',
-                        )}
-                        onClick={() => navigate('/concierge')}
-                      >
-                        <SquarePen size={15} />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>New Chat</TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="rounded-md p-1 text-zinc-400 hover:text-zinc-700"
-                        onClick={() => setIsOpen(!isOpen)}
-                      >
-                        <AnimatedSidebarButton isSidebarOpen={isSidebarOpen} />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      {isSidebarOpen ? 'Hide Sidebar' : 'Show Sidebar'}
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-            )}
             <div
               className={cn(
-                'flex w-full flex-col overflow-hidden transition-all duration-500 ease-in-out',
-                className,
-                !isSidebarOpen
-                  ? 'opacity-0 md:max-w-0'
-                  : 'opacity-100 lg:max-w-[259px]',
+                'relative transition-all duration-500 ease-in-out',
+                isOpen ? 'w-full lg:max-w-[259px]' : 'max-w-0 w-full',
+                type === 'concierge' &&
+                  'opacity-0 pointer-events-none blur-[1px]',
               )}
             >
-              <div className="mb-4 flex items-center gap-2">
-                <H3>Concierge</H3>
-                <div className="rounded-full border border-vermillion-900 px-2 py-0.5">
-                  <p className="font-mono text-xs text-vermillion-900">BETA</p>
+              {type !== 'concierge' && (
+                <div
+                  className={cn(
+                    'absolute top-1 hidden items-center gap-2 transition-all duration-500 lg:flex',
+                    isOpen ? 'xl:right-0 -right-4' : '-right-14',
+                  )}
+                >
+                  <TooltipProvider delayDuration={0}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          disabled={!id}
+                          className={cn(
+                            'rounded-md p-1 text-zinc-400 transition-all hover:text-zinc-700',
+                            isOpen
+                              ? 'pointer-events-none hidden opacity-0'
+                              : 'opacity-100',
+                          )}
+                          onClick={() => navigate('/concierge')}
+                        >
+                          <SquarePen size={15} />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>New Chat</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="rounded-md p-1 text-zinc-400 hover:text-zinc-700"
+                          onClick={() => setIsOpen(!isOpen)}
+                        >
+                          <AnimatedSidebarButton isSidebarOpen={isOpen} />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {isOpen ? 'Hide Sidebar' : 'Show Sidebar'}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
-              </div>
-              {/*<div className="h-10 rounded-xl bg-zinc-100 px-4 py-1.5" />*/}
-              <div className="w-full">
-                <div className="relative mb-2 px-0.5">
-                  <Search
-                    size={15}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"
-                  />
-                  <Input
-                    type="text"
-                    placeholder="Search"
-                    className="h-10 w-full rounded-xl border border-none bg-zinc-100 px-4 pl-8 text-sm outline-none"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
+              )}
+              <div
+                className={cn(
+                  'flex w-full flex-col overflow-hidden transition-all duration-500 ease-in-out',
+                  className,
+                  !isOpen
+                    ? 'opacity-0 md:max-w-0'
+                    : 'opacity-100 lg:max-w-[259px]',
+                )}
+              >
+                <div className="mb-4 flex items-center gap-2">
+                  <H3>Concierge</H3>
+                  <div className="rounded-full border border-vermillion-900 px-2 py-0.5">
+                    <p className="font-mono text-xs text-vermillion-900">
+                      BETA
+                    </p>
+                  </div>
                 </div>
+                {/*<div className="h-10 rounded-xl bg-zinc-100 px-4 py-1.5" />*/}
+                <div className="w-full">
+                  <div className="relative mb-2 px-0.5">
+                    <Search
+                      size={15}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Search"
+                      className="h-10 w-full rounded-xl border border-none bg-zinc-100 px-4 pl-8 text-sm outline-none"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                    />
+                  </div>
 
-                <div className="mt-4 flex flex-col overflow-hidden">
-                  <Button
-                    variant="ghost"
-                    size="medium"
-                    className="justify-start gap-2 px-3 py-2 text-zinc-400"
-                    disabled={!id}
-                    onClick={() => {
-                      navigate('/concierge?type=ai');
-                    }}
-                  >
-                    <SquarePen size={15} />
-                    New AI chat
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="medium"
-                    className="justify-start gap-2 px-3 py-2 text-zinc-400"
-                    disabled={!id}
-                    onClick={() => {
-                      navigate('/concierge?type=concierge');
-                    }}
-                  >
-                    <UsersIcon size={15} />
-                    Ask care team
-                  </Button>
+                  <div className="mt-4 flex flex-col overflow-hidden">
+                    <Button
+                      variant="ghost"
+                      size="medium"
+                      className="justify-start gap-2 px-3 py-2 text-zinc-400"
+                      disabled={!id}
+                      onClick={() => {
+                        navigate('/concierge?type=ai');
+                      }}
+                    >
+                      <SquarePen size={15} />
+                      New AI chat
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="medium"
+                      className="justify-start gap-2 px-3 py-2 text-zinc-400"
+                      disabled={!id}
+                      onClick={() => {
+                        navigate('/concierge?type=concierge');
+                      }}
+                    >
+                      <UsersIcon size={15} />
+                      Ask care team
+                    </Button>
+                  </div>
                 </div>
-              </div>
-              <div className="relative">
-                <div className="pointer-events-none absolute top-0 z-10 h-6 w-full bg-gradient-to-t from-transparent to-zinc-50" />
-                <div className="pointer-events-none absolute bottom-0 z-10 h-6 w-full bg-gradient-to-b from-transparent to-zinc-50" />
-                <div className="scrollbar-w-1.5 flex max-h-[calc(100vh-16rem)] flex-col gap-4 overflow-y-scroll px-px py-6 scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300 hover:scrollbar-thumb-zinc-400">
-                  {groupedChats.today.length > 0 && (
-                    <div>
-                      <Body3 className="px-3 pb-1 text-zinc-700">Today</Body3>
-                      {groupedChats.today.map((chat) => (
-                        <ChatItem
-                          key={chat.id}
-                          chat={chat}
-                          isActive={chat.id === id}
-                        />
-                      ))}
-                    </div>
-                  )}
+                <div className="relative">
+                  <div className="pointer-events-none absolute top-0 z-10 h-6 w-full bg-gradient-to-t from-transparent to-zinc-50" />
+                  <div className="pointer-events-none absolute bottom-0 z-10 h-6 w-full bg-gradient-to-b from-transparent to-zinc-50" />
+                  <div className="scrollbar-w-1.5 flex max-h-[calc(100vh-16rem)] flex-col gap-4 overflow-y-scroll px-px py-6 scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300 hover:scrollbar-thumb-zinc-400">
+                    {groupedChats.today.length > 0 && (
+                      <div>
+                        <Body3 className="px-3 pb-1 text-zinc-700">Today</Body3>
+                        {groupedChats.today.map((chat) => (
+                          <ChatItem
+                            key={chat.id}
+                            chat={chat}
+                            isActive={chat.id === id}
+                          />
+                        ))}
+                      </div>
+                    )}
 
-                  {groupedChats.yesterday.length > 0 && (
-                    <div>
-                      <Body3 className="px-3 pb-1 text-zinc-700">
-                        Yesterday
-                      </Body3>
-                      {groupedChats.yesterday.map((chat) => (
-                        <ChatItem
-                          key={chat.id}
-                          chat={chat}
-                          isActive={chat.id === id}
-                        />
-                      ))}
-                    </div>
-                  )}
+                    {groupedChats.yesterday.length > 0 && (
+                      <div>
+                        <Body3 className="px-3 pb-1 text-zinc-700">
+                          Yesterday
+                        </Body3>
+                        {groupedChats.yesterday.map((chat) => (
+                          <ChatItem
+                            key={chat.id}
+                            chat={chat}
+                            isActive={chat.id === id}
+                          />
+                        ))}
+                      </div>
+                    )}
 
-                  {groupedChats.lastWeek.length > 0 && (
-                    <div>
-                      <Body3 className="px-3 pb-1 text-zinc-700">
-                        Last 7 days
-                      </Body3>
-                      {groupedChats.lastWeek.map((chat) => (
-                        <ChatItem
-                          key={chat.id}
-                          chat={chat}
-                          isActive={chat.id === id}
-                        />
-                      ))}
-                    </div>
-                  )}
+                    {groupedChats.lastWeek.length > 0 && (
+                      <div>
+                        <Body3 className="px-3 pb-1 text-zinc-700">
+                          Last 7 days
+                        </Body3>
+                        {groupedChats.lastWeek.map((chat) => (
+                          <ChatItem
+                            key={chat.id}
+                            chat={chat}
+                            isActive={chat.id === id}
+                          />
+                        ))}
+                      </div>
+                    )}
 
-                  {groupedChats.lastMonth.length > 0 && (
-                    <div>
-                      <Body3 className="px-3 pb-1 text-zinc-700">
-                        Last 30 days
-                      </Body3>
-                      {groupedChats.lastMonth.map((chat) => (
-                        <ChatItem
-                          key={chat.id}
-                          chat={chat}
-                          isActive={chat.id === id}
-                        />
-                      ))}
-                    </div>
-                  )}
+                    {groupedChats.lastMonth.length > 0 && (
+                      <div>
+                        <Body3 className="px-3 pb-1 text-zinc-700">
+                          Last 30 days
+                        </Body3>
+                        {groupedChats.lastMonth.map((chat) => (
+                          <ChatItem
+                            key={chat.id}
+                            chat={chat}
+                            isActive={chat.id === id}
+                          />
+                        ))}
+                      </div>
+                    )}
 
-                  {groupedChats.older.length > 0 && (
-                    <div>
-                      <Body3 className="px-3 pb-1 text-zinc-700">Older</Body3>
-                      {groupedChats.older.map((chat) => (
-                        <ChatItem
-                          key={chat.id}
-                          chat={chat}
-                          isActive={chat.id === id}
-                        />
-                      ))}
-                    </div>
-                  )}
+                    {groupedChats.older.length > 0 && (
+                      <div>
+                        <Body3 className="px-3 pb-1 text-zinc-700">Older</Body3>
+                        {groupedChats.older.map((chat) => (
+                          <ChatItem
+                            key={chat.id}
+                            chat={chat}
+                            isActive={chat.id === id}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
