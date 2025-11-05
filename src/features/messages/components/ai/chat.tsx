@@ -40,21 +40,19 @@ export function Chat({
     null,
   );
   const [input, setInput] = useState('');
-  const transportHeaders: Record<string, string> = {
-    Accept: 'application/json',
-  };
-  const accessToken = getActiveLogin()?.accessToken;
-  if (accessToken) {
-    transportHeaders.Authorization = `Bearer ${accessToken}`;
-  }
 
   const { messages, setMessages, sendMessage, status, stop } = useChat({
     id,
     transport: new DefaultChatTransport({
       api: `${env.API_URL}/chat`,
-      headers: {
-        Accept: 'application/json',
-        Authorization: `Bearer ${getActiveLogin()?.accessToken}`,
+      headers: () => {
+        const activeLogin = getActiveLogin();
+        const accessToken = activeLogin?.accessToken;
+
+        return {
+          Accept: 'application/json',
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+        };
       },
       prepareSendMessagesRequest({ messages, id }) {
         return { body: { message: messages[messages.length - 1], id } };

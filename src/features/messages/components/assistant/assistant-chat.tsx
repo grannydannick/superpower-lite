@@ -53,9 +53,14 @@ export function AssistantChat({
     id,
     transport: new DefaultChatTransport({
       api: `${env.API_URL}/chat`,
-      headers: {
-        Accept: 'application/json',
-        Authorization: `Bearer ${getActiveLogin()?.accessToken}`,
+      headers: () => {
+        const activeLogin = getActiveLogin();
+        const accessToken = activeLogin?.accessToken;
+
+        return {
+          Accept: 'application/json',
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+        };
       },
       prepareSendMessagesRequest({ messages, id }) {
         const hasUserMessage = messages.some((m) => m.role === 'user');

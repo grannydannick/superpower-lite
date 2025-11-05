@@ -28,7 +28,7 @@ type RetriableRequestConfig = InternalAxiosRequestConfig & {
 };
 
 // Shares a single refresh call across concurrent 401s so that only one refresh hits the server.
-let refreshPromise: Promise<string> | null = null;
+let refreshPromise: ReturnType<typeof refreshAccessToken> | null = null;
 
 const AUTH_PUBLIC_PATH_PREFIXES = [
   '/signin',
@@ -61,7 +61,7 @@ const redirectToSignin = () => {
 };
 
 // Performs the OAuth refresh token grant and persists the new login state.
-const refreshAccessToken = async (): Promise<string> => {
+const refreshAccessToken = async (): Promise<string | undefined> => {
   const refreshToken = getActiveLogin()?.refreshToken;
   if (!refreshToken) {
     throw new Error('Missing refresh token');
@@ -81,7 +81,10 @@ const refreshAccessToken = async (): Promise<string> => {
     },
   );
 
-  const accessToken = response.data.access_token;
+  const accessToken = response.data?.access_token;
+  if (!accessToken) {
+    return;
+  }
 
   // Persist the updated tokens so queued requests can pick them up.
   setActiveLogin({
@@ -183,13 +186,15 @@ api.interceptors.response.use(
       try {
         // Each 401 waits for the shared refresh to settle before retrying the original request.
         const token = await refreshPromise;
-        const headers = originalRequest.headers ?? {};
-        originalRequest.headers = headers;
-        // Support both AxiosHeaders (with set) and plain objects (tests, mocks).
-        if ('set' in headers && typeof (headers as any).set === 'function') {
-          (headers as any).set('Authorization', `Bearer ${token}`);
-        } else {
-          (headers as any).Authorization = `Bearer ${token}`;
+        if (token !== undefined) {
+          const headers = originalRequest.headers ?? {};
+          originalRequest.headers = headers;
+          // Support both AxiosHeaders (with set) and plain objects (tests, mocks).
+          if ('set' in headers && typeof headers.set === 'function') {
+            headers.set('Authorization', `Bearer ${token}`);
+          } else {
+            headers.Authorization = `Bearer ${token}`;
+          }
         }
         return api.request(originalRequest);
       } catch (err) {
