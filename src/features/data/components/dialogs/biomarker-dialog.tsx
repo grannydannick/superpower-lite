@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { dialogVariants } from '@/components/ui/dialog/utils/dialog-variants';
 import { Body1, Body2, Body3, H4 } from '@/components/ui/typography';
+import { selectResultForOrder } from '@/features/data/utils/select-result-for-order';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { cn } from '@/lib/utils';
 import { Biomarker } from '@/types/api';
@@ -27,10 +28,14 @@ export const BiomarkerDialog = ({
   children,
   biomarker,
   disabled = false,
+  selectedOrderId,
+  selectedOrderDate,
 }: {
   children: React.ReactNode;
   biomarker: Biomarker;
   disabled?: boolean;
+  selectedOrderId?: string;
+  selectedOrderDate?: Date | null;
 }) => {
   const [open, setOpen] = useState(false);
   const { lastValueSource } = getBiomarkerRanges(biomarker);
@@ -61,6 +66,13 @@ export const BiomarkerDialog = ({
       (range) => range.status === 'OPTIMAL',
     );
   }, [biomarker.ranges, lastValueSource]);
+
+  const computedSelectedResult = useMemo(() => {
+    return (
+      selectResultForOrder(biomarker, selectedOrderId, selectedOrderDate) ||
+      biomarker.value?.[0]
+    );
+  }, [biomarker, selectedOrderId, selectedOrderDate]);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -123,9 +135,15 @@ export const BiomarkerDialog = ({
                   color: statusColor,
                 }}
               >
-                <NumberFlow value={biomarker.value[0]?.quantity.value || 0} />{' '}
+                <NumberFlow
+                  value={
+                    computedSelectedResult?.quantity.value ??
+                    biomarker.value[0]?.quantity.value ??
+                    0
+                  }
+                />{' '}
                 <Body1 className="inline-block text-zinc-500">
-                  {biomarker.unit}
+                  {computedSelectedResult?.quantity.unit || biomarker.unit}
                 </Body1>
               </H4>
             </div>

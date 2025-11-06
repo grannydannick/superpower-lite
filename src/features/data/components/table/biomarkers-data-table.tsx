@@ -34,6 +34,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Body1, Body2, H4 } from '@/components/ui/typography';
+import { selectResultForOrder } from '@/features/data/utils/select-result-for-order';
 import { useOrders } from '@/features/orders/api';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
@@ -52,6 +53,8 @@ const BiomarkersTableBodyContent = ({
   isLoading,
   skeletonColSpan,
   screenSize,
+  selectedOrderId,
+  selectedOrderDate,
 }: {
   rows: Row<Biomarker>[];
   visibleRows: Row<Biomarker>[];
@@ -59,6 +62,8 @@ const BiomarkersTableBodyContent = ({
   isLoading?: boolean;
   skeletonColSpan: number;
   screenSize: 'mobile' | 'tablet' | 'desktop' | 'widescreen';
+  selectedOrderId?: string;
+  selectedOrderDate?: Date | null;
 }) => {
   if (isFiltering || isLoading) {
     if (visibleRows.length > 0) {
@@ -97,7 +102,13 @@ const BiomarkersTableBodyContent = ({
   return (
     <>
       {rows.map((row) => (
-        <BiomarkerDataRow key={row.id} row={row} screenSize={screenSize} />
+        <BiomarkerDataRow
+          key={row.id}
+          row={row}
+          screenSize={screenSize}
+          selectedOrderId={selectedOrderId}
+          selectedOrderDate={selectedOrderDate}
+        />
       ))}
     </>
   );
@@ -212,29 +223,9 @@ const getColumns = (
       header: () => <span className="text-sm text-zinc-400">Value</span>,
       cell: ({ row }: { row: Row<Biomarker> }) => {
         const biomarker = row.original;
-        let currentValue = biomarker.value?.[0];
-
-        if (selectedOrderId) {
-          const oneDayInMs = 24 * 60 * 60 * 1000;
-          let selected = biomarker.value.find(
-            (v) => v.orderId === selectedOrderId,
-          );
-          if (!selected && selectedOrderDate) {
-            let best: (typeof biomarker.value)[number] | undefined;
-            let bestDiff = Number.POSITIVE_INFINITY;
-            for (const v of biomarker.value) {
-              const d = Math.abs(
-                new Date(v.timestamp).getTime() - selectedOrderDate.getTime(),
-              );
-              if (d <= oneDayInMs && d < bestDiff) {
-                best = v;
-                bestDiff = d;
-              }
-            }
-            if (best) selected = best;
-          }
-          if (selected) currentValue = selected;
-        }
+        const currentValue =
+          selectResultForOrder(biomarker, selectedOrderId, selectedOrderDate) ||
+          biomarker.value?.[0];
 
         const formatCurrentValue = () => {
           if (!currentValue?.quantity) return 'No value';
@@ -544,6 +535,8 @@ const BiomarkersDataTableComponent = ({
             isLoading={isLoading}
             skeletonColSpan={skeletonColSpan}
             screenSize={screenSize}
+            selectedOrderId={selectedOrderId}
+            selectedOrderDate={selectedOrderDate}
           />
         </TableBody>
       </Table>

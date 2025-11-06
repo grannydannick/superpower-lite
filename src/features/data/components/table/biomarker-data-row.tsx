@@ -68,9 +68,13 @@ function BiomarkerRowCell({
 export const BiomarkerDataRow = ({
   row,
   screenSize,
+  selectedOrderId,
+  selectedOrderDate,
 }: {
   row: Row<Biomarker>;
   screenSize: ScreenSize;
+  selectedOrderId?: string;
+  selectedOrderDate?: Date | null;
 }) => {
   if (row.original.status === 'PENDING' || row.original.status === 'UNKNOWN') {
     return null;
@@ -80,7 +84,11 @@ export const BiomarkerDataRow = ({
   const lastIndex = cells.length - 1;
 
   return (
-    <BiomarkerDialog biomarker={row.original}>
+    <BiomarkerDialog
+      biomarker={row.original}
+      selectedOrderId={selectedOrderId}
+      selectedOrderDate={selectedOrderDate}
+    >
       <TableRow className="h-24 cursor-pointer rounded-xl border-transparent bg-white shadow-sm outline outline-1 -outline-offset-1 outline-zinc-100 transition-all hover:bg-white hover:outline-zinc-200">
         {cells.map((cell, index) => (
           <BiomarkerRowCell
