@@ -1,5 +1,5 @@
 import type { ComponentType, ReactNode, SVGProps } from 'react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import {
@@ -67,12 +67,6 @@ export const MarketplaceTabs = () => {
       return params;
     });
   }, [setSearchParams]);
-
-  useEffect(() => {
-    if (activeTab === 'prescriptions' && filter !== 'all') {
-      setFilter('all');
-    }
-  }, [activeTab, filter, setFilter]);
 
   const handleClearSearch = useCallback(() => {
     setSearchQuery('');
@@ -162,7 +156,7 @@ export const MarketplaceTabs = () => {
     ];
   }, [data, filter, handleClearSearch, isLoading, query, searchTitle]);
 
-  const showFilters = activeTab !== 'orders' && activeTab !== 'prescriptions';
+  const showFilters = activeTab !== 'orders';
 
   return (
     <URLTabs>

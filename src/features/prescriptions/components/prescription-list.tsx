@@ -30,6 +30,7 @@ export const PrescriptionsList = ({
   }
 
   const {
+    trimmedQuery,
     normalizedQuery,
     isFiltered,
     isSearching,
@@ -65,7 +66,19 @@ export const PrescriptionsList = ({
     ].filter(({ prescriptions }) => prescriptions.length > 0);
   }
 
-  if (!filteredPrescriptions.length || !sections.length) return null;
+  if ((isFiltered || isSearching) && !filteredPrescriptions.length) {
+    return (
+      <div className="flex flex-col items-center space-y-4 rounded-2xl border border-dashed border-zinc-200 px-6 py-10 text-center text-sm text-secondary">
+        <p>
+          {isSearching
+            ? `No prescriptions found for "${trimmedQuery}".`
+            : `No prescriptions available for "${filter}" right now.`}
+        </p>
+      </div>
+    );
+  }
+
+  if (!sections.length) return null;
 
   return (
     <div className="flex flex-col gap-14">
