@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { HSAFSACheckoutButton } from '@/components/shared/hsa-fsa-checkout-button';
-import { PaymentDetails } from '@/components/shared/payment-details';
 import { StripeCardElement } from '@/components/shared/stripe-card-element';
 import { StripeExpressCheckoutElement } from '@/components/shared/stripe-express-checkout-element';
 import { Button } from '@/components/ui/button';
@@ -11,6 +10,7 @@ import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner'
 import { Body1, Body2, H3 } from '@/components/ui/typography';
 import { useCheckout } from '@/features/auth/hooks/use-checkout';
 import { useCheckoutContext } from '@/features/auth/stores';
+import { PaymentDetails } from '@/features/users/components/payment/payment-details';
 import { RegisterInput } from '@/lib/auth';
 import { getAccessCode } from '@/utils/access-code';
 import { getState } from '@/utils/verify-state-from-postal';

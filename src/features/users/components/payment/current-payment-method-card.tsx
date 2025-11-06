@@ -1,49 +1,28 @@
-import { CircleCheckBig, Pencil, X } from 'lucide-react';
+import { CircleCheckBig, Pencil } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Body1, Body2, Body3 } from '@/components/ui/typography';
 import { usePaymentMethodSelection } from '@/features/settings/hooks';
-import { PaymentMethodsSelect } from '@/features/users/components/payment-methods-select';
+import { PaymentMethodsSelect } from '@/features/users/components/payment/payment-methods-select';
 import { cn } from '@/lib/utils';
 import { capitalize } from '@/utils/format';
 
 export const CurrentPaymentMethodCard = ({
   error,
   className,
-  selectedPaymentMethodId,
-  onPaymentMethodSelect,
-  isEditing = false,
-  setIsEditing,
 }: {
   error?: string;
   className?: string;
-  selectedPaymentMethodId?: string;
-  onPaymentMethodSelect: (paymentMethodId: string) => void;
-  isEditing: boolean;
-  setIsEditing: (isEditing: boolean) => void;
 }) => {
-  const { defaultPaymentMethod, activePaymentMethod, isFlexSelected } =
-    usePaymentMethodSelection(selectedPaymentMethodId);
+  const {
+    activePaymentMethod,
+    isFlexSelected,
+    isSelectingPaymentMethod,
+    startSelectingPaymentMethod,
+  } = usePaymentMethodSelection();
 
-  if (isEditing) {
-    return (
-      <PaymentMethodsSelect
-        selectedPaymentMethodId={
-          selectedPaymentMethodId ||
-          defaultPaymentMethod?.externalPaymentMethodId
-        }
-        onPaymentMethodSelect={(id) => {
-          onPaymentMethodSelect(id);
-          setIsEditing(false);
-        }}
-        closeBtn={
-          <X
-            className="size-4 cursor-pointer text-zinc-500"
-            onClick={() => setIsEditing(false)}
-          />
-        }
-      />
-    );
+  if (isSelectingPaymentMethod) {
+    return <PaymentMethodsSelect />;
   }
 
   return (
@@ -63,7 +42,7 @@ export const CurrentPaymentMethodCard = ({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setIsEditing(true)}
+            onClick={startSelectingPaymentMethod}
           >
             <Pencil className="size-4 cursor-pointer text-zinc-500" />
           </Button>

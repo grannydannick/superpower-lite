@@ -1,7 +1,7 @@
 // Animations removed for simplicity
 import NumberFlow from '@number-flow/react';
 import { CircleCheckBig } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { SplitScreenLayout } from '@/components/layouts/split-screen-layout';
 import { TestimonialCarousel } from '@/components/shared/testimonials/components/testimonial-carousel';
@@ -11,7 +11,7 @@ import { useTestKitServices } from '@/features/onboarding/hooks/use-test-kits';
 import { useCreateBulkOrders } from '@/features/orders/api/create-bulk-orders';
 import { CreateOrderInput } from '@/features/orders/api/create-order';
 import { usePaymentMethodSelection } from '@/features/settings/hooks';
-import { CurrentPaymentMethodCard } from '@/features/users/components/current-payment-method-card';
+import * as Payment from '@/features/users/components/payment';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
@@ -31,19 +31,13 @@ const CheckoutStepContent = () => {
   const { next: nextTestKitStep } = TestKitStepper.useStepper();
   const { next: nextOnboardingStep } = useOnboardingStepper();
 
-  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<
-    string | undefined
-  >();
-  const [isSelectingPaymentMethod, setIsSelectingPaymentMethod] =
-    useState(false);
-
-  const { isFlexSelected, hasFlexPaymentMethod, activePaymentMethod } =
-    usePaymentMethodSelection(selectedPaymentMethodId);
-
-  const handlePaymentMethodSelect = (id: string) => {
-    setSelectedPaymentMethodId(id);
-    setIsSelectingPaymentMethod(false);
-  };
+  const {
+    isFlexSelected,
+    hasFlexPaymentMethod,
+    activePaymentMethod,
+    activePaymentMethodId,
+    startSelectingPaymentMethod,
+  } = usePaymentMethodSelection();
 
   const totalPrice = useMemo(() => {
     return selectedServices.reduce((acc, service) => acc + service.price, 0);
@@ -147,12 +141,8 @@ const CheckoutStepContent = () => {
           <div>
             <H3 className="mb-4">Payment</H3>
 
-            <CurrentPaymentMethodCard
+            <Payment.CurrentPaymentMethodCard
               className="bg-white"
-              selectedPaymentMethodId={selectedPaymentMethodId}
-              onPaymentMethodSelect={handlePaymentMethodSelect}
-              isEditing={isSelectingPaymentMethod}
-              setIsEditing={setIsSelectingPaymentMethod}
               error={
                 error
                   ? 'There was an issue with your payment method. Please try again'
@@ -195,9 +185,9 @@ const CheckoutStepContent = () => {
               </Button>
               {hasFlexPaymentMethod &&
                 selectedServices.length > 0 &&
-                !selectedPaymentMethodId && (
+                !activePaymentMethodId && (
                   <Button
-                    onClick={() => setIsSelectingPaymentMethod(true)}
+                    onClick={startSelectingPaymentMethod}
                     variant="outline"
                     className="w-full bg-white"
                   >

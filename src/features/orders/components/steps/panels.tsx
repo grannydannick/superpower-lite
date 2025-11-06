@@ -9,7 +9,12 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Body1, Body2, H3 } from '@/components/ui/typography';
-import { MAX_TUBE_COUNT, SUPERPOWER_BLOOD_PANEL } from '@/const';
+import {
+  BASELINE_TUBE_COUNT,
+  MAX_TUBE_COUNT,
+  ORGAN_AGE_PANEL,
+  SUPERPOWER_BLOOD_PANEL,
+} from '@/const';
 import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
 import { HEALTHCARE_SERVICE_DIALOG_CONTAINER_STYLE } from '@/features/orders/const/config';
 import { useHasCredit } from '@/features/orders/hooks';
@@ -39,7 +44,9 @@ export const Panels = () => {
         <AddOnPanelsSelect
           existingCreditIds={new Set(credit?.addOnServiceIds ?? [])}
           selectedIds={addOnIds}
+          excludeServices={[SUPERPOWER_BLOOD_PANEL, ORGAN_AGE_PANEL]}
           setSelectedIds={updateAddOnIds}
+          standalone
         />
       </div>
       <HealthcareServiceFooter nextBtnDisabled={isDisabled} />
@@ -52,6 +59,8 @@ type AddOnsProps = {
   setSelectedIds: React.Dispatch<React.SetStateAction<Set<string>>>;
   existingCreditIds?: Set<string>;
   className?: string;
+  standalone?: boolean;
+  excludeServices?: string[];
   isLoading?: boolean;
 };
 
@@ -61,28 +70,39 @@ export const AddOnPanelsSelect = ({
   setSelectedIds,
   existingCreditIds,
   className,
+  standalone = false,
+  excludeServices = [],
   isLoading = false,
 }: AddOnsProps) => {
   const addOnServicesQuery = useServices({ group: 'blood-panel-addon' });
-  const visibleServices = addOnServicesQuery.data?.services ?? [];
 
   const ownedIds = useMemo(
     () => existingCreditIds ?? new Set<string>(),
     [existingCreditIds],
   );
 
-  const hasBaselineCredit = useMemo(() => {
-    for (const id of ownedIds) {
-      if (id.toLowerCase().includes('baseline')) return true;
-    }
-    return false;
-  }, [ownedIds]);
-
-  // temporary hack to hide baseline if credit is not present
+  // Filter out excluded services from list of add-on services and apply sorting logic
   const services = useMemo(() => {
-    if (hasBaselineCredit) return visibleServices;
-    return visibleServices.filter((s) => s.name !== SUPERPOWER_BLOOD_PANEL);
-  }, [visibleServices, hasBaselineCredit]);
+    let filtered = addOnServicesQuery.data?.services ?? [];
+    const excludeSet = new Set(excludeServices);
+    filtered = filtered.filter((s) => !excludeSet.has(s.name));
+    return [...filtered].sort((a, b) => {
+      if (a.name === ORGAN_AGE_PANEL) return -1;
+      if (b.name === ORGAN_AGE_PANEL) return 1;
+      return 0;
+    });
+  }, [addOnServicesQuery.data?.services, excludeServices]);
+
+  // If add-ons are being booked standalone (i.e. a-la-carte), we don't need to subtract the baseline tubes
+  // If the baseline is included in the services, we don't need to subtract the baseline tubes
+  const maxAddOnTubes = useMemo(() => {
+    const hasBaselineInServices = services.some(
+      (s) => s.name === SUPERPOWER_BLOOD_PANEL,
+    );
+    return hasBaselineInServices || standalone
+      ? MAX_TUBE_COUNT
+      : MAX_TUBE_COUNT - BASELINE_TUBE_COUNT;
+  }, [services, standalone]);
 
   const tubeCountById = useMemo(
     () => new Map(services.map((s) => [s.id, s.bloodTubeCount ?? 0])),
@@ -124,13 +144,13 @@ export const AddOnPanelsSelect = ({
         });
 
         const addCount = service.bloodTubeCount ?? 0;
-        if (currentTotal + addCount > MAX_TUBE_COUNT) return prev; // reject add
+        if (currentTotal + addCount > maxAddOnTubes) return prev; // reject add
 
         next.add(service.id);
         return next;
       });
     },
-    [setSelectedIds, baseTubes, ownedIds, tubeCountById],
+    [setSelectedIds, baseTubes, ownedIds, tubeCountById, maxAddOnTubes],
   );
 
   const totalPrice = useMemo(
@@ -157,7 +177,7 @@ export const AddOnPanelsSelect = ({
             const wouldExceed =
               !isPurchased &&
               !selectedIds.has(s.id) &&
-              totalTubes + (s.bloodTubeCount ?? 0) > MAX_TUBE_COUNT;
+              totalTubes + (s.bloodTubeCount ?? 0) > maxAddOnTubes;
 
             const disabled = isPurchased || wouldExceed || isLoading;
 
@@ -180,9 +200,12 @@ export const AddOnPanelsSelect = ({
           <>
             <div className="flex items-center gap-2">
               <Body1 className="text-secondary">
-                Estimated Total: {totalTubes}/{MAX_TUBE_COUNT} tubes
+                Estimated Total: {totalTubes}/{maxAddOnTubes} additional tubes
               </Body1>
-              <EstimatedTooltip />
+              <EstimatedTooltip
+                maxAddOnTubes={maxAddOnTubes}
+                standalone={standalone}
+              />
             </div>
             <Body1>{formatMoney(totalPrice)}</Body1>
           </>
@@ -192,7 +215,13 @@ export const AddOnPanelsSelect = ({
   );
 };
 
-const EstimatedTooltip = () => {
+const EstimatedTooltip = ({
+  maxAddOnTubes,
+  standalone,
+}: {
+  maxAddOnTubes: number;
+  standalone: boolean;
+}) => {
   return (
     <TooltipProvider>
       <Tooltip delayDuration={75}>
@@ -216,11 +245,12 @@ const EstimatedTooltip = () => {
           }}
         >
           <p>
-            For your comfort and safety, we limit each draw to 14 tubes. This
-            ensures we collect enough blood to run all your tests without taking
-            more than your body can easily replenish in a single visit. If
-            you&apos;d like to add even more tests, you can visit the Services
-            page in your dashboard and schedule another appointment.
+            {standalone
+              ? `For your comfort & safety, each draw is limited to ${MAX_TUBE_COUNT} tubes. `
+              : `For your comfort & safety, each draw is limited to ${MAX_TUBE_COUNT} tubes: ${BASELINE_TUBE_COUNT} for your baseline test & up to ${maxAddOnTubes} for add-ons.`}
+            This ensures we collect enough blood without exceeding what your
+            body can easily replenish. To add more tests, you can visit the
+            Marketplace in your dashboard & schedule another appointment.
           </p>
         </TooltipContent>
       </Tooltip>

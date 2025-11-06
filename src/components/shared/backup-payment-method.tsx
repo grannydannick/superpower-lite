@@ -1,10 +1,11 @@
 import { StripeError } from '@stripe/stripe-js';
 
-import { PaymentDetails } from '@/components/shared/payment-details';
 import { StripeCardElement } from '@/components/shared/stripe-card-element';
 import { Body2, H3 } from '@/components/ui/typography';
 // eslint-disable-next-line import/no-restricted-paths
 import { usePaymentMethods } from '@/features/settings/api/get-payment-methods';
+// eslint-disable-next-line import/no-restricted-paths
+import * as Payment from '@/features/users/components/payment';
 
 interface BackupPaymentMethodProps {
   isLoading: boolean;
@@ -47,14 +48,14 @@ export const BackupPaymentMethod = ({
           collect a backup credit card.
         </Body2>
       </div>
-      <div className="space-y-4">
-        <PaymentDetails />
+      <Payment.PaymentGroup>
+        <Payment.PaymentDetails />
         <StripeCardElement
           processing={isLoading}
           error={stripeError}
           setError={setStripeError}
         />
-      </div>
+      </Payment.PaymentGroup>
     </div>
   );
 };

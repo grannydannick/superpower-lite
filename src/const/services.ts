@@ -48,6 +48,7 @@ export const METHYLATION_PANEL = 'Methylation Panel';
 export const FEMALE_FERTILITY_PANEL = 'Female Fertility Panel';
 export const AUTOIMMUNITY_AND_CELIAC_PANEL = 'Autoimmunity & Celiac Panel';
 export const NUTRIENT_AND_ANTIOXIDANT_PANEL = 'Nutrient & Antioxidant Panel';
+export const ORGAN_AGE_PANEL = 'Organ Age Panel';
 
 export const READY_NUM_HOURS_BEFORE_ADVISORY = 2;
 
@@ -83,3 +84,4 @@ export const checkLabOrderSupport = (serviceName: string) => {
 };
 
 export const MAX_TUBE_COUNT = 14;
+export const BASELINE_TUBE_COUNT = 6;

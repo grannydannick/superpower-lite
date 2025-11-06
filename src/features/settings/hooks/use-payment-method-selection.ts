@@ -1,18 +1,37 @@
 import { useMemo } from 'react';
 
 import { usePaymentMethods } from '@/features/settings/api';
-
-const isFlexPaymentProvider = (provider?: string) =>
-  provider?.toLowerCase() === 'flex';
+import { usePaymentMethodStore } from '@/features/settings/stores/payment-method-store';
 
 /**
  * Hook for computing payment method derived values based on selected payment method ID.
- * State management should be handled by the consuming component.
+ * State management and computation logic is handled by the zustand store.
  *
- * @param selectedPaymentMethodId - The currently selected payment method ID (managed by component)
  * @returns Payment method query data and computed properties
  */
-export function usePaymentMethodSelection(selectedPaymentMethodId?: string) {
+export function usePaymentMethodSelection() {
+  const {
+    selectedPaymentMethodId,
+    isSelectingPaymentMethod,
+    setActivePaymentMethod,
+    startSelectingPaymentMethod,
+    getDefaultPaymentMethod,
+    getFlexPaymentMethod,
+    getActivePaymentMethod,
+    getIsFlexSelected,
+    getHasFlexPaymentMethod,
+  } = usePaymentMethodStore((s) => ({
+    selectedPaymentMethodId: s.selectedPaymentMethodId,
+    isSelectingPaymentMethod: s.isSelectingPaymentMethod,
+    setActivePaymentMethod: s.setActivePaymentMethod,
+    startSelectingPaymentMethod: s.startSelectingPaymentMethod,
+    getDefaultPaymentMethod: s.getDefaultPaymentMethod,
+    getFlexPaymentMethod: s.getFlexPaymentMethod,
+    getActivePaymentMethod: s.getActivePaymentMethod,
+    getIsFlexSelected: s.getIsFlexSelected,
+    getHasFlexPaymentMethod: s.getHasFlexPaymentMethod,
+  }));
+
   const paymentMethodsQuery = usePaymentMethods();
   const paymentMethods = useMemo(
     () => paymentMethodsQuery.data?.paymentMethods ?? [],
@@ -20,42 +39,46 @@ export function usePaymentMethodSelection(selectedPaymentMethodId?: string) {
   );
 
   const defaultPaymentMethod = useMemo(
-    () =>
-      paymentMethods.find((pm) => pm.default) ??
-      (paymentMethods.length > 0 ? paymentMethods[0] : undefined),
-    [paymentMethods],
+    () => getDefaultPaymentMethod(paymentMethods),
+    [getDefaultPaymentMethod, paymentMethods],
   );
 
   const flexPaymentMethod = useMemo(
-    () =>
-      paymentMethods.find((pm) => isFlexPaymentProvider(pm.paymentProvider)),
-    [paymentMethods],
+    () => getFlexPaymentMethod(paymentMethods),
+    [getFlexPaymentMethod, paymentMethods],
   );
 
   const activePaymentMethod = useMemo(
-    () =>
-      selectedPaymentMethodId
-        ? paymentMethods.find(
-            (pm) => pm.externalPaymentMethodId === selectedPaymentMethodId,
-          )
-        : defaultPaymentMethod,
-    [selectedPaymentMethodId, paymentMethods, defaultPaymentMethod],
+    () => getActivePaymentMethod(paymentMethods, selectedPaymentMethodId),
+    [getActivePaymentMethod, paymentMethods, selectedPaymentMethodId],
   );
 
   const isFlexSelected = useMemo(
-    () => isFlexPaymentProvider(activePaymentMethod?.paymentProvider),
-    [activePaymentMethod],
+    () => getIsFlexSelected(activePaymentMethod),
+    [getIsFlexSelected, activePaymentMethod],
   );
 
-  const hasFlexPaymentMethod = flexPaymentMethod !== undefined;
+  const hasFlexPaymentMethod = useMemo(
+    () => getHasFlexPaymentMethod(flexPaymentMethod),
+    [getHasFlexPaymentMethod, flexPaymentMethod],
+  );
+
+  const isLoading = useMemo(
+    () => paymentMethodsQuery.isLoading,
+    [paymentMethodsQuery.isLoading],
+  );
 
   return {
     paymentMethods,
-    paymentMethodsQuery,
     defaultPaymentMethod,
     flexPaymentMethod,
     activePaymentMethod,
+    activePaymentMethodId: activePaymentMethod?.externalPaymentMethodId,
+    setActivePaymentMethod,
+    startSelectingPaymentMethod,
     isFlexSelected,
     hasFlexPaymentMethod,
+    isSelectingPaymentMethod,
+    isLoading,
   };
 }

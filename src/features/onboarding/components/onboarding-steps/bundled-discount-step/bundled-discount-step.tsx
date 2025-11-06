@@ -1,19 +1,15 @@
-import { Check, CircleCheckBig } from 'lucide-react';
+import { Check } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { SplitScreenLayout } from '@/components/layouts';
-import { PaymentDetails } from '@/components/shared/payment-details';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/components/ui/sonner';
-import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner';
 import { Body1, H2, H3, H4 } from '@/components/ui/typography';
 import { useUpgradeOrder } from '@/features/orders/api/upgrade-order';
-import { usePaymentMethodSelection } from '@/features/settings/hooks';
-import { CurrentPaymentMethodCard } from '@/features/users/components/current-payment-method-card';
+import * as Payment from '@/features/users/components/payment';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 import { formatMoney } from '@/utils/format-money';
@@ -137,30 +133,17 @@ const BundledDiscountCard = ({
 };
 
 const BundledDiscountContent = () => {
-  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<
-    string | undefined
-  >();
-  const [isSelectingPaymentMethod, setIsSelectingPaymentMethod] =
-    useState(false);
-  const { isFlexSelected, hasFlexPaymentMethod, activePaymentMethod } =
-    usePaymentMethodSelection(selectedPaymentMethodId);
-
-  const handlePaymentMethodSelect = (id: string) => {
-    setSelectedPaymentMethodId(id);
-    setIsSelectingPaymentMethod(false);
-  };
-
   const { next } = useOnboardingStepper();
   const upgradeOrderMutation = useUpgradeOrder();
   const { data: user } = useUser();
   const [selectedBundledDiscount, setSelectedBundledDiscount] =
     useState<BundledDiscount>(BUNDLED_DISCOUNTS[0]);
 
-  const upgradeOrder = async () => {
+  const upgradeOrder = async (paymentMethodId: string) => {
     await upgradeOrderMutation.mutateAsync({
       data: {
         upgradeType: 'baseline-bundle',
-        paymentMethodId: activePaymentMethod?.externalPaymentMethodId,
+        paymentMethodId,
         quantity: selectedBundledDiscount.quantity,
       },
     });
@@ -223,75 +206,19 @@ const BundledDiscountContent = () => {
       {/* Payment Details Panel */}
       <div className="order-2 w-full flex-col gap-4 p-4 md:order-1 md:p-10 lg:sticky lg:top-8 lg:flex lg:h-[calc(100svh-4rem)] lg:max-h-[calc(100svh-4rem)] lg:overflow-auto">
         <ProgressHeader className="hidden md:flex" />
-        <div className="mt-8 space-y-4">
+        <Payment.PaymentGroup>
           <H3 className="hidden text-zinc-900 md:block">Payment details</H3>
-          <PaymentDetails titleSm="Payment details" titleMd="Card" />
-          <CurrentPaymentMethodCard
-            className="!bg-white"
-            selectedPaymentMethodId={selectedPaymentMethodId}
-            onPaymentMethodSelect={handlePaymentMethodSelect}
-            isEditing={isSelectingPaymentMethod}
-            setIsEditing={setIsSelectingPaymentMethod}
+          <Payment.PaymentDetails titleSm="Payment details" titleMd="Card" />
+          <Payment.CurrentPaymentMethodCard className="!bg-white" />
+          <Payment.SubmitPayment
+            onSubmit={upgradeOrder}
+            onCancel={next}
+            submitLabel="Purchase"
+            isPending={upgradeOrderMutation.isPending}
+            isSuccess={upgradeOrderMutation.isSuccess}
+            enabled={selectedBundledDiscount.quantity > 0}
           />
-        </div>
-        <div className="my-6 flex flex-col gap-2">
-          <Button
-            disabled={
-              upgradeOrderMutation.isPending || upgradeOrderMutation.isSuccess
-            }
-            onClick={upgradeOrder}
-          >
-            {upgradeOrderMutation.isPending ? (
-              <TransactionSpinner className="flex justify-center" />
-            ) : (
-              <>
-                {isFlexSelected && (
-                  <CircleCheckBig className="mr-2 size-[20px]" />
-                )}
-                Purchase {selectedBundledDiscount.quantity} additional test
-                {selectedBundledDiscount.quantity > 1 ? 's' : ''} {''}
-                for {formatMoney(selectedDiscountPricing.price)} {''}
-                {isFlexSelected ? ' with HSA/FSA' : ''}
-              </>
-            )}
-          </Button>
-          {hasFlexPaymentMethod && !selectedPaymentMethodId && (
-            <Button
-              variant="outline"
-              className="bg-white"
-              onClick={() => setIsSelectingPaymentMethod(true)}
-            >
-              <CircleCheckBig className="mr-2 size-[20px] text-zinc-700" />
-              Select HSA/FSA card
-            </Button>
-          )}
-          <Button
-            variant="outline"
-            className="bg-white"
-            onClick={next}
-            disabled={upgradeOrderMutation.isPending}
-          >
-            No thanks
-          </Button>
-        </div>
-        <div className="flex justify-center gap-6 text-xs text-zinc-400 md:justify-start">
-          <a
-            href="https://www.superpower.com/privacy"
-            target="_blank"
-            rel="noreferrer"
-            className="transition-colors duration-150 hover:text-zinc-500"
-          >
-            Privacy Policy
-          </a>
-          <a
-            href="https://www.superpower.com/terms"
-            target="_blank"
-            rel="noreferrer"
-            className="transition-colors duration-150 hover:text-zinc-500"
-          >
-            Terms of services
-          </a>
-        </div>
+        </Payment.PaymentGroup>
       </div>
     </React.Fragment>
   );

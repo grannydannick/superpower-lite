@@ -1,10 +1,8 @@
-import { ArrowRight, ChevronDown, CircleCheckBig } from 'lucide-react';
-import { useState } from 'react';
+import { ArrowRight, ChevronDown } from 'lucide-react';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { SplitScreenLayout } from '@/components/layouts';
 import { AvailableBiomarkersDialog } from '@/components/shared/available-biomarkers';
-import { PaymentDetails } from '@/components/shared/payment-details';
 import { StyledMarkdown } from '@/components/shared/styled-markdown';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,12 +12,10 @@ import {
 } from '@/components/ui/collapsible';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/components/ui/sonner';
-import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner';
 import { Body1, Body2, H2, H3, H4 } from '@/components/ui/typography';
 import { UPGRADE_INFO } from '@/const';
 import { useUpgradeOrder } from '@/features/orders/api/upgrade-order';
-import { usePaymentMethodSelection } from '@/features/settings/hooks';
-import { CurrentPaymentMethodCard } from '@/features/users/components/current-payment-method-card';
+import * as Payment from '@/features/users/components/payment';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 import { formatMoney } from '@/utils/format-money';
@@ -32,27 +28,14 @@ const AdvancedPanelUpgradeContent = () => {
 
   const upgradeOrderMutation = useUpgradeOrder();
   const { data: user } = useUser();
-  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<
-    string | undefined
-  >();
-  const [isSelectingPaymentMethod, setIsSelectingPaymentMethod] =
-    useState(false);
-
-  const { isFlexSelected, hasFlexPaymentMethod, activePaymentMethod } =
-    usePaymentMethodSelection(selectedPaymentMethodId);
-
-  const handlePaymentMethodSelect = (id: string) => {
-    setSelectedPaymentMethodId(id);
-    setIsSelectingPaymentMethod(false);
-  };
 
   const price = getUpgradePrice(user);
 
-  const upgradeOrder = async () => {
+  const upgradeOrder = async (paymentMethodId: string) => {
     await upgradeOrderMutation.mutateAsync({
       data: {
         upgradeType: 'advanced',
-        paymentMethodId: activePaymentMethod?.externalPaymentMethodId,
+        paymentMethodId,
       },
     });
     toast.success(`One-time Advanced Panel upgrade successful!`);
@@ -74,7 +57,7 @@ const AdvancedPanelUpgradeContent = () => {
             risk.
           </Body1>
 
-          <CardInfo className="lg:hidden" price={price} />
+          <ProductInfo price={price} className="lg:hidden" />
           <AvailableBiomarkersDialog>
             <Button
               variant="ghost"
@@ -105,87 +88,34 @@ const AdvancedPanelUpgradeContent = () => {
             </Collapsible>
           </div>
         ))}
-        <div className="space-y-4">
-          <PaymentDetails />
-          <CurrentPaymentMethodCard
-            className="!bg-white"
-            selectedPaymentMethodId={selectedPaymentMethodId}
-            onPaymentMethodSelect={handlePaymentMethodSelect}
-            isEditing={isSelectingPaymentMethod}
-            setIsEditing={setIsSelectingPaymentMethod}
+        <Payment.PaymentGroup>
+          <Payment.PaymentDetails />
+          <Payment.CurrentPaymentMethodCard className="!bg-white" />
+          <Payment.SubmitPayment
+            onSubmit={upgradeOrder}
+            onCancel={next}
+            submitLabel="Upgrade to Advanced"
+            isPending={upgradeOrderMutation.isPending}
+            isSuccess={upgradeOrderMutation.isSuccess}
+            enabled
           />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Button
-            disabled={upgradeOrderMutation.isPending}
-            onClick={upgradeOrder}
-          >
-            {upgradeOrderMutation.isPending ||
-            upgradeOrderMutation.isSuccess ? (
-              <TransactionSpinner className="flex justify-center" />
-            ) : (
-              <>
-                {isFlexSelected && (
-                  <CircleCheckBig className="mr-2 size-[20px]" />
-                )}
-                Upgrade to Advanced{isFlexSelected ? ' with HSA/FSA' : ''} (+
-                {formatMoney(price)})
-              </>
-            )}
-          </Button>
-          {hasFlexPaymentMethod && !selectedPaymentMethodId && (
-            <Button
-              variant="outline"
-              className="bg-white"
-              onClick={() => setIsSelectingPaymentMethod(true)}
-            >
-              <CircleCheckBig className="mr-2 size-[20px] text-zinc-700" />
-              Select HSA/FSA card
-            </Button>
-          )}
-          <Button
-            variant={selectedPaymentMethodId ? 'outline' : 'white'}
-            className="bg-white"
-            onClick={next}
-            disabled={upgradeOrderMutation.isPending}
-          >
-            No thanks
-          </Button>
-        </div>
-        <div className="flex gap-6 text-xs text-zinc-400">
-          <a
-            href="https://www.superpower.com/privacy"
-            target="_blank"
-            rel="noreferrer"
-            className="transition-colors duration-150 hover:text-zinc-500"
-          >
-            Privacy Policy
-          </a>
-          <a
-            href="https://www.superpower.com/terms"
-            target="_blank"
-            rel="noreferrer"
-            className="transition-colors duration-150 hover:text-zinc-500"
-          >
-            Terms of services
-          </a>
-        </div>
+        </Payment.PaymentGroup>
       </div>
       <div className="hidden w-full flex-col gap-4 rounded-3xl border border-zinc-200 bg-white p-10 lg:sticky lg:top-8 lg:flex lg:h-[calc(100svh-4rem)] lg:max-h-[calc(100svh-4rem)] lg:overflow-auto">
         <Body1 className="text-zinc-500">One-time upgrade</Body1>
-        <CardInfo price={price} />
+        <ProductInfo price={price} />
         <TotalInfo price={price} />
       </div>
     </>
   );
 };
 
-const CardInfo = ({
-  className,
+const ProductInfo = ({
   price,
+  className,
 }: {
-  className?: string;
   price: number;
+  className?: string;
 }) => {
   return (
     <div

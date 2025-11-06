@@ -1,5 +1,4 @@
 import { CircleCheckBig, MoreVertical, Plus } from 'lucide-react';
-import { ReactNode } from 'react';
 
 import { DotIcon } from '@/components/icons/dot';
 import { Button } from '@/components/ui/button';
@@ -10,46 +9,22 @@ import {
 } from '@/components/ui/dropdown';
 import { Label } from '@/components/ui/label';
 import { Body1, Body3 } from '@/components/ui/typography';
-import { usePaymentMethods } from '@/features/settings/api';
 import { CreatePaymentMethodDialog } from '@/features/settings/components/billing/create-payment-method-dialog';
 import {
   DeletePaymentMethodMenuItem,
   SetDefaultPaymentMethodMenuItem,
 } from '@/features/settings/components/billing/payment-method-list';
+import { usePaymentMethodSelection } from '@/features/settings/hooks';
 import { cn } from '@/lib/utils';
 import { capitalize } from '@/utils/format';
 
-export const PaymentMethodsSelect = ({
-  onPaymentMethodAdd,
-  closeBtn,
-  selectedPaymentMethodId,
-  onPaymentMethodSelect,
-}: {
-  onPaymentMethodAdd?: () => void;
-  closeBtn?: ReactNode;
-  selectedPaymentMethodId?: string;
-  onPaymentMethodSelect?: (paymentMethodId: string) => void;
-}) => {
-  const paymentMethodsQuery = usePaymentMethods({});
-  const paymentMethods = paymentMethodsQuery.data?.paymentMethods ?? [];
-
-  const handleCardClick = (paymentMethodId: string) => {
-    if (!onPaymentMethodSelect) return;
-    onPaymentMethodSelect(paymentMethodId);
-  };
+export const PaymentMethodsSelect = () => {
+  const { activePaymentMethodId, setActivePaymentMethod, paymentMethods } =
+    usePaymentMethodSelection();
 
   return (
     <div className="space-y-2">
-      {closeBtn ? (
-        <div className="flex items-center justify-between">
-          <Label className="text-sm text-zinc-500">
-            Active payment methods
-          </Label>
-          {closeBtn}
-        </div>
-      ) : (
-        <Label className="text-sm text-zinc-500">Active payment methods</Label>
-      )}
+      <Label className="text-sm text-zinc-500">Active payment methods</Label>
       <div className="rounded-xl border border-zinc-200 bg-white">
         {paymentMethods.length > 0 && (
           <div className="p-2">
@@ -57,29 +32,29 @@ export const PaymentMethodsSelect = ({
               const isFlexCard =
                 paymentMethod.paymentProvider.toLowerCase() === 'flex';
               const isSelected =
-                selectedPaymentMethodId ===
-                paymentMethod.externalPaymentMethodId;
-              const isClickable = onPaymentMethodSelect;
-
+                activePaymentMethodId === paymentMethod.externalPaymentMethodId;
               return (
                 <div
                   role="button"
                   tabIndex={0}
                   className={cn(
                     'flex w-full items-center justify-between rounded-[8px] p-4 text-left',
-                    isClickable && 'cursor-pointer',
                     isSelected
                       ? 'bg-zinc-100 hover:bg-zinc-100'
                       : 'hover:bg-zinc-100',
                   )}
                   key={i}
                   onClick={() =>
-                    handleCardClick(paymentMethod.externalPaymentMethodId)
+                    setActivePaymentMethod(
+                      paymentMethod.externalPaymentMethodId,
+                    )
                   }
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
-                      handleCardClick(paymentMethod.externalPaymentMethodId);
+                      setActivePaymentMethod(
+                        paymentMethod.externalPaymentMethodId,
+                      );
                     }
                   }}
                 >
@@ -161,11 +136,10 @@ export const PaymentMethodsSelect = ({
         <div
           className={cn(paymentMethods.length > 0 ? 'pb-3' : 'py-3', `px-6`)}
         >
-          {onPaymentMethodAdd ? (
+          <CreatePaymentMethodDialog>
             <Button
               variant="ghost"
               className="group flex cursor-pointer items-center gap-1.5 p-0 text-sm text-zinc-400 hover:text-zinc-700"
-              onClick={onPaymentMethodAdd}
             >
               <Plus
                 strokeWidth={2.75}
@@ -173,20 +147,7 @@ export const PaymentMethodsSelect = ({
               />
               Add payment method
             </Button>
-          ) : (
-            <CreatePaymentMethodDialog>
-              <Button
-                variant="ghost"
-                className="group flex cursor-pointer items-center gap-1.5 p-0 text-sm text-zinc-400 hover:text-zinc-700"
-              >
-                <Plus
-                  strokeWidth={2.75}
-                  className="size-4 text-zinc-400 transition-colors group-hover:text-zinc-700"
-                />
-                Add payment method
-              </Button>
-            </CreatePaymentMethodDialog>
-          )}
+          </CreatePaymentMethodDialog>
         </div>
       </div>
     </div>

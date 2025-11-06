@@ -1,5 +1,5 @@
 import { AlertCircleIcon, CircleCheckBig } from 'lucide-react';
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,7 @@ import { useOrder } from '@/features/orders/stores/order-store';
 import { useService } from '@/features/services/api';
 import { CreatePaymentMethodForm } from '@/features/settings/components/billing/create-payment-method-form';
 import { usePaymentMethodSelection } from '@/features/settings/hooks';
-import { CurrentPaymentMethodCard } from '@/features/users/components/current-payment-method-card';
+import { CurrentPaymentMethodCard } from '@/features/users/components/payment/current-payment-method-card';
 import { useStepper } from '@/lib/stepper';
 import { cn } from '@/lib/utils';
 import { Order } from '@/types/api';
@@ -35,11 +35,6 @@ export function OrderSummary(): ReactNode {
     onSuccess,
   } = useOrder((s) => s);
   const { nextStep, prevStep } = useStepper((s) => s);
-  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<
-    string | undefined
-  >();
-  const [isSelectingPaymentMethod, setIsSelectingPaymentMethod] =
-    useState(false);
 
   const createOrderMutation = useCreateOrder({
     mutationConfig: {
@@ -60,17 +55,14 @@ export function OrderSummary(): ReactNode {
     createOrderMutation.isPending || updateOrderMutation.isPending;
 
   const {
-    paymentMethodsQuery,
+    isLoading: isPaymentMethodsLoading,
     defaultPaymentMethod,
     isFlexSelected,
     hasFlexPaymentMethod,
     activePaymentMethod,
-  } = usePaymentMethodSelection(selectedPaymentMethodId);
-
-  const handlePaymentMethodSelect = (id: string) => {
-    setSelectedPaymentMethodId(id);
-    setIsSelectingPaymentMethod(false);
-  };
+    activePaymentMethodId,
+    startSelectingPaymentMethod,
+  } = usePaymentMethodSelection();
 
   const serviceQuery = useService({
     serviceId: service.id,
@@ -82,7 +74,7 @@ export function OrderSummary(): ReactNode {
   });
 
   const isQueryLoading =
-    serviceQuery.isLoading || isCreditLoading || paymentMethodsQuery.isLoading;
+    serviceQuery.isLoading || isCreditLoading || isPaymentMethodsLoading;
 
   const price = serviceQuery.data?.service.price;
 
@@ -160,14 +152,7 @@ export function OrderSummary(): ReactNode {
               supportsLabOrder={service.supportsLabOrder}
               selectedPanels={[...addOnIds, ...(credit?.addOnServiceIds ?? [])]}
             />
-            {price && price > 0 ? (
-              <CurrentPaymentMethodCard
-                selectedPaymentMethodId={selectedPaymentMethodId}
-                onPaymentMethodSelect={handlePaymentMethodSelect}
-                isEditing={isSelectingPaymentMethod}
-                setIsEditing={setIsSelectingPaymentMethod}
-              />
-            ) : null}
+            {price && price > 0 ? <CurrentPaymentMethodCard /> : null}
           </div>
         ) : null}
         {!defaultPaymentMethod && !isQueryLoading ? (
@@ -192,12 +177,12 @@ export function OrderSummary(): ReactNode {
             className={cn(
               'w-full bg-white md:w-auto',
               (!hasFlexPaymentMethod ||
-                selectedPaymentMethodId ||
+                activePaymentMethodId ||
                 price === undefined ||
                 price <= 0) &&
                 'hidden',
             )}
-            onClick={() => setIsSelectingPaymentMethod(true)}
+            onClick={startSelectingPaymentMethod}
           >
             <CircleCheckBig className="mr-2 size-[20px] text-zinc-700" />
             Select HSA/FSA card

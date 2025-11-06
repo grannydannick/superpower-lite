@@ -90,10 +90,7 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
     }
 
     if (userHasAdvancedUpgrade) {
-      excludedSteps.push(
-        ONBOARDING_STEPS.ADVANCED_UPGRADE,
-        ONBOARDING_STEPS.ADD_ON_PANELS,
-      );
+      excludedSteps.push(ONBOARDING_STEPS.ADVANCED_UPGRADE);
     }
 
     if (userHasCustomPanels) {

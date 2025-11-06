@@ -5,7 +5,7 @@ import {
   HSAFSAIcon,
   MasterCardIcon,
   VisaIcon,
-} from '../icons';
+} from '../../../../components/icons';
 
 const AVAILABLE_PAYMENT_METHODS = [
   { icon: <AmericanExpressIcon />, key: 'american-express' },
