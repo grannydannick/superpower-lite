@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { SplitScreenLayout } from '@/components/layouts/split-screen-layout';
 import { Body1, H2 } from '@/components/ui/typography';
-import { SUPERPOWER_BLOOD_PANEL } from '@/const';
+import { ADVANCED_BLOOD_PANEL, SUPERPOWER_BLOOD_PANEL } from '@/const';
 import { useUpgradeOrder } from '@/features/orders/api/upgrade-order';
 import { AddOnPanelsSelect } from '@/features/orders/components/steps';
 import { useHasCredit } from '@/features/orders/hooks';
@@ -71,7 +71,7 @@ const AddOnPanelsContent = () => {
             existingCreditIds={existingCreditIds}
             isLoading={upgradeOrderMutation.isPending}
             className="max-h-fit flex-1 overflow-y-scroll"
-            excludeServices={[SUPERPOWER_BLOOD_PANEL]}
+            excludeServices={[ADVANCED_BLOOD_PANEL, SUPERPOWER_BLOOD_PANEL]}
           />
         </div>
         <Payment.PaymentGroup>

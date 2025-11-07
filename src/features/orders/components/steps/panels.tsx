@@ -14,6 +14,7 @@ import {
   MAX_TUBE_COUNT,
   ORGAN_AGE_PANEL,
   SUPERPOWER_BLOOD_PANEL,
+  ADVANCED_BLOOD_PANEL,
 } from '@/const';
 import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
 import { HEALTHCARE_SERVICE_DIALOG_CONTAINER_STYLE } from '@/features/orders/const/config';
@@ -44,7 +45,11 @@ export const Panels = () => {
         <AddOnPanelsSelect
           existingCreditIds={new Set(credit?.addOnServiceIds ?? [])}
           selectedIds={addOnIds}
-          excludeServices={[SUPERPOWER_BLOOD_PANEL, ORGAN_AGE_PANEL]}
+          excludeServices={[
+            ADVANCED_BLOOD_PANEL,
+            SUPERPOWER_BLOOD_PANEL,
+            ORGAN_AGE_PANEL,
+          ]}
           setSelectedIds={updateAddOnIds}
           standalone
         />
