@@ -46,7 +46,8 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
 
   // Fetch user profile data and check completion status (proxy for info-update step)
   const { data: user, isLoading: isUserLoading } = useUser();
-  const userInfoCompleted = user?.firstName && user?.lastName;
+  const userInfoCompleted =
+    user?.firstName && user?.lastName && user?.primaryAddress?.state;
 
   // Check user's order history for upgrade eligibility
   const { data: ordersData, isLoading: isOrdersLoading } = useOrders();

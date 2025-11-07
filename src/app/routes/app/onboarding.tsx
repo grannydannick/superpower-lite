@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Spinner } from '@/components/ui/spinner';
@@ -35,17 +35,26 @@ export const OnboardingRoute = () => {
   });
 
   const navigate = useNavigate();
+  const hasCheckedInitialLoad = useRef(false);
 
   /**
    * This gets triggered on final step or if user already has onboarding completed
+   * Only redirect on initial load, not on refetch
    */
   useEffect(() => {
     if (!onboardingTask.data) return;
 
+    // Only check on initial load, skip refetches
+    if (hasCheckedInitialLoad.current) return;
+
     if (onboardingTask.data.task.status === 'completed') {
+      hasCheckedInitialLoad.current = true;
       navigate('/', {
         replace: true,
       });
+    } else {
+      // Mark as checked even if not completed, so we don't check again on refetch
+      hasCheckedInitialLoad.current = true;
     }
   }, [onboardingTask.data, navigate]);
 

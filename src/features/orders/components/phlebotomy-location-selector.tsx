@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -21,12 +21,21 @@ export const CreateOrderPhlebotomyLocationSelector = () => {
     updateSlot,
     updateTz,
   } = useOrder((s) => s);
-  const { data: user } = useUser();
+  const {
+    data: user,
+    refetch: refetchUser,
+    isLoading: isUserLoading,
+  } = useUser();
   const { checkAdminActorAccess } = useAuthorization();
   const { credit } = useHasCredit({
     serviceName: service.name,
   });
   const isAdmin = checkAdminActorAccess();
+
+  // Force refetch user data on mount to ensure we have the latest address info
+  useEffect(() => {
+    refetchUser();
+  }, [refetchUser]);
 
   const handleOptionClick = (optionValue: CollectionMethodType) => {
     updateCollectionMethod(
@@ -40,8 +49,12 @@ export const CreateOrderPhlebotomyLocationSelector = () => {
   // Check if user has an AT_HOME credit from a draft order
   const options = useMemo(
     () => getCollectionMethods(service, user?.primaryAddress, credit, isAdmin),
-    [service, user?.primaryAddress, isAdmin, credit],
+    [service, user, isAdmin, credit],
   );
+
+  if (isUserLoading) {
+    return null;
+  }
 
   return (
     <RadioGroup

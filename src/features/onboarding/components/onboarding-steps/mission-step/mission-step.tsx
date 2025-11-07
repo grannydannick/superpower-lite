@@ -1,12 +1,10 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { OnboardingLayout } from '@/components/layouts/onboarding-layout';
 import { Button } from '@/components/ui/button';
 import { H1, H3, H4 } from '@/components/ui/typography';
-import { useUpdateTask } from '@/features/tasks/api/update-task';
-
-import { useOnboardingStepper } from '../onboarding-stepper';
 
 import { Activation } from './animation';
 
@@ -19,16 +17,10 @@ const MISSION_CONTENT = [
 ];
 
 export const Mission = () => {
-  const { next } = useOnboardingStepper();
+  const navigate = useNavigate();
 
-  const { mutateAsync: updateTaskProgress } = useUpdateTask();
-
-  const handleNext = async () => {
-    await updateTaskProgress({
-      taskName: 'onboarding',
-      data: { status: 'completed' },
-    });
-    next();
+  const onClick = () => {
+    navigate('/');
   };
 
   return (
@@ -49,7 +41,7 @@ export const Mission = () => {
           </H3>
         ))}
         <Button
-          onClick={handleNext}
+          onClick={onClick}
           type="submit"
           className="w-full"
           variant="white"

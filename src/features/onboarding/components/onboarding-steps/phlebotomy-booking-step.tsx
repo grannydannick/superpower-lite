@@ -18,6 +18,7 @@ import { useOnboardingStepper } from './onboarding-stepper';
 
 const BookingContent = ({ bloodPanel }: { bloodPanel?: HealthcareService }) => {
   const { next } = useOnboardingStepper();
+  const { mutateAsync: updateTaskProgress } = useUpdateTask();
 
   if (!bloodPanel) {
     return null;
@@ -29,12 +30,20 @@ const BookingContent = ({ bloodPanel }: { bloodPanel?: HealthcareService }) => {
     excludeSteps.push(BookingStepID.PANELS);
   }
 
+  const onClose = async () => {
+    await updateTaskProgress({
+      taskName: 'onboarding',
+      data: { status: 'completed' },
+    });
+    next();
+  };
+
   return (
     <HealthcareServiceDialog
       healthcareService={bloodPanel}
       excludeSteps={excludeSteps}
       // let user manually click next step inside the onboarding
-      onClose={next}
+      onClose={onClose}
     />
   );
 };
