@@ -11,6 +11,9 @@ export const RX_SAFETY_ADDRESS_LINKID = 'safety.address';
 // Used for Rx questionnaires to render the RX intro image.
 export const RX_SAFETY_INTRO_LINKID = 'safety.intro';
 
+// Used for Rx questionnaires to render the identity verification button before the payment screen.
+export const RX_IDENTITY_VERIFICATION_LINKID = 'consent-payment.verification';
+
 // Used for Rx questionnaires to skip the gender question.
 // Also a common linkId to conditionally enable male/female specific questions.
 export const RX_SEX_ASSIGNED_AT_BIRTH_LINKID = 'sex-assigned-at-birth';

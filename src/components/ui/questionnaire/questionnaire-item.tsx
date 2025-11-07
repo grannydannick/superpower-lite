@@ -14,7 +14,6 @@ import { Body1 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 
 import { RX_CONSENT_PAYMENT_LINKID } from './const/special-linkids';
-import { IdentityVerification } from './identity-verification';
 import { QuestionnaireErrorWrapper } from './questionnaire-error-wrapper';
 import { getCurrentAnswer } from './questionnaire-types/common';
 import {
@@ -39,7 +38,6 @@ export interface QuestionnaireFormItemProps {
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   nested?: boolean;
   onValidationChange?: (linkId: string, hasError: boolean) => void;
-  needsIdentityVerification?: boolean;
 }
 
 export const QuestionnaireFormItem = ({
@@ -51,11 +49,9 @@ export const QuestionnaireFormItem = ({
   onKeyDown,
   nested,
   onValidationChange,
-  needsIdentityVerification,
 }: QuestionnaireFormItemProps) => {
   const [localError, setLocalError] = useState(isError);
   const [rangeError, setRangeError] = useState<string | null>(null);
-  const [isIdentitySubmitted, setIsIdentitySubmitted] = useState(false);
 
   // Ensure parent state is reset if the component unmounts (e.g. when navigating away)
   useEffect(() => {
@@ -158,19 +154,9 @@ export const QuestionnaireFormItem = ({
     const confirmLabel = item.answerOption?.[0].valueString as string;
     return (
       <QuestionnaireErrorWrapper isError={localError}>
-        {item.linkId === RX_CONSENT_PAYMENT_LINKID &&
-          needsIdentityVerification && (
-            <IdentityVerification
-              shouldShow={!isIdentitySubmitted}
-              buttonCopy="Click to verify your identity"
-              handleIdentitySubmitted={() => setIsIdentitySubmitted(true)}
-            />
-          )}
         <Button
           type="button"
           className="w-full"
-          // The following logic prevents race condition between consent payment answer being set and the form being submitted (resulting in form requiring >1 click to submit)
-          disabled={needsIdentityVerification && !isIdentitySubmitted}
           onClick={(e) => {
             // 1) set the answer
             onChangeAnswer({ valueString: confirmLabel });

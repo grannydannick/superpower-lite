@@ -18,7 +18,12 @@ import {
   RX_ASSESSMENTS,
   RxQuestionnaireName,
 } from '../../../../const/questionnaire';
-import { RX_SEX_ASSIGNED_AT_BIRTH_LINKID } from '../const/special-linkids';
+import {
+  RX_IDENTITY_VERIFICATION_LINKID,
+  RX_SEX_ASSIGNED_AT_BIRTH_LINKID,
+} from '../const/special-linkids';
+
+import { isIdentityVerificationExpired } from './questionnaire-identity-utils';
 
 export enum QuestionnaireItemType {
   group = 'group',
@@ -60,6 +65,50 @@ export function shouldSkipGenderQuestion(
     isRxQuestionnaire(questionnaire) &&
     item.linkId === RX_SEX_ASSIGNED_AT_BIRTH_LINKID &&
     !!user?.gender
+  );
+}
+
+/**
+ * Checks if a question should be skipped because it's the identity verification question
+ * and the user already has a verified identity that hasn't expired.
+ * For Rx questionnaires, if the user's identity is already verified and not expired,
+ * they should not be shown the identity verification question.
+ */
+export function shouldSkipIdentityQuestion(
+  item: QuestionnaireItem,
+  questionnaire: Questionnaire,
+  user?: User,
+): boolean {
+  if (
+    !isRxQuestionnaire(questionnaire) ||
+    item.linkId !== RX_IDENTITY_VERIFICATION_LINKID
+  ) {
+    return false;
+  }
+
+  // Check if user is verified
+  const isVerified = user?.identityVerificationStatus === 'VERIFIED';
+  if (!isVerified || !user?.identityUpdatedTime) {
+    return false;
+  }
+
+  // Skip if verified and not expired
+  return !isIdentityVerificationExpired(user?.identityUpdatedTime);
+}
+/**
+ * TODO: ideally this logic lives on the server side, but FHIR QR native components is blocking this
+ * Consolidated function to check if a question should be skipped.
+ * Calls all individual skip functions (gender, identity, etc.) and returns true
+ * if any of them indicate the question should be skipped.
+ */
+export function shouldSkipQuestion(
+  item: QuestionnaireItem,
+  questionnaire: Questionnaire,
+  user?: User,
+): boolean {
+  return (
+    shouldSkipGenderQuestion(item, questionnaire, user) ||
+    shouldSkipIdentityQuestion(item, questionnaire, user)
   );
 }
 

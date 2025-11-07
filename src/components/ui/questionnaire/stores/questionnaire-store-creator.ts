@@ -12,7 +12,7 @@ import { User } from '@/types/api';
 import {
   buildInitialResponse,
   isQuestionEnabled,
-  shouldSkipGenderQuestion,
+  shouldSkipQuestion,
   QuestionnaireItemType,
 } from '../utils';
 
@@ -72,8 +72,8 @@ export const questionnaireStoreCreator = (
           }
 
           item.item.forEach((subItem) => {
-            // Skip gender question for Rx questionnaires (should be autofilled)
-            if (shouldSkipGenderQuestion(subItem, questionnaire, user)) {
+            // Skip questions that should be hidden (e.g., gender, identity verification)
+            if (shouldSkipQuestion(subItem, questionnaire, user)) {
               return;
             }
             if (isQuestionEnabled(subItem, response?.item ?? [], user)) {
@@ -81,8 +81,8 @@ export const questionnaireStoreCreator = (
             }
           });
         } else {
-          // Skip gender question for Rx questionnaires (should be autofilled)
-          if (shouldSkipGenderQuestion(item, questionnaire, user)) {
+          // Skip questions that should be hidden (e.g., gender, identity verification)
+          if (shouldSkipQuestion(item, questionnaire, user)) {
             return;
           }
           if (isQuestionEnabled(item, response?.item ?? [], user)) {
@@ -189,7 +189,7 @@ export const questionnaireStoreCreator = (
 
             item.item.forEach((subItem) => {
               if (
-                shouldSkipGenderQuestion(
+                shouldSkipQuestion(
                   subItem,
                   initProps.questionnaire,
                   initProps.user,
@@ -209,11 +209,7 @@ export const questionnaireStoreCreator = (
             });
           } else {
             if (
-              shouldSkipGenderQuestion(
-                item,
-                initProps.questionnaire,
-                initProps.user,
-              )
+              shouldSkipQuestion(item, initProps.questionnaire, initProps.user)
             ) {
               return acc;
             }
@@ -277,7 +273,7 @@ export const questionnaireStoreCreator = (
 
           item.item.forEach((subItem) => {
             if (
-              shouldSkipGenderQuestion(
+              shouldSkipQuestion(
                 subItem,
                 initProps.questionnaire,
                 initProps.user,
@@ -297,11 +293,7 @@ export const questionnaireStoreCreator = (
           });
         } else {
           if (
-            shouldSkipGenderQuestion(
-              item,
-              initProps.questionnaire,
-              initProps.user,
-            )
+            shouldSkipQuestion(item, initProps.questionnaire, initProps.user)
           ) {
             return acc;
           }

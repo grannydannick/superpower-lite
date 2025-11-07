@@ -13,14 +13,17 @@ import { Body1, Body2, H2 } from '@/components/ui/typography';
 // it's quite a lift so if someone could do this it would be greatly appreciated <3 ~A.S 11-03-2025
 // eslint-disable-next-line import/no-restricted-paths
 import { CurrentAddressCard } from '@/features/users/components/current-address-card';
+import { useIdentityVerification } from '@/hooks/use-identity-verification';
 import { cn } from '@/lib/utils';
 
 import {
   RX_CONSENT_PAYMENT_LINKID,
+  RX_IDENTITY_VERIFICATION_LINKID,
   RX_SAFETY_ADDRESS_LINKID,
   RX_SAFETY_INTRO_LINKID,
 } from './const/special-linkids';
 import { SUPERPOWER_QUESTIONNAIRE_DESCRIPTION_EXTENSION_URL } from './const/system-urls';
+import { IdentityVerificationButton } from './identity-verification-button';
 import { QuestionnaireFormRepeatableItem } from './questionnaire-repeatable-item';
 import { useQuestionnaireStore } from './stores/questionnaire-store';
 import {
@@ -35,7 +38,6 @@ interface QuestionnaireQuestionProps {
   response: QuestionnaireResponseItem;
   onChange: (response: QuestionnaireResponseItem[]) => void;
   onSave: (response: QuestionnaireResponseItem[]) => void;
-  needsIdentityVerification?: boolean;
 }
 
 /**
@@ -47,7 +49,6 @@ export const QuestionnaireQuestion = ({
   response,
   onChange,
   onSave,
-  needsIdentityVerification,
 }: QuestionnaireQuestionProps) => {
   const [localErrors, setLocalErrors] = useState<string[]>([]);
   const [validationErrors, setValidationErrors] = useState<Set<string>>(
@@ -96,6 +97,12 @@ export const QuestionnaireQuestion = ({
   )?.valueString;
   const isRxSafetyIntroQuestion = item.linkId === RX_SAFETY_INTRO_LINKID;
   const isRxSafetyAddressQuestion = item.linkId === RX_SAFETY_ADDRESS_LINKID;
+  const isRxIdentityVerificationQuestion =
+    item.linkId === RX_IDENTITY_VERIFICATION_LINKID;
+
+  const { needsVerification } = useIdentityVerification();
+  const isIdentityVerificationBlocking =
+    isRxIdentityVerificationQuestion && needsVerification;
 
   const handleNextStep = () => {
     if (hasValidationErrors) {
@@ -244,7 +251,6 @@ export const QuestionnaireQuestion = ({
               }}
               onKeyDown={handleKeyDown}
               onValidationChange={handleValidationChange}
-              needsIdentityVerification={needsIdentityVerification}
             />
           ))}
         </div>
@@ -271,6 +277,16 @@ export const QuestionnaireQuestion = ({
       {isRxSafetyIntroQuestion && (
         <img src="/onboarding/rx.webp" alt="Superpower experience preview" />
       )}
+      {isRxIdentityVerificationQuestion && (
+        <>
+          <img
+            src="/rx/identity.png"
+            alt="Identity verification"
+            className="w-full rounded-3xl"
+          />
+          <IdentityVerificationButton buttonCopy="Verify" />
+        </>
+      )}
       {/* NOTE: we don't want members editing address mid-Rx questionnaire */}
       {isRxSafetyAddressQuestion && <CurrentAddressCard disableEdit={true} />}
       {description && (
@@ -287,7 +303,12 @@ export const QuestionnaireQuestion = ({
   const renderNavigationButtons = () => {
     const disableAdvance =
       Boolean(isResponseEmpty(item, response, checkForQuestionEnabled)) ||
-      hasValidationErrors;
+      hasValidationErrors ||
+      isIdentityVerificationBlocking;
+
+    // Hide Next button on identity verification step until verified
+    const hideNextButton =
+      isRxIdentityVerificationQuestion && isIdentityVerificationBlocking;
 
     return (
       <div
@@ -316,7 +337,7 @@ export const QuestionnaireQuestion = ({
               Submit
             </Button>
           )
-        ) : (
+        ) : hideNextButton ? null : (
           <div
             className={cn(
               'ml-auto flex w-full flex-col-reverse gap-4 md:w-auto md:flex-row',
@@ -395,7 +416,6 @@ export const QuestionnaireQuestion = ({
             isError={localErrors.includes(item.linkId)}
             onKeyDown={handleKeyDown}
             onValidationChange={handleValidationChange}
-            needsIdentityVerification={needsIdentityVerification}
           />
         )}
         {renderNavigationButtons()}

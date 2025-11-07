@@ -3,6 +3,8 @@ export {
   isMultipleChoice,
   isRxQuestionnaire,
   shouldSkipGenderQuestion,
+  shouldSkipIdentityQuestion,
+  shouldSkipQuestion,
   getNewMultiSelectValues,
   formatReferenceString,
   getNumberOfPages,
@@ -10,6 +12,8 @@ export {
 } from './questionnaire-utils';
 
 export { isQuestionEnabled } from './questionnaire-enablement';
+
+export { isIdentityVerificationExpired } from './questionnaire-identity-utils';
 
 export {
   isResponseEmpty,

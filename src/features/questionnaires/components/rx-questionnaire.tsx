@@ -61,7 +61,6 @@ export const RxQuestionnaire = ({
         onSubmit && onSubmit();
       }}
       showIntro={showIntro}
-      needsIdentityVerification={true}
       user={user}
       className="space-y-6"
     />

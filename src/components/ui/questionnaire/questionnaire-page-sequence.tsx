@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 import { IntakeQuestionnaireCover } from './covers/intake-questionnaire-cover';
 import { QuestionnaireQuestion } from './questionnaire-question';
 import { useQuestionnaireStore } from './stores/questionnaire-store';
-import { QuestionnaireItemType, shouldSkipGenderQuestion } from './utils';
+import { QuestionnaireItemType, shouldSkipQuestion } from './utils';
 
 const hasAnswers = (item: QuestionnaireResponseItem): boolean => {
   if (item.answer && item.answer.length > 0) {
@@ -33,11 +33,9 @@ const hasAnswers = (item: QuestionnaireResponseItem): boolean => {
 // Component that renders the questionnaire form page in sequence
 export const QuestionnaireFormPageSequence = ({
   showIntro,
-  needsIdentityVerification,
   onSave,
 }: {
   showIntro: boolean;
-  needsIdentityVerification?: boolean;
   onSave: (item: QuestionnaireResponseItem[]) => void;
 }) => {
   const [_showIntro, setShowIntro] = useState(showIntro);
@@ -84,8 +82,8 @@ export const QuestionnaireFormPageSequence = ({
         }
 
         item.item.forEach((subItem) => {
-          // Skip gender question for Rx questionnaires (should be autofilled)
-          if (shouldSkipGenderQuestion(subItem, questionnaire, user)) {
+          // Skip questions that should be hidden (e.g., gender, identity verification)
+          if (shouldSkipQuestion(subItem, questionnaire, user)) {
             return;
           }
           if (checkForQuestionEnabled(subItem)) {
@@ -107,8 +105,8 @@ export const QuestionnaireFormPageSequence = ({
           }
         });
       } else {
-        // Skip gender question for Rx questionnaires (should be autofilled)
-        if (shouldSkipGenderQuestion(item, questionnaire, user)) {
+        // Skip questions that should be hidden (e.g., gender, identity verification)
+        if (shouldSkipQuestion(item, questionnaire, user)) {
           return;
         }
         if (checkForQuestionEnabled(item)) {
@@ -245,7 +243,6 @@ export const QuestionnaireFormPageSequence = ({
                     <QuestionnaireQuestion
                       item={currentQuestion.item}
                       response={currentQuestion.response}
-                      needsIdentityVerification={needsIdentityVerification}
                       onChange={setItems}
                       onSave={onSave}
                     />
