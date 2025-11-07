@@ -474,6 +474,7 @@ export const useCheckout = ({
       return true;
     } catch (error: any) {
       setProcessing(false);
+      console.error('Error adding payment method:', error);
       toast.error(
         'Something went wrong when adding your card. Please try again.',
       );
