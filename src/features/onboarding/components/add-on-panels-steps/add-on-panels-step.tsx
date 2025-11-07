@@ -48,7 +48,7 @@ const AddOnPanelsContent = () => {
           existingCreditIds={existingCreditIds}
           isLoading={upgradeOrderMutation.isPending}
           className="max-h-fit flex-1 overflow-y-scroll"
-          excludeServices={[SUPERPOWER_BLOOD_PANEL]}
+          excludeServices={[SUPERPOWER_BLOOD_PANEL, ADVANCED_BLOOD_PANEL]}
         />
       </div>
       <div className="w-full space-y-8 p-4 md:p-10">
