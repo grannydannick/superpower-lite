@@ -61,6 +61,7 @@ export const useUpgradeOrder = ({
       // TODO: we can likely grab service info from query client cache as well
       track('order_upgraded', {
         upgrade_type: variables.data.upgradeType,
+        addon_service_ids: variables.data.addOnServiceIds,
         upgrade_quantity: variables.data.quantity || 1,
         order_id: order.id,
         order_name: order.serviceName,
