@@ -53,6 +53,7 @@ const BiomarkersTableBodyContent = ({
   isLoading,
   skeletonColSpan,
   screenSize,
+  hideDialog = false,
   selectedOrderId,
   selectedOrderDate,
 }: {
@@ -62,6 +63,7 @@ const BiomarkersTableBodyContent = ({
   isLoading?: boolean;
   skeletonColSpan: number;
   screenSize: 'mobile' | 'tablet' | 'desktop' | 'widescreen';
+  hideDialog?: boolean;
   selectedOrderId?: string;
   selectedOrderDate?: Date | null;
 }) => {
@@ -106,6 +108,7 @@ const BiomarkersTableBodyContent = ({
           key={row.id}
           row={row}
           screenSize={screenSize}
+          hideDialog={hideDialog}
           selectedOrderId={selectedOrderId}
           selectedOrderDate={selectedOrderDate}
         />
@@ -338,11 +341,13 @@ const BiomarkersDataTableComponent = ({
   hideHeader = false,
   hiddenColumns = [],
   isLoading,
+  hideDialog = false,
 }: {
   biomarkers: Biomarker[];
   hideHeader?: boolean;
   hiddenColumns?: string[];
   isLoading?: boolean;
+  hideDialog?: boolean;
 }) => {
   const [isFiltering, setIsFiltering] = useState(false);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -535,6 +540,7 @@ const BiomarkersDataTableComponent = ({
             isLoading={isLoading}
             skeletonColSpan={skeletonColSpan}
             screenSize={screenSize}
+            hideDialog={hideDialog}
             selectedOrderId={selectedOrderId}
             selectedOrderDate={selectedOrderDate}
           />

@@ -15,23 +15,9 @@ export const biologicalAgeBiomarker = (
     id: 'biological-age',
     name: 'Biological Age',
     favorite: false,
-    description: `Not all ages are equal: Your chronological age, or calendar age, reflects how many years you have lived, while your biological age aims to reflect how your body is aging on a cellular level relative to other people.
-
-Your biological age is affected by many different factors, including diet, sleep, stress, exercise, social relationships, location, genetics, illness, and lifestyle decisions, which means that to some degree, you may be able to improve it over time with appropriate changes.
-
-There are many different ways to measure biological age, such as with epigenetics, telomere length, and blood biomarkers.
-
-Superpower uses your blood biomarker data. We run select blood biomarkers known to be strongly associated with aging through an open-source, peer-reviewed biological clock algorithm called PhenoAge by Yale Scientist Morgan Levine, PHD, based on 9,926 subjects of normally distributed age (see 'Sources').
-
-These subjects were followed for 23 years to see who had died or developed cardiovascular disease, cancer, dementia, diabetes, etc. Levine's team found that their algorithm correlated highly with chronological age (r=0.9) but also predicted all-cause mortality and death from specific diseases better than chronological age alone.
-
-The following nine biomarkers are used to calculate PhenoAge: albumin, creatinine, glucose, c-reactive protein, lymphocyte percent Immune, mean cell volume (MCV), red cell distribution width (RDW), alkaline phosphatase, and white blood cell count.
-
-Biological age has become a popular term in the last few years, as more people become attuned to the concept of longevity and the understanding that we have a certain degree of control over it.
-
-However, it is important to recognize that biological age is not a discrete predictor of morbidity or mortality events. Meaning, it can't tell you exactly how long you will live or whether or not you will develop a disease.
-
-Rather, think of it as a directional measurement of how your body may be aging internally, that is relative to you––i.e., the changes in your biological age over time reflect a general trend (of aging better or worse, or holding steady) and can alert you to lifestyle changes you may want to make to support healthy aging.`,
+    description: `Your chronological age reflects how many years you've lived, while your biological age reflects how your body is aging at a cellular level. Biological age is influenced by factors like diet, sleep, stress, exercise, and genetics, and can potentially be improved with lifestyle changes.
+    Superpower measures biological age using blood biomarkers run through PhenoAge, a peer-reviewed algorithm developed by Yale scientist Morgan Levine, PhD. Based on a 23-year study of nearly 10,000 subjects, PhenoAge was found to predict mortality and disease risk better than chronological age alone, using nine key biomarkers including albumin, glucose, creatinine, and inflammatory markers (see 'Sources').
+    However, biological age isn't a precise predictor of how long you'll live or whether you'll develop disease. Instead, think of it as a directional measurement—tracking changes in your biological age over time reveals general trends in how you're aging and can guide lifestyle adjustments to support healthier aging.`,
     importance: '',
     category: 'Aging',
     value: age

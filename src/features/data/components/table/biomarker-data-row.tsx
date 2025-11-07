@@ -3,6 +3,7 @@ import { cva } from 'class-variance-authority';
 import type { CSSProperties } from 'react';
 
 import { TableCell, TableRow } from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 import { Biomarker } from '@/types/api';
 
 import { BiomarkerDialog } from '../dialogs/biomarker-dialog';
@@ -70,11 +71,13 @@ export const BiomarkerDataRow = ({
   screenSize,
   selectedOrderId,
   selectedOrderDate,
+  hideDialog = false,
 }: {
   row: Row<Biomarker>;
   screenSize: ScreenSize;
   selectedOrderId?: string;
-  selectedOrderDate?: Date | null;
+  selectedOrderDate?: Date | undefined | null;
+  hideDialog?: boolean;
 }) => {
   if (row.original.status === 'PENDING' || row.original.status === 'UNKNOWN') {
     return null;
@@ -82,6 +85,29 @@ export const BiomarkerDataRow = ({
 
   const cells = row.getVisibleCells();
   const lastIndex = cells.length - 1;
+
+  const tableRowContent = (
+    <TableRow
+      className={cn(
+        'h-24 rounded-xl border-transparent bg-white shadow-sm outline outline-1 -outline-offset-1 outline-zinc-100 transition-all hover:bg-white hover:outline-zinc-200',
+        !hideDialog && 'cursor-pointer',
+      )}
+    >
+      {cells.map((cell, index) => (
+        <BiomarkerRowCell
+          key={cell.id}
+          screenSize={screenSize}
+          index={index}
+          lastIndex={lastIndex}
+          cell={cell}
+        />
+      ))}
+    </TableRow>
+  );
+
+  if (hideDialog) {
+    return tableRowContent;
+  }
 
   return (
     <BiomarkerDialog

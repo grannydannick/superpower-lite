@@ -13,12 +13,13 @@ import {
 } from '@/components/ui/dialog';
 import { dialogVariants } from '@/components/ui/dialog/utils/dialog-variants';
 import { SimpleTabs, SimpleTabsContent } from '@/components/ui/simple-tabs';
-import { Body1 } from '@/components/ui/typography';
+import { Body1, H3 } from '@/components/ui/typography';
 import { AgeShareCard } from '@/features/shareables/components/cards/age-share-card';
 import { SharingOptionsModal } from '@/features/shareables/components/sharing-options-modal';
 import { cn } from '@/lib/utils';
 
 import { useBiomarkers } from '../../api';
+import { BiomarkersAccordion } from '../biomarkers-accordion';
 
 import { BiomarkerContentTabs } from './biomarker-content-tabs';
 
@@ -50,6 +51,29 @@ export const BiologicalAgeDialog = ({
 
   const [selectedTab, setSelectedTab] =
     useState<(typeof tabs)[number]['value']>('chart');
+
+  // filter all biomarkers that contain "Organ Age" in their name
+  const organAgeBiomarkers =
+    biomarkersData?.biomarkers.filter((b) =>
+      b.name.toLowerCase().includes('organ age'),
+    ) ?? [];
+
+  // each organ age biomarker will render as its own accordion item.
+  // for each organ age, list related biomarkers whose names appear in components.
+  const resolveRelatedBiomarkers = (
+    organAge: (typeof organAgeBiomarkers)[number],
+  ) => {
+    const latest = organAge.value?.[organAge.value.length - 1];
+    const titles = (latest?.component ?? [])
+      .map((c) => c.title)
+      .filter(Boolean);
+    const all = biomarkersData?.biomarkers ?? [];
+    return all.filter(
+      (bm) =>
+        titles.includes(bm.name) &&
+        !bm.name.toLowerCase().includes('organ age'),
+    );
+  };
 
   return (
     <>
@@ -83,6 +107,7 @@ export const BiologicalAgeDialog = ({
               </DialogClose>
             </div>
           </div>
+
           <SimpleTabs
             tabs={tabs}
             defaultTab={selectedTab}
@@ -100,6 +125,23 @@ export const BiologicalAgeDialog = ({
               <AgeShareCard showAge={showAge} setShowAge={setShowAge} />
             </SimpleTabsContent>
           </SimpleTabs>
+
+          {organAgeBiomarkers.length > 0 && (
+            <div className="mb-8 space-y-4">
+              <H3>Your OrganAge Report</H3>
+              {organAgeBiomarkers.map((bm) => {
+                const related = resolveRelatedBiomarkers(bm);
+
+                return (
+                  <BiomarkersAccordion
+                    key={bm.id ?? bm.name}
+                    biomarker={bm}
+                    biomarkers={related}
+                  />
+                );
+              })}
+            </div>
+          )}
 
           {biologicalAgeMarker && (
             <BiomarkerContentTabs biomarker={biologicalAgeMarker} />
