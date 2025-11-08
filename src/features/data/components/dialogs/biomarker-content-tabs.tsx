@@ -15,6 +15,8 @@ import { Biomarker, MetadataContent } from '@/types/api';
 import { pluralizeIs } from '../../utils/pluralize';
 
 import { BiomarkerAiSuggestions } from './biomarker-ai-suggestions';
+import { BiomarkerFamilyRiskSuggestions } from './biomarker-family-risk-suggestions';
+import { BiomarkerServiceSuggestions } from './biomarker-service-suggestions';
 
 export function BiomarkerContentTabs({
   biomarker,
@@ -52,9 +54,15 @@ export function BiomarkerContentTabs({
 
   return (
     <div className={className}>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-6">
+        <BiomarkerFamilyRiskSuggestions biomarker={biomarker} />
         {biomarker.status !== 'RECOMMENDED' ? (
           <BiomarkerAiSuggestions name={name} />
+        ) : null}
+        {biomarker.status === 'RECOMMENDED' && biomarker.recommendedTest ? (
+          <BiomarkerServiceSuggestions
+            recommendedTest={biomarker.recommendedTest}
+          />
         ) : null}
 
         {metadata.map((item, idx) => (

@@ -212,7 +212,13 @@ export type Biomarker = Entity<{
   value: BiomarkerResult[];
   metadata: BiomarkerMetadata;
   recommendedTest?: string;
+  familyRisk?: BiomarkerFamilyRisk;
 }>;
+
+export interface BiomarkerFamilyRisk {
+  insight: string;
+  sms: string;
+}
 
 export type BiomarkerComponent = {
   category?: string;
@@ -871,3 +877,10 @@ export const SuperpowerCategory = {
 
 export type SuperpowerCategory =
   (typeof SuperpowerCategory)[keyof typeof SuperpowerCategory];
+
+export interface QuestionnaireInsights {
+  title: string;
+  description: string;
+  sms: string;
+  recommendations: string[];
+}

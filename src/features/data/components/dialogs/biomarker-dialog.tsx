@@ -1,7 +1,6 @@
 import { Description } from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import NumberFlow from '@/components/shared/number-flow';
 import { Button } from '@/components/ui/button';
@@ -15,12 +14,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { dialogVariants } from '@/components/ui/dialog/utils/dialog-variants';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, Body2, Body3, H4 } from '@/components/ui/typography';
-import { CUSTOM_BLOOD_PANEL_ID } from '@/const';
-import { BookingStepID } from '@/features/orders/utils/get-steps-for-service';
-import { useService } from '@/features/services/api';
-import { ServiceSelectCard } from '@/features/services/components/service-select-card';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { cn } from '@/lib/utils';
 import { Biomarker } from '@/types/api';
@@ -122,14 +116,9 @@ export const BiomarkerDialog = ({
         </div>
         <div className="flex flex-col gap-4">
           <TimeSeriesChart biomarker={biomarker} />
-          {biomarker.status === 'RECOMMENDED' && biomarker.recommendedTest ? (
-            <BiomarkerServiceSelectCard
-              recommendedTest={biomarker.recommendedTest}
-            />
-          ) : null}
           {biomarker.status !== 'RECOMMENDED' ? (
             <div className="mb-4 grid gap-2 min-[375px]:grid-cols-2">
-              <div className="flex flex-col gap-1 rounded-2xl border border-zinc-100 px-3 py-2 shadow-sm">
+              <div className="flex flex-col gap-1 rounded-2xl border px-3 py-2 shadow-sm">
                 <Body3 className="text-secondary">Latest result</Body3>
                 <H4
                   className="truncate"
@@ -143,7 +132,7 @@ export const BiomarkerDialog = ({
                   </Body1>
                 </H4>
               </div>
-              <div className="flex flex-col gap-1 rounded-2xl border border-zinc-100 px-3 py-2 shadow-sm">
+              <div className="flex flex-col gap-1 rounded-2xl border px-3 py-2 shadow-sm">
                 <Body3 className="text-secondary">Optimal range</Body3>
                 <H4
                   className="truncate"
@@ -167,44 +156,5 @@ export const BiomarkerDialog = ({
         <Description hidden>Insights about {biomarker.name}</Description>
       </DialogContent>
     </Dialog>
-  );
-};
-
-const BiomarkerServiceSelectCard = ({
-  recommendedTest,
-}: {
-  recommendedTest: string;
-}) => {
-  const navigate = useNavigate();
-
-  const getServiceQuery = useService({
-    serviceId: recommendedTest,
-    method: 'IN_LAB',
-  });
-
-  if (getServiceQuery.isLoading) {
-    return <Skeleton className="h-[106px] w-full rounded-[20px]" />;
-  }
-
-  const service = getServiceQuery.data?.service;
-
-  if (!service) {
-    return null;
-  }
-
-  return (
-    <ServiceSelectCard
-      service={service}
-      displayPrice={false}
-      toggle={() => {
-        const params = new URLSearchParams({
-          initialAddOnIds: `${service.id}`,
-          excludeSteps: `${BookingStepID.INFO}, ${BookingStepID.RECOMMENDATIONS}`,
-        });
-
-        navigate(`/services/${CUSTOM_BLOOD_PANEL_ID}?${params.toString()}`);
-      }}
-      trigger={<Button size="small">Test now</Button>}
-    />
   );
 };

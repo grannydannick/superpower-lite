@@ -19,6 +19,7 @@ import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
 
 import { Banner } from './banner/banner';
+import { FamilyInsightsBanner } from './family-insights/family-insights-banner';
 import { RecommendationsList } from './recommendations/recommendations-list';
 import {
   ActionPlanTimelineItem,
@@ -74,6 +75,7 @@ export const TimelineList = () => {
 
   return (
     <div className="mt-10 w-full md:mt-auto">
+      <FamilyInsightsBanner />
       <RecommendationsList />
       <Banner />
       <Timeline className="w-full">
