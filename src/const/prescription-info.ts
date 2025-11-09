@@ -263,7 +263,7 @@ export const SEMAGLUTIDE = {
     mechanism:
       'Semaglutide is usually administered through subcutaneous injection. The specific dosage will be determined by healthcare professionals based on individual needs. Strict adherence to the prescribed administration guidelines is crucial for optimal results.',
     history: `Semaglutide is a relatively recent addition to the class of medications known as GLP-1 receptor agonists, which are used primarily for treating type 2 diabetes and, more recently, obesity. Semaglutide was developed by the Danish pharmaceutical company Novo Nordisk. It is based on the GLP-1 hormone, which helps regulate blood sugar levels and appetite. In December 2017, the U.S. Food and Drug Administration (FDA) approved semaglutide under the brand name Ozempic® for the treatment of type 2 diabetes.
-      
+
       Recognizing the significant weight-loss benefits observed in clinical trials, Novo Nordisk pursued additional approval for semaglutide as a treatment for obesity, approved in June 2021 under the brand name Wegovy®.`,
   },
   headerFaq: [
@@ -1027,7 +1027,7 @@ export const GHK_CU_CREAM = {
     'Unlimited messaging with your provider',
   ],
   science: {
-    activeIngredients: `GHK-Cu (Copper Tripeptide-1) – 0.5%: The primary active ingredient known for stimulating collagen production, enhancing skin repair, and improving elasticity. Purified Water (Aqua): Serves as the base solvent for the cream, ensuring proper consistency and hydration. Glycerin: A humectant that attracts moisture to the skin, enhancing hydration and smoothness.`,
+    activeIngredients: `GHK-Cu (Copper Tripeptide-1) 0.5% (Anhydrous): Signals skin renewal and supports collagen-rich, resilient skin. Anhydrous Cream Base: Water-free blend of emollients and occlusives (e.g., squalane, caprylic/capric triglyceride, dimethicone, shea butter, beeswax) that locks in moisture, enhances glide, and improves peptide stability. No water, no glycerin, and typically no added preservatives required.`,
     mechanism: `GHK-CU is administered via a cream. Apply a small, pea sized amount to your face or affected areas. If there is no skin irritation, you can increase to 2 x pea sized amounts daily, as long as it isn't being combined with other skincare products like retinoids, vitamin c, AHAs/BHAs.`,
     history: `GHK-Cu (Glycyl-L-Histidyl-L-Lysine Copper) was discovered in the 1970s as a naturally occurring peptide in human plasma with profound roles in tissue repair and regeneration. Initially identified for its ability to stimulate collagen production and accelerate wound healing, GHK-Cu gained recognition for its anti-inflammatory and antioxidant properties. Early studies highlighted its impact on skin health, scar reduction, and hair growth, paving the way for its use in dermatological and cosmetic treatments. Today, GHK-Cu remains at the forefront of anti-aging research, with its applications expanding into broader areas of regenerative medicine and cellular health.`,
   },
