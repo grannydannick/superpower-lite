@@ -87,7 +87,7 @@ export const AssistantModal = () => {
           if (!isExpanded) open();
         }}
         className={cn(
-          'relative flex gap-2 flex-col border border-zinc-200 bg-white px-4 py-3 shadow-lg shadow-black/[.07] transition-all ease-out duration-200',
+          'relative pointer-events-auto hidden lg:flex gap-2 flex-col border border-zinc-200 bg-white px-4 py-3 shadow-lg shadow-black/[.07] transition-all ease-out duration-200',
           isExpanded
             ? 'pb-2 rounded-3xl items-start cursor-default'
             : 'items-center rounded-xl justify-center w-52 cursor-pointer hover:bg-zinc-50',

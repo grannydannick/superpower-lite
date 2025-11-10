@@ -65,7 +65,7 @@ export const DesktopCheckout = () => {
     <button
       onClick={handleOpenCheckout}
       className={cn(
-        'hidden lg:flex lg:flex-col items-center lg:items-start flex-row gap-4 lg:gap-0 hover:bg-zinc-50 z-10 lg:w-full lg:max-w-56 rounded-full lg:rounded-xl border border-zinc-200 bg-white p-3 shadow-lg shadow-black/5 transition-all duration-300 ease-in-out',
+        'hidden lg:flex lg:flex-col pointer-events-auto items-center lg:items-start flex-row gap-4 lg:gap-0 hover:bg-zinc-50 z-10 lg:w-full lg:max-w-56 rounded-full lg:rounded-xl border border-zinc-200 bg-white p-3 shadow-lg shadow-black/5 transition-all duration-300 ease-in-out',
         isVisible
           ? 'opacity-100'
           : 'opacity-0 pointer-events-none scale-[.99] translate-y-1 translate-x-1',

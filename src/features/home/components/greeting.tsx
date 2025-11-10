@@ -35,7 +35,7 @@ export const Greeting = () => {
       id="nav-reverse"
       className="size-full h-[700px] overflow-hidden bg-black py-32 md:px-8"
     >
-      <div className="relative z-50 mx-auto max-w-[1600px] px-8 min-[1620px]:px-16">
+      <div className="relative z-50 mx-auto max-w-[1600px] md:px-8 min-[1620px]:px-16">
         <H2 className="mb-8 px-6 text-white md:px-0">
           {greeting} <br />
           <span className="text-white/75">{greetingText}</span>

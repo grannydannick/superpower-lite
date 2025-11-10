@@ -15,6 +15,7 @@ import {
   MessageIcon,
   MarketplaceIcon,
 } from '@/components/icons';
+import { CircleAiIcon } from '@/components/icons/circle-ai-icon';
 import { PresentIcon } from '@/components/icons/present-icon';
 import { SettingsIcon } from '@/components/icons/settings-icon';
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
@@ -260,54 +261,48 @@ export const MobileNavbar = () => {
   ];
 
   return (
-    <>
+    <div className="fixed inset-x-3 bottom-3 z-[51] flex h-16 items-center gap-2">
       <div
         className={cn(
-          'flex justify-between lg:hidden items-center w-full p-4 fixed bottom-0 bg-white border-t border-t-zinc-100 z-[51] h-[72px]',
+          'flex flex-1 justify-between lg:hidden items-center h-full px-1 rounded-3xl bg-white border border-zinc-100 shadow-lg shadow-black/[.03]',
         )}
       >
-        {baseLinks.map((link, idx) => (
-          <NavLink
-            key={idx}
-            to={link.to}
-            className={({ isActive }) =>
-              cn(
-                'flex transition-colors rounded-xl flex-col md:flex-row items-center gap-2 p-2 min-w-[62px] md:min-w-0 md:p-4 cursor-pointer hover:bg-zinc-100',
-                isActive ? 'bg-zinc-100' : '',
-              )
-            }
-          >
-            <link.icon
+        {baseLinks
+          .filter((link) => link.name !== 'Concierge')
+          .map((link, idx) => (
+            <NavLink
+              key={idx}
+              to={link.to}
               className={cn(
-                'min-w-5 h-5 text-zinc-400 group-hover/sidebar:text-zinc-500 transition duration-150',
-                ({ isActive }: { isActive: boolean }) =>
-                  isActive ? 'text-zinc-900' : '',
-              )}
-            />
-            <span
-              className={cn(
-                '!m-0 inline-block whitespace-pre !p-0 text-[10px] md:text-sm text-zinc-500 transition duration-150',
-                ({ isActive }: { isActive: boolean }) =>
-                  isActive ? 'text-zinc-900 md:translate-x-1' : '',
+                'flex justify-center group shrink-0 h-[calc(100%-0.5rem)] transition-colors rounded-[20px] flex-col md:flex-row items-center gap-2 aspect-square p-4 md:min-w-0 cursor-pointer',
               )}
             >
-              {link.name}
-            </span>
-          </NavLink>
-        ))}
+              {({ isActive }) => (
+                <link.icon
+                  fill="currentColor"
+                  className={cn(
+                    'min-w-5 h-5 transition duration-150',
+                    isActive
+                      ? 'text-zinc-900'
+                      : 'text-zinc-300 group-hover:text-secondary',
+                  )}
+                />
+              )}
+            </NavLink>
+          ))}
         <DropdownMenu open={open} onOpenChange={setOpen}>
-          <DropdownMenuTrigger className="rounded-full" asChild>
+          <DropdownMenuTrigger className="group rounded-[20px]" asChild>
             <Button
               variant="link"
-              className="px-[14px] py-3 focus-visible:ring-transparent focus-visible:ring-offset-0 sm:px-4"
+              className="group p-[14px] focus-visible:ring-transparent focus-visible:ring-offset-0 sm:px-4"
             >
-              <Ellipsis className="text-zinc-500" />
+              <Ellipsis className="text-zinc-300 transition-colors group-hover:text-secondary group-data-[state='open']:text-zinc-900" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[244px] rounded-3xl border-none bg-black p-1.5 text-white outline-none xs:w-[178px]"
+            className="w-[244px] rounded-3xl border border-zinc-100 bg-white p-1.5 text-white shadow-lg shadow-black/[.03] outline-none xs:w-[178px]"
             side="bottom"
-            sideOffset={25}
+            sideOffset={16}
             align="end"
           >
             <ul className="flex flex-col gap-1.5">
@@ -332,13 +327,14 @@ export const MobileNavbar = () => {
                       : isActive;
 
                     return cn(
-                      'flex cursor-pointer items-center gap-3 rounded-[18px] p-4 transition duration-200 ease-in-out hover:bg-[#252525]',
-                      shouldBeActive && 'bg-[#252525]',
+                      'flex cursor-pointer items-center border hover:text-zinc-600 text-secondary border-transparent gap-3 rounded-[18px] p-4 transition duration-200 ease-in-out',
+                      shouldBeActive &&
+                        'bg-white border-zinc-200 shadow-sm text-zinc-900',
                     );
                   }}
                 >
-                  <link.icon width={12} height={12} color="white" />
-                  <p className="text-sm text-white">{link.name}</p>
+                  <link.icon width={12} height={12} color="currentColor" />
+                  <p className="text-sm">{link.name}</p>
                 </NavLink>
               ))}
               <NavLink
@@ -346,15 +342,33 @@ export const MobileNavbar = () => {
                 onClick={() => {
                   setOpen(false);
                 }}
-                className="flex cursor-pointer items-center gap-3 rounded-[18px] p-4 transition duration-200 ease-in-out hover:bg-[#252525]"
+                className="flex cursor-pointer items-center gap-3 rounded-[18px] p-4 text-secondary transition duration-200 ease-in-out hover:text-zinc-600"
               >
-                <LogOut width={12} height={12} color="white" />
-                <p className="text-sm text-white">Log out</p>
+                <LogOut width={12} height={12} color="currentColor" />
+                <p className="text-sm">Log out</p>
               </NavLink>
             </ul>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-    </>
+      <div className="flex aspect-square h-full shrink-0 items-center justify-center rounded-3xl border border-zinc-100 bg-white shadow-lg shadow-black/[.03]">
+        <NavLink
+          to={'./concierge'}
+          className={cn(
+            'flex justify-center rounded-[20px] group transition-colors flex-col md:flex-row items-center gap-2 aspect-square p-4 md:min-w-0 cursor-pointer',
+          )}
+        >
+          <CircleAiIcon
+            size={32}
+            className={cn(
+              'shrink-0 transition-colors',
+              pathname.startsWith('/concierge')
+                ? 'text-zinc-900'
+                : 'text-zinc-300 group-hover:text-secondary',
+            )}
+          />
+        </NavLink>
+      </div>
+    </div>
   );
 };

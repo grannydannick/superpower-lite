@@ -22,7 +22,7 @@ export const FloatingWrapper = () => {
   return (
     <div
       className={cn(
-        'fixed bottom-20 right-4 z-[51] flex flex-col items-end gap-3 lg:bottom-4',
+        'fixed bottom-24 right-4 w-52 pointer-events-none z-[51] flex flex-col items-end gap-3 lg:bottom-4',
         HIDE_WRAPPER_PATHNAMES.some((segment) => pathname.includes(segment)) &&
           'opacity-0 pointer-events-none',
       )}
