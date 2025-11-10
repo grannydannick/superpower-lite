@@ -261,10 +261,10 @@ export const MobileNavbar = () => {
   ];
 
   return (
-    <div className="fixed inset-x-3 bottom-3 z-[51] flex h-16 items-center gap-2">
+    <div className="fixed inset-x-3 bottom-3 z-[51] flex h-16 items-center gap-2 lg:hidden">
       <div
         className={cn(
-          'flex flex-1 justify-between lg:hidden items-center h-full px-1 rounded-3xl bg-white border border-zinc-100 shadow-lg shadow-black/[.03]',
+          'flex flex-1 justify-between items-center h-full px-1 rounded-3xl bg-white border border-zinc-100 shadow-lg shadow-black/[.03]',
         )}
       >
         {baseLinks
