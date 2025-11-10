@@ -1,5 +1,5 @@
 import { ChevronsDownUp, PictureInPicture } from 'lucide-react';
-import { useMemo, useState, type Ref } from 'react';
+import { useCallback, useMemo, useState, type Ref } from 'react';
 import { Resizable } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import { useNavigate } from 'react-router-dom';
@@ -23,6 +23,8 @@ export const AssistantModal = () => {
   const isExpanded = useAssistantStore((s) => s.isExpanded);
   const open = useAssistantStore((s) => s.open);
   const close = useAssistantStore((s) => s.close);
+  const input = useAssistantStore((s) => s.input);
+  const clearInput = useAssistantStore((s) => s.clearInput);
   const { width, height, setSize, minConstraints, maxConstraints } =
     useResizeAssistant();
 
@@ -32,6 +34,15 @@ export const AssistantModal = () => {
   const chatId = useMemo(() => generateUUID(), []);
   const boxHeight = isExpanded ? height : collapsedHeight;
   const boxWidth = isExpanded ? width : undefined;
+
+  const handleFullscreenClick = useCallback(() => {
+    const message = input?.trim();
+    const q = message ? `?defaultMessage=${encodeURIComponent(message)}` : '';
+    navigate(`/concierge/${chatId}${q}`);
+    // clear the input after navigating away
+    clearInput();
+    close();
+  }, [chatId, clearInput, close, input, navigate]);
 
   return (
     <Resizable
@@ -117,10 +128,7 @@ export const AssistantModal = () => {
               <Tooltip>
                 <TooltipTrigger>
                   <Button
-                    onClick={() => {
-                      navigate(`/concierge/${chatId}`);
-                      close();
-                    }}
+                    onClick={handleFullscreenClick}
                     variant="white"
                     className="aspect-square rounded-lg p-2 text-zinc-500 hover:bg-zinc-100 hover:text-primary"
                   >

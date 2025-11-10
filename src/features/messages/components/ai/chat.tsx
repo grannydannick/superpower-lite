@@ -2,6 +2,7 @@ import { useChat } from '@ai-sdk/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DefaultChatTransport, FileUIPart, type UIMessage } from 'ai';
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { toast } from '@/components/ui/sonner';
 import { env } from '@/config/env';
@@ -29,6 +30,7 @@ export function Chat({
   id: string;
   initialMessages: Array<UIMessage>;
 }) {
+  const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
   const { refetch } = useHistory();
   const { track } = useAnalytics();
@@ -39,7 +41,9 @@ export function Chat({
   const [lastSentMessageTime, setLastSentMessageTime] = useState<number | null>(
     null,
   );
-  const [input, setInput] = useState('');
+
+  const initialMessage = searchParams.get('defaultMessage');
+  const [input, setInput] = useState(initialMessage ?? '');
 
   const { messages, setMessages, sendMessage, status, stop } = useChat({
     id,
@@ -122,6 +126,22 @@ export function Chat({
 
   const [attachments, setAttachments] = useState<Array<FileUIPart>>([]);
 
+  const handleSendMessage = (message: any, options: any) => {
+    if (searchParams.get('defaultMessage') != null) {
+      setSearchParams(
+        (params) => {
+          params.delete('defaultMessage');
+          return params;
+        },
+        { replace: true },
+      );
+    }
+    setLastUserMessageTime(Date.now());
+    incrementMessageCount();
+    setInput('');
+    return sendMessage(message, options);
+  };
+
   // Initialize session start time when component mounts for AI chat
   useEffect(() => {
     if (type === 'ai' && !sessionStartTime) {
@@ -168,12 +188,7 @@ export function Chat({
             chatId={id}
             input={input}
             setInput={setInput}
-            sendMessage={(message, options) => {
-              setLastUserMessageTime(Date.now());
-              incrementMessageCount();
-              setInput('');
-              return sendMessage(message, options);
-            }}
+            sendMessage={handleSendMessage}
             status={status}
             stop={stop}
             attachments={attachments}
