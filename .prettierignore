@@ -1,1 +1,3 @@
 *.hbs
+
+src/orpc/types.generated.ts

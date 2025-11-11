@@ -37,7 +37,6 @@ yarn-error.log*
 
 # local
 mocked-db.json
-.cursor
 
 .idea
 
