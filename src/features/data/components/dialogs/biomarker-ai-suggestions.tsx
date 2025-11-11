@@ -1,4 +1,6 @@
+import { useWindowWidth } from '@wojtekmaj/react-hooks';
 import { ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -10,12 +12,16 @@ import { useAnalytics } from '@/hooks/use-analytics';
 
 export const BiomarkerAiSuggestions = ({ name }: { name: string }) => {
   const { track } = useAnalytics();
+  const width = useWindowWidth();
+  const navigate = useNavigate();
   const { suggestions, isLoading } = useSuggestions({
     enabled: true,
     max: 3,
     context: `I'm currently looking at my ${name} biomarker. Please give me some suggestions for questions.`,
   });
   const open = useAssistantStore((s) => s.open);
+
+  const isMobile = width ? width < 1024 : false;
 
   const content = (() => {
     if (isLoading || suggestions.length === 0) {
@@ -34,7 +40,13 @@ export const BiomarkerAiSuggestions = ({ name }: { name: string }) => {
         key={index}
         className="group w-full justify-start gap-5 rounded-2xl text-left transition-all duration-200 animate-in fade-in slide-in-from-bottom-2"
         onClick={() => {
-          open(suggestion);
+          if (isMobile) {
+            navigate(
+              `/concierge?defaultMessage=${encodeURIComponent(suggestion)}`,
+            );
+          } else {
+            open(suggestion);
+          }
 
           track('clicked_biomarker_ai_suggestion', {
             name,
