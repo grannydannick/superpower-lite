@@ -26,7 +26,13 @@ import { useOnboardingStepper } from './onboarding-stepper';
 const AdvancedPanelUpgradeContent = () => {
   const { next } = useOnboardingStepper();
 
-  const upgradeOrderMutation = useUpgradeOrder();
+  const upgradeOrderMutation = useUpgradeOrder({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success(`One-time Advanced Panel upgrade successful!`);
+      },
+    },
+  });
   const { data: user } = useUser();
 
   const price = getUpgradePrice(user);
@@ -38,10 +44,7 @@ const AdvancedPanelUpgradeContent = () => {
         paymentMethodId,
       },
     });
-    toast.success(`One-time Advanced Panel upgrade successful!`);
-    setTimeout(() => {
-      next();
-    }, 3000);
+    next();
   };
 
   return (

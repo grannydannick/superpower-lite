@@ -10,11 +10,10 @@ import {
 } from '@/components/ui/tooltip';
 import { Body1, Body2, H3 } from '@/components/ui/typography';
 import {
-  BASELINE_TUBE_COUNT,
+  ADVANCED_BLOOD_PANEL,
   MAX_TUBE_COUNT,
   ORGAN_AGE_PANEL,
   SUPERPOWER_BLOOD_PANEL,
-  ADVANCED_BLOOD_PANEL,
 } from '@/const';
 import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
 import { HEALTHCARE_SERVICE_DIALOG_CONTAINER_STYLE } from '@/features/orders/const/config';
@@ -45,13 +44,7 @@ export const Panels = () => {
         <AddOnPanelsSelect
           existingCreditIds={new Set(credit?.addOnServiceIds ?? [])}
           selectedIds={addOnIds}
-          excludeServices={[
-            ADVANCED_BLOOD_PANEL,
-            SUPERPOWER_BLOOD_PANEL,
-            ORGAN_AGE_PANEL,
-          ]}
           setSelectedIds={updateAddOnIds}
-          standalone
         />
       </div>
       <HealthcareServiceFooter nextBtnDisabled={isDisabled} />
@@ -64,8 +57,6 @@ type AddOnsProps = {
   setSelectedIds: React.Dispatch<React.SetStateAction<Set<string>>>;
   existingCreditIds?: Set<string>;
   className?: string;
-  standalone?: boolean;
-  excludeServices?: string[];
   isLoading?: boolean;
 };
 
@@ -75,39 +66,61 @@ export const AddOnPanelsSelect = ({
   setSelectedIds,
   existingCreditIds,
   className,
-  standalone = false,
-  excludeServices = [],
   isLoading = false,
 }: AddOnsProps) => {
   const addOnServicesQuery = useServices({ group: 'blood-panel-addon' });
+  const visibleServices = addOnServicesQuery.data?.services ?? [];
 
   const ownedIds = useMemo(
     () => existingCreditIds ?? new Set<string>(),
     [existingCreditIds],
   );
 
-  // Filter out excluded services from list of add-on services and apply sorting logic
-  const services = useMemo(() => {
-    let filtered = addOnServicesQuery.data?.services ?? [];
-    const excludeSet = new Set(excludeServices);
-    filtered = filtered.filter((s) => !excludeSet.has(s.name));
-    return [...filtered].sort((a, b) => {
-      if (a.name === ORGAN_AGE_PANEL) return -1;
-      if (b.name === ORGAN_AGE_PANEL) return 1;
-      return 0;
-    });
-  }, [addOnServicesQuery.data?.services, excludeServices]);
+  const hasBaselineCredit = useMemo(() => {
+    for (const id of ownedIds) {
+      if (id.toLowerCase().includes('baseline')) return true;
+    }
+    return false;
+  }, [ownedIds]);
 
-  // If add-ons are being booked standalone (i.e. a-la-carte), we don't need to subtract the baseline tubes
-  // If the baseline is included in the services, we don't need to subtract the baseline tubes
-  const maxAddOnTubes = useMemo(() => {
-    const hasBaselineInServices = services.some(
-      (s) => s.name === SUPERPOWER_BLOOD_PANEL,
-    );
-    return hasBaselineInServices || standalone
-      ? MAX_TUBE_COUNT
-      : MAX_TUBE_COUNT - BASELINE_TUBE_COUNT;
-  }, [services, standalone]);
+  const hasAdvancedCredit = useMemo(() => {
+    for (const id of ownedIds) {
+      if (id.toLowerCase().includes('advanced')) return true;
+    }
+    return false;
+  }, [ownedIds]);
+
+  const hasOrganAgeCredit = useMemo(() => {
+    for (const id of ownedIds) {
+      if (id.toLowerCase().includes('organ-age')) return true;
+    }
+    return false;
+  }, [ownedIds]);
+
+  // filter out excluded services from list of add-on services and apply sorting logic
+  const services = useMemo(() => {
+    return visibleServices.filter((s) => {
+      if (
+        ![
+          SUPERPOWER_BLOOD_PANEL,
+          ADVANCED_BLOOD_PANEL,
+          ORGAN_AGE_PANEL,
+        ].includes(s.name)
+      )
+        return true;
+
+      if (s.name === SUPERPOWER_BLOOD_PANEL) return hasBaselineCredit;
+      if (s.name === ADVANCED_BLOOD_PANEL) return hasAdvancedCredit;
+      if (s.name === ORGAN_AGE_PANEL) return hasOrganAgeCredit;
+
+      return false;
+    });
+  }, [
+    visibleServices,
+    hasBaselineCredit,
+    hasAdvancedCredit,
+    hasOrganAgeCredit,
+  ]);
 
   const tubeCountById = useMemo(
     () => new Map(services.map((s) => [s.id, s.bloodTubeCount ?? 0])),
@@ -149,13 +162,13 @@ export const AddOnPanelsSelect = ({
         });
 
         const addCount = service.bloodTubeCount ?? 0;
-        if (currentTotal + addCount > maxAddOnTubes) return prev; // reject add
+        if (currentTotal + addCount > MAX_TUBE_COUNT) return prev; // reject add
 
         next.add(service.id);
         return next;
       });
     },
-    [setSelectedIds, baseTubes, ownedIds, tubeCountById, maxAddOnTubes],
+    [setSelectedIds, baseTubes, ownedIds, tubeCountById],
   );
 
   const totalPrice = useMemo(
@@ -182,7 +195,7 @@ export const AddOnPanelsSelect = ({
             const wouldExceed =
               !isPurchased &&
               !selectedIds.has(s.id) &&
-              totalTubes + (s.bloodTubeCount ?? 0) > maxAddOnTubes;
+              totalTubes + (s.bloodTubeCount ?? 0) > MAX_TUBE_COUNT;
 
             const disabled = isPurchased || wouldExceed || isLoading;
 
@@ -205,12 +218,9 @@ export const AddOnPanelsSelect = ({
           <>
             <div className="flex items-center gap-2">
               <Body1 className="text-secondary">
-                Estimated Total: {totalTubes}/{maxAddOnTubes} additional tubes
+                Estimated Total: {totalTubes}/{MAX_TUBE_COUNT} additional tubes
               </Body1>
-              <EstimatedTooltip
-                maxAddOnTubes={maxAddOnTubes}
-                standalone={standalone}
-              />
+              <EstimatedTooltip />
             </div>
             <Body1>{formatMoney(totalPrice)}</Body1>
           </>
@@ -220,13 +230,7 @@ export const AddOnPanelsSelect = ({
   );
 };
 
-const EstimatedTooltip = ({
-  maxAddOnTubes,
-  standalone,
-}: {
-  maxAddOnTubes: number;
-  standalone: boolean;
-}) => {
+const EstimatedTooltip = () => {
   return (
     <TooltipProvider>
       <Tooltip delayDuration={75}>
@@ -250,12 +254,11 @@ const EstimatedTooltip = ({
           }}
         >
           <p>
-            {standalone
-              ? `For your comfort & safety, each draw is limited to ${MAX_TUBE_COUNT} tubes. `
-              : `For your comfort & safety, each draw is limited to ${MAX_TUBE_COUNT} tubes: ${BASELINE_TUBE_COUNT} for your baseline test & up to ${maxAddOnTubes} for add-ons.`}
-            This ensures we collect enough blood without exceeding what your
-            body can easily replenish. To add more tests, you can visit the
-            Marketplace in your dashboard & schedule another appointment.
+            For your comfort and safety, we limit each draw to 14 tubes. This
+            ensures we collect enough blood to run all your tests without taking
+            more than your body can easily replenish in a single visit. If
+            you&apos;d like to add even more tests, you can visit the Services
+            page in your dashboard and schedule another appointment.
           </p>
         </TooltipContent>
       </Tooltip>

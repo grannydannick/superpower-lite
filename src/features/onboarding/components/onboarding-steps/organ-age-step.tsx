@@ -1,14 +1,9 @@
-// import { ArrowRight } from 'lucide-react';
-import { useMemo } from 'react';
-
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { SplitScreenLayout } from '@/components/layouts';
-// import { AvailableBiomarkersDialog } from '@/components/shared/available-biomarkers';
-import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/components/ui/sonner';
 import { Body1, Body2, H2, H4 } from '@/components/ui/typography';
-import { ADVANCED_BLOOD_PANEL } from '@/const/services';
+import { ADVANCED_BLOOD_PANEL, ORGAN_AGE_PANEL } from '@/const';
 import { useUpgradeOrder } from '@/features/orders/api/upgrade-order';
 import { useHasCredit } from '@/features/orders/hooks';
 import { useServices } from '@/features/services/api';
@@ -16,73 +11,59 @@ import * as Payment from '@/features/users/components/payment';
 import { cn } from '@/lib/utils';
 import { formatMoney } from '@/utils/format-money';
 
-import { useAddOnPanels } from '../../hooks/use-add-on-panels';
-import { useOnboardingStepper } from '../onboarding-steps/onboarding-stepper';
-
-import { AddOnPanelsStepper } from './add-on-panels-stepper';
+import { useOnboardingStepper } from './onboarding-stepper';
 
 const ORGAN_AGE_PRICE = 9900;
 
 const OrganAgeContent = () => {
-  const { next: nextAddOnPanelsStep } = AddOnPanelsStepper.useStepper();
-  const { next: nextOnboardingStep } = useOnboardingStepper();
+  const { next, methods } = useOnboardingStepper();
 
-  const { togglePanel } = useAddOnPanels();
-
-  const upgradeOrderMutation = useUpgradeOrder();
-
-  // Check if the user has advanced credit
-  const {
-    hasCredit: hasAdvancedCredit,
-    isCreditLoading: isAdvancedCreditLoading,
-  } = useHasCredit({
+  const { credit } = useHasCredit({
     serviceName: ADVANCED_BLOOD_PANEL,
   });
 
-  // Get the add-on services for the user
-  const { data: addOnServicesData, isLoading: isServicesLoading } = useServices(
-    {
-      group: 'blood-panel-addon',
+  const upgradeOrderMutation = useUpgradeOrder({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success(`One-time Organ Age upgrade successful!`);
+      },
     },
-  );
+  });
 
-  // Find the organ-age service
-  const organAgeService = useMemo(() => {
-    const addOnServices = addOnServicesData?.services ?? [];
-    return addOnServices.find((service) =>
-      service.id.startsWith('v2-organ-age'),
-    );
-  }, [addOnServicesData?.services]);
+  // Get the add-on services for the user
+  const { data, isLoading: isServicesLoading } = useServices({
+    group: 'blood-panel-addon',
+  });
+
+  const goToNext = () => {
+    if (credit) {
+      methods.goTo('test-kit-steps');
+    } else {
+      next();
+    }
+  };
 
   // If the user has advanced credit, upgrade the order and skip the add-on panels step
   const upgradeOrder = async (paymentMethodId: string) => {
-    if (!organAgeService?.id) {
+    const organAge = data?.services.find((s) => s.name === ORGAN_AGE_PANEL);
+
+    if (!organAge) {
+      toast.error('Something went wrong, contact concierge@superpower.com');
       return;
     }
+
     await upgradeOrderMutation.mutateAsync({
       data: {
         upgradeType: 'custom-panel',
-        addOnServiceIds: [organAgeService.id],
+        addOnServiceIds: [organAge.id],
         paymentMethodId,
       },
     });
-    toast.success(`One-time Organ Age upgrade successful!`);
-    setTimeout(() => {
-      nextOnboardingStep();
-    }, 3000);
+
+    goToNext();
   };
 
-  // If the user doesn't have advanced credit, add the organ age service to the selected IDs and advance to the add-on panels step
-  const addOrganAge = () => {
-    if (!organAgeService?.id) {
-      return;
-    }
-    togglePanel(organAgeService.id);
-    nextAddOnPanelsStep();
-  };
-
-  // Show loading state while checking credit
-  if (isAdvancedCreditLoading || isServicesLoading) {
+  if (isServicesLoading) {
     return null;
   }
 
@@ -152,49 +133,19 @@ const OrganAgeContent = () => {
           />
         </div>
         <TotalInfo className="block md:hidden" />
-        {((hasAdvancedCredit || upgradeOrderMutation.isSuccess) && (
-          <Payment.PaymentGroup>
-            <Payment.PaymentDetails />
-            <Payment.CurrentPaymentMethodCard className="!bg-white" />
-            <Payment.SubmitPayment
-              onSubmit={upgradeOrder}
-              onCancel={nextOnboardingStep}
-              submitLabel="Add Organ Age"
-              isPending={upgradeOrderMutation.isPending}
-              isSuccess={upgradeOrderMutation.isSuccess}
-              enabled
-            />
-          </Payment.PaymentGroup>
-        )) || (
-          <div className="flex flex-col gap-2">
-            <Button onClick={addOrganAge}>Add Organ Age</Button>
-            <Button
-              variant="outline"
-              className="bg-white"
-              onClick={nextAddOnPanelsStep}
-            >
-              No thanks
-            </Button>
-            <div className="mt-8 flex gap-6 text-xs text-zinc-400">
-              <a
-                href="https://www.superpower.com/privacy"
-                target="_blank"
-                rel="noreferrer"
-                className="transition-colors duration-150 hover:text-zinc-500"
-              >
-                Privacy Policy
-              </a>
-              <a
-                href="https://www.superpower.com/terms"
-                target="_blank"
-                rel="noreferrer"
-                className="transition-colors duration-150 hover:text-zinc-500"
-              >
-                Terms of services
-              </a>
-            </div>
-          </div>
-        )}
+
+        <Payment.PaymentGroup>
+          <Payment.PaymentDetails />
+          <Payment.CurrentPaymentMethodCard className="!bg-white" />
+          <Payment.SubmitPayment
+            onSubmit={upgradeOrder}
+            onCancel={goToNext}
+            submitLabel="Add Organ Age"
+            isPending={upgradeOrderMutation.isPending}
+            isSuccess={upgradeOrderMutation.isSuccess}
+            enabled
+          />
+        </Payment.PaymentGroup>
       </div>
     </>
   );

@@ -1,40 +1,74 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { SplitScreenLayout } from '@/components/layouts/split-screen-layout';
 import { Body1, H2 } from '@/components/ui/typography';
-import { ADVANCED_BLOOD_PANEL, SUPERPOWER_BLOOD_PANEL } from '@/const';
+import {
+  ADVANCED_BLOOD_PANEL,
+  CUSTOM_BLOOD_PANEL,
+  SUPERPOWER_BLOOD_PANEL,
+} from '@/const';
+import { useUpdateOrder } from '@/features/orders/api';
 import { useUpgradeOrder } from '@/features/orders/api/upgrade-order';
 import { AddOnPanelsSelect } from '@/features/orders/components/steps';
-import { useHasCredit } from '@/features/orders/hooks';
+import { useGroupedOrders } from '@/features/orders/hooks';
 import * as Payment from '@/features/users/components/payment';
 
-import { useAddOnPanels } from '../../hooks/use-add-on-panels';
-import { useOnboardingStepper } from '../onboarding-steps/onboarding-stepper';
+import { useOnboardingStepper } from './onboarding-stepper';
 
 const AddOnPanelsContent = () => {
   const { next } = useOnboardingStepper();
-  const { selectedIds, setSelectedIds } = useAddOnPanels();
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  const { credit } = useHasCredit({
-    serviceName: SUPERPOWER_BLOOD_PANEL,
-  });
+  const { buckets } = useGroupedOrders();
 
-  const existingCreditIds = useMemo(
-    () => (credit ? new Set([credit.serviceId]) : undefined),
-    [credit],
-  );
+  const existingCreditIds = useMemo(() => {
+    const ids = new Set<string>();
+
+    const bloodPanel = buckets.drafts.find(
+      (d) => d.order.serviceName === SUPERPOWER_BLOOD_PANEL,
+    );
+    const advancedPanel = buckets.drafts.find(
+      (d) => d.order.serviceName === ADVANCED_BLOOD_PANEL,
+    );
+    const customPanel = buckets.drafts.find(
+      (d) => d.order.serviceName === CUSTOM_BLOOD_PANEL,
+    );
+    if (bloodPanel) ids.add(bloodPanel.order.serviceId);
+    if (advancedPanel) ids.add(advancedPanel.order.serviceId);
+    if (customPanel && customPanel.order.addOnServiceIds) {
+      for (const id of customPanel.order.addOnServiceIds) {
+        ids.add(id);
+      }
+    }
+
+    return ids;
+  }, [buckets.drafts]);
 
   const upgradeOrderMutation = useUpgradeOrder();
+  const updateOrderMutation = useUpdateOrder();
 
   const upgradeOrder = async (paymentMethodId: string) => {
-    await upgradeOrderMutation.mutateAsync({
-      data: {
-        upgradeType: 'custom-panel',
-        addOnServiceIds: [...selectedIds],
-        paymentMethodId,
-      },
-    });
+    const hasCustomCredit = buckets.drafts.find(
+      (d) => d.order.serviceName === CUSTOM_BLOOD_PANEL,
+    );
+
+    if (hasCustomCredit) {
+      await updateOrderMutation.mutateAsync({
+        orderId: hasCustomCredit.order.id,
+        data: {
+          addOnServiceIds: [...selectedIds],
+        },
+      });
+    } else {
+      await upgradeOrderMutation.mutateAsync({
+        data: {
+          upgradeType: 'custom-panel',
+          addOnServiceIds: [...selectedIds],
+          paymentMethodId,
+        },
+      });
+    }
     next();
   };
 
@@ -48,7 +82,6 @@ const AddOnPanelsContent = () => {
           existingCreditIds={existingCreditIds}
           isLoading={upgradeOrderMutation.isPending}
           className="max-h-fit flex-1 overflow-y-scroll"
-          excludeServices={[SUPERPOWER_BLOOD_PANEL, ADVANCED_BLOOD_PANEL]}
         />
       </div>
       <div className="w-full space-y-8 p-4 md:p-10">
@@ -69,9 +102,10 @@ const AddOnPanelsContent = () => {
             selectedIds={selectedIds}
             setSelectedIds={setSelectedIds}
             existingCreditIds={existingCreditIds}
-            isLoading={upgradeOrderMutation.isPending}
+            isLoading={
+              upgradeOrderMutation.isPending || updateOrderMutation.isPending
+            }
             className="max-h-fit flex-1 overflow-y-scroll"
-            excludeServices={[ADVANCED_BLOOD_PANEL, SUPERPOWER_BLOOD_PANEL]}
           />
         </div>
         <Payment.PaymentGroup>
@@ -81,7 +115,9 @@ const AddOnPanelsContent = () => {
             onSubmit={upgradeOrder}
             onCancel={next}
             submitLabel="Purchase"
-            isPending={upgradeOrderMutation.isPending}
+            isPending={
+              upgradeOrderMutation.isPending || updateOrderMutation.isPending
+            }
             isSuccess={upgradeOrderMutation.isSuccess}
             enabled={selectedIds.size > 0}
           />

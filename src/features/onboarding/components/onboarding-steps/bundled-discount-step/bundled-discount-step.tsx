@@ -134,7 +134,15 @@ const BundledDiscountCard = ({
 
 const BundledDiscountContent = () => {
   const { next } = useOnboardingStepper();
-  const upgradeOrderMutation = useUpgradeOrder();
+  const upgradeOrderMutation = useUpgradeOrder({
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success(
+          `Purchase of ${selectedBundledDiscount.quantity} additional test${selectedBundledDiscount.quantity > 1 ? 's' : ''} successful!`,
+        );
+      },
+    },
+  });
   const { data: user } = useUser();
   const [selectedBundledDiscount, setSelectedBundledDiscount] =
     useState<BundledDiscount>(BUNDLED_DISCOUNTS[0]);
@@ -147,12 +155,7 @@ const BundledDiscountContent = () => {
         quantity: selectedBundledDiscount.quantity,
       },
     });
-    toast.success(
-      `Purchase of ${selectedBundledDiscount.quantity} additional test${selectedBundledDiscount.quantity > 1 ? 's' : ''} successful!`,
-    );
-    setTimeout(() => {
-      next();
-    }, 3000);
+    next();
   };
 
   const onToggleDiscount = (bundledDiscount: BundledDiscount) => {

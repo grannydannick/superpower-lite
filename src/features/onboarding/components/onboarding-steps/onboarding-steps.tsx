@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 
 import { Spinner } from '@/components/ui/spinner';
 
-import { AddOnPanelsSteps } from '../add-on-panels-steps/add-on-panels-steps';
 import { TestKitSteps } from '../test-kit-steps/test-kit-steps';
 
 import {
@@ -60,7 +59,8 @@ const OnboardingStepsContent = (): React.ReactElement => {
           [ONBOARDING_STEPS.INTAKE]: () => (
             <Steps.IntakeQuestionnaireStep showIntro={true} />
           ),
-          [ONBOARDING_STEPS.ADD_ON_PANELS]: () => <AddOnPanelsSteps />,
+          [ONBOARDING_STEPS.ADD_ON_PANELS]: () => <Steps.AddOnPanelsStep />,
+          [ONBOARDING_STEPS.ORGAN_AGE]: () => <Steps.OrganAgeStep />,
           [ONBOARDING_STEPS.TEST_KIT_STEPS]: () => <TestKitSteps />,
           [ONBOARDING_STEPS.PHLEBOTOMY_BOOKING]: () => (
             <Steps.PhlebotomyBookingStep />

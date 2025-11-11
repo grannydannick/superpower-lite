@@ -14,6 +14,7 @@ export const ONBOARDING_STEPS = {
   BUNDLED_DISCOUNT: 'bundled-discount',
   HEARD_ABOUT_US: 'heard-about-us',
   INTAKE: 'intake',
+  ORGAN_AGE: 'organ-age',
   ADD_ON_PANELS: 'add-on-panels',
   TEST_KIT_STEPS: 'test-kit-steps',
   PHLEBOTOMY_BOOKING: 'phlebotomy-booking',
@@ -26,6 +27,7 @@ export const OnboardingStepper = defineStepper(
   { id: ONBOARDING_STEPS.BUNDLED_DISCOUNT },
   { id: ONBOARDING_STEPS.HEARD_ABOUT_US },
   { id: ONBOARDING_STEPS.INTAKE },
+  { id: ONBOARDING_STEPS.ORGAN_AGE },
   { id: ONBOARDING_STEPS.ADD_ON_PANELS },
   { id: ONBOARDING_STEPS.TEST_KIT_STEPS },
   { id: ONBOARDING_STEPS.PHLEBOTOMY_BOOKING },
@@ -54,7 +56,7 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
   const userHasAdvancedUpgrade = ordersData?.orders?.find(
     (order) => order.serviceName === ADVANCED_BLOOD_PANEL,
   );
-  const userHasCustomPanels = ordersData?.orders?.some(
+  const userHasCustomPanels = ordersData?.orders?.find(
     (order) => order.serviceName === CUSTOM_BLOOD_PANEL,
   );
 
@@ -68,12 +70,13 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
   const intakeQuestionnaireCompleted =
     intakeQuestionnaireData?.questionnaireResponse?.status === 'completed';
 
-  // Aggregate loading states
   const isLoading = useMemo(() => {
     return isUserLoading || isOrdersLoading || isIntakeQuestionnaireLoading;
   }, [isUserLoading, isOrdersLoading, isIntakeQuestionnaireLoading]);
 
-  // Determine which steps to exclude based on user state
+  // Note: this is currently note dynamic so we wouldnt recalculate everything if e.g. custom blood panel added
+  // if we ever change this logic to actually take it into account this would break and we need more specific handling
+  // right now it should be pretty safe
   const excludedSteps = useMemo((): string[] => {
     const excludedSteps: string[] = [];
 
@@ -96,9 +99,10 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
 
     if (userHasCustomPanels) {
       excludedSteps.push(
-        ONBOARDING_STEPS.ADD_ON_PANELS,
         ONBOARDING_STEPS.ADVANCED_UPGRADE,
         ONBOARDING_STEPS.BUNDLED_DISCOUNT,
+        ONBOARDING_STEPS.ORGAN_AGE,
+        ONBOARDING_STEPS.ADD_ON_PANELS,
       );
     }
 
