@@ -6,6 +6,8 @@ import {
 import { Body1, Body2 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 
+import { ConsentPaymentSummary } from './consent-payment-summary';
+import { RX_CONSENT_PAYMENT_LINKID } from './const/special-linkids';
 import {
   SUPERPOWER_QUESTIONNAIRE_DESCRIPTION_EXTENSION_URL,
   QUESTIONNAIRE_ITEM_CONTROL_EXTENSION_URL,
@@ -51,6 +53,8 @@ export const QuestionnaireFormRepeatableItem = ({
   const isMultipleChoice = item.extension?.find(
     (e) => e.url === QUESTIONNAIRE_ITEM_CONTROL_EXTENSION_URL,
   )?.valueCodeableConcept;
+
+  const isRxConsentPaymentQuestion = item.linkId === RX_CONSENT_PAYMENT_LINKID;
 
   if (!checkForQuestionEnabled(item)) {
     return null;
@@ -106,6 +110,8 @@ export const QuestionnaireFormRepeatableItem = ({
           <Body2 className="text-secondary">Select all that apply.</Body2>
         )}
       </div>
+
+      {isRxConsentPaymentQuestion && <ConsentPaymentSummary />}
 
       {/*Should be ...Array(number)*/}
       {[...Array(1)].map((_, index) => (
