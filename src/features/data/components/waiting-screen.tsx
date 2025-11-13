@@ -70,13 +70,18 @@ export const WaitingScreen = () => {
             className="flex-1 overflow-hidden pb-0 md:w-1/2"
           >
             <div className="pointer-events-none absolute bottom-0 z-20 h-24 w-full bg-gradient-to-b from-transparent to-white transition-colors group-hover:to-zinc-50" />
-            <video
+            {/*<video
               src="/data/videos/wearables.webm"
               autoPlay
               muted
               playsInline
               preload="metadata"
               className="ease-[cubic-bezier(0.68,-0.6,0.32,1.6)] pointer-events-none -mt-8 h-40 w-full flex-1 origin-bottom object-cover object-top transition-all duration-300 will-change-transform group-hover:scale-[.97]"
+            />*/}
+            <img
+              src="/data/wearables.webp"
+              alt="Wearables"
+              className="ease-[cubic-bezier(0.68,-0.6,0.32,1.6)] pointer-events-none h-32 w-full flex-1 origin-bottom translate-x-16 translate-y-4 object-contain object-bottom transition-all duration-300 group-hover:scale-[.97]"
             />
           </QuickLink>
         </div>
