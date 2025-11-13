@@ -1,4 +1,8 @@
-import { COLLECTION_METHODS, type CollectionOptionType } from '@/const';
+import {
+  COLLECTION_METHODS,
+  getAtHomePrice,
+  type CollectionOptionType,
+} from '@/const';
 import { Address, HealthcareService, Order } from '@/types/api';
 import { formatMoney } from '@/utils/format-money';
 
@@ -64,10 +68,11 @@ export const getCollectionMethods = (
   }
 
   const state = primaryAddress.state;
+  const atHomePrice = getAtHomePrice(state);
 
   // If user is admin, allow in-lab options regardless of state
   if (isAdmin) {
-    return [createInLabOption(), createAtHomedOption()];
+    return [createInLabOption(), createAtHomedOption({ price: atHomePrice })];
   }
 
   // For NY and NJ, only allow at-home appointments
@@ -78,7 +83,7 @@ export const getCollectionMethods = (
         description:
           'We currently support at-home appointments only in New York (NY) and New Jersey (NJ).',
       }),
-      createAtHomedOption(),
+      createAtHomedOption({ price: atHomePrice }),
     ];
   }
 
@@ -88,9 +93,9 @@ export const getCollectionMethods = (
         disabled: true,
         description: "This service doesn't support in-lab",
       }),
-      createAtHomedOption(),
+      createAtHomedOption({ price: atHomePrice }),
     ];
   }
 
-  return [createInLabOption(), createAtHomedOption()];
+  return [createInLabOption(), createAtHomedOption({ price: atHomePrice })];
 };
