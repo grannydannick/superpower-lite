@@ -10,29 +10,30 @@ import { getServiceImage } from '@/utils/service';
 
 // NOTE: details trigger should be used very carefully here
 // if you render this card inside of the healthcaredialog it would crash
-type ServiceSelectCardDetailsRenderOptions = {
+type ServiceActionCardDetailsRenderOptions = {
   isExpanded: boolean;
   toggle: () => void;
 };
 
-type ServiceSelectCardDetailsRenderResult = {
+type ServiceActionCardDetailsRenderResult = {
   trigger?: ReactNode;
   content?: ReactNode;
 };
 
-type ServiceSelectCardProps = {
+type ServiceActionCardProps = {
   service: HealthcareService;
   toggle: (s: HealthcareService) => void;
   disabled?: boolean;
   checked?: boolean;
   details?: (
-    options: ServiceSelectCardDetailsRenderOptions,
-  ) => ServiceSelectCardDetailsRenderResult | undefined;
+    options: ServiceActionCardDetailsRenderOptions,
+  ) => ServiceActionCardDetailsRenderResult | undefined;
   displayPrice?: boolean;
   trigger?: ReactNode;
+  imgOverwrite?: string;
 };
 
-export const ServiceSelectCard = ({
+export const ServiceActionCard = ({
   service,
   disabled = false,
   displayPrice = true,
@@ -40,7 +41,8 @@ export const ServiceSelectCard = ({
   toggle,
   details,
   trigger,
-}: ServiceSelectCardProps) => {
+  imgOverwrite,
+}: ServiceActionCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleDetails = () => {
@@ -90,7 +92,7 @@ export const ServiceSelectCard = ({
           />
         ) : null}
         <img
-          src={getServiceImage(service.name)}
+          src={imgOverwrite ? imgOverwrite : getServiceImage(service.name)}
           className="size-16 rounded-lg object-cover"
           alt={service.name}
         />

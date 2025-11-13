@@ -63,5 +63,9 @@ export const biologicalAgeBiomarker = (
       content: [],
     },
     status: age ? (age < ageInYears ? 'OPTIMAL' : 'HIGH') : 'PENDING',
+    recommendedTests: {
+      rx: [],
+      services: [],
+    },
   };
 };

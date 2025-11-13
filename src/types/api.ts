@@ -211,13 +211,18 @@ export type Biomarker = Entity<{
   ranges: LabRanges;
   value: BiomarkerResult[];
   metadata: BiomarkerMetadata;
-  recommendedTest?: string;
+  recommendedTests: BiomarkerRecommendedTests;
   familyRisk?: BiomarkerFamilyRisk;
 }>;
 
 export interface BiomarkerFamilyRisk {
   insight: string;
   sms: string;
+}
+
+export interface BiomarkerRecommendedTests {
+  rx: { id: string; explanation: string }[];
+  services: { id: string; explanation: string }[];
 }
 
 export type BiomarkerComponent = {
@@ -884,4 +889,16 @@ export interface QuestionnaireInsights {
   description: string;
   sms: string;
   recommendations: string[];
+}
+
+export interface RxService {
+  id: string;
+  url: string;
+  type: string;
+  source: string;
+  name: string;
+  description: string;
+  price: string;
+  active: boolean;
+  tags: string[];
 }

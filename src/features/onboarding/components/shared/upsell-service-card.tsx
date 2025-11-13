@@ -12,7 +12,7 @@ import {
 } from '@/const/services';
 import { ServiceWithMetadata } from '@/features/onboarding/hooks/use-test-kits';
 import { HealthcareServiceDialog } from '@/features/orders/components/healthcare-service-dialog';
-import { ServiceSelectCard } from '@/features/services/components/service-select-card';
+import { ServiceActionCard } from '@/features/services/components/service-action-card';
 
 const INDIVIDUAL_TOXIN_TEST_IDS = [
   MYCOTOXINS_TEST_ID,
@@ -60,7 +60,7 @@ export const UpsellServiceCard = ({
   };
 
   return (
-    <ServiceSelectCard
+    <ServiceActionCard
       checked={isSelected}
       disabled={isDisabled}
       toggle={handleSelectService}
@@ -83,11 +83,11 @@ export const UpsellServiceCard = ({
               </DialogClose>
             )}
           >
-            <div className="flex cursor-pointer items-center gap-1.5 group">
-              <Body2 className="line-clamp-2 text-secondary group-hover:text-zinc-700 transition-all duration-200">
+            <div className="group flex cursor-pointer items-center gap-1.5">
+              <Body2 className="line-clamp-2 text-secondary transition-all duration-200 group-hover:text-zinc-700">
                 Learn more
               </Body2>
-              <InfoIcon className="size-4 text-zinc-400 group-hover:text-zinc-500 transition-all duration-200" />
+              <InfoIcon className="size-4 text-zinc-400 transition-all duration-200 group-hover:text-zinc-500" />
             </div>
           </HealthcareServiceDialog>
         ),

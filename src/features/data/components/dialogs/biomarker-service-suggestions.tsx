@@ -4,38 +4,52 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CUSTOM_BLOOD_PANEL_ID } from '@/const';
 import { BookingStepID } from '@/features/orders/utils/get-steps-for-service';
-import { useService } from '@/features/services/api';
-import { ServiceSelectCard } from '@/features/services/components/service-select-card';
+import { useServices } from '@/features/services/api';
+import { ServiceActionCard } from '@/features/services/components/service-action-card';
+import { BiomarkerRecommendedTests } from '@/types/api';
 
 export const BiomarkerServiceSuggestions = ({
-  recommendedTest,
+  recommendedTests,
 }: {
-  recommendedTest: string;
+  recommendedTests: BiomarkerRecommendedTests;
 }) => {
+  const recommendedServiceIds = new Set(
+    recommendedTests.services.map((s) => s.id),
+  );
+
+  return (
+    <div className="space-y-2">
+      <SuggestedServices serviceIds={recommendedServiceIds} />
+    </div>
+  );
+};
+
+const SuggestedServices = ({ serviceIds }: { serviceIds: Set<string> }) => {
   const navigate = useNavigate();
+  const getServicesQuery = useServices({ group: 'blood-panel-addon' });
 
-  const getServiceQuery = useService({
-    serviceId: recommendedTest,
-    method: 'IN_LAB',
-  });
-
-  if (getServiceQuery.isLoading) {
+  if (getServicesQuery.isLoading) {
     return <Skeleton className="h-[106px] w-full rounded-[20px]" />;
   }
 
-  const service = getServiceQuery.data?.service;
+  const services = getServicesQuery.data?.services;
 
-  if (!service) {
+  if (!services) {
     return null;
   }
 
-  return (
-    <ServiceSelectCard
-      service={service}
+  const filteredServices = services.filter((s) => serviceIds.has(s.id));
+
+  if (filteredServices.length === 0) return null;
+
+  return filteredServices.map((s) => (
+    <ServiceActionCard
+      key={s.id}
+      service={s}
       displayPrice={false}
       toggle={() => {
         const params = new URLSearchParams({
-          initialAddOnIds: `${service.id}`,
+          initialAddOnIds: `${s.id}`,
           excludeSteps: `${BookingStepID.INFO}, ${BookingStepID.RECOMMENDATIONS}`,
         });
 
@@ -43,5 +57,5 @@ export const BiomarkerServiceSuggestions = ({
       }}
       trigger={<Button size="small">Test now</Button>}
     />
-  );
+  ));
 };

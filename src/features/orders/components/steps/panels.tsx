@@ -20,8 +20,8 @@ import { HEALTHCARE_SERVICE_DIALOG_CONTAINER_STYLE } from '@/features/orders/con
 import { useHasCredit } from '@/features/orders/hooks';
 import { useOrder } from '@/features/orders/stores/order-store';
 import { useServices } from '@/features/services/api';
+import { ServiceActionCard } from '@/features/services/components/service-action-card';
 import { ServiceFaqs } from '@/features/services/components/service-faqs';
-import { ServiceSelectCard } from '@/features/services/components/service-select-card';
 import { cn } from '@/lib/utils';
 import { HealthcareService } from '@/types/api';
 import { formatMoney } from '@/utils/format-money';
@@ -278,7 +278,7 @@ const PanelInfoCard = ({
   toggle: (s: HealthcareService) => void;
 }) => {
   return (
-    <ServiceSelectCard
+    <ServiceActionCard
       disabled={disabled}
       checked={checked}
       service={s}

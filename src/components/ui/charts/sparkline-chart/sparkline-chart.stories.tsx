@@ -20,6 +20,10 @@ const baseBiomarker = {
     source: [],
     content: [],
   },
+  recommendedTests: {
+    rx: [],
+    services: [],
+  },
 };
 
 const optimalBoundedBiomarker = {

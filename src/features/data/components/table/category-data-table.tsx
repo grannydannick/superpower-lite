@@ -12,7 +12,7 @@ import {
 } from '@/const';
 import { useOrders } from '@/features/orders/api';
 import { useService, useServices } from '@/features/services/api';
-import { ServiceSelectCard } from '@/features/services/components/service-select-card';
+import { ServiceActionCard } from '@/features/services/components/service-action-card';
 import { cn } from '@/lib/utils';
 import { Category, SuperpowerCategory } from '@/types/api';
 
@@ -135,7 +135,7 @@ const GutInsights = () => {
   }
 
   return (
-    <ServiceSelectCard
+    <ServiceActionCard
       displayPrice={false}
       service={service}
       toggle={() => navigate(`/services/${service.id}`)}
@@ -169,7 +169,7 @@ const ToxinsInsights = () => {
   return (
     <div className="space-y-2">
       {env ? (
-        <ServiceSelectCard
+        <ServiceActionCard
           displayPrice={false}
           service={env}
           toggle={() => navigate(`/services/${env.id}`)}
@@ -181,7 +181,7 @@ const ToxinsInsights = () => {
         />
       ) : null}
       {mycotoxins ? (
-        <ServiceSelectCard
+        <ServiceActionCard
           displayPrice={false}
           service={mycotoxins}
           toggle={() => navigate(`/services/${mycotoxins.id}`)}
@@ -193,7 +193,7 @@ const ToxinsInsights = () => {
         />
       ) : null}
       {heavymetals ? (
-        <ServiceSelectCard
+        <ServiceActionCard
           displayPrice={false}
           service={heavymetals}
           toggle={() => navigate(`/services/${heavymetals.id}`)}
