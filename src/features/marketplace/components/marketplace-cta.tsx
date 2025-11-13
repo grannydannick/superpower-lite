@@ -15,7 +15,9 @@ export const MarketplaceCta = () => {
   const [searchParams] = useSearchParams();
   const isOrdersTab = searchParams.get('tab') === 'orders';
   const { buckets, groupedOrdersLoading } = useGroupedOrders();
-  const { data: multipassData, isLoading } = useGetMultipassUrl();
+  const { data: multipassData, isLoading } = useGetMultipassUrl({
+    returnTo: '/apps/retextion/login',
+  });
   const { track } = useAnalytics();
 
   const handleMarketplaceClick = () => {
