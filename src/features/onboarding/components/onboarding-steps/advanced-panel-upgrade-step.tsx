@@ -66,7 +66,7 @@ const AdvancedPanelUpgradeContent = () => {
               variant="ghost"
               className="gap-1 px-0 py-2 text-sm text-zinc-500"
             >
-              View all tested 130+ biomarkers
+              View all tested 120+ biomarkers
               <ArrowRight size={16} />
             </Button>
           </AvailableBiomarkersDialog>
