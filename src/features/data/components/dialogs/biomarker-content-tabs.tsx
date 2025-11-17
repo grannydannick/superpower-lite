@@ -33,23 +33,28 @@ export function BiomarkerContentTabs({ biomarker }: { biomarker: Biomarker }) {
     },
   ];
 
-  if (biomarker.recommendedTests.rx.length === 0) {
+  if (
+    !biomarker.recommendedTests ||
+    biomarker.recommendedTests.rx.length === 0
+  ) {
     tabs = tabs.filter((t) => t.value !== 'recommendations');
   }
 
   return (
     <Tabs defaultValue="explanation">
-      <TabsList className="flex h-auto flex-wrap items-center justify-start">
-        {tabs.map((t, idx) => (
-          <TabsTrigger
-            value={t.value}
-            className="text-base lg:text-base"
-            key={idx}
-          >
-            {capitalize(t.value)}
-          </TabsTrigger>
-        ))}
-      </TabsList>
+      {tabs.length > 1 && (
+        <TabsList className="flex h-auto flex-wrap items-center justify-start">
+          {tabs.map((t, idx) => (
+            <TabsTrigger
+              value={t.value}
+              className="text-base lg:text-base"
+              key={idx}
+            >
+              {capitalize(t.value)}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      )}
       {tabs.map((t, idx) => (
         <TabsContent value={t.value} className="mt-10" key={idx}>
           {t.component}
