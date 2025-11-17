@@ -97,7 +97,7 @@ export const BiomarkerDistributionBar = () => {
           <Body2 className="text-zinc-400">Out of Range</Body2>
         </div>
       </motion.div>
-      <div className="flex h-1.5 w-full justify-end gap-1">
+      <div className="flex h-1.5 w-full justify-start gap-1">
         {optimalPercent > 0 && (
           <motion.div
             className="h-full rounded-full"
