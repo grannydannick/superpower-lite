@@ -268,7 +268,7 @@ function PureMultimodalInput({
         tabIndex={-1}
       />
 
-      <div className="flex w-full flex-1 flex-col-reverse gap-2 lg:flex-col lg:gap-4">
+      <div className="flex w-full flex-1 flex-col gap-2 lg:flex-col lg:gap-4">
         <div
           ref={inputWrapperRef}
           className={cn(

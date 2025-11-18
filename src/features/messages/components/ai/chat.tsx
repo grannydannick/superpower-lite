@@ -201,7 +201,7 @@ export function Chat({
           />
         </form>
 
-        <p className="max-w-[560px] pb-2 text-[10px] text-zinc-400">
+        <p className="mx-auto max-w-xl pb-2 text-center text-[10px] text-zinc-400">
           Your Superpower AI is not intended to replace medical advice, and
           solely provided solely to offer suggestions and education. Always seek
           the advice of a licensed human healthcare provider for any medical

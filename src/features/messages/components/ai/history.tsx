@@ -459,7 +459,7 @@ export const ChatHistory = () => {
         </div>
         <SheetContent
           side="left"
-          className="overflow-y-scroll bg-zinc-50 px-4 pt-20"
+          className="overflow-y-scroll bg-zinc-50 px-4 pt-12"
         >
           <ChatHistoryContainer />
         </SheetContent>

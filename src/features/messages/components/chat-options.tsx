@@ -19,7 +19,7 @@ const AICard = () => {
   return (
     <div
       className={cn(
-        'flex h-[143px] w-full cursor-pointer flex-col justify-between rounded-2xl border bg-white p-4 shadow-sm transition-all duration-150' +
+        'flex gap-6 w-full cursor-pointer flex-col justify-between rounded-2xl border bg-white p-4 shadow-sm transition-all duration-150' +
           '',
         type === 'ai'
           ? 'border-vermillion-900 shadow-lg shadow-vermillion-900/15'
@@ -39,8 +39,8 @@ const AICard = () => {
       <div className="flex items-center justify-between">
         <AnimatedIcon state="idle" size={32} />
         <div className="flex items-center gap-2">
-          <Clock className="text-zinc-400" size={16} />
-          <Body1 className="line-clamp-1 text-zinc-400">Immediate</Body1>
+          <Clock className="mb-0.5 text-zinc-400" size={14} />
+          <Body2 className="line-clamp-1 text-zinc-400">Immediate</Body2>
         </div>
       </div>
       <div>
@@ -60,7 +60,7 @@ const CareTeamCard = () => {
   return (
     <div
       className={cn(
-        'flex h-[143px] w-full cursor-pointer flex-col justify-between rounded-2xl border bg-white p-4 shadow-sm transition-all duration-150' +
+        'flex gap-6 w-full cursor-pointer flex-col justify-between rounded-2xl border bg-white p-4 shadow-sm transition-all duration-150' +
           '',
         type === 'concierge'
           ? 'border-vermillion-900 shadow-lg shadow-vermillion-900/15'
@@ -92,8 +92,8 @@ const CareTeamCard = () => {
           />
         </div>
         <div className="flex items-center gap-2">
-          <Clock className="text-zinc-400" size={16} />
-          <Body1 className="line-clamp-1 text-zinc-400">{`<24h on weekdays`}</Body1>
+          <Clock className="mb-0.5 text-zinc-400" size={16} />
+          <Body2 className="line-clamp-1 text-zinc-400">{`<24h on weekdays`}</Body2>
         </div>
       </div>
       <div>
