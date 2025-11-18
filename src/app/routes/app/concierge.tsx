@@ -1,4 +1,5 @@
 import { FileUIPart, UIMessage } from 'ai';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { useMessages } from '@/features/messages/api/get-messages';
@@ -7,7 +8,8 @@ import { ChatMessage } from '@/types/api';
 import { generateUUID } from '@/utils/generate-uiud';
 
 export const ConciergeRoute = () => {
-  const generatedUUID = generateUUID();
+  // ensure stable ID for the session while there's no :id in the URL
+  const [generatedUUID] = useState(() => generateUUID());
   const { id } = useParams();
 
   const getMessagesQuery = useMessages({
