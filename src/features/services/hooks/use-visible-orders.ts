@@ -22,10 +22,11 @@ export function useVisibleOrders() {
   // 2) define status-priority map
   const statusPriority: Record<OrderStatus, number> = {
     [OrderStatus.upcoming]: 1,
-    [OrderStatus.pending]: 2,
-    [OrderStatus.completed]: 3,
-    [OrderStatus.cancelled]: 4,
-    [OrderStatus.revoked]: 5,
+    [OrderStatus.active]: 2,
+    [OrderStatus.pending]: 3,
+    [OrderStatus.completed]: 4,
+    [OrderStatus.cancelled]: 5,
+    [OrderStatus.revoked]: 6,
     [OrderStatus.draft]: Number.MAX_SAFE_INTEGER,
   };
 

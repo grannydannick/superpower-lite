@@ -73,9 +73,8 @@ export const Navbar = () => {
   );
 };
 
-const lightNavPaths = ['/', '/invite'];
+const lightNavPaths = ['/invite'];
 const blurThresholds: Record<string, number> = {
-  '/': 621,
   '/invite': 500,
 };
 

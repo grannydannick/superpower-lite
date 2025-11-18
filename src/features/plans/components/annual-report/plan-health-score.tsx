@@ -124,7 +124,11 @@ const BiologicalAge = ({
   );
 };
 
-export function PlanHealthScore() {
+export function PlanHealthScore({
+  showOverview = true,
+}: {
+  showOverview?: boolean;
+}) {
   const { data: user } = useUser();
   const { data: biomarkersData, isLoading: biomarkersLoading } =
     useBiomarkers();
@@ -198,13 +202,17 @@ export function PlanHealthScore() {
           </div>
         </div>
       </div>
-      <div className="mx-auto mt-3 w-full max-w-3xl flex-1 overflow-y-auto rounded-xl border border-zinc-200 bg-white px-4 pt-4 shadow-md shadow-black/[.02] scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300">
-        <div className="flex flex-col gap-4">
-          <Body2 className="font-semibold">Overview</Body2>
-          <BiomarkerDistributionBar />
-        </div>
-      </div>
-      <PhilosophyBlocks />
+      {showOverview && (
+        <>
+          <div className="mx-auto mt-3 w-full max-w-3xl flex-1 overflow-y-auto rounded-xl border border-zinc-200 bg-white px-4 pt-4 shadow-md shadow-black/[.02] scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300">
+            <div className="flex flex-col gap-4">
+              <Body2 className="font-semibold">Overview</Body2>
+              <BiomarkerDistributionBar />
+            </div>
+          </div>
+          <PhilosophyBlocks />
+        </>
+      )}
     </div>
   );
 }

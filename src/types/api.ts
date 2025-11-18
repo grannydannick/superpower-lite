@@ -352,6 +352,7 @@ export type MembershipPriceMeta = {
 
 export enum OrderStatus {
   upcoming = 'UPCOMING',
+  active = 'ACTIVE',
   completed = 'COMPLETED',
   cancelled = 'CANCELLED',
   revoked = 'REVOKED',

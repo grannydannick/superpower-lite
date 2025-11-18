@@ -9,6 +9,7 @@ const contentLayoutVariants = cva('grow space-y-6 md:space-y-8', {
   variants: {
     variant: {
       default: 'px-6 py-16 sm:p-16',
+      homepage: 'p-4 sm:p-4',
       noPadding: '',
     },
   },

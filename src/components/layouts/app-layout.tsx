@@ -30,9 +30,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     pathname.includes('questionnaire') ||
     pathname.includes('legacy-checkout');
 
-  const isWhiteBg =
-    WHITE_BACKGROUND_PATHS.some((path) => pathname.includes(path)) ||
-    pathname === '/';
+  const isWhiteBg = WHITE_BACKGROUND_PATHS.some((path) =>
+    pathname.includes(path),
+  );
 
   return (
     <main className={isWhiteBg ? 'bg-white' : 'bg-zinc-50'}>
