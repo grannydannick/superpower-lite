@@ -2,11 +2,11 @@ import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { CUSTOM_BLOOD_PANEL_ID } from '@/const';
-import { BookingStepID } from '@/features/orders/utils/get-steps-for-service';
 import { useServices } from '@/features/services/api';
 import { ServiceActionCard } from '@/features/services/components/service-action-card';
 import { BiomarkerRecommendedTests } from '@/types/api';
+
+import { getServiceActionUrl } from '../../utils/get-service-action-url';
 
 export const BiomarkerServiceSuggestions = ({
   recommendedTests,
@@ -48,12 +48,7 @@ const SuggestedServices = ({ serviceIds }: { serviceIds: Set<string> }) => {
       service={s}
       displayPrice={false}
       toggle={() => {
-        const params = new URLSearchParams({
-          initialAddOnIds: `${s.id}`,
-          excludeSteps: `${BookingStepID.INFO}, ${BookingStepID.RECOMMENDATIONS}`,
-        });
-
-        navigate(`/services/${CUSTOM_BLOOD_PANEL_ID}?${params.toString()}`);
+        navigate(getServiceActionUrl(s.id));
       }}
       trigger={<Button size="small">Test now</Button>}
     />

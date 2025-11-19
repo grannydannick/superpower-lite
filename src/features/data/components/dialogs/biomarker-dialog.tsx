@@ -1,6 +1,7 @@
 import { Description } from '@radix-ui/react-dialog';
-import { X } from 'lucide-react';
+import { Lock, X } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import NumberFlow from '@/components/shared/number-flow';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,7 @@ import { cn } from '@/lib/utils';
 import { Biomarker } from '@/types/api';
 
 import { STATUS_TO_COLOR } from '../../../../const/status-to-color';
+import { getServiceActionUrl } from '../../utils/get-service-action-url';
 
 import { BiomarkerContentTabs } from './biomarker-content-tabs';
 
@@ -38,6 +40,7 @@ export const BiomarkerDialog = ({
   const [open, setOpen] = useState(false);
   const { width } = useWindowDimensions();
   const { track } = useAnalytics();
+  const navigate = useNavigate();
 
   const handleOpenChange = useCallback((newOpen: boolean) => {
     setOpen(newOpen);
@@ -68,10 +71,30 @@ export const BiomarkerDialog = ({
         </div>
       </div>
       <div className="flex flex-col gap-4">
-        {biomarker.status !== 'RECOMMENDED' ? (
-          <TimeSeriesChart biomarker={biomarker} />
+        {biomarker.status === 'RECOMMENDED' ? (
+          <div className="relative">
+            <Button
+              variant="outline"
+              className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col space-y-2 rounded-2xl border border-zinc-200 bg-white shadow-lg"
+              onClick={() => {
+                const firstServiceId =
+                  biomarker.recommendedTests.services[0]?.id;
+
+                if (firstServiceId) {
+                  navigate(getServiceActionUrl(firstServiceId));
+                }
+              }}
+            >
+              <Lock className="size-[18px] text-secondary" />
+              <span>
+                <Body2>Discover your value</Body2>
+                <Body3 className="text-secondary">Test now</Body3>
+              </span>
+            </Button>
+            <TimeSeriesChartPlaceholder />
+          </div>
         ) : (
-          <TimeSeriesChartPlaceholder />
+          <TimeSeriesChart biomarker={biomarker} />
         )}
         {biomarker.status !== 'RECOMMENDED' ? (
           <div className="mb-4 grid gap-2 min-[375px]:grid-cols-2">
