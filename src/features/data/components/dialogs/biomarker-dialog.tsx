@@ -96,7 +96,7 @@ export const BiomarkerDialog = ({
         >
           {children}
         </SheetTrigger>
-        <SheetContent className="flex flex-col rounded-t-[10px] p-4 md:p-8">
+        <SheetContent className="flex h-[calc(100vh-6rem)] flex-col rounded-t-3xl p-4 pt-7 md:p-8">
           {content}
         </SheetContent>
       </Sheet>
