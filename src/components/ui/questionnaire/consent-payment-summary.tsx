@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
 
 import { ProgressiveImage } from '@/components/ui/progressive-image';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -10,8 +9,12 @@ import { Rx } from '@/types/api';
 
 import { getPrescriptionImage } from '../../../utils/prescription';
 
+import { useQuestionnaireStore } from './stores/questionnaire-store';
+
 export const ConsentPaymentSummary = () => {
-  const { prescription, isLoading } = useConsentPaymentPrescription();
+  const questionnaireName = useQuestionnaireStore((s) => s.questionnaire?.name);
+  const { prescription, isLoading } =
+    useConsentPaymentPrescription(questionnaireName);
 
   const formattedPrice = prescription
     ? formatCurrency(prescription.price)
@@ -95,26 +98,24 @@ export const ConsentPaymentSummary = () => {
   );
 };
 
-const useConsentPaymentPrescription = (): {
+const useConsentPaymentPrescription = (
+  questionnaireName?: string,
+): {
   prescription?: Rx;
   isLoading: boolean;
 } => {
-  // type = questionnaire name
-  const { type } = useParams<{
-    type?: string;
-  }>();
   const marketplaceQuery = useMarketplace();
 
   const prescription = useMemo(() => {
-    if (!type || !marketplaceQuery.data?.prescriptions?.length) {
+    if (!questionnaireName || !marketplaceQuery.data?.prescriptions?.length) {
       return undefined;
     }
 
     return marketplaceQuery.data.prescriptions.find((rx) => {
       // '/questionnaire/{name'
-      return rx.url?.includes(type) ?? false;
+      return rx.url?.includes(questionnaireName) ?? false;
     });
-  }, [marketplaceQuery.data?.prescriptions, type]);
+  }, [marketplaceQuery.data?.prescriptions, questionnaireName]);
 
   return {
     prescription,
