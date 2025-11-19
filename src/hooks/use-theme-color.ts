@@ -17,6 +17,9 @@ export function useThemeColor() {
   useEffect(() => {
     if (lastColorRef.current === themeColor) return;
 
+    // set the body background color matching to theme color
+    document.body.style.backgroundColor = themeColor;
+
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
       metaThemeColor.setAttribute('content', themeColor);
