@@ -74,6 +74,8 @@ const BiologicalAge = ({
   biologicalAge: number;
   ageDifference: number;
 }) => {
+  const { data } = useUser();
+
   return (
     <BiologicalAgeDialog disabled={isLoading || !biologicalAge}>
       <QuickLink className="h-full flex-1 overflow-hidden">
@@ -89,7 +91,7 @@ const BiologicalAge = ({
                 <NumberFlow value={biologicalAge ?? 0} />
               </H2>
               <Body2 className="m-0 mb-2 leading-none text-zinc-400 md:mb-3">
-                / 100
+                / {Math.round(yearsSinceDate(data?.dateOfBirth ?? ''))}
               </Body2>
             </>
           )}
