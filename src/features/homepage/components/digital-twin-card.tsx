@@ -1,19 +1,33 @@
+import { format } from 'date-fns';
 import { ArrowUpRight } from 'lucide-react';
 
 import { Link } from '@/components/ui/link';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useBiomarkers } from '@/features/data/api';
 import { DigitalTwin } from '@/features/digital-twin/components/digital-twin';
-import { useLatestCompletedPlan } from '@/features/plans/hooks/use-latest-completed-plan';
 import { useUser } from '@/lib/auth';
 
 export const DigitalTwinCard = () => {
   const { data: user } = useUser();
-  const { data: latestPlan, latestCompletedPlanDate } =
-    useLatestCompletedPlan();
+  const { data: biomarkers } = useBiomarkers();
+
+  const mostRecentBiomarkerTimestamp = biomarkers?.biomarkers
+    ? biomarkers.biomarkers
+        .flatMap((biomarker) => biomarker.value)
+        .reduce(
+          (latest, result) => {
+            const latestDate = new Date(latest?.timestamp ?? 0);
+            const resultDate = new Date(result.timestamp);
+            return resultDate > latestDate ? result : latest;
+          },
+          biomarkers.biomarkers.flatMap((biomarker) => biomarker.value)[0],
+        )?.timestamp
+    : null;
 
   return (
     <div className="relative hidden max-h-[1000px] rounded-3xl bg-zinc-100 lg:flex lg:items-center lg:justify-end">
       <div className="absolute left-6 top-6 z-10">
-        {latestPlan ? (
+        {user ? (
           <h2 className="text-3xl font-medium text-zinc-400">
             {user?.firstName}&apos;s
             <br />
@@ -38,10 +52,12 @@ export const DigitalTwinCard = () => {
       </Link>
 
       {/* Bottom left overlay: Last tested date */}
-      {latestCompletedPlanDate && (
+      {mostRecentBiomarkerTimestamp ? (
         <div className="absolute bottom-6 left-6 z-10 text-sm text-zinc-400">
-          Last tested: {latestCompletedPlanDate}
+          Last updated {format(mostRecentBiomarkerTimestamp, 'MMM d, yyyy')}
         </div>
+      ) : (
+        <Skeleton className="absolute bottom-6 left-6 z-10 h-6 w-40" />
       )}
 
       <DigitalTwin />
