@@ -29,7 +29,7 @@ export const RangesFilter = () => {
             className="size-2 rounded-full"
             style={{ backgroundColor: color }}
           />
-          <Body1 className="hidden text-neutral-500 xs:block">
+          <Body1 className="text-neutral-500">
             {RANGES.find((range) => range.id === selectedRange)?.name}
           </Body1>
           <ChevronDownIcon className="size-4" />
