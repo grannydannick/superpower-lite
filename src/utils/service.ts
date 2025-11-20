@@ -281,7 +281,7 @@ export const getServiceImage = (name: string): string => {
 
 export const BEST_VALUE_SERVICES = [SUPERPOWER_BLOOD_PANEL, TOTAL_TOXIN_TEST];
 export const BEST_SELLER_SERVICES = [GUT_MICROBIOME_ANALYSIS];
-export const SALE_SERVICES = [GRAIL_GALLERI_MULTI_CANCER_TEST];
+export const SALE_SERVICES: string[] = [];
 
 export const getServiceBadge = (serviceName: string): string | null => {
   switch (true) {
