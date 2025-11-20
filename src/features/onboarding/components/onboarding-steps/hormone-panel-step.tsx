@@ -42,7 +42,12 @@ const HormonePanelContent = () => {
     return null;
   }
 
-  const _hormonePanel = data?.services.find((s) => s.name === panelName);
+  const hormonePanel = data?.services.find((s) => s.name === panelName);
+
+  if (!hormonePanel) {
+    handleSkip();
+    return null;
+  }
 
   return (
     <>
@@ -106,7 +111,8 @@ const HormonePanelContent = () => {
 
         <div className="flex flex-col gap-2">
           <Button onClick={handleAddPanel}>
-            Add {isMale ? "Men's Health Panel" : 'Female Fertility Panel'}
+            Add {isMale ? "Men's Health Panel" : 'Female Fertility Panel'} -{' '}
+            {formatMoney(hormonePanel.price)}
           </Button>
           <Button variant="outline" className="bg-white" onClick={handleSkip}>
             Skip for now

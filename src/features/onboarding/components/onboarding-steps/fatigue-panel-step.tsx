@@ -2,7 +2,7 @@ import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { SplitScreenLayout } from '@/components/layouts';
 import { Button } from '@/components/ui/button';
 import { Body1, Body2, H2, H3, H4 } from '@/components/ui/typography';
-import { FATIGUE_PANEL, ANEMIA_PANEL } from '@/const';
+import { FATIGUE_PANEL } from '@/const';
 import { useAddOnPanelStore } from '@/features/onboarding/stores/add-on-panel-store';
 import { useServices } from '@/features/services/api';
 import { cn } from '@/lib/utils';
@@ -21,13 +21,9 @@ const FatiguePanelContent = () => {
 
   const handleAddPanel = () => {
     const fatiguePanel = data?.services.find((s) => s.name === FATIGUE_PANEL);
-    const anemiaPanel = data?.services.find((s) => s.name === ANEMIA_PANEL);
 
     if (fatiguePanel) {
       togglePanel(fatiguePanel.id);
-    }
-    if (anemiaPanel) {
-      togglePanel(anemiaPanel.id);
     }
 
     next();
@@ -42,8 +38,11 @@ const FatiguePanelContent = () => {
   }
 
   const fatiguePanel = data?.services.find((s) => s.name === FATIGUE_PANEL);
-  const anemiaPanel = data?.services.find((s) => s.name === ANEMIA_PANEL);
-  const _totalPrice = (fatiguePanel?.price || 0) + (anemiaPanel?.price || 0);
+
+  if (!fatiguePanel) {
+    handleSkip();
+    return null;
+  }
 
   return (
     <>
@@ -97,7 +96,9 @@ const FatiguePanelContent = () => {
         <ServiceInfoCard className="block md:hidden" />
 
         <div className="flex flex-col gap-2">
-          <Button onClick={handleAddPanel}>Add Fatigue Panel</Button>
+          <Button onClick={handleAddPanel}>
+            Add Fatigue Panel - {formatMoney(fatiguePanel.price)}
+          </Button>
           <Button variant="outline" className="bg-white" onClick={handleSkip}>
             Skip for now
           </Button>
@@ -152,7 +153,6 @@ const ServiceInfoCard = ({ className }: { className?: string }) => {
   });
 
   const fatiguePanel = data?.services.find((s) => s.name === FATIGUE_PANEL);
-  const anemiaPanel = data?.services.find((s) => s.name === ANEMIA_PANEL);
 
   return (
     <div className={cn('space-y-2', className)}>
@@ -169,22 +169,6 @@ const ServiceInfoCard = ({ className }: { className?: string }) => {
               <Body2 className="text-zinc-500">Diagnostic Test</Body2>
             </div>
             <Body1>{formatMoney(fatiguePanel.price)}</Body1>
-          </div>
-        </div>
-      )}
-      {anemiaPanel && (
-        <div className="rounded-[20px] border border-zinc-200 bg-white p-5">
-          <div className="flex flex-row items-center justify-between gap-4">
-            <img
-              src="/services/anemia.png"
-              alt="anemia-panel"
-              className="pointer-events-none size-16 object-contain"
-            />
-            <div className="flex min-w-0 flex-1 flex-col">
-              <Body1>{anemiaPanel.name}</Body1>
-              <Body2 className="text-zinc-500">Diagnostic Test</Body2>
-            </div>
-            <Body1>{formatMoney(anemiaPanel.price)}</Body1>
           </div>
         </div>
       )}

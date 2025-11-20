@@ -4,7 +4,6 @@ import { useCallback, useRef, useEffect, useMemo } from 'react';
 import { INTAKE_QUESTIONNAIRE } from '@/const/questionnaire';
 import {
   ADVANCED_BLOOD_PANEL,
-  ANEMIA_PANEL,
   CUSTOM_BLOOD_PANEL,
   FATIGUE_PANEL,
   FEMALE_FERTILITY_PANEL,
@@ -94,13 +93,34 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
   // Check if specific panels are available
   const services = addOnServices?.services;
   const hasOrganAge = hasService(services, ORGAN_AGE_PANEL);
-  const hasFatigue =
-    hasService(services, FATIGUE_PANEL) && hasService(services, ANEMIA_PANEL);
+  const hasFatigue = hasService(services, FATIGUE_PANEL);
   const hormonePanelName =
     user?.gender?.toLowerCase() === 'male'
       ? MALE_HEALTH_PANEL
       : FEMALE_FERTILITY_PANEL;
   const hasHormone = hasService(services, hormonePanelName);
+
+  // Calculate user age if birthdate is available
+  const userAge = useMemo(() => {
+    if (!user?.dateOfBirth) return null;
+    const birthDate = new Date(user.dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+    return age;
+  }, [user?.dateOfBirth]);
+
+  // Check if user is female over 45 (should not see fertility panel)
+  const isFemaleOver45 =
+    user?.gender?.toLowerCase() === 'female' &&
+    userAge !== null &&
+    userAge > 45;
 
   const isLoading =
     isUserLoading || isOrdersLoading || isIntakeLoading || isServicesLoading;
@@ -132,6 +152,8 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
         ONBOARDING_STEPS.ADVANCED_UPGRADE,
         ONBOARDING_STEPS.BUNDLED_DISCOUNT,
         ONBOARDING_STEPS.ORGAN_AGE,
+        ONBOARDING_STEPS.FATIGUE_PANEL,
+        ONBOARDING_STEPS.HORMONE_PANEL,
         ONBOARDING_STEPS.ADD_ON_PANELS,
       );
     }
@@ -140,6 +162,9 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
     if (!hasOrganAge) excluded.push(ONBOARDING_STEPS.ORGAN_AGE);
     if (!hasFatigue) excluded.push(ONBOARDING_STEPS.FATIGUE_PANEL);
     if (!hasHormone) excluded.push(ONBOARDING_STEPS.HORMONE_PANEL);
+
+    // Women over 45 should not see fertility panel
+    if (isFemaleOver45) excluded.push(ONBOARDING_STEPS.HORMONE_PANEL);
 
     return excluded;
   }, [
@@ -150,6 +175,7 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
     hasOrganAge,
     hasFatigue,
     hasHormone,
+    isFemaleOver45,
   ]);
 
   // Initialize valid steps once when data is loaded

@@ -73,6 +73,13 @@ const OrganAgeContent = () => {
     return null;
   }
 
+  const organAgePanel = data?.services.find((s) => s.name === ORGAN_AGE_PANEL);
+
+  if (!organAgePanel) {
+    goToNext();
+    return null;
+  }
+
   return (
     <>
       <div className="hidden w-full flex-col gap-4 rounded-3xl border border-zinc-200 bg-white p-10 lg:sticky lg:top-8 lg:flex lg:self-start">
@@ -90,7 +97,6 @@ const OrganAgeContent = () => {
             Understand how each of your body&apos;s major systems is aging, from
             heart and metabolism to brain and immune health.
           </Body1>
-          <Body1 className="text-zinc-500">View all 9 measured systems →</Body1>
 
           <ProductInfo className="lg:hidden" />
         </div>
@@ -145,7 +151,7 @@ const OrganAgeContent = () => {
           <Payment.SubmitPayment
             onSubmit={upgradeOrder}
             onCancel={goToNext}
-            submitLabel="Add Organ Age Panel"
+            submitLabel={`Add Organ Age Panel - ${formatMoney(organAgePanel.price)}`}
             isPending={upgradeOrderMutation.isPending}
             isSuccess={upgradeOrderMutation.isSuccess}
             enabled
