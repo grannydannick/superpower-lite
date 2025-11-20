@@ -27,6 +27,7 @@ export function FileDropdown({ children, file }: FileDropdownProps) {
       <DropdownMenuContent
         align="end"
         className="w-[160px] rounded-[16px] border-zinc-100"
+        onClick={(e) => e.stopPropagation()}
       >
         <DownloadMenuItem {...file} />
         {file.contentType === 'application/pdf' ? (

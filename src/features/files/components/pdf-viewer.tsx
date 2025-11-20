@@ -158,7 +158,7 @@ export const PdfViewer = ({ id, name }: PdfViewerProps) => {
 const Loader = (): JSX.Element => {
   return (
     <div className="flex items-center justify-center">
-      <Skeleton className="h-screen w-full" variant="shimmer" />
+      <Skeleton className="h-screen w-full" />
     </div>
   );
 };
