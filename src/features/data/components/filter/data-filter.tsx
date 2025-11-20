@@ -6,7 +6,7 @@ import { useIsIntersecting } from '@/hooks/use-sticky-state';
 import { cn } from '@/lib/utils';
 
 import { useDataFilterStore } from '../../stores/data-filter-store';
-import { BiomarkerDistributionBar } from '../biomarkers-distribution-bar';
+import { BiomarkersDistributionBar } from '../biomarkers-distribution-bar';
 
 import { CategoryFilter } from './category-filter';
 import { DataSearch } from './data-search';
@@ -76,7 +76,7 @@ export const DataFilter = ({ isLoading }: { isLoading: boolean }) => {
                   </div>
                 </div>
               ) : (
-                <BiomarkerDistributionBar />
+                <BiomarkersDistributionBar enableToggle />
               )}
             </div>
             {!isLoading && (

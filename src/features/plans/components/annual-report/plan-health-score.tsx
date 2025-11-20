@@ -5,12 +5,12 @@ import { QuickLink } from '@/components/ui/quick-link';
 import { Spinner } from '@/components/ui/spinner';
 import { Body2, H2 } from '@/components/ui/typography';
 import { useBiomarkers } from '@/features/data/api';
+import { BiomarkersDistributionBar } from '@/features/data/components/biomarkers-distribution-bar';
 import { mostRecent } from '@/features/data/utils/most-recent-biomarker';
 import { ShareableCardsModal } from '@/features/shareables/components/shareable-cards-modal';
 import { useUser } from '@/lib/auth';
 import { yearsSinceDate } from '@/utils/format';
 
-import { BiomarkerDistributionBar } from './biomarker-distribution-bar';
 import { PhilosophyBlocks } from './philosophy-blocks';
 
 const MESSAGES = [
@@ -207,7 +207,7 @@ export function PlanHealthScore({
           <div className="mx-auto mt-3 w-full max-w-3xl flex-1 overflow-y-auto rounded-xl border border-zinc-200 bg-white px-4 pt-4 shadow-md shadow-black/[.02] scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300">
             <div className="flex flex-col gap-4">
               <Body2 className="font-semibold">Overview</Body2>
-              <BiomarkerDistributionBar />
+              <BiomarkersDistributionBar />
             </div>
           </div>
           <PhilosophyBlocks />

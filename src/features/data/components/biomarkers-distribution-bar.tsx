@@ -1,5 +1,6 @@
 import NumberFlow from '@number-flow/react';
 import { motion } from 'framer-motion';
+import { forwardRef, type ButtonHTMLAttributes } from 'react';
 
 import { Body2, H3 } from '@/components/ui/typography';
 import { useBiomarkers } from '@/features/data/api';
@@ -11,10 +12,73 @@ import { STATUS_TO_COLOR } from '../../../const/status-to-color';
 import { useFilteredBiomarkers } from '../hooks/use-filtered-biomarkers';
 import { useDataFilterStore } from '../stores/data-filter-store';
 
-const ease = [0.16, 1, 0.3, 1];
+type FilterTarget = 'all' | 'optimal' | 'normal' | 'out of range';
 
-export const BiomarkerDistributionBar = () => {
-  const { selectedRange } = useDataFilterStore();
+type ValueKey = 'total' | 'optimal' | 'normal' | 'outOfRange';
+
+const EASE = [0.16, 1, 0.3, 1];
+
+const BIOMARKER_FILTERS = [
+  { target: 'all' as const, label: 'Total', valueKey: 'total' as const },
+  {
+    target: 'optimal' as const,
+    label: 'Optimal',
+    valueKey: 'optimal' as const,
+  },
+  { target: 'normal' as const, label: 'Normal', valueKey: 'normal' as const },
+  {
+    target: 'out of range' as const,
+    label: 'Out of Range',
+    valueKey: 'outOfRange' as const,
+  },
+] as const;
+
+type BiomarkerFilterButtonProps = {
+  target: FilterTarget;
+  label: string;
+  value: number;
+  selected: boolean;
+  onToggle: (target: FilterTarget) => void;
+} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick' | 'children'>;
+
+const BiomarkerFilterButton = forwardRef<
+  HTMLButtonElement,
+  BiomarkerFilterButtonProps
+>(({ target, label, value, selected, onToggle, className, ...rest }, ref) => {
+  return (
+    <button
+      ref={ref}
+      type="button"
+      className={cn(
+        'flex select-none text-left flex-col rounded-lg p-1.5 outline-none transition-all duration-200 focus-visible:bg-zinc-100 focus-visible:outline-none',
+        'cursor-pointer disabled:cursor-default',
+        className,
+      )}
+      aria-pressed={selected}
+      onClick={() => onToggle(target)}
+      {...rest}
+    >
+      <H3
+        className={cn(
+          'transition-colors duration-300',
+          selected ? 'text-black' : 'text-zinc-400',
+        )}
+      >
+        <NumberFlow value={value} />
+      </H3>
+      <Body2 className="text-zinc-400">{label}</Body2>
+    </button>
+  );
+});
+
+BiomarkerFilterButton.displayName = 'BiomarkerFilterButton';
+
+export const BiomarkersDistributionBar = ({
+  enableToggle,
+}: {
+  enableToggle?: boolean;
+}) => {
+  const { selectedRange, updateRange } = useDataFilterStore();
   const { data: biomarkers } = useBiomarkers();
   const { data: orders } = useOrders();
 
@@ -44,58 +108,38 @@ export const BiomarkerDistributionBar = () => {
   const outOfRangePercent =
     Math.round((numOutOfRange / numTotalBiomarkers) * 100) || 0;
 
+  const handleToggle = (target: FilterTarget) => {
+    if (!enableToggle) return;
+
+    updateRange(selectedRange === target ? 'all' : target);
+  };
+
+  const valueMap: Record<ValueKey, number> = {
+    total: numTotalBiomarkers,
+    optimal: numInRange,
+    normal: numNormal,
+    outOfRange: numOutOfRange,
+  };
+
   return (
     <div className="mb-3 space-y-2">
       <motion.div
         className="flex w-full items-center justify-between"
         initial={{ opacity: 0, width: '75%' }}
         animate={{ opacity: 1, width: '100%' }}
-        transition={{ duration: 1, ease }}
+        transition={{ duration: 1, ease: EASE }}
       >
-        <div className="flex flex-col">
-          <H3
-            className={cn(
-              'transition-colors duration-300',
-              selectedRange === 'all' ? 'text-black' : 'text-zinc-400',
-            )}
-          >
-            <NumberFlow value={numTotalBiomarkers} />
-          </H3>
-          <Body2 className="text-zinc-400">Total</Body2>
-        </div>
-        <div className="flex flex-col">
-          <H3
-            className={cn(
-              'transition-colors duration-300',
-              selectedRange === 'optimal' ? 'text-black' : 'text-zinc-400',
-            )}
-          >
-            <NumberFlow value={numInRange} />
-          </H3>
-          <Body2 className="text-zinc-400">Optimal</Body2>
-        </div>
-        <div className="flex flex-col">
-          <H3
-            className={cn(
-              'transition-colors duration-300',
-              selectedRange === 'normal' ? 'text-black' : 'text-zinc-400',
-            )}
-          >
-            <NumberFlow value={numNormal} />
-          </H3>
-          <Body2 className="text-zinc-400">Normal</Body2>
-        </div>
-        <div className="flex flex-col">
-          <H3
-            className={cn(
-              'transition-colors duration-300',
-              selectedRange === 'out of range' ? 'text-black' : 'text-zinc-400',
-            )}
-          >
-            <NumberFlow value={numOutOfRange} />
-          </H3>
-          <Body2 className="text-zinc-400">Out of Range</Body2>
-        </div>
+        {BIOMARKER_FILTERS.map(({ target, label, valueKey }) => (
+          <BiomarkerFilterButton
+            key={target}
+            target={target}
+            label={label}
+            value={valueMap[valueKey]}
+            selected={selectedRange === target}
+            onToggle={handleToggle}
+            disabled={!enableToggle}
+          />
+        ))}
       </motion.div>
       <div className="flex h-1.5 w-full justify-start gap-1">
         {optimalPercent > 0 && (
@@ -110,7 +154,7 @@ export const BiomarkerDistributionBar = () => {
             }}
             initial={{ width: 0 }}
             animate={{ width: `${optimalPercent}%` }}
-            transition={{ duration: 1.5, ease }}
+            transition={{ duration: 1.5, ease: EASE }}
           />
         )}
         {normalPercent > 0 && (
@@ -123,7 +167,7 @@ export const BiomarkerDistributionBar = () => {
             }}
             initial={{ width: 0 }}
             animate={{ width: `${normalPercent}%` }}
-            transition={{ duration: 1.5, ease }}
+            transition={{ duration: 1.5, ease: EASE }}
           />
         )}
         {outOfRangePercent > 0 && (
@@ -138,7 +182,7 @@ export const BiomarkerDistributionBar = () => {
             }}
             initial={{ width: 0 }}
             animate={{ width: `${outOfRangePercent}%` }}
-            transition={{ duration: 1.5, ease }}
+            transition={{ duration: 1.5, ease: EASE }}
           />
         )}
         <motion.div
@@ -147,7 +191,7 @@ export const BiomarkerDistributionBar = () => {
           animate={{
             width: `${100 - optimalPercent - normalPercent - outOfRangePercent}%`,
           }}
-          transition={{ duration: 1.5, ease }}
+          transition={{ duration: 1.5, ease: EASE }}
         />
       </div>
     </div>

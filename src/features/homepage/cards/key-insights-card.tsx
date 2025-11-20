@@ -1,7 +1,7 @@
 import { GoalIcon } from 'lucide-react';
 
 import { Body1, Body2 } from '@/components/ui/typography';
-import { BiomarkerDistributionBar } from '@/features/data/components/biomarkers-distribution-bar';
+import { BiomarkersDistributionBar } from '@/features/data/components/biomarkers-distribution-bar';
 import { PlanGoalObservation } from '@/features/plans/components/goals/plan-goal-observation';
 import { useLatestCompletedPlan } from '@/features/plans/hooks/use-latest-completed-plan';
 
@@ -26,7 +26,7 @@ export const KeyInsightsCard = () => {
         )}
         <div className="space-y-3">
           <Body1>Summary</Body1>
-          <BiomarkerDistributionBar />
+          <BiomarkersDistributionBar />
         </div>
         {goalObservations.length > 0 && (
           <div className="space-y-3">
