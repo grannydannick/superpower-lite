@@ -27,7 +27,7 @@ export const PhlebotomyProgress = ({ status }: PhlebotomyProgressProps) => {
         >
           Processing
         </Body2>
-        <Body2 className="font-medium text-zinc-400">Result Ready</Body2>
+        <Body2 className="font-medium text-zinc-400">Results Ready</Body2>
       </div>
       <div className="relative mt-2 h-1 w-full overflow-hidden rounded-full bg-zinc-200">
         <div
