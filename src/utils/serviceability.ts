@@ -1,5 +1,5 @@
 import { CollectionMethodType } from '@/types/api';
-const AT_HOME_ONLY_STATES = new Set<string>(['NY', 'NJ', 'AZ']);
+const AT_HOME_ONLY_STATES = new Set<string>(['NY', 'NJ']);
 export function getCollectionMethodForState(
   state?: string,
 ): CollectionMethodType {
