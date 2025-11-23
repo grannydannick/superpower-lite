@@ -50,8 +50,10 @@ const AboutDisclaimer = () => {
         </Body2>
       </div>
       <Body1 className="text-zinc-400">
-        Superpower isn’t a replacement for your primary care provider. Questions
-        or concerns? Review these results with your doctor.
+        Written by Superpower’s custom proprietary AI, built from the minds of
+        the best in medicine. Superpower isn’t a replacement for your primary
+        care provider. If you have questions or concerns, please review these
+        results with your doctor.
       </Body1>
     </div>
   );
