@@ -108,7 +108,13 @@ const BiologicalAge = ({
             ) : (
               <>
                 <H2 className="m-0 leading-none">
-                  <NumberFlow value={biologicalAge ?? 0} />
+                  <NumberFlow
+                    value={biologicalAge ?? 0}
+                    format={{
+                      minimumFractionDigits: 1,
+                      maximumFractionDigits: 1,
+                    }}
+                  />
                 </H2>
                 <Body2 className="m-0 mb-2 leading-none text-zinc-400 md:mb-3">
                   years
@@ -119,10 +125,9 @@ const BiologicalAge = ({
           {!isLoading && (
             <Body2 className="text-zinc-400">
               {ageDifference &&
-                Math.abs(ageDifference) +
-                  ' years ' +
-                  (ageDifference >= 0 ? 'younger' : 'older') +
-                  ' than your actual age'}
+                `${Math.abs(ageDifference).toFixed(1)} years ${
+                  ageDifference >= 0 ? 'younger' : 'older'
+                } than your actual age`}
             </Body2>
           )}
         </div>
