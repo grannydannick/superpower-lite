@@ -46,10 +46,7 @@ export const ProtocolOverview = ({
   const historicalProtocols =
     allProtocols?.filter((p) => p.id !== protocol?.id) || [];
 
-  const name =
-    id && protocol
-      ? historicalProtocols.find((protocol) => protocol.id === id)?.title
-      : 'Protocol';
+  const name = id && protocol ? protocol?.title : 'Protocol';
 
   if (isLoading) {
     return (
@@ -111,7 +108,7 @@ export const ProtocolOverview = ({
         >
           <ChevronLeft className="-mt-px w-[15px] text-zinc-400 transition-all duration-150 group-hover:-translate-x-0.5 group-hover:text-zinc-600" />
           <Body2 className="text-zinc-500 transition-all duration-150 group-hover:text-zinc-700">
-            Back
+            Overview
           </Body2>
         </Link>
       )}
