@@ -1,6 +1,7 @@
 import { ArrowUpRight } from 'lucide-react';
 import { useState } from 'react';
 
+import { StyledMarkdown } from '@/components/shared/styled-markdown';
 import {
   Accordion,
   AccordionContent,
@@ -9,7 +10,7 @@ import {
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Body2, H3 } from '@/components/ui/typography';
+import { H3 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 import { Biomarker, MetadataContent } from '@/types/api';
 import { capitalize } from '@/utils/format';
@@ -123,9 +124,11 @@ const ExplanationTab = ({ biomarker }: { biomarker: Biomarker }) => {
       {metadata.map((item, idx) => (
         <div key={idx} className="flex flex-col gap-2">
           <H3>{item.title}</H3>
-          <Body2 className="mb-6 whitespace-pre-wrap text-zinc-500">
-            {item.text}
-          </Body2>
+          <StyledMarkdown className="space-y-4 text-secondary" variant="small">
+            {typeof item.text === 'string'
+              ? item.text.replace(/([^\n])\n([^\n])/g, '$1  \n$2')
+              : item.text}
+          </StyledMarkdown>
         </div>
       ))}
       {sources.length > 0 && (
