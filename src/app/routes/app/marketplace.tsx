@@ -5,10 +5,7 @@ import { MarketplaceTabs } from '@/features/marketplace/components/marketplace-t
 
 export const MarketplaceRoute = () => {
   return (
-    <ContentLayout
-      title="Marketplace"
-      className="max-w-[1600px] py-0 md:space-y-6"
-    >
+    <ContentLayout title="Marketplace" className="max-w-[1600px] md:space-y-6">
       <Header
         title="Marketplace"
         callToAction={<MarketplaceCta />}

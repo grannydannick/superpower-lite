@@ -26,7 +26,7 @@ export const DigitalTwinCard = () => {
 
   return (
     <div className="relative top-0 hidden h-full lg:block">
-      <div className="sticky top-36 flex max-h-[1000px] rounded-3xl bg-zinc-100 lg:items-center lg:justify-end">
+      <div className="sticky top-32 flex max-h-[1000px] rounded-3xl bg-zinc-100 lg:items-center lg:justify-end">
         <div className="absolute left-6 top-6 z-10">
           {user ? (
             <h2 className="text-3xl font-medium text-zinc-400">

@@ -22,7 +22,7 @@ export const SettingsListMobile = () => {
     <div className="flex-1 bg-zinc-50 md:hidden">
       <div className="p-6">
         {!current ? (
-          <Header title="Settings" className="pb-8 pt-16" />
+          <Header title="Settings" className="pb-8 pt-4" />
         ) : (
           <div className="space-y-6 py-6">
             <div

@@ -8,9 +8,9 @@ export function useThemeColor() {
   const lastColorRef = useRef<string>();
 
   const themeColor = useMemo(() => {
-    const isWhiteBg =
-      WHITE_BACKGROUND_PATHS.some((path) => pathname.includes(path)) ||
-      pathname === '/';
+    const isWhiteBg = WHITE_BACKGROUND_PATHS.some((path) =>
+      pathname.includes(path),
+    );
     return isWhiteBg ? '#ffffff' : '#fafafa';
   }, [pathname]);
 

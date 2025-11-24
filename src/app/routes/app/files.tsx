@@ -8,7 +8,7 @@ export const FilesRoute = () => {
     <ContentLayout title="Records" className="max-md:pt-4">
       <FilesHub
         headerSlot={
-          <div className="flex gap-4">
+          <div className="mt-1 flex gap-4 md:mb-2 md:mt-0">
             <Link to="/data">
               <H3 className="border-b-2 border-b-transparent text-black/20 transition-all hover:text-black/40">
                 Twin

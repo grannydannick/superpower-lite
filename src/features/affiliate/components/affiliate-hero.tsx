@@ -34,7 +34,7 @@ export const AffiliateHero = () => {
   const { width } = useWindowDimensions();
 
   return (
-    <header className="mx-auto flex h-full flex-col justify-end pb-40">
+    <header className="mx-auto flex h-full flex-col justify-end pb-32 md:pb-40">
       <div className="relative z-10 py-16">
         <H2 className="text-white">
           Refer your friends <br />

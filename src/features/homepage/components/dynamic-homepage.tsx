@@ -15,7 +15,7 @@ export const DynamicHomepage = () => {
     <ContentLayout
       title="Home"
       variant="homepage"
-      className="max-w-[1600px] md:space-y-6 lg:py-0"
+      className="max-w-[1600px] pt-6 md:space-y-6 md:pt-0 lg:py-0"
     >
       {/* Mobile: Greeting at top */}
       <div className="lg:hidden">
@@ -23,7 +23,7 @@ export const DynamicHomepage = () => {
       </div>
 
       {/* Desktop: Split screen layout */}
-      <div className="mx-auto grid w-full max-w-[1600px] grid-cols-1 gap-6 p-4 lg:h-full lg:grid-cols-2 lg:gap-16 lg:px-12 lg:py-8">
+      <div className="mx-auto grid w-full max-w-[1600px] grid-cols-1 gap-6 lg:h-full lg:grid-cols-2 lg:gap-16 lg:px-12 lg:py-8">
         {/* Left column: Static, full height (digital twin placeholder) */}
         <DigitalTwinCard />
 
@@ -40,7 +40,7 @@ export const DynamicHomepage = () => {
               <p>No cards to display at this time.</p>
             </div>
           ) : (
-            <div className="space-y-6 px-2">
+            <div className="space-y-6 lg:px-2">
               {visibleCards.map(({ id, component: Component }) => (
                 <Suspense key={id} fallback={<CardSkeleton />}>
                   <Component />
