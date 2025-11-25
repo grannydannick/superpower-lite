@@ -45,6 +45,7 @@ const createEnv = () => {
     POSTHOG_KEY: z.string().optional(),
     POSTHOG_DEBUG: z.string().optional(),
     GO_RX_URL: z.string(),
+    CHECKOUT_URL: z.string(),
   });
 
   const envVars = Object.entries(import.meta.env).reduce<

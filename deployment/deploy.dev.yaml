@@ -49,6 +49,8 @@ spec:
               value: '{{ .VITE_APP_KLAVIYO_PUBLIC_API_KEY }}'
             - name: VITE_APP_GO_RX_URL
               value: '{{ .VITE_APP_GO_RX_URL }}'
+            - name: VITE_APP_CHECKOUT_URL
+              value: '{{ .VITE_APP_CHECKOUT_URL }}'
 
 ---
 apiVersion: v1

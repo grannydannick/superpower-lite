@@ -15,6 +15,7 @@ import {
 import { toast } from '@/components/ui/sonner';
 import { Spinner } from '@/components/ui/spinner';
 import { Body2, H1 } from '@/components/ui/typography';
+import { env } from '@/config/env';
 import { useSendMagicLink } from '@/features/auth/api/send-magic-link';
 import { AuthInput } from '@/features/auth/components/auth-input';
 import { LoginInput, loginInputSchema, useLogin } from '@/lib/auth';
@@ -111,13 +112,13 @@ export const LoginForm = ({
       <div className="space-y-3">
         <H1 className="text-3xl md:text-5xl">Welcome back</H1>
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center">
-          <Body2 className="text-zinc-500">Don’t have an account?</Body2>
-          <Link
-            to="/register"
+          <Body2 className="text-zinc-500">Don&apos;t have an account?</Body2>
+          <a
+            href={env.CHECKOUT_URL}
             className="cursor-pointer text-sm text-vermillion-900"
           >
             Create an account
-          </Link>
+          </a>
         </div>
       </div>
 
