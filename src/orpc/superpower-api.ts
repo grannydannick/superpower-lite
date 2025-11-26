@@ -10,7 +10,6 @@ import createFetchClient from 'openapi-fetch';
 import createClient from 'openapi-react-query';
 
 import { env } from '@/config/env';
-import { getActiveLogin } from '@/lib/utils';
 import type { paths } from '@/orpc/types.generated';
 
 /**
@@ -21,14 +20,7 @@ import type { paths } from '@/orpc/types.generated';
  */
 export const api = createFetchClient<paths>({
   baseUrl: `${env.API_URL}/rpc`,
-  headers: {
-    get Authorization() {
-      const activeLogin = getActiveLogin();
-      return activeLogin?.accessToken
-        ? `Bearer ${activeLogin.accessToken}`
-        : undefined;
-    },
-  },
+  // We don't need to do anything with headers because we have cookie-based auth.
   credentials: 'include',
 });
 
@@ -40,7 +32,6 @@ export const api = createFetchClient<paths>({
  *
  * Usage:
  * ```ts
- * // In a component:
  * const { data } = $api.useQuery('get', '/auth/methods', {
  *   params: { query: { email: 'user@example.com' } }
  * });
