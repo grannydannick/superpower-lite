@@ -7,14 +7,17 @@ import { Body1, Body2 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 
 import { ConsentPaymentSummary } from './consent-payment-summary';
-import { RX_CONSENT_PAYMENT_LINKID } from './const/special-linkids';
+import {
+  RX_CONSENT_PAYMENT_LINKID,
+  RX_CONSENT_QUESTION_LINKID,
+} from './const/special-linkids';
 import {
   SUPERPOWER_QUESTIONNAIRE_DESCRIPTION_EXTENSION_URL,
   QUESTIONNAIRE_ITEM_CONTROL_EXTENSION_URL,
 } from './const/system-urls';
 import { QuestionnaireFormItem } from './questionnaire-item';
 import { useQuestionnaireStore } from './stores/questionnaire-store';
-import { QuestionnaireItemType } from './utils';
+import { isFrontDoorExperiment, QuestionnaireItemType } from './utils';
 
 interface QuestionnaireFormRepeatableItemProps {
   item: QuestionnaireItem;
@@ -43,6 +46,7 @@ export const QuestionnaireFormRepeatableItem = ({
   const checkForQuestionEnabled = useQuestionnaireStore(
     (s) => s.checkForQuestionEnabled,
   );
+  const currentResponse = useQuestionnaireStore((s) => s.response);
 
   // If https://superpower.com/fhir/StructureDefinition/questionnaire-description is available in the extension array, use it as the description
   const description = item.extension?.find(
@@ -55,6 +59,13 @@ export const QuestionnaireFormRepeatableItem = ({
   )?.valueCodeableConcept;
 
   const isRxConsentPaymentQuestion = item.linkId === RX_CONSENT_PAYMENT_LINKID;
+  const isRxConsentQuestion = item.linkId === RX_CONSENT_QUESTION_LINKID;
+
+  const isFrontDoor = isFrontDoorExperiment(currentResponse);
+
+  // Frontdoor/semaglutide handle payment via checkout, not in-questionnaires, so we hide it
+  const shouldShowPaymentSummary =
+    (isRxConsentPaymentQuestion || isRxConsentQuestion) && !isFrontDoor;
 
   if (!checkForQuestionEnabled(item)) {
     return null;
@@ -111,7 +122,7 @@ export const QuestionnaireFormRepeatableItem = ({
         )}
       </div>
 
-      {isRxConsentPaymentQuestion && <ConsentPaymentSummary />}
+      {shouldShowPaymentSummary && <ConsentPaymentSummary />}
 
       {/*Should be ...Array(number)*/}
       {[...Array(1)].map((_, index) => (

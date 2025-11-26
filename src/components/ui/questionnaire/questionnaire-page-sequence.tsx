@@ -38,9 +38,6 @@ export const QuestionnaireFormPageSequence = ({
   showIntro: boolean;
   onSave: (item: QuestionnaireResponseItem[]) => void;
 }) => {
-  const [_showIntro, setShowIntro] = useState(showIntro);
-  const [manualActiveStep, setManualActiveStep] = useState<number | null>(null);
-
   const {
     questionnaire,
     response,
@@ -52,17 +49,17 @@ export const QuestionnaireFormPageSequence = ({
     user,
   } = useQuestionnaireStore((s) => s);
 
-  const items = useMemo(() => questionnaire.item ?? [], [questionnaire.item]);
+  // Compute whether to show intro based on initial response having answers
+  // This prevents the intro from showing and then immediately hiding
+  const hasInitialAnswers =
+    initialResponse?.item &&
+    initialResponse.item.some((item) => hasAnswers(item));
+  const shouldShowIntro = showIntro && !hasInitialAnswers;
 
-  // Disable the intro if the initial response has answers
-  useEffect(() => {
-    if (
-      initialResponse?.item &&
-      initialResponse.item.some((item) => hasAnswers(item))
-    ) {
-      setShowIntro(false);
-    }
-  }, [initialResponse]);
+  const [_showIntro, setShowIntro] = useState(shouldShowIntro);
+  const [manualActiveStep, setManualActiveStep] = useState<number | null>(null);
+
+  const items = useMemo(() => questionnaire.item ?? [], [questionnaire.item]);
 
   const effectiveStep =
     manualActiveStep !== null ? manualActiveStep : activeStep;
@@ -83,16 +80,31 @@ export const QuestionnaireFormPageSequence = ({
 
         item.item.forEach((subItem) => {
           // Skip questions that should be hidden (e.g., gender, identity verification)
-          if (shouldSkipQuestion(subItem, questionnaire, user)) {
+          if (shouldSkipQuestion(subItem, questionnaire, user, response)) {
             return;
           }
           if (checkForQuestionEnabled(subItem)) {
             const groupResponseItem = response?.item?.find(
               (i) => i.linkId === item.linkId,
             );
-            const nestedResponseItem = groupResponseItem?.item?.find(
+            let nestedResponseItem = groupResponseItem?.item?.find(
               (i) => i.linkId === subItem.linkId,
-            ) || { linkId: subItem.linkId };
+            );
+
+            // If not found in current response, check initialResponse for pre-filled answers
+            if (!nestedResponseItem && initialResponse?.item) {
+              const initialGroupItem = initialResponse.item.find(
+                (i) => i.linkId === item.linkId,
+              );
+              nestedResponseItem = initialGroupItem?.item?.find(
+                (i) => i.linkId === subItem.linkId,
+              );
+            }
+
+            // Fallback to empty item with linkId
+            if (!nestedResponseItem) {
+              nestedResponseItem = { linkId: subItem.linkId };
+            }
 
             const isAnswered = hasAnswers(nestedResponseItem);
 
@@ -106,7 +118,7 @@ export const QuestionnaireFormPageSequence = ({
         });
       } else {
         // Skip questions that should be hidden (e.g., gender, identity verification)
-        if (shouldSkipQuestion(item, questionnaire, user)) {
+        if (shouldSkipQuestion(item, questionnaire, user, response)) {
           return;
         }
         if (checkForQuestionEnabled(item)) {
@@ -125,7 +137,14 @@ export const QuestionnaireFormPageSequence = ({
     });
 
     return result;
-  }, [items, response, checkForQuestionEnabled, questionnaire, user]);
+  }, [
+    items,
+    response,
+    checkForQuestionEnabled,
+    questionnaire,
+    user,
+    initialResponse,
+  ]);
 
   const uniqueGroups = useMemo(() => {
     const groups = new Set(

@@ -1,9 +1,10 @@
 import {
   QuestionnaireItem,
+  QuestionnaireResponse,
   QuestionnaireResponseItem,
 } from '@medplum/fhirtypes';
 import { ArrowLeftIcon, SmileIcon } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -16,8 +17,9 @@ import { CurrentAddressCard } from '@/features/users/components/current-address-
 import { useIdentityVerification } from '@/hooks/use-identity-verification';
 import { cn } from '@/lib/utils';
 
+import { ConsentPaymentSummary } from './consent-payment-summary';
 import {
-  RX_CONSENT_PAYMENT_LINKID,
+  RX_CONSENT_PAYMENT_GROUP_LINKID,
   RX_IDENTITY_VERIFICATION_LINKID,
   RX_SAFETY_ADDRESS_LINKID,
   RX_SAFETY_INTRO_LINKID,
@@ -28,7 +30,9 @@ import { QuestionnaireFormRepeatableItem } from './questionnaire-repeatable-item
 import { useQuestionnaireStore } from './stores/questionnaire-store';
 import {
   ensureNestedResponseItems,
+  isFrontDoorExperiment,
   isResponseEmpty,
+  isSemaglutideByName,
   QuestionnaireItemType,
   validateRequiredFields,
 } from './utils';
@@ -39,6 +43,130 @@ interface QuestionnaireQuestionProps {
   onChange: (response: QuestionnaireResponseItem[]) => void;
   onSave: (response: QuestionnaireResponseItem[]) => void;
 }
+
+/**
+ * Recursively merges current store items with initial response items to preserve pre-filled answers.
+ * Strategy: Start with initialResponse items, then override with currentResponse items where linkIds match.
+ * For group items, recursively merge nested items to preserve pre-filled nested answers.
+ * This ensures pre-filled answers (like billing-period inside consent-payment group) are not lost.
+ *
+ * IMPORTANT: For front-door experiments and semaglutide questionnaires, billing-period and payment questions
+ * are skipped in the UI but their pre-filled values MUST be preserved in the response for backend validation.
+ */
+const mergeStoredWithInitial = (
+  currentItems: QuestionnaireResponseItem[],
+  initialItems: QuestionnaireResponseItem[],
+  response: QuestionnaireResponse,
+): QuestionnaireResponseItem[] => {
+  if (!initialItems || initialItems.length === 0) {
+    return currentItems || [];
+  }
+
+  if (!currentItems || currentItems.length === 0) {
+    return initialItems;
+  }
+
+  const isFrontDoor = isFrontDoorExperiment(response);
+
+  // Create a map of current items by linkId for fast lookup
+  const currentItemsMap = new Map<string, QuestionnaireResponseItem>();
+  currentItems.forEach((item) => {
+    if (item.linkId) {
+      currentItemsMap.set(item.linkId, item);
+    }
+  });
+
+  // Start with all initial items and override with current items where they exist
+  const merged = initialItems.map((initialItem) => {
+    // Skip items without linkId to prevent duplicates
+    if (!initialItem.linkId) {
+      return initialItem;
+    }
+
+    const currentItem = currentItemsMap.get(initialItem.linkId);
+
+    // If user has modified this item
+    if (currentItem) {
+      // If both items have nested items (group question), recursively merge them
+      if (Array.isArray(currentItem.item) && Array.isArray(initialItem.item)) {
+        return {
+          ...currentItem,
+          item: mergeStoredWithInitial(
+            currentItem.item,
+            initialItem.item,
+            response,
+          ),
+        };
+      }
+      // Otherwise use the current version (user's answer takes priority)
+      return currentItem;
+    }
+
+    // Frontdoor skips billing-period/payment questions but needs prefilled values in the response for validation
+    if (isFrontDoor && initialItem.linkId === 'consent-payment') {
+      const currentConsentPayment = currentItemsMap.get('consent-payment');
+      if (currentConsentPayment && Array.isArray(initialItem.item)) {
+        const currentNestedMap = new Map<string, QuestionnaireResponseItem>();
+
+        // Only process items with valid linkIds to prevent duplicates
+        if (Array.isArray(currentConsentPayment.item)) {
+          currentConsentPayment.item.forEach((nested) => {
+            if (nested.linkId) {
+              currentNestedMap.set(nested.linkId, nested);
+            }
+          });
+        }
+
+        // Merge all nested items from initial, preserving skipped ones
+        const mergedNested = initialItem.item.map((initialNested) => {
+          if (!initialNested.linkId) {
+            return initialNested;
+          }
+          const currentNested = currentNestedMap.get(initialNested.linkId);
+          return currentNested || initialNested;
+        });
+
+        // Add any new nested items from current that weren't in initial
+        // Track which linkIds we've already processed to avoid duplicates
+        const processedLinkIds = new Set(
+          mergedNested.filter((item) => item.linkId).map((item) => item.linkId),
+        );
+
+        if (Array.isArray(currentConsentPayment.item)) {
+          currentConsentPayment.item.forEach((nested) => {
+            if (nested.linkId && !processedLinkIds.has(nested.linkId)) {
+              mergedNested.push(nested);
+              processedLinkIds.add(nested.linkId);
+            }
+          });
+        }
+
+        return {
+          ...currentConsentPayment,
+          item: mergedNested,
+        };
+      }
+    }
+
+    // Otherwise keep the pre-filled initial value
+    return initialItem;
+  });
+
+  // Add any current items that weren't in initial (edge case)
+  // Track which linkIds we've already processed to avoid duplicates
+  const processedLinkIds = new Set(
+    merged.filter((item) => item.linkId).map((item) => item.linkId),
+  );
+
+  currentItems.forEach((item) => {
+    if (item.linkId && !processedLinkIds.has(item.linkId)) {
+      merged.push(item);
+      processedLinkIds.add(item.linkId);
+    }
+  });
+
+  return merged;
+};
 
 /**
  * This component is used to render a questionnaire question.
@@ -60,11 +188,75 @@ export const QuestionnaireQuestion = ({
   const { nextStep, prevStep, activeStep, getLastQuestion } =
     useQuestionnaireStore((s) => s);
   const currentResponse = useQuestionnaireStore((s) => s.response);
+  const initialResponse = useQuestionnaireStore((s) => s.initialResponse);
+  const questionnaire = useQuestionnaireStore((s) => s.questionnaire);
 
   const showBackButton = activeStep > 0;
   const lastQuestion = getLastQuestion();
   const isLastQuestion = lastQuestion?.linkId === item.linkId;
   const hasValidationErrors = validationErrors.size > 0;
+
+  const isFrontDoor = isFrontDoorExperiment(currentResponse);
+  const isSemaglutide = questionnaire
+    ? isSemaglutideByName(questionnaire)
+    : false;
+
+  const hasMergedRef = useRef<string | null>(null);
+
+  // Merge billing defaults from initialResponse into store before render (for validation)
+  useLayoutEffect(() => {
+    const shouldMerge =
+      item.type === QuestionnaireItemType.group &&
+      initialResponse?.item &&
+      item.linkId &&
+      hasMergedRef.current !== item.linkId;
+
+    if (shouldMerge) {
+      const initialGroupItem = initialResponse?.item?.find(
+        (i) => i.linkId === item.linkId,
+      );
+      if (initialGroupItem?.item) {
+        // Check if any pre-filled nested items are missing from current response
+        const missingItems: QuestionnaireResponseItem[] = [];
+        // Find the current group item in response
+        const currentGroupItem = response.item?.find(
+          (r) => r.linkId === item.linkId,
+        );
+
+        initialGroupItem.item.forEach((initialNestedItem) => {
+          const existsInResponse = currentGroupItem?.item?.some(
+            (r) => r.linkId === initialNestedItem.linkId,
+          );
+          if (!existsInResponse && initialNestedItem.linkId) {
+            missingItems.push(initialNestedItem);
+          }
+        });
+
+        // Add missing items to store if any
+        if (missingItems.length > 0) {
+          const currentGroupIndex =
+            response.item?.findIndex((r) => r.linkId === item.linkId) ?? -1;
+
+          if (currentGroupIndex >= 0 && response.item) {
+            const updatedGroupItem = {
+              ...response.item[currentGroupIndex],
+              item: [
+                ...(response.item[currentGroupIndex].item || []),
+                ...missingItems,
+              ],
+            };
+            const updatedItems = [...response.item];
+            updatedItems[currentGroupIndex] = updatedGroupItem;
+            onChange([{ ...response, item: updatedItems }]);
+            hasMergedRef.current = item.linkId;
+          }
+        } else {
+          // Even if no missing items, mark as merged to avoid re-checking
+          hasMergedRef.current = item.linkId;
+        }
+      }
+    }
+  }, [item.linkId, item.type, initialResponse, response, onChange]); // Run when dependencies change
 
   const handleValidationChange = useCallback(
     (linkId: string, hasError: boolean) => {
@@ -113,7 +305,13 @@ export const QuestionnaireQuestion = ({
     ensureNestedResponseItems(item, response, onChange);
 
     if (currentResponse.item) {
-      onSave(currentResponse.item);
+      // Merge current store items with initial response to preserve pre-filled answers
+      const mergedItems = mergeStoredWithInitial(
+        currentResponse.item,
+        initialResponse?.item || [],
+        currentResponse,
+      );
+      onSave(mergedItems);
     }
 
     if (isLastQuestion) {
@@ -198,6 +396,12 @@ export const QuestionnaireQuestion = ({
         );
       });
 
+    const isConsentPaymentGroup =
+      item.linkId === RX_CONSENT_PAYMENT_GROUP_LINKID;
+
+    const shouldShowConsentPaymentSummary =
+      isConsentPaymentGroup && !isFrontDoor && !isSemaglutide;
+
     return (
       <div className="space-y-6">
         <div className="mb-10">
@@ -216,6 +420,7 @@ export const QuestionnaireQuestion = ({
             />
           )}
         </div>
+        {shouldShowConsentPaymentSummary && <ConsentPaymentSummary />}
         <div
           className={cn(
             'grid grid-cols-1 gap-4',
@@ -310,6 +515,19 @@ export const QuestionnaireQuestion = ({
     const hideNextButton =
       isRxIdentityVerificationQuestion && isIdentityVerificationBlocking;
 
+    // Hide all navigation buttons for consent-payment group (has custom buttons)
+    // Also hide for consent-payment.consent which has custom "Agree & continue" / "Cancel" buttons
+    // Also hide for consent-payment.payment which has its own custom submit button
+    const hideAllButtons =
+      item.linkId === 'consent-payment' ||
+      item.linkId === 'consent-payment.consent' ||
+      item.linkId === 'consent-payment.payment';
+
+    // Don't render any buttons for consent-payment group or consent question
+    if (hideAllButtons) {
+      return null;
+    }
+
     return (
       <div
         className={cn(
@@ -327,17 +545,15 @@ export const QuestionnaireQuestion = ({
             <ArrowLeftIcon />
           </button>
         )}
-        {isLastQuestion ? (
-          item.linkId === RX_CONSENT_PAYMENT_LINKID ? null : (
-            <Button
-              type="submit"
-              className="ml-auto w-full md:w-[108px]"
-              disabled={disableAdvance}
-            >
-              Submit
-            </Button>
-          )
-        ) : hideNextButton ? null : (
+        {hideNextButton ? null : isLastQuestion ? (
+          <Button
+            type="submit"
+            className="ml-auto w-full md:w-[108px]"
+            disabled={disableAdvance}
+          >
+            Submit
+          </Button>
+        ) : (
           <div
             className={cn(
               'ml-auto flex w-full flex-col-reverse gap-4 md:w-auto md:flex-row',

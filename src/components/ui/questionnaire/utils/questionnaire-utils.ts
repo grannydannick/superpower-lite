@@ -9,6 +9,7 @@ import {
   Questionnaire,
   QuestionnaireItem,
   QuestionnaireItemAnswerOption,
+  QuestionnaireResponse,
   QuestionnaireResponseItemAnswer,
 } from '@medplum/fhirtypes';
 
@@ -24,6 +25,31 @@ import {
 } from '../const/special-linkids';
 
 import { isIdentityVerificationExpired } from './questionnaire-identity-utils';
+
+export const FRONTDOOR_EXPERIMENT_SYSTEM =
+  'https://superpower.com/fhir/experiment';
+export const GLP_FRONTDOOR_EXPERIMENT_VALUE = 'glp-frontdoor-experiment';
+
+export function isFrontDoorExperiment(
+  response?: QuestionnaireResponse,
+): boolean {
+  return (
+    response?.identifier?.system === FRONTDOOR_EXPERIMENT_SYSTEM &&
+    response?.identifier?.value === GLP_FRONTDOOR_EXPERIMENT_VALUE
+  );
+}
+
+export function isSemaglutideByName(questionnaire: Questionnaire): boolean {
+  return questionnaire.name?.toLowerCase().includes('semaglutide') ?? false;
+}
+
+// Used to default billing-period to 1 month (semaglutide pricing); frontdoor is also semaglutide
+export function isSemaglutideQuestionnaire(
+  questionnaire: Questionnaire,
+  response?: QuestionnaireResponse,
+): boolean {
+  return isSemaglutideByName(questionnaire) || isFrontDoorExperiment(response);
+}
 
 export enum QuestionnaireItemType {
   group = 'group',
@@ -95,6 +121,33 @@ export function shouldSkipIdentityQuestion(
   // Skip if verified and not expired
   return !isIdentityVerificationExpired(user?.identityUpdatedTime);
 }
+
+/**
+ * Checks if a question should be skipped for front-door experiment users or semaglutide questionnaires.
+ * Front-door users already paid, so we skip billing-period and payment questions.
+ * For semaglutide questionnaires, billing-period is auto-set to 1 month, so we skip it.
+ */
+export function shouldSkipFrontDoorQuestion(
+  item: QuestionnaireItem,
+  questionnaire: Questionnaire,
+  response?: QuestionnaireResponse,
+): boolean {
+  // For frontdoor experiments, skip both billing-period and payment
+  if (isFrontDoorExperiment(response)) {
+    return (
+      item.linkId === 'consent-payment.billing-period' ||
+      item.linkId === 'consent-payment.payment'
+    );
+  }
+
+  // For all semaglutide questionnaires, skip billing-period (auto-set to 1 month)
+  if (isSemaglutideByName(questionnaire)) {
+    return item.linkId === 'consent-payment.billing-period';
+  }
+
+  return false;
+}
+
 /**
  * TODO: ideally this logic lives on the server side, but FHIR QR native components is blocking this
  * Consolidated function to check if a question should be skipped.
@@ -105,10 +158,12 @@ export function shouldSkipQuestion(
   item: QuestionnaireItem,
   questionnaire: Questionnaire,
   user?: User,
+  response?: QuestionnaireResponse,
 ): boolean {
   return (
     shouldSkipGenderQuestion(item, questionnaire, user) ||
-    shouldSkipIdentityQuestion(item, questionnaire, user)
+    shouldSkipIdentityQuestion(item, questionnaire, user) ||
+    shouldSkipFrontDoorQuestion(item, questionnaire, response)
   );
 }
 

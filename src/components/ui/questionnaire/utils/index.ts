@@ -4,11 +4,15 @@ export {
   isRxQuestionnaire,
   shouldSkipGenderQuestion,
   shouldSkipIdentityQuestion,
+  shouldSkipFrontDoorQuestion,
   shouldSkipQuestion,
   getNewMultiSelectValues,
   formatReferenceString,
   getNumberOfPages,
   getNumericBounds,
+  isFrontDoorExperiment,
+  isSemaglutideByName,
+  isSemaglutideQuestionnaire,
 } from './questionnaire-utils';
 
 export { isQuestionEnabled } from './questionnaire-enablement';

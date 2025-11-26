@@ -10,33 +10,45 @@ import {
 
 import { User } from '@/types/api';
 
-import { RX_SEX_ASSIGNED_AT_BIRTH_LINKID } from '../const/special-linkids';
+import {
+  RX_BILLING_PERIOD_LINKID,
+  RX_SEX_ASSIGNED_AT_BIRTH_LINKID,
+} from '../const/special-linkids';
 
-// This function is used to build the initial response with the initial values.
+import { isSemaglutideQuestionnaire } from './questionnaire-utils';
+
 export function buildInitialResponse(
   questionnaire: Questionnaire,
   user?: User,
+  response?: QuestionnaireResponse,
 ): QuestionnaireResponse {
-  const response: QuestionnaireResponse = {
+  const isSemaglutide = isSemaglutideQuestionnaire(questionnaire, response);
+
+  const newResponse: QuestionnaireResponse = {
     resourceType: 'QuestionnaireResponse',
     questionnaire: getReferenceString(questionnaire),
-    item: buildInitialResponseItems(questionnaire.item, user),
+    item: buildInitialResponseItems(questionnaire.item, user, isSemaglutide),
     status: 'in-progress',
   };
 
-  return response;
+  return newResponse;
 }
 
 function buildInitialResponseItems(
   items: QuestionnaireItem[] | undefined,
   user?: User,
+  isSemaglutide?: boolean,
 ): QuestionnaireResponseItem[] {
-  return items?.map((item) => buildInitialResponseItem(item, user)) ?? [];
+  return (
+    items?.map((item) => buildInitialResponseItem(item, user, isSemaglutide)) ??
+    []
+  );
 }
 
 export function buildInitialResponseItem(
   item: QuestionnaireItem,
   user?: User,
+  isSemaglutide?: boolean,
 ): QuestionnaireResponseItem {
   let initialAnswer = item.initial?.map(buildInitialResponseAnswer) || [];
 
@@ -53,11 +65,16 @@ export function buildInitialResponseItem(
     // For 'OTHER' or 'UNKNOWN', don't prefill - let user answer if question is shown
   }
 
+  // Pre-populate billing-period for semaglutide questionnaires with 1 month subscription
+  if (item.linkId === RX_BILLING_PERIOD_LINKID && isSemaglutide) {
+    initialAnswer = [{ valueInteger: 1 }];
+  }
+
   return {
     id: generateId(),
     linkId: item.linkId,
     text: item.text,
-    item: buildInitialResponseItems(item.item, user),
+    item: buildInitialResponseItems(item.item, user, isSemaglutide),
     answer: initialAnswer,
   };
 }

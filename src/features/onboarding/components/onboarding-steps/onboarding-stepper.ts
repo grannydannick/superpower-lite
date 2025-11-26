@@ -1,7 +1,10 @@
 import { defineStepper, Get } from '@stepperize/react';
 import { useCallback, useRef, useEffect, useMemo } from 'react';
 
-import { INTAKE_QUESTIONNAIRE } from '@/const/questionnaire';
+import {
+  GLP_FRONTDOOR_EXPERIMENT,
+  INTAKE_QUESTIONNAIRE,
+} from '@/const/questionnaire';
 import {
   ADVANCED_BLOOD_PANEL,
   CUSTOM_BLOOD_PANEL,
@@ -22,6 +25,7 @@ export const ONBOARDING_STEPS = {
   BUNDLED_DISCOUNT: 'bundled-discount',
   HEARD_ABOUT_US: 'heard-about-us',
   INTAKE: 'intake',
+  GLP_QUESTIONNAIRE: 'glp-questionnaire',
   ORGAN_AGE: 'organ-age',
   FATIGUE_PANEL: 'fatigue-panel',
   HORMONE_PANEL: 'hormone-panel',
@@ -37,6 +41,7 @@ export const OnboardingStepper = defineStepper(
   { id: ONBOARDING_STEPS.BUNDLED_DISCOUNT },
   { id: ONBOARDING_STEPS.HEARD_ABOUT_US },
   { id: ONBOARDING_STEPS.INTAKE },
+  { id: ONBOARDING_STEPS.GLP_QUESTIONNAIRE },
   { id: ONBOARDING_STEPS.ORGAN_AGE },
   { id: ONBOARDING_STEPS.FATIGUE_PANEL },
   { id: ONBOARDING_STEPS.HORMONE_PANEL },
@@ -80,10 +85,20 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
   // Check intake questionnaire completion status
   const { data: intakeData, isLoading: isIntakeLoading } =
     useQuestionnaireResponse({
-      questionnaireName: INTAKE_QUESTIONNAIRE,
+      identifier: INTAKE_QUESTIONNAIRE,
+      statuses: ['in-progress', 'stopped'],
     });
-  const intakeCompleted =
-    intakeData?.questionnaireResponse?.status === 'completed';
+  const intakeCompleted = !intakeData?.questionnaireResponse?.id;
+
+  // Check if user is in the GLP Front Door Experiment with an incomplete RX assessment
+  const { data: rxAssessmentData, isLoading: isRxAssessmentLoading } =
+    useQuestionnaireResponse({
+      identifier: GLP_FRONTDOOR_EXPERIMENT,
+      statuses: ['in-progress', 'stopped'],
+    });
+  const hasInProgressRxAssessment = Boolean(
+    rxAssessmentData?.questionnaireResponse?.id,
+  );
 
   // Fetch add-on panel services to check availability
   const { data: addOnServices, isLoading: isServicesLoading } = useServices({
@@ -123,7 +138,11 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
     userAge > 45;
 
   const isLoading =
-    isUserLoading || isOrdersLoading || isIntakeLoading || isServicesLoading;
+    isUserLoading ||
+    isOrdersLoading ||
+    isIntakeLoading ||
+    isRxAssessmentLoading ||
+    isServicesLoading;
 
   // Determine which steps to exclude based on user state and service availability
   const excludedSteps = useMemo((): string[] => {
@@ -141,6 +160,10 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
         ONBOARDING_STEPS.INTAKE,
       );
     }
+
+    // User doesn't have an in-progress RX assessment - skip GLP questionnaire
+    if (!hasInProgressRxAssessment)
+      excluded.push(ONBOARDING_STEPS.GLP_QUESTIONNAIRE);
 
     // User already has advanced upgrade
     if (userHasAdvancedUpgrade)
@@ -170,6 +193,7 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
   }, [
     userInfoCompleted,
     intakeCompleted,
+    hasInProgressRxAssessment,
     userHasAdvancedUpgrade,
     userHasCustomPanels,
     hasOrganAge,

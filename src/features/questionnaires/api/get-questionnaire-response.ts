@@ -3,13 +3,12 @@ import { queryOptions, useQuery } from '@tanstack/react-query';
 
 import { api } from '@/lib/api-client';
 import { QueryConfig } from '@/lib/react-query';
-import { QuestionnaireName } from '@/types/api';
 
 export const getQuestionnaireResponse = ({
-  questionnaireName,
+  identifier,
   statuses,
 }: {
-  questionnaireName: QuestionnaireName;
+  identifier: string;
   statuses?: (
     | 'completed'
     | 'in-progress'
@@ -20,13 +19,13 @@ export const getQuestionnaireResponse = ({
 }): Promise<{
   questionnaireResponse: QuestionnaireResponse | null;
 }> => {
-  return api.get(`/questionnaires/${questionnaireName}/response`, {
+  return api.get(`/questionnaire-response/${identifier}`, {
     params: { statusQuery: statuses?.join(',') },
   });
 };
 
 export const getQuestionnaireResponseQueryOptions = (
-  questionnaireName: QuestionnaireName,
+  identifier: string,
   statuses?: (
     | 'completed'
     | 'in-progress'
@@ -36,13 +35,13 @@ export const getQuestionnaireResponseQueryOptions = (
   )[],
 ) => {
   return queryOptions({
-    queryKey: ['questionnaire-response', questionnaireName],
-    queryFn: () => getQuestionnaireResponse({ questionnaireName, statuses }),
+    queryKey: ['questionnaire-response', identifier],
+    queryFn: () => getQuestionnaireResponse({ identifier, statuses }),
   });
 };
 
 type UseQuestionnaireResponseOptions = {
-  questionnaireName: QuestionnaireName;
+  identifier: string;
   statuses?: (
     | 'completed'
     | 'in-progress'
@@ -54,12 +53,12 @@ type UseQuestionnaireResponseOptions = {
 };
 
 export const useQuestionnaireResponse = ({
-  questionnaireName,
+  identifier,
   statuses,
   queryConfig,
 }: UseQuestionnaireResponseOptions) => {
   return useQuery({
-    ...getQuestionnaireResponseQueryOptions(questionnaireName, statuses),
+    ...getQuestionnaireResponseQueryOptions(identifier, statuses),
     ...queryConfig,
   });
 };

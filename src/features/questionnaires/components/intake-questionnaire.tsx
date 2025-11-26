@@ -14,12 +14,20 @@ export const IntakeQuestionnaire = ({
 }) => {
   const updateQuestionnaireResponseMutation = useUpdateQuestionnaireResponse();
 
-  const getQuestionnaireQuery = useQuestionnaire({
-    questionnaireName: INTAKE_QUESTIONNAIRE,
+  const getQuestionnaireResponseQuery = useQuestionnaireResponse({
+    identifier: INTAKE_QUESTIONNAIRE,
+    statuses: ['in-progress', 'stopped'],
   });
 
-  const getQuestionnaireResponseQuery = useQuestionnaireResponse({
-    questionnaireName: INTAKE_QUESTIONNAIRE,
+  // Extract questionnaire ID from the response
+  const questionnaireId =
+    getQuestionnaireResponseQuery.data?.questionnaireResponse?.questionnaire;
+
+  const getQuestionnaireQuery = useQuestionnaire({
+    identifier: questionnaireId || '',
+    queryConfig: {
+      enabled: !!questionnaireId,
+    },
   });
 
   if (
@@ -36,7 +44,8 @@ export const IntakeQuestionnaire = ({
   if (
     !getQuestionnaireQuery.data ||
     !getQuestionnaireResponseQuery.data ||
-    getQuestionnaireResponseQuery.data.questionnaireResponse === null
+    getQuestionnaireResponseQuery.data.questionnaireResponse === null ||
+    !questionnaireId
   ) {
     return null;
   }
@@ -48,13 +57,13 @@ export const IntakeQuestionnaire = ({
       onSave={(item) => {
         updateQuestionnaireResponseMutation.mutate({
           data: { item, status: 'in-progress' },
-          questionnaireName: INTAKE_QUESTIONNAIRE,
+          identifier: INTAKE_QUESTIONNAIRE,
         });
       }}
       onSubmit={(item) => {
         updateQuestionnaireResponseMutation.mutate({
           data: { item, status: 'completed' },
-          questionnaireName: INTAKE_QUESTIONNAIRE,
+          identifier: INTAKE_QUESTIONNAIRE,
         });
         onSubmit && onSubmit();
       }}

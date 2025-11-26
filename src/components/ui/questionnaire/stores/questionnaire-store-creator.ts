@@ -11,7 +11,9 @@ import { User } from '@/types/api';
 
 import {
   buildInitialResponse,
+  isFrontDoorExperiment,
   isQuestionEnabled,
+  isSemaglutideByName,
   shouldSkipQuestion,
   QuestionnaireItemType,
 } from '../utils';
@@ -55,7 +57,11 @@ export const questionnaireStoreCreator = (
   return createStore<QuestionnaireStore>()((set, get) => {
     const initialResponse =
       initProps.initialResponse ||
-      buildInitialResponse(initProps.questionnaire, initProps.user);
+      buildInitialResponse(
+        initProps.questionnaire,
+        initProps.user,
+        initProps.initialResponse,
+      );
 
     const getAllQuestions = () => {
       const { questionnaire, response, user } = get();
@@ -73,7 +79,7 @@ export const questionnaireStoreCreator = (
 
           item.item.forEach((subItem) => {
             // Skip questions that should be hidden (e.g., gender, identity verification)
-            if (shouldSkipQuestion(subItem, questionnaire, user)) {
+            if (shouldSkipQuestion(subItem, questionnaire, user, response)) {
               return;
             }
             if (isQuestionEnabled(subItem, response?.item ?? [], user)) {
@@ -82,7 +88,7 @@ export const questionnaireStoreCreator = (
           });
         } else {
           // Skip questions that should be hidden (e.g., gender, identity verification)
-          if (shouldSkipQuestion(item, questionnaire, user)) {
+          if (shouldSkipQuestion(item, questionnaire, user, response)) {
             return;
           }
           if (isQuestionEnabled(item, response?.item ?? [], user)) {
@@ -193,6 +199,7 @@ export const questionnaireStoreCreator = (
                   subItem,
                   initProps.questionnaire,
                   initProps.user,
+                  initialResponse ?? undefined,
                 )
               ) {
                 return;
@@ -209,7 +216,12 @@ export const questionnaireStoreCreator = (
             });
           } else {
             if (
-              shouldSkipQuestion(item, initProps.questionnaire, initProps.user)
+              shouldSkipQuestion(
+                item,
+                initProps.questionnaire,
+                initProps.user,
+                initialResponse ?? undefined,
+              )
             ) {
               return acc;
             }
@@ -277,6 +289,7 @@ export const questionnaireStoreCreator = (
                 subItem,
                 initProps.questionnaire,
                 initProps.user,
+                initialResponse,
               )
             ) {
               return;
@@ -293,7 +306,12 @@ export const questionnaireStoreCreator = (
           });
         } else {
           if (
-            shouldSkipQuestion(item, initProps.questionnaire, initProps.user)
+            shouldSkipQuestion(
+              item,
+              initProps.questionnaire,
+              initProps.user,
+              initialResponse,
+            )
           ) {
             return acc;
           }
@@ -315,8 +333,11 @@ export const questionnaireStoreCreator = (
       parentContext: QuestionnaireResponseItem[] = [],
       parentDisabled: boolean = false,
     ): QuestionnaireResponseItem[] => {
-      const { questionnaire } = get();
+      const { questionnaire, response } = get();
       const allResponseItems = [...parentContext, ...responseItems];
+
+      const isFrontDoor = isFrontDoorExperiment(response);
+      const isSemaglutide = isSemaglutideByName(questionnaire);
 
       const cleanedItems: QuestionnaireResponseItem[] = [];
 
@@ -333,6 +354,19 @@ export const questionnaireStoreCreator = (
           responseItem.linkId,
         );
 
+        // Keep prefilled billing-period/payment answers even though those questions are skipped
+        const isSkippedWithPrefilledAnswer =
+          (isFrontDoor || isSemaglutide) &&
+          questionnaireItem &&
+          shouldSkipQuestion(
+            questionnaireItem,
+            questionnaire,
+            initProps.user,
+            response,
+          ) &&
+          responseItem.answer &&
+          responseItem.answer.length > 0;
+
         // Check if this item is enabled
         const isEnabled =
           !questionnaireItem ||
@@ -343,7 +377,7 @@ export const questionnaireStoreCreator = (
             initProps.user,
           );
 
-        if (isEnabled) {
+        if (isEnabled || isSkippedWithPrefilledAnswer) {
           if (responseItem.item && responseItem.item.length > 0) {
             // Process nested items, passing the disabled status of parent
             const currentItemDisabled =
@@ -372,7 +406,7 @@ export const questionnaireStoreCreator = (
               cleanedItems.push(responseItem);
             }
           } else {
-            // Keep enabled items
+            // Keep enabled items and skipped items with prefilled answers
             cleanedItems.push(responseItem);
           }
         }
@@ -406,6 +440,7 @@ export const questionnaireStoreCreator = (
 
     return {
       ...initProps,
+      initialResponse: initialResponse,
       response: initialResponse,
       activeStep: initialStep,
       currentGroup: initialGroup,

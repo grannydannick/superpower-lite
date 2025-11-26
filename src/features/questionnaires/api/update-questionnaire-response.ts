@@ -6,7 +6,6 @@ import { getTimelineQueryOptions } from '@/features/home/api/get-timeline';
 import { getQuestionnaireResponseQueryOptions } from '@/features/questionnaires/api/get-questionnaire-response';
 import { api } from '@/lib/api-client';
 import { MutationConfig } from '@/lib/react-query';
-import { QuestionnaireName } from '@/types/api';
 
 export const updateQuestionnaireResponseInputSchema = z.object({
   status: z
@@ -27,12 +26,12 @@ export type UpdateQuestionnaireInput = z.infer<
 
 export const updateQuestionnaireResponse = ({
   data,
-  questionnaireName,
+  identifier,
 }: {
   data: UpdateQuestionnaireInput;
-  questionnaireName: QuestionnaireName;
+  identifier: string;
 }): Promise<{ questionnaireResponse: QuestionnaireResponse }> => {
-  return api.patch(`/questionnaires/${questionnaireName}/response`, data);
+  return api.patch(`/questionnaire-response/${identifier}`, data);
 };
 
 type UseUpdateQuestionnaireResponseOptions = {
@@ -48,9 +47,8 @@ export const useUpdateQuestionnaireResponse = ({
   return useMutation({
     onSuccess: (data, variables, ...args) => {
       queryClient.invalidateQueries({
-        queryKey: getQuestionnaireResponseQueryOptions(
-          variables.questionnaireName,
-        ).queryKey,
+        queryKey: getQuestionnaireResponseQueryOptions(variables.identifier)
+          .queryKey,
       });
       queryClient.invalidateQueries({
         queryKey: getTimelineQueryOptions().queryKey,

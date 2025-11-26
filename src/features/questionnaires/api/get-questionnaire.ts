@@ -3,38 +3,35 @@ import { queryOptions, useQuery } from '@tanstack/react-query';
 
 import { api } from '@/lib/api-client';
 import { QueryConfig } from '@/lib/react-query';
-import { QuestionnaireName } from '@/types/api';
 
 export const getQuestionnaire = ({
-  questionnaireName,
+  identifier,
 }: {
-  questionnaireName: QuestionnaireName;
+  identifier: string;
 }): Promise<{
   questionnaire: Questionnaire;
 }> => {
-  return api.get(`/questionnaires/${questionnaireName}`);
+  return api.get(`/questionnaires/${identifier}`);
 };
 
-export const getQuestionnaireQueryOptions = (
-  questionnaireName: QuestionnaireName,
-) => {
+export const getQuestionnaireQueryOptions = (identifier: string) => {
   return queryOptions({
-    queryKey: ['questionnaire', questionnaireName],
-    queryFn: () => getQuestionnaire({ questionnaireName }),
+    queryKey: ['questionnaire', identifier],
+    queryFn: () => getQuestionnaire({ identifier }),
   });
 };
 
 type UseQuestionnaireOptions = {
-  questionnaireName: QuestionnaireName;
+  identifier: string;
   queryConfig?: QueryConfig<typeof getQuestionnaireQueryOptions>;
 };
 
 export const useQuestionnaire = ({
-  questionnaireName,
+  identifier,
   queryConfig,
 }: UseQuestionnaireOptions) => {
   return useQuery({
-    ...getQuestionnaireQueryOptions(questionnaireName),
+    ...getQuestionnaireQueryOptions(identifier),
     ...queryConfig,
   });
 };
