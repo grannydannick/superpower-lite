@@ -1,48 +1,60 @@
-import QuickLink from '@/components/shared/quicklink';
-import { Body2, H2, H4 } from '@/components/ui/typography';
-import { useDataGating } from '@/features/data/hooks/use-data-gating';
-import { PhlebotomyProgress } from '@/features/homepage/cards/phlebotomy-appointment/phlebotomy-progress';
-import { useUser } from '@/lib/auth';
+import { Lock } from 'lucide-react';
 
-export const ProtocolWaitingScreen = () => {
-  const { data: user } = useUser();
-  const gating = useDataGating();
+import { ResultsTracker } from '@/components/shared/results-tracker/results-tracker';
+import { Badge } from '@/components/ui/badge';
+import { Body1, Body2, Body3, H3, H4 } from '@/components/ui/typography';
 
-  const ETA = gating.hasAnyBiomarkers ? '4-7' : '7-10';
-  const title = gating.hasAnyBiomarkers
-    ? 'Your results are being analyzed'
-    : 'Your results are pending';
-
-  return (
-    <div className="mx-auto max-w-3xl flex-1 overflow-y-auto rounded-[24px] bg-white p-6 scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300">
-      <div className="size-full">
-        <H4 className="mb-2">Hi {user?.firstName},</H4>
-        <Body2 className="mb-4 text-zinc-400">
-          We are currently awaiting and analysing your first test results. They
-          should be with you in {ETA} days. You&apos;ll receive an e-mail once
-          your results are ready and your protocol is created.
-        </Body2>
-        <div className="py-6">
-          <PhlebotomyProgress status="processing" />
-        </div>
-        <div className="flex flex-col gap-4 md:flex-row md:flex-wrap">
-          <QuickLink
-            to="/services"
-            title={title}
-            className="relative w-full overflow-hidden"
-          >
-            <div className="relative z-20">
-              <H2>
-                {ETA} <span className="text-xl">days</span>
-              </H2>
-              <Body2 className="text-zinc-400">
-                Until your protocol is available
-              </Body2>
+export const ProtocolWaitingScreen = () => (
+  <div className="mx-auto w-full max-w-[1600px] space-y-4 p-6 lg:px-16">
+    <div className="grid-cols-5 space-y-16 lg:grid lg:gap-8 lg:space-y-0">
+      <div className="col-span-3 space-y-6">
+        <H3 className="text-black">Protocol</H3>
+        <ResultsTracker />
+        <div className="space-y-4">
+          <H4>Your protocol items</H4>
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="flex items-center gap-4">
+              <div className="flex aspect-square w-16 shrink-0 items-center justify-center rounded-xl bg-zinc-200/50 p-2">
+                <Lock className="size-4 text-secondary" />
+              </div>
+              <div className="space-y-0.5">
+                <Body1 className="text-secondary">
+                  Unlocks once your test results are processed
+                </Body1>
+                <Body2 className="text-secondary/75">Awaiting results</Body2>
+              </div>
             </div>
-            <div className="pointer-events-none absolute bottom-0 z-10 h-24 w-full bg-gradient-to-b from-transparent to-white transition-colors group-hover:to-zinc-50" />
-          </QuickLink>
+          ))}
+        </div>
+      </div>
+      <div className="col-span-2 space-y-4">
+        <H3 className="text-black">Goals</H3>
+        <div className="relative h-80 w-full overflow-hidden rounded-3xl border border-white/10">
+          <img
+            src="/action-plan/goals/dead.webp"
+            alt="Locked goal"
+            className="pointer-events-none absolute inset-0"
+          />
+          <div className="absolute inset-0 z-10 flex flex-col justify-between p-6">
+            <div className="mb-8 flex w-full items-start justify-end">
+              <Badge className="rounded-full border border-white/10 bg-white/10 px-2 py-0.5 text-white backdrop-blur-md">
+                Pending
+              </Badge>
+            </div>
+            <div>
+              <Body3 className="mb-2 font-mono font-normal uppercase text-white">
+                Awaiting results
+              </Body3>
+              <div className="flex items-center gap-0.5 transition-all duration-200 ease-out group-hover:gap-1">
+                <H3 className="text-white">
+                  Your health goals will unlock once your test results are
+                  processed
+                </H3>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  );
-};
+  </div>
+);

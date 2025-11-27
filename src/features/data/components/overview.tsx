@@ -4,9 +4,9 @@ import { useEffect } from 'react';
 
 import { BiologicalAgeLogo } from '@/components/shared/biological-age-logo';
 import QuickLink from '@/components/shared/quicklink';
+import { ResultsTracker } from '@/components/shared/results-tracker/results-tracker';
 import { SuperpowerScoreLogo } from '@/components/shared/score-logo';
 import { Body2, H2, H4 } from '@/components/ui/typography';
-import { PhlebotomyProgress } from '@/features/homepage/cards/phlebotomy-appointment/phlebotomy-progress';
 import { useOrders } from '@/features/orders/api';
 import { useUser } from '@/lib/auth';
 import { yearsSinceDate } from '@/utils/format';
@@ -218,7 +218,9 @@ export const Overview = () => {
                 </Body2>
               ))}
           </div>
-          {markersAvailable || isLoading ? (
+          <ResultsTracker />
+
+          {markersAvailable && (
             <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-2">
               <SuperpowerScore
                 isLoading={isLoading}
@@ -229,10 +231,6 @@ export const Overview = () => {
                 biologicalAge={biologicalAge ?? 0}
                 ageDifference={ageDifference ?? 0}
               />
-            </div>
-          ) : (
-            <div className="pt-6">
-              <PhlebotomyProgress status="processing" />
             </div>
           )}
         </div>

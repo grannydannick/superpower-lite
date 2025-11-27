@@ -81,12 +81,7 @@ export const ProtocolOverview = ({
   }
 
   if (!protocol) {
-    return (
-      <div className="mx-auto w-full max-w-[1600px] space-y-4 p-6 lg:px-16">
-        <H3 className="text-black">Protocol</H3>
-        <ProtocolWaitingScreen />
-      </div>
-    );
+    return <ProtocolWaitingScreen />;
   }
 
   if (error) {

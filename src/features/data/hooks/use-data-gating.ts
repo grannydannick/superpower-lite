@@ -11,9 +11,12 @@ export type DataGatingState = {
   hasCompletedPlan: boolean;
   biomarkersLoaded: boolean;
   hasAnyBiomarkers: boolean;
+  hasUncompletedOrder: boolean;
   hasRelevantCompletedOrder: boolean;
   shouldShowWaiting: boolean;
   isTestAppointmentOlderThan5Days: boolean;
+  isAppointmentInFuture: boolean;
+  hasNoOrders: boolean;
 };
 
 const FIVE_DAYS_MS = 5 * 24 * 60 * 60 * 1000;
@@ -34,6 +37,17 @@ export const useDataGating = (): DataGatingState => {
   const hasAnyBiomarkers = useMemo(
     () => (biomarkers?.biomarkers?.length ?? 0) > 0,
     [biomarkers?.biomarkers],
+  );
+
+  const hasUncompletedOrder = useMemo(
+    () =>
+      orders?.orders?.some(
+        (o) =>
+          o.status !== OrderStatus.completed &&
+          (o.serviceName === SUPERPOWER_BLOOD_PANEL ||
+            o.serviceName === ADVANCED_BLOOD_PANEL),
+      ) ?? false,
+    [orders?.orders],
   );
 
   const hasRelevantCompletedOrder = useMemo(
@@ -73,6 +87,13 @@ export const useDataGating = (): DataGatingState => {
     return latestRelevantAppointmentTime < Date.now() - FIVE_DAYS_MS;
   }, [latestRelevantAppointmentTime]);
 
+  // User has a relevant service appointment scheduled in the future
+  const isAppointmentInFuture = useMemo(() => {
+    if (!latestRelevantAppointmentTime) return false;
+
+    return latestRelevantAppointmentTime > Date.now();
+  }, [latestRelevantAppointmentTime]);
+
   const isLoading = isBiomarkersLoading || isOrdersLoading || isPlansLoading;
 
   // Waiting when: not loading AND (no completed plan OR biomarkers not loaded
@@ -83,13 +104,19 @@ export const useDataGating = (): DataGatingState => {
       !biomarkersLoaded ||
       !(hasRelevantCompletedOrder || hasAnyBiomarkers));
 
+  // Return when the user has no orders at all (needs to schedule)
+  const hasNoOrders = !orders?.orders || orders.orders?.length === 0;
+
   return {
     isLoading,
     hasCompletedPlan,
     biomarkersLoaded,
     hasAnyBiomarkers,
+    hasUncompletedOrder,
     hasRelevantCompletedOrder,
     shouldShowWaiting,
     isTestAppointmentOlderThan5Days,
+    isAppointmentInFuture,
+    hasNoOrders,
   };
 };

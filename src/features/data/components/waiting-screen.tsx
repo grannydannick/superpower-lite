@@ -1,6 +1,6 @@
 import QuickLink from '@/components/shared/quicklink';
-import { Body2, H2, H4 } from '@/components/ui/typography';
-import { PhlebotomyProgress } from '@/features/homepage/cards/phlebotomy-appointment/phlebotomy-progress';
+import { ResultsTracker } from '@/components/shared/results-tracker/results-tracker';
+import { Body2, H4 } from '@/components/ui/typography';
 import { useUser } from '@/lib/auth';
 
 import { useDataGating } from '../hooks/use-data-gating';
@@ -10,9 +10,6 @@ export const WaitingScreen = () => {
   const gating = useDataGating();
 
   const ETA = gating.hasAnyBiomarkers ? '4-7' : '7-10';
-  const title = gating.hasAnyBiomarkers
-    ? 'Your results are being analyzed'
-    : 'Your results are pending';
 
   return (
     <div className="mx-auto max-w-3xl flex-1 overflow-y-auto rounded-[24px] bg-white p-6 scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300">
@@ -28,34 +25,8 @@ export const WaitingScreen = () => {
           Until then, feel free to upload your existing health records or
           connect your wearables.
         </Body2>
-        <div className="py-6">
-          <PhlebotomyProgress status="processing" />
-        </div>
         <div className="flex flex-col gap-4 md:flex-row md:flex-wrap">
-          <QuickLink
-            to="/services"
-            title={title}
-            className="relative w-full overflow-hidden"
-          >
-            <div className="relative z-20">
-              <H2>
-                {ETA} <span className="text-xl">days</span>
-              </H2>
-              <Body2 className="text-zinc-400">
-                Until your lab data is processed
-              </Body2>
-            </div>
-            <div className="pointer-events-none absolute bottom-0 z-10 h-24 w-full bg-gradient-to-b from-transparent to-white transition-colors group-hover:to-zinc-50" />
-            {/* {status === 'success' && (
-              <RiveAnimation
-                riveFile={riveFile}
-                artboard="blood-tube"
-                animations="rotate"
-                autoplay
-                className="absolute -right-20 -top-4 size-64 rotate-45 object-cover duration-300 animate-in fade-in group-hover:scale-95 md:right-12"
-              />
-            )} */}
-          </QuickLink>
+          <ResultsTracker className="w-full" />
           <QuickLink
             to="/data/records"
             title="Upload existing health records"
