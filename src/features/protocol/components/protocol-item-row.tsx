@@ -40,16 +40,22 @@ export function ProtocolItemRow({
       )}
       <div className="flex min-w-0 flex-1 items-center justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <Body1 className="mb-1 truncate">{item?.title}</Body1>
+          {item?.url ? (
+            <Link to={item.url} className="shrink-0" target="_blank">
+              <Body1 className="mb-1 truncate hover:underline">
+                {item?.title}
+              </Body1>
+            </Link>
+          ) : (
+            <Body1 className="mb-1 truncate">{item?.title}</Body1>
+          )}
           {showPurchase && (
             <Body1 className="text-primary">
               {formatMoney(Number(item?.price) || 0)}
             </Body1>
           )}
           {activity?.overview ? (
-            <Body2 className="line-clamp-2 text-secondary">
-              {activity?.overview}
-            </Body2>
+            <Body2 className="text-secondary">{activity?.overview}</Body2>
           ) : (
             <ProtocolMarkdown
               className="line-clamp-2 text-secondary"
@@ -60,7 +66,7 @@ export function ProtocolItemRow({
         {showPurchase && item?.url && (
           <Link to={item.url} className="shrink-0" target="_blank">
             <Button variant="default" size="small" className="shrink-0">
-              Purchase
+              Buy
             </Button>
           </Link>
         )}

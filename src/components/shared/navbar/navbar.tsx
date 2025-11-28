@@ -29,7 +29,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown';
 // eslint-disable-next-line import/no-restricted-paths
-import { REVEAL_STEPS } from '@/features/protocol/components/reveal/reveal-stepper';
 import { useScrollThreshold } from '@/hooks/use-scroll-threshold';
 import { ROLES, useAuthorization } from '@/lib/authorization';
 import { cn } from '@/lib/utils';
@@ -66,12 +65,7 @@ const profileDropdownItems = [
 export const Navbar = () => {
   const { pathname } = useLocation();
 
-  const hideNavbarPaths = [
-    `/protocol/reveal/${REVEAL_STEPS.PRODUCT_CHECKOUT}`,
-    `/protocol/reveal/${REVEAL_STEPS.SERVICE_CHECKOUT}`,
-    `/protocol/reveal/${REVEAL_STEPS.SERVICE_BOOKING}`,
-    `/protocol/reveal/${REVEAL_STEPS.RX_QUESTIONNAIRE}`,
-  ];
+  const hideNavbarPaths = [`/protocol/reveal/`];
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -14,6 +14,7 @@ import { CheckoutLayout } from '@/features/protocol/components/layouts/checkout-
 import { REVEAL_STEPS } from '@/features/protocol/components/reveal/reveal-stepper';
 import { useProtocolCheckout } from '@/features/protocol/hooks/use-protocol-checkout';
 import { getActivityPricing } from '@/features/protocol/utils/get-activity-pricing';
+import { useAnalytics } from '@/hooks/use-analytics';
 import { formatMoney } from '@/utils/format-money';
 
 type ProductCheckoutStepProps = {
@@ -31,7 +32,7 @@ export const ProductCheckoutStep = ({
   const completeRevealMutation = useCompleteReveal();
   const { items } = useProtocolCheckout();
   const [started, setStarted] = useState(false);
-
+  const { track } = useAnalytics();
   const revealStatusQuery = useRevealStatus(carePlanId, {
     enabled: started,
     refetchInterval: started ? 5000 : undefined,
@@ -85,6 +86,10 @@ export const ProductCheckoutStep = ({
   }, [productItems]);
 
   const handleCompleteWithoutAction = async () => {
+    track('protocol_reveal_quit', {
+      reason: 'product_checkout_step_quit',
+      careplanId: carePlanId,
+    });
     try {
       await completeRevealMutation.mutateAsync(carePlanId);
       navigate('/protocol');

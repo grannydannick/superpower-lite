@@ -8,6 +8,7 @@ export {
   useCreateServiceOrders,
   useMarkStepComplete,
   useCompleteReveal,
+  useCreateAutopilotCheckout,
   getRevealStatusQueryKey,
   revealLatestQueryKey,
 } from './reveal';

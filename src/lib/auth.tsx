@@ -297,6 +297,9 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const onLegacy = location.pathname.startsWith('/legacy-checkout');
   const onOnboarding = location.pathname.includes('/onboarding');
   const onProtocolReveal = location.pathname.startsWith('/protocol/reveal');
+  const onProtocolAutopilot = location.pathname.startsWith(
+    '/protocol/autopilot',
+  );
 
   // Check if user should be redirected to protocol reveal flow
   const shouldRedirectToReveal =
@@ -307,6 +310,7 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   if (
     shouldRedirectToReveal &&
     !onProtocolReveal &&
+    !onProtocolAutopilot &&
     taskQuery.data?.task.status === 'completed' &&
     !userQuery.data.admin
   ) {

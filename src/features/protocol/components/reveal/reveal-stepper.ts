@@ -11,6 +11,8 @@ import { useRevealStatus, useCompleteReveal } from '../../api/reveal';
 type RevealStatusResponse = Awaited<ReturnType<typeof useRevealStatus>>['data'];
 
 export const REVEAL_STEPS = {
+  // not real step but useful as a constant
+  AUTOPILOT: 'autopilot',
   GET_STARTED: 'get-started',
   BIOLOGICAL_AGE: 'biological-age',
   SCORE: 'score',

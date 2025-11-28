@@ -56,8 +56,10 @@ export function ProtocolGoalView({
   }
 
   // Filter activities that are linked to this goal
-  const goalActivities = protocol.activities.filter((activity) =>
-    activity.goalIds.includes(goalId),
+  const goalActivities = protocol.activities.filter(
+    (activity) =>
+      ['product', 'service', 'prescription'].includes(activity.type) &&
+      activity.goalIds.includes(goalId),
   );
 
   return (

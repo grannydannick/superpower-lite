@@ -5,6 +5,7 @@ import {
   type UseQueryResult,
 } from '@tanstack/react-query';
 
+import { useAnalytics } from '@/hooks/use-analytics';
 import { $api, api } from '@/orpc/client';
 import type { operations } from '@/orpc/types.generated';
 
@@ -177,6 +178,7 @@ const useRevealQueryInvalidation = () => {
 
 export function useCreateProtocolOrder() {
   const { invalidateRevealStatus } = useRevealQueryInvalidation();
+  const { track } = useAnalytics();
 
   return useMutation<
     CreateProtocolOrderResponse & {
@@ -192,6 +194,13 @@ export function useCreateProtocolOrder() {
     mutationFn: async ({ carePlanId, items }: CreateProtocolOrderInput) => {
       const { services, rx, products, hasProducts } =
         mapCheckoutItemsToPayload(items);
+
+      track('protocol_reveal_order_created', {
+        careplanId: carePlanId,
+        services,
+        rx,
+        products,
+      });
       const response = await api.POST('/protocol/reveal/{carePlanId}/order', {
         params: {
           path: { carePlanId },
@@ -220,6 +229,7 @@ export function useCreateProtocolOrder() {
 
 export function useCreateServiceOrders() {
   const { invalidateRevealStatus } = useRevealQueryInvalidation();
+  const { track } = useAnalytics();
 
   return useMutation<
     CreateServiceOrdersResponse,
@@ -230,6 +240,10 @@ export function useCreateServiceOrders() {
       carePlanId: string;
       paymentMethodId?: string;
     }) => {
+      track('protocol_reveal_service_orders_created', {
+        careplanId: data.carePlanId,
+        paymentMethodId: data.paymentMethodId,
+      });
       const response = await api.POST(
         '/protocol/reveal/{carePlanId}/checkout/services',
         {
@@ -277,6 +291,7 @@ export function useMarkStepComplete() {
 }
 
 export function useCompleteReveal() {
+  const { track } = useAnalytics();
   const { invalidateRevealStatus, invalidateRevealLatest } =
     useRevealQueryInvalidation();
 
@@ -294,6 +309,9 @@ export function useCompleteReveal() {
       return response.data as CompleteRevealResponse;
     },
     onSuccess: (_, carePlanId) => {
+      track('protocol_reveal_completed', {
+        careplanId: carePlanId,
+      });
       invalidateRevealStatus(carePlanId);
       invalidateRevealLatest();
     },
@@ -311,4 +329,32 @@ export function useProductCheckoutUrl(
     enabled: options?.enabled !== false && !!carePlanId,
     refetchOnWindowFocus: false,
   }) as UseQueryResult<ProductCheckoutResponse>;
+}
+
+// Autopilot subscription checkout - returns checkoutUrl on success, throws 404 on error
+type AutopilotCheckoutResponse =
+  operations['protocol.reveal.createAutopilotSubscription']['responses'][200]['content']['application/json'];
+
+export function useCreateAutopilotCheckout() {
+  return useMutation<
+    AutopilotCheckoutResponse,
+    Error,
+    { carePlanId: string; returnUrl: string }
+  >({
+    mutationFn: async (data: { carePlanId: string; returnUrl: string }) => {
+      const response = await api.POST(
+        '/protocol/reveal/{carePlanId}/autopilot-subscription',
+        {
+          params: {
+            path: { carePlanId: data.carePlanId },
+          },
+          body: {
+            returnUrl: data.returnUrl,
+          },
+        },
+      );
+      if (response.error) throw response.error;
+      return response.data as AutopilotCheckoutResponse;
+    },
+  });
 }

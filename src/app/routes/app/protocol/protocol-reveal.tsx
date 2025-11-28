@@ -112,8 +112,10 @@ const ProtocolRevealContent = ({
     }
 
     const goalActivities =
-      protocol.activities.filter((activity) =>
-        activity.goalIds.includes(goal.id),
+      protocol.activities.filter(
+        (activity) =>
+          ['product', 'service', 'prescription'].includes(activity.type) &&
+          activity.goalIds.includes(goal.id),
       ) || [];
 
     return (
@@ -197,7 +199,7 @@ const ProtocolRevealContent = ({
   return (
     <>
       <Head title="Your Health Protocol" />
-      <div className={cn('lg:-mt-[68px]')}>{renderCurrentStep()}</div>
+      <div className={cn('')}>{renderCurrentStep()}</div>
     </>
   );
 };

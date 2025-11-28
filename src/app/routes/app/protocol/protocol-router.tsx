@@ -39,5 +39,13 @@ export const protocolRoutes: RouteObject = {
         return { Component: ProtocolRevealRoute };
       },
     },
+    // Autopilot - standalone page (fake door experiment)
+    {
+      path: 'autopilot',
+      lazy: async () => {
+        const { ProtocolAutopilotRoute } = await import('./protocol-autopilot');
+        return { Component: ProtocolAutopilotRoute };
+      },
+    },
   ],
 };

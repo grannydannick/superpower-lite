@@ -1,0 +1,45 @@
+import React, { SVGProps } from 'react';
+
+export const DummyProductIcon: React.FC<SVGProps<SVGSVGElement>> = ({
+  ...props
+}) => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M17.4541 10.0962C18.6109 8.31497 18.4083 5.90826 16.8462 4.34619C15.0513 2.55127 12.1411 2.55127 10.3462 4.34619L4.34619 10.3462C2.55127 12.1411 2.55127 15.0513 4.34619 16.8462C5.90826 18.4083 8.31497 18.6109 10.0962 17.4541"
+        stroke="#71717A"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M7.5 7.5L11 11"
+        stroke="#71717A"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M15.5 21C18.5376 21 21 18.5376 21 15.5C21 12.4624 18.5376 10 15.5 10C12.4624 10 10 12.4624 10 15.5C10 18.5376 12.4624 21 15.5 21Z"
+        stroke="#71717A"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M16.5 20.5L14.5 10.5"
+        stroke="#71717A"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};

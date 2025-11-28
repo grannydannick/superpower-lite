@@ -18,9 +18,11 @@ import {
 } from '@/features/protocol/api';
 import { useProtocolCheckout } from '@/features/protocol/hooks/use-protocol-checkout';
 import { getActivityPricing } from '@/features/protocol/utils/get-activity-pricing';
+import { useAnalytics } from '@/hooks/use-analytics';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 
+import { AutopilotCard } from '../../autopilot/autopilot-card';
 import { CheckoutItemCard } from '../../checkout/checkout-item-card';
 import { ProtocolGoalPriority } from '../../goals/protocol-goal-priority';
 import { ProtocolLayout } from '../../layouts/protocol-layout';
@@ -45,6 +47,7 @@ export function OrderSummaryStep({
   const { data: revealData } = useRevealLatest();
   const createOrderMutation = useCreateProtocolOrder();
   const completeRevealMutation = useCompleteReveal();
+  const { track } = useAnalytics();
 
   const navigate = useNavigate();
 
@@ -54,8 +57,10 @@ export function OrderSummaryStep({
     if (!goals || !activities) return grouped;
 
     goals.forEach((goal) => {
-      const goalActivities = activities.filter((activity) =>
-        activity.goalIds?.includes(goal.id),
+      const goalActivities = activities.filter(
+        (activity) =>
+          ['product', 'service', 'prescription'].includes(activity.type) &&
+          activity.goalIds?.includes(goal.id),
       );
       if (goalActivities.length > 0) {
         grouped.set(goal.id, goalActivities);
@@ -150,6 +155,7 @@ export function OrderSummaryStep({
             <SuperpowerUserSignature />
           </div>
         </div>
+        <AutopilotCard />
         <div className="space-y-8">
           {goals?.map((goal, goalIndex) => {
             const activities = itemsByGoal.get(goal.id) || [];
@@ -263,6 +269,10 @@ export function OrderSummaryStep({
                 if (errorMessage.includes('already exists')) {
                   try {
                     await completeRevealMutation.mutateAsync(carePlanId);
+                    track('protocol_reveal_quit', {
+                      reason: 'order_already_exists',
+                      careplanId: carePlanId,
+                    });
                     navigate('/protocol');
                     return;
                   } catch (completeError) {
@@ -299,6 +309,10 @@ export function OrderSummaryStep({
                     { carePlanId },
                   );
                 }
+                track('protocol_reveal_quit', {
+                  reason: 'order_summary_step_quit',
+                  careplanId: carePlanId,
+                });
                 await completeRevealMutation.mutateAsync(carePlanId);
                 navigate('/protocol');
               } catch (error) {

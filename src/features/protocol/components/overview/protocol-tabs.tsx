@@ -5,23 +5,30 @@ import { ResultsTracker } from '@/components/shared/results-tracker/results-trac
 import { Button } from '@/components/ui/button';
 import { Link } from '@/components/ui/link';
 import { Body2, H4 } from '@/components/ui/typography';
+import { AiSuggestions } from '@/features/messages/components/ai-suggestions';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
 import { Protocol } from '../../api';
-import { Activity } from '../../api/get-protocol';
 import { isActivityInProtocol } from '../../utils/protocol-activity';
 import { ProtocolBook } from '../protocol-book';
 import { ProtocolItemRow } from '../protocol-item-row';
+import { ProtocolTextItemRow } from '../protocol-text-item-row';
 
 import { ProtocolTabEmpty } from './protocol-tab-empty';
 
-type ProtocolTabValue = 'products' | 'lifestyle' | 'nutrition' | 'previous';
+type ProtocolTabValue =
+  | 'products'
+  | 'lifestyle'
+  | 'nutrition'
+  | 'general'
+  | 'previous';
 
 const PROTOCOL_TABS = [
   { value: 'products' as const, label: 'Products' },
-  // { value: 'lifestyle' as const, label: 'Lifestyle' },
-  // { value: 'nutrition' as const, label: 'Nutrition' },
+  { value: 'lifestyle' as const, label: 'Lifestyle' },
+  { value: 'nutrition' as const, label: 'Nutrition' },
+  { value: 'general' as const, label: 'General' },
   { value: 'previous' as const, label: 'Previous protocols' },
 ];
 
@@ -35,7 +42,39 @@ export const ProtocolTabs = ({
   const [activeTab, setActiveTab] = useState<ProtocolTabValue>('products');
   const isMobile = useIsMobile();
 
+  const tabsToShow = PROTOCOL_TABS.filter((tab) => {
+    switch (tab.value) {
+      // Products will always be shown
+      case 'products':
+        return true;
+      case 'lifestyle':
+        return protocol.activities.some(
+          (activity) => activity.type === 'lifestyle',
+        );
+      case 'nutrition':
+        return protocol.activities.some(
+          (activity) => activity.type === 'nutrition',
+        );
+      case 'general':
+        console.log(
+          protocol.activities.filter((activity) => activity.type === 'general'),
+        );
+        return protocol.activities.some(
+          (activity) => activity.type === 'general',
+        );
+      case 'previous':
+        return (
+          historicalProtocols !== undefined && historicalProtocols.length > 0
+        );
+      default:
+        return false;
+    }
+  });
+
   const renderTabContent = (tabValue: ProtocolTabValue) => {
+    const currentTabActivities = protocol.activities.filter(
+      (activity) => activity.type === tabValue,
+    );
     switch (tabValue) {
       case 'products': {
         if (protocol.activities.length === 0) {
@@ -47,7 +86,7 @@ export const ProtocolTabs = ({
         //   isActivityInProtocol(activity, protocol),
         // );
         // Descoping for now
-        const currentItems: Activity[] = [];
+        // const currentItems: Activity[] = [];
 
         // Todo: Filter out items that are in the AIAP but NOT ordered yet
         const additionalProducts = protocol.activities.filter(
@@ -58,10 +97,15 @@ export const ProtocolTabs = ({
               activity.type === 'prescription'),
         );
 
+        const avoidProducts = protocol.activities.filter(
+          (activity) => activity.type === 'avoid-product',
+        );
+
         return (
           <div className="space-y-8 md:pb-24">
             <ResultsTracker className="bg-zinc-50" />
-            {currentItems.length > 0 && (
+
+            {/* {currentItems.length > 0 && (
               <div>
                 <H4 className="mb-4">Your protocol items</H4>
                 <div>
@@ -74,11 +118,11 @@ export const ProtocolTabs = ({
                   ))}
                 </div>
               </div>
-            )}
+            )} */}
 
             {additionalProducts.length > 0 && (
               <div>
-                <H4 className="mb-4">Additional products to add</H4>
+                <H4 className="mb-4">Your protocol items</H4>
                 <div className="space-y-4">
                   {additionalProducts.map((activity, index) => (
                     <ProtocolItemRow
@@ -90,13 +134,40 @@ export const ProtocolTabs = ({
                 </div>
               </div>
             )}
+
+            {avoidProducts.length > 0 && (
+              <div>
+                <H4 className="mb-4">Avoid these for now:</H4>
+                <div className="space-y-4">
+                  {avoidProducts.map((activity, index) => (
+                    <ProtocolTextItemRow
+                      key={index}
+                      activity={activity}
+                      useDummyIcon={true}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         );
       }
+      case 'general':
       case 'lifestyle':
-        return <ProtocolTabEmpty />;
       case 'nutrition':
-        return <ProtocolTabEmpty />;
+        return (
+          <div className="space-y-8">
+            <div className="space-y-4">
+              {currentTabActivities.map((activity, index) => (
+                <ProtocolTextItemRow key={index} activity={activity} />
+              ))}
+            </div>
+
+            <AiSuggestions
+              context={`I'm currently looking at my Protocol, particulairly at ${tabValue} activities. Please give me some suggestions for questions I can ask regarding this.`}
+            />
+          </div>
+        );
       case 'previous':
         return historicalProtocols && historicalProtocols.length > 0 ? (
           <div className="flex flex-col gap-4 lg:flex-row lg:flex-wrap lg:gap-12">
@@ -139,10 +210,7 @@ export const ProtocolTabs = ({
   return (
     <div className="space-y-6">
       <div className="flex flex-nowrap items-center gap-1 overflow-x-auto pr-8 md:flex-wrap md:overflow-visible md:pr-0">
-        {PROTOCOL_TABS.filter(
-          (tab) =>
-            tab.value !== 'previous' || historicalProtocols !== undefined,
-        ).map((tab) => {
+        {tabsToShow.map((tab) => {
           const isActive = activeTab === tab.value;
 
           return (

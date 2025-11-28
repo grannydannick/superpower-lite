@@ -7,9 +7,6 @@ import type { operations } from '@/orpc/types.generated';
 type GetAllProtocolsResponse =
   operations['protocol.getAllProtocols']['responses'][200]['content']['application/json'];
 
-type GetProtocolByIdResponse =
-  operations['protocol.getProtocolById']['responses'][200]['content']['application/json'];
-
 export type Protocol = GetAllProtocolsResponse['protocols'][number];
 export type Goal = Protocol['goals'][number];
 export type Activity = Protocol['activities'][number];
@@ -48,7 +45,6 @@ export function useProtocol(protocolId: string) {
       },
     }),
     enabled: !!protocolId,
-    // kingsley: hack, we need to root cause address the typegen
-    select: (data) => (data as GetProtocolByIdResponse).protocol,
+    select: (data) => data.protocol,
   });
 }

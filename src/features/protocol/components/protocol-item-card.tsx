@@ -9,8 +9,6 @@ import { cn } from '@/lib/utils';
 import type { Activity } from '../api';
 import { getItemDetails } from '../utils/get-item-details';
 
-import { ProtocolMarkdown } from './protocol-markdown';
-
 type ProtocolItemCardProps = {
   activity: Activity;
   className?: string;
@@ -114,28 +112,31 @@ export function ProtocolItemCard({
           <div className="mb-4">
             <ProgressiveImage
               src={getImage()!.src}
-              alt={getImage()!.alt}
+              alt={getImage()!.alt ?? ''}
               className="h-40 w-full rounded-xl object-contain"
             />
           </div>
         )}
         <div className="flex-1 space-y-2">
           <Body1>{getTitle()}</Body1>
-          {activity.overview && (
-            <Body2 className="text-secondary">{activity.overview}</Body2>
-          )}
+          <ul className="list-inside list-disc">
+            {activity.overview && (
+              <li>
+                <Body2 className="-ml-2 inline text-secondary">
+                  {activity.overview}
+                </Body2>
+              </li>
+            )}
+            {activity.actionBrief && (
+              <li>
+                <Body2 className="-ml-2 inline text-secondary">
+                  {activity.actionBrief}
+                </Body2>
+              </li>
+            )}
+          </ul>
         </div>
         {children}
-
-        <div className="text-secondary">
-          {activity.description && (
-            <ProtocolMarkdown
-              className="text-secondary"
-              content={activity.description}
-              citations={activity.citations}
-            />
-          )}
-        </div>
       </div>
     </div>
   );

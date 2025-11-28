@@ -30,9 +30,18 @@ export const getItemDetails = (activity: Activity) => {
         linkType: 'internal' as const,
       };
     case 'general':
+    case 'avoid-product':
+    case 'lifestyle':
+    case 'nutrition':
+      return {
+        title: activity.title,
+        price: 0,
+        url: undefined,
+        linkType: undefined,
+      };
     default:
       return {
-        title: 'General Recommendation',
+        title: 'Recommendation',
         price: 0,
         url: undefined,
         linkType: undefined,

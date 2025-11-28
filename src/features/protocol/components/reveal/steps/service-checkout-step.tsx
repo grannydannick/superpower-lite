@@ -20,6 +20,7 @@ import { REVEAL_STEPS } from '@/features/protocol/components/reveal/reveal-stepp
 import { CreatePaymentMethodForm } from '@/features/settings/components/billing/create-payment-method-form';
 import { usePaymentMethodSelection } from '@/features/settings/hooks';
 import { CurrentPaymentMethodCard } from '@/features/users/components/payment/current-payment-method-card';
+import { useAnalytics } from '@/hooks/use-analytics';
 import { cn } from '@/lib/utils';
 import { formatMoney } from '@/utils/format-money';
 import { getServiceImage } from '@/utils/service';
@@ -57,7 +58,7 @@ export const ServiceCheckoutStep = ({
   } = usePaymentMethodSelection();
   const createServiceOrdersMutation = useCreateServiceOrders();
   const completeRevealMutation = useCompleteReveal();
-
+  const { track } = useAnalytics();
   const navigate = useNavigate();
 
   const serviceItems = useMemo(
@@ -124,6 +125,10 @@ export const ServiceCheckoutStep = ({
   const total = subtotal;
 
   const handleCompleteWithoutAction = async () => {
+    track('protocol_reveal_quit', {
+      reason: 'service_checkout_step_quit',
+      careplanId: carePlanId,
+    });
     try {
       await completeRevealMutation.mutateAsync(carePlanId);
       navigate('/protocol');

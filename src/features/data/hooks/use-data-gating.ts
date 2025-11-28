@@ -104,8 +104,16 @@ export const useDataGating = (): DataGatingState => {
       !biomarkersLoaded ||
       !(hasRelevantCompletedOrder || hasAnyBiomarkers));
 
-  // Return when the user has no orders at all (needs to schedule)
-  const hasNoOrders = !orders?.orders || orders.orders?.length === 0;
+  // Return true when the user has no orders at all or all orders are in DRAFT, REVOKED, or CANCELLED states (needs to schedule)
+  const hasNoOrders =
+    !orders?.orders ||
+    orders.orders.length === 0 ||
+    orders.orders.every(
+      (o) =>
+        o.status === OrderStatus.draft ||
+        o.status === OrderStatus.revoked ||
+        o.status === OrderStatus.cancelled,
+    );
 
   return {
     isLoading,
