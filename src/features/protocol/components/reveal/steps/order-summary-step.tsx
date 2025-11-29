@@ -1,4 +1,5 @@
 import NumberFlow from '@number-flow/react';
+import { useFeatureFlagEnabled } from 'posthog-js/react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -20,6 +21,7 @@ import { useProtocolCheckout } from '@/features/protocol/hooks/use-protocol-chec
 import { getActivityPricing } from '@/features/protocol/utils/get-activity-pricing';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { useUser } from '@/lib/auth';
+import { FeatureFlags } from '@/lib/posthog';
 import { cn } from '@/lib/utils';
 
 import { AutopilotCard } from '../../autopilot/autopilot-card';
@@ -48,6 +50,9 @@ export function OrderSummaryStep({
   const createOrderMutation = useCreateProtocolOrder();
   const completeRevealMutation = useCompleteReveal();
   const { track } = useAnalytics();
+  const showAutopilotCard = useFeatureFlagEnabled(
+    FeatureFlags.ProtocolAutopilot,
+  );
 
   const navigate = useNavigate();
 
@@ -155,7 +160,7 @@ export function OrderSummaryStep({
             <SuperpowerUserSignature />
           </div>
         </div>
-        <AutopilotCard />
+        {showAutopilotCard && <AutopilotCard />}
         <div className="space-y-8">
           {goals?.map((goal, goalIndex) => {
             const activities = itemsByGoal.get(goal.id) || [];

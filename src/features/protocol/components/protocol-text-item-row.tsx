@@ -45,7 +45,8 @@ export function ProtocolTextItemRow({
         <div className="min-w-0 flex-1">
           <Body1 className="mb-1 truncate">{item?.title}</Body1>
           {/* Hack: Make it look nicer if it isn't MD */}
-          {!activity.description.includes('**') ? (
+          {!activity.description.includes('**') &&
+          !activity.description.includes('##') ? (
             <Body2 className="text-secondary">{activity.description}</Body2>
           ) : (
             <ProtocolMarkdown

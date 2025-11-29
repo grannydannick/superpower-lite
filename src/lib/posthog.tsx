@@ -51,4 +51,6 @@ export function PHProvider({
   return <PostHogProvider client={phClient}>{children}</PostHogProvider>;
 }
 
-export const FeatureFlags = {};
+export const FeatureFlags = {
+  ProtocolAutopilot: 'protocol-autopilot-nov-2025',
+};
