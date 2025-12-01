@@ -1,7 +1,6 @@
 import moment from 'moment';
 import { useState } from 'react';
 
-import { ResultsTracker } from '@/components/shared/results-tracker/results-tracker';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/components/ui/link';
 import { Body2, H4 } from '@/components/ui/typography';
@@ -103,8 +102,6 @@ export const ProtocolTabs = ({
 
         return (
           <div className="space-y-8 md:pb-24">
-            <ResultsTracker className="bg-zinc-50" />
-
             {/* {currentItems.length > 0 && (
               <div>
                 <H4 className="mb-4">Your protocol items</H4>

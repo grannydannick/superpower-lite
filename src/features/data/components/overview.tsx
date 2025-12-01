@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 
 import { BiologicalAgeLogo } from '@/components/shared/biological-age-logo';
 import QuickLink from '@/components/shared/quicklink';
-import { ResultsTracker } from '@/components/shared/results-tracker/results-tracker';
 import { SuperpowerScoreLogo } from '@/components/shared/score-logo';
 import { Body2, H2, H4 } from '@/components/ui/typography';
 import { useOrders } from '@/features/orders/api';
@@ -218,7 +217,6 @@ export const Overview = () => {
                 </Body2>
               ))}
           </div>
-          <ResultsTracker />
 
           {markersAvailable && (
             <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-2">

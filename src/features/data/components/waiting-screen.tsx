@@ -1,5 +1,4 @@
 import QuickLink from '@/components/shared/quicklink';
-import { ResultsTracker } from '@/components/shared/results-tracker/results-tracker';
 import { Body2, H4 } from '@/components/ui/typography';
 import { useUser } from '@/lib/auth';
 
@@ -26,7 +25,6 @@ export const WaitingScreen = () => {
           connect your wearables.
         </Body2>
         <div className="flex flex-col gap-4 md:flex-row md:flex-wrap">
-          <ResultsTracker className="w-full" />
           <QuickLink
             to="/data/records"
             title="Upload existing health records"

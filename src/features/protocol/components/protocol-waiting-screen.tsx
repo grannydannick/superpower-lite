@@ -1,6 +1,5 @@
 import { Lock } from 'lucide-react';
 
-import { ResultsTracker } from '@/components/shared/results-tracker/results-tracker';
 import { Badge } from '@/components/ui/badge';
 import { Body1, Body2, Body3, H3, H4 } from '@/components/ui/typography';
 
@@ -9,7 +8,6 @@ export const ProtocolWaitingScreen = () => (
     <div className="grid-cols-5 space-y-16 lg:grid lg:gap-8 lg:space-y-0">
       <div className="col-span-3 space-y-6">
         <H3 className="text-black">Protocol</H3>
-        <ResultsTracker />
         <div className="space-y-4">
           <H4>Your protocol items</H4>
           {Array.from({ length: 3 }).map((_, index) => (
