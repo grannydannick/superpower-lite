@@ -63,6 +63,7 @@ const FamilyInsightsDialog = ({ children }: { children: ReactNode }) => {
     handleShare(insight.sms);
   };
 
+  // Only render when insights are available
   if (!data || data.insights.length === 0) return null;
 
   const insight = data.insights[current];
@@ -116,12 +117,17 @@ const FamilyInsightsDialog = ({ children }: { children: ReactNode }) => {
         </div>
         <div className="flex flex-col gap-4">
           <Body2>When your results arrive, check for related markers:</Body2>
-          {insight.recommendations.map((r) => (
-            <div className="flex items-start gap-2" key={r.toLocaleLowerCase()}>
-              <Dot className="shrink-0 text-zinc-400" />
-              <Body2>{r}</Body2>
-            </div>
-          ))}
+          <ul className="-ml-2">
+            {insight.recommendations.map((r) => (
+              <li
+                className="flex items-center gap-1"
+                key={r.toLocaleLowerCase()}
+              >
+                <Dot className="shrink-0 text-zinc-300" />
+                <Body2>{r}</Body2>
+              </li>
+            ))}
+          </ul>
           <Body2>
             Have family members you think may also be at risk? Help them take
             action!
@@ -130,7 +136,7 @@ const FamilyInsightsDialog = ({ children }: { children: ReactNode }) => {
         <Button
           size={width < 1024 ? 'medium' : 'small'}
           variant={width < 1024 ? 'outline' : 'default'}
-          className="w-full lg:w-fit"
+          className="w-full px-4 lg:w-fit"
           onClick={() => shareInsight(insight)}
         >
           Share this with your family
@@ -157,7 +163,7 @@ const FamilyInsightsDialog = ({ children }: { children: ReactNode }) => {
       <DialogTrigger asChild onClick={() => track('clicked_family_CTA')}>
         {children}
       </DialogTrigger>
-      <DialogContent className="max-w-[1000px] overflow-y-auto">
+      <DialogContent className="max-w-[1000px] overflow-y-auto rounded-s-[30px]">
         {content}
       </DialogContent>
     </Dialog>
