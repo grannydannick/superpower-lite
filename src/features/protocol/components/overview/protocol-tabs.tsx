@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { useState } from 'react';
 
+import { AIIcon } from '@/components/icons/ai-icon';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/components/ui/link';
 import { Body2, H4 } from '@/components/ui/typography';
@@ -146,6 +147,19 @@ export const ProtocolTabs = ({
                 </div>
               </div>
             )}
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Server renders in UTC, we should be consistent with this */}
+              <Body2 className="m-0 leading-none text-zinc-400">
+                {moment.utc(protocol.created).format('MMM Do, YYYY')}
+              </Body2>
+              <div className="-mt-px size-[3px] rounded-full bg-zinc-400" />
+              <div className="flex items-center gap-1">
+                <AIIcon className="-mt-0.5 size-4 shrink-0" />
+                <Body2 className="text-zinc-400">
+                  Written by Superpower’s proprietary AI
+                </Body2>
+              </div>
+            </div>
           </div>
         );
       }
