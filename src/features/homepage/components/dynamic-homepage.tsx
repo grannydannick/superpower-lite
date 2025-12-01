@@ -15,7 +15,7 @@ export const DynamicHomepage = () => {
     <ContentLayout
       title="Home"
       variant="homepage"
-      className="max-w-[1600px] pt-6 md:space-y-6 md:pt-0 lg:py-0"
+      className="max-w-[1600px] pt-6 md:space-y-6 lg:py-0"
     >
       {/* Mobile: Greeting at top */}
       <div className="lg:hidden">
