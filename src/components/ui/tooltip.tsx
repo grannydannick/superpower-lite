@@ -11,6 +11,8 @@ const TooltipTrigger = TooltipPrimitive.Trigger;
 
 const TooltipArrow = TooltipPrimitive.Arrow;
 
+const TooltipPortal = TooltipPrimitive.Portal;
+
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
@@ -36,4 +38,5 @@ export {
   TooltipContent,
   TooltipProvider,
   TooltipArrow,
+  TooltipPortal,
 };

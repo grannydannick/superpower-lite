@@ -9,6 +9,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
+  TooltipPortal,
 } from '@/components/ui/tooltip';
 import { Body1 } from '@/components/ui/typography';
 import { useOrder } from '@/features/orders/stores/order-store';
@@ -151,7 +152,9 @@ const LocationListOption = ({
               <CornerUpRight className="size-5" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>See location on Google Maps</TooltipContent>
+          <TooltipPortal>
+            <TooltipContent>See location on Google Maps</TooltipContent>
+          </TooltipPortal>
         </Tooltip>
       </TooltipProvider>
 
