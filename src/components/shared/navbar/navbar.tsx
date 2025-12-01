@@ -215,12 +215,12 @@ export const DesktopNavbar = () => {
                     data-testid={link.testid}
                     className={({ isActive }) =>
                       cn(
-                        'flex cursor-pointer items-center gap-3 transition duration-200 ease-in-out rounded-[18px]',
+                        'flex cursor-pointer items-center gap-3 transition duration-200 ease-in-out rounded-[10px]',
                         isActive && 'bg-accent',
                       )
                     }
                   >
-                    <DropdownMenuItem className="w-full gap-3 rounded-[18px] p-4">
+                    <DropdownMenuItem className="w-full gap-3 rounded-[10px] p-4">
                       <link.icon width={14} height={14} />
                       <p className="text-sm">{link.name}</p>
                     </DropdownMenuItem>
