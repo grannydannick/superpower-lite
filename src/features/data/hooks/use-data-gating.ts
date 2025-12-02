@@ -62,7 +62,11 @@ export const useDataGating = (): DataGatingState => {
   // find the most recent appointment start for relevant tests
   const latestRelevantAppointmentTime = useMemo(() => {
     const relevantAppointments = orders?.orders?.filter(
-      (o) => !!o.startTimestamp && isBloodPanelService(o.serviceName),
+      (o) =>
+        !!o.startTimestamp &&
+        isBloodPanelService(o.serviceName) &&
+        o.status !== OrderStatus.cancelled &&
+        o.status !== OrderStatus.revoked,
     );
 
     if (!relevantAppointments || relevantAppointments.length === 0)
