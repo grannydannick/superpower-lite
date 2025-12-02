@@ -3,7 +3,7 @@ import {
   QuestionnaireResponseItem,
 } from '@medplum/fhirtypes';
 
-import { Body1 } from '@/components/ui/typography';
+import { Body1, Body2 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 
 import { ConsentPaymentSummary } from './consent-payment-summary';
