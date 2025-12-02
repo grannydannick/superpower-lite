@@ -1,11 +1,13 @@
 import { ArrowUpRight } from 'lucide-react';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, Body2, H2 } from '@/components/ui/typography';
 import { checkLabOrderSupport } from '@/const';
 import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
 import { HEALTHCARE_SERVICE_DIALOG_CONTAINER_STYLE } from '@/features/orders/const/config';
 import { useHasCredit } from '@/features/orders/hooks';
 import { useOrder } from '@/features/orders/stores/order-store';
+import { useService } from '@/features/services/api';
 import { ServiceFaqs } from '@/features/services/components/service-faqs';
 import { cn } from '@/lib/utils';
 import { customDisplayNameForService } from '@/utils/display-name-for-service';
@@ -16,9 +18,16 @@ import {
 } from '@/utils/service';
 
 export const HealthcareServiceDetails = () => {
-  const { service } = useOrder((s) => s);
+  const { service, collectionMethod, addOnIds } = useOrder((s) => s);
   const { hasCredit } = useHasCredit({ serviceName: service.name });
   const sampleReportLink = getSampleReportLinkForService(service.name);
+
+  // fetch the latest service (and pricing) and use its loading state
+  const serviceQuery = useService({
+    serviceId: service.id,
+    method: collectionMethod,
+    addOnServiceIds: addOnIds.size > 0 ? [...addOnIds] : undefined,
+  });
 
   // WC: 2025-10-15 - This is a temporary function to display the custom display name for the service.
   // THIS IS AN UGLY HACK AND SHOULD BE REMOVED ASAP.
@@ -40,9 +49,17 @@ export const HealthcareServiceDetails = () => {
           />
           <div className="max-w-[220px] space-y-4 md:max-w-none">
             <H2 className="text-zinc-900">{displayName}</H2>
-            <Body2 className="text-zinc-500">
-              {hasCredit ? 'Included' : getHealthcareServicePriceLabel(service)}
-            </Body2>
+            {serviceQuery.isLoading ? (
+              <Skeleton className="h-5 w-16" />
+            ) : (
+              <Body2 className="text-zinc-500">
+                {hasCredit
+                  ? 'Included'
+                  : getHealthcareServicePriceLabel(
+                      serviceQuery.data?.service ?? service,
+                    )}
+              </Body2>
+            )}
           </div>
           <Body1 className="text-zinc-500">{service.description}</Body1>
           {checkLabOrderSupport(service.name) && (
