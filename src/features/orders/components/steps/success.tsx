@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { DialogClose } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, Body3, H2 } from '@/components/ui/typography';
+import { KIT_SERVICES } from '@/const/services';
 import { HealthcareServiceFooter } from '@/features/orders/components/healthcare-service-footer';
 import { HEALTHCARE_SERVICE_DIALOG_CONTAINER_STYLE } from '@/features/orders/const/config';
 import { useOrder } from '@/features/orders/stores/order-store';
@@ -18,6 +19,18 @@ export const Success = () => {
   const { slot, service, collectionMethod, location } = useOrder((s) => s);
   const timelineSteps = getServiceTimeline(service, collectionMethod);
   const { data: user, isLoading } = useUser();
+
+  const getMessage = () => {
+    if (service.name && KIT_SERVICES.has(service.name)) {
+      return `Thank you, your ${service.name} test is on its way`;
+    }
+
+    if (service.phlebotomy) {
+      return 'Thank you, we look forward to seeing you shortly.';
+    }
+
+    return 'Thank you, your order is being processed and will be shipped soon.';
+  };
 
   const renderCalendarButtons = () => {
     if (!location?.address) {
@@ -63,9 +76,7 @@ export const Success = () => {
         className={cn('space-y-8', HEALTHCARE_SERVICE_DIALOG_CONTAINER_STYLE)}
       >
         <div className="space-y-1">
-          <H2 className="text-zinc-900">
-            Thank you, we look forward to seeing you shortly.
-          </H2>
+          <H2 className="text-zinc-900">{getMessage()}</H2>
           {isLoading ? (
             <Skeleton className="h-10 w-full" />
           ) : (

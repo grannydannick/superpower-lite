@@ -95,6 +95,13 @@ export const RECOMMENDED_SERVICES = [
   MYCOTOXINS_TEST,
 ];
 
+export const KIT_SERVICES = new Set([
+  GUT_MICROBIOME_ANALYSIS,
+  ENVIRONMENTAL_TOXIN_TEST,
+  MYCOTOXINS_TEST,
+  HEAVY_METALS_TEST,
+]);
+
 // we assume those services can be ordered through the lab
 export const checkLabOrderSupport = (serviceName: string) => {
   return LAB_ORDER_SUPPORTED_SERVICES.includes(serviceName);
