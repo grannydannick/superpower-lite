@@ -18,7 +18,11 @@ export const OnboardingSteps = () => {
   const { isLoading } = useOnboardingStepper();
 
   if (isLoading) {
-    return <Spinner variant="primary" />;
+    return (
+      <div className="flex h-dvh w-full items-center justify-center">
+        <Spinner variant="primary" />
+      </div>
+    );
   }
 
   return (
