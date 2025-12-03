@@ -9,79 +9,59 @@ const RX_SCREEN_OUT_TEXT = [
   {
     title:
       'Thank you for taking the time to share your health information with us.',
+    heading: 'Our clinical decision',
     body: [
-      'After careful review of your responses, we are unable to prescribe the medication you requested at this time.',
-      'Our decision is based on various factors, including medical guidelines, safety considerations, and our commitment to providing you with the right treatment.',
+      'After reviewing your responses, our clinical team is not able to safely prescribe the medication you requested at this time. This decision is based on medical guidelines and safety considerations designed to protect your long-term health.',
     ],
   },
   {
-    heading: 'Why do we do this?',
+    heading: 'Why we made this decision',
     body: [
-      'Your health and well-being are our top priorities, and we appreciate your time and effort in providing us with the necessary information.',
-      'If you have any questions or feel you received this message in error, reach out to your concierge or seek further medical advice if you have any immediate health or treatment concerns.',
+      'We know this may feel disappointing, especially if you were hoping this medication could support your goals. Your health and well-being are important to us, and we appreciate the time you took to share your information.',
+    ],
+  },
+  {
+    heading: 'Have questions or concerns?',
+    body: [
+      'If you have questions about this decision, or believe something may have been misunderstood, please reach out to your concierge at concierge@superpower.com so we can review it with you and help you understand possible next steps.',
     ],
   },
 ];
 
-function RxScreenOutInformation() {
-  return (
-    <motion.section
-      id="main"
-      className="space-y-8 pt-10"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
-    >
-      {RX_SCREEN_OUT_TEXT.map((text, idx) => (
-        <motion.div
-          key={text.heading || idx}
-          className="space-y-3"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 0.6,
-            ease: 'easeOut',
-            delay: 0.2 + idx * 0.1,
-          }}
-        >
-          <H3>{text.title}</H3>
-          <H4>{text.heading}</H4>
-          <div className="space-y-4">
-            {text.body.map((body, index) => (
-              <Body2 key={index} className="text-secondary">
-                {body.split(/(superpower@superpower\.com)/g).map((part, i) =>
-                  part.match(/superpower@superpower\.com/) ? (
-                    <a
-                      key={i}
-                      href={`mailto:${part}`}
-                      className="text-white underline-offset-1 hover:underline"
-                    >
-                      {part}
-                    </a>
-                  ) : (
-                    part
-                  ),
-                )}
-              </Body2>
-            ))}
-          </div>
-        </motion.div>
-      ))}
-    </motion.section>
-  );
-}
+const RX_SCREEN_OUT_FRONT_DOOR_TEXT = [
+  {
+    title:
+      'Thank you for taking the time to share your health information with us.',
+    heading: 'Our clinical decision',
+    body: [
+      'After reviewing your responses, our clinical team is not able to safely prescribe GLP-1 medication at this time. This decision is based on medical guidelines and safety considerations designed to protect your long-term health.',
+    ],
+  },
+  {
+    heading: 'What happens next?',
+    body: [
+      'We know this may be disappointing if you were hoping to start GLP-1s, and we appreciate the time you took to complete the intake.',
+      'Because we’re unable to move forward with treatment, your payment has been fully refunded to your original payment method, and you will not be enrolled in a Superpower membership.',
+    ],
+  },
+  {
+    heading: 'Questions about your refund or care?',
+    body: [
+      'If you have any questions about this decision or your refund, please reach out to our concierge at concierge@superpower.com and we’ll be happy to review it with you.',
+    ],
+  },
+];
 
-export const RxScreenOut = ({ onContinue }: { onContinue?: () => void }) => {
+export const RxScreenOut = ({
+  isFrontdoorExperiment,
+}: {
+  isFrontdoorExperiment: boolean;
+}) => {
   const navigate = useNavigate();
 
-  const handleContinue = () => {
-    if (onContinue) {
-      onContinue();
-      return;
-    }
-
-    navigate('/');
-  };
+  const text = isFrontdoorExperiment
+    ? RX_SCREEN_OUT_FRONT_DOOR_TEXT
+    : RX_SCREEN_OUT_TEXT;
 
   return (
     <div className="min-h-screen bg-zinc-100 px-8">
@@ -93,10 +73,14 @@ export const RxScreenOut = ({ onContinue }: { onContinue?: () => void }) => {
         >
           <SuperpowerLogo className="w-32" />
         </motion.div>
-        <RxScreenOutInformation />
-        <Button className="mt-10 w-full" onClick={handleContinue}>
-          I Understand
-        </Button>
+        <RxScreenOutInformation text={text} />
+        {/* NOTE: We don't render this button if it's a front door experiment since
+          their Superpower membership is cancelled; we don't want them going anywhere unintended! */}
+        {!isFrontdoorExperiment && (
+          <Button className="mt-10 w-full" onClick={() => navigate('/')}>
+            I Understand
+          </Button>
+        )}
       </div>
 
       <div className="fixed bottom-0 left-1/2 z-10 -translate-x-1/2">
@@ -134,3 +118,57 @@ export const RxScreenOut = ({ onContinue }: { onContinue?: () => void }) => {
     </div>
   );
 };
+
+function RxScreenOutInformation({
+  text,
+}: {
+  text: typeof RX_SCREEN_OUT_TEXT | typeof RX_SCREEN_OUT_FRONT_DOOR_TEXT;
+}) {
+  return (
+    <motion.section
+      id="main"
+      className="space-y-8 pt-10"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
+    >
+      {text.map((item: any, idx: number) => (
+        <motion.div
+          key={item.heading || idx}
+          className="space-y-3"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: 0.6,
+            ease: 'easeOut',
+            delay: 0.2 + idx * 0.1,
+          }}
+        >
+          <H3>{item.title}</H3>
+          <H4>{item.heading}</H4>
+          <div className="space-y-4">
+            {item.body.map((body: string, index: number) => (
+              <Body2 key={index} className="text-secondary">
+                {body
+                  .split(/(concierge@superpower\.com)/g)
+                  .map((part: string, i: number) =>
+                    part.match(/concierge@superpower\.com/) ? (
+                      <a
+                        key={i}
+                        href={`mailto:concierge@superpower.com`}
+                        className="text-vermillion-900 underline-offset-1 hover:underline"
+                      >
+                        concierge@superpower.com
+                      </a>
+                    ) : (
+                      part
+                    ),
+                  )}
+              </Body2>
+            ))}
+          </div>
+        </motion.div>
+      ))}
+    </motion.section>
+  );
+}

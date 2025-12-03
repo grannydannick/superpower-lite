@@ -313,12 +313,7 @@ export const QuestionnaireQuestion = ({
       isRxIdentityVerificationQuestion && isIdentityVerificationBlocking;
 
     return (
-      <div
-        className={cn(
-          'flex flex-col gap-2',
-          isRxSafetyIntroQuestion ? 'mt-auto' : 'mt-12 md:mt-0',
-        )}
-      >
+      <div className={cn('flex flex-col gap-2 mt-12 md:mt-0')}>
         {showBackButton && (
           <button
             tabIndex={-1}
@@ -401,8 +396,7 @@ export const QuestionnaireQuestion = ({
       <SuperpowerLogo className="size-32 h-12 md:hidden" />
       <div
         className={cn(
-          'flex h-full flex-1 flex-col justify-between gap-6 md:translate-y-0',
-          isRxSafetyIntroQuestion ? 'md:justify-between' : 'md:justify-start',
+          'flex h-full flex-1 flex-col justify-between gap-6 md:translate-y-0 md:justify-start',
         )}
       >
         {item.type === QuestionnaireItemType.group ? (

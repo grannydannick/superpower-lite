@@ -10,16 +10,16 @@ import { isMemberIneligible } from '@/features/questionnaires/utils/is-member-in
 import { useUser } from '@/lib/auth';
 import { QuestionnaireName } from '@/types/api';
 
+import { isGLP1FrontDoorExperiment } from '../../../components/ui/questionnaire/utils/questionnaire-utils';
+
 export const RxQuestionnaire = ({
   showIntro = false,
   name,
   onSubmit,
-  onIneligible,
 }: {
   showIntro?: boolean;
   name: QuestionnaireName;
   onSubmit?: () => void;
-  onIneligible?: () => void;
 }) => {
   const [showIneligibleScreen, setShowIneligibleScreen] =
     useState<boolean>(false);
@@ -38,7 +38,7 @@ export const RxQuestionnaire = ({
     getQuestionnaireResponseQuery.data?.questionnaireResponse?.id;
 
   const getQuestionnaireQuery = useQuestionnaire({
-    identifier: questionnaireRef as QuestionnaireName,
+    identifier: questionnaireRef || '',
     queryConfig: {
       enabled: !!questionnaireRef,
     },
@@ -64,8 +64,12 @@ export const RxQuestionnaire = ({
     return <div>Questionnaire not found</div>;
   }
 
+  const isFrontdoorExperiment = isGLP1FrontDoorExperiment(
+    getQuestionnaireResponseQuery.data?.questionnaireResponse,
+  );
+
   if (showIneligibleScreen) {
-    return <RxScreenOut onContinue={() => onIneligible?.()} />;
+    return <RxScreenOut isFrontdoorExperiment={isFrontdoorExperiment} />;
   }
 
   return (
