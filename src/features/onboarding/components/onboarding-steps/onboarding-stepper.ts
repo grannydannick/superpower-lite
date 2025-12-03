@@ -1,6 +1,7 @@
 import { defineStepper, Get } from '@stepperize/react';
 import { useCallback, useRef, useEffect, useMemo } from 'react';
 
+import { isGLP1FrontDoorExperiment } from '@/components/ui/questionnaire/utils/questionnaire-utils';
 import {
   GLP_FRONTDOOR_EXPERIMENT,
   INTAKE_QUESTIONNAIRE,
@@ -98,6 +99,9 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
   const hasIncompleteRxFrontDoorIntake =
     rxFrontDoorIntakeData?.questionnaireResponse != null &&
     rxFrontDoorIntakeData.questionnaireResponse.status !== 'completed';
+  const isFrontDoorExperiment =
+    rxFrontDoorIntakeData?.questionnaireResponse != null &&
+    isGLP1FrontDoorExperiment(rxFrontDoorIntakeData.questionnaireResponse);
 
   // Fetch add-on panel services to check availability
   const { data: addOnServices, isLoading: isServicesLoading } = useServices({
@@ -169,8 +173,8 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
     if (userHasAdvancedUpgrade)
       excluded.push(ONBOARDING_STEPS.ADVANCED_UPGRADE);
 
-    // User has custom panels - skip most upsells
-    if (userHasCustomPanels) {
+    // User has custom panels, or purchased a GLP-1 front-door experiment - skip most upsells
+    if (userHasCustomPanels || isFrontDoorExperiment) {
       excluded.push(
         ONBOARDING_STEPS.ADVANCED_UPGRADE,
         ONBOARDING_STEPS.BUNDLED_DISCOUNT,
@@ -194,6 +198,7 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
     userInfoCompleted,
     intakeCompleted,
     hasIncompleteRxFrontDoorIntake,
+    isFrontDoorExperiment,
     userHasAdvancedUpgrade,
     userHasCustomPanels,
     hasOrganAge,
