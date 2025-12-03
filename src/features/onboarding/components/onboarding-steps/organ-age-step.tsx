@@ -168,8 +168,8 @@ const ProductInfo = ({ className }: { className?: string }) => {
   // Determine splash image based on gender
   const splashImage =
     user?.gender?.toLowerCase() === 'female'
-      ? '/onboarding/splash/organ-age-splash-female.png'
-      : '/onboarding/splash/organ-age-splash-male.png';
+      ? '/onboarding/splash/organ-age-splash-female.webp'
+      : '/onboarding/splash/organ-age-splash-male.webp';
 
   return (
     <div className={cn('space-y-2 lg:space-y-4', className)}>

@@ -131,7 +131,7 @@ const ProductInfo = ({ className }: { className?: string }) => {
     <div className={cn('space-y-2 lg:space-y-4', className)}>
       <div className="relative">
         <img
-          src="/onboarding/splash/fatigue-splash.png"
+          src="/onboarding/splash/fatigue-splash.webp"
           alt="fatigue-panels"
           className="pointer-events-none mx-auto w-full rounded-[20px] object-contain"
         />
