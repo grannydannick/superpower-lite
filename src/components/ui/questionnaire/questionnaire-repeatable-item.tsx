@@ -101,7 +101,9 @@ export const QuestionnaireFormRepeatableItem = ({
           // I don't see a case for XSS because the only way to edit this is in Medplum
           dangerouslySetInnerHTML={{ __html: item.text ?? '' }}
         />
-        {isFrontdoorExperiment && (
+        {/* NOTE: consider moving to separate component / different approach
+         if we continue to have conditional descriptions for the same question. */}
+        {isFrontdoorExperiment && item.linkId === RX_CONSENT_PAYMENT_LINKID && (
           <Body2 className="text-secondary">
             Your Rx prescription is included with your Superpower membership.
           </Body2>

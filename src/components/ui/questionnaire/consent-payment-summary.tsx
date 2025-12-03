@@ -1,7 +1,5 @@
-import { SmileIcon } from 'lucide-react';
 import { useMemo } from 'react';
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ProgressiveImage } from '@/components/ui/progressive-image';
 import { isGLP1FrontDoorExperiment } from '@/components/ui/questionnaire/utils/questionnaire-utils';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -41,15 +39,6 @@ export const ConsentPaymentSummary = () => {
 
   return (
     <div className="flex flex-col gap-6 pb-6">
-      {isFrontdoorExperiment && (
-        <Alert>
-          <SmileIcon className="size-4" />
-          <AlertTitle>Good news!</AlertTitle>
-          <AlertDescription>
-            Your Rx prescription is included with your Superpower membership.
-          </AlertDescription>
-        </Alert>
-      )}
       <div className="flex h-80 w-full items-center justify-center overflow-hidden rounded-3xl bg-white">
         {showSkeleton ? (
           <Skeleton className="size-full rounded-3xl" />
