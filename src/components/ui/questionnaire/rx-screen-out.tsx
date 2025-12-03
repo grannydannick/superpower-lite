@@ -1,9 +1,12 @@
+import { QuestionnaireResponse } from '@medplum/fhirtypes';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { Button } from '@/components/ui/button';
 import { Body2, H3, H4 } from '@/components/ui/typography';
+
+import { isGLP1FrontDoorExperiment } from './utils/questionnaire-utils';
 
 const RX_SCREEN_OUT_TEXT = [
   {
@@ -53,13 +56,14 @@ const RX_SCREEN_OUT_FRONT_DOOR_TEXT = [
 ];
 
 export const RxScreenOut = ({
-  isFrontdoorExperiment,
+  response,
 }: {
-  isFrontdoorExperiment: boolean;
+  response: QuestionnaireResponse;
 }) => {
+  const isFrontDoorExperiment = isGLP1FrontDoorExperiment(response);
   const navigate = useNavigate();
 
-  const text = isFrontdoorExperiment
+  const text = isFrontDoorExperiment
     ? RX_SCREEN_OUT_FRONT_DOOR_TEXT
     : RX_SCREEN_OUT_TEXT;
 
@@ -76,7 +80,7 @@ export const RxScreenOut = ({
         <RxScreenOutInformation text={text} />
         {/* NOTE: We don't render this button if it's a front door experiment since
           their Superpower membership is cancelled; we don't want them going anywhere unintended! */}
-        {!isFrontdoorExperiment && (
+        {!isFrontDoorExperiment && (
           <Button className="mt-10 w-full" onClick={() => navigate('/')}>
             I Understand
           </Button>

@@ -1,5 +1,8 @@
 import { useState } from 'react';
 
+// TODO: move data fetching upstream, or make this a global component
+// eslint-disable-next-line import/no-restricted-paths
+import { NotFoundRoute } from '@/app/routes/not-found';
 import { QuestionnaireForm } from '@/components/ui/questionnaire';
 import { RxScreenOut } from '@/components/ui/questionnaire/rx-screen-out';
 import { Spinner } from '@/components/ui/spinner';
@@ -9,8 +12,6 @@ import { useUpdateQuestionnaireResponse } from '@/features/questionnaires/api/up
 import { isMemberIneligible } from '@/features/questionnaires/utils/is-member-ineligible';
 import { useUser } from '@/lib/auth';
 import { QuestionnaireName } from '@/types/api';
-
-import { isGLP1FrontDoorExperiment } from '../../../components/ui/questionnaire/utils/questionnaire-utils';
 
 export const RxQuestionnaire = ({
   showIntro = false,
@@ -31,16 +32,13 @@ export const RxQuestionnaire = ({
     statuses: ['in-progress', 'stopped'],
   });
 
-  const questionnaireRef =
-    getQuestionnaireResponseQuery.data?.questionnaireResponse?.questionnaire;
-
   const questionnaireResponseId =
     getQuestionnaireResponseQuery.data?.questionnaireResponse?.id;
 
   const getQuestionnaireQuery = useQuestionnaire({
-    identifier: questionnaireRef || '',
+    identifier: name || '',
     queryConfig: {
-      enabled: !!questionnaireRef,
+      enabled: !!name,
     },
   });
 
@@ -56,26 +54,34 @@ export const RxQuestionnaire = ({
     );
   }
 
-  if (
-    !getQuestionnaireQuery.data?.questionnaire ||
-    !getQuestionnaireResponseQuery.data?.questionnaireResponse ||
-    !userQuery.data
-  ) {
-    return <div>Questionnaire not found</div>;
+  //TODO: move this upstream
+  if (!getQuestionnaireQuery.data) {
+    console.error('Questionnaire not found');
+    return <NotFoundRoute />;
   }
 
-  const isFrontdoorExperiment = isGLP1FrontDoorExperiment(
-    getQuestionnaireResponseQuery.data?.questionnaireResponse,
-  );
+  if (!userQuery.data) {
+    console.error('User not found');
+    return <NotFoundRoute />;
+  }
 
-  if (showIneligibleScreen) {
-    return <RxScreenOut isFrontdoorExperiment={isFrontdoorExperiment} />;
+  if (
+    showIneligibleScreen &&
+    getQuestionnaireResponseQuery.data?.questionnaireResponse != null
+  ) {
+    return (
+      <RxScreenOut
+        response={getQuestionnaireResponseQuery.data.questionnaireResponse}
+      />
+    );
   }
 
   return (
     <QuestionnaireForm
       questionnaire={getQuestionnaireQuery.data.questionnaire}
-      response={getQuestionnaireResponseQuery.data.questionnaireResponse}
+      response={
+        getQuestionnaireResponseQuery.data?.questionnaireResponse ?? undefined
+      }
       user={userQuery.data}
       onSave={(item) => {
         updateQuestionnaireResponseMutation.mutate({

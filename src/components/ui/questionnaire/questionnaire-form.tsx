@@ -30,7 +30,7 @@ export const QuestionnaireForm = ({
   user,
 }: {
   questionnaire: Questionnaire;
-  response: QuestionnaireResponse;
+  response?: QuestionnaireResponse;
   user: User;
   onSave: (item: QuestionnaireResponseItem[]) => void;
   onSubmit: (item: QuestionnaireResponseItem[]) => void;
@@ -41,7 +41,7 @@ export const QuestionnaireForm = ({
   const mergedQuestionnaire = {
     ...questionnaire,
     item: questionnaire.item
-      ? mergeResponseItems(questionnaire.item, response?.item || [])
+      ? mergeResponseItems(questionnaire.item, response?.item ?? [])
       : undefined,
   };
 
