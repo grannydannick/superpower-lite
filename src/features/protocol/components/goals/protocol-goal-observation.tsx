@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/tooltip';
 import { Body2 } from '@/components/ui/typography';
 import { STATUS_TO_COLOR } from '@/const/status-to-color';
-import { useBiomarker } from '@/features/data/api/get-biomarker';
+import { useBiomarkers } from '@/features/data/api';
 import { BiomarkerDialog } from '@/features/data/components/dialogs/biomarker-dialog';
 import { BiomarkerRange } from '@/features/data/components/range';
 import { BiomarkerValueUnit } from '@/features/data/components/value-unit';
@@ -25,15 +25,20 @@ export function ProtocolGoalObservation({
   id,
   className,
 }: ProtocolGoalObservationProps) {
-  const { data, isLoading } = useBiomarker({ id });
+  const { data, isLoading } = useBiomarkers();
 
   if (isLoading) {
     return <Skeleton className="h-[82px] w-full rounded-[20px]" />;
   }
 
-  if (!data?.biomarker) return null;
+  if (!data) return null;
 
-  const biomarker = data.biomarker;
+  const biomarker = data.biomarkers.find((b) =>
+    b.value.some((v) => v.id.toString() === id.toString()),
+  );
+
+  if (!biomarker) return null;
+
   const { status, name } = biomarker;
 
   return (
