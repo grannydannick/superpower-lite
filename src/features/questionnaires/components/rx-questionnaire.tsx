@@ -1,3 +1,4 @@
+import { keepPreviousData } from '@tanstack/react-query';
 import { useState } from 'react';
 
 // TODO: move data fetching upstream, or make this a global component
@@ -32,19 +33,25 @@ export const RxQuestionnaire = ({
     statuses: ['in-progress', 'stopped'],
   });
 
-  const questionnaireRef =
-    getQuestionnaireResponseQuery.data?.questionnaireResponse?.questionnaire;
-
   const questionnaireResponseId =
     getQuestionnaireResponseQuery.data?.questionnaireResponse?.id;
 
+  const questionnaireRef =
+    getQuestionnaireResponseQuery.data?.questionnaireResponse?.questionnaire;
+
   const getQuestionnaireQuery = useQuestionnaire({
     identifier: questionnaireRef ?? name,
+    queryConfig: {
+      // Keep previous questionnaire data when query key changes (name -> questionnaireRef)
+      // This prevents re-renders since we assume name & questionnaireRef point to the same questionnaire.
+      placeholderData: keepPreviousData,
+    },
   });
 
   if (
-    getQuestionnaireQuery.isLoading ||
-    getQuestionnaireResponseQuery.isLoading ||
+    (!getQuestionnaireQuery.data && getQuestionnaireQuery.isLoading) ||
+    (!getQuestionnaireResponseQuery.data?.questionnaireResponse &&
+      getQuestionnaireResponseQuery.isLoading) ||
     userQuery.isLoading
   ) {
     return (
@@ -78,6 +85,7 @@ export const RxQuestionnaire = ({
 
   return (
     <QuestionnaireForm
+      key={getQuestionnaireQuery.data.questionnaire.id}
       questionnaire={getQuestionnaireQuery.data.questionnaire}
       response={
         getQuestionnaireResponseQuery.data?.questionnaireResponse ?? undefined
