@@ -10,6 +10,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
 import { Protocol } from '../../api';
+import { useServicesForProtocols } from '../../hooks/use-services-for-protocols';
 import { isActivityInProtocol } from '../../utils/protocol-activity';
 import { ProtocolBook } from '../protocol-book';
 import { ProtocolItemRow } from '../protocol-item-row';
@@ -41,6 +42,8 @@ export const ProtocolTabs = ({
 }) => {
   const [activeTab, setActiveTab] = useState<ProtocolTabValue>('products');
   const isMobile = useIsMobile();
+  const historicalIds = (historicalProtocols ?? []).map((p) => p.id);
+  const { servicesMap } = useServicesForProtocols(historicalIds);
 
   const tabsToShow = PROTOCOL_TABS.filter((tab) => {
     switch (tab.value) {
@@ -182,33 +185,45 @@ export const ProtocolTabs = ({
       case 'previous':
         return historicalProtocols && historicalProtocols.length > 0 ? (
           <div className="flex flex-col gap-4 lg:flex-row lg:flex-wrap lg:gap-12">
-            {historicalProtocols.map((historicalProtocol) => (
-              <Link
-                key={historicalProtocol.id}
-                to={`/protocol/plans/${historicalProtocol.id}`}
-                className="group flex items-center gap-8 rounded-2xl border border-zinc-200 bg-white px-6 py-4 shadow-sm lg:rounded-none lg:border-none lg:p-0 lg:shadow-none"
-              >
-                <div>
-                  <ProtocolBook
-                    className="w-16 -rotate-6 rounded-xl shadow-2xl lg:w-40 lg:rotate-0 max-lg:[&_#cover]:rounded-sm max-lg:[&_#date]:hidden max-lg:[&_p]:text-[10px]"
-                    title={historicalProtocol.title}
-                    date={
-                      isMobile
-                        ? undefined
-                        : moment(historicalProtocol.created).format(
-                            'DD MMM, YYYY',
-                          )
-                    }
-                  />
-                </div>
-                <div className="lg:hidden">
-                  <Body2>{historicalProtocol.title}</Body2>
-                  <Body2 className="text-secondary">
-                    {moment(historicalProtocol.created).format('DD MMM YYYY')}
-                  </Body2>
-                </div>
-              </Link>
-            ))}
+            {historicalProtocols.map((historicalProtocol) => {
+              const info = servicesMap.get(historicalProtocol.id);
+              const associatedOrder = info?.order;
+              const coverImage = info?.coverImage;
+
+              return (
+                <Link
+                  key={historicalProtocol.id}
+                  to={`/protocol/plans/${historicalProtocol.id}`}
+                  className="group flex items-center gap-8 rounded-2xl border border-zinc-200 bg-white px-6 py-4 shadow-sm lg:rounded-none lg:border-none lg:p-0 lg:shadow-none"
+                >
+                  <div className="flex items-center gap-4">
+                    <ProtocolBook
+                      className="w-16 -rotate-6 rounded-xl shadow-2xl lg:w-40 lg:rotate-0 max-lg:[&_#cover]:rounded-sm max-lg:[&_#date]:hidden max-lg:[&_p]:text-[10px]"
+                      title="Protocol"
+                      date={
+                        isMobile
+                          ? undefined
+                          : moment(historicalProtocol.created).format(
+                              'DD MMM, YYYY',
+                            )
+                      }
+                      coverImage={coverImage}
+                    />
+                  </div>
+                  <div className="lg:hidden">
+                    <Body2>{historicalProtocol.title}</Body2>
+                    <Body2 className="text-secondary">
+                      {moment(historicalProtocol.created).format('DD MMM YYYY')}
+                    </Body2>
+                    {associatedOrder && (
+                      <Body2 className="text-secondary">
+                        {associatedOrder.serviceName}
+                      </Body2>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         ) : (
           <ProtocolTabEmpty />

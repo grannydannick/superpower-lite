@@ -41,7 +41,7 @@ export const ProtocolBook = ({
           )}
         >
           <div className="absolute left-0 h-full w-2 bg-black/20" />
-          <div className="absolute z-10 flex size-full flex-col py-2 pl-2.5 pr-12 lg:pl-4">
+          <div className="absolute z-10 flex size-full flex-col py-2 pl-2.5 pr-12 lg:py-3 lg:pl-5">
             <Body1 className="flex-1 leading-tight text-white">{title}</Body1>
             {date && <Body4 className="text-white">{date}</Body4>}
           </div>
@@ -54,7 +54,7 @@ export const ProtocolBook = ({
         {/* inner page (slightly smaller than cover) */}
         <div
           className={cn(
-            'absolute flex flex-col overflow-hidden px-5 pt-4 pb-2 left-0 top-1 h-[calc(100%-8px)] w-[calc(100%-8px)] z-30 bg-gradient-to-r from-zinc-300 via-white via-50% to-white rounded-lg',
+            'absolute flex flex-col overflow-hidden md:break-words pl-3 pr-1 pt-2 md:pt-6 md:pr-6 md:pl-8 pb-2 left-0 top-1 h-[calc(100%-8px)] w-[calc(100%-8px)] z-30 bg-gradient-to-r from-zinc-300 via-white via-50% to-white rounded-lg',
             'origin-left transform-gpu [backface-visibility:hidden]',
             'transition-all duration-500 ease-out will-change-transform',
             '[transform:translateZ(2px)_rotateY(0deg)] delay-[240ms]',
@@ -66,7 +66,7 @@ export const ProtocolBook = ({
             {isLoading ? (
               <Skeleton />
             ) : (
-              <Body3 className="leading-tight">
+              <Body3 className="break-all !text-[8px] leading-tight md:!text-xs">
                 {data?.firstName}&apos;s Action Plan
               </Body3>
             )}
