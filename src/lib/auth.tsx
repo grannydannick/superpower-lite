@@ -6,8 +6,11 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { z } from 'zod';
 
 import { SuperpowerLoadingLogo } from '@/components/icons/superpower-logo';
+import { INTAKE_QUESTIONNAIRE } from '@/const/questionnaire';
 // eslint-disable-next-line import/no-restricted-paths
 import { revealLatestQueryKey } from '@/features/protocol/api';
+// eslint-disable-next-line import/no-restricted-paths
+import { useQuestionnaireResponse } from '@/features/questionnaires/api/get-questionnaire-response';
 import { useTask } from '@/features/tasks/api/get-task';
 import { MutationConfig } from '@/lib/react-query';
 import { clearActiveLogin, setActiveLogin } from '@/lib/utils';
@@ -266,6 +269,13 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     enabled: userQuery.isSuccess,
   });
 
+  const { data: intakeData } = useQuestionnaireResponse({
+    identifier: INTAKE_QUESTIONNAIRE,
+    queryConfig: {
+      enabled: userQuery.isSuccess,
+    },
+  });
+
   if (taskQuery.isLoading) {
     return (
       <div className="flex h-screen w-screen items-center justify-center">
@@ -302,6 +312,7 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     '/protocol/autopilot',
     '/onboarding', // Prevent infinite redirect loop
     '/action-plan/intro', // Videos
+    '/questionnaire/intake',
   ];
   const onPermissiblePath = revealPermissiblePaths.some((path) =>
     location.pathname.startsWith(path),
@@ -350,6 +361,25 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         `Redirecting to ${target}, current location: ${location.pathname}`,
       );
       return <Navigate to={target} replace />;
+    }
+
+    // Redirect to intake questionnaire if incomplete (only after onboarding is done)
+    // Allow admins to bypass so they can triage other issues normally
+    const onQuestionnaire = location.pathname.startsWith('/questionnaire');
+    const hasIncompleteIntake =
+      intakeData?.questionnaireResponse != null &&
+      ['in-progress', 'stopped'].includes(
+        intakeData.questionnaireResponse.status,
+      );
+    const isAdminActor = !!userQuery.data?.admin;
+
+    if (
+      !isTaskIncomplete &&
+      hasIncompleteIntake &&
+      !onQuestionnaire &&
+      !isAdminActor
+    ) {
+      return <Navigate to="/questionnaire/intake" replace />;
     }
   }
 
