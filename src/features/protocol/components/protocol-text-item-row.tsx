@@ -1,5 +1,5 @@
 import { DummyProductIcon } from '@/components/icons/dummy-product-icon';
-import { Body1, Body2 } from '@/components/ui/typography';
+import { Body1 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 
 import type { Activity } from '../api';
@@ -44,16 +44,10 @@ export function ProtocolTextItemRow({
       <div className="flex min-w-0 flex-1 items-center justify-between gap-4">
         <div className="min-w-0 flex-1">
           <Body1 className="mb-1 truncate">{item?.title}</Body1>
-          {/* Hack: Make it look nicer if it isn't MD */}
-          {!activity.description.includes('**') &&
-          !activity.description.includes('##') ? (
-            <Body2 className="text-secondary">{activity.description}</Body2>
-          ) : (
-            <ProtocolMarkdown
-              className="text-secondary"
-              content={activity.description}
-            />
-          )}
+          <ProtocolMarkdown
+            className="text-secondary"
+            content={activity.description}
+          />
         </div>
       </div>
     </div>
