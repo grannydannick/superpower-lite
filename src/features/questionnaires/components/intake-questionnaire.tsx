@@ -67,14 +67,16 @@ export const IntakeQuestionnaire = ({
         updateQuestionnaireResponseMutation.mutate({
           data: { item, status: 'in-progress' },
           identifier: questionnaireResponseId,
+          invalidateIdentifiers: [INTAKE_QUESTIONNAIRE],
         });
       }}
       onSubmit={(item) => {
         updateQuestionnaireResponseMutation.mutate({
           data: { item, status: 'completed' },
           identifier: questionnaireResponseId,
+          invalidateIdentifiers: [INTAKE_QUESTIONNAIRE],
         });
-        onSubmit && onSubmit();
+        onSubmit?.();
       }}
       showIntro={showIntro}
       className="space-y-6"

@@ -25,13 +25,19 @@ export type UpdateQuestionnaireInput = z.infer<
   typeof updateQuestionnaireResponseInputSchema
 >;
 
+export type UpdateQuestionnaireResponseVariables = {
+  data: UpdateQuestionnaireInput;
+  identifier: string | QuestionnaireName; // id, or most recent questionnaire response by identifier or name
+  /** Additional query identifiers to invalidate (e.g., the original query identifier if different from the response ID) */
+  invalidateIdentifiers?: (string | QuestionnaireName)[];
+};
+
 export const updateQuestionnaireResponse = ({
   data,
   identifier,
-}: {
-  data: UpdateQuestionnaireInput;
-  identifier: string | QuestionnaireName; // id, or most recent questionnaire response by identifier or name
-}): Promise<{ questionnaireResponse: QuestionnaireResponse }> => {
+}: UpdateQuestionnaireResponseVariables): Promise<{
+  questionnaireResponse: QuestionnaireResponse;
+}> => {
   return api.patch(`/questionnaire-response/${identifier}`, data);
 };
 
@@ -50,6 +56,12 @@ export const useUpdateQuestionnaireResponse = ({
       queryClient.invalidateQueries({
         queryKey: getQuestionnaireResponseQueryOptions(variables.identifier)
           .queryKey,
+      });
+      // Invalidate additional identifiers (e.g., the original query identifier if different from the response ID)
+      variables.invalidateIdentifiers?.forEach((id) => {
+        queryClient.invalidateQueries({
+          queryKey: getQuestionnaireResponseQueryOptions(id).queryKey,
+        });
       });
       queryClient.invalidateQueries({
         queryKey: getTimelineQueryOptions().queryKey,
