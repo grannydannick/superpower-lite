@@ -17,11 +17,11 @@ spec:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-              - matchExpressions:
-                  - key: eks.amazonaws.com/nodegroup
-                    operator: In
-                    values:
-                      - arm-workers
+            - matchExpressions:
+              - key: workload
+                operator: In
+                values: 
+                  - app-arm
       containers:
         - name: superpower-app
           image: __AWS_ECR_URL__/superpower-app:__VERSION__
