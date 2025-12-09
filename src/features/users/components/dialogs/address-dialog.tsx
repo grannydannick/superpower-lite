@@ -42,7 +42,6 @@ import {
 import { Address, NotServiceableReason } from '@/types/api';
 import { isSameFormAddressInput } from '@/utils/format';
 import { addressFromGoogleComponents } from '@/utils/google';
-import { getCollectionMethodForState } from '@/utils/serviceability';
 
 import { useEditAddress, useCreateAddress } from '../../api';
 
@@ -161,13 +160,10 @@ export function AddressDialog({
       return;
     }
 
-    const collectionMethod = getCollectionMethodForState(data.state);
-
     const response = await getServiceabilityMutation.mutateAsync({
       data: {
         zipCode: data.postalCode,
-        // For NY/NJ, we do not allow in-lab. Use at-home serviceability.
-        collectionMethod,
+        collectionMethod: 'IN_LAB',
       },
     });
 

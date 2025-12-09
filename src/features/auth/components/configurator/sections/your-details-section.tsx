@@ -41,11 +41,7 @@ export const YourDetailsSection = () => {
     const response = await getServiceabilityMutation.mutateAsync({
       data: {
         zipCode: postalCode,
-        collectionMethod: ['NY', 'NJ'].includes(
-          getState(postalCode)?.state ?? '',
-        )
-          ? 'AT_HOME'
-          : 'IN_LAB',
+        collectionMethod: 'IN_LAB',
       },
     });
 
