@@ -123,7 +123,7 @@ const useConsentPaymentPrescription = (
     }
 
     return marketplaceQuery.data.prescriptions.find((rx) => {
-      // '/questionnaire/{name'
+      // '/questionnaire/{name}'
       return rx.url?.includes(questionnaireName) ?? false;
     });
   }, [marketplaceQuery.data?.prescriptions, questionnaireName]);

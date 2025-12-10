@@ -26,7 +26,7 @@ export const getItemDetails = (activity: Activity) => {
         title: activity.prescription.name,
         image: getPrescriptionImage(activity.prescription.name),
         price: Number(activity.prescription.price) * 100,
-        url: activity.prescription.url,
+        url: activity.prescription.pdpUrl,
         linkType: 'internal' as const,
       };
     case 'general':

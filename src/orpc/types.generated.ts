@@ -175,6 +175,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/checkout/fulfillment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["checkout.getCheckoutFulfillment"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gifts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["gifts.listGifts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/gifts/{giftId}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["gifts.submitGift"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/protocol": {
         parameters: {
             query?: never;
@@ -340,7 +388,7 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /** @enum {unknown} */
-        CheckoutProductId: "v2-baseline-membership-20250801" | "v2-membership-advanced-upgrade-20250801" | "at-home-sample-collection-20251016" | "v2-autoimmunity-bundle-20250929" | "v2-cardiovascular-bundle-20250929" | "v2-metabolic-bundle-20250929" | "v2-fertility-bundle-20250929" | "v2-methylation-bundle-20250929" | "v2-nutrients-bundle-20250929" | "v2-baseline-blood-panel-20250801" | "v2-advanced-blood-panel-20250801" | "v2-custom-blood-panel-20251002" | "gut-microbiome-analysis-20240513" | "grail-galleri-multi-cancer-test-20240513" | "heavy-metals-20240513" | "mycotoxins-20240513" | "environmental-toxin-20240513" | "total-toxins-20240513" | "rx-semaglutide-90day-20251022" | "rx-semaglutide-180day-20251022" | "rx-semaglutide-60day-20251124";
+        CheckoutProductId: "v2-baseline-membership-20250801" | "v2-membership-advanced-upgrade-20250801" | "at-home-sample-collection-20251016" | "membership-gift-20251125" | "membership-gift-nynj-20251128" | "v2-autoimmunity-bundle-20250929" | "v2-cardiovascular-bundle-20250929" | "v2-metabolic-bundle-20250929" | "v2-fertility-bundle-20250929" | "v2-methylation-bundle-20250929" | "v2-nutrients-bundle-20250929" | "v2-baseline-blood-panel-20250801" | "v2-advanced-blood-panel-20250801" | "v2-custom-blood-panel-20251002" | "gut-microbiome-analysis-20240513" | "grail-galleri-multi-cancer-test-20240513" | "heavy-metals-20240513" | "mycotoxins-20240513" | "environmental-toxin-20240513" | "total-toxins-20240513" | "rx-semaglutide-90day-20251022" | "rx-semaglutide-180day-20251022" | "rx-semaglutide-60day-20251124";
         CheckoutSessionLineItem: {
             id: string;
             slug: components["schemas"]["CheckoutProductId"];
@@ -2308,6 +2356,584 @@ export interface operations {
             };
         };
     };
+    "checkout.getCheckoutFulfillment": {
+        parameters: {
+            query: {
+                externalId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        fulfillment: {
+                            id: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            /** @enum {unknown} */
+                            status: "PENDING" | "COMPLETED" | "FAILED";
+                            userId: string | null;
+                            externalId: string;
+                            /** @enum {unknown} */
+                            vendor: "STRIPE" | "FLEX";
+                        } | null;
+                    };
+                };
+            };
+            /** @description 400 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "BAD_REQUEST";
+                        /** @constant */
+                        status: 400;
+                        /** @default Bad Request */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 401 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "UNAUTHORIZED";
+                        /** @constant */
+                        status: 401;
+                        /** @default Unauthorized */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 403 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "NOT_AN_ADMIN";
+                        /** @constant */
+                        status: 403;
+                        /** @default NOT_AN_ADMIN */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 404 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "NOT_FOUND";
+                        /** @constant */
+                        status: 404;
+                        /** @default Not Found */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 429 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "RATE_LIMIT_EXCEEDED";
+                        /** @constant */
+                        status: 429;
+                        /** @default RATE_LIMIT_EXCEEDED */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 500 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "INTERNAL_SERVER_ERROR";
+                        /** @constant */
+                        status: 500;
+                        /** @default Internal Server Error */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    "gifts.listGifts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        gifts: {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            purchaserUserId: string;
+                            giftDeliveryType: ("digital" | "gift_box") | null;
+                            couponId: string;
+                            promotionCode: string;
+                            isNyNj: boolean;
+                            recipientFirstName: string | null;
+                            recipientLastName: string | null;
+                            recipientEmail: string | null;
+                            recipientPhone: string | null;
+                            recipientUserId: string | null;
+                            giftMessage: string | null;
+                            shippingLine1: string | null;
+                            shippingLine2: string | null;
+                            shippingCity: string | null;
+                            shippingState: string | null;
+                            shippingZipCode: string | null;
+                            sentGiftAt: string | null;
+                            redeemedAt: string | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description 401 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "UNAUTHORIZED";
+                        /** @constant */
+                        status: 401;
+                        /** @default Unauthorized */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 403 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "NOT_AN_ADMIN";
+                        /** @constant */
+                        status: 403;
+                        /** @default NOT_AN_ADMIN */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 429 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "RATE_LIMIT_EXCEEDED";
+                        /** @constant */
+                        status: 429;
+                        /** @default RATE_LIMIT_EXCEEDED */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 500 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "INTERNAL_SERVER_ERROR";
+                        /** @constant */
+                        status: 500;
+                        /** @default Internal Server Error */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    "gifts.submitGift": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                giftId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    recipientFirstName: string;
+                    recipientLastName: string;
+                    /** Format: email */
+                    recipientEmail: string;
+                    recipientPhone?: string;
+                    giftMessage?: string;
+                    /** @enum {unknown} */
+                    deliveryType: "digital" | "gift_box";
+                    shippingLine1?: string;
+                    shippingLine2?: string;
+                    shippingCity?: string;
+                    shippingState?: string;
+                    shippingZipCode?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        status: "success";
+                        gift: {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            purchaserUserId: string;
+                            giftDeliveryType: ("digital" | "gift_box") | null;
+                            couponId: string;
+                            promotionCode: string;
+                            isNyNj: boolean;
+                            recipientFirstName: string | null;
+                            recipientLastName: string | null;
+                            recipientEmail: string | null;
+                            recipientPhone: string | null;
+                            recipientUserId: string | null;
+                            giftMessage: string | null;
+                            shippingLine1: string | null;
+                            shippingLine2: string | null;
+                            shippingCity: string | null;
+                            shippingState: string | null;
+                            shippingZipCode: string | null;
+                            sentGiftAt: string | null;
+                            redeemedAt: string | null;
+                        };
+                    };
+                };
+            };
+            /** @description 400 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "BAD_REQUEST";
+                        /** @constant */
+                        status: 400;
+                        /** @default Bad Request */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 401 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "UNAUTHORIZED";
+                        /** @constant */
+                        status: 401;
+                        /** @default Unauthorized */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 403 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "NOT_AN_ADMIN";
+                        /** @constant */
+                        status: 403;
+                        /** @default NOT_AN_ADMIN */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "FORBIDDEN";
+                        /** @constant */
+                        status: 403;
+                        /** @default You do not have permission to modify this gift */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 404 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "NOT_FOUND";
+                        /** @constant */
+                        status: 404;
+                        /** @default Gift not found */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 429 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "RATE_LIMIT_EXCEEDED";
+                        /** @constant */
+                        status: 429;
+                        /** @default RATE_LIMIT_EXCEEDED */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 500 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "INTERNAL_SERVER_ERROR";
+                        /** @constant */
+                        status: 500;
+                        /** @default Internal Server Error */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+        };
+    };
     "protocol.getAllProtocols": {
         parameters: {
             query?: never;
@@ -2513,7 +3139,9 @@ export interface operations {
                                     /** @description Unique Rx catalog entry identifier (ie. rx-semaglutide) */
                                     id: string;
                                     /** @description URL to prescription ordering page (ie. /questionnaire/rx-assessment-semaglutide) */
-                                    url: string;
+                                    intakeUrl: string;
+                                    /** @description URL to prescription PDP page (ie. /prescriptions/rx-semaglutide) */
+                                    pdpUrl: string;
                                     type: string;
                                     source: string;
                                     name: string;
@@ -2967,7 +3595,9 @@ export interface operations {
                                     /** @description Unique Rx catalog entry identifier (ie. rx-semaglutide) */
                                     id: string;
                                     /** @description URL to prescription ordering page (ie. /questionnaire/rx-assessment-semaglutide) */
-                                    url: string;
+                                    intakeUrl: string;
+                                    /** @description URL to prescription PDP page (ie. /prescriptions/rx-semaglutide) */
+                                    pdpUrl: string;
                                     type: string;
                                     source: string;
                                     name: string;

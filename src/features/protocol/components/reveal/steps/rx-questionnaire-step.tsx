@@ -43,12 +43,17 @@ export const RxQuestionnaireStep = ({
       if (
         activity.type === 'prescription' &&
         activity.prescription?.id &&
-        activity.prescription.url
+        activity.prescription.intakeUrl
       ) {
-        const slugWithQuery = activity.prescription.url.split('/').pop();
-        const slug = slugWithQuery?.split('?')[0];
+        // isolates Questionnaire slug from urls like:
+        // /questionnaire/{slug}
+        // /questionnaire/{slug}?{query}
+        const questionnaireSlugWithQuery = activity.prescription.intakeUrl
+          .split('/')
+          .pop();
+        const questionnaireSlug = questionnaireSlugWithQuery?.split('?')[0];
 
-        if (!slug) {
+        if (!questionnaireSlug) {
           console.error(
             'Missing questionnaire slug for prescription activity',
             {
@@ -59,7 +64,7 @@ export const RxQuestionnaireStep = ({
         }
 
         map.set(activity.prescription.id, {
-          questionnaireName: slug as QuestionnaireName,
+          questionnaireName: questionnaireSlug as QuestionnaireName,
           title: activity.prescription.name,
           overview: activity.overview,
         });
