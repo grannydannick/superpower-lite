@@ -339,7 +339,7 @@ While many of these contraindications warrant further study, an extremely cautio
       question: 'Potential drug interactions?',
       answer: `Major Drug Interactions
 Not all interacting drugs are listed below. Only those marked as a major interaction with semaglutide are included.
-To see the full list, please click here.
+To see the full list, please follow this link: https://www.drugs.com/drug-interactions/semaglutide.html
 
 - Bexarotene
 Using bexarotene together with semaglutide may increase the risk of pancreatitis, or inflammation of the pancreas.
