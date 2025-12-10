@@ -1,5 +1,6 @@
 import { useSearchParams } from 'react-router-dom';
 
+import { MiniScoreChart } from '@/components/ui/charts/mini-score-chart/mini-score-chart';
 import { ScoreChart } from '@/components/ui/charts/score-chart/score-chart';
 import { Skeleton } from '@/components/ui/skeleton';
 import { H4 } from '@/components/ui/typography';
@@ -43,21 +44,38 @@ export const CategoryView = () => {
 
   return (
     <div className="w-full space-y-4">
-      <div className="mx-auto w-full flex-1 overflow-visible rounded-[24px] border-none bg-white p-6 scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300 hover:bg-white/80">
-        <H4>{activeCategoryData?.category}</H4>
-        <div className="flex w-full items-center justify-center py-2">
+      {/* We're not showing the full detail view when we don't receive the biomarkers related to the category */}
+      {categoryBiomarkers.length > 0 ? (
+        <div className="mx-auto w-full flex-1 overflow-visible rounded-[24px] border-none bg-white p-6 scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300 hover:bg-white/80">
+          <H4>{activeCategoryData?.category}</H4>
+          <div className="flex w-full items-center justify-center py-2">
+            {isLoading ? (
+              <div className="flex size-full items-center justify-center gap-4">
+                <Skeleton className="size-28 rounded-full" />
+              </div>
+            ) : (
+              <ScoreChart
+                biomarkers={categoryBiomarkers ?? []}
+                value={activeCategoryData?.value}
+              />
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="flex items-center gap-3">
           {isLoading ? (
-            <div className="flex size-full items-center justify-center gap-4">
-              <Skeleton className="size-28 rounded-full" />
-            </div>
+            <>
+              <Skeleton className="size-8 rounded-full" />{' '}
+              <Skeleton className="h-8 w-24" />
+            </>
           ) : (
-            <ScoreChart
-              biomarkers={categoryBiomarkers ?? []}
-              value={activeCategoryData?.value}
-            />
+            <>
+              <MiniScoreChart value={activeCategoryData.value} />
+              <H4>{activeCategoryData?.category}</H4>
+            </>
           )}
         </div>
-      </div>
+      )}
       {isLoading ? (
         <div className="mt-8 w-full space-y-2">
           {Array.from({ length: 10 }).map((_, index) => (
