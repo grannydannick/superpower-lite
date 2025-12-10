@@ -42,7 +42,10 @@ export function ProtocolGoal({
           {allGoals && goalIndex >= 0 && ` ${goalIndex + 1}/${allGoals.length}`}
         </Mono>
         <H2 className="text-balance text-white">{goal.title}</H2>
-        <Body2 className="text-white/80">{goal.introduction}</Body2>
+        <ProtocolMarkdown
+          className="text-white/80 [&>div]:text-sm"
+          content={goal.introduction}
+        />
       </ProtocolHeader>
       <div className="space-y-8 px-6 lg:px-0">
         <div className="flex h-16 w-full items-center rounded-2xl border border-zinc-100 bg-white p-3 shadow-sm">

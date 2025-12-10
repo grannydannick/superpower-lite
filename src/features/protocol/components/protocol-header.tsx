@@ -23,7 +23,8 @@ export const ProtocolHeader = ({
         backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3)), url(${src})`,
       }}
       className={cn(
-        'mb-8 w-full relative overflow-hidden lg:rounded-t-3xl rounded-t-none rounded-b-3xl lg:border border-white/10 bg-cover bg-center',
+        'w-full relative overflow-hidden sm:border border-white/10 bg-cover bg-center',
+        'sm:mb-8 -mb-8 sm:pb-0 pb-12 lg:rounded-3xl rounded-t-none sm:rounded-b-3xl',
         className,
       )}
     >
@@ -42,9 +43,13 @@ export const ProtocolHeader = ({
           </>
         )}
       </div>
-      <div className="space-y-2 p-8 duration-500 ease-out animate-in fade-in slide-in-from-bottom-8">
+      <div className="relative z-10 space-y-2 p-8 duration-500 ease-out animate-in fade-in slide-in-from-bottom-8">
         {children}
       </div>
+      <div
+        className="absolute bottom-0 h-12 w-full rounded-t-3xl bg-zinc-50 sm:hidden"
+        aria-hidden="true"
+      />
     </div>
   );
 };
