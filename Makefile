@@ -94,6 +94,14 @@ build/docker/app/stg: util/login-aws-ecr
 	VERSION=$(VERSION) \
 	bash ./assets/scripts/build-docker-app.sh stg
 
+.PHONY: build/docker/app/stg-scheduling
+build/docker/app/stg-scheduling: description = Build and push app/frontend docker image for stg-scheduling
+build/docker/app/stg-scheduling: util/login-aws-ecr
+	@bash $(SHARED_SCRIPT) info "Running $@ ..."
+	AWS_ECR_URL=$(AWS_ECR_URL) \
+	VERSION=stg-scheduling-$(VERSION) \
+	bash ./assets/scripts/build-docker-app-stg-scheduling.sh stg-scheduling
+
 .PHONY: build/docker/app/stg-emr
 build/docker/app/stg-emr: description = Build and push app/frontend docker image for stg-emr (staging EMR)
 build/docker/app/stg-emr: util/login-aws-ecr
@@ -124,6 +132,18 @@ deploy/app/stg: prereq
 	DEPLOY_ENV=STG \
 	DEPLOY_CONFIG=deployment/deploy.app.yaml \
 	KSP_SERVICE=app \
+	python3 $(DEPLOY_SCRIPT) -r superpower-app -t deploy/hidden
+
+.PHONY: deploy/app/stg-scheduling
+deploy/app/stg-scheduling: description = Deploy app to stg-scheduling
+deploy/app/stg-scheduling: prereq
+	K8S_CLUSTER=staging-cluster \
+	DOPPLER_PROJECT=superpower-app \
+	DOPPLER_CONFIG=stg_scheduling \
+	DEPLOY_ENV=STG \
+	DEPLOY_CONFIG=deployment/deploy.app.stg-scheduling.yaml \
+	KSP_SERVICE=app \
+	KSP_NAMESPACE=stg-scheduling \
 	python3 $(DEPLOY_SCRIPT) -r superpower-app -t deploy/hidden
 
 .PHONY: deploy/app/stg-emr

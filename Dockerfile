@@ -17,7 +17,7 @@ COPY . .
 # Build the application using env variables
 # RUN export $(grep -v '^#' .env | xargs) && \
 #     yarn build
-
+ENV NODE_OPTIONS=--max-old-space-size=4096
 RUN yarn build
 
 EXPOSE 3000
