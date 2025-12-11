@@ -1,5 +1,5 @@
 import { DialogClose } from '@radix-ui/react-dialog';
-import { ArrowLeft, ArrowRight, ChevronRight, Dot, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Dot, X } from 'lucide-react';
 import { ReactNode, useState } from 'react';
 
 import { AIIcon } from '@/components/icons/ai-icon';
@@ -12,6 +12,49 @@ import { useAnalytics } from '@/hooks/use-analytics';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { QuestionnaireInsights } from '@/types/api';
 import { handleShare } from '@/utils/share';
+
+// Mock insights used as a fallback when API data isn't available (development only)
+const MOCK_INSIGHTS: QuestionnaireInsights[] = [
+  {
+    title: 'Family history suggests cardiometabolic risk',
+    description:
+      'A family history of type 2 diabetes and high cholesterol can raise your own risk. Early lifestyle changes and periodic labs help prevent complications.',
+    sms: 'Heads up — our intake suggests higher diabetes/heart risk. Can you take the quick intake too so we can spot risks early?',
+    recommendations: [
+      'HbA1c',
+      'Fasting glucose',
+      'Lipid panel (LDL, HDL, TG)',
+      'ApoB',
+      'hs-CRP',
+    ],
+  },
+  {
+    title: 'Possible thyroid imbalance in the family',
+    description:
+      'Symptoms and family history point to checking thyroid function. Thyroid conditions often run in families and are very treatable when caught early.',
+    sms: 'Our intake flagged possible thyroid risk. Consider screening — catching it early makes treatment easier.',
+    recommendations: [
+      'TSH',
+      'Free T4',
+      'Free T3',
+      'TPO antibodies',
+      'Thyroglobulin antibodies',
+    ],
+  },
+  {
+    title: 'Inflammation and gut health signals',
+    description:
+      'Digestive symptoms and autoimmune history can reflect gut imbalance and systemic inflammation. A few markers can help clarify root causes.',
+    sms: 'FYI: Our intake flagged possible gut/inflammation issues. Worth checking a few markers together?',
+    recommendations: [
+      'Calprotectin (stool)',
+      'Zonulin',
+      'Vitamin D (25-OH)',
+      'Ferritin',
+      'hs-CRP',
+    ],
+  },
+];
 
 // TODO: god damn it we should standarize fonts across the app
 // TODO 2: I didnt find better way to use that background image...
@@ -45,17 +88,26 @@ export const FamilyInsightsBanner = () => {
 const FamilyInsightsDialog = ({ children }: { children: ReactNode }) => {
   const [current, setCurrent] = useState(0);
   const { width } = useWindowDimensions();
-  const { data } = useQuestionnaireInsights({
+  const { data, isLoading } = useQuestionnaireInsights({
     questionnaireName: 'onboarding-intake',
   });
   const { track } = useAnalytics();
 
+  const isDev = process.env.NODE_ENV === 'development';
+
+  const questionnaireInsights = data?.insights ?? [];
+  const shouldUseMock = isDev && questionnaireInsights.length === 0;
+
+  const insights = shouldUseMock ? MOCK_INSIGHTS : questionnaireInsights;
+
+  if (!insights || !insights.length) return null;
+
   const onNextInsight = () => {
-    setCurrent((prev) => prev + 1);
+    setCurrent((prev) => Math.min(prev + 1, insights.length - 1));
   };
 
   const onPrevInsight = () => {
-    setCurrent((prev) => prev - 1);
+    setCurrent((prev) => Math.max(prev - 1, 0));
   };
 
   const shareInsight = (insight: QuestionnaireInsights) => {
@@ -64,48 +116,40 @@ const FamilyInsightsDialog = ({ children }: { children: ReactNode }) => {
   };
 
   // Only render when insights are available
-  if (!data || data.insights.length === 0) return null;
-
-  const insight = data.insights[current];
+  const insight = insights[current];
 
   const content = (
     <div className="flex flex-col lg:flex-row lg:gap-6 lg:p-2">
-      <DialogClose className="absolute right-4 top-4 rounded-sm text-white opacity-70 lg:text-zinc-400">
+      <DialogClose className="absolute right-6 top-6 rounded-sm text-white transition-all duration-200 lg:text-zinc-400 lg:hover:text-secondary">
         <X className="size-4" />
         <span className="sr-only">Close</span>
       </DialogClose>
       <img
         src="/home/health-insights.png"
         alt="health-insights"
-        className="h-[259px] min-w-0 object-cover lg:h-auto lg:min-w-[448px] lg:rounded-3xl"
+        className="h-[259px] object-cover lg:h-auto lg:min-w-[448px] lg:rounded-3xl"
       />
 
-      <div className="flex flex-col gap-4 p-6 lg:gap-6 lg:p-12">
-        <div className="flex w-full items-center justify-between">
-          {current > 0 ? (
-            <Button
-              size="icon"
-              variant="ghost"
-              className="gap-1"
-              onClick={onPrevInsight}
-            >
-              <ArrowLeft className="size-4" />
-              Back
-            </Button>
-          ) : (
-            <div />
-          )}
-          {data.insights.length - 1 !== current ? (
-            <Button
-              size="icon"
-              variant="ghost"
-              className="gap-1"
-              onClick={onNextInsight}
-            >
-              Next
-              <ArrowRight className="size-4" />
-            </Button>
-          ) : null}
+      <div className="flex flex-col gap-4 p-6 lg:gap-6 lg:p-8 lg:pt-3">
+        <div className="-ml-1 flex w-full items-center gap-0.5 pr-4">
+          <Button
+            size="icon"
+            variant="ghost"
+            className="clear-start size-8 gap-1 hover:bg-zinc-100 lg:size-6 lg:rounded-md"
+            onClick={onPrevInsight}
+            disabled={current === 0 || isLoading}
+          >
+            <ChevronLeft className="size-4" />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="clear-start size-8 gap-1 hover:bg-zinc-100 lg:size-6 lg:rounded-md"
+            onClick={onNextInsight}
+            disabled={insights.length - 1 === current || isLoading}
+          >
+            <ChevronRight className="size-4" />
+          </Button>
         </div>
         <H3 className="text-[22px]">{insight.title}</H3>
         <div className="flex gap-3">
