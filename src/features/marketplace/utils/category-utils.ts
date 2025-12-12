@@ -10,11 +10,11 @@ const MARKETPLACE_ALL_LABELS: Record<
   Record<Exclude<MarketplaceTabValue, 'all'> | 'all', string>
 > = {
   all: {
-    all: 'All products',
-    tests: 'All tests',
-    supplements: 'All supplements',
-    prescriptions: 'All prescriptions',
-    orders: 'All orders',
+    all: 'Total Health',
+    tests: 'All Tests',
+    supplements: 'All Supplements',
+    prescriptions: 'All Prescriptions',
+    orders: 'All Orders',
   },
 };
 

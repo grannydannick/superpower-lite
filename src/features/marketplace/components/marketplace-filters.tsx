@@ -44,6 +44,8 @@ export const MarketplaceFilters = ({
     (opt) => !PILL_OPTIONS.includes(opt),
   );
 
+  const isFilterActive = DROPDOWN_OPTIONS.includes(value);
+
   return (
     <div className="relative">
       <div className="flex flex-nowrap items-center gap-1 overflow-x-auto pr-8 md:flex-wrap md:overflow-visible md:pr-10">
@@ -52,8 +54,13 @@ export const MarketplaceFilters = ({
             <Button
               type="button"
               size={isMobile ? 'small' : 'medium'}
-              variant="outline"
-              className="space-x-2.5 rounded-full border-input text-secondary"
+              variant={isFilterActive ? 'default' : 'outline'}
+              className={cn(
+                'space-x-2.5 rounded-full border shadow-none transition-colors',
+                isFilterActive
+                  ? 'border-primary'
+                  : 'border-input text-secondary',
+              )}
             >
               <ListFilterIcon className="-mt-0.5 size-4" />
               <span>Filters</span>
@@ -67,7 +74,13 @@ export const MarketplaceFilters = ({
               <DropdownMenuCheckboxItem
                 key={option}
                 checked={value === option}
-                onCheckedChange={() => onChange(option)}
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    onChange(option);
+                  } else {
+                    onChange('all');
+                  }
+                }}
                 className="rounded-lg"
               >
                 {getFilterLabel(option, activeTab)}
@@ -91,7 +104,11 @@ export const MarketplaceFilters = ({
               )}
               aria-pressed={isActive}
               onClick={() => {
-                if (!isActive) onChange(option);
+                if (option === 'all') {
+                  onChange('all');
+                } else if (!isActive) {
+                  onChange(option);
+                }
               }}
             >
               {getFilterLabel(option, activeTab)}
