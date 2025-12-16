@@ -33,8 +33,12 @@ export function usePaymentMethodSelection() {
   }));
 
   const paymentMethodsQuery = usePaymentMethods();
+  // Filter out Klarna payment methods
   const paymentMethods = useMemo(
-    () => paymentMethodsQuery.data?.paymentMethods ?? [],
+    () =>
+      (paymentMethodsQuery.data?.paymentMethods ?? []).filter(
+        (pm) => pm.type !== 'klarna',
+      ),
     [paymentMethodsQuery.data?.paymentMethods],
   );
 

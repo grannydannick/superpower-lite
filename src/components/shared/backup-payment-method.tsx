@@ -3,7 +3,7 @@ import { StripeError } from '@stripe/stripe-js';
 import { StripeCardElement } from '@/components/shared/stripe-card-element';
 import { Body2, H3 } from '@/components/ui/typography';
 // eslint-disable-next-line import/no-restricted-paths
-import { usePaymentMethods } from '@/features/settings/api/get-payment-methods';
+import { usePaymentMethodSelection } from '@/features/settings/hooks';
 // eslint-disable-next-line import/no-restricted-paths
 import * as Payment from '@/features/users/components/payment';
 
@@ -15,15 +15,19 @@ interface BackupPaymentMethodProps {
 
 /**
  * Custom hook to determine if a backup payment method is needed
- * Returns true if user only has HSA/FSA cards (no regular credit cards)
+ * Returns true if user only has HSA/FSA cards or Klarna (no regular credit cards)
+ * Note: Klarna is already filtered out by usePaymentMethodSelection
  */
 export const useNeedsBackupPaymentMethod = () => {
-  const { data: paymentMethodsData } = usePaymentMethods();
-  const paymentMethods = paymentMethodsData?.paymentMethods ?? [];
+  const { paymentMethods, isLoading } = usePaymentMethodSelection();
 
   const needsBackup =
-    paymentMethods.length > 0 &&
-    !paymentMethods.some((pm) => pm.paymentProvider?.toLowerCase() !== 'flex');
+    !isLoading &&
+    (paymentMethods.length === 0 ||
+      (paymentMethods.length > 0 &&
+        !paymentMethods.some(
+          (pm) => pm.paymentProvider?.toLowerCase() !== 'flex',
+        )));
 
   return { needsBackup, paymentMethods };
 };
@@ -44,8 +48,8 @@ export const BackupPaymentMethod = ({
       <div className="space-y-2">
         <H3>Add a Backup Payment Method</H3>
         <Body2 className="text-secondary">
-          Because you paid for your membership with an HSA/FSA card, we need to
-          collect a backup credit card.
+          Because you paid for your membership with a non-card payment method,
+          we need to collect a backup credit card.
         </Body2>
       </div>
       <Payment.PaymentGroup>
