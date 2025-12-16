@@ -45,6 +45,11 @@
     /*#ffffff => white */
     --secondary-foreground: 0 0% 100%;
 
+    /*Tertiary colors for <p>*/
+    /*#A1A1AA => zinc-400*/
+    --tertiary: 240 4% 60%;
+    --tertiary-foreground: 0 0% 100%;
+
     /*Used for accents such as hover effects on <DropdownMenuItem>, <SelectItem>...etc*/
     /*#f4f4f5 => zinc-100*/
     --accent: 240 5% 96%;

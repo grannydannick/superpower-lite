@@ -1,8 +1,10 @@
 import { ChevronRight } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
-import { H2 } from '@/components/ui/typography';
+import { Body3, H2 } from '@/components/ui/typography';
 import { Rx } from '@/types/api';
+
+import { COMPOUNDED_PRODUCTS_DISCLAIMER } from '../const';
 
 import { PrescriptionCard } from './prescriptions-card';
 
@@ -11,6 +13,7 @@ type PrescriptionCategoryProps = {
   subtitle?: string;
   prescriptions: Rx[];
   path?: string;
+  showDisclaimer?: boolean;
 };
 
 export const PrescriptionsCategory = ({
@@ -18,6 +21,7 @@ export const PrescriptionsCategory = ({
   subtitle,
   prescriptions,
   path,
+  showDisclaimer = false,
 }: PrescriptionCategoryProps) => {
   const handleViewAllClick = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -29,6 +33,11 @@ export const PrescriptionsCategory = ({
         <div className="flex flex-col">
           <H2>{title}</H2>
           {subtitle && <H2 className="text-secondary">{subtitle}</H2>}
+          {showDisclaimer && (
+            <Body3 className="mt-3 text-tertiary">
+              {COMPOUNDED_PRODUCTS_DISCLAIMER}
+            </Body3>
+          )}
         </div>
         {path && (
           <NavLink

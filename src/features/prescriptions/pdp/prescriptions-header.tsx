@@ -24,14 +24,16 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { ProgressiveImage } from '@/components/ui/progressive-image';
-import { Body1, Body2, H3, H4 } from '@/components/ui/typography';
-import { GHK_CU_CREAM, TRETINOIN } from '@/const';
+import { Body1, Body2, Body3, H3, H4 } from '@/components/ui/typography';
+import { GHK_CU_CREAM, HCG, TRETINOIN } from '@/const';
 import { cn } from '@/lib/utils';
 import type { Rx } from '@/types/api';
 import {
   getPrescriptionImage,
   getPrescriptionInfo,
 } from '@/utils/prescription';
+
+import { COMPOUNDED_PRODUCTS_DISCLAIMER } from '../const';
 
 const treatmentHighlights = [
   {
@@ -82,14 +84,21 @@ export const Header = ({ className, prescription }: HeaderProps) => {
           className,
         )}
       >
-        <div className="overflow-hidden rounded-[20px] lg:sticky lg:top-24">
-          <div className="flex aspect-square items-center justify-center bg-zinc-50 p-6 sm:p-12 lg:p-16">
-            <ProgressiveImage
-              src={getPrescriptionImage(prescription.name)}
-              alt={prescription.name}
-              className="aspect-square size-full max-h-[700px] bg-zinc-50 object-contain"
-            />
+        <div className="lg:sticky lg:top-24">
+          <div className="overflow-hidden rounded-[20px]">
+            <div className="flex aspect-square items-center justify-center bg-zinc-50 p-6 sm:p-12 lg:p-16">
+              <ProgressiveImage
+                src={getPrescriptionImage(prescription.name)}
+                alt={prescription.name}
+                className="aspect-square size-full max-h-[700px] bg-zinc-50 object-contain"
+              />
+            </div>
           </div>
+          {prescription.name !== HCG && (
+            <Body3 className="mt-4 text-tertiary">
+              {COMPOUNDED_PRODUCTS_DISCLAIMER}
+            </Body3>
+          )}
         </div>
 
         <div className="flex flex-col gap-6">
@@ -132,6 +141,12 @@ export const Header = ({ className, prescription }: HeaderProps) => {
                 </li>
               ))}
             </ul>
+
+            {prescription.name !== HCG && (
+              <Body3 className="text-tertiary">
+                {COMPOUNDED_PRODUCTS_DISCLAIMER}
+              </Body3>
+            )}
           </div>
 
           <div className="space-y-4">

@@ -97,12 +97,13 @@ export const PrescriptionsList = ({
 
   return (
     <div className="flex flex-col gap-14">
-      {sections.map(({ title, subtitle, prescriptions }) => (
+      {sections.map(({ title, subtitle, prescriptions }, index) => (
         <PrescriptionsCategory
           key={title}
           title={title}
           subtitle={subtitle}
           prescriptions={prescriptions}
+          showDisclaimer={index === 0}
         />
       ))}
     </div>
