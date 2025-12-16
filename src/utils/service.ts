@@ -1,34 +1,34 @@
 import { AnimatedTimelineType } from '@/components/ui/animated-timeline';
 import {
+  ADVANCED_BLOOD_PANEL,
   ADVISORY_CALL,
   AGREEMENT_COPIES,
+  AUTOIMMUNITY_AND_CELIAC_PANEL,
+  CARDIOVASCULAR_PANEL,
   CONTINUOUS_GLUCOSE_MONITOR,
   CUSTOM_BLOOD_PANEL,
   DEXA_SCAN,
   ENVIRONMENTAL_TOXIN_TEST,
   ENVIRONMENTAL_TOXINS,
+  FEMALE_FERTILITY_PANEL,
   FOOD_ENVIRONMENTAL_ALLERGY,
   FULL_BODY_MRI,
   FULL_GENETIC_SEQUENCING,
   GRAIL_GALLERI_MULTI_CANCER_TEST,
-  HEAVY_METALS_TEST,
-  MYCOTOXINS_TEST,
   GUT_MICROBIOME_ANALYSIS,
   HEART_CALCIUM_SCAN,
+  HEAVY_METALS_TEST,
   INTESTINAL_PERMEABILITY_PANEL,
   IV_DRIP,
   LEGAL_DESCLAIMERS,
+  METABOLIC_PANEL,
+  METHYLATION_PANEL,
+  MYCOTOXINS_TEST,
+  NUTRIENT_AND_ANTIOXIDANT_PANEL,
   PFAS_CHEMICALS,
   SUPERPOWER_BLOOD_PANEL,
   TOTAL_TOXIN_TEST,
   VO2_MAX_TEST,
-  AUTOIMMUNITY_AND_CELIAC_PANEL,
-  CARDIOVASCULAR_PANEL,
-  FEMALE_FERTILITY_PANEL,
-  METABOLIC_PANEL,
-  METHYLATION_PANEL,
-  NUTRIENT_AND_ANTIOXIDANT_PANEL,
-  ADVANCED_BLOOD_PANEL,
 } from '@/const';
 import { SERVICE_DETAILS } from '@/const/service-details';
 import { CollectionMethodType, HealthcareService } from '@/types/api';
@@ -279,9 +279,9 @@ export const getServiceImage = (name: string): string => {
   }
 };
 
-export const BEST_VALUE_SERVICES = [SUPERPOWER_BLOOD_PANEL, TOTAL_TOXIN_TEST];
+export const BEST_VALUE_SERVICES = [TOTAL_TOXIN_TEST];
 export const BEST_SELLER_SERVICES = [GUT_MICROBIOME_ANALYSIS];
-export const SALE_SERVICES: string[] = [];
+export const SALE_SERVICES = [SUPERPOWER_BLOOD_PANEL];
 
 export const getServiceBadge = (serviceName: string): string | null => {
   switch (true) {
@@ -289,7 +289,7 @@ export const getServiceBadge = (serviceName: string): string | null => {
       return 'Best value';
 
     case BEST_SELLER_SERVICES.includes(serviceName):
-      return 'Best seller';
+      return 'Bestseller';
 
     case SALE_SERVICES.includes(serviceName):
       return 'Sale';
