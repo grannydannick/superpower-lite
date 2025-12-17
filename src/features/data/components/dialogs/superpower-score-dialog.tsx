@@ -12,11 +12,13 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { dialogVariants } from '@/components/ui/dialog/utils/dialog-variants';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { SimpleTabs, SimpleTabsContent } from '@/components/ui/simple-tabs';
 import { Body1, H3 } from '@/components/ui/typography';
 import { BiomarkerContentTabs } from '@/features/data/components/dialogs/biomarker-content-tabs';
 import { ScoreShareCard } from '@/features/shareables/components/cards/score-share-card';
 import { SharingOptionsModal } from '@/features/shareables/components/sharing-options-modal';
+import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
 
 import { useBiomarkers } from '../../api';
@@ -43,6 +45,7 @@ export const SuperpowerScoreDialog = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [sharingOptionsOpen, setSharingOptionsOpen] = useState(false);
+  const { width } = useWindowDimensions();
   const { data: biomarkersData } = useBiomarkers();
   const superpowerScoreMarker = biomarkersData?.biomarkers.find(
     (b) => b.name == 'Health Score',
@@ -66,6 +69,85 @@ export const SuperpowerScoreDialog = ({
       b.value?.some((v) => v.id && relatedBiomarkerIds.has(v.id)),
     ) ?? [];
 
+  const content = (
+    <>
+      <div className="-mt-3 flex items-center justify-between">
+        <DialogTitle>
+          <Body1 className="line-clamp-2 text-zinc-400">Superpower Score</Body1>
+        </DialogTitle>
+        <div className="-mr-3 flex items-center gap-2">
+          <DialogClose asChild>
+            <Button variant="ghost" className="text-zinc-400">
+              <X strokeWidth={2.5} className="size-4" />
+            </Button>
+          </DialogClose>
+        </div>
+      </div>
+      <SimpleTabs
+        tabs={tabs}
+        defaultTab={selectedTab}
+        value={selectedTab}
+        onValueChange={setSelectedTab}
+        className="mb-8 flex flex-1 flex-col items-center justify-between gap-8"
+      >
+        <SimpleTabsContent
+          className="flex w-full flex-1 flex-col justify-center"
+          value="chart"
+        >
+          <TimeSeriesChart biomarker={superpowerScoreMarker!} />
+        </SimpleTabsContent>
+        <SimpleTabsContent className="w-full" value="card">
+          <ScoreShareCard />
+        </SimpleTabsContent>
+      </SimpleTabs>
+      {superpowerScoreMarker && (
+        <BiomarkerContentTabs biomarker={superpowerScoreMarker} />
+      )}
+      {categoryBiomarkers.length > 0 && (
+        <div className="mt-4">
+          <H3 className="mb-2">
+            Which biomarkers influence your Health Score?
+          </H3>
+          <BiomarkersDataTable
+            biomarkers={categoryBiomarkers ?? []}
+            hideHeader
+            hiddenColumns={['value', 'optimalRange']}
+          />
+        </div>
+      )}
+      <Description hidden>Information about the superpower score.</Description>
+    </>
+  );
+
+  if (width <= 1024) {
+    return (
+      <>
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger
+            asChild
+            disabled={disabled}
+            className={cn(disabled && 'pointer-events-none')}
+          >
+            {children}
+          </SheetTrigger>
+          <SheetContent
+            className={cn(
+              'flex h-[calc(100vh-8rem)] flex-col rounded-t-3xl p-4 pt-7 md:p-8',
+              sharingOptionsOpen && '-mt-10 scale-[.92] opacity-75',
+            )}
+          >
+            {content}
+          </SheetContent>
+        </Sheet>
+        <SharingOptionsModal
+          open={sharingOptionsOpen}
+          onOpenChange={setSharingOptionsOpen}
+          cardType="score"
+        />
+      </>
+    );
+  }
+
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -84,66 +166,7 @@ export const SuperpowerScoreDialog = ({
             sharingOptionsOpen && '-mt-10 scale-[.92] opacity-75',
           )}
         >
-          <div className="-mt-3 flex items-center justify-between">
-            <DialogTitle>
-              <Body1 className="line-clamp-2 text-zinc-400">
-                Superpower Score
-              </Body1>
-            </DialogTitle>
-            <div className="-mr-3 flex items-center gap-2">
-              {/* <Button
-                variant="outline"
-                className="h-10 px-3"
-                onClick={() => setSharingOptionsOpen(true)}
-              >
-                Share
-                <Upload strokeWidth={2} className="ml-2 size-4 text-zinc-400" />
-              </Button> */}
-              <DialogClose asChild>
-                <Button variant="ghost" className="text-zinc-400">
-                  <X strokeWidth={2.5} className="size-4" />
-                </Button>
-              </DialogClose>
-            </div>
-          </div>
-          <SimpleTabs
-            tabs={tabs}
-            defaultTab={selectedTab}
-            value={selectedTab}
-            onValueChange={setSelectedTab}
-            className="mb-8 flex flex-1 flex-col items-center justify-between gap-8"
-          >
-            <SimpleTabsContent
-              className="flex w-full flex-1 flex-col justify-center"
-              value="chart"
-            >
-              <TimeSeriesChart biomarker={superpowerScoreMarker!} />
-            </SimpleTabsContent>
-            <SimpleTabsContent className="w-full" value="card">
-              <ScoreShareCard />
-            </SimpleTabsContent>
-          </SimpleTabs>
-
-          {superpowerScoreMarker && (
-            <BiomarkerContentTabs biomarker={superpowerScoreMarker} />
-          )}
-
-          {categoryBiomarkers.length > 0 && (
-            <div className="mt-4">
-              <H3 className="mb-2">
-                Which biomarkers influence your Health Score?
-              </H3>
-              <BiomarkersDataTable
-                biomarkers={categoryBiomarkers ?? []}
-                hideHeader
-                hiddenColumns={['value', 'optimalRange']}
-              />
-            </div>
-          )}
-
-          <Description hidden>
-            Information about the superpower score.
-          </Description>
+          {content}
         </DialogContent>
       </Dialog>
       <SharingOptionsModal

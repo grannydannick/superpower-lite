@@ -14,9 +14,11 @@ import { BiomarkersDataTable } from './table/biomarkers-data-table';
 export const BiomarkersAccordion = ({
   biomarker,
   biomarkers,
+  className,
 }: {
   biomarker: Biomarker;
   biomarkers?: Biomarker[];
+  className?: string;
 }) => {
   const latest = biomarker.value?.[biomarker.value.length - 1];
 
@@ -34,7 +36,7 @@ export const BiomarkersAccordion = ({
     <Accordion
       type="single"
       collapsible
-      className="rounded-2xl bg-white shadow-sm"
+      className={cn('rounded-2xl bg-white shadow-sm', className)}
     >
       <AccordionItem
         value={biomarker.id ?? biomarker.name}
