@@ -10,6 +10,7 @@ export const TEST_KIT_STEPS = {
 export const TestKitStepper = defineStepper(
   { id: TEST_KIT_STEPS.COVER },
   { id: TEST_KIT_STEPS.SELECT_GUT },
-  { id: TEST_KIT_STEPS.SELECT_TOXINS },
+  // TODO: re-enable when we switch to new toxin service. determine if NY/NJ is still blocked.
+  // { id: TEST_KIT_STEPS.SELECT_TOXINS },
   { id: TEST_KIT_STEPS.CHECKOUT },
 );

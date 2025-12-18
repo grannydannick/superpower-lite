@@ -22,7 +22,8 @@ const TestKitStepsContent = (): React.ReactElement => {
         {methods.switch({
           [TEST_KIT_STEPS.COVER]: () => <Steps.CoverStep />,
           [TEST_KIT_STEPS.SELECT_GUT]: () => <Steps.SelectGutStep />,
-          [TEST_KIT_STEPS.SELECT_TOXINS]: () => <Steps.SelectToxinsStep />,
+          // TODO: re-enable when we switch to new toxin service. determine if NY/NJ is still blocked.
+          // [TEST_KIT_STEPS.SELECT_TOXINS]: () => <Steps.SelectToxinsStep />,
           [TEST_KIT_STEPS.CHECKOUT]: () => <Steps.CheckoutStep />,
         })}
       </React.Fragment>

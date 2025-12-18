@@ -14,10 +14,12 @@ export const CoverStep = () => {
     serviceName: GUT_MICROBIOME_ANALYSIS,
   });
 
-  // if user has gut credit, go to select toxins step
+  // if user has gut credit, go to checkout directly
+  // TODO: usually skips to toxins step, but is disabled as of 12/16/2025.
+  // when we switch to new toxin service. determine if NY/NJ is still blocked.
   const nextStep = useCallback(() => {
     if (hasGutCredit) {
-      goTo(TEST_KIT_STEPS.SELECT_TOXINS);
+      goTo(TEST_KIT_STEPS.CHECKOUT);
     } else {
       next();
     }
