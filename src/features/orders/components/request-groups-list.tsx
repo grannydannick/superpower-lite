@@ -11,83 +11,94 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 import { Body1, H4 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
+import { OrderStatus } from '@/types/api';
+import { capitalize } from '@/utils/format';
 
 import { useVisibleRequestGroups } from '../../services/hooks/use-visible-request-groups';
 
 import { RequestGroupCard } from './request-group-card';
 
-export const RequestGroupsList = React.memo((): JSX.Element => {
-  const [collapsibleOpen, setCollapsibleOpen] = useState(false);
-  const {
-    isLoading,
-    visibleRequestGroups,
-    totalFiltered,
-    restRequestGroups,
-    defaultVisible,
-  } = useVisibleRequestGroups();
+type RequestGroupsListProps = {
+  status: OrderStatus;
+};
 
-  if (isLoading) {
-    return (
-      <div className="flex h-48 w-full items-center justify-center">
-        <Spinner variant="primary" size="lg" />
-      </div>
-    );
-  }
+export const RequestGroupsList = React.memo(
+  ({ status }: RequestGroupsListProps) => {
+    const [collapsibleOpen, setCollapsibleOpen] = useState(false);
+    const {
+      isLoading,
+      visibleRequestGroups,
+      totalFiltered,
+      restRequestGroups,
+      defaultVisible,
+    } = useVisibleRequestGroups({ status });
 
-  if (totalFiltered === 0) return <RequestGroupsListListEmpty />;
-
-  return (
-    <section className="space-y-2">
-      <H4>Active orders</H4>
-      <Collapsible open={collapsibleOpen} onOpenChange={setCollapsibleOpen}>
-        <div className="grid gap-5">
-          {visibleRequestGroups.map((rg) => (
-            <RequestGroupCard key={rg.id} requestGroup={rg} />
-          ))}
+    if (isLoading) {
+      return (
+        <div className="flex h-48 w-full items-center justify-center">
+          <Spinner variant="primary" size="lg" />
         </div>
+      );
+    }
 
-        <CollapsibleContent>
-          <div className="mt-5 grid gap-5">
-            {restRequestGroups.map((rg) => (
+    if (totalFiltered === 0)
+      return <RequestGroupsListListEmpty status={status} />;
+
+    return (
+      <section className="space-y-2">
+        <H4>{capitalize(status)} orders</H4>
+        <Collapsible open={collapsibleOpen} onOpenChange={setCollapsibleOpen}>
+          <div className="grid gap-5">
+            {visibleRequestGroups.map((rg) => (
               <RequestGroupCard key={rg.id} requestGroup={rg} />
             ))}
           </div>
-        </CollapsibleContent>
 
-        {totalFiltered > defaultVisible && (
-          <CollapsibleTrigger asChild>
-            <Button
-              variant="ghost"
-              size="small"
-              className="mx-auto mt-5 flex flex-row items-center space-x-2 text-secondary"
-            >
-              <Body1>
-                {collapsibleOpen
-                  ? 'Collapse'
-                  : `${totalFiltered - defaultVisible} more bookings`}
-              </Body1>
-              <ChevronDown
-                className={cn(
-                  'size-4 transition-transform duration-300 ease-in-out',
-                  collapsibleOpen ? 'rotate-180' : 'rotate-0',
-                )}
-              />
-              <span className="sr-only">
-                {collapsibleOpen
-                  ? 'Collapse'
-                  : `${totalFiltered - defaultVisible} more bookings`}
-              </span>
-            </Button>
-          </CollapsibleTrigger>
-        )}
-      </Collapsible>
-    </section>
-  );
-});
+          <CollapsibleContent>
+            <div className="mt-5 grid gap-5">
+              {restRequestGroups.map((rg) => (
+                <RequestGroupCard key={rg.id} requestGroup={rg} />
+              ))}
+            </div>
+          </CollapsibleContent>
+
+          {totalFiltered > defaultVisible && (
+            <CollapsibleTrigger asChild>
+              <Button
+                variant="ghost"
+                size="small"
+                className="mx-auto mt-5 flex flex-row items-center space-x-2 text-secondary"
+              >
+                <Body1>
+                  {collapsibleOpen
+                    ? 'Collapse'
+                    : `${totalFiltered - defaultVisible} more bookings`}
+                </Body1>
+                <ChevronDown
+                  className={cn(
+                    'size-4 transition-transform duration-300 ease-in-out',
+                    collapsibleOpen ? 'rotate-180' : 'rotate-0',
+                  )}
+                />
+                <span className="sr-only">
+                  {collapsibleOpen
+                    ? 'Collapse'
+                    : `${totalFiltered - defaultVisible} more bookings`}
+                </span>
+              </Button>
+            </CollapsibleTrigger>
+          )}
+        </Collapsible>
+      </section>
+    );
+  },
+);
 
 RequestGroupsList.displayName = 'OrdersList';
 
-export const RequestGroupsListListEmpty = (): JSX.Element => {
+export const RequestGroupsListListEmpty = ({
+  status,
+}: RequestGroupsListProps): JSX.Element => {
   return (
     <div className="relative overflow-hidden rounded-3xl border border-dashed border-zinc-300">
       <div className="group relative">
@@ -97,9 +108,9 @@ export const RequestGroupsListListEmpty = (): JSX.Element => {
             'lg:group-hover:blur-sm lg:group-hover:opacity-30',
           )}
         >
-          <h3 className="mt-4 text-lg">No active orders yet</h3>
+          <h3 className="mt-4 text-lg">No {status} orders yet</h3>
           <p className="mb-4 mt-2 text-sm text-secondary">
-            You have no active orders.
+            You have no {status} orders.
           </p>
           {/* Mobile-only CTA (< md) */}
           <div className="lg:hidden">

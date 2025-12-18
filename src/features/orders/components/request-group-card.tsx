@@ -3,7 +3,12 @@ import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import { Body1, Body2, Body3 } from '@/components/ui/typography';
-import { HealthcareService, Order, RequestGroup } from '@/types/api';
+import {
+  HealthcareService,
+  Order,
+  OrderStatus,
+  RequestGroup,
+} from '@/types/api';
 import { formatMoney } from '@/utils/format-money';
 import { getServiceImage } from '@/utils/service';
 
@@ -69,10 +74,12 @@ const GroupedCard = ({
           .format('MMM D, YYYY')
       : undefined;
 
+  const isCompleted = requestGroup.status === OrderStatus.completed;
+
   return (
     <div className="overflow-hidden rounded-3xl bg-[#f5f5f7] px-4 pb-0 pt-3">
       <div className="mb-3 flex items-center justify-between">
-        {scheduledForWithTz ? (
+        {!isCompleted && scheduledForWithTz ? (
           <div className="inline-flex items-center rounded-[6px] bg-zinc-100 px-[6px] py-0.5 mix-blend-multiply">
             <Body3 className="text-secondary">
               Scheduled for: {scheduledForWithTz}

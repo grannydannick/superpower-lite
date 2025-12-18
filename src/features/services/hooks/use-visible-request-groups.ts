@@ -3,13 +3,17 @@ import { OrderStatus, RequestGroup } from '@/types/api';
 
 const DEFAULT_VISIBLE = 12;
 
-export function useVisibleRequestGroups() {
+export function useVisibleRequestGroups(
+  {
+    status,
+  }: {
+    status?: OrderStatus;
+  } = { status: OrderStatus.completed },
+) {
   const { data, isLoading } = useOrders();
   const requestGroups = data?.requestGroups ?? [];
 
-  const filtered = requestGroups.filter((rg) =>
-    [OrderStatus.active].includes(rg.status),
-  );
+  const filtered = requestGroups.filter((rg) => [status].includes(rg.status));
 
   // 3) sort by priority then timestamp
   const sorted = [...filtered].sort((a, b) => {
