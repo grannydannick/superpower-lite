@@ -203,7 +203,7 @@ export const ProtocolTabs = ({
                             )
                       }
                       // TODO: figure out image when there are > 1 supporting info elements
-                      coverImage={'/services/custom_blood_panel.pngs'}
+                      coverImage={'/action-plan/aiap-book-cover.webp'}
                     />
                   </div>
                   <div className="lg:hidden">
