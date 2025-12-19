@@ -13,11 +13,13 @@ export const AiSuggestions = ({
   context,
   onClick,
   limit = 3,
+  prefix,
   eventName,
 }: {
   context: string;
   onClick?: (suggestion: string) => void;
   limit?: number;
+  prefix?: string;
   eventName?: string;
 }) => {
   const { track } = useAnalytics();
@@ -47,18 +49,22 @@ export const AiSuggestions = ({
   ));
 
   const suggestionButtons = suggestions.map((suggestion, index) => {
+    const suggestionText = prefix ? `${prefix} ${suggestion}` : suggestion;
+
     const handleClick = () => {
       if (isMobile) {
-        navigate(`/concierge?defaultMessage=${encodeURIComponent(suggestion)}`);
+        navigate(
+          `/concierge?defaultMessage=${encodeURIComponent(suggestionText)}`,
+        );
       } else {
-        open(suggestion);
+        open(suggestionText);
       }
 
-      onClick && onClick(suggestion);
+      onClick && onClick(suggestionText);
 
       track(eventName ?? 'clicked_ai_suggestion', {
         context,
-        suggestion,
+        suggestion: suggestionText,
       });
     };
 
@@ -71,7 +77,7 @@ export const AiSuggestions = ({
       >
         <AnimatedIcon state="idle" className="size-5 shrink-0" />
         <span className="w-full min-w-0 flex-1 self-start whitespace-normal break-words text-left text-sm lg:text-base">
-          {suggestion}
+          {suggestionText}
         </span>
         <ArrowRight className="size-4 shrink-0 text-zinc-500 transition-all duration-200 ease-out group-hover:translate-x-1 group-hover:text-zinc-600" />
       </Button>

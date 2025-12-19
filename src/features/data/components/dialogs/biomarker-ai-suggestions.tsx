@@ -10,6 +10,7 @@ export const BiomarkerAiSuggestions = ({ name }: { name: string }) => {
       <AiSuggestions
         context={context}
         limit={3}
+        prefix={`${name}:`}
         eventName="clicked_biomarker_ai_suggestion"
       />
     </div>
