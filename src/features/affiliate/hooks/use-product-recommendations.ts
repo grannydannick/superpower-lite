@@ -1,8 +1,8 @@
 import React from 'react';
 
+import { useMarketplace } from '@/features/marketplace/api/get-marketplace';
 import { usePlans } from '@/features/protocol/api';
 import { parseProductRequests } from '@/features/protocol/utils/parse-product-requests';
-import { useProducts } from '@/features/supplements/api';
 import { Product } from '@/types/api';
 
 /**
@@ -94,14 +94,14 @@ export const useProductRecommendations = () => {
     return actionPlans[0];
   }, [plans.data?.actionPlans]);
 
-  const { data: productsData, isLoading: isProductsLoading } = useProducts({});
+  const { data: productsData, isLoading: isProductsLoading } = useMarketplace();
 
   const recommendedProducts = React.useMemo(() => {
     return getProducts(
-      productsData?.products ?? [],
+      productsData?.supplements ?? [],
       parseProductRequests(plan?.activity ?? []),
     );
-  }, [plan, productsData?.products]);
+  }, [plan, productsData?.supplements]);
 
   const isLoading = plans.isLoading || isProductsLoading;
 

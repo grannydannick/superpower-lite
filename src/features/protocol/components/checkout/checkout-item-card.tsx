@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Body1, Body2 } from '@/components/ui/typography';
-import { useProducts } from '@/features/supplements/api';
+import { useMarketplace } from '@/features/marketplace/api/get-marketplace';
 import { formatMoney } from '@/utils/format-money';
 
 import { Activity } from '../../api';
@@ -29,10 +29,10 @@ export const CheckoutItemCard = ({
   const item = getItemDetails(activity);
   const basePriceCents = Number(item.price);
 
-  const productsQuery = useProducts({});
+  const productsQuery = useMarketplace({});
   const { originalCents, finalCents, hasDiscount } = getActivityPricing(
     activity,
-    productsQuery.data?.products,
+    productsQuery.data?.supplements,
   );
   const showFinalPriceCents = finalCents ?? basePriceCents;
   const showOriginalPriceCents = hasDiscount ? originalCents : null;
