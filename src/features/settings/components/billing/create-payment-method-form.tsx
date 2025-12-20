@@ -8,7 +8,6 @@ import React, { FormEvent, useEffect, useState } from 'react';
 
 import { StripeCardElement } from '@/components/shared/stripe-card-element';
 import { Button } from '@/components/ui/button';
-import { DialogClose } from '@/components/ui/dialog';
 import { toast } from '@/components/ui/sonner';
 import { TextShimmer } from '@/components/ui/text-shimmer';
 import { useAddPaymentMethod } from '@/features/settings/api';
@@ -18,10 +17,12 @@ interface PaymentMethodFormProps {
    * Callback function invoked upon successful form submission.
    */
   onSuccess?: () => void;
+  onClose?: () => void;
 }
 
 export const CreatePaymentMethodForm = ({
   onSuccess,
+  onClose,
 }: PaymentMethodFormProps) => {
   const stripe = useStripe();
   const elements = useElements();
@@ -85,11 +86,9 @@ export const CreatePaymentMethodForm = ({
         setError={setError}
       />
       <div className="flex w-full flex-col gap-4 pt-6 md:flex-row md:justify-end">
-        <DialogClose asChild>
-          <Button variant="outline" type="button">
-            Cancel
-          </Button>
-        </DialogClose>
+        <Button variant="outline" type="button" onClick={onClose}>
+          Cancel
+        </Button>
 
         <Button onClick={handleSubmit} disabled={processing}>
           {processing ? (
