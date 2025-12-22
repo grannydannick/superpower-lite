@@ -5,7 +5,7 @@ import { OrderStatus } from '@/types/api';
 
 export const OrdersRoute = () => {
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-10 py-9">
+    <div className="mx-auto w-full max-w-3xl space-y-10 px-6 py-9 lg:px-0">
       <H3>Your orders</H3>
       <FinishScheduleList />
 
