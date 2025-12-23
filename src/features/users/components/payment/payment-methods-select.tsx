@@ -133,7 +133,9 @@ export const PaymentMethodsSelect = () => {
                           paymentMethodId={paymentMethod.stripePaymentMethodId}
                           setDefault={!paymentMethod.default}
                         />
-                        <DeletePaymentMethodMenuItem {...paymentMethod} />
+                        {paymentMethods.length > 1 && (
+                          <DeletePaymentMethodMenuItem {...paymentMethod} />
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   )}
