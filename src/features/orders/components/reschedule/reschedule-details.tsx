@@ -1,7 +1,11 @@
 import { CheckCircle2Icon, CircleAlert, Clock4Icon } from 'lucide-react';
 
+import { ChevronLeft } from '@/components/icons/chevron-left-icon';
+import { Badge } from '@/components/ui/badge';
+import { Link } from '@/components/ui/link';
 import { Body2, H2 } from '@/components/ui/typography';
 import { ADVISORY_CALL } from '@/const';
+import { cn } from '@/lib/utils';
 import { OrderStatus, RequestGroup } from '@/types/api';
 import { getServiceImage } from '@/utils/service';
 
@@ -19,7 +23,18 @@ export function RescheduleDetails({
 
   return (
     <div className="space-y-8 px-4">
-      <BadgesDisplay requestGroup={requestGroup} />
+      <div className="flex w-full flex-wrap items-center justify-between gap-4">
+        <Link
+          to="/orders"
+          className="group -ml-1.5 flex items-center gap-0.5 p-0"
+        >
+          <ChevronLeft className="-mt-px w-[15px] text-zinc-400 transition-all duration-150 group-hover:-translate-x-0.5 group-hover:text-zinc-600" />
+          <Body2 className="text-zinc-500 transition-all duration-150 group-hover:text-zinc-700">
+            Back
+          </Body2>
+        </Link>
+        <BadgesDisplay requestGroup={requestGroup} />
+      </div>
       <div className="flex flex-col justify-center gap-4 md:max-w-none">
         <img
           src={
@@ -81,50 +96,43 @@ const BadgesDisplay = ({ requestGroup }: { requestGroup: RequestGroup }) => {
   return (
     <>
       {isPastAppointment &&
-      requestGroup.status !== OrderStatus.completed &&
-      !isAdvisoryCall ? (
-        <Pill
-          Icon={Clock4Icon}
-          bg="bg-vermillion-100"
-          textColor="text-vermillion-900"
-        >
-          Results in progress
-        </Pill>
-      ) : null}
-      {requestGroup.status === OrderStatus.revoked ? (
-        <Pill Icon={CircleAlert} bg="bg-pink-100" textColor="text-pink-900">
+        requestGroup.status !== OrderStatus.completed &&
+        !isAdvisoryCall && (
+          <Pill
+            Icon={Clock4Icon}
+            className="bg-vermillion-100 text-vermillion-900"
+          >
+            Results in progress
+          </Pill>
+        )}
+      {requestGroup.status === OrderStatus.revoked && (
+        <Pill Icon={CircleAlert} className="bg-pink-100 text-pink-900">
           Order cancelled
         </Pill>
-      ) : null}
-      {requestGroup.status === OrderStatus.completed ? (
+      )}
+      {requestGroup.status === OrderStatus.completed && (
         <Pill
           Icon={CheckCircle2Icon}
-          bg="bg-emerald-100"
-          textColor="text-emerald-900"
+          className="bg-emerald-100 text-emerald-900"
         >
           Order completed
         </Pill>
-      ) : null}
+      )}
     </>
   );
 };
 
-// TODO: probably replace with badge
 const Pill = ({
   Icon,
-  bg,
-  textColor,
+  className,
   children,
 }: {
   Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-  bg: string;
-  textColor: string;
+  className: string;
   children: React.ReactNode;
 }) => (
-  <div
-    className={`inline-flex items-center space-x-1 self-start rounded-lg px-2 py-1 ${bg}`}
-  >
-    <Icon className={`size-4 ${textColor}`} />
-    <Body2 className={textColor}>{children}</Body2>
-  </div>
+  <Badge className={cn(className, 'w-fit gap-2 mt-0')}>
+    <Icon className="size-4" />
+    <Body2 className="text-current">{children}</Body2>
+  </Badge>
 );
