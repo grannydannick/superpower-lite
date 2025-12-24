@@ -13,6 +13,7 @@ import {
   MALE_HEALTH_PANEL,
   ORGAN_AGE_PANEL,
 } from '@/const/services';
+import { useHasClaimedBenefits } from '@/features/b2b/api';
 import { useCredits } from '@/features/orders/api/credits';
 import { useQuestionnaireResponse } from '@/features/questionnaires/api/get-questionnaire-response';
 import { useServices } from '@/features/services/api';
@@ -104,6 +105,11 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
     (c) => c.serviceName === ORGAN_AGE_PANEL,
   );
 
+  // Check if user has claimed B2B benefits
+  const { data: claimedBenefitsData, isLoading: isClaimedBenefitsLoading } =
+    useHasClaimedBenefits();
+  const hasClaimedBenefits = claimedBenefitsData?.hasClaimedBenefits ?? false;
+
   // Check if specific panels are available
   const services = addOnServices?.services;
   const hasOrganAge = hasService(services, ORGAN_AGE_PANEL);
@@ -140,7 +146,8 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
     isUserLoading ||
     isIntakeLoading ||
     isRxFrontDoorIntakeLoading ||
-    isServicesLoading;
+    isServicesLoading ||
+    isClaimedBenefitsLoading;
 
   // Determine which steps to exclude based on user state and service availability
   const excludedSteps = useMemo((): string[] => {
@@ -192,6 +199,21 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
     // Women over 45 should not see fertility panel
     if (isFemaleOver45) excluded.push(ONBOARDING_STEPS.HORMONE_PANEL);
 
+    // B2B users with claimed benefits only see update-info, intake, and phlebotomy-booking
+    if (hasClaimedBenefits) {
+      excluded.push(
+        ONBOARDING_STEPS.ADVANCED_UPGRADE,
+        ONBOARDING_STEPS.BUNDLED_DISCOUNT,
+        ONBOARDING_STEPS.HEARD_ABOUT_US,
+        ONBOARDING_STEPS.GLP1_QUESTIONNAIRE,
+        ONBOARDING_STEPS.ORGAN_AGE,
+        ONBOARDING_STEPS.FATIGUE_PANEL,
+        ONBOARDING_STEPS.HORMONE_PANEL,
+        ONBOARDING_STEPS.ADD_ON_PANELS,
+        ONBOARDING_STEPS.TEST_KIT_STEPS,
+      );
+    }
+
     return excluded;
   }, [
     userInfoCompleted,
@@ -199,10 +221,12 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
     hasIncompleteRxFrontDoorIntake,
     isFrontDoorExperiment,
     userHasAdvancedUpgrade,
+    userHasOrganAge,
     hasOrganAge,
     hasFatigue,
     hasHormone,
     isFemaleOver45,
+    hasClaimedBenefits,
   ]);
 
   // Initialize valid steps once when data is loaded

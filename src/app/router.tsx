@@ -25,6 +25,15 @@ export const createRouter = () =>
       },
     },
     {
+      path: '/claim-benefit',
+      lazy: async () => {
+        const { ClaimBenefitRoute } = await import(
+          './routes/auth/claim-benefit'
+        );
+        return { Component: ClaimBenefitRoute };
+      },
+    },
+    {
       path: '/signin',
       lazy: async () => {
         const { LoginRoute } = await import('./routes/auth/login');

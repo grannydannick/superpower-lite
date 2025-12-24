@@ -17,11 +17,20 @@ interface PaymentMethodFormProps {
    * Callback function invoked upon successful form submission.
    */
   onSuccess?: () => void;
+  /**
+   * Callback function invoked upon clicking the cancel button.
+   */
   onClose?: () => void;
+  /**
+   * Whether to show the cancel button.
+   * @default true
+   */
+  showCancelButton?: boolean;
 }
 
 export const CreatePaymentMethodForm = ({
   onSuccess,
+  showCancelButton = true,
   onClose,
 }: PaymentMethodFormProps) => {
   const stripe = useStripe();
@@ -86,9 +95,11 @@ export const CreatePaymentMethodForm = ({
         setError={setError}
       />
       <div className="flex w-full flex-col gap-4 pt-6 md:flex-row md:justify-end">
-        <Button variant="outline" type="button" onClick={onClose}>
-          Cancel
-        </Button>
+        {showCancelButton && (
+          <Button variant="outline" type="button" onClick={onClose}>
+            Cancel
+          </Button>
+        )}
 
         <Button onClick={handleSubmit} disabled={processing}>
           {processing ? (

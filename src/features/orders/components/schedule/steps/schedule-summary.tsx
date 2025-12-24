@@ -96,7 +96,7 @@ export function ScheduleSummaryStep(): ReactNode {
             <Skeleton className="h-[130px] w-full rounded-2xl" />
           </>
         ) : null}
-        {defaultPaymentMethod && !isQueryLoading ? (
+        {!isQueryLoading && (defaultPaymentMethod || price === 0) ? (
           <div className="space-y-6 md:space-y-10">
             <ScheduleSummaryItems />
             <AppointmentDetails
@@ -107,13 +107,15 @@ export function ScheduleSummaryStep(): ReactNode {
               isAdvisory={mode === 'advisory-call'}
               price={price}
             />
-            {price && price > 0 ? <CurrentPaymentMethodCard /> : null}
+            {price > 0 && defaultPaymentMethod ? (
+              <CurrentPaymentMethodCard />
+            ) : null}
           </div>
         ) : null}
-        {!defaultPaymentMethod && !isQueryLoading ? (
+        {!defaultPaymentMethod && !isQueryLoading && price > 0 ? (
           <div className="space-y-4">
             <H2>We do not have your payment method!</H2>
-            <CreatePaymentMethodForm />
+            <CreatePaymentMethodForm showCancelButton={false} />
           </div>
         ) : null}
       </div>
@@ -135,7 +137,7 @@ export function ScheduleSummaryStep(): ReactNode {
             disabled={
               isMutationLoading ||
               isQueryLoading ||
-              !activePaymentMethod?.externalPaymentMethodId
+              (price > 0 && !activePaymentMethod?.externalPaymentMethodId)
             }
           >
             {isMutationLoading ? (

@@ -111,6 +111,8 @@ export const registerInputSchema = z.object({
     message: 'Please enter a valid zip code.',
   }),
   phiMarketingConsent: z.boolean().optional(),
+  gender: z.enum(['MALE', 'FEMALE']).optional(),
+  state: z.string().optional(),
 });
 
 export type RegisterInput = z.infer<typeof registerInputSchema>;

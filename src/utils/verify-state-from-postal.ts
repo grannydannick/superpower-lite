@@ -201,9 +201,7 @@ export function getState(
     st = 'WY';
     stateName = 'Wyoming';
   } else {
-    st = 'none';
-    stateName = 'none';
-    console.log('No state found matching', zipcode);
+    return;
   }
 
   /* Return postal abbreviation */

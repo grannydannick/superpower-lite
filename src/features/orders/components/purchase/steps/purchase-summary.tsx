@@ -76,7 +76,7 @@ export function PurchaseSummaryStep(): ReactNode {
         {!defaultPaymentMethod && !isQueryLoading ? (
           <div className="space-y-4">
             <H2>We do not have your payment method!</H2>
-            <CreatePaymentMethodForm />
+            <CreatePaymentMethodForm showCancelButton={false} />
           </div>
         ) : null}
       </div>

@@ -36,6 +36,7 @@ import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner'
 import { Body2, H3, H4 } from '@/components/ui/typography';
 import { US_STATES } from '@/const';
 import { useCheckout } from '@/features/auth/hooks/use-checkout';
+import { useHasClaimedBenefits } from '@/features/b2b/api';
 import { useCreateAddress, useEditAddress } from '@/features/users/api';
 import { useUpdateUser } from '@/features/users/api/update-user';
 import { useUser } from '@/lib/auth';
@@ -98,6 +99,8 @@ export type UpdateUserInput = z.infer<typeof updateUserInputSchema>;
 const UpdateInfoContent = () => {
   const { data: user } = useUser();
   const { next } = useOnboardingStepper();
+  const { data: claimedBenefitsData } = useHasClaimedBenefits();
+  const hasClaimedBenefits = claimedBenefitsData?.hasClaimedBenefits ?? false;
   const { needsBackup } = useNeedsBackupPaymentMethod();
   const {
     handleAddPaymentMethod,
@@ -137,8 +140,8 @@ const UpdateInfoContent = () => {
   const onSubmit = async (data: UpdateUserInput) => {
     if (!data.address) return;
 
-    // If user needs backup payment method, add it first
-    if (needsBackup) {
+    // If user needs backup payment method (and hasn't claimed a B2B benefit), add it first
+    if (needsBackup && !hasClaimedBenefits) {
       const paymentMethodAdded = await handleAddPaymentMethod();
       if (!paymentMethodAdded) {
         return;
@@ -274,11 +277,13 @@ const UpdateInfoContent = () => {
                 )}
               />
               <PrimaryAddressForm />
-              <BackupPaymentMethod
-                isLoading={isLoading}
-                stripeError={stripeError}
-                setStripeError={setStripeError}
-              />
+              {!hasClaimedBenefits && (
+                <BackupPaymentMethod
+                  isLoading={isLoading}
+                  stripeError={stripeError}
+                  setStripeError={setStripeError}
+                />
+              )}
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? <TransactionSpinner /> : 'Update'}
               </Button>

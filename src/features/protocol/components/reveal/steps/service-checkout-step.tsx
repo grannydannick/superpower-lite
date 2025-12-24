@@ -286,7 +286,7 @@ export const ServiceCheckoutStep = ({
                 }
               />
             ) : (
-              <CreatePaymentMethodForm />
+              <CreatePaymentMethodForm showCancelButton={false} />
             )}
             {hasPaymentMethod &&
               hasFlexPaymentMethod &&

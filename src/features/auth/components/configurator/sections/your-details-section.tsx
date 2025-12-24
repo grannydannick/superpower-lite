@@ -15,6 +15,13 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { DatetimePicker, Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/select';
 import { H3 } from '@/components/ui/typography';
 import { useCheckoutContext } from '@/features/auth/stores';
 import { useGetServiceability } from '@/features/orders/api';
@@ -25,7 +32,15 @@ import { cn } from '@/lib/utils';
 import { NotServiceableReason } from '@/types/api';
 import { getState } from '@/utils/verify-state-from-postal';
 
-export const YourDetailsSection = () => {
+export const YourDetailsSection = ({
+  emailDisabled = true,
+  showAtHomeNoticeAlert = true,
+  showGenderField = false,
+}: {
+  emailDisabled?: boolean;
+  showAtHomeNoticeAlert?: boolean;
+  showGenderField?: boolean;
+}) => {
   const [nonServiceabilityReason, setNonServiceabilityReason] = useState<
     NotServiceableReason | undefined
   >(undefined);
@@ -94,10 +109,12 @@ export const YourDetailsSection = () => {
                         autoCapitalize="none"
                         autoComplete="email"
                         autoCorrect="off"
-                        disabled
+                        disabled={emailDisabled}
                         {...field}
                       />
-                      <Lock className="absolute right-5 top-1/2 size-4 -translate-y-1/2 cursor-not-allowed text-zinc-300" />
+                      {emailDisabled && (
+                        <Lock className="absolute right-5 top-1/2 size-4 -translate-y-1/2 cursor-not-allowed text-zinc-300" />
+                      )}
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -138,7 +155,9 @@ export const YourDetailsSection = () => {
                     {fieldState.error ? (
                       <FormMessage />
                     ) : (
-                      <AtHomeNoticeAlert postalCode={field.value} />
+                      showAtHomeNoticeAlert && (
+                        <AtHomeNoticeAlert postalCode={field.value} />
+                      )
                     )}
                   </FormItem>
                 )}
@@ -164,6 +183,52 @@ export const YourDetailsSection = () => {
                 )}
               />
             </div>
+            {showGenderField && (
+              <FormField
+                control={form.control}
+                name="gender"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <FormLabel>Biological Sex</FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger
+                          className={cn(
+                            ` px-6 py-4`,
+                            field.value
+                              ? 'text-primary'
+                              : fieldState.error
+                                ? 'text-pink-700'
+                                : 'text-muted-foreground',
+                          )}
+                          variant={fieldState.error ? 'error' : 'default'}
+                        >
+                          <SelectValue placeholder="Select biological sex" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem
+                            value="MALE"
+                            data-testid="gender-option-male"
+                          >
+                            Male
+                          </SelectItem>
+                          <SelectItem
+                            value="FEMALE"
+                            data-testid="gender-option-female"
+                          >
+                            Female
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <FormField
               control={form.control}
               name="phone"

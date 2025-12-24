@@ -20,7 +20,10 @@ export function CreatePaymentMethodDialog({
         <SheetContent className="rounded-t-[10px]">
           <div className="grid gap-4 p-10">
             <h1 className="text-3xl">Add a new card</h1>
-            <CreatePaymentMethodForm onSuccess={() => setOpen(false)} />
+            <CreatePaymentMethodForm
+              onSuccess={() => setOpen(false)}
+              onClose={() => setOpen(false)}
+            />
           </div>
         </SheetContent>
       </Sheet>

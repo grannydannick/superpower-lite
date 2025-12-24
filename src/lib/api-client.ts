@@ -33,6 +33,7 @@ let refreshPromise: ReturnType<typeof refreshAccessToken> | null = null;
 const AUTH_PUBLIC_PATH_PREFIXES = [
   '/signin',
   '/register',
+  '/claim-benefit',
   '/resetpassword',
   '/setpassword',
   '/check-email',
