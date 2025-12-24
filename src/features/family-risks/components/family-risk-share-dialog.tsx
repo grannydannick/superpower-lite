@@ -234,7 +234,7 @@ export function FamilyRiskShareDialog({
             Share family insights
           </DialogTitle>
         </DialogHeader>
-        <DialogClose>
+        <DialogClose asChild>
           <Button
             variant="glass"
             className="absolute right-4 top-4 flex aspect-square size-8 items-center justify-center bg-transparent p-0 transition-all hover:bg-white/10 hover:backdrop-blur-[2px]"
