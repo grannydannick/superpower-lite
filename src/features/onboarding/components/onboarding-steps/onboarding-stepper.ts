@@ -1,5 +1,5 @@
 import { defineStepper, Get } from '@stepperize/react';
-import { useCallback, useRef, useEffect, useMemo } from 'react';
+import { useCallback, useRef, useState, useEffect, useMemo } from 'react';
 
 import { isGLP1FrontDoorExperiment } from '@/components/ui/questionnaire/utils/questionnaire-utils';
 import {
@@ -54,6 +54,7 @@ type OnboardingStepperReturn = {
   validSteps: Get.Id<typeof OnboardingStepper.steps>[];
   next: () => void;
   methods: ReturnType<typeof OnboardingStepper.useStepper>;
+  isLastStep: boolean;
   isLoading: boolean;
 };
 
@@ -65,6 +66,8 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
   const { track } = useAnalytics();
   const methods = OnboardingStepper.useStepper();
   const validStepsRef = useRef<Get.Id<typeof OnboardingStepper.steps>[]>([]);
+  // Version counter to trigger memo recalculation when ref is updated
+  const [stepsVersion, setStepsVersion] = useState(0);
 
   // Fetch user profile data and check completion status (proxy for info-update step)
   const { data: user, isLoading: isUserLoading } = useUser();
@@ -229,14 +232,32 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
     hasClaimedBenefits,
   ]);
 
-  // Initialize valid steps once when data is loaded
   useEffect(() => {
-    if (!isLoading && validStepsRef.current.length === 0) {
-      validStepsRef.current = Object.values(ONBOARDING_STEPS).filter(
-        (step) => !excludedSteps.includes(step),
+    if (isLoading) return;
+
+    const steps = Object.values(ONBOARDING_STEPS).filter(
+      (step) => !excludedSteps.includes(step),
+    );
+
+    // For B2B users with claimed benefits, swap intake and phlebotomy booking
+    // so they book their blood draw before completing the intake questionnaire
+    if (hasClaimedBenefits) {
+      const intakeIndex = steps.indexOf(ONBOARDING_STEPS.INTAKE);
+      const phlebotomyIndex = steps.indexOf(
+        ONBOARDING_STEPS.PHLEBOTOMY_BOOKING,
       );
+
+      if (intakeIndex !== -1 && phlebotomyIndex !== -1) {
+        [steps[intakeIndex], steps[phlebotomyIndex]] = [
+          steps[phlebotomyIndex],
+          steps[intakeIndex],
+        ];
+      }
     }
-  }, [isLoading, excludedSteps]);
+
+    validStepsRef.current = steps;
+    setStepsVersion((v) => v + 1);
+  }, [isLoading, excludedSteps, hasClaimedBenefits]);
 
   // Navigate to next step with analytics tracking
   const next = useCallback(() => {
@@ -260,10 +281,18 @@ export const useOnboardingStepper = (): OnboardingStepperReturn => {
     methods.goTo(nextId);
   }, [methods, track]);
 
+  const isLastStep = useMemo(() => {
+    const validSteps = validStepsRef.current;
+    if (validSteps.length === 0) return false;
+    return validSteps.indexOf(methods.current.id) === validSteps.length - 1;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [methods.current.id, stepsVersion]);
+
   return {
     validSteps: validStepsRef.current,
     next,
     methods,
+    isLastStep,
     isLoading,
   };
 };

@@ -12,6 +12,7 @@ import {
 
 export interface ScheduleStoreProps {
   onSuccess?: () => void;
+  onDone?: () => void;
   // used for filtering
   mode: ServiceGroup;
 }

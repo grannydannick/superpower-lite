@@ -7,10 +7,11 @@ import { ScheduleFlowSteps } from './schedule-steps';
 
 export const ScheduleFlow: React.FC<ScheduleStoreProps> = ({
   onSuccess,
+  onDone,
   mode,
 }) => {
   return (
-    <ScheduleStoreProvider onSuccess={onSuccess} mode={mode}>
+    <ScheduleStoreProvider onSuccess={onSuccess} onDone={onDone} mode={mode}>
       <div className="mx-auto w-full max-w-3xl py-8">
         <ScheduleFlowSteps />
       </div>

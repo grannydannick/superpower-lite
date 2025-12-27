@@ -25,12 +25,13 @@ export const ScheduleSuccessStep = () => {
     collectionMethod,
     location,
     reset: resetStore,
+    onDone,
+    mode,
   } = useScheduleStore((s) => s);
   const { reset: resetSteps } = ScheduleFlowStepper.useStepper();
   const creditsQuery = useCredits();
   const servicesQuery = useServices();
   const navigate = useNavigate();
-  const mode = useScheduleStore((s) => s.mode);
 
   const resetEverything = () => {
     resetStore();
@@ -113,7 +114,7 @@ export const ScheduleSuccessStep = () => {
             <Button
               className="w-full"
               variant={creditedServices.length > 0 ? 'ghost' : 'default'}
-              onClick={() => navigate('/')}
+              onClick={() => (onDone ? onDone() : navigate('/'))}
             >
               Done
             </Button>

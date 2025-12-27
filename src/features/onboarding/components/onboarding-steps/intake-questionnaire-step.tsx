@@ -1,4 +1,7 @@
+import { useNavigate } from 'react-router-dom';
+
 import { IntakeQuestionnaire } from '@/features/questionnaires/components/intake-questionnaire';
+import { useUpdateTask } from '@/features/tasks/api/update-task';
 
 import { useOnboardingStepper } from './onboarding-stepper';
 
@@ -9,7 +12,21 @@ interface QuestionnaireStepProps {
 export const IntakeQuestionnaireStep = ({
   showIntro = true,
 }: QuestionnaireStepProps) => {
-  const { next } = useOnboardingStepper();
+  const navigate = useNavigate();
+  const { next, isLastStep } = useOnboardingStepper();
+  const { mutateAsync: updateTaskProgress } = useUpdateTask();
 
-  return <IntakeQuestionnaire showIntro={showIntro} onSubmit={next} />;
+  const onSubmit = async () => {
+    if (isLastStep) {
+      await updateTaskProgress({
+        taskName: 'onboarding',
+        data: { status: 'completed' },
+      });
+      navigate('/');
+    } else {
+      next();
+    }
+  };
+
+  return <IntakeQuestionnaire showIntro={showIntro} onSubmit={onSubmit} />;
 };
