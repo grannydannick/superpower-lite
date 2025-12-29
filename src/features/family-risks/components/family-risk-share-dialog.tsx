@@ -133,8 +133,10 @@ export function FamilyRiskShareDialog({
         </div>
         <div className="space-y-2 rounded-xl bg-zinc-50 p-4">
           <Body2 className="text-secondary">
-            By enabling sharing, you consent to making this health insight
-            accessible to anyone with the link.
+            By enabling public sharing, you consent to making these family
+            health insights accessible to anyone who has the URL. <br /> This
+            includes any personal health information that has been mentioned in
+            each insight
           </Body2>
         </div>
         <div className="flex w-full flex-col space-y-1">
@@ -145,8 +147,8 @@ export function FamilyRiskShareDialog({
             disabled={!planId || setPublicSharingMutation.isPending}
           >
             {setPublicSharingMutation.isPending
-              ? 'Enabling...'
-              : 'Enable sharing'}
+              ? 'Enabling sharing...'
+              : 'Enable public sharing'}
           </Button>
         </div>
       </div>
@@ -192,8 +194,8 @@ export function FamilyRiskShareDialog({
             className="text-sm text-secondary underline transition-colors hover:text-primary disabled:opacity-50"
           >
             {setPublicSharingMutation.isPending
-              ? 'Revoking...'
-              : 'Revoke access'}
+              ? 'Revoking sharing...'
+              : 'Revoke public sharing'}
           </button>
         </div>
       </div>
