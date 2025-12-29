@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import {
   Sheet,
   SheetClose,
@@ -21,17 +22,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from '@/components/ui/sonner';
-import { Switch } from '@/components/ui/switch';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipPortal,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { Body1, H2 } from '@/components/ui/typography';
+import { Body1, Body2, H2 } from '@/components/ui/typography';
 import { env } from '@/config/env';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
@@ -98,23 +90,43 @@ export function ChatShareDialog({
 
   const updateChatMutation = useUpdateChat({});
 
-  const handleToggleVisibility = (checked: boolean) => {
+  const handleEnableSharing = () => {
     if (isBusy) return;
 
     const prev = visibility;
-    const next: Visibility = checked ? 'private' : 'public';
-
+    const next: Visibility = 'public';
     setVisibility(next);
 
     updateChatMutation.mutate(
       { chatId, data: { visibility: next } },
       {
         onSuccess: () => {
-          toast.success(`Visibility set to ${next}`);
+          toast.success('Sharing enabled');
         },
         onError: () => {
           setVisibility(prev);
-          toast.error('Failed to update visibility');
+          toast.error('Failed to update sharing status');
+        },
+      },
+    );
+  };
+
+  const handleRevokeSharing = () => {
+    if (isBusy) return;
+
+    const prev = visibility;
+    const next: Visibility = 'private';
+    setVisibility(next);
+
+    updateChatMutation.mutate(
+      { chatId, data: { visibility: next } },
+      {
+        onSuccess: () => {
+          toast.success('Sharing revoked');
+        },
+        onError: () => {
+          setVisibility(prev);
+          toast.error('Failed to update sharing status');
         },
       },
     );
@@ -134,8 +146,11 @@ export function ChatShareDialog({
   const isMobile = width <= 768;
   // Only block toggling while an update is in flight.
   const isBusy = updateChatMutation.isPending;
+  const isShareActionDisabled = !chatId || isBusy;
 
-  const content = () => (
+  const URL = `${env.WEBSITE_URL}/share/chat/${chatId}`;
+
+  const consentContent = () => (
     <>
       <div className='w-full overflow-hidden bg-[url("/chat/share-chat.webp")] bg-cover px-8 pt-14'>
         <motion.div
@@ -187,45 +202,110 @@ export function ChatShareDialog({
             Share this chat with your doctor, family or friends.
           </Body1>
         </div>
-        <div className="flex items-center justify-center gap-2.5">
-          {historyQuery.isLoading || messagesQuery.isLoading ? (
-            <Skeleton className="h-7 w-12 rounded-full" />
-          ) : (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger className="m-0 h-6">
-                  <Switch
-                    checked={visibility === 'private'}
-                    onCheckedChange={handleToggleVisibility}
-                    disabled={isBusy}
-                    aria-label="Toggle chat visibility"
-                  />
-                </TooltipTrigger>
-                <TooltipPortal>
-                  <TooltipContent>
-                    Setting the visibilty to public makes your chat visible to
-                    the whole world.
-                  </TooltipContent>
-                </TooltipPortal>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-          <Body1 className="text-secondary">Keep this chat private</Body1>
+        <div className="space-y-2 rounded-xl bg-zinc-50 p-4">
+          <Body2 className="text-secondary">
+            By enabling public sharing, you consent to making all messages in
+            this chat thread accessible to anyone who has the URL. This includes
+            any personal health information that has been disclosed in messages
+            you&apos;ve sent or received
+          </Body2>
         </div>
-        <div className="flex w-full flex-col space-y-1 pt-4">
+        <div className="flex w-full flex-col space-y-1">
           <Button
             variant="default"
             className="gap-2 rounded-full text-center"
-            onClick={handleCopy}
-            disabled={!chatId || visibility !== 'public'}
+            onClick={handleEnableSharing}
+            disabled={isShareActionDisabled}
           >
-            <Copy className="size-4" />
-            Copy
+            {isBusy ? 'Enabling sharing...' : 'Enable public sharing'}
           </Button>
         </div>
       </div>
     </>
   );
+
+  const shareContent = () => (
+    <>
+      <div className='w-full overflow-hidden bg-[url("/chat/share-chat.webp")] bg-cover px-8 pt-14'>
+        <motion.div
+          className="pointer-events-none space-y-6"
+          initial="hidden"
+          animate="show"
+          variants={{
+            show: {
+              transition: { staggerChildren: 0.15, delayChildren: 0.05 },
+            },
+          }}
+        >
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, y: 24, filter: 'blur(6px)' },
+              show: {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                transition: { duration: 0.35, delay: 0.2, ease: 'easeOut' },
+              },
+            }}
+            className="ml-auto w-fit max-w-xs rounded-xl border border-white/10 bg-black/15 p-2 backdrop-blur"
+          >
+            <Body1 className="text-white">{lastUserMessage}</Body1>
+          </motion.div>
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, y: 24, filter: 'blur(6px)' },
+              show: {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                transition: { duration: 0.35, delay: 0.5, ease: 'easeOut' },
+              },
+            }}
+            className="max-h-32 [-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_50%,transparent_100%)] [mask-image:linear-gradient(to_bottom,black_0%,black_50%,transparent_100%)] [mask-repeat:no-repeat] [mask-size:100%_100%]"
+          >
+            <div className="mr-auto w-fit max-w-xs text-white/75">
+              <Markdown>{lastAiMessage ?? ''}</Markdown>
+            </div>
+          </motion.div>
+        </motion.div>
+      </div>
+      <div className="space-y-6 p-6 pt-10">
+        <div className="space-y-2">
+          <H2 className="text-center">Share this chat</H2>
+          <Body1 className="text-balance text-center text-secondary">
+            Share this chat with your doctor, family or friends.
+          </Body1>
+        </div>
+        <div>
+          <Input value={URL} readOnly />
+          <div className="flex w-full flex-col space-y-1 pt-4">
+            <Button
+              variant="default"
+              className="gap-2 rounded-full text-center"
+              onClick={handleCopy}
+              disabled={!chatId}
+            >
+              <Copy className="size-4" />
+              Copy link
+            </Button>
+          </div>
+        </div>
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={handleRevokeSharing}
+            disabled={isShareActionDisabled}
+            className="text-sm text-secondary underline transition-colors hover:text-primary disabled:opacity-50"
+          >
+            {isBusy ? 'Revoking sharing...' : 'Revoke public sharing'}
+          </button>
+        </div>
+      </div>
+    </>
+  );
+
+  const content = () =>
+    visibility === 'public' ? shareContent() : consentContent();
 
   if (isMobile) {
     return (
