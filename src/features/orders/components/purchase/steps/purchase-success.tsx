@@ -16,7 +16,11 @@ import { PurchaseDialogFooter } from '../purchase-dialog-footer';
 export const PurchaseSuccessStep = () => {
   const navigate = useNavigate();
   const service = usePurchaseStore((s) => s.service);
-  const timelineSteps = getTimeline(undefined, 'credit');
+  const isTestKit = service?.group === 'test-kit';
+  const timelineSteps = getTimeline(
+    undefined,
+    isTestKit ? 'test-kit' : 'credit',
+  );
   const { data: user, isLoading } = useUser();
 
   return (
@@ -49,7 +53,7 @@ export const PurchaseSuccessStep = () => {
                 )
               }
             >
-              Schedule now
+              {isTestKit ? 'Ship now' : 'Schedule now'}
             </Button>
             <DialogClose asChild>
               <Button
@@ -57,7 +61,7 @@ export const PurchaseSuccessStep = () => {
                 className="w-full"
                 variant="white"
               >
-                Schedule later
+                {isTestKit ? 'Ship later' : 'Schedule later'}
               </Button>
             </DialogClose>
           </div>

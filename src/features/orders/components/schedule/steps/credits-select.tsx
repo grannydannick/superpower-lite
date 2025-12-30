@@ -23,22 +23,33 @@ import { useScheduleStore } from '../../../stores/schedule-store';
 import { ScheduleFlowFooter } from '../schedule-flow-footer';
 
 export const CreditsSelectStep = () => {
-  const { selectedCreditIds, updateSelectedCreditIds } = useScheduleStore(
+  const { selectedCreditIds, updateSelectedCreditIds, mode } = useScheduleStore(
     (s) => s,
   );
 
   const isDisabled = [...selectedCreditIds].length === 0;
+  const isTestKit = mode === 'test-kit';
 
   return (
     <>
       <div className={cn('space-y-8', SHARED_CONTAINER_STYLE)}>
         <div className="space-y-2">
-          <H2>Schedule your appointment</H2>
-          <Body1 className="text-zinc-500">
-            For your health and safety, each appointment is limited to 14 vials
-            (a vial is a small blood sample tube). If your selection would go
-            over the limit, you’ll need to schedule an additional appointment.
-          </Body1>
+          <H2>
+            {isTestKit ? 'Select your test kits' : 'Schedule your appointment'}
+          </H2>
+          {isTestKit ? (
+            <Body1 className="text-zinc-500">
+              Select the test kits you&apos;d like to order. Your kit will be
+              shipped to your address for at-home sample collection.
+            </Body1>
+          ) : (
+            <Body1 className="text-zinc-500">
+              For your health and safety, each appointment is limited to 14
+              vials (a vial is a small blood sample tube). If your selection
+              would go over the limit, you&apos;ll need to schedule an
+              additional appointment.
+            </Body1>
+          )}
         </div>
         <CreditsSelectContent
           selectedIds={selectedCreditIds}

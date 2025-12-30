@@ -81,13 +81,21 @@ export function ScheduleSummaryStep(): ReactNode {
     }
   };
 
+  const isTestKit = mode === 'test-kit';
+
   return (
     <>
       <div className={cn('space-y-8', SHARED_CONTAINER_STYLE)}>
         <div className="space-y-1">
-          <H2>Confirm your testing location & date</H2>
+          <H2>
+            {isTestKit
+              ? 'Confirm your shipping address'
+              : 'Confirm your testing location & date'}
+          </H2>
           <Body1 className="text-secondary">
-            Confirm your testing details below.
+            {isTestKit
+              ? 'Review your order details and shipping address below.'
+              : 'Confirm your testing details below.'}
           </Body1>
         </div>
         {isQueryLoading ? (
@@ -105,6 +113,7 @@ export function ScheduleSummaryStep(): ReactNode {
               timezone={tz ?? undefined}
               location={location ?? undefined}
               isAdvisory={mode === 'advisory-call'}
+              isTestKit={isTestKit}
               price={price}
             />
             {price > 0 && defaultPaymentMethod ? (

@@ -65,7 +65,7 @@ export const ServicesList = ({
         services: recommended,
       },
       {
-        title: 'Blood test',
+        title: 'Blood tests',
         services: filteredServices.filter(
           (service) => service.group === 'phlebotomy',
         ),

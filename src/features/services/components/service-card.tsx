@@ -46,12 +46,14 @@ const DesktopCard = ({
       );
     }
 
+    const buttonText = service.group === 'test-kit' ? 'Order now' : 'Book now';
+
     return (
       <Button
         className="ease-[cubic-bezier(0.22,_0.61,_0.35,_1)] pointer-events-none absolute inset-x-4 bottom-4 translate-y-2 opacity-0 blur-sm transition-all duration-200 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-hover:blur-0"
         size="medium"
       >
-        Book now
+        {buttonText}
       </Button>
     );
   };

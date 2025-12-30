@@ -13,7 +13,6 @@ export const getTimeline = (
     },
     { title: 'Test results processed within 2-4 weeks', complete: false },
     { title: 'Results uploaded', complete: false },
-    { title: 'Schedule a follow-up appointment', complete: false },
   ];
 
   const bloodPanelTimeline = [

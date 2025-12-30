@@ -28,6 +28,7 @@ interface AppointmentDetailsProps {
   location?: PhlebotomyLocation | null;
   collectionMethod?: CollectionMethodType;
   isAdvisory?: boolean;
+  isTestKit?: boolean;
   orderIds?: string[];
   price?: number;
 }
@@ -80,6 +81,7 @@ export function AppointmentDetails({
   collectionMethod,
   orderIds,
   isAdvisory,
+  isTestKit,
   price,
 }: AppointmentDetailsProps): React.ReactNode {
   if (!location?.address) {
@@ -101,6 +103,7 @@ export function AppointmentDetails({
 
   const collectionMethodLabel = (() => {
     if (isAdvisory === true) return 'Video call';
+    if (isTestKit === true) return 'Shipping address';
     return 'Address';
   })();
 
@@ -117,7 +120,7 @@ export function AppointmentDetails({
 
   return (
     <div className="flex flex-col gap-4">
-      <H4>Appointment details</H4>
+      <H4>{isTestKit ? 'Shipping details' : 'Appointment details'}</H4>
       <div className="flex flex-col gap-4">
         {orderIds ? <OrderFileLinkFromFiles orderIds={orderIds} /> : null}
         {slot && timezone ? (
