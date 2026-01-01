@@ -23,6 +23,7 @@ export const useOnboardingAnalytics = () => {
       track('onboarding_credits_purchased', {
         credits,
         totalValue,
+        value: totalValue,
         payment_provider:
           activePaymentMethod?.paymentProvider?.toLowerCase() ?? 'unknown',
       }),
