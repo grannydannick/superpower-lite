@@ -1,23 +1,53 @@
-export const UPGRADE_INFO = [
-  {
-    title: 'Who is this Ideal for?',
-    preview:
-      'Ideal for those navigating symptoms, family planning, performance goals, or higher risk due to age or family history.',
-    markdown: `
-- Men 35+ who need to be getting screened for prostate cancer.
-- Women 30+ navigating fertility concerns, irregular cycles, or perimenopause.
-- People with symptoms like fatigue, brain fog, weight gain, low libido, or poor mood.
-- High performers and health optimizers who need real data to personalize their training, recovery, and longevity strategies.
-- Anyone with family history of heart disease or diabetes.`,
-  },
-  {
-    title: "What's included in the advanced panel?",
-    preview:
-      'Biomarkers including prolactin, IGF-1, Lp(a), fasting insulin, B12, and folate for deeper insights into hormones, heart health, and nutrient status.',
-    markdown: `
-- Identify nutrient gaps with B12, folate, magnesium & ferritin for better energy, mood & stress support.
-- Uncover cardiovascular risk with Lp(a), homocysteine & advanced lipoprotein testing.
-- Spot insulin resistance early with fasting insulin & eAG - before A1c rises.
-- Screen critical hormones including PSA (men), prolactin & progesterone (women), plus FSH/LH & IGF‑1 for insight into energy, libido & hormonal balance.`,
-  },
-] as const;
+export const UPGRADE_INFO = {
+  male: [
+    {
+      title: 'Identify hidden risks',
+      preview:
+        'Screen for heart disease and prostate cancer - the two biggest silent killers for men - that often develop with no symptoms.',
+      markdown: `
+- Lp(a) identifies inherited heart disease risk not visible on standard cholesterol tests.
+- PSA screens for prostate cancer risk early, before symptoms appear.`,
+    },
+    {
+      title: 'Improve sexual health and vitality',
+      preview:
+        'Get real answers to energy, strength, or libido changes - not just whether testosterone is "normal."',
+      markdown: `
+- IGF-1 is a key growth hormone activity tied to strength, recovery and healthy aging.
+- Prolactin can explain issues with libido, motivation, and sexual function even when testosterone appears normal.`,
+    },
+    {
+      title: 'Optimize metabolism and body composition',
+      preview: 'Connect the dots on fatigue, weight gain, and slow recovery.',
+      markdown: `
+- Free insulin detects insulin resistance years before glucose or A1C change.
+- Free T3 measures active thyroid hormone that drives metabolism and energy.`,
+    },
+  ],
+  female: [
+    {
+      title: 'Understand hormone and cycle health',
+      preview:
+        'Hormone changes often show up first as cycle irregularity, PMS, fertility concerns, or subtle shifts in energy and mood.',
+      markdown: `
+- AMH provides clear insights into ovarian reserves and fertility timelines.
+- Progesterone supports ovulation, pregnancy, and mood.`,
+    },
+    {
+      title: 'Identify thyroid and inflammatory imbalance',
+      preview:
+        'Women are disproportionately affected by thyroid autoimmunity, iron-adjacent fatigue, and low-grade inflammation. Measure the markers that matter.',
+      markdown: `
+- Thyroid Peroxidase & Antibodies characterizes autoimmune thyroid imbalance before hormones are impacted.
+- Free T3 reveals whether thyroid hormone is being effectively used for energy and metabolism.`,
+    },
+    {
+      title: 'Screen heart and metabolic health',
+      preview:
+        'Identify metabolic and inherited patterns that quietly increase heart risk and make weight loss harder.',
+      markdown: `
+- Lp(a) reveals inherited heart disease risk that isn't influenced by diet or exercise.
+- Fasting insulin detects early insulin resistance that drives fat storage and energy crashes.`,
+    },
+  ],
+} as const;

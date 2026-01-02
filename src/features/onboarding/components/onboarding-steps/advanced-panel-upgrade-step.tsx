@@ -30,6 +30,11 @@ const AdvancedPanelUpgradeContent = () => {
   const { trackOnboardingCreditPurchase } = useOnboardingAnalytics();
   const { data: user } = useUser();
   const price = getUpgradePrice(user);
+  const isMale = user?.gender?.toLowerCase() === 'male';
+  const upgradeInfo = isMale ? UPGRADE_INFO.male : UPGRADE_INFO.female;
+  const panelName = isMale
+    ? 'Male Advanced Health Panel'
+    : 'Female Advanced Health Panel';
 
   const upgradeOrderMutation = useUpgradeCredit();
 
@@ -55,12 +60,15 @@ const AdvancedPanelUpgradeContent = () => {
       <div className="w-full space-y-8 p-4 md:p-10">
         <SuperpowerLogo />
         <div className="space-y-2">
-          <H2>Upgrade your Baseline Test</H2>
+          <H2>Upgrade your first test</H2>
           <Body1 className="text-zinc-500">
-            The Advanced Panel is a one-time upgrade that adds 30+ biomarkers on
-            top of your baseline panel, providing deep insights across hormone
-            balance, insulin resistance, nutrient status, and cardiovascular
-            risk.
+            Your baseline test provides a strong foundation with 100+ biomarkers
+            across key areas of health.
+          </Body1>
+          <Body1 className="text-zinc-500">
+            The {panelName} builds on that foundation by adding 30+ biomarkers
+            for deeper insight across hormones, cardiovascular health, and
+            metabolism.
           </Body1>
 
           <ProductInfo price={price} className="lg:hidden" />
@@ -69,12 +77,12 @@ const AdvancedPanelUpgradeContent = () => {
               variant="ghost"
               className="gap-1 px-0 py-2 text-sm text-zinc-500"
             >
-              View all tested 120+ biomarkers
+              View all tested 130+ biomarkers
               <ArrowRight size={16} />
             </Button>
           </AvailableBiomarkersDialog>
         </div>
-        {UPGRADE_INFO.map(({ title, preview, markdown }) => (
+        {upgradeInfo.map(({ title, preview, markdown }) => (
           <div key={title} className="space-y-2">
             <H4 className="m-0 text-zinc-900">{title}</H4>
             <Collapsible className="space-y-2 ">
@@ -169,7 +177,7 @@ const ProductInfo = ({
           </div>
           <CollapsibleContent className="space-y-2">
             <Body1 className="text-zinc-500">
-              120+ biomarkers for deep insights across health optimization,
+              130+ biomarkers for deep insights across health optimization,
               prevention, and complex symptoms
             </Body1>
             <TotalInfo price={price} />
