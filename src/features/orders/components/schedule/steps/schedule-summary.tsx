@@ -162,7 +162,7 @@ export function ScheduleSummaryStep(): ReactNode {
 }
 
 function ScheduleSummaryItems(): ReactNode {
-  const servicesQuery = useServices();
+  const servicesQuery = useServices({ includeUnorderable: true });
   const creditsQuery = useCredits();
   const selectedCreditIds = useScheduleStore((s) => s.selectedCreditIds);
 

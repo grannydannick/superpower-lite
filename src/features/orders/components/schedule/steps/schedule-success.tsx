@@ -30,7 +30,7 @@ export const ScheduleSuccessStep = () => {
   } = useScheduleStore((s) => s);
   const { reset: resetSteps } = ScheduleFlowStepper.useStepper();
   const creditsQuery = useCredits();
-  const servicesQuery = useServices();
+  const servicesQuery = useServices({ includeUnorderable: true });
   const navigate = useNavigate();
 
   const resetEverything = () => {

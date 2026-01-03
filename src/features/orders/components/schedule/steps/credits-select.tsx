@@ -75,7 +75,7 @@ const CreditsSelectContent = ({
   isLoading = false,
 }: CreditsSelectContentProps) => {
   const mode = useScheduleStore((s) => s.mode);
-  const servicesQuery = useServices({ group: mode });
+  const servicesQuery = useServices({ group: mode, includeUnorderable: true });
   const creditsQuery = useCredits();
 
   const isQueryLoading = servicesQuery.isLoading || creditsQuery.isLoading;

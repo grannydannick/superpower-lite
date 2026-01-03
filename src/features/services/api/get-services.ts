@@ -6,8 +6,10 @@ import { HealthcareService, ServiceGroup } from '@/types/api';
 
 export const getServices = async ({
   group,
+  includeUnorderable,
 }: {
   group?: ServiceGroup;
+  includeUnorderable?: boolean;
 }): Promise<{
   services: HealthcareService[];
 }> => {
@@ -17,17 +19,23 @@ export const getServices = async ({
     params.group = group;
   }
 
+  if (includeUnorderable) {
+    params.includeUnorderable = 'true';
+  }
+
   return await api.get('/services', { params });
 };
 
 export const getServicesQueryOptions = ({
   group,
+  includeUnorderable,
 }: {
   group?: ServiceGroup;
+  includeUnorderable?: boolean;
 } = {}) => {
   return queryOptions({
-    queryKey: ['services', group],
-    queryFn: () => getServices({ group }),
+    queryKey: ['services', group, includeUnorderable],
+    queryFn: () => getServices({ group, includeUnorderable }),
     // this is on purpose to remove issues with credits / etc
     // added oct 7, 2025 by NM
     staleTime: 0,
@@ -38,15 +46,17 @@ export const getServicesQueryOptions = ({
 
 type UseServicesOptions = {
   group?: ServiceGroup;
+  includeUnorderable?: boolean;
   queryConfig?: QueryConfig<typeof getServicesQueryOptions>;
 };
 
 export const useServices = ({
   queryConfig,
   group,
+  includeUnorderable,
 }: UseServicesOptions = {}) => {
   return useQuery({
-    ...getServicesQueryOptions({ group }),
+    ...getServicesQueryOptions({ group, includeUnorderable }),
     ...queryConfig,
   });
 };
