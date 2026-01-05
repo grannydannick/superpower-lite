@@ -1,12 +1,12 @@
 export const UPGRADE_INFO = {
   male: [
     {
-      title: 'Identify hidden risks',
+      title: 'Uncover hidden risks',
       preview:
-        'Screen for heart disease and prostate cancer - the two biggest silent killers for men - that often develop with no symptoms.',
+        '1 in 2 men develop heart disease and 1 in 8 develop prostate cancer - often without early warning signs.',
       markdown: `
-- Lp(a) identifies inherited heart disease risk not visible on standard cholesterol tests.
-- PSA screens for prostate cancer risk early, before symptoms appear.`,
+- Test Lp(a) to identify genetic risk for heart disease not visible on standard cholesterol tests.
+- Measure PSA to screen for prostate cancer risk early, often before symptoms appear.`,
     },
     {
       title: 'Improve sexual health and vitality',
