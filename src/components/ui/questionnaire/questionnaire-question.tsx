@@ -281,7 +281,7 @@ export const QuestionnaireQuestion = ({
       {isRxIdentityVerificationQuestion && (
         <>
           <img
-            src="/rx/identity.png"
+            src="/rx/identity.webp"
             alt="Identity verification"
             className="w-full rounded-3xl"
           />

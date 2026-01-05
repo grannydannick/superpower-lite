@@ -55,6 +55,9 @@ const RX_METHYLCOBALAMIN_B12_SYMPTOM_TRACKER =
 const RX_TRT_INJECTABLE = 'rx-assessment-trt-injectable';
 const RX_TRT_INJECTABLE_SYMPTOM_TRACKER =
   'rx-assessment-trt-injectable-symptom-tracker';
+const RX_TIRZEPATIDE = 'rx-assessment-tirzepatide';
+const RX_TIRZEPATIDE_SYMPTOM_TRACKER =
+  'rx-assessment-tirzepatide-symptom-tracker';
 
 const RX_SYMPTOM_TRACKERS = [
   RX_GHK_CU_SYMPTOM_TRACKER,
@@ -75,6 +78,7 @@ const RX_SYMPTOM_TRACKERS = [
   RX_LOW_DOSE_NALTREXONE_SYMPTOM_TRACKER,
   RX_METHYLCOBALAMIN_B12_SYMPTOM_TRACKER,
   RX_TRT_INJECTABLE_SYMPTOM_TRACKER,
+  RX_TIRZEPATIDE_SYMPTOM_TRACKER,
 ] as const;
 
 type RxSymptomTrackerName = (typeof RX_SYMPTOM_TRACKERS)[number];
@@ -122,6 +126,8 @@ const RX_ASSESSMENTS = [
   RX_METHYLCOBALAMIN_B12_SYMPTOM_TRACKER,
   RX_TRT_INJECTABLE,
   RX_TRT_INJECTABLE_SYMPTOM_TRACKER,
+  RX_TIRZEPATIDE,
+  RX_TIRZEPATIDE_SYMPTOM_TRACKER,
 ] as const;
 type RxQuestionnaireName =
   | typeof RX_ASSESSMENT_GHK_CU
@@ -160,6 +166,8 @@ type RxQuestionnaireName =
   | typeof RX_METHYLCOBALAMIN_B12_SYMPTOM_TRACKER
   | typeof RX_TRT_INJECTABLE
   | typeof RX_TRT_INJECTABLE_SYMPTOM_TRACKER
+  | typeof RX_TIRZEPATIDE
+  | typeof RX_TIRZEPATIDE_SYMPTOM_TRACKER
   // The following questionnaire 'names' are identifiers on the QuestionnaireResponse
   // used for front-door experiments. TODO: decouple the front door experiment name from the
   // actual questionnaire name.

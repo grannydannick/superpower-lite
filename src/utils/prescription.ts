@@ -12,6 +12,7 @@ import {
   SERMORELIN_INJECTION,
   SERMORELIN_TROCHES,
   TADALAFIL,
+  TIRZEPATIDE,
   TRETINOIN,
   VIP_NASAL_SPRAY,
   VITAMIN_B12_INJECTION,
@@ -35,7 +36,8 @@ const prescriptionImages: Record<string, string> = {
   NADInjection: '/rx/transparent/nad-plus-injection.webp',
   Enclomiphene: '/rx/transparent/enclomiphene.webp',
   SermorelinTroches: '/rx/transparent/sermorelin-oral.webp',
-  FallbackImage: '/rx/prescription-empty.png',
+  Tirzepatide: '/rx/transparent/tirzepatide.webp',
+  FallbackImage: '/rx/prescription-empty.webp',
 };
 
 export const getPrescriptionImage = (name: string): string => {
@@ -88,6 +90,9 @@ export const getPrescriptionImage = (name: string): string => {
     case SERMORELIN_TROCHES:
       return prescriptionImages.SermorelinTroches;
 
+    case TIRZEPATIDE:
+      return prescriptionImages.Tirzepatide;
+
     default:
       return prescriptionImages.FallbackImage;
   }
@@ -114,6 +119,7 @@ const prescriptionInfoMap: Record<string, PrescriptionInfo> = {
   [NAD_INJECTION]: PrescriptionInfoData.NAD_INJECTION,
   [ENCLOMIPHENE]: PrescriptionInfoData.ENCLOMIPHENE,
   [SERMORELIN_TROCHES]: PrescriptionInfoData.SERMORELIN_TROCHES,
+  [TIRZEPATIDE]: PrescriptionInfoData.TIRZEPATIDE,
 };
 
 export const getPrescriptionInfo = (

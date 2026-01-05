@@ -269,7 +269,8 @@ export const SEMAGLUTIDE = {
   headerFaq: [
     {
       question: 'What is Semaglutide?',
-      answer: `Unlock your weight-loss potential with our powerful compounded Semaglutide formula, the same game-changing ingredient featured in Ozempic® and Wegovy®. Expertly crafted by a US-licensed compounding pharmacy that meets Superpower's strict quality standards, this formula is designed to revolutionize your approach to health. Semaglutide works by curbing your appetite, enhancing insulin production, slowing stomach emptying, and keeping you satisfied longer—all while helping you conquer cravings for unhealthy foods. Take charge of your weight and well-being with Semaglutide, and start your journey to a healthier you today.`,
+      answer:
+        "Semaglutide is a prescription GLP-1 receptor agonist that supports metabolic health by improving glucose control and reducing appetite; it's the active ingredient in FDA-approved medications such as Ozempic® (type 2 diabetes), Wegovy® (chronic weight management), and Rybelsus® (type 2 diabetes).",
     },
     {
       question: 'How does it work?',
@@ -281,7 +282,7 @@ export const SEMAGLUTIDE = {
     {
       question: 'Am I a good candidate for Semaglutide?',
       answer:
-        'A good candidate for Semaglutide typically meets specific health criteria and has certain goals related to weight management or diabetes control. If you have a BMI of 27+, and also have weight-related health issues such as high blood pressure, type 2 diabetes, or sleep apnea are good candidates for Semaglutide therapy.',
+        'You may be a fit if your clinician identifies meaningful cardiometabolic risk such as prediabetes or type 2 diabetes, insulin resistance, elevated A1c, dyslipidemia, hypertension, central adiposity/visceral fat, fatty liver risk, or persistent difficulty improving metabolic markers despite lifestyle, and you can use it safely based on your medical history and current medications.',
     },
     {
       question:
@@ -297,43 +298,18 @@ export const SEMAGLUTIDE = {
     {
       question:
         'What do I do if I need a higher dose of Semaglutide than is prescribed in the titration schedule?',
-      answer: `We will prescribe up to a maximum of 2mg per week (as medically required). If you feel you need a higher dose, please contact your physician and we will adjust the amount we send you for your next 90 day supply. There will be no extra fee's incurred.`,
+      answer:
+        "If you think you need a higher dose, don't increase it on your own, simply message your concierge so your clinician can review your response and side effects and adjust if appropriate. In our program we prescribe up to a maximum of 2.4 mg/week when medically indicated. There are no extra fees for this.",
     },
     {
       question: 'What are the potential side effects?',
-      answer: `Semaglutide Side Effects Overview
-Semaglutide has a fairly high side effect profile. Each patient should be carefully monitored to ensure they are titrating their dosage in a way that minimizes side effects. Patients must be walked through all potential side effects so they know what to expect.
-
-Most Common Side Effects:
-
-Nausea
-Diarrhoea
-Constipation
-Fatigue
-GI distress
-Headaches
-Abdominal pain / stomach discomfort
-
-Less Common Side Effects:
-
-Allergic reaction to injection
-Hair loss
-Increased prevalence of suicidal thoughts
-Sensitive skin (commonly referred to as “semaglutide skin”)`,
+      answer:
+        'Most side effects are gastrointestinal, are more common during dose increases, and often improve over time. Your clinician can slow titration or adjust the plan if symptoms are persistent or limiting. Common side effects include nausea, vomiting, diarrhea, constipation, bloating, and decreased appetite. Less common or adverse effects may include pancreatitis, gallbladder disease, kidney injury (from dehydration), worsening diabetic retinopathy, severe GI intolerance, and dehydration.',
     },
     {
       question: 'What are potential contraindications?',
-      answer: `Contraindications
-While many of these contraindications warrant further study, an extremely cautious approach is advised as we await more research.
-
-- Pancreatitis
-- Type 1 Diabetes (T1D)
-- Thyroid cancer
-- Gallbladder disease
-- Multiple Endocrine Neoplasia syndrome type 2
-- Severe depression (including history of suicide attempts, suicidal thoughts, or self-harm)
-- Eating disorders
-- Pregnant or breastfeeding`,
+      answer:
+        "Semaglutide isn't appropriate for everyone, and your clinician will confirm safety before prescribing. Contraindications include pancreatitis, uncontrolled T2D on insulin therapy, type 1 diabetes, medullary thyroid cancer, Multiple Endocrine Neoplasia type 2 (MEN2), severe GI disorders (bowel obstruction, refractory constipation), severe depression or suicidal ideation, pregnant or breastfeeding, and severe renal impairment (eGFR <45). Cautions apply to hiatal hernia, reflux disease, moderate renal impairment (eGFR 45–59), prior retinopathy, rapid weight loss risk, elderly/frail patients, significant polypharmacy, and gallbladder disease.",
     },
     {
       question: 'Potential drug interactions?',
@@ -1259,6 +1235,91 @@ Pregnancy Risks: Enclomiphene is not recommended for use during pregnancy due to
     {
       question: 'Potential drug interactions?',
       answer: `Enclomiphene's interactions with other medications should be carefully assessed to ensure optimal safety and efficacy. Individuals using drugs metabolized by the liver, especially those affecting the cytochrome P450 system, may experience altered metabolism when concurrently using enclomiphene. Additionally, caution is advised when combining enclomiphene with other hormonal therapies, as potential synergistic or antagonistic effects could influence overall therapeutic outcomes. It is crucial for healthcare professionals to thoroughly review a patient's medication profile and consider potential interactions before prescribing enclomiphene.`,
+    },
+  ],
+};
+
+export const TIRZEPATIDE = {
+  benefits: [
+    'Dual receptor activation for greater blood sugar control than medications that just target GLP-1 receptors',
+    'Weight loss',
+    'Appetite suppression',
+    'Reduced risk of cardiovascular disease',
+  ],
+  includes: [
+    '30 day supply of medication',
+    'Overnight shipping',
+    'Repeat labs',
+    'Medical evaluation',
+    'Unlimited messaging',
+    'Dr guided titration plan',
+  ],
+  science: {
+    activeIngredients:
+      "Tirzepatide is the primary active ingredient, which is the same as in commercial products like Mounjaro® and Zepbound®. It's a GLP-1 / GIP receptor agonist used to manage blood sugar levels and promote weight loss. Additional excipients, stabilizers and solvents are added to help with absorption.",
+    mechanism:
+      'Tirzepatide is usually administered through subcutaneous injection. The specific dosage will be determined by healthcare professionals based on individual needs. Strict adherence to the prescribed administration guidelines is crucial for optimal results.',
+    history:
+      'The concept for Tirzepatide emerged from research into incretin hormones—GLP-1 and GIP—that play key roles in regulating blood sugar levels and metabolism. Eli Lilly began developing Tirzepatide as part of its efforts to advance diabetes treatment options. The drug was designed to harness the effects of both GLP-1 and GIP to provide more comprehensive blood sugar control and weight loss. In May 2022, the FDA approved Tirzepatide under the brand name Mounjaro™ for the treatment of type 2 diabetes. Later, Tirzepatide was approved for weight loss under the name Zepbound™.',
+  },
+  headerFaq: [
+    {
+      question: 'What is Tirzepatide?',
+      answer:
+        'Tirzepatide is a prescription medication that activates two gut-hormone pathways (GIP and GLP-1) to improve glucose regulation and reduce appetite, supporting metabolic health and, in many people, clinically meaningful weight reduction.',
+    },
+    {
+      question: 'How does it work?',
+      answer:
+        'Tirzepatide works by mimicking two hormones in your body called GLP-1 and GIP, which help control your blood sugar levels and appetite. Tirzepatide achieves this by helping your body produce more insulin which lowers your blood sugar. Tirzepatide also acts on your brain to make you feel less hungry. Reduced hunger will help you lose weight over time.',
+    },
+  ],
+  faq: [
+    {
+      question: 'Am I a good candidate for Tirzepatide?',
+      answer:
+        "You may be a fit if your clinician identifies meaningful cardiometabolic risk (e.g., insulin resistance, prediabetes/type 2 diabetes, elevated A1c, dyslipidemia, hypertension, visceral/central adiposity, or persistent difficulty improving weight/metabolic markers with lifestyle alone) and you can use it safely. It's not appropriate with a personal/family history of medullary thyroid cancer or MEN2, or if you've had a serious allergy to the medication.",
+    },
+    {
+      question:
+        'How long does it take to see results with Tirzepatide therapy?',
+      answer:
+        "Everyone's results will differ. Some people might only lose 1-5 lbs per month and some may lose 15-20 lbs per month. Also, keep in mind that it can take up to 2 months for the medication to fully absorb into your body. So, just have patience!",
+    },
+    {
+      question:
+        'What do I do if I feel I have plateaued with my Tirzepatide therapy?',
+      answer:
+        "If you feel you've plateaued with your Tirzepatide therapy, remember that plateaus are a natural part of any weight loss or metabolic control journey. Over time, your body may adapt to the changes, which can sometimes slow down progress. This is normal, and it doesn't mean the medication isn't working. Tirzepatide is designed to help with appetite control and glucose regulation, but it's not a quick fix. It's important to stay focused on your long-term goals and continue making healthy lifestyle choices, including regular physical activity and mindful eating. Feeling increased hunger or slower results may be your body adjusting to these changes. If you're concerned, reach out to your clinical team—they can review your progress, assess your current dosage, and help you troubleshoot any factors that may be contributing to the plateau. Sometimes, a dosage adjustment or a renewed focus on lifestyle factors may be needed to get you back on track. Stay consistent, stay patient, and remember that sustainable results take time.",
+    },
+    {
+      question:
+        'What do I do if I need a higher dose of Tirzepatide than is prescribed in the titration schedule?',
+      answer:
+        "If you think you need a higher dose, don't increase it on your own, simply message your concierge so your clinician can review your response and side effects and adjust if appropriate. In our program we prescribe up to a maximum of 12.5 mg/week when medically indicated. There are no extra fees for this.",
+    },
+    {
+      question: 'What are the potential side effects?',
+      answer:
+        'Like all prescription medications, Tirzepatide can cause side effects. Most are gastrointestinal, tend to show up during dose increases, and often improve over time. Our clinicians use a gradual titration plan to support tolerability and will adjust if symptoms are persistent or severe. Common side effects include constipation, mild nausea, fatigue, headache, and reduced appetite. Less common or adverse effects may include gallbladder disease, pancreatitis, severe dehydration, and electrolyte imbalance.',
+    },
+    {
+      question: 'What are potential contraindications?',
+      answer:
+        "Tirzepatide isn't appropriate for everyone, and your clinician will confirm safety before prescribing. Absolute contraindications include history of pancreatitis, type 1 diabetes, uncontrolled T2D (DKA risk), medullary thyroid carcinoma or MEN-2 (personal or family history), pregnancy or breastfeeding, severe GI disease (bowel obstruction, gastroparesis), severe renal impairment (eGFR <30), and active eating disorder or severe depression. Additional cautions apply to gallbladder disease or prior cholecystectomy, high constipation risk (opioids, low fiber diet, IBS-C), history of dehydration, and sarcopenia risk during rapid weight loss.",
+    },
+    {
+      question: 'Potential drug interactions?',
+      answer: `Major Drug Interactions
+Not all interacting drugs are listed below. Only those marked as a major interaction with Tirzepatide are included.
+To see the full list, please follow this link: https://www.drugs.com/drug-interactions/tirzepatide-index.html?filter=3
+
+- Bexarotene
+Using bexarotene together with Tirzepatide may increase the risk of pancreatitis, or inflammation of the pancreas.
+- Desflurane, Enflurane, Etomidate, Fospropofol, Halothane, Isoflurane, Ketamine, Methohexital, Methoxyflurane, Nitrous Oxide, Propofol, Sevoflurane, Thiopental
+These agents may increase the risk of regurgitation and pulmonary aspiration of gastric contents in patients undergoing general anesthesia. This is due to delayed gastric emptying caused by stimulation of central nervous system GLP-1 receptors and vagal nerve activation. Pulmonary aspiration during anesthesia can lead to pneumonitis, aspiration pneumonia, other lung injury, and even death.
+- Gatifloxacin
+Gatifloxacin can affect blood glucose levels and should not be used in patients with diabetes. Both hypoglycemia (low blood glucose) and, less frequently, hyperglycemia (high blood glucose) have been reported. Severe cases of hypoglycemia have resulted in coma and even death.`,
     },
   ],
 };

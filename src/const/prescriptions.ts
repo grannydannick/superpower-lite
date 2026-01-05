@@ -15,6 +15,7 @@ export const GHK_CU_CREAM = 'GHK-Cu Cream';
 export const NAD_INJECTION = 'NAD+ Injection';
 export const ENCLOMIPHENE = 'Enclomiphene';
 export const SERMORELIN_TROCHES = 'Sermorelin Troches';
+export const TIRZEPATIDE = 'Tirzepatide';
 
 export const PRESCRIPTION_SLUGS: Record<string, string> = {
   [SERMORELIN_INJECTION]: 'sermorelin-injection',
@@ -34,6 +35,7 @@ export const PRESCRIPTION_SLUGS: Record<string, string> = {
   [NAD_INJECTION]: 'nad-injection',
   [ENCLOMIPHENE]: 'enclomiphene',
   [SERMORELIN_TROCHES]: 'sermorelin-troches',
+  [TIRZEPATIDE]: 'tirzepatide',
 };
 
 export const RECOMMENDED_PRESCRIPTIONS = [
