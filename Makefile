@@ -178,9 +178,15 @@ deploy/app/prd:
 	@if [ -n "$$(git status --porcelain)" ]; then \
 		bash $(SHARED_SCRIPT) fatal "Working tree is not clean. Please commit or stash your changes before deploying to production."; \
 	fi
+	@bash $(SHARED_SCRIPT) info "Checking if local main is up to date with origin/main ..."
+	@git fetch origin main --quiet
+	@if [ "$$(git rev-parse HEAD)" != "$$(git rev-parse origin/main)" ]; then \
+		bash $(SHARED_SCRIPT) fatal "Local main is not up to date with origin/main. Please pull the latest changes."; \
+	fi
+	@bash $(SHARED_SCRIPT) info "Deploying app to cloudfront ..."
+	doppler run -p $(SERVICE) -c prd -- sh ./assets/scripts/deploy-app-cloudfront.sh
 	@bash $(SHARED_SCRIPT) info "Creating deployment notification in Slack ..."
 	@TARGET=$@ bash $(SHARED_SCRIPT) notify $(PRD_DEPLOYMENT_MSG)
-	@bash $(SHARED_SCRIPT) info "Deploying app to cloudfront ..."
 	doppler run -p $(SERVICE) -c prd -- sh ./assets/scripts/deploy-app-cloudfront.sh
 
 ### Deploy (FEATURE)
