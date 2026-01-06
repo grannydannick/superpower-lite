@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { DialogClose } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, Body2 } from '@/components/ui/typography';
+import { ADVANCED_BLOOD_PANEL, SUPERPOWER_BLOOD_PANEL } from '@/const';
 import { PurchaseDialog } from '@/features/orders/components/purchase';
 import { useServices } from '@/features/services/api';
 import { cn } from '@/lib/utils';
@@ -30,7 +31,12 @@ export const AddOnPanelsSelect = ({
   isLoading = false,
 }: AddOnsProps) => {
   const servicesQuery = useServices({ group: 'phlebotomy' });
-  const services = servicesQuery.data?.services ?? [];
+  let services = servicesQuery.data?.services ?? [];
+
+  // filter out baseline + advanced panels
+  services = services.filter(
+    (s) => ![SUPERPOWER_BLOOD_PANEL, ADVANCED_BLOOD_PANEL].includes(s.name),
+  );
 
   const toggle = useCallback(
     (service: HealthcareService) => {
