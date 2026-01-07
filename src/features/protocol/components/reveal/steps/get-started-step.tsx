@@ -5,9 +5,6 @@ import { useUser } from '@/lib/auth';
 export function GetStartedStep({ next }: { next: () => void }) {
   const { data: user, isLoading } = useUser();
 
-  // Disable hook for now (devices seem to crash loading the videos)
-  // usePreloadVideos(VIDEOS.map((video) => video.source));
-
   return (
     <div
       className="fixed inset-0 z-10 bg-black bg-cover bg-center"

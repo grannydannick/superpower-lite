@@ -1,3 +1,5 @@
+import { useCallback, useState } from 'react';
+
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -5,6 +7,7 @@ import { Body1, H2, H4 } from '@/components/ui/typography';
 import { useBiologicalAge } from '@/features/data/hooks/use-biological-age';
 
 import { ScoreCounter } from '../score-counter';
+import { VideoSequence } from '../video-sequence';
 
 type BiologicalAgeStepProps = {
   next: () => void;
@@ -12,14 +15,15 @@ type BiologicalAgeStepProps = {
 };
 
 export function BiologicalAgeStep({ next }: BiologicalAgeStepProps) {
-  // TODO: Investigate why videos might cause a crash on devices
-  // const [showSequence, setShowSequence] = useState(false);
+  const [showSequence, setShowSequence] = useState(true);
   const { biologicalAge, ageDifference, isYounger, isLoading } =
     useBiologicalAge();
 
-  // if (showSequence) {
-  //   return <VideoSequence onComplete={() => setShowSequence(false)} />;
-  // }
+  const handleComplete = useCallback(() => setShowSequence(false), []);
+
+  if (showSequence) {
+    return <VideoSequence onComplete={handleComplete} />;
+  }
 
   return (
     <div className="h-screen w-full bg-black">

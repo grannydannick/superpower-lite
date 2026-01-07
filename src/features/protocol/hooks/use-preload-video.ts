@@ -1,27 +1,22 @@
 import { useEffect } from 'react';
 
+const isIOS =
+  typeof navigator !== 'undefined' &&
+  /iP(hone|od|ad)/.test(navigator.userAgent);
+
 export const usePreloadVideo = (url?: string) => {
   useEffect(() => {
-    if (!url) return;
+    if (!url || isIOS) return;
 
-    const video = document.createElement('video');
-    video.preload = 'auto';
-    video.muted = true;
-    video.playsInline = true;
-    video.src = url;
-    try {
-      video.load();
-    } catch (_) {
-      /* empty */
-    }
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'video';
+    link.href = url;
+    link.type = 'video/mp4';
+    document.head.appendChild(link);
 
     return () => {
-      try {
-        video.removeAttribute('src');
-        video.load?.();
-      } catch (_) {
-        /* empty */
-      }
+      if (link.parentNode) link.parentNode.removeChild(link);
     };
   }, [url]);
 };
