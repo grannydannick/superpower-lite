@@ -446,7 +446,7 @@ export const ChatHistory = () => {
   if (width <= 1024) {
     return (
       <Sheet>
-        <div className="flex w-full items-center justify-between gap-4 space-y-4 pt-4">
+        <div className="flex w-full items-center justify-between gap-4 pt-4">
           <div className="flex items-center gap-4">
             <SheetTrigger>
               <PanelLeft size={24} className="text-zinc-400" />
@@ -458,7 +458,7 @@ export const ChatHistory = () => {
               </div>
             </div>
           </div>
-          <div className="flex w-full justify-end pb-2">
+          <div className="flex w-full justify-end">
             {id ? <ChatShareDialog chatId={id} /> : <CareTeamDialog />}
           </div>
         </div>

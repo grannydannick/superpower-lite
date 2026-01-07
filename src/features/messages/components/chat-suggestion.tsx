@@ -18,7 +18,7 @@ export const ChatSuggestion = ({
       )}
       onClick={onClick}
     >
-      <Body2 className="text-zinc-400 transition-all duration-200 group-hover:text-zinc-700">
+      <Body2 className="text-balance text-zinc-400 transition-all duration-200 group-hover:text-zinc-700">
         {suggestion}
       </Body2>
     </button>

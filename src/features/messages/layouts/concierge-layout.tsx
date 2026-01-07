@@ -13,7 +13,7 @@ export const ConciergeLayout = () => {
       <ChatHistory />
       <Outlet />
       <div className="hidden w-full max-w-[259px] lg:block">
-        <div className="ml-auto flex w-full justify-end pb-2">
+        <div className="ml-auto flex w-full justify-end">
           {id ? <ChatShareDialog chatId={id} /> : <CareTeamDialog />}
         </div>
       </div>
