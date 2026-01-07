@@ -29,7 +29,6 @@ import { cn } from '@/lib/utils';
 import { scrollToBottom } from '../../utils/scroll-to-bottom';
 
 import { PreviewAttachment } from './preview-attachment';
-import { SuggestedActions } from './suggested-actions';
 
 const MAX_HEIGHT = 256;
 
@@ -41,10 +40,8 @@ function PureMultimodalInput({
   attachments,
   status,
   setAttachments,
-  messages,
   setMessages,
   sendMessage,
-  showSuggestions = true,
   className,
 }: {
   chatId: string;
@@ -258,7 +255,7 @@ function PureMultimodalInput({
   };
 
   return (
-    <div className="relative flex w-full flex-col gap-4" {...getRootProps()}>
+    <div className="relative flex w-full flex-col gap-8" {...getRootProps()}>
       <input
         type="file"
         className="pointer-events-none fixed -left-4 -top-4 size-0.5 opacity-0"
@@ -272,15 +269,12 @@ function PureMultimodalInput({
         <div
           ref={inputWrapperRef}
           className={cn(
-            'relative flex h-full flex-col rounded-[20px] border border-zinc-100 bg-white pb-4 shadow-lg shadow-black/5 transition-all',
+            'relative flex flex-col rounded-[20px] border border-zinc-100 bg-white pb-4 shadow-lg shadow-black/5 transition-all min-h-[56px] shrink-0',
             isAttachmentPresent
               ? 'justify-between pt-2'
               : 'justify-center pt-4',
             className,
           )}
-          style={{
-            height: `56px`,
-          }}
         >
           {isDragActive && (
             <svg
@@ -387,10 +381,6 @@ function PureMultimodalInput({
             )}
           </div>
         </div>
-        {showSuggestions &&
-          messages.length === 0 &&
-          attachments.length === 0 &&
-          uploadQueue.length === 0 && <SuggestedActions setInput={setInput} />}
       </div>
     </div>
   );

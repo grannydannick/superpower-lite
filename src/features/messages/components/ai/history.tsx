@@ -1,11 +1,5 @@
 import { isToday, isYesterday, subMonths, subWeeks } from 'date-fns';
-import {
-  MoreHorizontalIcon,
-  PanelLeft,
-  Search,
-  SquarePen,
-  UsersIcon,
-} from 'lucide-react';
+import { MoreHorizontalIcon, PanelLeft, Search, SquarePen } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -28,7 +22,7 @@ import {
 import { Body3, H3 } from '@/components/ui/typography';
 import { useDeleteChat } from '@/features/messages/api/delete-chat';
 import { useHistory } from '@/features/messages/api/get-history';
-import { useChatStore } from '@/features/messages/stores/chat-store';
+import { CareTeamDialog } from '@/features/messages/components/care-team-dialog';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
 import { Chat } from '@/types/api';
@@ -63,8 +57,10 @@ const ChatItem = ({ chat, isActive }: { chat: Chat; isActive: boolean }) => {
       to={`/concierge/${chat.id}`}
       preventScrollReset
       className={cn(
-        'group flex w-full justify-between gap-2 rounded-xl border px-4 py-2.5',
-        isActive ? 'border-zinc-100 bg-white shadow-sm' : 'border-transparent',
+        'group flex w-full rounded-full justify-between gap-2 transition-all duration-200 ease-out border px-4 py-2.5',
+        isActive
+          ? 'border-zinc-200 bg-white shadow-sm'
+          : 'border-transparent hover:bg-zinc-100',
       )}
       onClick={() => {
         scrollToBottom();
@@ -116,7 +112,6 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
   const navigate = useNavigate();
   const { data: history, isLoading } = useHistory();
 
-  const type = useChatStore((s) => s.type);
   const [search, setSearch] = useState('');
   const [isOpen, setIsOpen] = useState(true);
 
@@ -177,65 +172,56 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
         const groupedChats = groupChatsByDate(filteredChats || []);
 
         return (
-          <div
-            className={cn(
-              'xl:w-full xl:max-w-[259px]',
-              type === 'concierge' && 'lg:max-w-0',
-            )}
-          >
+          <div className={cn('xl:w-full xl:max-w-[259px]')}>
             <div
               className={cn(
                 'relative transition-all duration-500 ease-in-out',
                 isOpen ? 'w-full lg:max-w-[259px]' : 'max-w-0 w-full',
-                type === 'concierge' &&
-                  'opacity-0 pointer-events-none blur-[1px]',
               )}
             >
-              {type !== 'concierge' && (
-                <div
-                  className={cn(
-                    'absolute top-1 hidden items-center gap-2 transition-all duration-500 lg:flex',
-                    isOpen ? 'xl:right-0 -right-4' : '-right-14',
-                  )}
-                >
-                  <TooltipProvider delayDuration={0}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          disabled={!id}
-                          className={cn(
-                            'rounded-md p-1 text-zinc-400 transition-all hover:text-zinc-700',
-                            isOpen
-                              ? 'pointer-events-none hidden opacity-0'
-                              : 'opacity-100',
-                          )}
-                          onClick={() => navigate('/concierge')}
-                        >
-                          <SquarePen size={15} />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>New Chat</TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="rounded-md p-1 text-zinc-400 hover:text-zinc-700"
-                          onClick={() => setIsOpen(!isOpen)}
-                        >
-                          <AnimatedSidebarButton isSidebarOpen={isOpen} />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        {isOpen ? 'Hide Sidebar' : 'Show Sidebar'}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              )}
+              <div
+                className={cn(
+                  'absolute top-1 hidden items-center gap-2 transition-all duration-500 lg:flex',
+                  isOpen ? 'xl:right-0 -right-4' : '-right-14',
+                )}
+              >
+                <TooltipProvider delayDuration={0}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        disabled={!id}
+                        className={cn(
+                          'rounded-md p-1 text-zinc-400 transition-all hover:text-zinc-700',
+                          isOpen
+                            ? 'pointer-events-none hidden opacity-0'
+                            : 'opacity-100',
+                        )}
+                        onClick={() => navigate('/concierge')}
+                      >
+                        <SquarePen size={15} />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>New Chat</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="rounded-md p-1 text-zinc-400 hover:text-zinc-700"
+                        onClick={() => setIsOpen(!isOpen)}
+                      >
+                        <AnimatedSidebarButton isSidebarOpen={isOpen} />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {isOpen ? 'Hide Sidebar' : 'Show Sidebar'}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
               <div
                 className={cn(
                   'flex w-full flex-col overflow-hidden transition-all duration-500 ease-in-out',
@@ -245,12 +231,17 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
                     : 'opacity-100 lg:max-w-[259px]',
                 )}
               >
-                <div className="mb-4 flex items-center gap-2">
-                  <H3>Concierge</H3>
-                  <div className="rounded-full border border-vermillion-900 px-2 py-0.5">
-                    <p className="font-mono text-xs text-vermillion-900">
-                      BETA
-                    </p>
+                <div className="mb-4 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <H3>Concierge</H3>
+                    <div className="rounded-full border border-vermillion-900 px-2 py-0.5">
+                      <p className="font-mono text-xs text-vermillion-900">
+                        BETA
+                      </p>
+                    </div>
+                  </div>
+                  <div className="lg:hidden">
+                    <CareTeamDialog />
                   </div>
                 </div>
                 {/*<div className="h-10 rounded-xl bg-zinc-100 px-4 py-1.5" />*/}
@@ -269,39 +260,46 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
                     />
                   </div>
 
-                  <div className="mt-4 flex flex-col overflow-hidden">
+                  <div className="mt-4 flex flex-col justify-start overflow-hidden">
                     <Button
                       variant="ghost"
                       size="medium"
                       className="justify-start gap-2 px-3 py-2 text-zinc-400"
                       disabled={!id}
                       onClick={() => {
-                        navigate('/concierge?type=ai');
+                        navigate('/concierge');
                       }}
                     >
                       <SquarePen size={15} />
                       New AI chat
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="medium"
-                      className="justify-start gap-2 px-3 py-2 text-zinc-400"
-                      disabled={!id}
-                      onClick={() => {
-                        navigate('/concierge?type=concierge');
-                      }}
-                    >
-                      <UsersIcon size={15} />
-                      Ask care team
-                    </Button>
                   </div>
+                  {id && (
+                    <CareTeamDialog
+                      trigger={
+                        <Button
+                          variant="ghost"
+                          size="medium"
+                          className="justify-start gap-2 px-3 py-2 text-zinc-400"
+                        >
+                          <img
+                            className="size-4 rounded-full object-cover"
+                            src="/services/doctors/doc_1.webp"
+                            alt="Superpower Concierge Doctor 1"
+                          />
+                          Care team
+                        </Button>
+                      }
+                    />
+                  )}
                 </div>
+
                 <div className="relative">
                   <div className="pointer-events-none absolute top-0 z-10 h-6 w-full bg-gradient-to-t from-transparent to-zinc-50" />
                   <div className="pointer-events-none absolute bottom-0 z-10 h-6 w-full bg-gradient-to-b from-transparent to-zinc-50" />
                   <div className="scrollbar-w-1.5 flex max-h-[calc(100vh-16rem)] flex-col gap-4 overflow-y-scroll px-px py-6 scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300 hover:scrollbar-thumb-zinc-400">
                     {groupedChats.today.length > 0 && (
-                      <div>
+                      <div className="space-y-0.5">
                         <Body3 className="px-3 pb-1 text-zinc-700">Today</Body3>
                         {groupedChats.today.map((chat) => (
                           <ChatItem
@@ -314,7 +312,7 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
                     )}
 
                     {groupedChats.yesterday.length > 0 && (
-                      <div>
+                      <div className="space-y-0.5">
                         <Body3 className="px-3 pb-1 text-zinc-700">
                           Yesterday
                         </Body3>
@@ -329,7 +327,7 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
                     )}
 
                     {groupedChats.lastWeek.length > 0 && (
-                      <div>
+                      <div className="space-y-0.5">
                         <Body3 className="px-3 pb-1 text-zinc-700">
                           Last 7 days
                         </Body3>
@@ -344,7 +342,7 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
                     )}
 
                     {groupedChats.lastMonth.length > 0 && (
-                      <div>
+                      <div className="space-y-0.5">
                         <Body3 className="px-3 pb-1 text-zinc-700">
                           Last 30 days
                         </Body3>
@@ -359,7 +357,7 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
                     )}
 
                     {groupedChats.older.length > 0 && (
-                      <div>
+                      <div className="space-y-0.5">
                         <Body3 className="px-3 pb-1 text-zinc-700">Older</Body3>
                         {groupedChats.older.map((chat) => (
                           <ChatItem
@@ -460,11 +458,9 @@ export const ChatHistory = () => {
               </div>
             </div>
           </div>
-          {!!id && (
-            <div className="flex w-full justify-end pb-2">
-              <ChatShareDialog chatId={id} />
-            </div>
-          )}
+          <div className="flex w-full justify-end pb-2">
+            {id ? <ChatShareDialog chatId={id} /> : <CareTeamDialog />}
+          </div>
         </div>
         <SheetContent
           side="left"

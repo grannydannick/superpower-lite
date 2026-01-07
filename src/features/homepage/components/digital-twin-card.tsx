@@ -1,4 +1,4 @@
-import { IconArrowUpRight } from '@central-icons-react/round-filled-radius-3-stroke-1.5/IconArrowUpRight';
+import { IconArrowUpRight } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconArrowUpRight';
 import { format } from 'date-fns';
 
 import { Link } from '@/components/ui/link';

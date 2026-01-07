@@ -70,7 +70,7 @@ export const CreateMessageForm = (): JSX.Element => {
               <FormItem>
                 <FormControl>
                   <div className="flex flex-col-reverse gap-2 lg:flex-col lg:gap-4">
-                    <div className="rounded-[20px] border border-zinc-100 bg-white px-4 pt-4 shadow-lg shadow-black/5">
+                    <div className="rounded-xl border border-zinc-200 bg-white px-4 pt-4">
                       <Textarea
                         {...field}
                         placeholder="Ask questions about your health from longevity advisors and get help from our customer service team"
@@ -183,7 +183,7 @@ const SuccessDialog = ({
             variant="default"
             className="w-full rounded-full"
             onClick={() => {
-              navigate('/concierge?type=ai');
+              navigate('/concierge');
             }}
           >
             Message Superpower AI

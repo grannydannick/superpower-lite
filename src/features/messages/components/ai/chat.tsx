@@ -7,16 +7,15 @@ import { useSearchParams } from 'react-router-dom';
 import { toast } from '@/components/ui/sonner';
 import { env } from '@/config/env';
 import { useHistory } from '@/features/messages/api/get-history';
-import { Greeting } from '@/features/messages/components/ai/greeting';
-import { ChatOptions } from '@/features/messages/components/chat-options';
-import { CreateMessageForm } from '@/features/messages/components/create-message-form';
 import { useChatStore } from '@/features/messages/stores/chat-store';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { cn, getActiveLogin } from '@/lib/utils';
 import { generateUUID } from '@/utils/generate-uiud';
 
+import { Greeting } from './greeting';
 import { Messages } from './messages';
 import { MultimodalInput } from './multimodal-input';
+import { SuggestedActions } from './suggested-actions';
 
 const publicErrors = [
   'Too many requests, please try again later.',
@@ -125,7 +124,6 @@ export function Chat({
       }
     },
   });
-  const type = useChatStore((s) => s.type);
   const sessionStartTime = useChatStore((s) => s.sessionStartTime);
   const setSessionStartTime = useChatStore((s) => s.setSessionStartTime);
   const incrementMessageCount = useChatStore((s) => s.incrementMessageCount);
@@ -149,24 +147,11 @@ export function Chat({
     return sendMessage(message, options);
   };
 
-  // Initialize session start time when component mounts for AI chat
   useEffect(() => {
-    if (type === 'ai' && !sessionStartTime) {
+    if (!sessionStartTime) {
       setSessionStartTime(Date.now());
     }
-  }, [type, sessionStartTime, setSessionStartTime]);
-
-  if (type === 'concierge') {
-    return (
-      <div className="mx-auto flex size-full min-w-0 max-w-3xl flex-1 flex-col justify-center pb-[50px]">
-        <div className="mx-auto flex w-full flex-col gap-6 pb-2">
-          <Greeting />
-          <ChatOptions />
-          <CreateMessageForm />
-        </div>
-      </div>
-    );
-  }
+  }, [sessionStartTime, setSessionStartTime]);
 
   return (
     <>
@@ -176,21 +161,41 @@ export function Chat({
           messages.length > 0 ? 'justify-start' : 'justify-between',
         )}
       >
-        <Messages
-          chatId={id}
-          messages={messages}
-          setMessages={setMessages}
-          status={status}
-        />
-
-        <form
+        {/* Top content area: messages and, if empty, centered greeting/suggestions */}
+        <div
           className={cn(
-            'mx-auto flex w-full flex-col gap-6 pb-2',
-            messages.length > 0 ? 'mt-auto' : null,
+            'flex flex-1 flex-col',
+            messages.length > 0 ? 'justify-start' : 'justify-center',
           )}
         >
-          {messages.length === 0 && <Greeting />}
-          {messages.length === 0 && <ChatOptions />}
+          <Messages
+            chatId={id}
+            messages={messages}
+            setMessages={setMessages}
+            status={status}
+          />
+
+          {messages.length === 0 && (
+            <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+              <Greeting />
+              <div
+                className={cn(
+                  'transition-all duration-500 ease-out flex w-full',
+                  input &&
+                    'opacity-0 blur-[2px] pointer-events-none -translate-y-4',
+                )}
+              >
+                <SuggestedActions
+                  onSendSuggestion={(text) =>
+                    handleSendMessage({ text, files: [] }, undefined)
+                  }
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        <form className="mx-auto w-full pb-2">
           <MultimodalInput
             chatId={id}
             input={input}

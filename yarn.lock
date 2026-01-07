@@ -1276,10 +1276,10 @@
   dependencies:
     statuses "^2.0.1"
 
-"@central-icons-react/round-filled-radius-3-stroke-1.5@^1.1.60":
-  version "1.1.60"
-  resolved "https://registry.yarnpkg.com/@central-icons-react/round-filled-radius-3-stroke-1.5/-/round-filled-radius-3-stroke-1.5-1.1.60.tgz#13ab06e9c94d3ed145e392d180d6728b1612dd0c"
-  integrity sha512-2ptGCzfBqTYcXyOVx45W+nnBB5c2jNPrPIyii1BcwGS0rZxyZiTndo3J26Ao9a5UFN5X4UXNh3Qx7frQ1qV0aw==
+"@central-icons-react/round-outlined-radius-3-stroke-1.5@^1.1.60":
+  version "1.1.83"
+  resolved "https://registry.yarnpkg.com/@central-icons-react/round-outlined-radius-3-stroke-1.5/-/round-outlined-radius-3-stroke-1.5-1.1.83.tgz#0ccb1a388826fec9dca2f7408e939d43e7125da7"
+  integrity sha512-6jRQzelpFpgu/EW23jDFiE96CsHVrrSWimd9/nA6gVaIYTgwY7V0c49Fr66N2xqNIJTeax8LrhAW4P3B7Yh4sg==
 
 "@chevrotain/cst-dts-gen@11.0.3":
   version "11.0.3"

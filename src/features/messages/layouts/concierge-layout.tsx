@@ -1,6 +1,7 @@
 import { Outlet, useParams } from 'react-router-dom';
 
 import { ChatHistory } from '@/features/messages/components/ai/history';
+import { CareTeamDialog } from '@/features/messages/components/care-team-dialog';
 
 import { ChatShareDialog } from '../components/chat-share-dialog';
 
@@ -12,11 +13,9 @@ export const ConciergeLayout = () => {
       <ChatHistory />
       <Outlet />
       <div className="hidden w-full max-w-[259px] lg:block">
-        {!!id && (
-          <div className="ml-auto flex w-full justify-end pb-2">
-            <ChatShareDialog chatId={id} />
-          </div>
-        )}
+        <div className="ml-auto flex w-full justify-end pb-2">
+          {id ? <ChatShareDialog chatId={id} /> : <CareTeamDialog />}
+        </div>
       </div>
     </div>
   );
