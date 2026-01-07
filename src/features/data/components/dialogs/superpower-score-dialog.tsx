@@ -1,6 +1,7 @@
 import { Description } from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import { TimeSeriesChart } from '@/components/ui/charts/time-series-chart/time-series-chart';
@@ -44,6 +45,7 @@ export const SuperpowerScoreDialog = ({
   disabled?: boolean;
 }) => {
   const [open, setOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [sharingOptionsOpen, setSharingOptionsOpen] = useState(false);
   const { width } = useWindowDimensions();
   const { data: biomarkersData } = useBiomarkers();
@@ -68,6 +70,23 @@ export const SuperpowerScoreDialog = ({
     biomarkersData?.biomarkers.filter((b) =>
       b.value?.some((v) => v.id && relatedBiomarkerIds.has(v.id)),
     ) ?? [];
+
+  useEffect(() => {
+    const modal = (searchParams.get('modal') || '').toLowerCase();
+    const shouldBeOpen = modal === 'superpower-score' && !disabled;
+    setOpen(shouldBeOpen);
+  }, [searchParams, disabled]);
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen);
+    const params = new URLSearchParams(searchParams);
+    if (nextOpen) {
+      params.set('modal', 'superpower-score');
+    } else if (params.get('modal') === 'superpower-score') {
+      params.delete('modal');
+    }
+    setSearchParams(params);
+  };
 
   const content = (
     <>
@@ -122,7 +141,7 @@ export const SuperpowerScoreDialog = ({
   if (width <= 1024) {
     return (
       <>
-        <Sheet open={open} onOpenChange={setOpen}>
+        <Sheet open={open} onOpenChange={handleOpenChange}>
           <SheetTrigger
             asChild
             disabled={disabled}
@@ -150,7 +169,7 @@ export const SuperpowerScoreDialog = ({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogTrigger
           asChild
           disabled={disabled}

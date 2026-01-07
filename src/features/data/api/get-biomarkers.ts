@@ -1,4 +1,5 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
 import { api } from '@/lib/api-client';
 import { useUser } from '@/lib/auth';
@@ -45,28 +46,42 @@ export const useBiomarkers = ({
   });
 
   // TODO: Move this into backend when we have the capacity for it
-  const filteredData = query.data
-    ? {
-        ...query.data,
-        biomarkers: query.data.biomarkers.filter((biomarker) => {
-          if (
-            user?.gender.toLowerCase() === 'female' &&
-            FILTERED_FEMALE_BIOMARKERS.includes(biomarker.name)
-          ) {
-            return false;
-          }
+  const filteredData = useMemo(() => {
+    if (!query.data) return query.data;
 
-          if (
-            user?.gender.toLowerCase() === 'male' &&
-            FILTERED_MALE_BIOMARKERS.includes(biomarker.name)
-          ) {
-            return false;
-          }
+    const gender = user?.gender?.toLowerCase();
 
-          return true;
-        }),
+    if (gender !== 'female' && gender !== 'male') {
+      return query.data;
+    }
+
+    const biomarkers = query.data.biomarkers.filter((biomarker) => {
+      if (
+        gender === 'female' &&
+        FILTERED_FEMALE_BIOMARKERS.includes(biomarker.name)
+      ) {
+        return false;
       }
-    : query.data;
+
+      if (
+        gender === 'male' &&
+        FILTERED_MALE_BIOMARKERS.includes(biomarker.name)
+      ) {
+        return false;
+      }
+
+      return true;
+    });
+
+    if (biomarkers.length === query.data.biomarkers.length) {
+      return query.data;
+    }
+
+    return {
+      ...query.data,
+      biomarkers,
+    };
+  }, [query.data, user?.gender]);
 
   return {
     ...query,

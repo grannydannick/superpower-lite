@@ -36,7 +36,7 @@ export const PotentialScreen = ({ handleNext }: { handleNext: () => void }) => {
   return (
     <div className="flex w-full flex-1 flex-col items-center justify-start md:justify-center">
       <H1 className="mx-auto mb-6 max-w-md text-balance text-center text-white max-md:text-5xl md:max-w-xl">
-        Every body has 100 year potential
+        Every body has a 100-year potential
       </H1>
       <Body1 className="mx-auto mb-8 max-w-xl text-balance text-center text-white md:max-w-md">
         No matter where you come from, your body holds that potential.{' '}

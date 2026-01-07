@@ -76,6 +76,15 @@ export const ShareableCardsModal = ({
     [preselectedTab, track],
   );
 
+  const handleWhatIsClick = () => {
+    const params =
+      selectedTab === 'score'
+        ? '/data?modal=superpower-score'
+        : '/data?modal=biological-age';
+
+    navigate(params);
+  };
+
   const content = (
     <>
       <DialogTitle>
@@ -107,7 +116,7 @@ export const ShareableCardsModal = ({
       </SimpleTabs>
       {selectedTab === 'age' && <OrganAgeSection />}
       <Button
-        onClick={() => navigate(`/data?modal=superpower-score`)}
+        onClick={handleWhatIsClick}
         variant="ghost"
         size="medium"
         className="text-center"

@@ -1,6 +1,7 @@
 import { Description } from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import { TimeSeriesChart } from '@/components/ui/charts/time-series-chart/time-series-chart';
@@ -48,6 +49,7 @@ export const BiologicalAgeDialog = ({
   disabled?: boolean;
 }) => {
   const [open, setOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [sharingOptionsOpen, setSharingOptionsOpen] = useState(false);
   const [showAge, setShowAge] = useState(false);
   const { width } = useWindowDimensions();
@@ -60,6 +62,23 @@ export const BiologicalAgeDialog = ({
     useState<(typeof tabs)[number]['value']>('chart');
 
   const organAgeBiomarkers = getOrganAgeBiomarkers(biomarkersData?.biomarkers);
+
+  useEffect(() => {
+    const modal = (searchParams.get('modal') || '').toLowerCase();
+    const shouldBeOpen = modal === 'biological-age' && !disabled;
+    setOpen(shouldBeOpen);
+  }, [searchParams, disabled]);
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen);
+    const params = new URLSearchParams(searchParams);
+    if (nextOpen) {
+      params.set('modal', 'biological-age');
+    } else if (params.get('modal') === 'biological-age') {
+      params.delete('modal');
+    }
+    setSearchParams(params);
+  };
 
   const content = (
     <>
@@ -120,7 +139,7 @@ export const BiologicalAgeDialog = ({
   if (width <= 1024) {
     return (
       <>
-        <Sheet open={open} onOpenChange={setOpen}>
+        <Sheet open={open} onOpenChange={handleOpenChange}>
           <SheetTrigger
             asChild
             disabled={disabled}
@@ -148,7 +167,7 @@ export const BiologicalAgeDialog = ({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogTrigger
           asChild
           disabled={disabled}
