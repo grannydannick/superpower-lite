@@ -1,10 +1,13 @@
 import { format } from 'date-fns';
+import { ChevronDown } from 'lucide-react';
 
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { H4 } from '@/components/ui/typography';
 import { useSubscriptions } from '@/features/settings/api';
 import { cn } from '@/lib/utils';
+
+import { CancelMembershipDialog } from './cancel-membership-dialog';
 
 export const CurrentMembership = (): JSX.Element => {
   const { data: subscriptionsData, isLoading } = useSubscriptions();
@@ -42,26 +45,43 @@ export const CurrentMembership = (): JSX.Element => {
           {superpowerMembership?.status === 'canceled' ? (
             <div className="my-3 hidden border-l border-zinc-100 lg:block" />
           ) : null}
-          {superpowerMembership?.status === 'canceled' ? (
-            <Card
-              className={cn(
-                `w-full px-5 rounded-2xl shadow-none py-4 lg:bg-transparent pointer-events-none`,
-              )}
-            >
-              <div className="flex flex-col">
-                <span className="text-xs text-zinc-400 md:text-sm">
-                  Canceled at
-                </span>
-                {superpowerMembership?.canceled_at ? (
-                  <span className="text-nowrap lg:text-xl">
-                    {format(
-                      new Date(superpowerMembership.canceled_at * 1000),
-                      'PP',
-                    )}
+          {superpowerMembership ? (
+            <CancelMembershipDialog membership={superpowerMembership}>
+              <Card
+                className={cn(
+                  `w-full px-5 rounded-2xl shadow-none py-4 lg:bg-transparent pointer-events-none`,
+                  superpowerMembership?.status === 'active' &&
+                    'cursor-pointer pointer-events-auto',
+                )}
+              >
+                <div className="flex flex-col">
+                  <span className="text-xs text-zinc-400 md:text-sm">
+                    {superpowerMembership?.status === 'canceled'
+                      ? 'Canceled at'
+                      : 'Manage'}
                   </span>
-                ) : null}
-              </div>
-            </Card>
+                  {superpowerMembership?.status === 'canceled' &&
+                  superpowerMembership?.canceled_at ? (
+                    <span className="text-nowrap lg:text-xl">
+                      {format(
+                        new Date(superpowerMembership.canceled_at * 1000),
+                        'PP',
+                      )}
+                    </span>
+                  ) : (
+                    <div className="flex flex-row items-center justify-between gap-x-1.5">
+                      <span className="md:text-xl">Membership</span>
+                      <ChevronDown className="size-4 shrink-0 text-zinc-400" />
+                    </div>
+                  )}
+                  {superpowerMembership?.status === 'active' ? (
+                    <span className="hidden whitespace-nowrap text-xs text-zinc-400 md:block">
+                      Update, cancel, and more
+                    </span>
+                  ) : null}
+                </div>
+              </Card>
+            </CancelMembershipDialog>
           ) : null}
         </div>
       )}
