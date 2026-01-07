@@ -49,16 +49,12 @@ export const RequestGroupsList = React.memo(
         <H4>{capitalize(status)} orders</H4>
         <Collapsible open={collapsibleOpen} onOpenChange={setCollapsibleOpen}>
           <div className="grid gap-5">
-            {visibleRequestGroups.map((rg) => (
-              <RequestGroupCard key={rg.id} requestGroup={rg} />
-            ))}
+            <RequestGroupCard requestGroups={visibleRequestGroups} />
           </div>
 
           <CollapsibleContent>
             <div className="mt-5 grid gap-5">
-              {restRequestGroups.map((rg) => (
-                <RequestGroupCard key={rg.id} requestGroup={rg} />
-              ))}
+              <RequestGroupCard requestGroups={restRequestGroups} />
             </div>
           </CollapsibleContent>
 
