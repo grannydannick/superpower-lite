@@ -5,3 +5,4 @@ export * from './phlebotomy-location';
 export * from './scheduler';
 export * from './schedule-success';
 export * from './schedule-summary';
+export * from './advisory-scheduler';

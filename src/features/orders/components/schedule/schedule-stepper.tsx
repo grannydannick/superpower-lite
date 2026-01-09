@@ -6,6 +6,7 @@ export const SCHEDULE_STEPS = {
   CREDITS_SELECT: 'credits-select',
   PHLEBOTOMY: 'phlebotomy',
   SCHEDULER: 'scheduler',
+  ADVISORY_SCHEDULER: 'advisory-scheduler',
   SUMMARY: 'summary',
   SUCCESS: 'success',
   CONFIRM_ADDRESS: 'confirm-address',
@@ -18,6 +19,7 @@ export const ScheduleFlowStepper = defineStepper(
   { id: SCHEDULE_STEPS.CONFIRM_ADDRESS },
   { id: SCHEDULE_STEPS.PHLEBOTOMY },
   { id: SCHEDULE_STEPS.SCHEDULER },
+  { id: SCHEDULE_STEPS.ADVISORY_SCHEDULER },
   { id: SCHEDULE_STEPS.SUMMARY },
   { id: SCHEDULE_STEPS.SUCCESS },
 );
@@ -50,7 +52,7 @@ export const useScheduleFlowStepper = (): UseScheduleFlowStepperType => {
     case 'advisory-call':
       steps = [
         { id: SCHEDULE_STEPS.CREDITS_SELECT },
-        { id: SCHEDULE_STEPS.SCHEDULER },
+        { id: SCHEDULE_STEPS.ADVISORY_SCHEDULER },
         { id: SCHEDULE_STEPS.SUMMARY },
         { id: SCHEDULE_STEPS.SUCCESS },
       ];

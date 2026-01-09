@@ -129,10 +129,14 @@ export function AppointmentDetails({
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <Calendar className="-mt-0.5 size-4 text-secondary" />
-                  <Body1 className="text-secondary">
-                    {collectionMethod === 'IN_LAB' ? 'In lab' : 'At home'}{' '}
-                    appointment
-                  </Body1>
+                  {isAdvisory ? (
+                    <Body1 className="text-secondary">Video appointment</Body1>
+                  ) : (
+                    <Body1 className="text-secondary">
+                      {collectionMethod === 'IN_LAB' ? 'In lab' : 'At home'}{' '}
+                      appointment
+                    </Body1>
+                  )}
                 </div>
                 <div className="space-y-2 pl-6">
                   <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center">
@@ -168,7 +172,7 @@ export function AppointmentDetails({
             </div>
           </div>
         ) : null}
-        {location?.address ? (
+        {location?.address && !isAdvisory ? (
           <div className="flex gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2">

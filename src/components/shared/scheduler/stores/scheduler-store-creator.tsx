@@ -1,6 +1,5 @@
 import moment, { Moment } from 'moment';
 import 'moment-timezone';
-import { toast } from 'sonner';
 import { createStore } from 'zustand';
 
 import { api } from '@/lib/api-client';
@@ -68,7 +67,7 @@ export const schedulerStoreCreator = (initProps: SchedulerProps) => {
       if (!response.slots.length) return;
 
       if (!response.timezone) {
-        toast.info('Cannot determine timezone');
+        console.warn('Cannot determine timezone');
         return;
       }
 

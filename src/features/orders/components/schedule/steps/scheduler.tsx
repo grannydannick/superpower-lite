@@ -12,7 +12,6 @@ import { Slot } from '@/types/api';
 
 import { WALK_IN_TEST_STEPS } from '../../../const/test-steps';
 import { useScheduleStore } from '../../../stores/schedule-store';
-import { ScheduleDuplicateNotice } from '../schedule-duplicate-notice';
 import { ScheduleFlowFooter } from '../schedule-flow-footer';
 
 export const SchedulerStep = () => {
@@ -21,11 +20,7 @@ export const SchedulerStep = () => {
   const { width } = useWindowDimensions();
   const { data: user } = useUser();
 
-  const isAdvisory = mode === 'advisory-call';
-  const schedulerCollectionMethod =
-    collectionMethod ?? (isAdvisory ? 'AT_HOME' : null);
-
-  if (!schedulerCollectionMethod) {
+  if (!collectionMethod) {
     throw new Error(
       'Collection method must be defined to use PhlebotomyScheduler',
     );
@@ -37,7 +32,7 @@ export const SchedulerStep = () => {
 
   if (!addressToUse) {
     throw new Error(
-      'Primary address must be defined to use PhlebotomyScheduler',
+      'Collection method must be defined to use PhlebotomyScheduler',
     );
   }
 
@@ -47,9 +42,9 @@ export const SchedulerStep = () => {
   };
 
   const numDaysToShow = width > 600 ? 5 : 4;
-  const instructions = getCollectionInstructions(schedulerCollectionMethod);
+  const instructions = getCollectionInstructions(collectionMethod);
 
-  if (!location?.capabilities.includes('APPOINTMENT_SCHEDULING') && !isAdvisory)
+  if (!location?.capabilities.includes('APPOINTMENT_SCHEDULING'))
     return <WalkInScheduler />;
 
   return (
@@ -57,19 +52,16 @@ export const SchedulerStep = () => {
       <div className={cn(SHARED_CONTAINER_STYLE)}>
         <div className="space-y-1 pb-4">
           <H2>Pick a time for your appointment</H2>
-          <ScheduleDuplicateNotice />
-          {!isAdvisory ? (
-            <Body1 className="text-zinc-500">{instructions}</Body1>
-          ) : null}
+          <Body1 className="text-zinc-500">{instructions}</Body1>
         </div>
         <div className="w-full rounded-xl py-6">
           <Scheduler
-            collectionMethod={schedulerCollectionMethod}
+            collectionMethod={collectionMethod}
             address={addressToUse}
             onSlotUpdate={onSlotUpdate}
             showCreateBtn={false}
             numDays={numDaysToShow}
-            isAdvisory={isAdvisory}
+            isAdvisory={mode === 'advisory-call'}
           />
         </div>
       </div>

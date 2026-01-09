@@ -26,6 +26,9 @@ const ScheduleFlowStepsContent = (): React.ReactElement => {
           <Steps.PhlebotomyLocationSelectStep />
         ),
         [SCHEDULE_STEPS.SCHEDULER]: () => <Steps.SchedulerStep />,
+        [SCHEDULE_STEPS.ADVISORY_SCHEDULER]: () => (
+          <Steps.AdvisorySchedulerStep />
+        ),
         [SCHEDULE_STEPS.SUMMARY]: () => <Steps.ScheduleSummaryStep />,
         [SCHEDULE_STEPS.SUCCESS]: () => <Steps.ScheduleSuccessStep />,
       })}
