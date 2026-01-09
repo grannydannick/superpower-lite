@@ -21,7 +21,11 @@ export const SchedulerStep = () => {
   const { width } = useWindowDimensions();
   const { data: user } = useUser();
 
-  if (!collectionMethod) {
+  const isAdvisory = mode === 'advisory-call';
+  const schedulerCollectionMethod =
+    collectionMethod ?? (isAdvisory ? 'AT_HOME' : null);
+
+  if (!schedulerCollectionMethod) {
     throw new Error(
       'Collection method must be defined to use PhlebotomyScheduler',
     );
@@ -33,7 +37,7 @@ export const SchedulerStep = () => {
 
   if (!addressToUse) {
     throw new Error(
-      'Collection method must be defined to use PhlebotomyScheduler',
+      'Primary address must be defined to use PhlebotomyScheduler',
     );
   }
 
@@ -43,9 +47,9 @@ export const SchedulerStep = () => {
   };
 
   const numDaysToShow = width > 600 ? 5 : 4;
-  const instructions = getCollectionInstructions(collectionMethod);
+  const instructions = getCollectionInstructions(schedulerCollectionMethod);
 
-  if (!location?.capabilities.includes('APPOINTMENT_SCHEDULING'))
+  if (!location?.capabilities.includes('APPOINTMENT_SCHEDULING') && !isAdvisory)
     return <WalkInScheduler />;
 
   return (
@@ -54,16 +58,18 @@ export const SchedulerStep = () => {
         <div className="space-y-1 pb-4">
           <H2>Pick a time for your appointment</H2>
           <ScheduleDuplicateNotice />
-          <Body1 className="text-zinc-500">{instructions}</Body1>
+          {!isAdvisory ? (
+            <Body1 className="text-zinc-500">{instructions}</Body1>
+          ) : null}
         </div>
         <div className="w-full rounded-xl py-6">
           <Scheduler
-            collectionMethod={collectionMethod}
+            collectionMethod={schedulerCollectionMethod}
             address={addressToUse}
             onSlotUpdate={onSlotUpdate}
             showCreateBtn={false}
             numDays={numDaysToShow}
-            isAdvisory={mode === 'advisory-call'}
+            isAdvisory={isAdvisory}
           />
         </div>
       </div>
