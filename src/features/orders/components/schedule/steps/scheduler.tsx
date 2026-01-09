@@ -12,6 +12,7 @@ import { Slot } from '@/types/api';
 
 import { WALK_IN_TEST_STEPS } from '../../../const/test-steps';
 import { useScheduleStore } from '../../../stores/schedule-store';
+import { ScheduleDuplicateNotice } from '../schedule-duplicate-notice';
 import { ScheduleFlowFooter } from '../schedule-flow-footer';
 
 export const SchedulerStep = () => {
@@ -52,6 +53,7 @@ export const SchedulerStep = () => {
       <div className={cn(SHARED_CONTAINER_STYLE)}>
         <div className="space-y-1 pb-4">
           <H2>Pick a time for your appointment</H2>
+          <ScheduleDuplicateNotice />
           <Body1 className="text-zinc-500">{instructions}</Body1>
         </div>
         <div className="w-full rounded-xl py-6">
