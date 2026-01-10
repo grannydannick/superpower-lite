@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { DefaultChatTransport, FileUIPart, type UIMessage } from 'ai';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { toast } from '@/components/ui/sonner';
 import { env } from '@/config/env';
@@ -33,6 +34,7 @@ export function Chat({
   const queryClient = useQueryClient();
   const { refetch } = useHistory();
   const { track } = useAnalytics();
+  const navigate = useNavigate();
 
   const [lastUserMessageTime, setLastUserMessageTime] = useState<number | null>(
     null,
@@ -114,7 +116,41 @@ export function Chat({
       }
     },
     onError: (error) => {
-      if (publicErrors.some((publicError) => publicError === error.message)) {
+      console.error(error);
+
+      const safeMessage =
+        typeof (error as any)?.message === 'string'
+          ? (error as any).message
+          : '';
+
+      const isValidationError =
+        error.name === 'AI_TypeValidationError' ||
+        safeMessage.includes('Type validation failed') ||
+        (safeMessage.includes('finish') &&
+          safeMessage.includes('finishReason'));
+
+      const isPublicError = publicErrors.some(
+        (publicError) => publicError === error.message,
+      );
+
+      if (isValidationError) {
+        console.warn(
+          'AI SDK type validation error - likely due to unrecognized message type from backend:',
+          {
+            error: error.message,
+            name: error.name,
+            timestamp: new Date().toISOString(),
+          },
+        );
+
+        // Don't show these validation errors to the user as they're internal SDK issues
+        refetch();
+        navigate(`/concierge/${id}`);
+
+        return;
+      }
+
+      if (isPublicError) {
         toast(error.message);
       } else {
         // refetch to trigger api client if its non requests issue
