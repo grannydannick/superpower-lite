@@ -168,7 +168,7 @@ export function AssistantChat({
         />
       </div>
       {visibleSuggestions.length > 0 && (
-        <div className="mb-2 ml-auto flex w-full flex-col items-end gap-2 px-1">
+        <div className="mb-2 ml-auto flex w-full items-end gap-2 px-1">
           {visibleSuggestions.map((suggestion) => (
             <ChatSuggestion
               key={suggestion}

@@ -255,7 +255,10 @@ function PureMultimodalInput({
   };
 
   return (
-    <div className="relative flex w-full flex-col gap-8" {...getRootProps()}>
+    <div
+      className="relative outline-none flex w-full flex-col gap-8"
+      {...getRootProps()}
+    >
       <input
         type="file"
         className="pointer-events-none fixed -left-4 -top-4 size-0.5 opacity-0"

@@ -13,7 +13,7 @@ export const ChatSuggestion = ({
   return (
     <button
       className={cn(
-        'group rounded-2xl lg:max-w-40 h-full flex border border-zinc-200 px-4 py-2 text-left transition-all duration-200 animate-in fade-in slide-in-from-bottom-2 hover:bg-zinc-100',
+        'group rounded-2xl focus-visible:ring-ring focus-visible:ring-2 outline-none lg:max-w-40 h-full flex border border-zinc-200 px-4 py-2 text-left transition-all duration-200 animate-in fade-in slide-in-from-bottom-2 hover:bg-zinc-100',
         className,
       )}
       onClick={onClick}
