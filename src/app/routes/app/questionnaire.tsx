@@ -11,6 +11,27 @@ import {
 import { useSubscriptionActive } from '@/features/questionnaires/api/subscription-active';
 import { IntakeQuestionnaire } from '@/features/questionnaires/components/intake-questionnaire';
 import { RxQuestionnaire } from '@/features/questionnaires/components/rx-questionnaire';
+import { preloadImage } from '@/utils/preload-image';
+
+export const questionnaireLoader = () => async () => {
+  /**
+   * This hack is to "preload" all of the images used in questionnaire
+   *
+   * If we are not using this, images are loaded dynamically and create weird "flicker" effect
+   * which this loader hopefully should fix
+   */
+  const preloadedImages = [
+    '/onboarding/rx.webp', // Intro step image
+    '/rx/identity.webp', // Identity verification step image
+  ];
+
+  const imagesPromiseList: Promise<any>[] = [];
+  for (const i of preloadedImages) {
+    imagesPromiseList.push(preloadImage(i));
+  }
+
+  return Promise.all(imagesPromiseList);
+};
 
 export const QuestionnaireRoute = () => {
   const { type } = useParams();

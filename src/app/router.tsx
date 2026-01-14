@@ -139,6 +139,12 @@ export const createRouter = () =>
             );
             return { Component: QuestionnaireRoute };
           },
+          loader: async () => {
+            const { questionnaireLoader } = await import(
+              './routes/app/questionnaire'
+            );
+            return questionnaireLoader()();
+          },
         },
         // Vault is the old name for records and will redirect legacy users to the new route
         {
