@@ -1,5 +1,61 @@
 {
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": [
+          "49WC8R527B.Superpower-Health-Mobile-Application---com.superpower-prod.ios"
+        ],
+        "components": [
+          {
+            "/": "/marketplace",
+            "?": {
+              "tab": "supplements"
+            },
+            "exclude": true,
+            "comment": "Exclude supplements tab - keep in Safari"
+          },
+          {
+            "/": "/"
+          },
+          {
+            "/": "/data"
+          },
+          {
+            "/": "/records"
+          },
+          {
+            "/": "/records/*"
+          },
+          {
+            "/": "/protocol"
+          },
+          {
+            "/": "/protocol/*"
+          },
+          {
+            "/": "/marketplace"
+          },
+          {
+            "/": "/marketplace/*"
+          },
+          {
+            "/": "/concierge"
+          },
+          {
+            "/": "/concierge/*"
+          },
+          {
+            "/": "/service/*"
+          }
+        ]
+      }
+    ]
+  },
   "webcredentials": {
-    "apps": [ "49WC8R527B.Superpower-Health-Mobile-Application---com.superpower-prod.ios", "49WC8R527B.Superpower-Health-Mobile-Application---com.superpower.ios" ]
+    "apps": [
+      "49WC8R527B.Superpower-Health-Mobile-Application---com.superpower-prod.ios",
+      "49WC8R527B.Superpower-Health-Mobile-Application---com.superpower.ios"
+    ]
   }
 }
