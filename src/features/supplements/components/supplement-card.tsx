@@ -63,7 +63,7 @@ const DesktopCard = ({
         )}
         <div className="pointer-events-none absolute inset-x-4 bottom-4 translate-y-2 opacity-0 blur-sm transition-all duration-200 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-hover:blur-0">
           <Button className="mx-auto flex w-full" size="medium">
-            Buy now
+            View Product
           </Button>
         </div>
       </div>
