@@ -96,30 +96,14 @@ export const LEGAL_DESCLAIMERS = {
   ),
   toxins: (
     <>
-      Vibrant testing does not demonstrate absolute positive and negative
-      predictive values for any disease state or condition. Its clinical utility
-      has not been fully established. Vibrant validates the accuracy and
-      precision of the testing but not of its clinical or diagnostic value. So
-      these tests are for wellness and informational purposes only. Vibrant is
-      actively doing clinical research on these samples, de-identified from
-      patients under an IRB and will make research publications towards the same
-      as and when the clinical utility is well established. These tests have
-      been laboratory developed and their performance characteristics determined
-      by Vibrant America LLC, a CLIA-certified laboratory performing the test
-      CLIA#:05D2078809. The test has not been cleared or approved by the U.S.
-      Food and Drug Administration (FDA). Although FDA does not currently clear
-      or approve laboratory-developed tests in the U.S., certification of the
-      laboratory is required under CLIA to ensure the quality and validity of
-      the tests. The general wellness test intended uses relate to sustaining or
-      offering general improvement to functions associated with a general state
-      of health while making reference to diseases or conditions. Content
-      provided for informational purposes only and should not be construed as
-      medical advice. Content provided to help you make a healthy lifestyle,
-      dietary, and treatment choices in consultation with your healthcare
-      provider. It is intended to be used as a tool to encourage a general state
-      of health and well-being. Please consult with your healthcare practitioner
-      for diagnosis and treatment considerations. The Vibrant Wellness platform
-      provides tools for you to track and analyze your general wellness profile.
+      This test was developed, and its performance characteristics determined by
+      Mosaic Diagnostics Laboratory. It has not been cleared or approved by the
+      US Food and Drug Administration, however, does comply with CLIA
+      regulations for clinical use. Please note that each value in the report
+      needs to be considered in the context of the overall health and
+      environment. The results should be interpreted in conjunction with the
+      complete clinical picture, given patient history and presentation, and at
+      the discretion of the medical provider.
     </>
   ),
   gut: (

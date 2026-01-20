@@ -6,8 +6,8 @@ import {
   CARDIOVASCULAR_PANEL,
   CONTINUOUS_GLUCOSE_MONITOR,
   DEXA_SCAN,
-  ENVIRONMENTAL_TOXINS_TEST,
   ENVIRONMENTAL_TOXINS,
+  ENVIRONMENTAL_TOXINS_TEST,
   FEMALE_FERTILITY_PANEL,
   FOOD_ENVIRONMENTAL_ALLERGY,
   FULL_BODY_MRI,
@@ -74,12 +74,12 @@ export const getSampleReportLinkForService = (service: string) => {
 
 /**
  * Retrieves the legal disclaimer for a specific healthcare service.
- * If the service does not have a specific disclaimer, the disclaimer for environmental toxins is used by default.
+ * If the service does not have a specific disclaimer, the generic disclaimer is used by default.
  *
  * @param service - The healthcare service for which to retrieve the legal disclaimer.
  * @returns {JSX.Element} The corresponding legal disclaimer for the given healthcare service.
  *
- * The function includes a default case where the disclaimer for "environmental toxins" is returned.
+ * The function includes a default case where the generic disclaimer is returned.
  * This default is applied when the healthcare service does not have a predefined legal disclaimer or falls under unspecified services.
  * This ensures that all services have a disclaimer, especially when the service is not explicitly mapped to one.
  *
@@ -89,7 +89,7 @@ export const getSampleReportLinkForService = (service: string) => {
  *   name: 'GRAIL Galleri Multi-Cancer Test'
  * });
  *
- * // Returns the default legal disclaimer for environmental toxins
+ * // Returns the default generic legal disclaimer
  * const disclaimer = getLegalDisclaimerForService({
  *   name: 'Unspecified Service'
  * });
@@ -98,10 +98,10 @@ export const getInformedConsentForService = (service: string): JSX.Element => {
   switch (service) {
     case GRAIL_GALLERI_MULTI_CANCER_TEST:
       return LEGAL_DESCLAIMERS.grail;
-    case ENVIRONMENTAL_TOXINS_TEST ||
-      HEAVY_METALS_TEST ||
-      MYCOTOXINS_TEST ||
-      TOTAL_TOXIN_TEST:
+    case ENVIRONMENTAL_TOXINS_TEST:
+    case HEAVY_METALS_TEST:
+    case MYCOTOXINS_TEST:
+    case TOTAL_TOXIN_TEST:
       return LEGAL_DESCLAIMERS.toxins;
     case GUT_MICROBIOME_ANALYSIS:
       return LEGAL_DESCLAIMERS.gut;
