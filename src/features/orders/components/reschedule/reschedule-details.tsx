@@ -46,14 +46,14 @@ export function RescheduleDetails({
 
         <div className="space-y-6">
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col justify-between md:flex-row md:items-center">
               <H3 className="text-zinc-900">
                 {requestGroup.orders.map((o) => o.serviceName).join(', ')}
               </H3>
               <StatusDisplay requestGroup={requestGroup} />
             </div>
             {canManageAppointment ? (
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col gap-2 md:flex-row md:items-center">
                 <button
                   className="flex w-full items-center justify-between rounded-xl border px-3 py-2"
                   onClick={() => setMode('reschedule')}
@@ -94,7 +94,7 @@ export function RescheduleDetails({
           </div>
 
           {requestGroup.createdAt ? (
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col justify-between md:flex-row md:items-center">
               <Body1>Purchase date</Body1>
               <Body1 className="text-secondary">
                 {moment(requestGroup.createdAt).format('MMM Do, YYYY')}
@@ -199,7 +199,7 @@ const Pill = ({
 }) => (
   <div
     className={cn(
-      'rounded-lg bg-vermillion-100 py-[3px] pl-1.5 pr-2 mix-blend-multiply',
+      'rounded-lg bg-vermillion-100 py-[3px] pl-1.5 pr-2 mix-blend-multiply w-fit',
       className,
     )}
   >

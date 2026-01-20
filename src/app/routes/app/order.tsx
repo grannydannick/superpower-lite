@@ -32,5 +32,9 @@ export const OrderRoute = () => {
     return <NotFoundRoute />;
   }
 
-  return <RescheduleFlow requestGroup={requestGroup} />;
+  return (
+    <div className="mx-auto w-full max-w-3xl px-6 py-9 md:px-16">
+      <RescheduleFlow requestGroup={requestGroup} />
+    </div>
+  );
 };
