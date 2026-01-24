@@ -13,7 +13,10 @@ import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 import { Category } from '@/types/api';
 
+import { useCheckPerformance } from '../hooks/use-check-performance';
 import { Level } from '../types';
+
+import { DigitalTwinFallback } from './digital-twin-fallback';
 
 const DigitalTwinModel = lazy(() => import('./digital-twin-model'));
 
@@ -24,6 +27,8 @@ export const DigitalTwin = ({ category }: { category?: Category }) => {
   const lastProgressRef = useRef<number>(-1);
 
   const { data: user, isLoading: isUserLoading } = useUser();
+  const { isPerformanceSufficient, isLoading: isPerformanceLoading } =
+    useCheckPerformance();
 
   // Stable gender → model mapping
   const model = useMemo<'male' | 'female'>(
@@ -68,6 +73,14 @@ export const DigitalTwin = ({ category }: { category?: Category }) => {
       return () => clearTimeout(t);
     }
   }, []);
+
+  if (isPerformanceLoading) {
+    return null;
+  }
+
+  if (!isPerformanceSufficient) {
+    return <DigitalTwinFallback />;
+  }
 
   return (
     <div
