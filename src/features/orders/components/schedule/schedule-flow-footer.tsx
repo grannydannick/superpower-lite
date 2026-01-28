@@ -58,7 +58,7 @@ export const ScheduleFlowFooter = ({
   };
 
   return (
-    <div className="flex items-center px-6 py-4 backdrop-blur-sm md:px-16 md:py-8">
+    <div className="flex items-center py-4 backdrop-blur-sm md:py-8">
       <div className="flex w-full flex-col-reverse justify-end gap-4 md:flex-row md:gap-2">
         {renderPrevButton()}
         {renderNextButton()}

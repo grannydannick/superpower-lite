@@ -438,6 +438,9 @@ export type PhlebotomyLocation = {
   phone?: string;
   capabilities: LabCapability[];
   hours?: LabHours;
+  slots: Slot[];
+  lat?: number;
+  lng?: number;
 };
 
 export type LabCapability = 'APPOINTMENT_SCHEDULING' | 'WALK_IN';

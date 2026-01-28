@@ -1,7 +1,6 @@
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
-import moment from 'moment';
-import 'moment-timezone';
-import { useRef, useEffect, useState, useCallback } from 'react';
+import moment from 'moment-timezone';
+import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
@@ -13,134 +12,77 @@ import {
 } from '@/components/ui/popover';
 import { Spinner } from '@/components/ui/spinner';
 import { TextShimmer } from '@/components/ui/text-shimmer';
-import { Body1 } from '@/components/ui/typography';
+import { Body1, H4 } from '@/components/ui/typography';
 
-import { useScheduler } from '../stores/scheduler';
+import { DEFAULT_DAYS_RANGE } from '../const';
 
 import { RangeSelectButton } from './range-select-button';
 
-export function SchedulerHeading(): JSX.Element {
-  const {
-    updateSelectedDay,
-    tz,
-    updateStartRange,
-    startRange,
-    numDays,
-    updateSelectedSlot,
-    onSlotUpdate,
-    showCreateBtn,
-    loading,
-    slots,
-    selectedDay,
-  } = useScheduler((s) => s);
+interface SchedulerHeadingProps {
+  startRange?: moment.Moment;
+  tz: string;
+  loading: boolean;
+  onRangeChange: (newRange: moment.Moment) => void;
+  onSelectionClear: () => void;
+}
+
+export const SchedulerHeading = ({
+  startRange,
+  tz,
+  loading,
+  onRangeChange,
+  onSelectionClear,
+}: SchedulerHeadingProps) => {
   const { pathname } = useLocation();
 
-  // Store the initial startRange when the component first loads as we do not want to show dates before this
-  const initialStartRangeRef = useRef<moment.Moment | null>(null);
-  useEffect(() => {
-    if (!initialStartRangeRef.current && slots && slots.length > 0) {
-      // Find the earliest slot date (in scheduler timezone)
-      const earliestSlot = slots.reduce((min, slot) => {
-        const m = moment(slot.start).tz(tz);
-        return m.isBefore(min) ? m : min;
-      }, moment(slots[0].start).tz(tz));
-      initialStartRangeRef.current = earliestSlot.clone();
-    }
-  }, [slots, tz]);
+  const currentWeekStart = moment().tz(tz).startOf('isoWeek');
+  const isAtInitialWeek = startRange
+    ? startRange.clone().startOf('isoWeek').isSameOrBefore(currentWeekStart)
+    : true;
 
-  // Calculate the previous range end if the user clicks the left chevron to know when to disable it
-  const prevRangeEnd = startRange
-    ? startRange.clone().subtract(1, 'days')
-    : null;
+  const handlePrev = () => {
+    if (!startRange || isAtInitialWeek) return;
 
-  const initialStartRange = initialStartRangeRef.current;
+    const today = moment().tz(tz).startOf('day');
+    const target = startRange
+      .clone()
+      .startOf('isoWeek')
+      .subtract(DEFAULT_DAYS_RANGE, 'days')
+      .tz(tz);
 
-  // Only adjust the back button to go to the previous ISO week start.
-  const handlePrev = async () => {
+    // don't go before today
+    const finalTarget = target.isBefore(today) ? today : target;
+
+    onRangeChange(finalTarget);
+    onSelectionClear();
+  };
+
+  const handleNext = () => {
     if (!startRange) return;
 
     const target = startRange
       .clone()
       .startOf('isoWeek')
-      .subtract(1, 'week')
+      .add(DEFAULT_DAYS_RANGE, 'days')
       .tz(tz);
 
-    updateStartRange(target);
-    updateSelectedDay(undefined);
-    updateSelectedSlot(undefined);
-
-    onSlotUpdate && !showCreateBtn && onSlotUpdate(null, tz);
-  };
-
-  // Keep forward navigation as-is (step by numDays and clamp to today)
-  const handleNext = async (numDays: number) => {
-    if (!startRange) return;
-
-    const newStartRange = startRange.clone().add(numDays, 'days').tz(tz);
-    const currentDate = moment().tz(tz);
-
-    if (newStartRange.isBefore(currentDate)) {
-      updateStartRange(currentDate);
-    } else {
-      updateStartRange(newStartRange);
-    }
-    updateSelectedDay(undefined);
-    updateSelectedSlot(undefined);
-
-    onSlotUpdate && !showCreateBtn && onSlotUpdate(null, tz);
+    onRangeChange(target);
+    onSelectionClear();
   };
 
   const [open, setOpen] = useState(false);
 
-  const handleDaySelect = (date?: Date) => {
+  // tomorrow is the earliest selectable date
+  const tomorrow = moment().tz(tz).add(1, 'day').startOf('day').toDate();
+
+  const handleCalendarSelect = (date: Date | undefined) => {
     if (!date) return;
 
-    const picked = moment
-      .tz(
-        {
-          year: date.getFullYear(),
-          month: date.getMonth(),
-          date: date.getDate(),
-        },
-        tz,
-      )
-      .startOf('day');
-
-    const weekStart = picked.clone().startOf('isoWeek');
-
-    const minStart = initialStartRangeRef.current
-      ? initialStartRangeRef.current.clone()
-      : moment().tz(tz);
-
-    const newStart = weekStart.isBefore(minStart) ? minStart : weekStart;
-
-    updateStartRange(newStart);
-    updateSelectedDay(picked);
-    updateSelectedSlot(undefined);
-
-    onSlotUpdate && !showCreateBtn && onSlotUpdate(null, tz);
-
+    const selected = moment(date).tz(tz);
+    onRangeChange(selected);
+    onSelectionClear();
     setOpen(false);
   };
-
-  const defaultMonthDate = startRange
-    ? new Date(startRange.year(), startRange.month(), startRange.date())
-    : undefined;
-
-  const selectedDate = selectedDay
-    ? new Date(selectedDay.year(), selectedDay.month(), selectedDay.date())
-    : startRange
-      ? new Date(startRange.year(), startRange.month(), startRange.date())
-      : undefined;
-
-  const getCalendarMinDate = useCallback(() => {
-    const min = (
-      initialStartRangeRef.current
-        ? initialStartRangeRef.current.clone()
-        : moment().tz(tz)
-    ).startOf('day');
-    return new Date(min.year(), min.month(), min.date());
-  }, [tz]);
 
   return (
     <div className="flex items-center justify-between gap-2">
@@ -157,17 +99,17 @@ export function SchedulerHeading(): JSX.Element {
           <PopoverTrigger asChild>
             <Button
               variant="ghost"
-              className="group flex items-center gap-2 px-2 py-1 transition-colors duration-150 hover:bg-zinc-100"
+              className="group flex items-center gap-1 p-0"
             >
-              <Body1 className="text-sm text-primary sm:text-base">
+              <H4>
                 {startRange?.tz(tz).format('MMMM')}{' '}
                 <span className="text-secondary">
                   {startRange?.tz(tz).format('YYYY')}
                 </span>
-              </Body1>
+              </H4>
               <ChevronDown
                 className="text-zinc-400 transition-all duration-200 group-data-[state=open]:-rotate-180"
-                size={16}
+                size={20}
               />
             </Button>
           </PopoverTrigger>
@@ -176,11 +118,8 @@ export function SchedulerHeading(): JSX.Element {
               mode="single"
               showOutsideDays
               captionLayout="dropdown"
-              defaultMonth={defaultMonthDate}
-              selected={selectedDate}
-              onSelect={handleDaySelect}
-              // Disable picking dates before the earliest available (or today as a fallback)
-              disabled={{ before: getCalendarMinDate() }}
+              disabled={{ before: tomorrow }}
+              onSelect={handleCalendarSelect}
             />
           </PopoverContent>
         </Popover>
@@ -198,23 +137,17 @@ export function SchedulerHeading(): JSX.Element {
         <div className="flex flex-row items-center">
           {loading ? <Spinner variant="primary" size="xs" /> : null}
           <RangeSelectButton
-            icon={<ChevronLeft className="size-4" />}
-            disabled={
-              loading ||
-              !prevRangeEnd ||
-              prevRangeEnd.isBefore(initialStartRange, 'day')
-            }
+            icon={<ChevronLeft className="size-5 text-zinc-400" />}
+            disabled={loading || isAtInitialWeek}
             onClick={handlePrev}
           />
           <RangeSelectButton
-            icon={<ChevronRight className="size-4" />}
+            icon={<ChevronRight className="size-5 text-zinc-400" />}
             disabled={loading}
-            onClick={() => {
-              numDays && handleNext(numDays);
-            }}
+            onClick={handleNext}
           />
         </div>
       </div>
     </div>
   );
-}
+};

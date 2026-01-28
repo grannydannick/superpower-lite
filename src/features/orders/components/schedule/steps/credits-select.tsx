@@ -1,5 +1,6 @@
 import { Info } from 'lucide-react';
 import React, { useCallback, useMemo } from 'react';
+import { NavLink } from 'react-router-dom';
 
 import { SelectableCard } from '@/components/shared/selectable-card';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +13,6 @@ import {
 } from '@/components/ui/tooltip';
 import { Body1, H2 } from '@/components/ui/typography';
 import { MAX_TUBE_COUNT } from '@/const';
-import { SHARED_CONTAINER_STYLE } from '@/features/orders/const/config';
 import { useServices } from '@/features/services/api';
 import { cn } from '@/lib/utils';
 import { Credit } from '@/types/api';
@@ -31,8 +31,8 @@ export const CreditsSelectStep = () => {
   const isTestKit = mode === 'test-kit';
 
   return (
-    <>
-      <div className={cn('space-y-8', SHARED_CONTAINER_STYLE)}>
+    <div className="flex flex-1 flex-col justify-between">
+      <div className={cn('space-y-8')}>
         <div className="space-y-2">
           <H2>
             {isTestKit ? 'Select your test kits' : 'Schedule your appointment'}
@@ -57,7 +57,7 @@ export const CreditsSelectStep = () => {
         />
       </div>
       <ScheduleFlowFooter nextBtnDisabled={isDisabled} />
-    </>
+    </div>
   );
 };
 
@@ -169,6 +169,20 @@ const CreditsSelectContent = ({
             <Skeleton className="h-[106px] w-full rounded-[20px]" key={i} />
           ))}
 
+        {!isQueryLoading && uniqueCredits.length === 0 ? (
+          <div className="flex items-center justify-center rounded-xl border border-dashed px-3 py-10">
+            <Body1 className="text-secondary">
+              No credits available, get some{' '}
+              <NavLink
+                className="text-vermillion-900 underline"
+                to="/marketplace"
+              >
+                here
+              </NavLink>
+            </Body1>
+          </div>
+        ) : null}
+
         {!isQueryLoading &&
           uniqueCredits.map((credit) => {
             const service = services.find((s) => s.id === credit.serviceId);
@@ -208,13 +222,13 @@ const CreditsSelectContent = ({
       </div>
 
       {mode === 'phlebotomy' ? (
-        <div className="mt-4 flex justify-between ">
+        <div className="mt-4 flex flex-col justify-between gap-4 sm:flex-row">
           {isQueryLoading ? (
             <Skeleton className="h-6 w-full" />
           ) : (
             <>
               <div className="flex items-center gap-2">
-                <Body1 className="text-secondary">
+                <Body1 className="text-nowrap text-secondary">
                   Estimated Total: {totalTubes}/{MAX_TUBE_COUNT} vials
                 </Body1>
                 <EstimatedTooltip />
@@ -225,8 +239,8 @@ const CreditsSelectContent = ({
                 </div>
               )}
               {anyWouldExceed && totalTubes < MAX_TUBE_COUNT && (
-                <div className="ml-4 flex items-center">
-                  <Body1 className="text-zinc-500">
+                <div className="flex items-center">
+                  <Body1 className="text-nowrap text-zinc-500">
                     Some tests require another appointment.
                   </Body1>
                 </div>

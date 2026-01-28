@@ -131,6 +131,7 @@ export function RescheduleDetails({
                     : // fallback for legacy to always appointment schedyuling
                       ['APPOINTMENT_SCHEDULING'],
                   name: '',
+                  slots: [],
                 }
               : undefined
           }

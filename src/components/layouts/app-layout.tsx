@@ -28,7 +28,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     !data ||
     pathname.includes('onboarding') ||
     pathname.includes('questionnaire') ||
-    pathname.includes('family-risk/plan');
+    pathname.includes('family-risk/plan') ||
+    pathname.includes('schedule');
 
   const isWhiteBg = WHITE_BACKGROUND_PATHS.some((path) =>
     pathname.includes(path),

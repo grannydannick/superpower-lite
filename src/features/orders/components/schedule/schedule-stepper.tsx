@@ -1,8 +1,11 @@
 import { defineStepper } from '@stepperize/react';
 
+import { useCheckLocation } from '@/hooks/use-check-location';
+
 import { useScheduleStore } from '../../stores/schedule-store';
 
 export const SCHEDULE_STEPS = {
+  INTRO: 'intro',
   CREDITS_SELECT: 'credits-select',
   PHLEBOTOMY: 'phlebotomy',
   SCHEDULER: 'scheduler',
@@ -10,12 +13,11 @@ export const SCHEDULE_STEPS = {
   SUMMARY: 'summary',
   SUCCESS: 'success',
   CONFIRM_ADDRESS: 'confirm-address',
-  RECOMMENDATIONS: 'recommendations',
 } as const satisfies Record<string, string>;
 
 export const ScheduleFlowStepper = defineStepper(
+  { id: SCHEDULE_STEPS.INTRO },
   { id: SCHEDULE_STEPS.CREDITS_SELECT },
-  { id: SCHEDULE_STEPS.RECOMMENDATIONS },
   { id: SCHEDULE_STEPS.CONFIRM_ADDRESS },
   { id: SCHEDULE_STEPS.PHLEBOTOMY },
   { id: SCHEDULE_STEPS.SCHEDULER },
@@ -36,17 +38,21 @@ type UseScheduleFlowStepperType = ScheduleFlowStepperUseStepperType & {
 
 export const useScheduleFlowStepper = (): UseScheduleFlowStepperType => {
   const mode = useScheduleStore((s) => s.mode);
+  const isOnOnboarding = useCheckLocation('/onboarding');
 
   const methods = ScheduleFlowStepper.useStepper();
 
   let steps: { id: ScheduleFlowStepId }[] = [
     { id: SCHEDULE_STEPS.CREDITS_SELECT },
-    { id: SCHEDULE_STEPS.RECOMMENDATIONS },
     { id: SCHEDULE_STEPS.PHLEBOTOMY },
     { id: SCHEDULE_STEPS.SCHEDULER },
     { id: SCHEDULE_STEPS.SUMMARY },
     { id: SCHEDULE_STEPS.SUCCESS },
   ];
+
+  if (isOnOnboarding) {
+    steps.unshift({ id: SCHEDULE_STEPS.INTRO });
+  }
 
   switch (mode) {
     case 'advisory-call':

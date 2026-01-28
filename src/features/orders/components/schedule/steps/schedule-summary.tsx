@@ -7,7 +7,6 @@ import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner'
 import { Body1, Body2, H2 } from '@/components/ui/typography';
 import { useCredits } from '@/features/orders/api/credits';
 import { useUpgradeCreditPrice } from '@/features/orders/api/credits/get-upgrade-credit-price';
-import { SHARED_CONTAINER_STYLE } from '@/features/orders/const/config';
 import { useScheduleStore } from '@/features/orders/stores/schedule-store';
 import { useServices } from '@/features/services/api';
 import { CreatePaymentMethodForm } from '@/features/settings/components/billing/create-payment-method-form';
@@ -58,6 +57,7 @@ export function ScheduleSummaryStep(): ReactNode {
 
   const isQueryLoading = isPaymentMethodsLoading || isUpgradePriceLoading;
 
+  const isTestKit = mode === 'test-kit';
   const price =
     collectionMethod === 'AT_HOME' ? upgradePriceData?.price ?? 0 : 0;
 
@@ -81,21 +81,19 @@ export function ScheduleSummaryStep(): ReactNode {
     }
   };
 
-  const isTestKit = mode === 'test-kit';
-
   return (
-    <>
-      <div className={cn('space-y-8', SHARED_CONTAINER_STYLE)}>
+    <div className="flex flex-1 flex-col justify-between">
+      <div className={cn('space-y-8')}>
         <div className="space-y-1">
           <H2>
             {isTestKit
               ? 'Confirm your shipping address'
-              : 'Confirm your testing location & date'}
+              : 'Confirm appointment'}
           </H2>
           <Body1 className="text-secondary">
             {isTestKit
               ? 'Review your order details and shipping address below.'
-              : 'Confirm your testing details below.'}
+              : 'Confirm your appointment details below.'}
           </Body1>
         </div>
         {isQueryLoading ? (
@@ -157,7 +155,7 @@ export function ScheduleSummaryStep(): ReactNode {
           </Button>
         }
       ></ScheduleFlowFooter>
-    </>
+    </div>
   );
 }
 
@@ -171,7 +169,7 @@ function ScheduleSummaryItems(): ReactNode {
   const ownedCredits = credits.filter((s) => selectedCreditIds.has(s.id));
 
   return (
-    <div className="flex flex-col rounded-[20px] border border-zinc-200 bg-white p-5 shadow shadow-black/[.03]">
+    <div className="flex flex-col rounded-[20px] border border-zinc-200 bg-white px-5 py-3 shadow shadow-black/[.03]">
       {ownedCredits.map((c, i) => {
         const s = services.find((s) => s.id === c.serviceId);
         if (!s) return;

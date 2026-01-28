@@ -99,8 +99,9 @@ export const scheduleStoreCreator = (initProps: ScheduleStoreProps) => {
           const data: CreateOrderInput = {
             creditIds: creditIds.size > 0 ? [...creditIds] : [],
             address: location.address,
-            timestamp: slot ? slot.start : undefined,
-            timezone: tz ? tz : undefined,
+            timestamp:
+              slot && appointmentType === 'SCHEDULED' ? slot.start : undefined,
+            timezone: tz && appointmentType === 'SCHEDULED' ? tz : undefined,
             collectionMethod: collectionMethod ?? undefined,
             appointmentType,
           };

@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 
 import { H2 } from '@/components/ui/typography';
-import { SHARED_CONTAINER_STYLE } from '@/features/orders/const/config';
 import { CurrentAddressCard } from '@/features/users/components/current-address-card';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
@@ -22,16 +21,17 @@ export const ConfirmAddressStep = () => {
       address: user.primaryAddress,
       capabilities: ['APPOINTMENT_SCHEDULING'],
       name: '',
+      slots: [],
     });
-  }, [user?.primaryAddress]);
+  }, [user?.primaryAddress, updateLocation]);
 
   return (
-    <>
-      <div className={cn('space-y-8', SHARED_CONTAINER_STYLE)}>
+    <div className="flex flex-1 flex-col justify-between">
+      <div className={cn('space-y-8')}>
         <H2 className="text-2xl md:text-3xl">Confirm shipping address</H2>
-        <CurrentAddressCard disableEdit={true} />
+        <CurrentAddressCard />
       </div>
       <ScheduleFlowFooter nextBtnDisabled={!location} />
-    </>
+    </div>
   );
 };

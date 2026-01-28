@@ -11,20 +11,18 @@ export interface SchedulerProps {
   collectionMethod: CollectionMethodType;
   address: Address;
   onSlotUpdate?: (slot: Slot | null, tz: string) => void;
-  numDays?: number;
-  showCreateBtn?: boolean;
   isAdvisory?: boolean;
+  selectedSlot?: Slot | null;
 }
 
 export interface SchedulerStore extends SchedulerProps {
   slots: Slot[];
   loading: boolean;
+  error: string | null;
   tz: string;
   fetchSlots: () => Promise<void>;
   selectedDay: Moment | undefined;
   updateSelectedDay: (day: Moment | undefined) => void;
-  selectedSlot: Slot | undefined;
-  updateSelectedSlot: (slot: Slot | undefined) => void | undefined;
   startRange: Moment | undefined;
   updateStartRange: (date: Moment) => void;
 }
@@ -33,9 +31,7 @@ export type SchedulerStoreApi = ReturnType<typeof schedulerStoreCreator>;
 
 export const schedulerStoreCreator = (initProps: SchedulerProps) => {
   const DEFAULT_PROPS: SchedulerProps = {
-    numDays: initProps.numDays ?? 5,
     onSlotUpdate: initProps.onSlotUpdate,
-    showCreateBtn: initProps.showCreateBtn,
     collectionMethod: initProps.collectionMethod,
     address: initProps.address,
     isAdvisory: initProps.isAdvisory ?? false,
@@ -46,51 +42,61 @@ export const schedulerStoreCreator = (initProps: SchedulerProps) => {
     slots: [],
     tz: moment.tz.guess(),
     loading: false,
+    error: null,
     fetchSlots: async () => {
       const state = get();
       const collectionMethod = state.collectionMethod;
       const address = state.address;
       const startRange = state.startRange;
       const isAdvisory = state.isAdvisory;
-      set({ loading: true });
+      set({ loading: true, error: null });
 
-      const response: { slots: Slot[]; timezone: string | undefined } =
-        await api.post(URL, {
-          collectionMethod,
-          address,
-          start: startRange ? startRange.toDate() : new Date(),
-          isAdvisory,
-        });
+      try {
+        const response: { slots: Slot[]; timezone: string | undefined } =
+          await api.post(URL, {
+            collectionMethod,
+            address,
+            start: startRange ? startRange.toDate() : new Date(),
+            isAdvisory,
+          });
 
-      set({ loading: false, slots: response.slots });
+        const tz = response.timezone ?? state.tz;
 
-      if (!response.slots.length) return;
+        // find earliest slot to set initial startRange
+        const allSlots = response.slots;
+        let newStartRange = state.startRange;
 
-      if (!response.timezone) {
-        console.warn('Cannot determine timezone');
-        return;
-      }
+        if (allSlots.length > 0) {
+          const earliestSlot = allSlots.reduce((min, slot) => {
+            return moment(slot.start).isBefore(moment(min.start)) ? slot : min;
+          }, allSlots[0]);
 
-      const convertedMoment = moment
-        .utc(response.slots[0].start)
-        .tz(response.timezone);
+          const earliestMoment = moment.utc(earliestSlot.start).tz(tz);
+          if (earliestMoment.isAfter(newStartRange)) {
+            newStartRange = earliestMoment;
+          }
+        }
 
-      if (moment(convertedMoment).isAfter(startRange)) {
         set({
-          startRange: convertedMoment,
-          selectedDay: undefined,
-          tz: response.timezone,
+          loading: false,
+          slots: response.slots,
+          tz,
+          startRange: newStartRange,
+        });
+      } catch {
+        set({
+          loading: false,
+          error: 'Failed to load available slots. Please try again.',
         });
       }
     },
     selectedDay: undefined,
     updateSelectedDay: (day) =>
       set((state) => ({ ...state, selectedDay: day })),
-    selectedSlot: undefined,
-    updateSelectedSlot: (slot) =>
-      set((state) => ({ ...state, selectedSlot: slot })),
     startRange: moment().tz(moment.tz.guess()),
-    updateStartRange: (date) =>
-      set((state) => ({ ...state, startRange: date })),
+    updateStartRange: (date) => {
+      set({ startRange: date, selectedDay: undefined });
+      get().fetchSlots();
+    },
   }));
 };

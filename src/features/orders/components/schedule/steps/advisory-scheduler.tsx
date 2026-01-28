@@ -2,10 +2,7 @@ import { useEffect } from 'react';
 
 import { Scheduler } from '@/components/shared/scheduler';
 import { Body1, H2 } from '@/components/ui/typography';
-import { SHARED_CONTAINER_STYLE } from '@/features/orders/const/config';
-import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { useUser } from '@/lib/auth';
-import { cn } from '@/lib/utils';
 import { Slot } from '@/types/api';
 
 import { useScheduleStore } from '../../../stores/schedule-store';
@@ -15,7 +12,6 @@ export const AdvisorySchedulerStep = () => {
   const { updateSlot, updateTz, slot, updateLocation } = useScheduleStore(
     (s) => s,
   );
-  const { width } = useWindowDimensions();
   const { data: user } = useUser();
 
   const addressToUse = user?.primaryAddress;
@@ -28,6 +24,7 @@ export const AdvisorySchedulerStep = () => {
       address: addressToUse,
       name: 'ZOOM',
       capabilities: [],
+      slots: [],
     });
   }, [addressToUse, updateLocation]);
 
@@ -40,11 +37,9 @@ export const AdvisorySchedulerStep = () => {
     if (tz) updateTz(tz);
   };
 
-  const numDaysToShow = width > 600 ? 5 : 4;
-
   return (
-    <>
-      <div className={cn(SHARED_CONTAINER_STYLE)}>
+    <div className="flex flex-1 flex-col justify-between">
+      <div>
         <div className="space-y-1 pb-4">
           <H2>Pick a time for your appointment</H2>
         </div>
@@ -53,13 +48,11 @@ export const AdvisorySchedulerStep = () => {
             collectionMethod={'AT_HOME'}
             address={addressToUse}
             onSlotUpdate={onSlotUpdate}
-            showCreateBtn={false}
-            numDays={numDaysToShow}
             isAdvisory={true}
           />
         </div>
       </div>
       <ScheduleFlowFooter nextBtnDisabled={!slot} />
-    </>
+    </div>
   );
 };

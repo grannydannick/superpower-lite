@@ -1,41 +1,41 @@
 import { Moment } from 'moment';
-import { useEffect } from 'react';
 import 'moment-timezone';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { Body1 } from '@/components/ui/typography';
+import { Slot } from '@/types/api';
 
-import { useScheduler } from '../stores/scheduler';
-import { dayArray, isDisabledDaySlot } from '../utils';
+import { DEFAULT_DAYS_RANGE } from '../const';
+import { dayArray } from '../utils';
 
 import { SchedulerDaySlot } from './scheduler-day-slot';
-export function SchedulerDays(): JSX.Element {
-  const {
-    selectedDay,
-    slots,
-    updateSelectedDay,
-    startRange,
-    numDays,
-    loading,
-  } = useScheduler((s) => s);
 
-  useEffect(() => {
-    if (!startRange || !numDays) return;
+interface SchedulerDaysProps {
+  slots: Slot[];
+  startRange?: Moment;
+  loading: boolean;
+  selectedDay?: Moment;
+  tz: string;
+  numDays?: number;
+  onDaySelect: (day: Moment) => void;
+}
 
-    for (const day of dayArray(startRange, numDays).reverse()) {
-      if (!selectedDay && !isDisabledDaySlot(day, slots)) {
-        updateSelectedDay(day);
-      }
-    }
-  }, [slots]);
-
-  const renderDays = numDays && startRange && slots.length > 0 && !loading;
+export const SchedulerDays = ({
+  slots,
+  startRange,
+  loading,
+  selectedDay,
+  tz,
+  numDays = DEFAULT_DAYS_RANGE,
+  onDaySelect,
+}: SchedulerDaysProps) => {
+  const renderDays = startRange && slots.length > 0 && !loading;
 
   if (slots.length === 0 && !loading) {
     return (
-      <div className="mb-8 flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center rounded-xl border border-dashed px-3 py-10">
         <Body1 className="text-center text-zinc-500">
-          We were unable to find available slots within the next few months.
+          We were unable to find available slots. Try next week
           <br />
         </Body1>
       </div>
@@ -43,25 +43,28 @@ export function SchedulerDays(): JSX.Element {
   }
 
   return (
-    <div className="mb-8 flex flex-col justify-start gap-2 sm:flex-row">
+    <div className="flex justify-start gap-2 overflow-x-auto">
       {loading &&
         Array(numDays)
           .fill(0)
           .map((_, indx) => (
-            <Skeleton
-              className="h-[134px] w-full min-w-fit rounded-2xl"
-              key={indx}
-            />
+            <Skeleton className="h-[70px] w-full rounded-xl" key={indx} />
           ))}
       {renderDays
         ? dayArray(startRange, numDays).map((day: Moment): JSX.Element => {
             return (
               <div key={day.format()} className="flex w-full">
-                <SchedulerDaySlot day={day} />
+                <SchedulerDaySlot
+                  day={day}
+                  selectedDay={selectedDay}
+                  slots={slots}
+                  tz={tz}
+                  onDaySelect={onDaySelect}
+                />
               </div>
             );
           })
         : null}
     </div>
   );
-}
+};

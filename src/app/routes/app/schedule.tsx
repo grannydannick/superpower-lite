@@ -1,12 +1,5 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import { ScheduleFlow } from '@/features/orders/components/schedule';
 import { ServiceGroup } from '@/types/api';
 
@@ -19,25 +12,8 @@ export const ScheduleRoute = () => {
 
   // TODO: probably validate mode
   return (
-    <div className="mx-auto w-full max-w-3xl py-9">
-      <ScheduleBreadcrumb />
+    <div className="flex min-h-dvh flex-col">
       <ScheduleFlow mode={mode ? (mode as ServiceGroup) : 'phlebotomy'} />
     </div>
-  );
-};
-
-const ScheduleBreadcrumb = () => {
-  return (
-    <Breadcrumb className="px-6 md:px-16">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink asChild>
-            <NavLink to="/">Home</NavLink>
-          </BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>Schedule</BreadcrumbItem>
-      </BreadcrumbList>
-    </Breadcrumb>
   );
 };

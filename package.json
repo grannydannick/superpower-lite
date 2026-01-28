@@ -68,6 +68,7 @@
     "@tryvital/vital-link": "^0.1.7",
     "@types/react-resizable": "^3.0.8",
     "@types/validator": "^13.12.0",
+    "@vis.gl/react-google-maps": "^1.7.1",
     "@wojtekmaj/react-hooks": "^1.21.0",
     "ai": "^5.0.35",
     "axios": "^1.6.8",

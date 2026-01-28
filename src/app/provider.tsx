@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { APIProvider } from '@vis.gl/react-google-maps';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -8,6 +9,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { MainErrorFallback } from '@/components/errors/main';
 import { SuperpowerLoadingLogo } from '@/components/icons/superpower-logo';
 import { Toaster } from '@/components/ui/sonner';
+import { env } from '@/config/env';
 import { useUser } from '@/lib/auth';
 import { PHProvider } from '@/lib/posthog';
 import { queryConfig } from '@/lib/react-query';
@@ -64,13 +66,15 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       <HelmetProvider>
         <QueryClientProvider client={queryClient}>
           <PHProvider>
-            <StripeProvider>
-              {import.meta.env.DEV && (
-                <ReactQueryDevtools buttonPosition="top-right" />
-              )}
-              <Toaster />
-              <AuthLoader>{children}</AuthLoader>
-            </StripeProvider>
+            <APIProvider apiKey={env.GOOGLE_API_KEY}>
+              <StripeProvider>
+                {import.meta.env.DEV && (
+                  <ReactQueryDevtools buttonPosition="top-right" />
+                )}
+                <Toaster />
+                <AuthLoader>{children}</AuthLoader>
+              </StripeProvider>
+            </APIProvider>
           </PHProvider>
         </QueryClientProvider>
       </HelmetProvider>

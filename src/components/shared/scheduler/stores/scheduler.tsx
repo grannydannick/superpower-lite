@@ -1,4 +1,10 @@
-import { createContext, useContext, useRef, PropsWithChildren } from 'react';
+import {
+  createContext,
+  useContext,
+  useRef,
+  useEffect,
+  PropsWithChildren,
+} from 'react';
 import { shallow } from 'zustand/shallow';
 import { useStoreWithEqualityFn } from 'zustand/traditional';
 
@@ -23,6 +29,13 @@ export const SchedulerStoreProvider = ({
   if (!schedulerStoreRef.current) {
     schedulerStoreRef.current = schedulerStoreCreator(props);
   }
+
+  // keeps onSlotUpdate callback in sync, captures parent state in closure
+  useEffect(() => {
+    if (schedulerStoreRef.current) {
+      schedulerStoreRef.current.setState({ onSlotUpdate: props.onSlotUpdate });
+    }
+  }, [props.onSlotUpdate]);
 
   return (
     <SchedulerStoreContext.Provider value={schedulerStoreRef.current}>

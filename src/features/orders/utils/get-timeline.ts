@@ -16,25 +16,23 @@ export const getTimeline = (
   ];
 
   const bloodPanelTimeline = [
-    { title: 'Test ordered', complete: true },
-    { title: 'Schedule a test appointment', complete: true },
+    { title: 'Test scheduled', complete: true },
     {
-      title:
-        collectionMethod === 'IN_LAB'
-          ? 'Phlebotomist completes your blood draw appointment in ~15 minutes'
-          : 'At-home testing',
+      title: 'Preparation instructions sent',
+      time: 'In 3-5 days',
       complete: false,
     },
-    { title: 'Test results processed within 10 days', complete: false },
-    { title: 'Results uploaded', complete: false },
-    { title: 'Action plan ready', complete: false },
+    {
+      title: 'View results & build your protocol',
+      time: 'In 10 days',
+      complete: false,
+    },
   ];
 
   const creditTimeline = [
     { title: 'Complete purchase', complete: true },
     { title: 'Schedule your appointments', complete: false },
-    { title: 'Test appointment', complete: false },
-    { title: 'Results uploaded within 10 days', complete: false },
+    { title: 'Results uploaded', time: 'In 10 days', complete: false },
   ];
 
   switch (type) {

@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 
-import { Button } from '@/components/ui/button';
 import { Body1 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 import { Address, CollectionMethodType, Slot } from '@/types/api';
@@ -12,11 +11,10 @@ interface Props {
   collectionMethod: CollectionMethodType;
   address: Address;
   onSlotUpdate?: (slot: Slot | null, tz: string) => void;
-  numDays?: number;
   className?: string;
   displayCancellationNote?: boolean;
-  showCreateBtn?: boolean;
   isAdvisory?: boolean;
+  selectedSlot?: Slot | null;
 }
 
 /*
@@ -31,10 +29,9 @@ export function Scheduler(props: Props) {
     className,
     collectionMethod,
     address,
-    numDays,
     displayCancellationNote = false,
-    showCreateBtn = true,
     isAdvisory = false,
+    selectedSlot,
     ...rest
   } = props;
 
@@ -42,15 +39,13 @@ export function Scheduler(props: Props) {
     <SchedulerStoreProvider
       address={address}
       collectionMethod={collectionMethod}
-      numDays={numDays}
-      showCreateBtn={showCreateBtn}
       isAdvisory={isAdvisory}
       {...rest}
     >
       <SchedulerConsumer
         className={className}
         displayCancellationNote={displayCancellationNote}
-        showCreateBtn={showCreateBtn}
+        selectedSlot={selectedSlot}
       />
     </SchedulerStoreProvider>
   );
@@ -59,27 +54,79 @@ export function Scheduler(props: Props) {
 function SchedulerConsumer({
   className,
   displayCancellationNote = false,
-  showCreateBtn = false,
+  selectedSlot,
 }: {
   className?: string;
   displayCancellationNote?: boolean;
-  showCreateBtn?: boolean;
+  selectedSlot?: Slot | null;
 }): JSX.Element {
-  const { selectedSlot, slots, onSlotUpdate, fetchSlots, tz, startRange } =
-    useScheduler((s) => s);
+  const {
+    slots,
+    fetchSlots,
+    startRange,
+    loading,
+    error,
+    tz,
+    selectedDay,
+    updateSelectedDay,
+    updateStartRange,
+    onSlotUpdate,
+  } = useScheduler((s) => s);
 
-  useEffect(() => {
-    fetchSlots();
-  }, [fetchSlots, startRange]);
+  useEffect(
+    () => {
+      fetchSlots();
+    },
+    // fetchLocations is stable from zustand, no need to put it in deps
+    [],
+  );
+
+  const handleSlotSelect = (slot: Slot) => {
+    onSlotUpdate?.(slot, tz);
+  };
+
+  const handleSelectionClear = () => {
+    updateSelectedDay(undefined);
+    onSlotUpdate?.(null, tz);
+  };
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center rounded-xl border border-dashed border-red-200 bg-red-50 px-3 py-10">
+        <Body1 className="text-red-600">{error}</Body1>
+      </div>
+    );
+  }
 
   return (
-    <div className={cn('w-full space-y-10', className)}>
-      <div className="flex flex-col justify-end">
-        <div className="mb-2">
-          <SchedulerHeading />
-        </div>
-        <SchedulerDays />
-        <SchedulerTimes />
+    <div className={cn('w-full space-y-8', className)}>
+      <div className="space-y-6">
+        <SchedulerHeading
+          startRange={startRange}
+          tz={tz}
+          loading={loading}
+          onRangeChange={updateStartRange}
+          onSelectionClear={handleSelectionClear}
+        />
+        <SchedulerDays
+          slots={slots}
+          startRange={startRange}
+          loading={loading}
+          selectedDay={selectedDay}
+          tz={tz}
+          onDaySelect={updateSelectedDay}
+        />
+      </div>
+      <div>
+        <SchedulerTimes
+          slots={slots}
+          selectedDay={selectedDay}
+          selectedSlot={selectedSlot}
+          loading={loading}
+          startRange={startRange}
+          tz={tz}
+          onSlotSelect={handleSlotSelect}
+        />
         {displayCancellationNote && slots.length > 0 ? (
           <div className="mt-6">
             <Body1 className="text-zinc-500">
@@ -89,19 +136,6 @@ function SchedulerConsumer({
             </Body1>
           </div>
         ) : null}
-        {showCreateBtn && onSlotUpdate && (
-          <div className="mt-6 flex justify-end">
-            <Button
-              disabled={!selectedSlot}
-              onClick={() => {
-                selectedSlot && onSlotUpdate(selectedSlot, tz);
-              }}
-              className="rounded-xl bg-[#18181B] px-8 py-4 text-white hover:bg-[#18181B]/80"
-            >
-              Confirm Appointment
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );

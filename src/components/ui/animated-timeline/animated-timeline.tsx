@@ -2,11 +2,12 @@ import { motion, useAnimationControls } from 'framer-motion';
 import { Check } from 'lucide-react';
 import React from 'react';
 
-import { Body1 } from '@/components/ui/typography';
+import { Body2, Body3 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 
 export type AnimatedTimelineType = {
   title: string;
+  time?: string;
   complete: boolean;
 };
 
@@ -38,7 +39,7 @@ export const AnimatedTimeline = ({
             <div className="flex items-center gap-4">
               <div
                 className={cn(
-                  'flex size-5 items-center justify-center rounded-full border-2',
+                  'flex size-5 items-center justify-center rounded-full border-2 shrink-0',
                   isComplete
                     ? 'border-vermillion-900 bg-vermillion-900'
                     : 'border-zinc-300',
@@ -53,14 +54,24 @@ export const AnimatedTimeline = ({
                   />
                 )}
               </div>
-              <Body1
-                className={cn(
-                  isComplete ? 'text-vermillion-900' : 'text-secondary',
-                  'line-clamp-1',
-                )}
-              >
-                {step.title}
-              </Body1>
+              <div>
+                {step.time ? (
+                  <Body3
+                    className={cn(
+                      isComplete ? 'text-vermillion-900' : 'text-secondary',
+                    )}
+                  >
+                    {step.time}
+                  </Body3>
+                ) : null}
+                <Body2
+                  className={cn(
+                    isComplete ? 'text-vermillion-900' : 'text-secondary',
+                  )}
+                >
+                  {step.title}
+                </Body2>
+              </div>
             </div>
             {!lastStep && (
               <motion.div
