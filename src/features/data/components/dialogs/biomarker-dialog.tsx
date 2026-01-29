@@ -26,6 +26,7 @@ import { Biomarker } from '@/types/api';
 import { STATUS_TO_COLOR } from '../../../../const/status-to-color';
 
 import { BiomarkerContentTabs } from './biomarker-content-tabs';
+import { formatOptimalRange } from './utils/format-optimal-range';
 
 export const BiomarkerDialog = ({
   children,
@@ -178,6 +179,8 @@ const OptimalRangeCard = ({ biomarker }: { biomarker: Biomarker }) => {
     );
   }, [biomarker.ranges, lastValueSource]);
 
+  const formattedRange = formatOptimalRange(optimalRange);
+
   return (
     <div className="flex flex-col gap-1 rounded-2xl border px-3 py-2 shadow-sm">
       <Body3 className="text-secondary">Optimal range</Body3>
@@ -187,10 +190,28 @@ const OptimalRangeCard = ({ biomarker }: { biomarker: Biomarker }) => {
           color: STATUS_TO_COLOR.optimal,
         }}
       >
-        <NumberFlow value={optimalRange?.low?.value || 0} />
-        -
-        <NumberFlow value={optimalRange?.high?.value || 0} />{' '}
-        <Body1 className="inline-block text-zinc-500">{biomarker.unit}</Body1>
+        {formattedRange.type === 'range' && (
+          <>
+            <NumberFlow value={formattedRange.lowValue} />
+            -
+            <NumberFlow value={formattedRange.highValue} />
+          </>
+        )}
+        {formattedRange.type === 'single' && (
+          <>
+            {formattedRange.symbol}
+            <NumberFlow value={formattedRange.value} />
+          </>
+        )}
+        {formattedRange.type === 'none' && '-'}
+        {formattedRange.type !== 'none' && (
+          <>
+            {' '}
+            <Body1 className="inline-block text-zinc-500">
+              {biomarker.unit}
+            </Body1>
+          </>
+        )}
       </H4>
     </div>
   );
