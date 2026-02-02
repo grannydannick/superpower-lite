@@ -114,6 +114,7 @@ const UpdateInfoContent = () => {
 
   const form = useForm<UpdateUserInput>({
     shouldUnregister: false,
+    mode: 'onChange',
     resolver: zodResolver(updateUserInputSchema),
     defaultValues: {
       firstName: user?.firstName,
@@ -290,7 +291,7 @@ const UpdateInfoContent = () => {
                   setStripeError={setStripeError}
                 />
               )}
-              <Button type="submit" disabled={isLoading}>
+              <Button type="submit" disabled={isLoading || !form.formState.isValid}>
                 {isLoading ? <TransactionSpinner /> : 'Update'}
               </Button>
             </div>
@@ -357,6 +358,15 @@ function PrimaryAddressForm() {
     return <FullPrimaryAddressForm />;
   }
 
+  const hasError = form.formState.errors.address;
+  // User typed something but didn't select from dropdown
+  const hasUnselectedInput = input.trim().length > 0 && !address;
+
+  const errorMessage =
+    hasError && hasUnselectedInput
+      ? 'Please select an address from the suggestions.'
+      : 'Address is required.';
+
   return (
     // note: intentionally leaving some fields blank here so we display it "one time"
     <div className="mt-2 flex flex-col gap-4">
@@ -368,18 +378,20 @@ function PrimaryAddressForm() {
           setInput(e.target.value);
         }}
         value={input}
-        onBlur={() => {}}
+        onBlur={() => {
+          form.trigger('address');
+        }}
         name="line1"
-        variant={form.formState.errors.address ? 'error' : 'default'}
+        variant={hasError ? 'error' : 'default'}
         onFormSubmit={(address) => {
-          form.setValue('address', address);
+          form.setValue('address', address, { shouldValidate: true });
         }}
       />
-      {form.formState.errors.address ? (
+      {hasError ? (
         <p className="text-sm font-medium text-destructive">
           <span className="flex items-center gap-3">
             <AlertCircle className="size-4 shrink-0 text-destructive" />
-            <span>Address is required.</span>
+            <span>{errorMessage}</span>
           </span>
         </p>
       ) : null}

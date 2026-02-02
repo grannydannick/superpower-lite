@@ -81,7 +81,8 @@ export const AddressAutocomplete = forwardRef<
   ) => {
     const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
     const [isFocused, setIsFocused] = useState(false);
-    const initialValue = useRef(value);
+    const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
+    const isSelectingRef = useRef(false);
     const {
       placesService,
       placePredictions,
@@ -103,8 +104,59 @@ export const AddressAutocomplete = forwardRef<
       }
     }, [value]);
 
+    // Reset highlighted index when predictions change
+    // Use place_ids to detect actual content changes, not just length
+    const predictionsKey = placePredictions.map((p) => p.place_id).join(',');
+    useEffect(() => {
+      setHighlightedIndex(-1);
+    }, [predictionsKey]);
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      // Don't handle keyboard navigation when dropdown is hidden or loading
+      // selectedPlaceId check prevents duplicate selections after dropdown closes
+      if (!isFocused || selectedPlaceId || placePredictions.length === 0 || isPlacePredictionsLoading) return;
+
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          setHighlightedIndex((prev) =>
+            prev < placePredictions.length - 1 ? prev + 1 : 0,
+          );
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          setHighlightedIndex((prev) =>
+            prev > 0 ? prev - 1 : placePredictions.length - 1,
+          );
+          break;
+        case 'Enter':
+          // Only prevent default if we have a highlighted item to select
+          if (highlightedIndex >= 0 && highlightedIndex < placePredictions.length) {
+            e.preventDefault();
+            handleSelect(placePredictions[highlightedIndex].place_id);
+          }
+          // Otherwise let Enter submit the form naturally
+          break;
+        case 'Tab':
+          // If user navigated to a highlighted item, select it before tabbing away
+          if (highlightedIndex >= 0 && highlightedIndex < placePredictions.length) {
+            handleSelect(placePredictions[highlightedIndex].place_id);
+          }
+          // Don't preventDefault - let Tab move focus naturally
+          break;
+        case 'Escape':
+          e.preventDefault();
+          setIsFocused(false);
+          break;
+      }
+    };
+
     const handleSelect = (placeId: string) => {
-      placesService?.getDetails(
+      if (!placesService) {
+        return;
+      }
+      isSelectingRef.current = true;
+      placesService.getDetails(
         {
           placeId,
         },
@@ -118,6 +170,7 @@ export const AddressAutocomplete = forwardRef<
           setSelectedPlaceId(placeId);
 
           onFormSubmit(address);
+          isSelectingRef.current = false;
         },
       );
     };
@@ -133,23 +186,38 @@ export const AddressAutocomplete = forwardRef<
           onChange={(e) => {
             getPlacePredictions({ input: e.target.value });
             onChange(e);
+            // Re-open dropdown when typing (e.g., after pressing Escape)
+            if (!isFocused) {
+              setIsFocused(true);
+            }
           }}
           onFocus={() => {
             setIsFocused(true);
             setSelectedPlaceId(null);
           }}
+          onClick={() => {
+            // Fallback for when field already has focus (e.g., autofocus, browser autofill)
+            // This ensures the popover appears even if onFocus didn't fire
+            setIsFocused(true);
+            setSelectedPlaceId(null);
+          }}
+          onKeyDown={handleKeyDown}
           onBlur={() => {
             setIsFocused(false);
-            onBlur();
+            // Skip validation if an async selection is in progress (e.g., Tab key)
+            // The form will be validated when the selection completes via onFormSubmit
+            if (!isSelectingRef.current) {
+              onBlur();
+            }
           }}
+          role="combobox"
+          aria-expanded={isFocused && placePredictions.length > 0}
+          aria-haspopup="listbox"
+          aria-autocomplete="list"
           {...rest}
         />
         <AnimatePresence>
-          {isFocused &&
-          !selectedPlaceId &&
-          // only search when input differs from initial value
-          value !== initialValue.current &&
-          placePredictions.length > 0 ? (
+          {isFocused && !selectedPlaceId && placePredictions.length > 0 ? (
             <motion.div
               className="relative"
               variants={container}
@@ -176,7 +244,7 @@ export const AddressAutocomplete = forwardRef<
                         ))
                     : null}
                   {placePredictions.length > 0 && !isPlacePredictionsLoading ? (
-                    <div>
+                    <div role="listbox">
                       {placePredictions.map(
                         (
                           option: {
@@ -189,20 +257,24 @@ export const AddressAutocomplete = forwardRef<
                           },
                           index,
                         ) => {
+                          const isHighlighted = highlightedIndex === index;
                           const isSelected =
                             selectedPlaceId === option.place_id;
                           return (
                             <button
                               data-testid={`autocomplete-${index}`}
                               type="button"
+                              role="option"
+                              aria-selected={isHighlighted || isSelected}
                               key={option.place_id}
                               onPointerDown={(e) => e.preventDefault()}
                               onClick={() => {
                                 handleSelect(option.place_id);
                               }}
+                              onMouseEnter={() => setHighlightedIndex(index)}
                               className={cn(
                                 'flex w-full py-4 rounded-[10px] px-[28px] flex-col items-start cursor-pointer data-[disabled]:opacity-100 hover:bg-zinc-50 hover:rounded-[10px] data-[disabled]:pointer-events-auto',
-                                isSelected ? 'bg-zinc-50' : null,
+                                isHighlighted || isSelected ? 'bg-zinc-50' : null,
                               )}
                             >
                               <Body1>
