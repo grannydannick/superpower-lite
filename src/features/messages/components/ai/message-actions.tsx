@@ -1,6 +1,6 @@
 import { isToolOrDynamicToolUIPart, type UIMessage } from 'ai';
 import equal from 'fast-deep-equal';
-import { CopyIcon } from 'lucide-react';
+import { BarChart, CopyIcon, Share, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { memo } from 'react';
 import removeMarkdown from 'remove-markdown';
 
@@ -14,7 +14,12 @@ import {
 } from '@/components/ui/tooltip';
 import { useAnalytics } from '@/hooks/use-analytics';
 
+import { parseMessageParts } from '../../utils/parse-message-parts';
+import { ChatShareDialog } from '../chat-share-dialog';
+import { CitationsDialog } from '../citations-dialog';
+
 export function PureMessageActions({
+  chatId,
   message,
   isLoading,
 }: {
@@ -27,6 +32,11 @@ export function PureMessageActions({
   if (message.role === 'user') return null;
   if (message.parts.some((part) => isToolOrDynamicToolUIPart(part)))
     return null;
+
+  const { citations } = parseMessageParts(message, false);
+  const citationsList = Array.from(citations.values()).sort(
+    (a, b) => a.number - b.number,
+  );
 
   const handleCopy = async () => {
     const textParts =
@@ -50,22 +60,93 @@ export function PureMessageActions({
     }
   };
 
+  const handleThumbsUp = () => {
+    track('message_feedback_positive', { chatId });
+    toast.success('Thank you. Your feedback has been received!');
+  };
+
+  const handleThumbsDown = () => {
+    track('message_feedback_negative', { chatId });
+    toast.success('Thank you. Your feedback has been received!');
+  };
+
   return (
     <TooltipProvider delayDuration={0}>
-      <div className="mt-2 flex flex-row gap-2">
+      <div className="mt-2 flex flex-row items-center gap-0.5">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              className="h-fit p-0 text-muted-foreground"
+              className="flex size-8 items-center justify-center rounded-lg p-0 text-muted-foreground hover:bg-zinc-100"
               variant="ghost"
               onClick={handleCopy}
-              disabled={isLoading}
             >
               <CopyIcon size={16} />
             </Button>
           </TooltipTrigger>
           <TooltipContent>Copy</TooltipContent>
         </Tooltip>
+        <Tooltip>
+          <ChatShareDialog
+            chatId={chatId}
+            trigger={
+              <TooltipTrigger asChild>
+                <Button
+                  className="flex size-8 items-center justify-center rounded-lg p-0 text-muted-foreground hover:bg-zinc-100"
+                  variant="ghost"
+                >
+                  <Share size={16} />
+                </Button>
+              </TooltipTrigger>
+            }
+          />
+          <TooltipContent>Share</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className="flex size-8 items-center justify-center rounded-lg p-0 text-muted-foreground hover:bg-zinc-100"
+              variant="ghost"
+              onClick={handleThumbsUp}
+            >
+              <ThumbsUp size={16} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Good response</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className="flex size-8 items-center justify-center rounded-lg p-0 text-muted-foreground hover:bg-zinc-100"
+              variant="ghost"
+              onClick={handleThumbsDown}
+            >
+              <ThumbsDown size={16} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Poor response</TooltipContent>
+        </Tooltip>
+        {citationsList.length > 0 && (
+          <Tooltip>
+            <CitationsDialog
+              messageId={message.id}
+              citations={citationsList}
+              trigger={
+                <TooltipTrigger asChild>
+                  <Button
+                    className="rounded-full px-2.5 py-1.5 hover:bg-zinc-100"
+                    variant="ghost"
+                  >
+                    <BarChart size={16} />
+                    <span className="ml-1 text-sm font-semibold leading-none">
+                      {citationsList.length} Sources
+                    </span>
+                  </Button>
+                </TooltipTrigger>
+              }
+            />
+            <TooltipContent>See all sources</TooltipContent>
+          </Tooltip>
+        )}
       </div>
     </TooltipProvider>
   );

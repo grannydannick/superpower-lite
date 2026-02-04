@@ -250,7 +250,7 @@ const CarouselMainContainer = forwardRef<
   const { mainRef, orientation, direction } = useCarousel();
 
   return (
-    <div {...props} ref={mainRef} className="overflow-hidden" dir={direction}>
+    <div {...props} ref={mainRef} dir={direction} className="overflow-hidden">
       <div
         ref={ref}
         className={cn(

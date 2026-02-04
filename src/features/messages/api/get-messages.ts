@@ -1,14 +1,14 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
+import { UIMessage } from 'ai';
 
 import { api } from '@/lib/api-client';
 import { QueryConfig } from '@/lib/react-query';
-import { ChatMessage } from '@/types/api';
 
 export const getMessages = async ({
   chatId,
 }: {
   chatId: string;
-}): Promise<ChatMessage[]> => {
+}): Promise<UIMessage[]> => {
   return api.get(`chat/${chatId}/messages`);
 };
 

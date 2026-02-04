@@ -43,10 +43,12 @@ export function ChatShareDialog({
   chatId,
   open: openProp,
   onOpenChange,
+  trigger,
 }: {
   chatId: string;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  trigger?: React.ReactNode;
 }) {
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = openProp !== undefined;
@@ -310,9 +312,7 @@ export function ChatShareDialog({
   if (isMobile) {
     return (
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild>
-          <Trigger />
-        </SheetTrigger>
+        <SheetTrigger asChild>{trigger || <Trigger />}</SheetTrigger>
         <SheetContent className="flex max-h-[85vh] flex-col gap-0 rounded-t-2xl p-0">
           <SheetHeader className="sr-only px-6 pb-4 pt-12">
             <SheetTitle className="flex items-center gap-2 text-lg">
@@ -333,9 +333,7 @@ export function ChatShareDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Trigger />
-      </DialogTrigger>
+      <DialogTrigger asChild>{trigger || <Trigger />}</DialogTrigger>
       <DialogContent className="max-w-lg gap-0 p-0">
         <DialogHeader className="sr-only px-6 py-4">
           <DialogTitle className="flex items-center gap-2 text-lg">

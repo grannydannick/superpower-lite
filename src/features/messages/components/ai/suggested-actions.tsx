@@ -18,7 +18,7 @@ function PureSuggestedActions({ onSendSuggestion }: SuggestedActionsProps) {
   });
 
   return (
-    <div className="flex min-h-10 h-fit lg:h-auto w-full flex-row flex-wrap items-start justify-start gap-2 lg:items-start lg:justify-center">
+    <div className="flex size-full min-h-[25px] flex-row flex-wrap justify-center gap-2.5 lg:min-h-[65px] lg:items-start">
       {suggestions.slice(0, 3).map((s, index) => (
         <ChatSuggestion
           key={`suggested-action-${s}-${index}`}

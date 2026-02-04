@@ -18,7 +18,12 @@ export function TextShimmer({
   duration = 2,
   spread = 2,
 }: TextShimmerProps) {
-  const MotionComponent = motion(Component as keyof JSX.IntrinsicElements);
+  // Memoize to prevent creating new component reference on every render
+  // which would cause React to unmount/remount and reset the animation
+  const MotionComponent = useMemo(
+    () => motion(Component as keyof JSX.IntrinsicElements),
+    [Component],
+  );
 
   const dynamicSpread = useMemo(() => {
     return children.length * spread;

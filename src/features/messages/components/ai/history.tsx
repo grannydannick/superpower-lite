@@ -10,7 +10,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown';
-import { Input } from '@/components/ui/input';
 import { Link } from '@/components/ui/link';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import {
@@ -28,7 +27,6 @@ import { cn } from '@/lib/utils';
 import { Chat } from '@/types/api';
 
 import { scrollToBottom } from '../../utils/scroll-to-bottom';
-import { ChatShareDialog } from '../chat-share-dialog';
 
 type GroupedChats = {
   today: Chat[];
@@ -57,10 +55,8 @@ const ChatItem = ({ chat, isActive }: { chat: Chat; isActive: boolean }) => {
       to={`/concierge/${chat.id}`}
       preventScrollReset
       className={cn(
-        'group flex w-full rounded-full justify-between gap-2 transition-all duration-200 ease-out border px-4 py-2.5',
-        isActive
-          ? 'border-zinc-200 bg-white shadow-sm'
-          : 'border-transparent hover:bg-zinc-100',
+        'group flex w-full rounded-xl justify-between gap-2 transition-all duration-200 ease-out px-4 py-2.5',
+        isActive ? 'bg-zinc-200/60' : 'hover:bg-zinc-100',
       )}
       onClick={() => {
         scrollToBottom();
@@ -69,7 +65,7 @@ const ChatItem = ({ chat, isActive }: { chat: Chat; isActive: boolean }) => {
       <span
         className={cn(
           'line-clamp-1 text-sm transition-all duration-150 ease-in-out',
-          isActive ? 'text-black' : 'text-zinc-400 group-hover:text-zinc-900',
+          isActive ? 'text-black' : 'text-secondary group-hover:text-zinc-900',
         )}
       >
         {chat.title}
@@ -231,66 +227,54 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
                     : 'opacity-100 lg:max-w-[259px]',
                 )}
               >
-                <div className="mb-4 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <H3>Concierge</H3>
-                    <div className="rounded-full border border-vermillion-900 px-2 py-0.5">
-                      <p className="font-mono text-xs text-vermillion-900">
-                        BETA
-                      </p>
-                    </div>
-                  </div>
-                  <div className="lg:hidden">
-                    <CareTeamDialog />
-                  </div>
-                </div>
-                {/*<div className="h-10 rounded-xl bg-zinc-100 px-4 py-1.5" />*/}
-                <div className="w-full">
-                  <div className="relative mb-2 px-0.5">
+                <H3 className="mb-4">Concierge</H3>
+
+                <div className="flex flex-col">
+                  <Button
+                    variant="ghost"
+                    size="medium"
+                    className="justify-start gap-2 px-3 py-2 text-secondary"
+                    onClick={() => {
+                      navigate('/concierge');
+                    }}
+                  >
+                    <SquarePen size={15} />
+                    New Chat
+                  </Button>
+                  <CareTeamDialog
+                    trigger={
+                      <Button
+                        variant="ghost"
+                        size="medium"
+                        className="w-full justify-start gap-2 px-3 py-2 text-secondary"
+                      >
+                        <img
+                          className="size-4 rounded-full object-cover"
+                          src="/services/doctors/doc_1.webp"
+                          alt="Superpower Concierge Doctor 1"
+                        />
+                        Text Care Team
+                      </Button>
+                    }
+                  />
+                  <div
+                    className={cn(
+                      'flex items-center gap-2 px-3 py-2 rounded-xl transition-colors duration-200',
+                      search && 'bg-zinc-100',
+                    )}
+                  >
                     <Search
                       size={15}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"
+                      className="shrink-0 -translate-y-px text-secondary"
                     />
-                    <Input
+                    <input
                       type="text"
-                      placeholder="Search"
-                      className="h-10 w-full rounded-xl border border-none bg-zinc-100 px-4 pl-8 text-sm outline-none"
+                      placeholder="Search..."
+                      className="w-full border-none bg-transparent text-sm text-secondary outline-none placeholder:text-secondary"
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                     />
                   </div>
-
-                  <div className="mt-4 flex flex-col justify-start overflow-hidden">
-                    <Button
-                      variant="ghost"
-                      size="medium"
-                      className="justify-start gap-2 px-3 py-2 text-zinc-400"
-                      onClick={() => {
-                        navigate('/concierge');
-                      }}
-                    >
-                      <SquarePen size={15} />
-                      New AI chat
-                    </Button>
-                  </div>
-                  {id && (
-                    <CareTeamDialog
-                      trigger={
-                        <Button
-                          variant="ghost"
-                          size="medium"
-                          className="justify-start gap-2 px-3 py-2 text-zinc-400"
-                        >
-                          <img
-                            className="size-4 rounded-full object-cover"
-                            src="/services/doctors/doc_1.webp"
-                            alt="Superpower Concierge Doctor 1"
-                          />
-                          Care team
-                        </Button>
-                      }
-                    />
-                  )}
                 </div>
 
                 <div className="relative">
@@ -299,7 +283,7 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
                   <div className="scrollbar-w-1.5 flex max-h-[calc(100vh-16rem)] flex-col gap-4 overflow-y-scroll px-px py-6 scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300 hover:scrollbar-thumb-zinc-400">
                     {groupedChats.today.length > 0 && (
                       <div className="space-y-0.5">
-                        <Body3 className="px-3 pb-1 text-zinc-700">Today</Body3>
+                        <Body3 className="px-3 pb-1 text-tertiary">Today</Body3>
                         {groupedChats.today.map((chat) => (
                           <ChatItem
                             key={chat.id}
@@ -312,7 +296,7 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
 
                     {groupedChats.yesterday.length > 0 && (
                       <div className="space-y-0.5">
-                        <Body3 className="px-3 pb-1 text-zinc-700">
+                        <Body3 className="px-3 pb-1 text-tertiary">
                           Yesterday
                         </Body3>
                         {groupedChats.yesterday.map((chat) => (
@@ -327,7 +311,7 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
 
                     {groupedChats.lastWeek.length > 0 && (
                       <div className="space-y-0.5">
-                        <Body3 className="px-3 pb-1 text-zinc-700">
+                        <Body3 className="px-3 pb-1 text-tertiary">
                           Last 7 days
                         </Body3>
                         {groupedChats.lastWeek.map((chat) => (
@@ -342,7 +326,7 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
 
                     {groupedChats.lastMonth.length > 0 && (
                       <div className="space-y-0.5">
-                        <Body3 className="px-3 pb-1 text-zinc-700">
+                        <Body3 className="px-3 pb-1 text-tertiary">
                           Last 30 days
                         </Body3>
                         {groupedChats.lastMonth.map((chat) => (
@@ -357,7 +341,7 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
 
                     {groupedChats.older.length > 0 && (
                       <div className="space-y-0.5">
-                        <Body3 className="px-3 pb-1 text-zinc-700">Older</Body3>
+                        <Body3 className="px-3 pb-1 text-tertiary">Older</Body3>
                         {groupedChats.older.map((chat) => (
                           <ChatItem
                             key={chat.id}
@@ -439,26 +423,17 @@ const LoadingChatItem = () => {
 };
 
 export const ChatHistory = () => {
-  const { id } = useParams();
   const { width } = useWindowDimensions();
 
   if (width <= 1024) {
     return (
       <Sheet>
-        <div className="flex w-full items-center justify-between gap-4 pt-4">
+        <div className="flex w-full items-center gap-4 pt-4">
           <div className="flex items-center gap-4">
             <SheetTrigger>
               <PanelLeft size={24} className="text-zinc-400" />
             </SheetTrigger>
-            <div className="flex items-center gap-2">
-              <H3>Concierge</H3>
-              <div className="rounded-full border border-vermillion-900 px-2 py-0.5">
-                <p className="font-mono text-xs text-vermillion-900">BETA</p>
-              </div>
-            </div>
-          </div>
-          <div className="flex w-full justify-end">
-            {id ? <ChatShareDialog chatId={id} /> : <CareTeamDialog />}
+            <H3>Concierge</H3>
           </div>
         </div>
         <SheetContent

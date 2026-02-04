@@ -256,7 +256,7 @@ function PureMultimodalInput({
 
   return (
     <div
-      className="relative outline-none flex w-full flex-col gap-8"
+      className="relative flex w-full flex-col gap-8 outline-none"
       {...getRootProps()}
     >
       <input
@@ -272,7 +272,7 @@ function PureMultimodalInput({
         <div
           ref={inputWrapperRef}
           className={cn(
-            'relative flex flex-col rounded-[20px] border border-zinc-100 bg-white pb-4 shadow-lg shadow-black/5 transition-all min-h-[56px] shrink-0',
+            'relative flex flex-col rounded-2xl border border-input bg-white pb-4 shadow-lg shadow-black/5 transition-all min-h-[56px] shrink-0',
             isAttachmentPresent
               ? 'justify-between pt-2'
               : 'justify-center pt-4',

@@ -1,7 +1,7 @@
 import { useChat } from '@ai-sdk/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DefaultChatTransport, FileUIPart } from 'ai';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { env } from '@/config/env';
@@ -38,45 +38,58 @@ export function AssistantChat({
   // input is handled by custom store to avoid additional effects to sync preset inputs
   const input = useAssistantStore((s) => s.input);
   const setInput = useAssistantStore((s) => s.setInput);
+  const initialMessages = useAssistantStore((s) => s.initialMessages);
+  const clearInitialMessages = useAssistantStore((s) => s.clearInitialMessages);
+  const hasSetInitialMessages = useAssistantStore(
+    (s) => s.hasSetInitialMessages,
+  );
+  const setHasSetInitialMessages = useAssistantStore(
+    (s) => s.setHasSetInitialMessages,
+  );
   const [attachments, setAttachments] = useState<Array<FileUIPart>>([]);
 
   const [shouldGenerateFollowups, setShouldGenerateFollowups] = useState(false);
 
-  const transportHeaders: Record<string, string> = {
-    Accept: 'application/json',
-  };
-  const accessToken = getActiveLogin()?.accessToken;
-  if (accessToken) {
-    transportHeaders.Authorization = `Bearer ${accessToken}`;
-  }
+  // Memoize transport to prevent unnecessary re-creation
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: `${env.API_URL}/chat/chatv2`,
+        headers: () => {
+          const activeLogin = getActiveLogin();
+          const accessToken = activeLogin?.accessToken;
+
+          return {
+            Accept: 'application/json',
+            ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+          };
+        },
+        prepareSendMessagesRequest({ messages, id }) {
+          const lastUserMessage = [...messages]
+            .reverse()
+            .find((m) => m.role === 'user');
+
+          if (!lastUserMessage) {
+            throw new Error('No user message to send.');
+          }
+
+          return {
+            api: `${env.API_URL}/chat/chatv2`,
+            body: { id, message: lastUserMessage },
+          };
+        },
+        prepareReconnectToStreamRequest: ({ id }) => ({
+          api: `${env.API_URL}/chat/chatv2/${id}/stream`,
+        }),
+      }),
+    [], // Intentionally empty - uses fresh data via getActiveLogin()
+  );
 
   const { messages, setMessages, sendMessage, status, stop } = useChat({
     id,
-    transport: new DefaultChatTransport({
-      api: `${env.API_URL}/chat`,
-      headers: () => {
-        const activeLogin = getActiveLogin();
-        const accessToken = activeLogin?.accessToken;
-
-        return {
-          Accept: 'application/json',
-          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-        };
-      },
-      prepareSendMessagesRequest({ messages, id }) {
-        const hasUserMessage = messages.some((m) => m.role === 'user');
-        return {
-          body: {
-            message: messages[messages.length - 1],
-            id: hasUserMessage ? id : null,
-            _followup: false,
-          },
-          credentials: 'include',
-        };
-      },
-    }),
+    transport,
     messages: [],
-    experimental_throttle: 100,
+    resume: true, // Enable auto-resume for durable streams
     generateId: generateUUID,
     onFinish: ({ message }) => {
       refetch();
@@ -112,6 +125,14 @@ export function AssistantChat({
       }
     },
   });
+
+  // Set initial messages when they're available and haven't been set yet
+  useEffect(() => {
+    if (initialMessages.length > 0 && !hasSetInitialMessages) {
+      setMessages(initialMessages);
+      setHasSetInitialMessages(true);
+    }
+  }, [initialMessages, hasSetInitialMessages, setMessages]);
 
   const followupsContext = `I'm currently visiting ${pathname} in the Superpower app, please give me some suggestions based on this.`;
 
@@ -191,6 +212,10 @@ export function AssistantChat({
             setInput={setInput}
             sendMessage={(message, options) => {
               setInput('');
+              if (hasSetInitialMessages) {
+                clearInitialMessages();
+                setHasSetInitialMessages(false);
+              }
               if (assistantContext) {
                 queryClient.cancelQueries({
                   queryKey: ['followups', assistantContext, 3],

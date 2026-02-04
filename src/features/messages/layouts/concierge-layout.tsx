@@ -1,22 +1,12 @@
-import { Outlet, useParams } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
 import { ChatHistory } from '@/features/messages/components/ai/history';
-import { CareTeamDialog } from '@/features/messages/components/care-team-dialog';
-
-import { ChatShareDialog } from '../components/chat-share-dialog';
 
 export const ConciergeLayout = () => {
-  const { id } = useParams();
-
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-72px)] w-full max-w-[1600px] flex-col gap-4 px-4 lg:h-[calc(100dvh-68px)] lg:flex-row lg:px-16 lg:pt-10">
       <ChatHistory />
       <Outlet />
-      <div className="hidden w-full max-w-[259px] lg:block">
-        <div className="ml-auto flex w-full justify-end">
-          {id ? <ChatShareDialog chatId={id} /> : <CareTeamDialog />}
-        </div>
-      </div>
     </div>
   );
 };

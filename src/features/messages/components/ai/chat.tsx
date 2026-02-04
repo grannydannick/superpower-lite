@@ -1,9 +1,8 @@
 import { useChat } from '@ai-sdk/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DefaultChatTransport, FileUIPart, type UIMessage } from 'ai';
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { toast } from '@/components/ui/sonner';
 import { env } from '@/config/env';
@@ -46,32 +45,55 @@ export function Chat({
   const initialMessage = searchParams.get('defaultMessage');
   const [input, setInput] = useState(initialMessage ?? '');
 
+  // Helper to get fresh access token and user ID for each request
+  const getActiveLoginData = () => {
+    const activeLogin = getActiveLogin();
+    return {
+      accessToken: activeLogin?.accessToken,
+      userId: activeLogin?.profile?.userId,
+    };
+  };
+
+  // Memoize transport to prevent unnecessary re-creation
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport<UIMessage>({
+        api: `${env.API_URL}/chat/chatv2`,
+        headers: () => {
+          // Get fresh token and user ID on each request
+          const { accessToken } = getActiveLoginData();
+          return {
+            Accept: 'application/json',
+            ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+          };
+        },
+        prepareSendMessagesRequest: ({ id, messages }) => {
+          // Find the last user message
+          const lastUser = [...messages]
+            .reverse()
+            .find((m) => m.role === 'user');
+
+          if (!lastUser) {
+            throw new Error('No user message to send.');
+          }
+
+          return {
+            api: `${env.API_URL}/chat/chatv2`,
+            body: { id, message: lastUser },
+          };
+        },
+        prepareReconnectToStreamRequest: ({ id }) => ({
+          api: `${env.API_URL}/chat/chatv2/${id}/stream`,
+        }),
+      }),
+    [], // Intentionally empty - uses fresh data via getActiveLoginData()
+  );
+
   const { messages, setMessages, sendMessage, status, stop } = useChat({
     id,
-    transport: new DefaultChatTransport({
-      api: `${env.API_URL}/chat`,
-      headers: () => {
-        const activeLogin = getActiveLogin();
-        const accessToken = activeLogin?.accessToken;
-
-        return {
-          Accept: 'application/json',
-          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-        };
-      },
-      prepareSendMessagesRequest({ messages, id }) {
-        return {
-          body: {
-            message: messages[messages.length - 1],
-            id,
-            _followup: false,
-          },
-          credentials: 'include',
-        };
-      },
-    }),
+    transport,
     messages: initialMessages,
-    experimental_throttle: 100,
+    resume: true, // Enable auto-resume for durable streams
     generateId: generateUUID,
     onFinish: ({ message }) => {
       refetch();
@@ -115,30 +137,30 @@ export function Chat({
         addResponseTime(responseTime);
       }
     },
-    onError: (error) => {
-      console.error(error);
+    onError: (err) => {
+      console.error(err);
 
       const safeMessage =
-        typeof (error as any)?.message === 'string'
-          ? (error as any).message
+        typeof (err as Error & { message?: string })?.message === 'string'
+          ? (err as Error).message
           : '';
 
       const isValidationError =
-        error.name === 'AI_TypeValidationError' ||
+        err.name === 'AI_TypeValidationError' ||
         safeMessage.includes('Type validation failed') ||
         (safeMessage.includes('finish') &&
           safeMessage.includes('finishReason'));
 
       const isPublicError = publicErrors.some(
-        (publicError) => publicError === error.message,
+        (publicError) => publicError === err.message,
       );
 
       if (isValidationError) {
         console.warn(
           'AI SDK type validation error - likely due to unrecognized message type from backend:',
           {
-            error: error.message,
-            name: error.name,
+            error: err.message,
+            name: err.name,
             timestamp: new Date().toISOString(),
           },
         );
@@ -151,7 +173,7 @@ export function Chat({
       }
 
       if (isPublicError) {
-        toast(error.message);
+        toast(err.message);
       } else {
         // refetch to trigger api client if its non requests issue
         // for example if its dead access token issue it would refresh the token
@@ -160,6 +182,7 @@ export function Chat({
       }
     },
   });
+
   const sessionStartTime = useChatStore((s) => s.sessionStartTime);
   const setSessionStartTime = useChatStore((s) => s.setSessionStartTime);
   const incrementMessageCount = useChatStore((s) => s.incrementMessageCount);
@@ -167,6 +190,7 @@ export function Chat({
 
   const [attachments, setAttachments] = useState<Array<FileUIPart>>([]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSendMessage = (message: any, options: any) => {
     if (searchParams.get('defaultMessage') != null) {
       setSearchParams(
@@ -191,7 +215,7 @@ export function Chat({
 
   return (
     <>
-      <div className="mx-auto flex w-full min-w-0 max-w-3xl flex-1 flex-col h-full">
+      <div className="mx-auto flex size-full min-w-0 max-w-3xl flex-1 flex-col">
         {/* Scrollable content area */}
         <div
           className={cn(
@@ -209,13 +233,7 @@ export function Chat({
           {messages.length === 0 && (
             <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
               <Greeting />
-              <div
-                className={cn(
-                  'transition-all duration-500 ease-out flex w-full',
-                  input &&
-                    'opacity-0 blur-[2px] pointer-events-none -translate-y-4',
-                )}
-              >
+              <div className="flex w-full">
                 <SuggestedActions
                   onSendSuggestion={(text) =>
                     handleSendMessage({ text, files: [] }, undefined)
@@ -227,7 +245,7 @@ export function Chat({
         </div>
 
         {/* Sticky bottom area */}
-        <div className="flex-shrink-0 sticky bottom-0">
+        <div className="sticky bottom-0 shrink-0">
           <form className="mx-auto w-full pb-2">
             <MultimodalInput
               chatId={id}

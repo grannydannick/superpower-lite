@@ -13,6 +13,7 @@ import {
 import { INTAKE_QUESTIONNAIRE } from '@/const/questionnaire';
 import { useQuestionnaireResponse } from '@/features/questionnaires/api/get-questionnaire-response';
 import { useUpdateQuestionnaireResponse } from '@/features/questionnaires/api/update-questionnaire-response';
+import { DEV_BYPASS_CARE_PLAN_KEY } from '@/features/summary/api/get-summary';
 
 import { toast } from '../ui/sonner';
 
@@ -20,6 +21,11 @@ export function DevHelper() {
   const isDev = process.env.NODE_ENV === 'development';
 
   const [open, setOpen] = React.useState(false);
+  const [bypassCarePlan, setBypassCarePlan] = React.useState(() =>
+    typeof window !== 'undefined'
+      ? localStorage.getItem(DEV_BYPASS_CARE_PLAN_KEY) === 'true'
+      : false,
+  );
   const updateQuestionnaireResponseMutation = useUpdateQuestionnaireResponse({
     mutationConfig: {
       onSuccess: () => {
@@ -91,6 +97,24 @@ export function DevHelper() {
               }}
             >
               <span>Complete intake</span>
+            </CommandItem>
+            <CommandItem
+              onSelect={() => {
+                const newValue = !bypassCarePlan;
+                localStorage.setItem(
+                  DEV_BYPASS_CARE_PLAN_KEY,
+                  newValue.toString(),
+                );
+                setBypassCarePlan(newValue);
+                toast.success(
+                  `Bypass care plan: ${newValue ? 'ON' : 'OFF'}. Refreshing...`,
+                );
+                window.location.reload();
+              }}
+            >
+              <span>
+                Bypass care plan check [{bypassCarePlan ? 'ON' : 'OFF'}]
+              </span>
             </CommandItem>
           </CommandGroup>
         </CommandList>

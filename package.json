@@ -22,7 +22,7 @@
     "run-mock-server": "vite-node mock-server.ts | pino-pretty -c"
   },
   "dependencies": {
-    "@ai-sdk/react": "^2.0.35",
+    "@ai-sdk/react": "^3.0.3",
     "@central-icons-react/round-outlined-radius-3-stroke-1.5": "^1.1.60",
     "@hookform/resolvers": "^3.9.0",
     "@imgly/background-removal": "^1.6.0",
@@ -70,7 +70,7 @@
     "@types/validator": "^13.12.0",
     "@vis.gl/react-google-maps": "^1.7.1",
     "@wojtekmaj/react-hooks": "^1.21.0",
-    "ai": "^5.0.35",
+    "ai": "^6.0.67",
     "axios": "^1.6.8",
     "calendar-link": "^2.7.0",
     "class-variance-authority": "^0.7.0",
@@ -129,7 +129,7 @@
     "remark-gfm": "^4.0.1",
     "remove-markdown": "^0.6.2",
     "sonner": "^1.5.0",
-    "streamdown": "^1.1.6",
+    "streamdown": "^2.1.0",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "three": "0.165.0",
