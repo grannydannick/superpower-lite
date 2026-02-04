@@ -66,7 +66,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       <HelmetProvider>
         <QueryClientProvider client={queryClient}>
           <PHProvider>
-            <APIProvider apiKey={env.GOOGLE_API_KEY}>
+            <APIProvider apiKey={env.GOOGLE_API_KEY} libraries={['places']}>
               <StripeProvider>
                 {import.meta.env.DEV && (
                   <ReactQueryDevtools buttonPosition="top-right" />

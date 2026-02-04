@@ -1,12 +1,12 @@
+import { useQuery } from '@tanstack/react-query';
+import { useMapsLibrary } from '@vis.gl/react-google-maps';
 import { AnimatePresence, motion } from 'framer-motion';
-import { forwardRef, useEffect, useRef, useState } from 'react';
+import { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import * as React from 'react';
-import usePlacesService from 'react-google-autocomplete/lib/usePlacesAutocompleteService';
 
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, Body3 } from '@/components/ui/typography';
-import { env } from '@/config/env';
 import { cn } from '@/lib/utils';
 import { GoogleAddressComponent } from '@/types/address';
 import { addressFromGoogleComponents } from '@/utils/google';
@@ -17,6 +17,15 @@ type FormAddressInput = {
   city: string;
   state: string;
   postalCode: string;
+};
+
+type PlacePrediction = {
+  place_id: string;
+  description: string;
+  structured_formatting: {
+    main_text: string;
+    secondary_text: string;
+  };
 };
 
 /**
@@ -83,26 +92,53 @@ export const AddressAutocomplete = forwardRef<
     const [isFocused, setIsFocused] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
     const isSelectingRef = useRef(false);
-    const {
-      placesService,
-      placePredictions,
-      getPlacePredictions,
-      isPlacePredictionsLoading,
-    } = usePlacesService({
-      apiKey: env.GOOGLE_API_KEY,
-      options: {
-        types: ['address'],
-        componentRestrictions: {
-          country: 'us',
-        },
-      },
-    });
+    const places = useMapsLibrary('places');
 
-    useEffect(() => {
-      if (value && value.length > 0) {
-        getPlacePredictions({ input: value });
-      }
-    }, [value]);
+    const autocompleteService = useMemo(() => {
+      if (!places) return null;
+      return new places.AutocompleteService();
+    }, [places]);
+
+    const placesService = useMemo(() => {
+      if (!places) return null;
+      // PlacesService needs a DOM element to work, we'll create a hidden div
+      const div = document.createElement('div');
+      return new places.PlacesService(div);
+    }, [places]);
+
+    const {
+      data: placePredictions = [],
+      isFetching: isPlacePredictionsLoading,
+    } = useQuery<PlacePrediction[]>({
+      queryKey: ['place-predictions', value],
+      queryFn: async () => {
+        if (!autocompleteService || !value || value.trim().length === 0) {
+          return [];
+        }
+
+        return new Promise<PlacePrediction[]>((resolve) => {
+          autocompleteService.getPlacePredictions(
+            {
+              input: value,
+              types: ['address'],
+              componentRestrictions: {
+                country: 'us',
+              },
+            },
+            (predictions: any, status: any) => {
+              if (status === places!.PlacesServiceStatus.OK && predictions) {
+                resolve(predictions);
+              } else {
+                resolve([]);
+              }
+            },
+          );
+        });
+      },
+      enabled: !!places && !!value && value.trim().length > 3,
+      staleTime: 5000, // Cache predictions for 5 seconds
+      placeholderData: (previousData) => previousData, // Keep previous data while fetching
+    });
 
     // Reset highlighted index when predictions change
     // Use place_ids to detect actual content changes, not just length
@@ -171,17 +207,21 @@ export const AddressAutocomplete = forwardRef<
       placesService.getDetails(
         {
           placeId,
+          fields: ['address_components'],
         },
-        ({
-          address_components,
-        }: {
-          address_components: GoogleAddressComponent[];
-        }) => {
-          const address = addressFromGoogleComponents(address_components);
+        (place: any, status: any) => {
+          if (
+            status === places!.PlacesServiceStatus.OK &&
+            place?.address_components
+          ) {
+            const address = addressFromGoogleComponents(
+              place.address_components as GoogleAddressComponent[],
+            );
 
-          setSelectedPlaceId(placeId);
+            setSelectedPlaceId(placeId);
 
-          onFormSubmit(address);
+            onFormSubmit(address);
+          }
           isSelectingRef.current = false;
         },
       );
@@ -196,7 +236,6 @@ export const AddressAutocomplete = forwardRef<
           variant={variant}
           value={value}
           onChange={(e) => {
-            getPlacePredictions({ input: e.target.value });
             onChange(e);
             // Re-open dropdown when typing (e.g., after pressing Escape)
             if (!isFocused) {
@@ -229,7 +268,7 @@ export const AddressAutocomplete = forwardRef<
           {...rest}
         />
         <AnimatePresence>
-          {isFocused && !selectedPlaceId && placePredictions.length > 0 ? (
+          {isFocused && !selectedPlaceId && value.trim().length > 3 ? (
             <motion.div
               className="relative"
               variants={container}
@@ -243,7 +282,7 @@ export const AddressAutocomplete = forwardRef<
                     'max-h-[200px] rounded-2xl overflow-scroll border border-zinc-200',
                   )}
                 >
-                  {isPlacePredictionsLoading
+                  {isPlacePredictionsLoading && placePredictions.length === 0
                     ? Array(6)
                         .fill(0)
                         .map((_, i) => (
@@ -255,7 +294,7 @@ export const AddressAutocomplete = forwardRef<
                           </div>
                         ))
                     : null}
-                  {placePredictions.length > 0 && !isPlacePredictionsLoading ? (
+                  {placePredictions.length > 0 ? (
                     <div role="listbox">
                       {placePredictions.map(
                         (
@@ -303,9 +342,7 @@ export const AddressAutocomplete = forwardRef<
                       )}
                     </div>
                   ) : null}
-                  {!isPlacePredictionsLoading &&
-                  !placePredictions.length &&
-                  value.length > 0 ? (
+                  {!isPlacePredictionsLoading && !placePredictions.length ? (
                     <div className="select-none rounded-sm px-[28px] py-4 text-center text-base font-normal text-zinc-500">
                       No results.
                     </div>

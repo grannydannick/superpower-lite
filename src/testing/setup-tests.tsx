@@ -4,7 +4,7 @@ import { queryClient } from '@/lib/react-query';
 import { initializeDb, resetDb } from '@/testing/mocks/db';
 import { server } from '@/testing/mocks/server';
 
-import { usePlacesServiceMock } from '../../__mocks__/use-places-service';
+import { mockAddressComponents } from '../../__mocks__/use-places-service';
 
 vi.mock('zustand');
 
@@ -20,10 +20,42 @@ vi.mock('@rive-app/react-canvas-lite', () => {
   };
 });
 
-vi.mock(
-  'react-google-autocomplete/lib/usePlacesAutocompleteService',
-  () => usePlacesServiceMock,
-);
+vi.mock('@vis.gl/react-google-maps', async () => {
+  const actual = await vi.importActual('@vis.gl/react-google-maps');
+  return {
+    ...actual,
+    useMapsLibrary: () => ({
+      AutocompleteService: class {
+        getPlacePredictions(
+          _request: any,
+          callback: (predictions: any, status: any) => void,
+        ) {
+          callback(
+            [
+              {
+                place_id: 'mock-1',
+                description: '123 Mock St, Testville, TS',
+                structured_formatting: {
+                  main_text: '123 Mock St',
+                  secondary_text: 'Testville, TS',
+                },
+              },
+            ],
+            'OK',
+          );
+        }
+      },
+      PlacesService: class {
+        getDetails(_request: any, callback: (place: any, status: any) => void) {
+          callback({ address_components: mockAddressComponents }, 'OK');
+        }
+      },
+      PlacesServiceStatus: {
+        OK: 'OK',
+      },
+    }),
+  };
+});
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterAll(() => server.close());

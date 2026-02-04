@@ -355,9 +355,10 @@ function PrimaryAddressForm() {
   const form = useFormContext<UpdateUserInput>();
 
   const [input, setInput] = useState('');
+  const [manualEntry, setManualEntry] = useState(false);
   const address = form.watch('address');
 
-  if (address) {
+  if (address || manualEntry) {
     return <FullPrimaryAddressForm />;
   }
 
@@ -370,26 +371,41 @@ function PrimaryAddressForm() {
       ? 'Please select an address from the suggestions.'
       : 'Address is required.';
 
+  const handleManualEntry = () => {
+    console.warn('User clicked manual address entry');
+    setManualEntry(true);
+  };
+
   return (
     // note: intentionally leaving some fields blank here so we display it "one time"
     <div className="mt-2 flex flex-col gap-4">
       <Label className="text-secondary" htmlFor="line1">
         Where should we provide your Superpower services?
       </Label>
-      <AddressAutocomplete
-        onChange={(e) => {
-          setInput(e.target.value);
-        }}
-        value={input}
-        onBlur={() => {
-          form.trigger('address');
-        }}
-        name="line1"
-        variant={hasError ? 'error' : 'default'}
-        onFormSubmit={(address) => {
-          form.setValue('address', address, { shouldValidate: true });
-        }}
-      />
+      <div>
+        <AddressAutocomplete
+          onChange={(e) => {
+            setInput(e.target.value);
+          }}
+          value={input}
+          onBlur={() => {
+            form.trigger('address');
+          }}
+          name="line1"
+          variant={hasError ? 'error' : 'default'}
+          onFormSubmit={(address) => {
+            form.setValue('address', address, { shouldValidate: true });
+          }}
+        />
+        <Button
+          type="button"
+          variant="ghost"
+          className="w-fit px-0 text-sm"
+          onClick={handleManualEntry}
+        >
+          Can&apos;t find your address?
+        </Button>
+      </div>
       {hasError ? (
         <p className="text-sm font-medium text-destructive">
           <span className="flex items-center gap-3">
