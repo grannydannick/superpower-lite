@@ -59,6 +59,7 @@ export function Chat({
     () =>
       new DefaultChatTransport<UIMessage>({
         api: `${env.API_URL}/chat/chatv2`,
+        credentials: 'include',
         headers: () => {
           // Get fresh token and user ID on each request
           const { accessToken } = getActiveLoginData();
