@@ -4,10 +4,10 @@ import cx from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
 import { InfoIcon } from 'lucide-react';
 import React, { memo, useMemo, useState } from 'react';
-import { Streamdown } from 'streamdown';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+import { defaultRehypePlugins, Streamdown } from 'streamdown';
 
 import { AIIcon } from '@/components/icons/ai-icon';
-import { Link } from '@/components/ui/link';
 import { TextShimmer } from '@/components/ui/text-shimmer';
 import { AnimatedIcon } from '@/features/messages/components/ai/animated-icon';
 import { useUser } from '@/lib/auth';
@@ -18,177 +18,38 @@ const LOADING_MESSAGES = [
   'Analyzing latest results...',
 ] as const;
 
-import type { CitationInfo } from '../../types/message-parts';
-import { getCitationTooltip } from '../../utils/citation-tooltip';
 import { parseMessageParts } from '../../utils/parse-message-parts';
 
-import { CitationCards, CitationMarker } from './citations';
-import { CodeBlock } from './code-block';
+import { CitationCards } from './citations';
+import { createMarkdownComponents } from './markdown-components';
 import { MessageActions } from './message-actions';
 import { PreviewAttachment } from './preview-attachment';
 
-// ============================================================================
-// Markdown Components
-// ============================================================================
-
-type MarkdownComponentProps = {
-  children?: React.ReactNode;
-  [key: string]: unknown;
+// Configure rehype-sanitize with additional allowed protocols
+const sanitizeSchema = {
+  ...defaultSchema,
+  protocols: {
+    ...defaultSchema.protocols,
+    href: [
+      ...(defaultSchema.protocols?.href ?? []),
+      'tel',
+      'sms',
+      'fhir',
+      'product',
+      'memory',
+      'chat',
+      'marketplace',
+    ],
+  },
 };
 
-interface MarkdownComponentsOptions {
-  messageId: string;
-  citations: Map<string, CitationInfo>;
-  userName?: string;
-}
-
-const createMarkdownComponents = ({
-  messageId,
-  citations,
-  userName,
-}: MarkdownComponentsOptions) => ({
-  code: ({
-    inline,
-    className,
-    children,
-    ...props
-  }: MarkdownComponentProps & { inline?: boolean; className?: string }) => {
-    return CodeBlock({
-      inline: inline || false,
-      className: className || '',
-      children,
-      ...props,
-    });
-  },
-  pre: ({ children }: Pick<MarkdownComponentProps, 'children'>) => (
-    <>{children}</>
-  ),
-  ol: ({ children, ...props }: MarkdownComponentProps) => (
-    <ol className="ml-4 list-outside list-decimal" {...props}>
-      {children}
-    </ol>
-  ),
-  li: ({ children, ...props }: MarkdownComponentProps) => (
-    <li className="py-1" {...props}>
-      {children}
-    </li>
-  ),
-  ul: ({ children, ...props }: MarkdownComponentProps) => (
-    <ul className="ml-4 list-outside list-disc" {...props}>
-      {children}
-    </ul>
-  ),
-  strong: ({ children, ...props }: MarkdownComponentProps) => (
-    <span className="font-semibold" {...props}>
-      {children}
-    </span>
-  ),
-  a: ({
-    children,
-    href,
-    ...props
-  }: MarkdownComponentProps & { href?: string }) => {
-    const text = String(children);
-
-    // Check if this is a citation marker link (e.g. [[1]](#msg-citation-1))
-    const citationMatch = text.match(/^\[(\d+)\]$/);
-    if (citationMatch && citationMatch[1] && href?.includes('-citation-')) {
-      const num = parseInt(citationMatch[1], 10);
-      // Find citation by number to get tooltip
-      const citation = Array.from(citations.values()).find(
-        (c) => c.number === num,
-      );
-      const tooltip = citation
-        ? getCitationTooltip(citation.source, userName)
-        : undefined;
-      return (
-        <CitationMarker messageId={messageId} number={num} tooltip={tooltip} />
-      );
-    }
-
-    // Not a valid link - render as plain text (handles [blocked] etc.)
-    if (!href || (!href.startsWith('http') && !href.startsWith('#'))) {
-      return <>{children}</>;
-    }
-
-    return (
-      <Link
-        className="text-blue-500 hover:underline"
-        target="_blank"
-        rel="noreferrer"
-        to={href}
-        {...props}
-      >
-        {children}
-      </Link>
-    );
-  },
-  h1: ({ children, ...props }: MarkdownComponentProps) => (
-    <h1 className="mb-2 mt-6 text-3xl font-semibold" {...props}>
-      {children}
-    </h1>
-  ),
-  h2: ({ children, ...props }: MarkdownComponentProps) => (
-    <h2 className="mb-2 mt-6 text-2xl font-semibold" {...props}>
-      {children}
-    </h2>
-  ),
-  h3: ({ children, ...props }: MarkdownComponentProps) => (
-    <h3 className="mb-2 mt-6 text-xl font-semibold" {...props}>
-      {children}
-    </h3>
-  ),
-  h4: ({ children, ...props }: MarkdownComponentProps) => (
-    <h4 className="mb-2 mt-6 text-lg font-semibold" {...props}>
-      {children}
-    </h4>
-  ),
-  h5: ({ children, ...props }: MarkdownComponentProps) => (
-    <h5 className="mb-2 mt-6 text-base font-semibold" {...props}>
-      {children}
-    </h5>
-  ),
-  h6: ({ children, ...props }: MarkdownComponentProps) => (
-    <h6 className="mb-2 mt-6 text-sm font-semibold" {...props}>
-      {children}
-    </h6>
-  ),
-  table: ({ children, ...props }: MarkdownComponentProps) => (
-    <table className="w-full border-collapse bg-transparent text-sm" {...props}>
-      {children}
-    </table>
-  ),
-  thead: ({ children, ...props }: MarkdownComponentProps) => (
-    <thead className="border-b border-zinc-300" {...props}>
-      {children}
-    </thead>
-  ),
-  tbody: ({ children, ...props }: MarkdownComponentProps) => (
-    <tbody {...props}>{children}</tbody>
-  ),
-  tr: ({ children, ...props }: MarkdownComponentProps) => (
-    <tr
-      className="border-b border-zinc-200 last:border-b-0 [thead_&]:border-b-0"
-      {...props}
-    >
-      {children}
-    </tr>
-  ),
-  th: ({ children, ...props }: MarkdownComponentProps) => (
-    <th
-      className="pb-4 pr-8 text-left first:pl-0 last:pr-0"
-      style={{ fontWeight: 700 }}
-      {...props}
-    >
-      {children}
-    </th>
-  ),
-  td: ({ children, ...props }: MarkdownComponentProps) => (
-    <td className="py-5 pr-8 align-top first:pl-0 last:pr-0" {...props}>
-      {children}
-    </td>
-  ),
-});
+const rehypePlugins = [
+  defaultRehypePlugins.raw,
+  [rehypeSanitize, sanitizeSchema],
+  // Note: intentionally omitting rehype-harden as it blocks custom protocol links
+  // (fhir://, product://, etc.) - sanitization above handles security
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+] as any;
 
 // ============================================================================
 // User Message Component
@@ -308,7 +169,10 @@ const AssistantMessageContent = memo(function AssistantMessageContent({
 
       result.push(
         <div key={block.key} className="leading-relaxed">
-          <Streamdown components={markdownComponents}>
+          <Streamdown
+            components={markdownComponents}
+            rehypePlugins={rehypePlugins}
+          >
             {textToRender}
           </Streamdown>
         </div>,

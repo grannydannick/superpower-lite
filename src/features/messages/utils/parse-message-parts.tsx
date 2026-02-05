@@ -1,10 +1,7 @@
 import { getToolName, isToolUIPart, type UIMessage } from 'ai';
 
-import { DataBlock } from '../components/ai/blocks/data-block';
-import { FileBlock } from '../components/ai/blocks/file-block';
+import { MetadataBlock } from '../components/ai/blocks/metadata-block';
 import { ReasoningBlock } from '../components/ai/blocks/reasoning-block';
-import { SourceDocumentBlock } from '../components/ai/blocks/source-document-block';
-import { SourceUrlBlock } from '../components/ai/blocks/source-url-block';
 import type {
   CitationInfo,
   ParsedBlock,
@@ -281,11 +278,14 @@ export function parseMessageParts(
         kind: 'node',
         key: `${message.id}:source-url:${partIndex}`,
         node: (
-          <SourceUrlBlock
+          <MetadataBlock
             messageId={message.id}
             partIndex={partIndex}
-            url={partWithType.url ?? ''}
-            title={partWithType.title}
+            variant={{
+              type: 'source-url',
+              url: partWithType.url ?? '',
+              title: partWithType.title,
+            }}
           />
         ),
       });
@@ -299,11 +299,14 @@ export function parseMessageParts(
         kind: 'node',
         key: `${message.id}:source-document:${partIndex}`,
         node: (
-          <SourceDocumentBlock
+          <MetadataBlock
             messageId={message.id}
             partIndex={partIndex}
-            title={partWithType.title ?? ''}
-            mediaType={partWithType.mediaType ?? ''}
+            variant={{
+              type: 'source-document',
+              title: partWithType.title ?? '',
+              mediaType: partWithType.mediaType ?? '',
+            }}
           />
         ),
       });
@@ -317,11 +320,14 @@ export function parseMessageParts(
         kind: 'node',
         key: `${message.id}:file:${partIndex}`,
         node: (
-          <FileBlock
+          <MetadataBlock
             messageId={message.id}
             partIndex={partIndex}
-            mediaType={partWithType.mediaType ?? ''}
-            url={partWithType.url ?? ''}
+            variant={{
+              type: 'file',
+              mediaType: partWithType.mediaType ?? '',
+              url: partWithType.url ?? '',
+            }}
           />
         ),
       });
@@ -335,11 +341,14 @@ export function parseMessageParts(
         kind: 'node',
         key: `${message.id}:data:${partIndex}`,
         node: (
-          <DataBlock
+          <MetadataBlock
             messageId={message.id}
             partIndex={partIndex}
-            type={part.type}
-            dataText={safeJsonStringify(part.data)}
+            variant={{
+              type: 'data',
+              dataType: part.type,
+              dataText: safeJsonStringify(part.data),
+            }}
           />
         ),
       });

@@ -1,7 +1,10 @@
+import { UIMessage } from 'ai';
 import { motion } from 'framer-motion';
 import { Copy, Share, X } from 'lucide-react';
 import { forwardRef, useEffect, useMemo, useState } from 'react';
 import type React from 'react';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+import { defaultRehypePlugins, Streamdown } from 'streamdown';
 
 import { AIIcon } from '@/components/icons/ai-icon';
 import { Button } from '@/components/ui/button';
@@ -32,12 +35,64 @@ import { Visibility } from '@/types/api';
 import { useHistory } from '../api/get-history';
 import { useMessages } from '../api/get-messages';
 import { useUpdateChat } from '../api/update-chat';
-import {
-  getLastAiMessage,
-  getLastUserMessage,
-} from '../utils/get-last-messages';
 
-import { Markdown } from './ai/markdown';
+import { baseMarkdownComponents } from './ai/markdown-components';
+
+// Allow all URL protocols in sanitization (fhir://, product://, tel:, sms:, etc.)
+const sanitizeSchema = {
+  ...defaultSchema,
+  protocols: {
+    ...defaultSchema.protocols,
+    href: [
+      ...(defaultSchema.protocols?.href ?? []),
+      'tel',
+      'sms',
+      'fhir',
+      'product',
+      'memory',
+      'chat',
+      'marketplace',
+    ],
+  },
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const rehypePlugins = [
+  defaultRehypePlugins.raw,
+  [rehypeSanitize, sanitizeSchema],
+  // Note: intentionally omitting rehype-harden for share dialog preview
+  // since it blocks custom protocol links (fhir://, product://, etc.)
+] as any;
+
+function getLastMessageByRole(
+  messages: UIMessage[] | undefined | null,
+  role: 'user' | 'assistant',
+): string | null {
+  if (!messages || messages.length === 0) return null;
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const m = messages[i];
+    if (m.role === role) {
+      // Find the first text part with actual content (not just whitespace)
+      const part = m.parts?.find(
+        (p) => p.type === 'text' && (p as { text?: string }).text?.trim(),
+      ) as { type: 'text'; text: string } | undefined;
+      if (part) return part.text;
+    }
+  }
+  return null;
+}
+
+function getLastUserMessage(
+  messages: UIMessage[] | undefined | null,
+): string | null {
+  return getLastMessageByRole(messages, 'user');
+}
+
+function getLastAiMessage(
+  messages: UIMessage[] | undefined | null,
+): string | null {
+  return getLastMessageByRole(messages, 'assistant');
+}
 
 export function ChatShareDialog({
   chatId,
@@ -192,7 +247,12 @@ export function ChatShareDialog({
             className="max-h-32 [-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_50%,transparent_100%)] [mask-image:linear-gradient(to_bottom,black_0%,black_50%,transparent_100%)] [mask-repeat:no-repeat] [mask-size:100%_100%]"
           >
             <div className="mr-auto w-fit max-w-xs text-white/75">
-              <Markdown>{lastAiMessage ?? ''}</Markdown>
+              <Streamdown
+                components={baseMarkdownComponents as any}
+                rehypePlugins={rehypePlugins}
+              >
+                {lastAiMessage ?? ''}
+              </Streamdown>
             </div>
           </motion.div>
         </motion.div>
@@ -266,7 +326,12 @@ export function ChatShareDialog({
             className="max-h-32 [-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_50%,transparent_100%)] [mask-image:linear-gradient(to_bottom,black_0%,black_50%,transparent_100%)] [mask-repeat:no-repeat] [mask-size:100%_100%]"
           >
             <div className="mr-auto w-fit max-w-xs text-white/75">
-              <Markdown>{lastAiMessage ?? ''}</Markdown>
+              <Streamdown
+                components={baseMarkdownComponents as any}
+                rehypePlugins={rehypePlugins}
+              >
+                {lastAiMessage ?? ''}
+              </Streamdown>
             </div>
           </motion.div>
         </motion.div>

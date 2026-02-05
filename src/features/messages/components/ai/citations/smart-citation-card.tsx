@@ -78,7 +78,8 @@ export const SmartCitationCard = memo(function SmartCitationCard({
       // Product data not loaded yet - show skeleton
       return <Skeleton className="h-[76px] w-full rounded-[20px]" />;
     }
-    return <CitationCard messageId={messageId} citation={citation} />;
+    // Product not found in marketplace - hide the citation card
+    return null;
   }
 
   // Default - use accordion
