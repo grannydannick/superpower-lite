@@ -1,4 +1,4 @@
-import { isToolOrDynamicToolUIPart, type UIMessage } from 'ai';
+import { isToolUIPart, type UIMessage } from 'ai';
 import equal from 'fast-deep-equal';
 import { BarChart, CopyIcon, Share, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { memo } from 'react';
@@ -30,8 +30,16 @@ export function PureMessageActions({
   const { track } = useAnalytics();
   if (isLoading) return null;
   if (message.role === 'user') return null;
-  if (message.parts.some((part) => isToolOrDynamicToolUIPart(part)))
+
+  // Check if message has any text content worth showing actions for
+  const hasTextContent = message.parts.some(
+    (part) => part.type === 'text' && part.text.trim().length > 0,
+  );
+
+  // Only hide if message has tool parts AND no text content
+  if (message.parts.some((part) => isToolUIPart(part)) && !hasTextContent) {
     return null;
+  }
 
   const { citations } = parseMessageParts(message, false);
   const citationsList = Array.from(citations.values()).sort(
