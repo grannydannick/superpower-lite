@@ -607,6 +607,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/rpc/recommendations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["recommendations.getRecommendations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -9124,7 +9140,7 @@ export interface operations {
     "questionnaire.getByName": {
         parameters: {
             query?: {
-                name?: "onboarding-intake" | "onboarding-screening" | "rx-assessment-ghk-cu" | "rx-assessment-ghk-cu-symptom-tracker" | "rx-assessment-semaglutide" | "rx-assessment-semaglutide-symptom-tracker" | "rx-assessment-sermorelin-injectable" | "rx-assessment-sermorelin-injectable-symptom-tracker" | "rx-assessment-sermorelin-troche" | "rx-assessment-sermorelin-troche-symptom-tracker" | "rx-assessment-vip-nasal-spray" | "rx-assessment-vip-nasal-spray-symptom-tracker" | "rx-assessment-metformin" | "rx-assessment-metformin-symptom-tracker" | "rx-assessment-olympus-male-max" | "rx-assessment-olympus-male-max-symptom-tracker" | "rx-assessment-hcg-pregnyl" | "rx-assessment-hcg-pregnyl-symptom-tracker" | "rx-assessment-gonadorelin" | "rx-assessment-gonadorelin-symptom-tracker" | "rx-assessment-nad-injectable" | "rx-assessment-nad-injectable-symptom-tracker" | "rx-assessment-nad-nasal-spray" | "rx-assessment-nad-nasal-spray-symptom-tracker" | "rx-assessment-aloe-vera-tretinoin" | "rx-assessment-aloe-vera-tretinoin-symptom-tracker" | "rx-assessment-elamipretide" | "rx-assessment-elamipretide-symptom-tracker" | "rx-assessment-enclomiphene" | "rx-assessment-enclomiphene-symptom-tracker" | "rx-assessment-tadalafil" | "rx-assessment-tadalafil-symptom-tracker" | "rx-assessment-low-dose-naltrexone" | "rx-assessment-low-dose-naltrexone-symptom-tracker" | "rx-assessment-methylcobalamin-b12" | "rx-assessment-methylcobalamin-b12-symptom-tracker" | "rx-assessment-trt-injectable" | "rx-assessment-trt-injectable-symptom-tracker" | "rx-assessment-tirzepatide" | "rx-assessment-tirzepatide-symptom-tracker" | "glp-frontdoor-experiment";
+                name?: "onboarding-intake" | "onboarding-screening" | "onboarding-primer" | "onboarding-medical-history" | "onboarding-female-health" | "onboarding-lifestyle" | "rx-assessment-ghk-cu" | "rx-assessment-ghk-cu-symptom-tracker" | "rx-assessment-semaglutide" | "rx-assessment-semaglutide-symptom-tracker" | "rx-assessment-sermorelin-injectable" | "rx-assessment-sermorelin-injectable-symptom-tracker" | "rx-assessment-sermorelin-troche" | "rx-assessment-sermorelin-troche-symptom-tracker" | "rx-assessment-vip-nasal-spray" | "rx-assessment-vip-nasal-spray-symptom-tracker" | "rx-assessment-metformin" | "rx-assessment-metformin-symptom-tracker" | "rx-assessment-olympus-male-max" | "rx-assessment-olympus-male-max-symptom-tracker" | "rx-assessment-hcg-pregnyl" | "rx-assessment-hcg-pregnyl-symptom-tracker" | "rx-assessment-gonadorelin" | "rx-assessment-gonadorelin-symptom-tracker" | "rx-assessment-nad-injectable" | "rx-assessment-nad-injectable-symptom-tracker" | "rx-assessment-nad-nasal-spray" | "rx-assessment-nad-nasal-spray-symptom-tracker" | "rx-assessment-aloe-vera-tretinoin" | "rx-assessment-aloe-vera-tretinoin-symptom-tracker" | "rx-assessment-elamipretide" | "rx-assessment-elamipretide-symptom-tracker" | "rx-assessment-enclomiphene" | "rx-assessment-enclomiphene-symptom-tracker" | "rx-assessment-tadalafil" | "rx-assessment-tadalafil-symptom-tracker" | "rx-assessment-low-dose-naltrexone" | "rx-assessment-low-dose-naltrexone-symptom-tracker" | "rx-assessment-methylcobalamin-b12" | "rx-assessment-methylcobalamin-b12-symptom-tracker" | "rx-assessment-trt-injectable" | "rx-assessment-trt-injectable-symptom-tracker" | "rx-assessment-tirzepatide" | "rx-assessment-tirzepatide-symptom-tracker" | "glp-frontdoor-experiment";
                 status?: "draft" | "active" | "retired";
             };
             header?: never;
@@ -9386,6 +9402,16 @@ export interface operations {
                                 display?: string;
                                 userSelected?: boolean;
                             };
+                            valueCodeableConcept?: {
+                                coding?: {
+                                    system?: string;
+                                    version?: string;
+                                    code?: string;
+                                    display?: string;
+                                    userSelected?: boolean;
+                                }[];
+                                text?: string;
+                            };
                             valueQuantity?: {
                                 value?: number;
                                 /** @enum {unknown} */
@@ -9433,6 +9459,16 @@ export interface operations {
                                     code?: string;
                                     display?: string;
                                     userSelected?: boolean;
+                                };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: string;
+                                        version?: string;
+                                        code?: string;
+                                        display?: string;
+                                        userSelected?: boolean;
+                                    }[];
+                                    text?: string;
                                 };
                                 valueQuantity?: {
                                     value?: number;
@@ -9482,6 +9518,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -9529,6 +9575,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -9578,6 +9628,16 @@ export interface operations {
                                 display?: string;
                                 userSelected?: boolean;
                             };
+                            valueCodeableConcept?: {
+                                coding?: {
+                                    system?: string;
+                                    version?: string;
+                                    code?: string;
+                                    display?: string;
+                                    userSelected?: boolean;
+                                }[];
+                                text?: string;
+                            };
                             valueQuantity?: {
                                 value?: number;
                                 /** @enum {unknown} */
@@ -9625,6 +9685,16 @@ export interface operations {
                                     code?: string;
                                     display?: string;
                                     userSelected?: boolean;
+                                };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: string;
+                                        version?: string;
+                                        code?: string;
+                                        display?: string;
+                                        userSelected?: boolean;
+                                    }[];
+                                    text?: string;
                                 };
                                 valueQuantity?: {
                                     value?: number;
@@ -9674,6 +9744,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -9721,6 +9801,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -9863,6 +9947,16 @@ export interface operations {
                                     display?: string;
                                     userSelected?: boolean;
                                 };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: string;
+                                        version?: string;
+                                        code?: string;
+                                        display?: string;
+                                        userSelected?: boolean;
+                                    }[];
+                                    text?: string;
+                                };
                                 valueQuantity?: {
                                     value?: number;
                                     /** @enum {unknown} */
@@ -9911,6 +10005,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -9958,6 +10062,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -10006,6 +10114,16 @@ export interface operations {
                                     display?: string;
                                     userSelected?: boolean;
                                 };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: string;
+                                        version?: string;
+                                        code?: string;
+                                        display?: string;
+                                        userSelected?: boolean;
+                                    }[];
+                                    text?: string;
+                                };
                                 valueQuantity?: {
                                     value?: number;
                                     /** @enum {unknown} */
@@ -10054,6 +10172,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -10101,6 +10229,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -10154,6 +10286,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -10201,6 +10343,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -10248,6 +10394,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -10295,6 +10451,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -10390,6 +10550,10 @@ export interface operations {
                                             display?: unknown;
                                             userSelected?: unknown;
                                         };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
+                                        };
                                         valueQuantity?: {
                                             value?: unknown;
                                             comparator?: unknown;
@@ -10434,6 +10598,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -10544,6 +10712,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -10591,6 +10769,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -10638,6 +10820,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -10685,6 +10877,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -10737,6 +10933,10 @@ export interface operations {
                                             display?: unknown;
                                             userSelected?: unknown;
                                         };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
+                                        };
                                         valueQuantity?: {
                                             value?: unknown;
                                             comparator?: unknown;
@@ -10781,6 +10981,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -10886,6 +11090,10 @@ export interface operations {
                                             display?: unknown;
                                             userSelected?: unknown;
                                         };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
+                                        };
                                         valueQuantity?: {
                                             value?: unknown;
                                             comparator?: unknown;
@@ -10930,6 +11138,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -11240,6 +11452,16 @@ export interface operations {
                                 display?: string;
                                 userSelected?: boolean;
                             };
+                            valueCodeableConcept?: {
+                                coding?: {
+                                    system?: string;
+                                    version?: string;
+                                    code?: string;
+                                    display?: string;
+                                    userSelected?: boolean;
+                                }[];
+                                text?: string;
+                            };
                             valueQuantity?: {
                                 value?: number;
                                 /** @enum {unknown} */
@@ -11288,6 +11510,16 @@ export interface operations {
                                     display?: string;
                                     userSelected?: boolean;
                                 };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: unknown;
+                                        version?: unknown;
+                                        code?: unknown;
+                                        display?: unknown;
+                                        userSelected?: unknown;
+                                    }[];
+                                    text?: string;
+                                };
                                 valueQuantity?: {
                                     value?: number;
                                     /** @enum {unknown} */
@@ -11335,6 +11567,10 @@ export interface operations {
                                         code?: unknown;
                                         display?: unknown;
                                         userSelected?: unknown;
+                                    };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
                                     };
                                     valueQuantity?: {
                                         value?: unknown;
@@ -11383,6 +11619,16 @@ export interface operations {
                                 display?: string;
                                 userSelected?: boolean;
                             };
+                            valueCodeableConcept?: {
+                                coding?: {
+                                    system?: string;
+                                    version?: string;
+                                    code?: string;
+                                    display?: string;
+                                    userSelected?: boolean;
+                                }[];
+                                text?: string;
+                            };
                             valueQuantity?: {
                                 value?: number;
                                 /** @enum {unknown} */
@@ -11431,6 +11677,16 @@ export interface operations {
                                     display?: string;
                                     userSelected?: boolean;
                                 };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: unknown;
+                                        version?: unknown;
+                                        code?: unknown;
+                                        display?: unknown;
+                                        userSelected?: unknown;
+                                    }[];
+                                    text?: string;
+                                };
                                 valueQuantity?: {
                                     value?: number;
                                     /** @enum {unknown} */
@@ -11478,6 +11734,10 @@ export interface operations {
                                         code?: unknown;
                                         display?: unknown;
                                         userSelected?: unknown;
+                                    };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
                                     };
                                     valueQuantity?: {
                                         value?: unknown;
@@ -11531,6 +11791,16 @@ export interface operations {
                                     display?: string;
                                     userSelected?: boolean;
                                 };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: unknown;
+                                        version?: unknown;
+                                        code?: unknown;
+                                        display?: unknown;
+                                        userSelected?: unknown;
+                                    }[];
+                                    text?: string;
+                                };
                                 valueQuantity?: {
                                     value?: number;
                                     /** @enum {unknown} */
@@ -11578,6 +11848,10 @@ export interface operations {
                                         code?: unknown;
                                         display?: unknown;
                                         userSelected?: unknown;
+                                    };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
                                     };
                                     valueQuantity?: {
                                         value?: unknown;
@@ -11625,6 +11899,16 @@ export interface operations {
                                     display?: string;
                                     userSelected?: boolean;
                                 };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: unknown;
+                                        version?: unknown;
+                                        code?: unknown;
+                                        display?: unknown;
+                                        userSelected?: unknown;
+                                    }[];
+                                    text?: string;
+                                };
                                 valueQuantity?: {
                                     value?: number;
                                     /** @enum {unknown} */
@@ -11672,6 +11956,10 @@ export interface operations {
                                         code?: unknown;
                                         display?: unknown;
                                         userSelected?: unknown;
+                                    };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
                                     };
                                     valueQuantity?: {
                                         value?: unknown;
@@ -11767,6 +12055,10 @@ export interface operations {
                                         display?: unknown;
                                         userSelected?: unknown;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
+                                    };
                                     valueQuantity?: {
                                         value?: unknown;
                                         comparator?: unknown;
@@ -11811,6 +12103,10 @@ export interface operations {
                                         code?: unknown;
                                         display?: unknown;
                                         userSelected?: unknown;
+                                    };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
                                     };
                                     valueQuantity?: {
                                         value?: unknown;
@@ -11921,6 +12217,16 @@ export interface operations {
                                     display?: string;
                                     userSelected?: boolean;
                                 };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: unknown;
+                                        version?: unknown;
+                                        code?: unknown;
+                                        display?: unknown;
+                                        userSelected?: unknown;
+                                    }[];
+                                    text?: string;
+                                };
                                 valueQuantity?: {
                                     value?: number;
                                     /** @enum {unknown} */
@@ -11968,6 +12274,10 @@ export interface operations {
                                         code?: unknown;
                                         display?: unknown;
                                         userSelected?: unknown;
+                                    };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
                                     };
                                     valueQuantity?: {
                                         value?: unknown;
@@ -12015,6 +12325,16 @@ export interface operations {
                                     display?: string;
                                     userSelected?: boolean;
                                 };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: unknown;
+                                        version?: unknown;
+                                        code?: unknown;
+                                        display?: unknown;
+                                        userSelected?: unknown;
+                                    }[];
+                                    text?: string;
+                                };
                                 valueQuantity?: {
                                     value?: number;
                                     /** @enum {unknown} */
@@ -12062,6 +12382,10 @@ export interface operations {
                                         code?: unknown;
                                         display?: unknown;
                                         userSelected?: unknown;
+                                    };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
                                     };
                                     valueQuantity?: {
                                         value?: unknown;
@@ -12114,6 +12438,10 @@ export interface operations {
                                         display?: unknown;
                                         userSelected?: unknown;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
+                                    };
                                     valueQuantity?: {
                                         value?: unknown;
                                         comparator?: unknown;
@@ -12158,6 +12486,10 @@ export interface operations {
                                         code?: unknown;
                                         display?: unknown;
                                         userSelected?: unknown;
+                                    };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
                                     };
                                     valueQuantity?: {
                                         value?: unknown;
@@ -12263,6 +12595,10 @@ export interface operations {
                                         display?: unknown;
                                         userSelected?: unknown;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
+                                    };
                                     valueQuantity?: {
                                         value?: unknown;
                                         comparator?: unknown;
@@ -12307,6 +12643,10 @@ export interface operations {
                                         code?: unknown;
                                         display?: unknown;
                                         userSelected?: unknown;
+                                    };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
                                     };
                                     valueQuantity?: {
                                         value?: unknown;
@@ -12443,6 +12783,16 @@ export interface operations {
                                 display?: string;
                                 userSelected?: boolean;
                             };
+                            valueCodeableConcept?: {
+                                coding?: {
+                                    system?: string;
+                                    version?: string;
+                                    code?: string;
+                                    display?: string;
+                                    userSelected?: boolean;
+                                }[];
+                                text?: string;
+                            };
                             valueQuantity?: {
                                 value?: number;
                                 /** @enum {unknown} */
@@ -12490,6 +12840,16 @@ export interface operations {
                                     code?: string;
                                     display?: string;
                                     userSelected?: boolean;
+                                };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: string;
+                                        version?: string;
+                                        code?: string;
+                                        display?: string;
+                                        userSelected?: boolean;
+                                    }[];
+                                    text?: string;
                                 };
                                 valueQuantity?: {
                                     value?: number;
@@ -12539,6 +12899,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -12586,6 +12956,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -12635,6 +13009,16 @@ export interface operations {
                                 display?: string;
                                 userSelected?: boolean;
                             };
+                            valueCodeableConcept?: {
+                                coding?: {
+                                    system?: string;
+                                    version?: string;
+                                    code?: string;
+                                    display?: string;
+                                    userSelected?: boolean;
+                                }[];
+                                text?: string;
+                            };
                             valueQuantity?: {
                                 value?: number;
                                 /** @enum {unknown} */
@@ -12682,6 +13066,16 @@ export interface operations {
                                     code?: string;
                                     display?: string;
                                     userSelected?: boolean;
+                                };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: string;
+                                        version?: string;
+                                        code?: string;
+                                        display?: string;
+                                        userSelected?: boolean;
+                                    }[];
+                                    text?: string;
                                 };
                                 valueQuantity?: {
                                     value?: number;
@@ -12731,6 +13125,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -12778,6 +13182,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -12920,6 +13328,16 @@ export interface operations {
                                     display?: string;
                                     userSelected?: boolean;
                                 };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: string;
+                                        version?: string;
+                                        code?: string;
+                                        display?: string;
+                                        userSelected?: boolean;
+                                    }[];
+                                    text?: string;
+                                };
                                 valueQuantity?: {
                                     value?: number;
                                     /** @enum {unknown} */
@@ -12968,6 +13386,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -13015,6 +13443,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -13063,6 +13495,16 @@ export interface operations {
                                     display?: string;
                                     userSelected?: boolean;
                                 };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: string;
+                                        version?: string;
+                                        code?: string;
+                                        display?: string;
+                                        userSelected?: boolean;
+                                    }[];
+                                    text?: string;
+                                };
                                 valueQuantity?: {
                                     value?: number;
                                     /** @enum {unknown} */
@@ -13111,6 +13553,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -13158,6 +13610,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -13211,6 +13667,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -13258,6 +13724,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -13305,6 +13775,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -13352,6 +13832,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -13447,6 +13931,10 @@ export interface operations {
                                             display?: unknown;
                                             userSelected?: unknown;
                                         };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
+                                        };
                                         valueQuantity?: {
                                             value?: unknown;
                                             comparator?: unknown;
@@ -13491,6 +13979,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -13601,6 +14093,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -13648,6 +14150,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -13695,6 +14201,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -13742,6 +14258,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -13794,6 +14314,10 @@ export interface operations {
                                             display?: unknown;
                                             userSelected?: unknown;
                                         };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
+                                        };
                                         valueQuantity?: {
                                             value?: unknown;
                                             comparator?: unknown;
@@ -13838,6 +14362,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -13943,6 +14471,10 @@ export interface operations {
                                             display?: unknown;
                                             userSelected?: unknown;
                                         };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
+                                        };
                                         valueQuantity?: {
                                             value?: unknown;
                                             comparator?: unknown;
@@ -13987,6 +14519,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -14317,6 +14853,16 @@ export interface operations {
                                 display?: string;
                                 userSelected?: boolean;
                             };
+                            valueCodeableConcept?: {
+                                coding?: {
+                                    system?: string;
+                                    version?: string;
+                                    code?: string;
+                                    display?: string;
+                                    userSelected?: boolean;
+                                }[];
+                                text?: string;
+                            };
                             valueQuantity?: {
                                 value?: number;
                                 /** @enum {unknown} */
@@ -14364,6 +14910,16 @@ export interface operations {
                                     code?: string;
                                     display?: string;
                                     userSelected?: boolean;
+                                };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: string;
+                                        version?: string;
+                                        code?: string;
+                                        display?: string;
+                                        userSelected?: boolean;
+                                    }[];
+                                    text?: string;
                                 };
                                 valueQuantity?: {
                                     value?: number;
@@ -14413,6 +14969,10 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: (unknown | null)[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -14452,6 +15012,7 @@ export interface operations {
                                         valueDateTime?: unknown;
                                         valueTime?: unknown;
                                         valueCoding?: unknown;
+                                        valueCodeableConcept?: unknown;
                                         valueQuantity?: unknown;
                                         valueReference?: unknown;
                                         valueAttachment?: unknown;
@@ -14480,6 +15041,16 @@ export interface operations {
                                 display?: string;
                                 userSelected?: boolean;
                             };
+                            valueCodeableConcept?: {
+                                coding?: {
+                                    system?: string;
+                                    version?: string;
+                                    code?: string;
+                                    display?: string;
+                                    userSelected?: boolean;
+                                }[];
+                                text?: string;
+                            };
                             valueQuantity?: {
                                 value?: number;
                                 /** @enum {unknown} */
@@ -14527,6 +15098,16 @@ export interface operations {
                                     code?: string;
                                     display?: string;
                                     userSelected?: boolean;
+                                };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: string;
+                                        version?: string;
+                                        code?: string;
+                                        display?: string;
+                                        userSelected?: boolean;
+                                    }[];
+                                    text?: string;
                                 };
                                 valueQuantity?: {
                                     value?: number;
@@ -14576,6 +15157,10 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: (unknown | null)[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -14615,6 +15200,7 @@ export interface operations {
                                         valueDateTime?: unknown;
                                         valueTime?: unknown;
                                         valueCoding?: unknown;
+                                        valueCodeableConcept?: unknown;
                                         valueQuantity?: unknown;
                                         valueReference?: unknown;
                                         valueAttachment?: unknown;
@@ -14736,6 +15322,16 @@ export interface operations {
                                     display?: string;
                                     userSelected?: boolean;
                                 };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: string;
+                                        version?: string;
+                                        code?: string;
+                                        display?: string;
+                                        userSelected?: boolean;
+                                    }[];
+                                    text?: string;
+                                };
                                 valueQuantity?: {
                                     value?: number;
                                     /** @enum {unknown} */
@@ -14784,6 +15380,10 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: (unknown | null)[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -14823,6 +15423,7 @@ export interface operations {
                                         valueDateTime?: unknown;
                                         valueTime?: unknown;
                                         valueCoding?: unknown;
+                                        valueCodeableConcept?: unknown;
                                         valueQuantity?: unknown;
                                         valueReference?: unknown;
                                         valueAttachment?: unknown;
@@ -14850,6 +15451,16 @@ export interface operations {
                                     display?: string;
                                     userSelected?: boolean;
                                 };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: string;
+                                        version?: string;
+                                        code?: string;
+                                        display?: string;
+                                        userSelected?: boolean;
+                                    }[];
+                                    text?: string;
+                                };
                                 valueQuantity?: {
                                     value?: number;
                                     /** @enum {unknown} */
@@ -14898,6 +15509,10 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: (unknown | null)[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -14937,6 +15552,7 @@ export interface operations {
                                         valueDateTime?: unknown;
                                         valueTime?: unknown;
                                         valueCoding?: unknown;
+                                        valueCodeableConcept?: unknown;
                                         valueQuantity?: unknown;
                                         valueReference?: unknown;
                                         valueAttachment?: unknown;
@@ -14969,6 +15585,10 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: (unknown | null)[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -15008,6 +15628,7 @@ export interface operations {
                                         valueDateTime?: unknown;
                                         valueTime?: unknown;
                                         valueCoding?: unknown;
+                                        valueCodeableConcept?: unknown;
                                         valueQuantity?: unknown;
                                         valueReference?: unknown;
                                         valueAttachment?: unknown;
@@ -15034,6 +15655,10 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: (unknown | null)[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -15073,6 +15698,7 @@ export interface operations {
                                         valueDateTime?: unknown;
                                         valueTime?: unknown;
                                         valueCoding?: unknown;
+                                        valueCodeableConcept?: unknown;
                                         valueQuantity?: unknown;
                                         valueReference?: unknown;
                                         valueAttachment?: unknown;
@@ -15138,6 +15764,7 @@ export interface operations {
                                         valueDateTime?: unknown;
                                         valueTime?: unknown;
                                         valueCoding?: unknown;
+                                        valueCodeableConcept?: unknown;
                                         valueQuantity?: unknown;
                                         valueReference?: unknown;
                                         valueAttachment?: unknown;
@@ -15154,6 +15781,7 @@ export interface operations {
                                         valueDateTime?: unknown;
                                         valueTime?: unknown;
                                         valueCoding?: unknown;
+                                        valueCodeableConcept?: unknown;
                                         valueQuantity?: unknown;
                                         valueReference?: unknown;
                                         valueAttachment?: unknown;
@@ -15214,6 +15842,10 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: (unknown | null)[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -15253,6 +15885,7 @@ export interface operations {
                                         valueDateTime?: unknown;
                                         valueTime?: unknown;
                                         valueCoding?: unknown;
+                                        valueCodeableConcept?: unknown;
                                         valueQuantity?: unknown;
                                         valueReference?: unknown;
                                         valueAttachment?: unknown;
@@ -15279,6 +15912,10 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: (unknown | null)[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -15318,6 +15955,7 @@ export interface operations {
                                         valueDateTime?: unknown;
                                         valueTime?: unknown;
                                         valueCoding?: unknown;
+                                        valueCodeableConcept?: unknown;
                                         valueQuantity?: unknown;
                                         valueReference?: unknown;
                                         valueAttachment?: unknown;
@@ -15340,6 +15978,7 @@ export interface operations {
                                         valueDateTime?: unknown;
                                         valueTime?: unknown;
                                         valueCoding?: unknown;
+                                        valueCodeableConcept?: unknown;
                                         valueQuantity?: unknown;
                                         valueReference?: unknown;
                                         valueAttachment?: unknown;
@@ -15356,6 +15995,7 @@ export interface operations {
                                         valueDateTime?: unknown;
                                         valueTime?: unknown;
                                         valueCoding?: unknown;
+                                        valueCodeableConcept?: unknown;
                                         valueQuantity?: unknown;
                                         valueReference?: unknown;
                                         valueAttachment?: unknown;
@@ -15431,6 +16071,7 @@ export interface operations {
                                         valueDateTime?: unknown;
                                         valueTime?: unknown;
                                         valueCoding?: unknown;
+                                        valueCodeableConcept?: unknown;
                                         valueQuantity?: unknown;
                                         valueReference?: unknown;
                                         valueAttachment?: unknown;
@@ -15447,6 +16088,7 @@ export interface operations {
                                         valueDateTime?: unknown;
                                         valueTime?: unknown;
                                         valueCoding?: unknown;
+                                        valueCodeableConcept?: unknown;
                                         valueQuantity?: unknown;
                                         valueReference?: unknown;
                                         valueAttachment?: unknown;
@@ -15707,6 +16349,16 @@ export interface operations {
                                 display?: string;
                                 userSelected?: boolean;
                             };
+                            valueCodeableConcept?: {
+                                coding?: {
+                                    system?: string;
+                                    version?: string;
+                                    code?: string;
+                                    display?: string;
+                                    userSelected?: boolean;
+                                }[];
+                                text?: string;
+                            };
                             valueQuantity?: {
                                 value?: number;
                                 /** @enum {unknown} */
@@ -15755,6 +16407,16 @@ export interface operations {
                                     display?: string;
                                     userSelected?: boolean;
                                 };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: unknown;
+                                        version?: unknown;
+                                        code?: unknown;
+                                        display?: unknown;
+                                        userSelected?: unknown;
+                                    }[];
+                                    text?: string;
+                                };
                                 valueQuantity?: {
                                     value?: number;
                                     /** @enum {unknown} */
@@ -15802,6 +16464,10 @@ export interface operations {
                                         code?: unknown;
                                         display?: unknown;
                                         userSelected?: unknown;
+                                    };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
                                     };
                                     valueQuantity?: {
                                         value?: unknown;
@@ -15850,6 +16516,16 @@ export interface operations {
                                 display?: string;
                                 userSelected?: boolean;
                             };
+                            valueCodeableConcept?: {
+                                coding?: {
+                                    system?: string;
+                                    version?: string;
+                                    code?: string;
+                                    display?: string;
+                                    userSelected?: boolean;
+                                }[];
+                                text?: string;
+                            };
                             valueQuantity?: {
                                 value?: number;
                                 /** @enum {unknown} */
@@ -15898,6 +16574,16 @@ export interface operations {
                                     display?: string;
                                     userSelected?: boolean;
                                 };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: unknown;
+                                        version?: unknown;
+                                        code?: unknown;
+                                        display?: unknown;
+                                        userSelected?: unknown;
+                                    }[];
+                                    text?: string;
+                                };
                                 valueQuantity?: {
                                     value?: number;
                                     /** @enum {unknown} */
@@ -15945,6 +16631,10 @@ export interface operations {
                                         code?: unknown;
                                         display?: unknown;
                                         userSelected?: unknown;
+                                    };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
                                     };
                                     valueQuantity?: {
                                         value?: unknown;
@@ -15998,6 +16688,16 @@ export interface operations {
                                     display?: string;
                                     userSelected?: boolean;
                                 };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: unknown;
+                                        version?: unknown;
+                                        code?: unknown;
+                                        display?: unknown;
+                                        userSelected?: unknown;
+                                    }[];
+                                    text?: string;
+                                };
                                 valueQuantity?: {
                                     value?: number;
                                     /** @enum {unknown} */
@@ -16045,6 +16745,10 @@ export interface operations {
                                         code?: unknown;
                                         display?: unknown;
                                         userSelected?: unknown;
+                                    };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
                                     };
                                     valueQuantity?: {
                                         value?: unknown;
@@ -16092,6 +16796,16 @@ export interface operations {
                                     display?: string;
                                     userSelected?: boolean;
                                 };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: unknown;
+                                        version?: unknown;
+                                        code?: unknown;
+                                        display?: unknown;
+                                        userSelected?: unknown;
+                                    }[];
+                                    text?: string;
+                                };
                                 valueQuantity?: {
                                     value?: number;
                                     /** @enum {unknown} */
@@ -16139,6 +16853,10 @@ export interface operations {
                                         code?: unknown;
                                         display?: unknown;
                                         userSelected?: unknown;
+                                    };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
                                     };
                                     valueQuantity?: {
                                         value?: unknown;
@@ -16234,6 +16952,10 @@ export interface operations {
                                         display?: unknown;
                                         userSelected?: unknown;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
+                                    };
                                     valueQuantity?: {
                                         value?: unknown;
                                         comparator?: unknown;
@@ -16278,6 +17000,10 @@ export interface operations {
                                         code?: unknown;
                                         display?: unknown;
                                         userSelected?: unknown;
+                                    };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
                                     };
                                     valueQuantity?: {
                                         value?: unknown;
@@ -16388,6 +17114,16 @@ export interface operations {
                                     display?: string;
                                     userSelected?: boolean;
                                 };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: unknown;
+                                        version?: unknown;
+                                        code?: unknown;
+                                        display?: unknown;
+                                        userSelected?: unknown;
+                                    }[];
+                                    text?: string;
+                                };
                                 valueQuantity?: {
                                     value?: number;
                                     /** @enum {unknown} */
@@ -16435,6 +17171,10 @@ export interface operations {
                                         code?: unknown;
                                         display?: unknown;
                                         userSelected?: unknown;
+                                    };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
                                     };
                                     valueQuantity?: {
                                         value?: unknown;
@@ -16482,6 +17222,16 @@ export interface operations {
                                     display?: string;
                                     userSelected?: boolean;
                                 };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: unknown;
+                                        version?: unknown;
+                                        code?: unknown;
+                                        display?: unknown;
+                                        userSelected?: unknown;
+                                    }[];
+                                    text?: string;
+                                };
                                 valueQuantity?: {
                                     value?: number;
                                     /** @enum {unknown} */
@@ -16529,6 +17279,10 @@ export interface operations {
                                         code?: unknown;
                                         display?: unknown;
                                         userSelected?: unknown;
+                                    };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
                                     };
                                     valueQuantity?: {
                                         value?: unknown;
@@ -16581,6 +17335,10 @@ export interface operations {
                                         display?: unknown;
                                         userSelected?: unknown;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
+                                    };
                                     valueQuantity?: {
                                         value?: unknown;
                                         comparator?: unknown;
@@ -16625,6 +17383,10 @@ export interface operations {
                                         code?: unknown;
                                         display?: unknown;
                                         userSelected?: unknown;
+                                    };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
                                     };
                                     valueQuantity?: {
                                         value?: unknown;
@@ -16730,6 +17492,10 @@ export interface operations {
                                         display?: unknown;
                                         userSelected?: unknown;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
+                                    };
                                     valueQuantity?: {
                                         value?: unknown;
                                         comparator?: unknown;
@@ -16774,6 +17540,10 @@ export interface operations {
                                         code?: unknown;
                                         display?: unknown;
                                         userSelected?: unknown;
+                                    };
+                                    valueCodeableConcept?: {
+                                        coding?: unknown;
+                                        text?: unknown;
                                     };
                                     valueQuantity?: {
                                         value?: unknown;
@@ -16913,6 +17683,16 @@ export interface operations {
                                 display?: string;
                                 userSelected?: boolean;
                             };
+                            valueCodeableConcept?: {
+                                coding?: {
+                                    system?: string;
+                                    version?: string;
+                                    code?: string;
+                                    display?: string;
+                                    userSelected?: boolean;
+                                }[];
+                                text?: string;
+                            };
                             valueQuantity?: {
                                 value?: number;
                                 /** @enum {unknown} */
@@ -16960,6 +17740,16 @@ export interface operations {
                                     code?: string;
                                     display?: string;
                                     userSelected?: boolean;
+                                };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: string;
+                                        version?: string;
+                                        code?: string;
+                                        display?: string;
+                                        userSelected?: boolean;
+                                    }[];
+                                    text?: string;
                                 };
                                 valueQuantity?: {
                                     value?: number;
@@ -17009,6 +17799,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -17056,6 +17856,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -17105,6 +17909,16 @@ export interface operations {
                                 display?: string;
                                 userSelected?: boolean;
                             };
+                            valueCodeableConcept?: {
+                                coding?: {
+                                    system?: string;
+                                    version?: string;
+                                    code?: string;
+                                    display?: string;
+                                    userSelected?: boolean;
+                                }[];
+                                text?: string;
+                            };
                             valueQuantity?: {
                                 value?: number;
                                 /** @enum {unknown} */
@@ -17152,6 +17966,16 @@ export interface operations {
                                     code?: string;
                                     display?: string;
                                     userSelected?: boolean;
+                                };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: string;
+                                        version?: string;
+                                        code?: string;
+                                        display?: string;
+                                        userSelected?: boolean;
+                                    }[];
+                                    text?: string;
                                 };
                                 valueQuantity?: {
                                     value?: number;
@@ -17201,6 +18025,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -17248,6 +18082,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -17390,6 +18228,16 @@ export interface operations {
                                     display?: string;
                                     userSelected?: boolean;
                                 };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: string;
+                                        version?: string;
+                                        code?: string;
+                                        display?: string;
+                                        userSelected?: boolean;
+                                    }[];
+                                    text?: string;
+                                };
                                 valueQuantity?: {
                                     value?: number;
                                     /** @enum {unknown} */
@@ -17438,6 +18286,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -17485,6 +18343,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -17533,6 +18395,16 @@ export interface operations {
                                     display?: string;
                                     userSelected?: boolean;
                                 };
+                                valueCodeableConcept?: {
+                                    coding?: {
+                                        system?: string;
+                                        version?: string;
+                                        code?: string;
+                                        display?: string;
+                                        userSelected?: boolean;
+                                    }[];
+                                    text?: string;
+                                };
                                 valueQuantity?: {
                                     value?: number;
                                     /** @enum {unknown} */
@@ -17581,6 +18453,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -17628,6 +18510,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -17681,6 +18567,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -17728,6 +18624,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -17775,6 +18675,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -17822,6 +18732,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -17917,6 +18831,10 @@ export interface operations {
                                             display?: unknown;
                                             userSelected?: unknown;
                                         };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
+                                        };
                                         valueQuantity?: {
                                             value?: unknown;
                                             comparator?: unknown;
@@ -17961,6 +18879,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -18071,6 +18993,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -18118,6 +19050,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -18165,6 +19101,16 @@ export interface operations {
                                         display?: string;
                                         userSelected?: boolean;
                                     };
+                                    valueCodeableConcept?: {
+                                        coding?: {
+                                            system?: unknown;
+                                            version?: unknown;
+                                            code?: unknown;
+                                            display?: unknown;
+                                            userSelected?: unknown;
+                                        }[];
+                                        text?: string;
+                                    };
                                     valueQuantity?: {
                                         value?: number;
                                         /** @enum {unknown} */
@@ -18212,6 +19158,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -18264,6 +19214,10 @@ export interface operations {
                                             display?: unknown;
                                             userSelected?: unknown;
                                         };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
+                                        };
                                         valueQuantity?: {
                                             value?: unknown;
                                             comparator?: unknown;
@@ -18308,6 +19262,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -18413,6 +19371,10 @@ export interface operations {
                                             display?: unknown;
                                             userSelected?: unknown;
                                         };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
+                                        };
                                         valueQuantity?: {
                                             value?: unknown;
                                             comparator?: unknown;
@@ -18457,6 +19419,10 @@ export interface operations {
                                             code?: unknown;
                                             display?: unknown;
                                             userSelected?: unknown;
+                                        };
+                                        valueCodeableConcept?: {
+                                            coding?: unknown;
+                                            text?: unknown;
                                         };
                                         valueQuantity?: {
                                             value?: unknown;
@@ -18544,6 +19510,217 @@ export interface operations {
                                         item?: (unknown | null)[];
                                     }[];
                                 }[];
+                            }[];
+                        }[];
+                    };
+                };
+            };
+            /** @description 400 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "BAD_REQUEST";
+                        /** @constant */
+                        status: 400;
+                        /** @default Bad Request */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 401 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "UNAUTHORIZED";
+                        /** @constant */
+                        status: 401;
+                        /** @default Unauthorized */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 403 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "FORBIDDEN";
+                        /** @constant */
+                        status: 403;
+                        /** @default Forbidden */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 404 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "NOT_FOUND";
+                        /** @constant */
+                        status: 404;
+                        /** @default Not found */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 409 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "CONFLICT";
+                        /** @constant */
+                        status: 409;
+                        /** @default Conflict */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 429 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "RATE_LIMIT_EXCEEDED";
+                        /** @constant */
+                        status: 429;
+                        /** @default Rate limit exceeded */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 500 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "INTERNAL_SERVER_ERROR";
+                        /** @constant */
+                        status: 500;
+                        /** @default Internal server error */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    "recommendations.getRecommendations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        products: {
+                            productId: components["schemas"]["CheckoutProductId"];
+                            reasons: {
+                                /** @enum {unknown} */
+                                type: "goals" | "family-history";
+                                label: string;
                             }[];
                         }[];
                     };
