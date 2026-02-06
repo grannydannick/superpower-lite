@@ -14,7 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { DatetimePicker, Input } from '@/components/ui/input';
+import { DatetimePicker, Input, NumericInput } from '@/components/ui/input';
 import {
   Select,
   SelectTrigger,
@@ -129,27 +129,16 @@ export const YourDetailsSection = ({
                   <FormItem>
                     <FormLabel>ZIP Code</FormLabel>
                     <FormControl>
-                      <Input
+                      <NumericInput
                         variant={fieldState.error ? 'error' : 'default'}
-                        autoComplete="off"
                         placeholder="ZIP Code"
-                        type="text"
-                        inputMode="numeric"
                         maxLength={5}
-                        {...field}
-                        onInput={(e) => {
-                          const input = e.currentTarget;
-                          input.value = input.value
-                            .replace(/\D/g, '')
-                            .slice(0, 5);
-                          field.onChange(input.value); // keep RHF in sync
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-                            e.preventDefault();
-                          }
-                        }}
-                        {...field}
+                        maxDigits={5}
+                        ref={field.ref}
+                        value={field.value}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        onChange={(value) => field.onChange(value)}
                       />
                     </FormControl>
                     {fieldState.error ? (

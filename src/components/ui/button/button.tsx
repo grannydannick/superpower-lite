@@ -22,6 +22,8 @@ const buttonVariants = cva(
           'border border-white/10 bg-white/10 text-white backdrop-blur-xl hover:bg-white/20',
         link: 'text-primary underline-offset-4 hover:underline',
         white: 'border bg-white text-zinc-900 hover:bg-white/90',
+        vermillion:
+          'border border-black/10 bg-vermillion-900 text-white shadow-sm hover:bg-vermillion-900/90',
       },
       size: {
         default: 'px-5 py-3.5 text-base',

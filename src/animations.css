@@ -1,0 +1,479 @@
+.progressive-blur {
+  -webkit-backdrop-filter: blur(40px);
+  backdrop-filter: blur(40px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black);
+  mask-image: linear-gradient(to bottom, transparent, black);
+}
+
+@keyframes mask-reveal {
+  from {
+    -webkit-mask-position: 0 100%;
+    mask-position: 0 100%;
+  }
+  to {
+    -webkit-mask-position: 0 0;
+    mask-position: 0 0;
+  }
+}
+
+.mask-reveal {
+  -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 60%, transparent 100%);
+  -webkit-mask-size: 100% 200%;
+  mask-size: 100% 200%;
+  -webkit-mask-position: 0 100%;
+  mask-position: 0 100%;
+  animation: mask-reveal 700ms ease-out forwards;
+}
+
+@keyframes mask-reveal-left {
+  from {
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+  }
+  to {
+    -webkit-mask-position: 0 0;
+    mask-position: 0 0;
+  }
+}
+
+@keyframes mask-reveal-right {
+  from {
+    -webkit-mask-position: 0 0;
+    mask-position: 0 0;
+  }
+  to {
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+  }
+}
+
+.mask-reveal-left {
+  -webkit-mask-image: linear-gradient(to right, #000 60%, transparent 100%);
+  mask-image: linear-gradient(to right, #000 60%, transparent 100%);
+  -webkit-mask-size: 200% 100%;
+  mask-size: 200% 100%;
+  -webkit-mask-position: 100% 0;
+  mask-position: 100% 0;
+  animation: mask-reveal-left 1500ms ease-out forwards;
+}
+
+.mask-reveal-right {
+  -webkit-mask-image: linear-gradient(to left, #000 60%, transparent 100%);
+  mask-image: linear-gradient(to left, #000 60%, transparent 100%);
+  -webkit-mask-size: 200% 100%;
+  mask-size: 200% 100%;
+  -webkit-mask-position: 0 0;
+  mask-position: 0 0;
+  animation: mask-reveal-right 1500ms ease-out forwards;
+}
+
+@keyframes image-shimmer {
+  0% {
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+  }
+  100% {
+    -webkit-mask-position: -100% 0;
+    mask-position: -100% 0;
+  }
+}
+
+.image-shimmer {
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  -webkit-mask-size: 200% 100%;
+  mask-size: 200% 100%;
+  -webkit-mask-position: 100% 0;
+  mask-position: 100% 0;
+  animation: image-shimmer 2s ease-in-out infinite;
+}
+
+@keyframes logo-mask-reveal {
+  0% {
+    -webkit-mask-size: 0% 0%;
+    mask-size: 0% 0%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  50% {
+    -webkit-mask-size: 150% 150%;
+    mask-size: 150% 150%;
+  }
+  100% {
+    -webkit-mask-size: 200% 200%;
+    mask-size: 200% 200%;
+  }
+}
+
+@keyframes logo-spotlight-sweep {
+  0% {
+    -webkit-mask-position: -50% 50%;
+    mask-position: -50% 50%;
+  }
+  50% {
+    -webkit-mask-position: 50% 50%;
+    mask-position: 50% 50%;
+  }
+  100% {
+    -webkit-mask-position: 150% 50%;
+    mask-position: 150% 50%;
+  }
+}
+
+@keyframes logo-fade-out {
+  0% {
+    opacity: 1;
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 0;
+    filter: blur(8px);
+  }
+}
+
+.logo-mask-reveal {
+  -webkit-mask-image: radial-gradient(
+    ellipse 60% 60% at 50% 50%,
+    black 30%,
+    transparent 70%
+  );
+  mask-image: radial-gradient(
+    ellipse 60% 60% at 50% 50%,
+    black 30%,
+    transparent 70%
+  );
+  -webkit-mask-size: 0% 0%;
+  mask-size: 0% 0%;
+  -webkit-mask-position: 50% 50%;
+  mask-position: 50% 50%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  animation: logo-mask-reveal 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.logo-spotlight {
+  -webkit-mask-image: radial-gradient(
+    ellipse 80% 80% at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+    black 20%,
+    rgba(0, 0, 0, 0.8) 40%,
+    rgba(0, 0, 0, 0.4) 60%,
+    transparent 80%
+  );
+  mask-image: radial-gradient(
+    ellipse 80% 80% at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+    black 20%,
+    rgba(0, 0, 0, 0.8) 40%,
+    rgba(0, 0, 0, 0.4) 60%,
+    transparent 80%
+  );
+}
+
+.logo-shimmer-sweep {
+  -webkit-mask-image: linear-gradient(
+    120deg,
+    transparent 0%,
+    transparent 25%,
+    black 45%,
+    black 55%,
+    transparent 75%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    120deg,
+    transparent 0%,
+    transparent 25%,
+    black 45%,
+    black 55%,
+    transparent 75%,
+    transparent 100%
+  );
+  -webkit-mask-size: 300% 100%;
+  mask-size: 300% 100%;
+  -webkit-mask-position: 100% 50%;
+  mask-position: 100% 50%;
+  animation: logo-spotlight-sweep 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.logo-combined-reveal {
+  -webkit-mask-image: radial-gradient(
+      ellipse 100% 100% at 50% 50%,
+      black 0%,
+      black 40%,
+      transparent 70%
+    ),
+    linear-gradient(
+      115deg,
+      transparent 0%,
+      transparent 40%,
+      rgba(255, 255, 255, 0.5) 50%,
+      transparent 60%,
+      transparent 100%
+    );
+  mask-image: radial-gradient(
+      ellipse 100% 100% at 50% 50%,
+      black 0%,
+      black 40%,
+      transparent 70%
+    ),
+    linear-gradient(
+      115deg,
+      transparent 0%,
+      transparent 40%,
+      rgba(255, 255, 255, 0.5) 50%,
+      transparent 60%,
+      transparent 100%
+    );
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+@keyframes logo-unified-reveal {
+  0% {
+    -webkit-mask-size: 0% 0%, 200% 200%;
+    mask-size: 0% 0%, 200% 200%;
+    -webkit-mask-position: 50% 50%, 200% 0;
+    mask-position: 50% 50%, 200% 0;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  40% {
+    -webkit-mask-size: 120% 120%, 200% 200%;
+    mask-size: 120% 120%, 200% 200%;
+    -webkit-mask-position: 50% 50%, 100% 0;
+    mask-position: 50% 50%, 100% 0;
+  }
+  70% {
+    -webkit-mask-size: 180% 180%, 200% 200%;
+    mask-size: 180% 180%, 200% 200%;
+    -webkit-mask-position: 50% 50%, 0% 0;
+    mask-position: 50% 50%, 0% 0;
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+    filter: blur(0px);
+  }
+  100% {
+    -webkit-mask-size: 200% 200%, 200% 200%;
+    mask-size: 200% 200%, 200% 200%;
+    -webkit-mask-position: 50% 50%, -100% 0;
+    mask-position: 50% 50%, -100% 0;
+    opacity: 0;
+    filter: blur(8px);
+  }
+}
+
+.logo-unified-reveal {
+  -webkit-mask-image: radial-gradient(
+      ellipse 60% 60% at 50% 50%,
+      black 30%,
+      transparent 70%
+    ),
+    linear-gradient(
+      115deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.6) 45%,
+      rgba(255, 255, 255, 0.8) 50%,
+      rgba(255, 255, 255, 0.6) 55%,
+      transparent 80%
+    );
+  mask-image: radial-gradient(
+      ellipse 60% 60% at 50% 50%,
+      black 30%,
+      transparent 70%
+    ),
+    linear-gradient(
+      115deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.6) 45%,
+      rgba(255, 255, 255, 0.8) 50%,
+      rgba(255, 255, 255, 0.6) 55%,
+      transparent 80%
+    );
+  -webkit-mask-size: 0% 0%, 200% 200%;
+  mask-size: 0% 0%, 200% 200%;
+  -webkit-mask-position: 50% 50%, 200% 0;
+  mask-position: 50% 50%, 200% 0;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+  animation: logo-unified-reveal 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes media-organic-reveal {
+  0% {
+    -webkit-mask-size: 0% 0%;
+    mask-size: 0% 0%;
+    -webkit-mask-position: 35% 65%;
+    mask-position: 35% 65%;
+    opacity: 0;
+  }
+  5% {
+    -webkit-mask-size: 20% 18%;
+    mask-size: 20% 18%;
+    -webkit-mask-position: 38% 60%;
+    mask-position: 38% 60%;
+    opacity: 0.7;
+  }
+  10% {
+    -webkit-mask-size: 40% 35%;
+    mask-size: 40% 35%;
+    -webkit-mask-position: 45% 52%;
+    mask-position: 45% 52%;
+    opacity: 1;
+  }
+  18% {
+    -webkit-mask-size: 65% 55%;
+    mask-size: 65% 55%;
+    -webkit-mask-position: 58% 42%;
+    mask-position: 58% 42%;
+  }
+  26% {
+    -webkit-mask-size: 85% 75%;
+    mask-size: 85% 75%;
+    -webkit-mask-position: 48% 55%;
+    mask-position: 48% 55%;
+  }
+  35% {
+    -webkit-mask-size: 105% 95%;
+    mask-size: 105% 95%;
+    -webkit-mask-position: 55% 48%;
+    mask-position: 55% 48%;
+  }
+  45% {
+    -webkit-mask-size: 130% 120%;
+    mask-size: 130% 120%;
+    -webkit-mask-position: 50% 52%;
+    mask-position: 50% 52%;
+  }
+  55% {
+    -webkit-mask-size: 155% 145%;
+    mask-size: 155% 145%;
+    -webkit-mask-position: 52% 49%;
+    mask-position: 52% 49%;
+  }
+  65% {
+    -webkit-mask-size: 185% 175%;
+    mask-size: 185% 175%;
+    -webkit-mask-position: 49% 51%;
+    mask-position: 49% 51%;
+  }
+  75% {
+    -webkit-mask-size: 220% 210%;
+    mask-size: 220% 210%;
+    -webkit-mask-position: 50% 50%;
+    mask-position: 50% 50%;
+  }
+  85% {
+    -webkit-mask-size: 260% 250%;
+    mask-size: 260% 250%;
+    -webkit-mask-position: 50% 50%;
+    mask-position: 50% 50%;
+  }
+  100% {
+    -webkit-mask-size: 320% 320%;
+    mask-size: 320% 320%;
+    -webkit-mask-position: 50% 50%;
+    mask-position: 50% 50%;
+    opacity: 1;
+  }
+}
+
+.media-organic-reveal {
+  -webkit-mask-image: radial-gradient(
+    ellipse 65% 70% at 50% 50%,
+    black 0%,
+    black 20%,
+    rgba(0, 0, 0, 0.7) 40%,
+    rgba(0, 0, 0, 0.3) 60%,
+    transparent 75%
+  );
+  mask-image: radial-gradient(
+    ellipse 65% 70% at 50% 50%,
+    black 0%,
+    black 20%,
+    rgba(0, 0, 0, 0.7) 40%,
+    rgba(0, 0, 0, 0.3) 60%,
+    transparent 75%
+  );
+  -webkit-mask-size: 0% 0%;
+  mask-size: 0% 0%;
+  -webkit-mask-position: 35% 65%;
+  mask-position: 35% 65%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  opacity: 0;
+  animation: media-organic-reveal 2.2s ease-out forwards;
+}
+
+@keyframes text-organic-reveal {
+  0% {
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+  }
+  100% {
+    -webkit-mask-size: 350% 350%;
+    mask-size: 350% 350%;
+  }
+}
+
+.text-organic-reveal {
+  -webkit-mask-image: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    black 0%,
+    black 40%,
+    rgba(0, 0, 0, 0.6) 60%,
+    rgba(0, 0, 0, 0.2) 80%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    black 0%,
+    black 40%,
+    rgba(0, 0, 0, 0.6) 60%,
+    rgba(0, 0, 0, 0.2) 80%,
+    transparent 100%
+  );
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-position: 50% 50%;
+  mask-position: 50% 50%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  animation: text-organic-reveal 2s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.text-gradient-mask {
+  -webkit-mask-image: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.15) 0%,
+    rgba(0, 0, 0, 0.35) 20%,
+    rgba(0, 0, 0, 0.6) 40%,
+    rgba(0, 0, 0, 0.8) 60%,
+    black 80%
+  );
+  mask-image: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.15) 0%,
+    rgba(0, 0, 0, 0.35) 20%,
+    rgba(0, 0, 0, 0.6) 40%,
+    rgba(0, 0, 0, 0.8) 60%,
+    black 80%
+  );
+}

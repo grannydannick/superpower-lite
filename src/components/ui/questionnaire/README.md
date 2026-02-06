@@ -55,7 +55,7 @@ This directory contains various types of questionnaire components used for colle
 
 - Single-select option list displayed as a vertical stack of radio buttons
 - Supports keyboard navigation (number keys 1-9 for quick selection)
-- Auto-advances to next question after selection
+- Selection does not auto-advance; use the Next button
 - Optimized for accessibility with keyboard navigation and focus states
 
 ### Multiple Choice (`multiple-choice.tsx`)
@@ -78,4 +78,4 @@ This directory contains various types of questionnaire components used for colle
   - `QuestionnaireChoiceDropDownInput`: Dropdown-based selection for both single and multiple options
   - `QuestionnaireChoiceSetInput`: Alternative radio button display for single selections
 - Supports various data types including CodeableConcept and Coding
-- Auto-advances after selection for single-select variants
+- Single-select variants do not auto-advance; use the Next button

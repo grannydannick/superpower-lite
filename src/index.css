@@ -1,3 +1,5 @@
+@import './animations.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -230,12 +232,12 @@
 
 @keyframes mask-reveal-right {
   from {
-    -webkit-mask-position: 100% 0;
-    mask-position: 100% 0;
-  }
-  to {
     -webkit-mask-position: 0 0;
     mask-position: 0 0;
+  }
+  to {
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
   }
 }
 
@@ -254,8 +256,8 @@
   mask-image: linear-gradient(to left, #000 60%, transparent 100%);
   -webkit-mask-size: 200% 100%;
   mask-size: 200% 100%;
-  -webkit-mask-position: 100% 0;
-  mask-position: 100% 0;
+  -webkit-mask-position: 0 0;
+  mask-position: 0 0;
   animation: mask-reveal-right 1500ms ease-out forwards;
 }
 

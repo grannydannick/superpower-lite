@@ -1,5 +1,8 @@
-import { QuestionnaireResponseItem } from '@medplum/fhirtypes';
-import { keepPreviousData } from '@tanstack/react-query';
+import {
+  Questionnaire,
+  QuestionnaireResponse,
+  QuestionnaireResponseItem,
+} from '@medplum/fhirtypes';
 import { useState } from 'react';
 
 // TODO: move data fetching upstream, or make this a global component
@@ -7,53 +10,33 @@ import { NotFoundRoute } from '@/app/routes/not-found';
 import { QuestionnaireForm } from '@/components/ui/questionnaire';
 import { RxScreenOut } from '@/components/ui/questionnaire/rx-screen-out';
 import { Spinner } from '@/components/ui/spinner';
-import { useQuestionnaire } from '@/features/questionnaires/api/get-questionnaire';
-import { useQuestionnaireResponse } from '@/features/questionnaires/api/get-questionnaire-response';
-import { useUpdateQuestionnaireResponse } from '@/features/questionnaires/api/update-questionnaire-response';
+import { RxQuestionnaireName } from '@/const/questionnaire';
+import { useQuestionnaireResponseController } from '@/features/questionnaires/hooks/use-questionnaire-response-controller';
 import { isMemberIneligible } from '@/features/questionnaires/utils/is-member-ineligible';
 import { useUser } from '@/lib/auth';
-import { QuestionnaireName } from '@/types/api';
 
 export const RxQuestionnaire = ({
-  showIntro = false,
   name,
   onSubmit,
 }: {
-  showIntro?: boolean;
-  name: QuestionnaireName;
+  name: RxQuestionnaireName;
   onSubmit?: () => void;
 }) => {
   const [showIneligibleScreen, setShowIneligibleScreen] =
     useState<boolean>(false);
   const userQuery = useUser();
-  const updateQuestionnaireResponseMutation = useUpdateQuestionnaireResponse();
-
-  const getQuestionnaireResponseQuery = useQuestionnaireResponse({
-    identifier: name,
+  const {
+    questionnaire,
+    response: questionnaireResponse,
+    isLoading: isQuestionnaireLoading,
+    save,
+    submit,
+  } = useQuestionnaireResponseController({
+    questionnaireName: name,
     statuses: ['in-progress', 'stopped'],
   });
 
-  const questionnaireResponseId =
-    getQuestionnaireResponseQuery.data?.questionnaireResponse?.id;
-
-  const questionnaireRef =
-    getQuestionnaireResponseQuery.data?.questionnaireResponse?.questionnaire;
-
-  const getQuestionnaireQuery = useQuestionnaire({
-    identifier: questionnaireRef ?? name,
-    queryConfig: {
-      // Keep previous questionnaire data when query key changes (name -> questionnaireRef)
-      // This prevents re-renders since we assume name & questionnaireRef point to the same questionnaire.
-      placeholderData: keepPreviousData,
-    },
-  });
-
-  if (
-    (!getQuestionnaireQuery.data && getQuestionnaireQuery.isLoading) ||
-    (!getQuestionnaireResponseQuery.data?.questionnaireResponse &&
-      getQuestionnaireResponseQuery.isLoading) ||
-    userQuery.isLoading
-  ) {
+  if (isQuestionnaireLoading || userQuery.isLoading) {
     return (
       <div className="flex h-dvh w-full items-center justify-center">
         <Spinner variant="primary" size="md" />
@@ -62,7 +45,7 @@ export const RxQuestionnaire = ({
   }
 
   //TODO: move this upstream
-  if (!getQuestionnaireQuery.data) {
+  if (!questionnaire) {
     console.error('Questionnaire not found');
     return <NotFoundRoute />;
   }
@@ -72,61 +55,49 @@ export const RxQuestionnaire = ({
     return <NotFoundRoute />;
   }
 
-  if (
-    showIneligibleScreen &&
-    getQuestionnaireResponseQuery.data?.questionnaireResponse != null
-  ) {
+  if (showIneligibleScreen && questionnaireResponse != null) {
     return (
       <RxScreenOut
-        response={getQuestionnaireResponseQuery.data.questionnaireResponse}
+        response={questionnaireResponse as unknown as QuestionnaireResponse}
       />
     );
   }
 
   const handleSave = (item: QuestionnaireResponseItem[]) => {
-    updateQuestionnaireResponseMutation.mutate({
-      data: { item, status: 'in-progress' },
-      identifier: questionnaireResponseId || name,
-    });
+    save(item);
   };
 
   const handleSubmit = (item: QuestionnaireResponseItem[]) => {
+    if (!questionnaire) return;
     const isIneligible = isMemberIneligible(
       item,
-      getQuestionnaireQuery.data.questionnaire.item ?? [],
+      (questionnaire as Questionnaire).item ?? [],
     );
 
     // NOTE(audric): server-side also handles frontdoor screenout logic.
-    updateQuestionnaireResponseMutation.mutate(
-      {
-        data: { item, status: 'completed' },
-        identifier: questionnaireResponseId || name,
+    submit(item, {
+      onSuccess: () => {
+        if (isIneligible == true) {
+          setShowIneligibleScreen(true);
+        } else {
+          // NOTE(audric): includes case for inEligible === undefined;
+          // on failure default to NP approval downstream flow
+          onSubmit && onSubmit();
+        }
       },
-      {
-        onSuccess: () => {
-          if (isIneligible == true) {
-            setShowIneligibleScreen(true);
-          } else {
-            // NOTE(audric): includes case for inEligible === undefined;
-            // on failure default to NP approval downstream flow
-            onSubmit && onSubmit();
-          }
-        },
-      },
-    );
+    });
   };
 
   return (
     <QuestionnaireForm
-      key={getQuestionnaireQuery.data.questionnaire.id}
-      questionnaire={getQuestionnaireQuery.data.questionnaire}
+      key={questionnaire.id}
+      questionnaire={questionnaire as unknown as Questionnaire}
       response={
-        getQuestionnaireResponseQuery.data?.questionnaireResponse ?? undefined
+        (questionnaireResponse as unknown as QuestionnaireResponse) ?? undefined
       }
       user={userQuery.data}
       onSave={handleSave}
       onSubmit={handleSubmit}
-      showIntro={showIntro}
       className="space-y-6"
     />
   );

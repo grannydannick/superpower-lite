@@ -9,7 +9,7 @@ export const MaintenancePage = () => {
 
   return (
     <div
-      className="relative flex h-screen w-full flex-col items-center bg-[url('/onboarding/bg-spine.webp')] bg-cover bg-center"
+      className="relative flex h-screen w-full flex-col items-center bg-[url('/onboarding/shared/backgrounds/bg-spine.webp')] bg-cover bg-center"
       role="alert"
     >
       <motion.div

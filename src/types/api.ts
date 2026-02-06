@@ -1,9 +1,6 @@
 import { CarePlan, Goal } from '@medplum/fhirtypes';
 
-import {
-  INTAKE_QUESTIONNAIRE,
-  RxQuestionnaireName,
-} from '@/const/questionnaire';
+import { RxQuestionnaireName } from '@/const/questionnaire';
 
 export type BaseEntity = {
   id: string;
@@ -130,9 +127,7 @@ export type OperationOutcome = {
 };
 
 /* QUESTIONNAIRE */
-export type QuestionnaireName =
-  | typeof INTAKE_QUESTIONNAIRE
-  | RxQuestionnaireName;
+export type QuestionnaireName = RxQuestionnaireName;
 
 /* TASK */
 export type Task = {

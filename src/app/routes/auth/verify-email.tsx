@@ -137,7 +137,7 @@ export const VerifyEmailRoute = () => {
     <div className="relative min-h-screen">
       <div className="absolute inset-0">
         <img
-          src="/onboarding/bright-woman.webp"
+          src="/onboarding/shared/backgrounds/bright-woman.webp"
           alt="background"
           className="size-full object-cover"
         />

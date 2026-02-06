@@ -137,7 +137,7 @@ export const ScheduleSuccessStep = () => {
               <Body3 className="text-center text-secondary">
                 Invites are sent to{' '}
                 <span className="text-primary">{user?.email}</span>. Otherwise
-                add the event to your calendar above.
+                add the event to your calendar below.
               </Body3>
             ) : null}
           </div>

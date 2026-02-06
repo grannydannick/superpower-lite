@@ -81,7 +81,7 @@ export function AddToCalendar({
           >
             <img
               className="size-6 object-cover"
-              src="/onboarding/calendar-ios.svg"
+              src="/onboarding/shared/calendar/calendar-ios.svg"
               alt="calendar-ios"
             />
             Apple calendar
@@ -94,7 +94,7 @@ export function AddToCalendar({
           >
             <img
               className="size-6 object-cover"
-              src="/onboarding/calendar-google.svg"
+              src="/onboarding/shared/calendar/calendar-google.svg"
               alt="calendar-ios"
             />
             Google calendar

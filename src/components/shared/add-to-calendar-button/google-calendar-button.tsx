@@ -29,17 +29,17 @@ export function GoogleCalendarButton({
       href={google(event)}
       target="_blank"
       className={cn(
-        'flex gap-3 rounded-xl px-5 py-3.5 text-base text-zinc-600 hover:cursor-pointer hover:bg-zinc-50',
+        'flex gap-3 rounded-xl px-5 py-3.5 text-base text-zinc-500 hover:cursor-pointer hover:bg-zinc-50',
         className,
       )}
       rel="noreferrer"
     >
       <img
         className="size-6 object-cover"
-        src="/onboarding/calendar-google.svg"
+        src="/onboarding/shared/calendar/calendar-google.svg"
         alt="calendar-google"
       />
-      Google calendar
+      Add to Google Calendar
     </a>
   );
 }

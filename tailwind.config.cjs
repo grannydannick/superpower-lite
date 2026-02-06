@@ -29,14 +29,14 @@ module.exports = {
     },
     extend: {
       backgroundImage: {
-        male: "url('/onboarding/bg-male.webp')",
-        'female-face': "url('/onboarding/bg-female-face.webp')",
-        spine: "url('/onboarding/bg-spine.webp')",
-        'female-hands': "url('/onboarding/bg-female-hands.webp')",
+        male: "url('/onboarding/shared/backgrounds/bg-male.webp')",
+        'female-face': "url('/onboarding/shared/backgrounds/bg-female-face.webp')",
+        spine: "url('/onboarding/shared/backgrounds/bg-spine.webp')",
+        'female-hands': "url('/onboarding/shared/backgrounds/bg-female-hands.webp')",
         'baseline-membership': "url('/settings/membership/baseline.webp')",
         'advanced-membership': "url('/settings/membership/advanced.webp')",
         home: "url('/home/default.webp')",
-        auth: "url('/onboarding/register-bg-alt.webp')",
+        auth: "url('/onboarding/shared/backgrounds/register-bg-alt.webp')",
       },
       colors: {
         border: 'hsl(var(--border))',
@@ -214,7 +214,7 @@ module.exports = {
     require('tailwind-scrollbar'),
     require('@tailwindcss/typography'),
     addVariablesForColors,
-    function ({ matchUtilities, theme }) {
+    function ({ matchUtilities, theme, addUtilities }) {
       matchUtilities(
         {
           'bg-grid': (value) => ({
@@ -238,6 +238,19 @@ module.exports = {
           type: 'color',
         },
       );
+
+      addUtilities({
+        '.rounded-mask': {
+          '-webkit-mask-image':
+            'radial-gradient(ellipse at center, black 40%, transparent 70%)',
+          'mask-image':
+            'radial-gradient(ellipse at center, black 40%, transparent 70%)',
+          '-webkit-mask-size': '100% 100%',
+          'mask-size': '100% 100%',
+          '-webkit-mask-position': 'center',
+          'mask-position': 'center',
+        },
+      });
     },
   ],
 };

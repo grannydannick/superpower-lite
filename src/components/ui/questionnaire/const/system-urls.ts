@@ -14,3 +14,7 @@ export const SUPERPOWER_QUESTIONNAIRE_DESCRIPTION_EXTENSION_URL =
 // Used to indicate multiple choice questions.
 export const QUESTIONNAIRE_ITEM_CONTROL_EXTENSION_URL =
   'http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl';
+
+// Used to supply placeholder text for text inputs.
+export const ENTRY_FORMAT_EXTENSION_URL =
+  'http://hl7.org/fhir/StructureDefinition/entryFormat';

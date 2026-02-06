@@ -11,14 +11,13 @@ import {
   QuestionnaireStoreProvider,
   useQuestionnaireStore,
 } from './stores/questionnaire-store';
-import { mergeResponseItems } from './utils';
+import { isResponseEmpty, mergeResponseItems } from './utils';
 
 /**
  * This component is used to render a questionnaire form.
  * It takes a questionnaire, a response, and onSave and onSubmit functions.
  * The onSave function is called to save the questionnaire response step by step.
  * It also takes a className prop to style the form.
- * It also takes a showIntro prop to show the intro page.
  */
 export const QuestionnaireForm = ({
   questionnaire,
@@ -26,8 +25,8 @@ export const QuestionnaireForm = ({
   onSave,
   onSubmit,
   className,
-  showIntro = true,
   user,
+  initialProgressPercent,
 }: {
   questionnaire: Questionnaire;
   response?: QuestionnaireResponse;
@@ -35,7 +34,7 @@ export const QuestionnaireForm = ({
   onSave: (item: QuestionnaireResponseItem[]) => void;
   onSubmit: (item: QuestionnaireResponseItem[]) => void;
   className?: string;
-  showIntro?: boolean;
+  initialProgressPercent?: number;
 }) => {
   // Process the questionnaire to include both initial values and any existing responses
   const mergedQuestionnaire = {
@@ -55,7 +54,7 @@ export const QuestionnaireForm = ({
         onSave={onSave}
         onSubmit={onSubmit}
         className={className}
-        showIntro={showIntro}
+        initialProgressPercent={initialProgressPercent}
       />
     </QuestionnaireStoreProvider>
   );
@@ -65,15 +64,18 @@ const QuestionnaireFormConsumer = ({
   onSave,
   onSubmit,
   className,
-  showIntro,
+  initialProgressPercent,
 }: {
   onSave: (item: QuestionnaireResponseItem[]) => void;
   onSubmit: (item: QuestionnaireResponseItem[]) => void;
   className?: string;
-  showIntro: boolean;
+  initialProgressPercent?: number;
 }) => {
   const response = useQuestionnaireStore((s) => s.response);
   const { activeStep } = useQuestionnaireStore((s) => s);
+  const checkForQuestionEnabled = useQuestionnaireStore(
+    (s) => s.checkForQuestionEnabled,
+  );
   const getNumberOfPages = useQuestionnaireStore((s) => s.getNumberOfPages);
   const getLastQuestion = useQuestionnaireStore((s) => s.getLastQuestion);
 
@@ -81,31 +83,40 @@ const QuestionnaireFormConsumer = ({
   const lastQuestion = getLastQuestion();
 
   const handleSubmit = () => {
-    if (response.item && isLastStep && lastQuestion) {
-      const findResponse = (
-        items: QuestionnaireResponseItem[] = [],
-        linkId: string,
-      ): QuestionnaireResponseItem | undefined => {
-        for (const item of items) {
-          if (item.linkId === linkId) return item;
-          if (item.item) {
-            const found = findResponse(item.item, linkId);
-            if (found) return found;
-          }
+    if (!isLastStep || !lastQuestion) {
+      return;
+    }
+
+    const responseItems = response.item ?? [];
+    const findResponse = (
+      items: QuestionnaireResponseItem[] = [],
+      linkId: string,
+    ): QuestionnaireResponseItem | undefined => {
+      for (const item of items) {
+        if (item.linkId === linkId) return item;
+        if (item.item) {
+          const found = findResponse(item.item, linkId);
+          if (found) return found;
         }
-        return undefined;
-      };
-
-      const lastResponse = findResponse(response.item, lastQuestion.linkId);
-
-      if (
-        (lastQuestion.required &&
-          lastResponse?.answer &&
-          lastResponse.answer.length > 0) ||
-        !lastQuestion.required
-      ) {
-        onSubmit(response.item);
       }
+      return undefined;
+    };
+
+    const lastResponse = findResponse(responseItems, lastQuestion.linkId);
+    const fallbackResponse = lastResponse ?? {
+      linkId: lastQuestion.linkId,
+      item: [],
+    };
+    const isLastResponseEmpty = Boolean(
+      isResponseEmpty(lastQuestion, fallbackResponse, checkForQuestionEnabled),
+    );
+
+    if (
+      (lastQuestion.required && !isLastResponseEmpty) ||
+      !lastQuestion.required
+    ) {
+      onSubmit(responseItems);
+      return;
     }
   };
 
@@ -117,7 +128,10 @@ const QuestionnaireFormConsumer = ({
         handleSubmit();
       }}
     >
-      <QuestionnaireFormPageSequence onSave={onSave} showIntro={showIntro} />
+      <QuestionnaireFormPageSequence
+        onSave={onSave}
+        initialProgressPercent={initialProgressPercent}
+      />
     </form>
   );
 };

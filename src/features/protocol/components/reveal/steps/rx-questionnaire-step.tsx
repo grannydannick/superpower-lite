@@ -162,7 +162,6 @@ export const RxQuestionnaireStep = ({
     content = (
       <div className="flex flex-1 flex-col">
         <RxQuestionnaire
-          showIntro={false}
           name={activeDescriptor.questionnaireName}
           onSubmit={handleQuestionnaireSubmit}
         />

@@ -42,3 +42,6 @@ mocked-db.json
 
 # vscode
 .vscode/settings.json
+
+# cursor
+.cursor/plans/

@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Spinner } from '@/components/ui/spinner';
-import { OnboardingSteps } from '@/features/onboarding/components/onboarding-steps/onboarding-steps';
+import { OnboardingFlow } from '@/features/onboarding/components/flow/onboarding-flow';
 import { useTask } from '@/features/tasks/api/get-task';
 import { preloadImage } from '@/utils/preload-image';
 
@@ -15,10 +15,10 @@ export const onboardingLoader = () => async () => {
    *
    */
   const preloadedImages = [
-    '/onboarding/bg-female-face.webp',
-    '/onboarding/bg-male.webp',
-    '/onboarding/bg-spine.webp',
-    '/onboarding/bg-female-hands.webp',
+    '/onboarding/shared/backgrounds/bg-female-face.webp',
+    '/onboarding/shared/backgrounds/bg-male.webp',
+    '/onboarding/shared/backgrounds/bg-spine.webp',
+    '/onboarding/shared/backgrounds/bg-female-hands.webp',
   ];
 
   const imagesPromiseList: Promise<any>[] = [];
@@ -70,5 +70,5 @@ export const OnboardingRoute = () => {
     return null;
   }
 
-  return <OnboardingSteps />;
+  return <OnboardingFlow />;
 };

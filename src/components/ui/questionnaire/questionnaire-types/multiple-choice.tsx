@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { OPTION_EXCLUSIVE_EXTENSION_URL } from '../const/system-urls';
 import { QuestionnaireErrorWrapper } from '../questionnaire-error-wrapper';
 import { useQuestionnaireStore } from '../stores/questionnaire-store';
+import { shouldAutoAdvanceMultipleChoice } from '../utils/questionnaire-utils';
 
 interface MultipleChoiceProps {
   item: QuestionnaireItem;
@@ -125,7 +126,13 @@ export function MultipleChoice({
 
     onChange({ ...response, answer: newAnswers });
 
-    if (newAnswers.length === 1 && !item.repeats) {
+    const shouldAutoAdvance = shouldAutoAdvanceMultipleChoice(
+      newAnswers.length,
+      Boolean(isExclusive && checked),
+      Boolean(item.repeats),
+    );
+
+    if (shouldAutoAdvance) {
       autoAdvance();
     }
   };

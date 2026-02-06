@@ -19,7 +19,7 @@ export const getTimeline = (
     { title: 'Test scheduled', complete: true },
     {
       title: 'Preparation instructions sent',
-      time: 'In 3-5 days',
+      time: 'Appointment complete',
       complete: false,
     },
     {

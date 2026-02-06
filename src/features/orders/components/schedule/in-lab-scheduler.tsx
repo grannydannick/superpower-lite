@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { LocationsScheduler } from '@/components/shared/scheduler';
-import { Input } from '@/components/ui/input';
+import { NumericInput } from '@/components/ui/input';
 import { Body2 } from '@/components/ui/typography';
 import { useUser } from '@/lib/auth';
 import { PhlebotomyLocation, Slot } from '@/types/api';
@@ -28,8 +28,7 @@ export const InLabScheduler = () => {
     updateTz(tz);
   };
 
-  const handleZipCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '');
+  const handleZipCodeChange = (value: string) => {
     setZipCode(value);
   };
 
@@ -42,12 +41,11 @@ export const InLabScheduler = () => {
           </Body2>
         </div>
         <div>
-          <Input
+          <NumericInput
             value={zipCode}
             onChange={handleZipCodeChange}
-            inputMode="numeric"
-            pattern="[0-9]*"
             maxLength={5}
+            maxDigits={5}
             placeholder="5-digit ZIP code"
           />
         </div>

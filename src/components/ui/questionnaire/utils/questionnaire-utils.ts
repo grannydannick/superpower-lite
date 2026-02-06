@@ -202,6 +202,18 @@ export function getNewMultiSelectValues(
   });
 }
 
+export function shouldAutoAdvanceMultipleChoice(
+  answerCount: number,
+  isExclusiveSelection: boolean,
+  isRepeatable: boolean,
+): boolean {
+  if (isRepeatable || isExclusiveSelection) {
+    return false;
+  }
+
+  return answerCount === 1;
+}
+
 /**
  * This function is used to format the reference string.
  * It takes a typed value and returns the display or reference.

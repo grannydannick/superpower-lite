@@ -2,6 +2,7 @@ import React, {
   forwardRef,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from 'react';
@@ -67,41 +68,108 @@ const DatetimeGrid = forwardRef<
     const dayRef = useRef<HTMLInputElement>(null);
     const yearRef = useRef<HTMLInputElement>(null);
 
-    const handleChange = (type: DateFormat, value: string) => {
-      value = value.replace(/\D/g, '');
+    // Track cursor position for proper restoration after filtering
+    const cursorPositionRef = useRef<{
+      type: DateFormat;
+      position: number;
+    } | null>(null);
 
-      if (value.length > MAX_LENGTHS[type]) {
-        value = value.slice(0, MAX_LENGTHS[type]);
-      }
+    /**
+     * Filter value to only allow digits and apply constraints
+     */
+    const filterValue = useCallback(
+      (type: DateFormat, rawValue: string): string => {
+        // Filter to digits only
+        let value = rawValue.replace(/\D/g, '');
 
-      if (type === 'months') {
-        const num = parseInt(value, 10);
-        if (!isNaN(num) && num > 12) {
-          value = '12';
+        // Apply max length
+        if (value.length > MAX_LENGTHS[type]) {
+          value = value.slice(0, MAX_LENGTHS[type]);
         }
-      }
-      if (type === 'days') {
-        const num = parseInt(value, 10);
-        if (!isNaN(num) && num > 31) {
-          value = '31';
-        }
-      }
 
-      onChange(type, value);
-
-      if (value.length === MAX_LENGTHS[type]) {
-        switch (type) {
-          case 'months':
-            dayRef.current?.focus();
-            break;
-          case 'days':
-            yearRef.current?.focus();
-            break;
-          default:
-            break;
+        // Apply range constraints
+        if (type === 'months') {
+          const num = parseInt(value, 10);
+          if (!isNaN(num) && num > 12) {
+            value = '12';
+          }
         }
+        if (type === 'days') {
+          const num = parseInt(value, 10);
+          if (!isNaN(num) && num > 31) {
+            value = '31';
+          }
+        }
+
+        return value;
+      },
+      [],
+    );
+
+    /**
+     * Handle input changes with proper cursor management for mobile
+     */
+    const handleChange = useCallback(
+      (type: DateFormat, e: React.ChangeEvent<HTMLInputElement>) => {
+        const input = e.target;
+        const rawValue = input.value;
+        const cursorPosition = input.selectionStart ?? 0;
+
+        // Filter the value
+        const filteredValue = filterValue(type, rawValue);
+
+        // Calculate new cursor position based on valid characters before cursor
+        const beforeCursor = rawValue.slice(0, cursorPosition);
+        const validCharsBeforeCursor = (beforeCursor.match(/\d/g) || []).length;
+        const newCursorPosition = Math.min(
+          validCharsBeforeCursor,
+          filteredValue.length,
+        );
+
+        // Store cursor position for restoration
+        cursorPositionRef.current = { type, position: newCursorPosition };
+
+        // Update the input value directly to avoid mobile input issues
+        input.value = filteredValue;
+
+        // Notify parent of the change
+        onChange(type, filteredValue);
+
+        // Auto-advance to next field when current field is complete
+        if (filteredValue.length === MAX_LENGTHS[type]) {
+          // Use setTimeout to ensure state has settled
+          setTimeout(() => {
+            switch (type) {
+              case 'months':
+                dayRef.current?.focus();
+                break;
+              case 'days':
+                yearRef.current?.focus();
+                break;
+              default:
+                break;
+            }
+          }, 0);
+        }
+      },
+      [filterValue, onChange],
+    );
+
+    /**
+     * Restore cursor position after render to fix mobile input issues
+     */
+    useLayoutEffect(() => {
+      if (cursorPositionRef.current) {
+        const { type, position } = cursorPositionRef.current;
+        const inputRef =
+          type === 'months' ? monthRef : type === 'days' ? dayRef : yearRef;
+
+        if (inputRef.current && document.activeElement === inputRef.current) {
+          inputRef.current.setSelectionRange(position, position);
+        }
+        cursorPositionRef.current = null;
       }
-    };
+    });
 
     return (
       <div
@@ -132,7 +200,7 @@ const DatetimeGrid = forwardRef<
               )}
               inputMode="numeric"
               value={values[unit]}
-              onChange={(e) => handleChange(unit, e.target.value)}
+              onChange={(e) => handleChange(unit, e)}
               placeholder={placeholders[unit]}
               data-testid={TEST_IDS[unit]}
               maxLength={MAX_LENGTHS[unit]}

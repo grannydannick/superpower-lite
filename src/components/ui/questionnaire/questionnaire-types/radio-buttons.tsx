@@ -15,7 +15,6 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
 
 import { QuestionnaireErrorWrapper } from '../questionnaire-error-wrapper';
-import { useQuestionnaireStore } from '../stores/questionnaire-store';
 
 interface RadioButtonsProps {
   item: QuestionnaireItem;
@@ -57,44 +56,14 @@ export function RadioButtons({
   const currentAnswer = getCurrentAnswer(response);
   const answerLinkId = getCurrentRadioAnswer(formattedOptions, currentAnswer);
 
-  const nextStep = useQuestionnaireStore((s) => s.nextStep);
-  const getCurrentQuestion = useQuestionnaireStore((s) => s.getCurrentQuestion);
-
-  const autoAdvance = useCallback(
-    (timeout = 0) => {
-      // Get fresh current question from store (calls getAllQuestions() each time)
-      const currentQuestion = getCurrentQuestion();
-
-      // Check if the current question/page is a group type with multiple questions/items
-      const isGroupPage =
-        currentQuestion?.type === 'group' &&
-        currentQuestion.item &&
-        currentQuestion.item.length > 1;
-
-      // Don't auto-advance if we're on a group page with multiple _questions_
-      // The member must complete all questions in the group to advance to the next page
-      if (isGroupPage) {
-        return;
-      }
-
-      setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        nextStep();
-        setSelectedAnswer(null);
-      }, timeout);
-    },
-    [nextStep, getCurrentQuestion],
-  );
-
   const handleSelect = useCallback(
     (optionName: string, optionValue: TypedValue) => {
       if (!optionValue?.type) return;
       const propertyName = 'value' + capitalize(optionValue.type);
       onChangeAnswer({ [propertyName]: optionValue.value });
       setSelectedAnswer(optionValue.value as string);
-      autoAdvance();
     },
-    [autoAdvance, onChangeAnswer],
+    [onChangeAnswer],
   );
 
   return (

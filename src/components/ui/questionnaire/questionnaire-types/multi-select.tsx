@@ -23,7 +23,6 @@ import {
 import { Body1 } from '@/components/ui/typography';
 
 import { QuestionnaireErrorWrapper } from '../questionnaire-error-wrapper';
-import { useQuestionnaireStore } from '../stores/questionnaire-store';
 import { getNewMultiSelectValues } from '../utils';
 
 import { RadioButtons } from './radio-buttons';
@@ -41,12 +40,6 @@ export function QuestionnaireChoiceDropDownInput(
   props: QuestionnaireChoiceInputProps,
 ): JSX.Element {
   const { item, initial, response, isError } = props;
-  const nextStep = useQuestionnaireStore((s) => s.nextStep);
-  const activeStep = useQuestionnaireStore((s) => s.activeStep);
-  const questionnaire = useQuestionnaireStore((s) => s.questionnaire);
-  const getNumberOfPages = useQuestionnaireStore((s) => s.getNumberOfPages);
-  const isLastQuestion = activeStep === getNumberOfPages() - 1;
-
   const initialValue = getTypedPropertyValue(
     { type: 'QuestionnaireItemInitial', value: initial },
     'value',
@@ -65,24 +58,6 @@ export function QuestionnaireChoiceDropDownInput(
   }
 
   const defaultValue = getCurrentAnswer(response) ?? initialValue;
-
-  const autoAdvance = () => {
-    const currentPage = questionnaire.item?.[activeStep];
-
-    // Case 1: Check if this is the only question in a group
-    const isSingleQuestionInGroup =
-      currentPage?.type === 'group' && currentPage.item?.length === 1;
-
-    // Case 2: Check if this is a direct question (not in a group)
-    const isDirectQuestion = currentPage?.type !== 'group';
-
-    if (!isLastQuestion && (isSingleQuestionInGroup || isDirectQuestion)) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      setTimeout(() => {
-        nextStep();
-      }, 500);
-    }
-  };
 
   if (!item.answerOption?.length) {
     return <></>;
@@ -129,8 +104,6 @@ export function QuestionnaireChoiceDropDownInput(
           ) as TypedValue;
           const propertyName = 'value' + capitalize(optionValue.type);
           props.onChangeAnswer({ [propertyName]: optionValue.value });
-
-          autoAdvance();
         }}
         defaultValue={formatCoding(defaultValue?.value) || defaultValue?.value}
       >

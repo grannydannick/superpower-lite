@@ -22,6 +22,7 @@ import { Body1 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 
 import { RX_CONSENT_PAYMENT_LINKID } from './const/special-linkids';
+import { ENTRY_FORMAT_EXTENSION_URL } from './const/system-urls';
 import { QuestionnaireErrorWrapper } from './questionnaire-error-wrapper';
 import { getCurrentAnswer } from './questionnaire-types/common';
 import {
@@ -150,6 +151,9 @@ export const QuestionnaireFormItem = ({
       { type: 'QuestionnaireItemInitial', value: initial },
       'value',
     );
+  const entryFormatPlaceholder = item.extension?.find(
+    (extension) => extension.url === ENTRY_FORMAT_EXTENSION_URL,
+  )?.valueString;
 
   // Special case: render a single confirm action as a submit button
   const isConsentPaymentSingleConfirm =
@@ -478,6 +482,24 @@ export const QuestionnaireFormItem = ({
       );
     // String or url item type, used for text questions
     case QuestionnaireItemType.string:
+      return (
+        <QuestionnaireErrorWrapper isError={localError}>
+          <Input
+            placeholder={entryFormatPlaceholder ?? ''}
+            id={name}
+            name={name}
+            // eslint-disable-next-line jsx-a11y/no-autofocus
+            autoFocus={!nested}
+            required={item.required}
+            defaultValue={defaultValue?.value}
+            onChange={(e) => {
+              const newValue = e.currentTarget.value;
+              onChangeAnswer({ valueString: newValue });
+            }}
+            onKeyDown={onKeyDown}
+          />
+        </QuestionnaireErrorWrapper>
+      );
     case QuestionnaireItemType.url:
       return (
         <QuestionnaireErrorWrapper isError={localError}>
@@ -508,6 +530,7 @@ export const QuestionnaireFormItem = ({
             // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus={!nested}
             defaultValue={defaultValue?.value}
+            placeholder={entryFormatPlaceholder}
             onChange={(e) => {
               const newValue = e.currentTarget.value;
               onChangeAnswer({ valueString: newValue });

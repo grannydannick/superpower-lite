@@ -18,7 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Input, NumericInput } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -343,12 +343,14 @@ export function AddressDialog({
                     <FormItem>
                       <FormLabel>ZIP Code</FormLabel>
                       <FormControl>
-                        <Input
-                          autoComplete="off"
+                        <NumericInput
                           placeholder="ZIP Code"
-                          inputMode="numeric"
                           maxLength={5}
-                          {...field}
+                          maxDigits={5}
+                          value={field.value}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          onChange={(value) => field.onChange(value)}
                         />
                       </FormControl>
                       <FormMessage />

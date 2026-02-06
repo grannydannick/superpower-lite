@@ -6,5 +6,4 @@ export * from './prescriptions';
 export * from './products';
 export * from './requestable-services';
 export * from './services';
-export * from './upgrade-info';
 export * from './us-state-codes';

@@ -184,11 +184,12 @@ export const QuestionnaireQuestion = ({
   );
 
   const renderGroupQuestion = () => {
+    const groupItems = (item.item ?? []).filter((nestedItem) =>
+      checkForQuestionEnabled(nestedItem),
+    );
     const shouldUseTwoColumns =
-      item.item &&
-      item.item.length &&
-      item.item.length > 1 &&
-      item.item.every((i) => {
+      groupItems.length > 1 &&
+      groupItems.every((i) => {
         const type = i.type;
         return (
           type === QuestionnaireItemType.integer ||
@@ -196,6 +197,8 @@ export const QuestionnaireQuestion = ({
           type === QuestionnaireItemType.decimal
         );
       });
+    const shouldSpanLastItem =
+      shouldUseTwoColumns && groupItems.length % 2 === 1;
 
     return (
       <div className="space-y-6">
@@ -221,36 +224,46 @@ export const QuestionnaireQuestion = ({
             shouldUseTwoColumns ? 'md:grid-cols-2' : '',
           )}
         >
-          {item.item?.map((nestedItem) => (
-            <QuestionnaireFormRepeatableItem
-              nested
+          {groupItems.map((nestedItem, index) => (
+            <div
               key={nestedItem.linkId}
-              item={nestedItem}
-              response={
-                response.item?.find((i) => i.linkId === nestedItem.linkId) || {
-                  linkId: nestedItem.linkId,
+              className={cn(
+                shouldSpanLastItem && index === groupItems.length - 1
+                  ? 'md:col-span-2'
+                  : '',
+              )}
+            >
+              <QuestionnaireFormRepeatableItem
+                nested
+                item={nestedItem}
+                response={
+                  response.item?.find(
+                    (i) => i.linkId === nestedItem.linkId,
+                  ) || {
+                    linkId: nestedItem.linkId,
+                  }
                 }
-              }
-              onChange={(newItems) => {
-                if (!response.item) {
-                  response.item = [];
-                }
+                onChange={(newItems) => {
+                  if (!response.item) {
+                    response.item = [];
+                  }
 
-                const existingItemIndex = response.item.findIndex(
-                  (i) => i.linkId === nestedItem.linkId,
-                );
+                  const existingItemIndex = response.item.findIndex(
+                    (i) => i.linkId === nestedItem.linkId,
+                  );
 
-                if (existingItemIndex >= 0) {
-                  response.item[existingItemIndex] = newItems[0];
-                } else {
-                  response.item.push(newItems[0]);
-                }
+                  if (existingItemIndex >= 0) {
+                    response.item[existingItemIndex] = newItems[0];
+                  } else {
+                    response.item.push(newItems[0]);
+                  }
 
-                onChange([response]);
-              }}
-              onKeyDown={handleKeyDown}
-              onValidationChange={handleValidationChange}
-            />
+                  onChange([response]);
+                }}
+                onKeyDown={handleKeyDown}
+                onValidationChange={handleValidationChange}
+              />
+            </div>
           ))}
         </div>
       </div>
@@ -276,7 +289,10 @@ export const QuestionnaireQuestion = ({
         dangerouslySetInnerHTML={{ __html: item.text ?? '' }}
       />
       {isRxSafetyIntroQuestion && (
-        <img src="/onboarding/rx.webp" alt="Superpower experience preview" />
+        <img
+          src="/onboarding/questionnaire/rx.webp"
+          alt="Superpower experience preview"
+        />
       )}
       {isRxIdentityVerificationQuestion && (
         <>
@@ -302,8 +318,11 @@ export const QuestionnaireQuestion = ({
   );
 
   const renderNavigationButtons = () => {
+    const isEmpty = Boolean(
+      isResponseEmpty(item, response, checkForQuestionEnabled),
+    );
     const disableAdvance =
-      Boolean(isResponseEmpty(item, response, checkForQuestionEnabled)) ||
+      (item.required && isEmpty) ||
       hasValidationErrors ||
       isIdentityVerificationBlocking;
 
@@ -340,24 +359,9 @@ export const QuestionnaireQuestion = ({
               item.type === QuestionnaireItemType.display && 'md:w-full',
             )}
           >
-            {!item.required &&
-              item.type !== QuestionnaireItemType.group &&
-              item.type !== QuestionnaireItemType.display && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="ml-auto w-full bg-white hover:bg-white/75 md:w-[108px]"
-                  onClick={handleNextStep}
-                >
-                  Skip
-                </Button>
-              )}
             <Button
               type="button"
-              className={cn(
-                'ml-auto w-full md:w-[108px]',
-                item.type === QuestionnaireItemType.display && 'md:w-full',
-              )}
+              className="w-full"
               onClick={handleNextStep}
               disabled={disableAdvance}
             >

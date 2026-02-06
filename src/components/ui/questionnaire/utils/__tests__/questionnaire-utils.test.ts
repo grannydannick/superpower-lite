@@ -7,6 +7,7 @@ import {
   getNewMultiSelectValues,
   formatReferenceString,
   getNumberOfPages,
+  shouldAutoAdvanceMultipleChoice,
 } from '../questionnaire-utils';
 
 describe('questionnaire-utils', () => {
@@ -139,6 +140,24 @@ describe('questionnaire-utils', () => {
       expect(result).toHaveLength(2);
       expect(result[0].valueString).toBe('Option 1');
       expect(result[1].valueString).toBe('Option 3');
+    });
+  });
+
+  describe('shouldAutoAdvanceMultipleChoice', () => {
+    it('returns false when exclusive option is selected', () => {
+      expect(shouldAutoAdvanceMultipleChoice(1, true, false)).toBe(false);
+    });
+
+    it('returns true for single non-exclusive selection', () => {
+      expect(shouldAutoAdvanceMultipleChoice(1, false, false)).toBe(true);
+    });
+
+    it('returns false for repeatable items', () => {
+      expect(shouldAutoAdvanceMultipleChoice(1, false, true)).toBe(false);
+    });
+
+    it('returns false when more than one answer is selected', () => {
+      expect(shouldAutoAdvanceMultipleChoice(2, false, false)).toBe(false);
     });
   });
 

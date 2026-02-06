@@ -9,7 +9,6 @@ import {
   isSymptomTracker,
 } from '@/const/questionnaire';
 import { useSubscriptionActive } from '@/features/questionnaires/api/subscription-active';
-import { IntakeQuestionnaire } from '@/features/questionnaires/components/intake-questionnaire';
 import { RxQuestionnaire } from '@/features/questionnaires/components/rx-questionnaire';
 import { preloadImage } from '@/utils/preload-image';
 
@@ -21,7 +20,7 @@ export const questionnaireLoader = () => async () => {
    * which this loader hopefully should fix
    */
   const preloadedImages = [
-    '/onboarding/rx.webp', // Intro step image
+    '/onboarding/questionnaire/rx.webp', // Intro step image
     '/rx/identity.webp', // Identity verification step image
   ];
 
@@ -73,11 +72,6 @@ export const QuestionnaireRoute = () => {
     return (
       <RxQuestionnaire onSubmit={onSubmit} name={type as RxQuestionnaireName} />
     );
-  }
-
-  // covers `/questionnaire/intake` and `/questionnaire`
-  if (type === 'intake' || type === undefined) {
-    return <IntakeQuestionnaire showIntro={true} onSubmit={onSubmit} />;
   }
 
   return <NotFoundRoute />;

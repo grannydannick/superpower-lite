@@ -2,12 +2,15 @@ import { queryOptions, useQuery } from '@tanstack/react-query';
 
 import { api } from '@/lib/api-client';
 import { QueryConfig } from '@/lib/react-query';
-import { QuestionnaireInsights, QuestionnaireName } from '@/types/api';
+import { QuestionnaireInsights } from '@/types/api';
+
+// Deprecated: onboarding-intake is legacy and only kept for family insights.
+type QuestionnaireInsightsName = 'onboarding-intake';
 
 export const getQuestionnaireInsights = ({
   questionnaireName,
 }: {
-  questionnaireName: QuestionnaireName;
+  questionnaireName: QuestionnaireInsightsName;
 }): Promise<{
   insights: QuestionnaireInsights[];
 }> => {
@@ -15,7 +18,7 @@ export const getQuestionnaireInsights = ({
 };
 
 export const getQuestionnaireInsightsQueryOptions = (
-  questionnaireName: QuestionnaireName,
+  questionnaireName: QuestionnaireInsightsName,
 ) => {
   return queryOptions({
     queryKey: ['questionnaire', questionnaireName, 'insights'],
@@ -24,7 +27,7 @@ export const getQuestionnaireInsightsQueryOptions = (
 };
 
 type UseQuestionnaireOptions = {
-  questionnaireName: QuestionnaireName;
+  questionnaireName: QuestionnaireInsightsName;
   queryConfig?: QueryConfig<typeof getQuestionnaireInsightsQueryOptions>;
 };
 

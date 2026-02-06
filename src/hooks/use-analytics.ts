@@ -1,5 +1,6 @@
 import { Properties } from 'posthog-js';
 import { usePostHog } from 'posthog-js/react';
+import { useCallback } from 'react';
 
 import { captureEvent } from '@/lib/gtm';
 
@@ -37,13 +38,16 @@ export const useAnalytics = () => {
    * @param properties Optional properties to attach to the event. Use `$set` for properties that should be set on the user profile, and `$set_once` for properties that should only be set once.
    * @returns
    */
-  const track = (eventName: string, properties?: TrackProperties) => {
-    if (posthog) {
-      posthog.capture(eventName, properties);
-    }
+  const track = useCallback(
+    (eventName: string, properties?: TrackProperties) => {
+      if (posthog) {
+        posthog.capture(eventName, properties);
+      }
 
-    captureEvent(eventName, properties || {});
-  };
+      captureEvent(eventName, properties || {});
+    },
+    [posthog],
+  );
 
   /**
    * https://posthog.com/docs/getting-started/identify-users
@@ -51,27 +55,30 @@ export const useAnalytics = () => {
    * @param properties (Optional) Properties to set on the user profile. Use `$set` for properties that should be set on the user profile, and `$set_once` for properties that should only be set once.
    * @returns
    */
-  const identify = (
-    userId?: string,
-    properties?: {
-      $set?: PersonProperties;
-      $set_once?: PersonProperties;
+  const identify = useCallback(
+    (
+      userId?: string,
+      properties?: {
+        $set?: PersonProperties;
+        $set_once?: PersonProperties;
+      },
+    ): void => {
+      if (posthog) {
+        posthog.identify(userId, properties?.$set, properties?.$set_once);
+      }
+
+      captureEvent('identify', { user_id: userId, ...properties });
     },
-  ): void => {
-    if (posthog) {
-      posthog.identify(userId, properties?.$set, properties?.$set_once);
-    }
+    [posthog],
+  );
 
-    captureEvent('identify', { user_id: userId, ...properties });
-  };
-
-  const reset = () => {
+  const reset = useCallback(() => {
     if (posthog) {
       posthog.reset();
     }
 
     captureEvent('reset', {});
-  };
+  }, [posthog]);
 
   return {
     track,

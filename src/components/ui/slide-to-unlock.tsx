@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 interface SlideToUnlockProps {
   className?: string;
   disabled?: boolean;
+  noShrink?: boolean;
   children?: React.ReactNode;
   onComplete: () => void;
   onProgress?: (progress: number) => void;
@@ -14,6 +15,7 @@ interface SlideToUnlockProps {
 export const SlideToUnlock = ({
   className = '',
   disabled = false,
+  noShrink = false,
   children,
   onComplete,
   onProgress,
@@ -26,6 +28,7 @@ export const SlideToUnlock = ({
   const shrinkingContainerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number | null>(null);
   const hasMovedRef = useRef(false);
+  const hasCompletedRef = useRef(false);
 
   const handleStart = useCallback(
     (clientX: number) => {
@@ -72,16 +75,19 @@ export const SlideToUnlock = ({
       }
 
       sliderRef.current.style.transform = `translateX(${newTranslate}px)`;
-      shrinkingContainerRef.current.style.maxWidth = `${containerWidth - newTranslate}px`;
+      if (!noShrink) {
+        shrinkingContainerRef.current.style.maxWidth = `${containerWidth - newTranslate}px`;
+      }
 
       const progress = maxTranslate > 0 ? newTranslate / maxTranslate : 0;
       onProgress?.(progress);
 
-      if (newTranslate === maxTranslate) {
+      if (newTranslate === maxTranslate && !hasCompletedRef.current) {
+        hasCompletedRef.current = true;
         onComplete();
       }
     },
-    [disabled, onComplete, onProgress],
+    [disabled, noShrink, onComplete, onProgress],
   );
 
   const handleEnd = useCallback(() => {
@@ -113,15 +119,17 @@ export const SlideToUnlock = ({
       sliderRef.current.style.transition = 'transform 0.3s ease-in-out';
       sliderRef.current.style.transform = 'translateX(0px)';
       currentTranslateRef.current = 0;
-      shrinkingContainerRef.current.style.maxWidth = '100%';
-      shrinkingContainerRef.current.style.transition =
-        'max-width 0.3s ease-in-out';
+      if (!noShrink) {
+        shrinkingContainerRef.current.style.maxWidth = '100%';
+        shrinkingContainerRef.current.style.transition =
+          'max-width 0.3s ease-in-out';
+      }
 
       onProgress?.(0);
     }
 
     sliderRef.current.style.cursor = 'grab';
-  }, [disabled, onProgress]);
+  }, [disabled, noShrink, onProgress]);
 
   const triggerAutoSlide = useCallback(() => {
     if (
@@ -153,7 +161,9 @@ export const SlideToUnlock = ({
 
       if (sliderRef.current && shrinkingContainerRef.current) {
         sliderRef.current.style.transform = `translateX(${currentTranslate}px)`;
-        shrinkingContainerRef.current.style.maxWidth = `${containerWidth - currentTranslate}px`;
+        if (!noShrink) {
+          shrinkingContainerRef.current.style.maxWidth = `${containerWidth - currentTranslate}px`;
+        }
 
         const progressPercent =
           maxTranslate > 0 ? currentTranslate / maxTranslate : 0;
@@ -164,7 +174,10 @@ export const SlideToUnlock = ({
         animationRef.current = requestAnimationFrame(animate);
       } else {
         currentTranslateRef.current = maxTranslate;
-        onComplete();
+        if (!hasCompletedRef.current) {
+          hasCompletedRef.current = true;
+          onComplete();
+        }
       }
     };
 
@@ -174,12 +187,13 @@ export const SlideToUnlock = ({
     }
 
     animationRef.current = requestAnimationFrame(animate);
-  }, [disabled, onComplete, onProgress]);
+  }, [disabled, noShrink, onComplete, onProgress]);
 
   const onMouseDown = useCallback(
     (e: React.MouseEvent) => {
       if (disabled) return;
       e.preventDefault();
+      e.stopPropagation();
       handleStart(e.clientX);
 
       const onMouseMove = (e: MouseEvent) => handleMove(e.clientX);
@@ -198,6 +212,7 @@ export const SlideToUnlock = ({
   const onTouchStart = useCallback(
     (e: React.TouchEvent) => {
       if (disabled) return;
+      e.stopPropagation();
       handleStart(e.touches[0].clientX);
 
       const onTouchMove = (e: TouchEvent) => {
@@ -257,13 +272,13 @@ export const SlideToUnlock = ({
         role="button"
         tabIndex={disabled ? -1 : 0}
         aria-label="Slide to unlock"
-        className="relative top-2 z-20 ml-2.5 flex aspect-square h-[calc(100%-1rem)] cursor-grab touch-manipulation select-none items-center justify-center rounded-full border border-zinc-200 bg-white transition-all hover:bg-zinc-50 active:scale-[.98]"
+        className="relative top-1.5 z-20 ml-1.5 flex aspect-square h-[calc(100%-0.75rem)] cursor-grab touch-none select-none items-center justify-center rounded-full bg-zinc-900 shadow-lg transition-all hover:bg-zinc-800 active:scale-95"
         onMouseDown={onMouseDown}
         onTouchStart={onTouchStart}
         onKeyDown={onKeyDown}
         onClick={onClick}
       >
-        <LucideArrowRight className="size-6 touch-manipulation" />
+        <LucideArrowRight className="size-5 text-white" strokeWidth={2} />
       </div>
     </div>
   );

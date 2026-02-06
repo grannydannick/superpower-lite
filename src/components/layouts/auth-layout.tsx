@@ -50,7 +50,7 @@ export const AuthLayout = ({ children, title, progress }: LayoutProps) => {
       >
         <div className="relative z-0 order-1 max-h-[180px] w-full md:absolute md:inset-0 md:max-h-none">
           <img
-            src="/onboarding/register-bg-alt.webp"
+            src="/onboarding/shared/backgrounds/register-bg-alt.webp"
             alt="auth-background"
             className="pointer-events-none size-full select-none object-cover"
             style={{ minHeight: '100%', minWidth: '100%' }}

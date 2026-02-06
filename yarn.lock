@@ -1284,6 +1284,11 @@
   dependencies:
     statuses "^2.0.1"
 
+"@central-icons-react/round-filled-radius-2-stroke-1.5@^1.1.94":
+  version "1.1.96"
+  resolved "https://registry.yarnpkg.com/@central-icons-react/round-filled-radius-2-stroke-1.5/-/round-filled-radius-2-stroke-1.5-1.1.96.tgz#1e636890991a5e6d2ba5100ca58c72594764fd19"
+  integrity sha512-NMLv2arCUq88hsIHRh76oM18Q9CCFGiwkY+yi5vR23sItSfe0XSamTnRhpqunGK5SAyQyvQyj3s+wU6Z0lBakw==
+
 "@central-icons-react/round-outlined-radius-3-stroke-1.5@^1.1.60":
   version "1.1.83"
   resolved "https://registry.yarnpkg.com/@central-icons-react/round-outlined-radius-3-stroke-1.5/-/round-outlined-radius-3-stroke-1.5-1.1.83.tgz#0ccb1a388826fec9dca2f7408e939d43e7125da7"

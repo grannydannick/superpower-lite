@@ -9,7 +9,6 @@ import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { Body2 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 
-import { IntakeQuestionnaireCover } from './covers/intake-questionnaire-cover';
 import { QuestionnaireQuestion } from './questionnaire-question';
 import { useQuestionnaireStore } from './stores/questionnaire-store';
 import { QuestionnaireItemType, shouldSkipQuestion } from './utils';
@@ -32,13 +31,12 @@ const hasAnswers = (item: QuestionnaireResponseItem): boolean => {
 
 // Component that renders the questionnaire form page in sequence
 export const QuestionnaireFormPageSequence = ({
-  showIntro,
   onSave,
+  initialProgressPercent,
 }: {
-  showIntro: boolean;
   onSave: (item: QuestionnaireResponseItem[]) => void;
+  initialProgressPercent?: number;
 }) => {
-  const [_showIntro, setShowIntro] = useState(showIntro);
   const [manualActiveStep, setManualActiveStep] = useState<number | null>(null);
 
   const {
@@ -48,21 +46,10 @@ export const QuestionnaireFormPageSequence = ({
     setItems,
     checkForQuestionEnabled,
     nextStep,
-    initialResponse,
     user,
   } = useQuestionnaireStore((s) => s);
 
   const items = useMemo(() => questionnaire.item ?? [], [questionnaire.item]);
-
-  // Disable the intro if the initial response has answers
-  useEffect(() => {
-    if (
-      initialResponse?.item &&
-      initialResponse.item.some((item) => hasAnswers(item))
-    ) {
-      setShowIntro(false);
-    }
-  }, [initialResponse]);
 
   const effectiveStep =
     manualActiveStep !== null ? manualActiveStep : activeStep;
@@ -164,10 +151,6 @@ export const QuestionnaireFormPageSequence = ({
     }
   }, [allQuestions.length, nextStep, questionnaire.item]);
 
-  const handleStartQuestionnaire = () => {
-    setShowIntro(false);
-  };
-
   if (!allQuestions.length || effectiveStep >= allQuestions.length) {
     console.error(
       'ERROR: !allQuestions.length || effectiveStep >= allQuestions.length condition triggered',
@@ -198,6 +181,11 @@ export const QuestionnaireFormPageSequence = ({
     currentGroupQuestions.length > 0
       ? ((currentQuestionIndex + 1) / currentGroupQuestions.length) * 100
       : 0;
+  const progressFloor =
+    typeof initialProgressPercent === 'number' && initialProgressPercent > 0
+      ? Math.min(initialProgressPercent, 100)
+      : 0;
+  const progressBarPercent = Math.max(groupProgress, progressFloor);
 
   const fadeAnimation = {
     hidden: { opacity: 0, filter: 'blur(1px)', pointerEvents: 'none' },
@@ -206,136 +194,128 @@ export const QuestionnaireFormPageSequence = ({
   };
 
   return (
-    <>
-      {_showIntro ? (
-        <IntakeQuestionnaireCover
-          handleStartQuestionnaire={handleStartQuestionnaire}
-        />
-      ) : (
-        <motion.div
-          key="questionnaire"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          <main className="flex min-h-svh w-full flex-col bg-zinc-100">
-            <div className="flex flex-1 flex-col">
-              <div className="mx-auto flex size-full max-w-[800px] flex-1 flex-col p-8 md:p-12">
-                <div className="relative h-1 w-full overflow-hidden rounded-full bg-zinc-300">
-                  <div
-                    style={{
-                      width: `${groupProgress}%`,
-                    }}
-                    className="absolute inset-0 h-full rounded-full bg-vermillion-900 transition-all duration-300"
-                  />
-                </div>
-                <SuperpowerLogo className="my-10 hidden md:block" />
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={`question-${currentQuestion.item.linkId}`}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    variants={fadeAnimation as Variants}
-                    transition={{ duration: 0.2, ease: 'easeInOut' }}
-                    className="flex h-full flex-1 flex-col space-y-6"
-                  >
-                    <QuestionnaireQuestion
-                      item={currentQuestion.item}
-                      response={currentQuestion.response}
-                      onChange={setItems}
-                      onSave={onSave}
-                    />
-                  </motion.div>
-                </AnimatePresence>
-              </div>
+    <motion.div
+      key="questionnaire"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      <main className="flex min-h-svh w-full flex-col bg-zinc-100">
+        <div className="flex flex-1 flex-col">
+          <div className="mx-auto flex size-full max-w-[800px] flex-1 flex-col p-8 md:p-12">
+            <div className="relative h-1 w-full overflow-hidden rounded-full bg-zinc-300">
+              <div
+                style={{
+                  width: `${progressBarPercent}%`,
+                }}
+                className="absolute inset-0 h-full rounded-full bg-vermillion-900 transition-all duration-300"
+              />
             </div>
-            <div className="pointer-events-none sticky bottom-0 z-10 flex w-full flex-col">
-              <div className="flex w-full justify-between">
-                <svg
-                  width="25"
-                  height="25"
-                  viewBox="0 0 25 25"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M0 0V25H25C11.1934 25 0 13.8071 0 0Z"
-                    fill="white"
-                  />
-                </svg>
+            <SuperpowerLogo className="my-10 hidden md:block" />
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`question-${currentQuestion.item.linkId}`}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                variants={fadeAnimation as Variants}
+                transition={{ duration: 0.2, ease: 'easeInOut' }}
+                className="flex h-full flex-1 flex-col space-y-6"
+              >
+                <QuestionnaireQuestion
+                  item={currentQuestion.item}
+                  response={currentQuestion.response}
+                  onChange={setItems}
+                  onSave={onSave}
+                />
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+        <div className="pointer-events-none sticky bottom-0 z-10 flex w-full flex-col">
+          <div className="flex w-full justify-between">
+            <svg
+              width="25"
+              height="25"
+              viewBox="0 0 25 25"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M0 0V25H25C11.1934 25 0 13.8071 0 0Z"
+                fill="white"
+              />
+            </svg>
 
-                <svg
-                  width="25"
-                  height="25"
-                  viewBox="0 0 25 25"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M25 0V25H0C13.8066 25 25 13.8071 25 0Z"
-                    fill="white"
-                  />
-                </svg>
-              </div>
-              <div className="pointer-events-auto flex h-16 w-full items-center justify-between gap-6 truncate bg-white px-8 py-4">
-                <div className="hidden flex-1 truncate md:block">
-                  <Body2 className="text-zinc-500">
-                    Progress is automatically saved
-                  </Body2>
-                </div>
-                <div className="hidden flex-1 items-center justify-center gap-3 truncate text-zinc-400 md:flex">
-                  <Body2 className="truncate font-normal text-black">
-                    {questionnaire.title}
-                  </Body2>
-                  {/*<ChevronRightIcon className="size-4" />*/}
-                  {/*<Body2 className="truncate font-normal text-zinc-400">*/}
-                  {/*  Schedule Test*/}
-                  {/*</Body2>*/}
-                  {/*<ChevronRightIcon className="size-4" />*/}
-                  {/*<Body2 className="truncate font-normal text-zinc-400">*/}
-                  {/*  You&apos;re In*/}
-                  {/*</Body2>*/}
-                </div>
-                <div className="flex flex-1 items-center justify-center gap-4 truncate py-3 md:justify-end md:py-0">
-                  <Body2
-                    className={cn(
-                      'truncate font-normal text-zinc-400',
-                      uniqueGroups.length > 1 ? 'hidden md:block' : 'block',
-                    )}
-                  >
-                    {currentQuestion && currentQuestion.group?.text}
-                  </Body2>
-                  {uniqueGroups.length > 1 && (
-                    <>
-                      <div className="hidden h-7 w-px shrink-0 bg-zinc-200 md:block" />
-                      <div className="flex shrink-0 items-center gap-2">
-                        {Array.from({ length: uniqueGroups.length }).map(
-                          (_, index) => (
-                            <div
-                              key={index}
-                              className={cn(
-                                'h-2.5 w-1.5 rounded-[2px] transition-colors duration-300',
-                                index <= currentGroupIndex
-                                  ? 'bg-vermillion-900 animate-jump-up'
-                                  : 'bg-zinc-200',
-                              )}
-                            />
-                          ),
-                        )}
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
+            <svg
+              width="25"
+              height="25"
+              viewBox="0 0 25 25"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M25 0V25H0C13.8066 25 25 13.8071 25 0Z"
+                fill="white"
+              />
+            </svg>
+          </div>
+          <div className="pointer-events-auto flex h-16 w-full items-center justify-between gap-6 truncate bg-white px-8 py-4">
+            <div className="hidden flex-1 truncate md:block">
+              <Body2 className="text-zinc-500">
+                Progress is automatically saved
+              </Body2>
             </div>
-          </main>
-        </motion.div>
-      )}
-    </>
+            <div className="hidden flex-1 items-center justify-center gap-3 truncate text-zinc-400 md:flex">
+              <Body2 className="truncate font-normal text-black">
+                {questionnaire.title}
+              </Body2>
+              {/*<ChevronRightIcon className="size-4" />*/}
+              {/*<Body2 className="truncate font-normal text-zinc-400">*/}
+              {/*  Schedule Test*/}
+              {/*</Body2>*/}
+              {/*<ChevronRightIcon className="size-4" />*/}
+              {/*<Body2 className="truncate font-normal text-zinc-400">*/}
+              {/*  You&apos;re In*/}
+              {/*</Body2>*/}
+            </div>
+            <div className="flex flex-1 items-center justify-center gap-4 truncate py-3 md:justify-end md:py-0">
+              <Body2
+                className={cn(
+                  'truncate font-normal text-zinc-400',
+                  uniqueGroups.length > 1 ? 'hidden md:block' : 'block',
+                )}
+              >
+                {currentQuestion && currentQuestion.group?.text}
+              </Body2>
+              {uniqueGroups.length > 1 && (
+                <>
+                  <div className="hidden h-7 w-px shrink-0 bg-zinc-200 md:block" />
+                  <div className="flex shrink-0 items-center gap-2">
+                    {Array.from({ length: uniqueGroups.length }).map(
+                      (_, index) => (
+                        <div
+                          key={index}
+                          className={cn(
+                            'h-2.5 w-1.5 rounded-[2px] transition-colors duration-300',
+                            index <= currentGroupIndex
+                              ? 'bg-vermillion-900 animate-jump-up'
+                              : 'bg-zinc-200',
+                          )}
+                        />
+                      ),
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </main>
+    </motion.div>
   );
 };
