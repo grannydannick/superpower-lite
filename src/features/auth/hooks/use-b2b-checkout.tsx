@@ -4,7 +4,7 @@ import { toast } from '@/components/ui/sonner';
 import { useCreateConsent } from '@/features/announcements/api/create-consent';
 import { useSendMagicLink } from '@/features/auth/api/send-magic-link';
 import { useCheckoutContext } from '@/features/auth/stores';
-import { useClaimBenefits } from '@/features/b2b/api';
+import { useCreateBenefitClaim } from '@/features/b2b/api';
 import { RegisterInput, useRegister, useUser } from '@/lib/auth';
 import { getActiveLogin } from '@/lib/utils';
 import { ConsentType, User } from '@/types/api';
@@ -25,7 +25,7 @@ export const useB2BCheckout = ({
   const { data: user } = useUser();
 
   // mutations
-  const claimBenefitsMutation = useClaimBenefits();
+  const claimBenefitsMutation = useCreateBenefitClaim();
   const registerMutation = useRegister();
   const sendMagicLinkMutation = useSendMagicLink();
   const createConsentMutation = useCreateConsent();

@@ -36,7 +36,7 @@ import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner'
 import { Body2, H3, H4 } from '@/components/ui/typography';
 import { US_STATES } from '@/const';
 import { useCheckout } from '@/features/auth/hooks/use-checkout';
-import { useHasClaimedBenefits } from '@/features/b2b/api';
+import { useGetBenefitClaims } from '@/features/b2b/api';
 import { useCreateAddress, useEditAddress } from '@/features/users/api';
 import { useUpdateUser } from '@/features/users/api/update-user';
 import { useUser } from '@/lib/auth';
@@ -99,8 +99,8 @@ export type UpdateUserInput = z.infer<typeof updateUserInputSchema>;
 const UpdateInfoContent = () => {
   const { data: user } = useUser();
   const { next } = useOnboardingNavigation();
-  const { data: claimedBenefitsData } = useHasClaimedBenefits();
-  const hasClaimedBenefits = claimedBenefitsData?.hasClaimedBenefits ?? false;
+  const { data: claimedBenefitsData } = useGetBenefitClaims();
+  const hasClaimedBenefits = (claimedBenefitsData?.length ?? 0) > 0;
   const userHasGenderSet = user?.gender === 'MALE' || user?.gender === 'FEMALE';
   const { needsBackup } = useNeedsBackupPaymentMethod();
   const {

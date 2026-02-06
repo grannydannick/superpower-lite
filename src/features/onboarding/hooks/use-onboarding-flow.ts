@@ -8,7 +8,7 @@ import {
   ORGAN_AGE_PANEL,
   SUPERPOWER_BLOOD_PANEL,
 } from '@/const/services';
-import { useHasClaimedBenefits } from '@/features/b2b/api';
+import { useGetBenefitClaims } from '@/features/b2b/api';
 import { useCredits } from '@/features/orders/api/credits';
 import { useQuestionnaireResponseList } from '@/features/questionnaires/api/questionnaire-response';
 import { useServices } from '@/features/services/api';
@@ -60,7 +60,7 @@ export const useOnboardingFlow = () => {
 
   // Check if user has claimed B2B benefits
   const { data: claimedBenefitsData, isLoading: isClaimedBenefitsLoading } =
-    useHasClaimedBenefits();
+    useGetBenefitClaims();
 
   const isLoading =
     isUserLoading ||
@@ -114,7 +114,7 @@ export const useOnboardingFlow = () => {
     const hasHormoneService = hasService(services, hormonePanelName);
 
     // B2B benefits
-    const hasClaimedBenefits = claimedBenefitsData?.hasClaimedBenefits ?? false;
+    const hasClaimedBenefits = (claimedBenefitsData?.length ?? 0) > 0;
 
     // Resume flow context
     const hasAdditionalCredits = userHasAdvancedUpgrade || credits.length > 1;

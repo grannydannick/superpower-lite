@@ -15,7 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
 import { Body1, H1 } from '@/components/ui/typography';
-import { useBenefits, useVerifyEligibility } from '@/features/b2b/api';
+import { useBenefits, useGetEligibleBenefits } from '@/features/b2b/api';
 import { useAnalytics } from '@/hooks/use-analytics';
 import {
   RegisterInput,
@@ -130,7 +130,7 @@ const VerifyEligibilityStep = ({
   const organizationId = searchParams.get('id');
 
   const logout = useLogout();
-  const verifyEligibility = useVerifyEligibility();
+  const getEligibleBenefits = useGetEligibleBenefits();
 
   const form = useFormContext<RegisterInput>();
 
@@ -142,14 +142,12 @@ const VerifyEligibilityStep = ({
     const email = form.getValues('email');
 
     try {
-      const result = await verifyEligibility.mutateAsync({
-        params: {
-          path: { organizationId },
-        },
-        body: { email },
+      const result = await getEligibleBenefits.mutateAsync({
+        organizationId,
+        email,
       });
 
-      if (!result.isEligible) {
+      if (result.length === 0) {
         form.setError('email', {
           type: 'manual',
           message: 'This email is not eligible for this benefit',
@@ -163,7 +161,7 @@ const VerifyEligibilityStep = ({
         await logout.mutateAsync({});
       }
 
-      const benefitIds = result.benefits.map((benefit) => benefit.id);
+      const benefitIds = result.map((benefit) => benefit.id);
 
       // Track registration started
       track('b2b_registration_started', {
@@ -219,9 +217,11 @@ const VerifyEligibilityStep = ({
           type="button"
           onClick={handleNext}
           className="w-full"
-          disabled={verifyEligibility.isPending}
+          disabled={getEligibleBenefits.isPending}
         >
-          {verifyEligibility.isPending ? 'Verifying...' : 'Verify eligibility'}
+          {getEligibleBenefits.isPending
+            ? 'Verifying...'
+            : 'Verify eligibility'}
         </Button>
       </div>
     </div>
