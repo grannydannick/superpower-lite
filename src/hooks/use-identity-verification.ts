@@ -6,11 +6,8 @@ import { useMemo } from 'react';
 import { isIdentityVerificationExpired } from '@/components/ui/questionnaire/utils';
 import { toast } from '@/components/ui/sonner';
 import { useCreateVerificationSession } from '@/features/onboarding/api/create-verification-session';
-import { useTask } from '@/features/tasks/api/get-task';
-import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { useUser } from '@/lib/auth';
 
-const ONBOARDING_TASK_NAME = 'onboarding-identity';
 const VERIFICATION_KEY = ['identity-verification'];
 const STRIPE_SESSION_CANCELLED_ERROR_CODE = 'session_cancelled';
 
@@ -18,10 +15,6 @@ export const useIdentityVerification = () => {
   const queryClient = useQueryClient();
   const stripe = useStripe();
   const createVerificationMutation = useCreateVerificationSession({});
-  const idvTask = useTask({
-    taskName: ONBOARDING_TASK_NAME,
-  });
-  const updateTaskMutation = useUpdateTask();
   const { data: user } = useUser();
 
   const { data: hasVerifiedInSession = false } = useQuery({
@@ -60,15 +53,6 @@ export const useIdentityVerification = () => {
     onSuccess: (success) => {
       if (success) {
         queryClient.setQueryData(VERIFICATION_KEY, true);
-
-        // Update task status if needed
-        if (idvTask.data?.task.status === 'draft') {
-          updateTaskMutation.mutate({
-            data: { status: 'in-progress' },
-            taskName: ONBOARDING_TASK_NAME,
-          });
-        }
-
         toast.success('Identity processed successfully');
       }
     },
