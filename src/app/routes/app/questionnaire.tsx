@@ -1,6 +1,13 @@
+import {
+  Questionnaire,
+  QuestionnaireResponse,
+  QuestionnaireResponseItem,
+} from '@medplum/fhirtypes';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { NotFoundRoute } from '@/app/routes/not-found';
+import { Head } from '@/components/seo';
+import { QuestionnaireForm } from '@/components/ui/questionnaire';
 import { toast } from '@/components/ui/sonner';
 import { Spinner } from '@/components/ui/spinner';
 import {
@@ -8,8 +15,15 @@ import {
   RX_ASSESSMENTS,
   isSymptomTracker,
 } from '@/const/questionnaire';
+import {
+  ONBOARDING_QUESTIONNAIRE_NAMES,
+  type OnboardingQuestionnaireName,
+} from '@/features/onboarding/components/sequences/questionnaire/onboarding-questionnaire-step';
 import { useSubscriptionActive } from '@/features/questionnaires/api/subscription-active';
 import { RxQuestionnaire } from '@/features/questionnaires/components/rx-questionnaire';
+import { useQuestionnaireResponseController } from '@/features/questionnaires/hooks/use-questionnaire-response-controller';
+import { pruneResponseItems } from '@/features/questionnaires/utils/prune-response-items';
+import { useUser } from '@/lib/auth';
 import { preloadImage } from '@/utils/preload-image';
 
 export const questionnaireLoader = () => async () => {
@@ -30,6 +44,67 @@ export const questionnaireLoader = () => async () => {
   }
 
   return Promise.all(imagesPromiseList);
+};
+
+const isOnboardingQuestionnaire = (
+  type: string | undefined,
+): type is OnboardingQuestionnaireName =>
+  ONBOARDING_QUESTIONNAIRE_NAMES.includes(type as OnboardingQuestionnaireName);
+
+const OnboardingQuestionnaire = ({
+  name,
+  onSubmit,
+}: {
+  name: string;
+  onSubmit: () => void;
+}) => {
+  const userQuery = useUser();
+  const {
+    questionnaire,
+    response: questionnaireResponse,
+    isLoading: isQuestionnaireLoading,
+    save,
+    submit,
+  } = useQuestionnaireResponseController({
+    questionnaireName: name,
+    statuses: ['in-progress', 'completed', 'stopped'],
+    normalizeItems: pruneResponseItems,
+  });
+
+  if (isQuestionnaireLoading || userQuery.isLoading) {
+    return (
+      <div className="flex h-dvh w-full items-center justify-center">
+        <Spinner variant="primary" size="md" />
+      </div>
+    );
+  }
+
+  if (!questionnaire || !userQuery.data) {
+    return <NotFoundRoute />;
+  }
+
+  const handleSave = async (item: QuestionnaireResponseItem[]) => {
+    await save(item);
+  };
+
+  const handleSubmit = async (item: QuestionnaireResponseItem[]) => {
+    await submit(item, { onSuccess: onSubmit });
+  };
+
+  return (
+    <>
+      <Head title="Questionnaire" />
+      <QuestionnaireForm
+        key={questionnaire.id}
+        questionnaire={questionnaire as unknown as Questionnaire}
+        response={questionnaireResponse as unknown as QuestionnaireResponse}
+        user={userQuery.data}
+        onSave={handleSave}
+        onSubmit={handleSubmit}
+        className="space-y-6"
+      />
+    </>
+  );
 };
 
 export const QuestionnaireRoute = () => {
@@ -72,6 +147,10 @@ export const QuestionnaireRoute = () => {
     return (
       <RxQuestionnaire onSubmit={onSubmit} name={type as RxQuestionnaireName} />
     );
+  }
+
+  if (isOnboardingQuestionnaire(type)) {
+    return <OnboardingQuestionnaire name={type} onSubmit={onSubmit} />;
   }
 
   return <NotFoundRoute />;

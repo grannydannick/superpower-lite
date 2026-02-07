@@ -23,7 +23,19 @@ type Props = {
  * Renders any questionnaire by name with auto-save and auto-advance on submit.
  * Creates a questionnaire response on first save/submit if missing.
  */
-const QUESTIONNAIRE_TITLES: Record<string, string> = {
+export const ONBOARDING_QUESTIONNAIRE_NAMES = [
+  'onboarding-intake',
+  'onboarding-primer',
+  'onboarding-medical-history',
+  'onboarding-female-health',
+  'onboarding-lifestyle',
+] as const;
+
+export type OnboardingQuestionnaireName =
+  (typeof ONBOARDING_QUESTIONNAIRE_NAMES)[number];
+
+const QUESTIONNAIRE_TITLES: Partial<Record<string, string>> = {
+  'onboarding-intake': 'Intake',
   'onboarding-primer': 'About You',
   'onboarding-medical-history': 'Medical History',
   'onboarding-female-health': 'Female Health',
