@@ -7,8 +7,14 @@ import { z } from 'zod';
 
 import { SuperpowerLoadingLogo } from '@/components/icons/superpower-logo';
 import { env } from '@/config/env';
+import {
+  buildQuestionnaireStatusMap,
+  getQuestionnaireStatus,
+} from '@/features/onboarding/utils/get-questionnaire-status';
 import { revealLatestQueryKey } from '@/features/protocol/api';
+import { useQuestionnaireResponseList } from '@/features/questionnaires/api/questionnaire-response';
 import { useTask } from '@/features/tasks/api/get-task';
+import { isIntakeDismissed } from '@/lib/intake-dismiss';
 import { MutationConfig } from '@/lib/react-query';
 import { clearActiveLogin, setActiveLogin } from '@/lib/utils';
 import { api as rawOrpcClient } from '@/orpc/client';
@@ -268,6 +274,17 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     enabled: userQuery.isSuccess,
   });
 
+  const onboardingDone = taskQuery.data?.task.status === 'completed';
+  const { data: intakeResponses, isLoading: intakeLoading } =
+    useQuestionnaireResponseList(
+      {
+        questionnaireName:
+          'onboarding-primer,onboarding-medical-history,onboarding-female-health,onboarding-lifestyle',
+        status: 'completed',
+      },
+      { enabled: userQuery.isSuccess && onboardingDone },
+    );
+
   if (taskQuery.isLoading) {
     return (
       <div className="flex h-screen w-screen items-center justify-center">
@@ -302,6 +319,7 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     '/protocol/reveal',
     '/protocol/autopilot',
     '/onboarding', // Prevent infinite redirect loop
+    '/intake', // Medical intake for legacy members
     '/action-plan/intro', // Videos
   ];
   const onPermissiblePath = revealPermissiblePaths.some((path) =>
@@ -331,6 +349,7 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const { task } = taskQuery.data;
     const isTaskIncomplete = task.status !== 'completed';
     const isSubscribed = !!userQuery.data?.subscribed;
+    const isDev = import.meta.env.DEV || process.env.NODE_ENV === 'development';
 
     let target: string | null = null;
 
@@ -353,8 +372,41 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       return <Navigate to={target} replace />;
     }
 
-    // Redirect to intake questionnaire if incomplete (only after onboarding is done)
-    // Allow admins to bypass so they can triage other issues normally
+    // Redirect legacy members (account > 6 months old) with incomplete intakes
+    if (
+      onboardingDone &&
+      !isDev &&
+      !intakeLoading &&
+      !userQuery.data?.adminActor &&
+      !onPermissiblePath
+    ) {
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+      // Clamp to last day of target month if day-of-month overflowed
+      const now = new Date();
+      if (sixMonthsAgo.getDate() !== now.getDate()) {
+        sixMonthsAgo.setDate(0);
+      }
+
+      const isLegacy =
+        userQuery.data?.createdAt &&
+        new Date(userQuery.data.createdAt) < sixMonthsAgo;
+
+      const statusMap = buildQuestionnaireStatusMap(intakeResponses);
+      const done = (name: string) =>
+        getQuestionnaireStatus(statusMap, name) === 'completed';
+
+      const isFemale = userQuery.data?.gender?.toLowerCase() === 'female';
+      const hasAllIntakes =
+        done('onboarding-primer') &&
+        done('onboarding-medical-history') &&
+        (!isFemale || done('onboarding-female-health')) &&
+        done('onboarding-lifestyle');
+
+      if (isLegacy && !hasAllIntakes && !isIntakeDismissed()) {
+        return <Navigate to="/intake" replace />;
+      }
+    }
   }
 
   return children;

@@ -21,6 +21,9 @@ export const STEP_IDS = {
   UPSELL_PANELS: 'upsell-panels',
   PHLEBOTOMY_BOOKING: 'phlebotomy-booking',
   COMMITMENT: 'commitment',
+  // Intake flow only (legacy members)
+  INTAKE_SPLASH: 'intake-splash',
+  INTAKE_COMPLETION: 'intake-completion',
 } as const;
 
 export type StepId = (typeof STEP_IDS)[keyof typeof STEP_IDS];

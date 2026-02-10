@@ -209,6 +209,13 @@ export const createRouter = () =>
           },
         },
         {
+          path: 'intake',
+          lazy: async () => {
+            const { IntakeRoute } = await import('./routes/app/intake');
+            return { Component: IntakeRoute };
+          },
+        },
+        {
           path: 'onboarding',
           lazy: async () => {
             const { OnboardingRoute } = await import('./routes/app/onboarding');
