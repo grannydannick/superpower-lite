@@ -6,15 +6,15 @@ import { SelectableCard } from '@/components/shared/selectable-card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-  ENVIRONMENTAL_TOXINS,
+  ENVIRONMENTAL_TOXINS_TEST_ID,
   GUT_MICROBIOME_ANALYSIS_ID,
-  HEAVY_METALS_TEST,
-  MYCOTOXINS_TEST,
+  HEAVY_METALS_TEST_ID,
+  MYCOTOXINS_TEST_ID,
 } from '@/const';
 import { useOrders } from '@/features/orders/api';
 import { useService, useServices } from '@/features/services/api';
 import { cn } from '@/lib/utils';
-import { Category, SuperpowerCategory } from '@/types/api';
+import { Category, OrderStatus, SuperpowerCategory } from '@/types/api';
 import { getServiceImage } from '@/utils/service';
 
 import { useBiomarkers } from '../../api';
@@ -61,7 +61,7 @@ export const CategoryDataTable = ({ category }: { category?: Category }) => {
 
   return (
     <div>
-      <div className="space-y-3 ">
+      <div className="space-y-3">
         <div
           className={cn(
             'sticky md:top-20 top-4 z-10 bg-gradient-to-b from-zinc-50 to-transparent transition-all duration-500',
@@ -143,13 +143,21 @@ const GutInsights = () => {
   );
 };
 
-// TODO: check if AIAP already exists for any of this services
 const ToxinsInsights = () => {
   const navigate = useNavigate();
 
   const getServicesQuery = useServices();
+  const getOrdersQuery = useOrders();
 
   const services = getServicesQuery.data?.services;
+  const requestGroups = getOrdersQuery.data?.requestGroups;
+
+  const allOrders = requestGroups?.flatMap((rg) => rg.orders) ?? [];
+
+  const hasCompletedOrder = (serviceId: string) =>
+    allOrders.some(
+      (o) => o.serviceId === serviceId && o.status === OrderStatus.completed,
+    );
 
   if (getServicesQuery.isLoading) {
     return <Skeleton className="h-[106px] w-full rounded-[20px]" />;
@@ -157,13 +165,13 @@ const ToxinsInsights = () => {
 
   if (!services) return null;
 
-  const env = services.find((s) => s.name === ENVIRONMENTAL_TOXINS);
-  const mycotoxins = services.find((s) => s.name === MYCOTOXINS_TEST);
-  const heavymetals = services.find((s) => s.name === HEAVY_METALS_TEST);
+  const env = services.find((s) => s.id === ENVIRONMENTAL_TOXINS_TEST_ID);
+  const mycotoxins = services.find((s) => s.id === MYCOTOXINS_TEST_ID);
+  const heavymetals = services.find((s) => s.id === HEAVY_METALS_TEST_ID);
 
   return (
     <div className="space-y-2">
-      {env ? (
+      {env && !hasCompletedOrder(ENVIRONMENTAL_TOXINS_TEST_ID) ? (
         <SelectableCard
           title={env.name}
           imageSrc={getServiceImage(env.name)}
@@ -176,7 +184,7 @@ const ToxinsInsights = () => {
           }
         />
       ) : null}
-      {mycotoxins ? (
+      {mycotoxins && !hasCompletedOrder(MYCOTOXINS_TEST_ID) ? (
         <SelectableCard
           title={mycotoxins.name}
           imageSrc={getServiceImage(mycotoxins.name)}
@@ -189,7 +197,7 @@ const ToxinsInsights = () => {
           }
         />
       ) : null}
-      {heavymetals ? (
+      {heavymetals && !hasCompletedOrder(HEAVY_METALS_TEST_ID) ? (
         <SelectableCard
           title={heavymetals.name}
           imageSrc={getServiceImage(heavymetals.name)}
