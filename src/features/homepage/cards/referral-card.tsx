@@ -8,7 +8,7 @@ import { HomepageCard } from '../components/homepage-card';
 
 export const ReferralCard: React.FC = () => {
   return (
-    <HomepageCard title="Live better, longer together">
+    <HomepageCard title="Live better, together">
       <div className="group relative cursor-pointer overflow-hidden rounded-3xl">
         <Link
           to="/invite"
