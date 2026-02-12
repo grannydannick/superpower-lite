@@ -63,6 +63,8 @@ export function ScheduleSummaryStep(): ReactNode {
 
   const createOrderFn = async (): Promise<void> => {
     const data = buildCreateOrderData();
+    if (!data) return;
+
     data.paymentMethodId = activePaymentMethod?.externalPaymentMethodId;
 
     if (collectionMethod === 'AT_HOME') {

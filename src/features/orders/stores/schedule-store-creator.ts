@@ -1,6 +1,7 @@
 import { createStore } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
+import { toast } from '@/components/ui/sonner';
 import { CreateOrderInput } from '@/features/orders/api';
 import {
   CollectionMethodType,
@@ -33,7 +34,7 @@ export interface ScheduleStore extends ScheduleStoreProps {
   updateSlot: (slot: Slot | null) => void;
   reset: () => void;
 
-  buildCreateOrderData: () => CreateOrderInput;
+  buildCreateOrderData: () => CreateOrderInput | undefined;
 }
 
 export type ScheduleStoreApi = ReturnType<typeof scheduleStoreCreator>;
@@ -80,33 +81,65 @@ export const scheduleStoreCreator = (initProps: ScheduleStoreProps) => {
           set({ selectedCreditIds: new Set(next) });
         },
 
-        buildCreateOrderData: (): CreateOrderInput => {
+        buildCreateOrderData: (): CreateOrderInput | undefined => {
           const slot = get().slot;
           const tz = get().tz;
           const collectionMethod = get().collectionMethod;
           const location = get().location;
           const creditIds = get().selectedCreditIds;
 
-          if (!location?.address)
-            throw new Error('No address provided to create order');
+          const mode = get().mode;
 
-          let appointmentType: AppointmentType = 'SCHEDULED';
-
-          if (!location.capabilities.includes('APPOINTMENT_SCHEDULING')) {
-            appointmentType = 'UNSCHEDULED';
+          if (!location?.address) {
+            toast.error('No address provided to create order');
+            return;
           }
 
-          const data: CreateOrderInput = {
-            creditIds: creditIds.size > 0 ? [...creditIds] : [],
-            address: location.address,
-            timestamp:
-              slot && appointmentType === 'SCHEDULED' ? slot.start : undefined,
-            timezone: tz && appointmentType === 'SCHEDULED' ? tz : undefined,
-            collectionMethod: collectionMethod ?? undefined,
-            appointmentType,
-          };
+          switch (mode) {
+            case 'advisory-call': {
+              if (!slot) {
+                toast.error('No slot provided to create order');
+                return;
+              }
 
-          return data;
+              return {
+                creditIds: creditIds.size > 0 ? [...creditIds] : [],
+                address: location.address,
+                timestamp: slot.start,
+                timezone: tz ?? undefined,
+              };
+            }
+            case 'test-kit': {
+              return {
+                creditIds: creditIds.size > 0 ? [...creditIds] : [],
+                address: location.address,
+              };
+            }
+
+            default: {
+              if (!slot) {
+                toast.error('No slot provided to create order');
+                return;
+              }
+
+              let appointmentType: AppointmentType = 'SCHEDULED';
+
+              if (!location.capabilities.includes('APPOINTMENT_SCHEDULING')) {
+                appointmentType = 'UNSCHEDULED';
+              }
+
+              return {
+                creditIds: creditIds.size > 0 ? [...creditIds] : [],
+                address: location.address,
+                timestamp:
+                  appointmentType === 'SCHEDULED' ? slot.start : undefined,
+                timezone:
+                  tz && appointmentType === 'SCHEDULED' ? tz : undefined,
+                collectionMethod: collectionMethod ?? undefined,
+                appointmentType,
+              };
+            }
+          }
         },
       }),
       { name: 'ScheduleStore' },
