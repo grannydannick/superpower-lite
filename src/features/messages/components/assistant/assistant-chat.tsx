@@ -85,7 +85,7 @@ export function AssistantChat({
     [], // Intentionally empty - uses fresh data via getActiveLogin()
   );
 
-  const { messages, setMessages, sendMessage, status, stop } = useChat({
+  const { messages, setMessages, sendMessage, status } = useChat({
     id,
     transport,
     messages: [],
@@ -132,7 +132,12 @@ export function AssistantChat({
       setMessages(initialMessages);
       setHasSetInitialMessages(true);
     }
-  }, [initialMessages, hasSetInitialMessages, setMessages]);
+  }, [
+    initialMessages,
+    hasSetInitialMessages,
+    setMessages,
+    setHasSetInitialMessages,
+  ]);
 
   const followupsContext = `I'm currently visiting ${pathname} in the Superpower app, please give me some suggestions based on this.`;
 
@@ -207,7 +212,6 @@ export function AssistantChat({
           )}
         >
           <MultimodalInput
-            chatId={id}
             input={input}
             setInput={setInput}
             sendMessage={(message, options) => {
@@ -230,11 +234,8 @@ export function AssistantChat({
               return sendMessage(message, options);
             }}
             status={status}
-            stop={stop}
             attachments={attachments}
             setAttachments={setAttachments}
-            messages={messages}
-            setMessages={setMessages}
             showSuggestions={false}
             className="min-h-12 rounded-xl bg-zinc-100 shadow-none"
           />

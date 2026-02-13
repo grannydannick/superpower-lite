@@ -4,6 +4,7 @@ import { DefaultChatTransport, FileUIPart, type UIMessage } from 'ai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { toast } from '@/components/ui/sonner';
 import { env } from '@/config/env';
 import { useHistory } from '@/features/messages/api/get-history';
@@ -17,6 +18,7 @@ import { useAnalytics } from '@/hooks/use-analytics';
 import { cn, getActiveLogin } from '@/lib/utils';
 import { generateUUID } from '@/utils/generate-uiud';
 
+import { classifyChatError } from './chat-error-utils';
 import { Greeting } from './greeting';
 import { Messages } from './messages';
 import { MultimodalInput } from './multimodal-input';
@@ -26,6 +28,8 @@ const publicErrors = [
   'Too many requests, please try again later.',
   'This chat has ended. Please start a new chat.',
 ];
+const conciergeLoadErrorMessage =
+  'Currently chat is under heavy load. Please try again later.';
 
 /** Check if an assistant message has actual text content */
 const hasAssistantContent = (message: UIMessage | undefined): boolean => {
@@ -33,6 +37,69 @@ const hasAssistantContent = (message: UIMessage | undefined): boolean => {
   return (message.parts ?? []).some(
     (p) => p.type === 'text' && p.text && p.text.length > 0,
   );
+};
+
+const isObjectRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
+const getErrorMessage = (err: unknown): string => {
+  if (err instanceof Error && typeof err.message === 'string') {
+    return err.message;
+  }
+
+  if (isObjectRecord(err) && typeof err.message === 'string') {
+    return err.message;
+  }
+
+  return '';
+};
+
+const getErrorName = (err: unknown): string => {
+  if (err instanceof Error && typeof err.name === 'string') {
+    return err.name;
+  }
+
+  if (isObjectRecord(err) && typeof err.name === 'string') {
+    return err.name;
+  }
+
+  return '';
+};
+
+const getErrorBody = (err: unknown): string => {
+  if (typeof err === 'string') {
+    return err;
+  }
+
+  if (err instanceof Error) {
+    const errorWithExtra = err as Error & Record<string, unknown>;
+    const payload: Record<string, unknown> = {
+      name: err.name,
+      message: err.message,
+    };
+
+    for (const [key, value] of Object.entries(errorWithExtra)) {
+      if (typeof value !== 'function' && key !== 'name' && key !== 'message') {
+        payload[key] = value;
+      }
+    }
+
+    try {
+      return JSON.stringify(payload);
+    } catch {
+      return err.message || err.name || 'Unknown chat error';
+    }
+  }
+
+  if (isObjectRecord(err)) {
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return String(err);
+    }
+  }
+
+  return String(err);
 };
 
 export function Chat({
@@ -47,6 +114,7 @@ export function Chat({
   const { refetch } = useHistory();
   const { track } = useAnalytics();
   const navigate = useNavigate();
+  const lastReportedErrorRef = useRef<string | null>(null);
 
   const initialMessage = searchParams.get('defaultMessage');
   const [input, setInput] = useState(initialMessage ?? '');
@@ -98,9 +166,29 @@ export function Chat({
 
   const recoveryInProgressRef = useRef(false);
 
+  const reportChatError = useCallback(
+    (errorBody: string) => {
+      const normalizedError = errorBody.trim() || 'Unknown chat error';
+
+      if (lastReportedErrorRef.current === normalizedError) return;
+      lastReportedErrorRef.current = normalizedError;
+
+      track('ai_chat_error', {
+        chat_id: id,
+        error: normalizedError,
+      });
+    },
+    [id, track],
+  );
+
   const recoverFromServer = useCallback(
     async (setMessages: (messages: UIMessage[]) => void) => {
-      if (recoveryInProgressRef.current) return false;
+      if (recoveryInProgressRef.current) {
+        return {
+          success: false as const,
+          errorBody: 'Recovery already in progress.',
+        };
+      }
       recoveryInProgressRef.current = true;
 
       try {
@@ -114,95 +202,103 @@ export function Chat({
               serverMessages,
             );
             recoveryInProgressRef.current = false;
-            return true;
+            return { success: true as const, errorBody: null };
           }
         }
         recoveryInProgressRef.current = false;
-        return false;
+        return {
+          success: false as const,
+          errorBody: 'Recovery failed: assistant response was empty.',
+        };
       } catch (err) {
-        // Recovery fetch failed — swallow silently
+        const recoveryErrorMessage =
+          err instanceof Error && err.message
+            ? err.message
+            : 'Recovery failed: unable to fetch messages.';
+
         recoveryInProgressRef.current = false;
-        return false;
+        return {
+          success: false as const,
+          errorBody: recoveryErrorMessage,
+        };
       }
     },
     [id, queryClient],
   );
 
-  const { messages, setMessages, sendMessage, resumeStream, status, stop } =
-    useChat({
-      id,
-      transport,
-      messages: initialMessages,
-      generateId: generateUUID,
-      onFinish: ({ message }) => {
-        refetch();
+  const { messages, setMessages, sendMessage, resumeStream, status } = useChat({
+    id,
+    transport,
+    messages: initialMessages,
+    generateId: generateUUID,
+    onFinish: ({ message }) => {
+      refetch();
 
-        // make sure that the chat message cache is fresh here
-        // e.g. so that navigating away and back shows the latest messages.
-        queryClient.invalidateQueries({ queryKey: ['chat', id] });
+      // make sure that the chat message cache is fresh here
+      // e.g. so that navigating away and back shows the latest messages.
+      queryClient.invalidateQueries({ queryKey: ['chat', id] });
 
-        if (message.role === 'user') {
-          const messageLength = message.parts?.reduce((acc, part) => {
-            if (part.type === 'text') {
-              acc += part.text.length;
-            }
-            return acc;
-          }, 0);
-
-          track('sent_message_ai', {
-            message_length: messageLength ?? 0,
-          });
-        } else if (message.role === 'assistant') {
-          const timing = extractTiming(message, false);
-
-          track('received_message_ai', {
-            response_time: timing.totalMs,
-          });
-
-          if (timing.totalMs) {
-            addResponseTime(timing.totalMs);
+      if (message.role === 'user') {
+        const messageLength = message.parts?.reduce((acc, part) => {
+          if (part.type === 'text') {
+            acc += part.text.length;
           }
+          return acc;
+        }, 0);
+
+        track('sent_message_ai', {
+          message_length: messageLength ?? 0,
+        });
+      } else if (message.role === 'assistant') {
+        const timing = extractTiming(message, false);
+
+        track('received_message_ai', {
+          response_time: timing.totalMs,
+        });
+
+        if (timing.totalMs) {
+          addResponseTime(timing.totalMs);
         }
-      },
-      onError: (err) => {
-        const safeMessage =
-          typeof (err as Error & { message?: string })?.message === 'string'
-            ? (err as Error).message
-            : '';
+      }
+    },
+    onError: (err) => {
+      const safeMessage = getErrorMessage(err);
+      const safeName = getErrorName(err);
+      const errorBody = getErrorBody(err);
+      const errorKind = classifyChatError({
+        errorName: safeName,
+        errorMessage: safeMessage,
+        publicErrors,
+      });
 
-        const isValidationError =
-          err.name === 'AI_TypeValidationError' ||
-          safeMessage.includes('Type validation failed') ||
-          (safeMessage.includes('finish') &&
-            safeMessage.includes('finishReason'));
+      if (errorKind === 'validation') {
+        setShowLoadErrorBanner(false);
+        track('ai_sdk_validation_error', {
+          error_message: safeMessage,
+          error_name: safeName,
+          chat_id: id,
+        });
 
-        const isPublicError = publicErrors.some(
-          (publicError) => publicError === err.message,
-        );
+        // Don't show these validation errors to the user as they're internal SDK issues
+        refetch();
+        navigate(`/concierge/${id}`);
 
-        if (isValidationError) {
-          track('ai_sdk_validation_error', {
-            error_message: err.message,
-            error_name: err.name,
-            chat_id: id,
-          });
+        return;
+      }
 
-          // Don't show these validation errors to the user as they're internal SDK issues
-          refetch();
-          navigate(`/concierge/${id}`);
+      if (errorKind === 'public') {
+        setShowLoadErrorBanner(false);
+        toast(safeMessage);
+        return;
+      }
 
-          return;
-        }
+      setShowLoadErrorBanner(true);
+      reportChatError(errorBody);
 
-        if (isPublicError) {
-          toast(err.message);
-          return;
-        }
-
-        // Fall back to server-side message recovery after a delay
-        setTimeout(() => recoverFromServer(setMessages), 1000);
-      },
-    });
+      // Fall back to server-side message recovery after a delay
+      setTimeout(() => recoverFromServer(setMessages), 1000);
+    },
+  });
 
   // Resume stream on page load for existing chats.
   // Always attempt for non-new chats with messages — if no stream is active,
@@ -221,6 +317,7 @@ export function Chat({
   // Catches edge cases where onFinish might not fire or status transitions unexpectedly.
   const recoveryAttemptedRef = useRef(false);
   const [recoveryFailed, setRecoveryFailed] = useState(false);
+  const [showLoadErrorBanner, setShowLoadErrorBanner] = useState(false);
 
   useEffect(() => {
     if (status !== 'ready') {
@@ -239,13 +336,17 @@ export function Chat({
     if (needsRecovery && !recoveryAttemptedRef.current) {
       recoveryAttemptedRef.current = true;
 
-      recoverFromServer(setMessages).then((success) => {
-        if (!success) {
+      recoverFromServer(setMessages).then((result) => {
+        if (!result.success) {
           setRecoveryFailed(true);
+          setShowLoadErrorBanner(true);
+          reportChatError(
+            result.errorBody ?? 'Recovery failed: unknown chat error.',
+          );
         }
       });
     }
-  }, [status, messages, recoverFromServer, setMessages]);
+  }, [status, messages, recoverFromServer, setMessages, reportChatError]);
 
   // Treat recovery failure as error so UI shows retry option
   const effectiveStatus =
@@ -297,6 +398,9 @@ export function Chat({
         { replace: true },
       );
     }
+    lastReportedErrorRef.current = null;
+    setRecoveryFailed(false);
+    setShowLoadErrorBanner(false);
     incrementMessageCount();
     setInput('');
     return sendMessage(message, options);
@@ -341,18 +445,23 @@ export function Chat({
 
         {/* Sticky bottom area */}
         <div className="sticky bottom-0 shrink-0">
+          {effectiveStatus === 'error' && showLoadErrorBanner && (
+            <div className="mx-auto mb-3 w-full max-w-3xl px-1">
+              <Alert variant="destructive">
+                <AlertTitle>Concierge is experiencing high demand</AlertTitle>
+                <AlertDescription>{conciergeLoadErrorMessage}</AlertDescription>
+              </Alert>
+            </div>
+          )}
+
           <form className="mx-auto w-full pb-2">
             <MultimodalInput
-              chatId={id}
               input={input}
               setInput={setInput}
               sendMessage={handleSendMessage}
               status={effectiveStatus}
-              stop={stop}
               attachments={attachments}
               setAttachments={setAttachments}
-              messages={messages}
-              setMessages={setMessages}
               disableFileUpload
             />
           </form>

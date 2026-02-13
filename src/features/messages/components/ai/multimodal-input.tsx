@@ -21,7 +21,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { acceptedFileContentTypes } from '@/const';
 import { useCreateFiles } from '@/features/files/api';
 import { AttachmentsButton } from '@/features/messages/components/ai/attachements-button';
-import { sanitizeUIMessages } from '@/features/messages/utils/sanitize-ui-messsages';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
@@ -33,28 +32,21 @@ import { PreviewAttachment } from './preview-attachment';
 const MAX_HEIGHT = 256;
 
 function PureMultimodalInput({
-  chatId,
   input,
   setInput,
-  stop,
   attachments,
   status,
   setAttachments,
-  setMessages,
   sendMessage,
   className,
   /** TODO: Temporarily disable file upload button for AI concierge */
   disableFileUpload = false,
 }: {
-  chatId: string;
   input: string;
   setInput: Dispatch<SetStateAction<string>>;
   status: UseChatHelpers<UIMessage>['status'];
-  stop: () => void;
   attachments: Array<FileUIPart>;
   setAttachments: Dispatch<SetStateAction<Array<FileUIPart>>>;
-  messages: Array<UIMessage>;
-  setMessages: UseChatHelpers<UIMessage>['setMessages'];
   sendMessage: UseChatHelpers<UIMessage>['sendMessage'];
   className?: string;
   showSuggestions?: boolean;
@@ -141,8 +133,8 @@ function PureMultimodalInput({
       textareaRef.current?.focus();
     }
   }, [
-    chatId,
     sendMessage,
+    input,
     attachments,
     setAttachments,
     resetHeight,
@@ -222,7 +214,7 @@ function PureMultimodalInput({
         setUploadQueue([]);
       }
     },
-    [setAttachments, uploadFiles, track],
+    [setAttachments, uploadFiles],
   );
 
   const { getRootProps, isDragActive } = useDropzone({
@@ -379,15 +371,12 @@ function PureMultimodalInput({
               <AttachmentsButton fileInputRef={fileInputRef} status={status} />
             )}
 
-            {status === 'submitted' || status === 'streaming' ? (
-              <StopButton stop={stop} setMessages={setMessages} />
-            ) : (
-              <SendButton
-                input={input}
-                submitForm={submitForm}
-                uploadQueue={uploadQueue}
-              />
-            )}
+            <SendButton
+              input={input}
+              submitForm={submitForm}
+              uploadQueue={uploadQueue}
+              status={status}
+            />
           </div>
         </div>
       </div>
@@ -408,38 +397,19 @@ export const MultimodalInput = memo(
   },
 );
 
-function PureStopButton({
-  stop,
-  setMessages,
-}: {
-  stop: () => void;
-  setMessages: Dispatch<SetStateAction<Array<UIMessage>>>;
-}) {
-  return (
-    <Button
-      className="h-fit rounded-full border p-1.5 dark:border-zinc-600"
-      onClick={(event) => {
-        event.preventDefault();
-        stop();
-        setMessages((messages) => sanitizeUIMessages(messages));
-      }}
-    >
-      <StopIcon size={14} />
-    </Button>
-  );
-}
-
-const StopButton = memo(PureStopButton);
-
 function PureSendButton({
   submitForm,
   input,
   uploadQueue,
+  status,
 }: {
   submitForm: () => void;
   input: string;
   uploadQueue: Array<string>;
+  status: UseChatHelpers<UIMessage>['status'];
 }) {
+  const canSend = status === 'ready' || status === 'error';
+
   return (
     <Button
       className={cn(
@@ -449,7 +419,7 @@ function PureSendButton({
         event.preventDefault();
         submitForm();
       }}
-      disabled={input.trim().length === 0 || uploadQueue.length > 0}
+      disabled={!canSend || input.trim().length === 0 || uploadQueue.length > 0}
     >
       <ArrowUpIcon size={14} />
     </Button>
@@ -460,23 +430,6 @@ const SendButton = memo(PureSendButton, (prevProps, nextProps) => {
   if (prevProps.uploadQueue.length !== nextProps.uploadQueue.length)
     return false;
   if (prevProps.input !== nextProps.input) return false;
+  if (prevProps.status !== nextProps.status) return false;
   return true;
 });
-
-const StopIcon = ({ size = 16 }: { size?: number }) => {
-  return (
-    <svg
-      height={size}
-      viewBox="0 0 16 16"
-      width={size}
-      style={{ color: 'currentcolor' }}
-    >
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M3 3H13V13H3V3Z"
-        fill="currentColor"
-      />
-    </svg>
-  );
-};
