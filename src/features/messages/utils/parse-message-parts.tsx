@@ -45,19 +45,6 @@ function isReasoningPart(part: unknown): part is {
   );
 }
 
-export function shouldShowUpdatingMemory(
-  message: UIMessage | undefined,
-  isStreaming: boolean,
-): boolean {
-  if (!isStreaming || !message || message.role !== 'assistant') return false;
-
-  const hasReasoningContent = message.parts.some(
-    (part) => isReasoningPart(part) && part.text.trim().length > 0,
-  );
-
-  return hasReasoningContent && isMemoryUpdateInProgress(message.parts, true);
-}
-
 function isDataPart(part: unknown): part is { type: string; data: unknown } {
   if (typeof part !== 'object' || part === null) return false;
   const p = part as { type?: string };

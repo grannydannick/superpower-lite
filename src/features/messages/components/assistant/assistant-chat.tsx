@@ -4,22 +4,17 @@ import { DefaultChatTransport, FileUIPart } from 'ai';
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { env } from '@/config/env';
 import { useCreateFollowups } from '@/features/messages/api/create-followups';
 import { useHistory } from '@/features/messages/api/get-history';
 import { MultimodalInput } from '@/features/messages/components/ai/multimodal-input';
 import { AssistantMessages } from '@/features/messages/components/assistant/assistant-messages';
 import { useAssistantStore } from '@/features/messages/stores/assistant-store';
-import { shouldShowUpdatingMemory } from '@/features/messages/utils/parse-message-parts';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { cn, getActiveLogin } from '@/lib/utils';
 import { generateUUID } from '@/utils/generate-uiud';
 
 import { ChatSuggestion } from '../chat-suggestion';
-
-const assistantLoadErrorMessage =
-  'Currently chat is under heavy load. Please try again later.';
 
 export function AssistantChat({
   chatId,
@@ -184,11 +179,6 @@ export function AssistantChat({
     showInitialSuggestions || showAssistantSuggestions;
 
   const visibleSuggestions = shouldShowSuggestions ? followupsData : [];
-  const lastMessage = messages[messages.length - 1];
-  const isUpdatingMemory = shouldShowUpdatingMemory(
-    lastMessage,
-    status === 'streaming',
-  );
 
   return (
     <div
@@ -215,14 +205,6 @@ export function AssistantChat({
         </div>
       )}
       <div className="pt-2">
-        {status === 'error' && (
-          <div className="mx-auto mb-3 w-full px-1">
-            <Alert variant="destructive">
-              <AlertTitle>Concierge is experiencing high demand</AlertTitle>
-              <AlertDescription>{assistantLoadErrorMessage}</AlertDescription>
-            </Alert>
-          </div>
-        )}
         <form
           className={cn(
             'mx-auto flex w-full flex-col gap-6 pb-2',
@@ -254,7 +236,6 @@ export function AssistantChat({
             status={status}
             attachments={attachments}
             setAttachments={setAttachments}
-            isUpdatingMemory={isUpdatingMemory}
             showSuggestions={false}
             className="min-h-12 rounded-xl bg-zinc-100 shadow-none"
           />

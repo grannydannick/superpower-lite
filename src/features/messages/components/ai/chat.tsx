@@ -14,7 +14,6 @@ import {
 } from '@/features/messages/api/get-messages';
 import { useChatStore } from '@/features/messages/stores/chat-store';
 import { extractTiming } from '@/features/messages/utils/extract-timing';
-import { shouldShowUpdatingMemory } from '@/features/messages/utils/parse-message-parts';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { cn, getActiveLogin } from '@/lib/utils';
 import { generateUUID } from '@/utils/generate-uiud';
@@ -387,11 +386,6 @@ export function Chat({
   const addResponseTime = useChatStore((s) => s.addResponseTime);
 
   const [attachments, setAttachments] = useState<Array<FileUIPart>>([]);
-  const lastMessage = messages[messages.length - 1];
-  const isUpdatingMemory = shouldShowUpdatingMemory(
-    lastMessage,
-    status === 'streaming',
-  );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSendMessage = (message: any, options: any) => {
@@ -468,7 +462,6 @@ export function Chat({
               status={effectiveStatus}
               attachments={attachments}
               setAttachments={setAttachments}
-              isUpdatingMemory={isUpdatingMemory}
               disableFileUpload
             />
           </form>

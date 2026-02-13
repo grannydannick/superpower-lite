@@ -39,7 +39,6 @@ function PureMultimodalInput({
   setAttachments,
   sendMessage,
   className,
-  isUpdatingMemory = false,
   /** TODO: Temporarily disable file upload button for AI concierge */
   disableFileUpload = false,
 }: {
@@ -51,7 +50,6 @@ function PureMultimodalInput({
   sendMessage: UseChatHelpers<UIMessage>['sendMessage'];
   className?: string;
   showSuggestions?: boolean;
-  isUpdatingMemory?: boolean;
   disableFileUpload?: boolean;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -62,10 +60,6 @@ function PureMultimodalInput({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
-  const [updatingMemoryDotCount, setUpdatingMemoryDotCount] = useState(1);
-  const placeholderText = isUpdatingMemory
-    ? `Updating Memory${'.'.repeat(updatingMemoryDotCount)}`
-    : 'Ask anything...';
 
   const isAttachmentPresent = attachments.length > 0 || uploadQueue.length > 0;
 
@@ -113,23 +107,6 @@ function PureMultimodalInput({
     ro.observe(el);
     return () => ro.disconnect();
   }, [adjustHeight]);
-
-  useEffect(() => {
-    if (!isUpdatingMemory) {
-      setUpdatingMemoryDotCount(1);
-      return;
-    }
-
-    const intervalId = window.setInterval(() => {
-      setUpdatingMemoryDotCount((currentCount) =>
-        currentCount >= 3 ? 1 : currentCount + 1,
-      );
-    }, 450);
-
-    return () => {
-      window.clearInterval(intervalId);
-    };
-  }, [isUpdatingMemory]);
 
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);
@@ -360,7 +337,7 @@ function PureMultimodalInput({
           >
             <Textarea
               ref={textareaRef}
-              placeholder={placeholderText}
+              placeholder="Ask anything..."
               value={input}
               onChange={handleInput}
               style={{
@@ -415,7 +392,6 @@ export const MultimodalInput = memo(
     if (!equal(prevProps.attachments, nextProps.attachments)) return false;
     if (prevProps.disableFileUpload !== nextProps.disableFileUpload)
       return false;
-    if (prevProps.isUpdatingMemory !== nextProps.isUpdatingMemory) return false;
 
     return true;
   },
