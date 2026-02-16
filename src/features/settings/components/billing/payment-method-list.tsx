@@ -51,6 +51,7 @@ export function PaymentMethodList(): JSX.Element {
             paymentMethod={paymentMethod}
             key={paymentMethod.stripePaymentMethodId}
             defaultMethod={paymentMethod.default}
+            paymentMethodsCount={paymentMethods.length}
           />
         ))}
       </RadioGroup>
@@ -61,9 +62,11 @@ export function PaymentMethodList(): JSX.Element {
 export function PaymentMethodCard({
   paymentMethod,
   defaultMethod,
+  paymentMethodsCount,
 }: {
   paymentMethod: PaymentMethod;
   defaultMethod: boolean;
+  paymentMethodsCount: number;
 }): JSX.Element {
   const isFlexCard = paymentMethod.paymentProvider?.toLowerCase() === 'flex';
   return (
@@ -127,7 +130,9 @@ export function PaymentMethodCard({
                   paymentMethodId={paymentMethod.stripePaymentMethodId}
                   setDefault={!defaultMethod}
                 />
-                <DeletePaymentMethodMenuItem {...paymentMethod} />
+                {paymentMethodsCount > 1 && (
+                  <DeletePaymentMethodMenuItem {...paymentMethod} />
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           )}
