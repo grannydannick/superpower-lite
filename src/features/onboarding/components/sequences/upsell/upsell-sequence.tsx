@@ -1,8 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { ComponentType, useMemo } from 'react';
+import { ComponentType, useEffect, useMemo, useRef } from 'react';
 
 import { Head } from '@/components/seo';
 import { useRecommendations } from '@/features/recommendations/api/recommendations';
+import { useAnalytics } from '@/hooks/use-analytics';
 
 import { useOnboardingNavigation } from '../../../hooks/use-onboarding-navigation';
 import {
@@ -29,6 +30,11 @@ import {
   GutMicrobiomePreview,
   GutMicrobiomeDetail,
 } from './panels';
+import {
+  type PanelId,
+  PanelIdProvider,
+  UpsellPanelIdsProvider,
+} from './shared/panel-id-context';
 
 const FADE_TRANSITION = { duration: 0.2 };
 
@@ -40,7 +46,7 @@ const MAX_RECOMMENDED_PANELS = 2;
  * Product IDs from the recommendations API include version suffixes
  * (e.g. "v2-cardiovascular-bundle-20250929"), so we match by prefix.
  */
-const PRODUCT_ID_PREFIX_TO_PANEL_ID: Record<string, string> = {
+const PRODUCT_ID_PREFIX_TO_PANEL_ID: Record<string, PanelId> = {
   'v2-cardiovascular-bundle': 'heart',
   'v2-fertility-bundle': 'fertility',
   'v2-metabolic-bundle': 'metabolic',
@@ -51,7 +57,7 @@ const PRODUCT_ID_PREFIX_TO_PANEL_ID: Record<string, string> = {
 };
 
 type PanelStep = {
-  id: string;
+  id: PanelId;
   preview: ComponentType;
   detail: ComponentType;
 };
@@ -70,15 +76,28 @@ const ALL_PANEL_STEPS: PanelStep[] = [
   },
 ];
 
+const withPanelId = (Component: ComponentType, panelId: PanelId) => {
+  const Wrapped = () => (
+    <PanelIdProvider value={panelId}>
+      <Component />
+    </PanelIdProvider>
+  );
+  Wrapped.displayName = `PanelId(${panelId})`;
+  return Wrapped;
+};
+
 export const UpsellSequence = () => {
   const { next: exitSequence, prev: exitBack } = useOnboardingNavigation();
-  const { data: recommendations } = useRecommendations();
+  const { data: recommendations, isSuccess: hasRecommendations } =
+    useRecommendations();
+  const { track } = useAnalytics();
+  const trackedPanelsRef = useRef<string | null>(null);
 
-  const steps = useMemo(() => {
+  const { steps, panelIds, panelKey } = useMemo(() => {
     const panelMap = new Map(ALL_PANEL_STEPS.map((p) => [p.id, p]));
 
     // Resolve recommended product IDs to panel IDs, preserving recommendation order
-    const recommendedPanelIds: string[] = [];
+    const recommendedPanelIds: PanelId[] = [];
     for (const product of recommendations?.products ?? []) {
       const prefix = Object.keys(PRODUCT_ID_PREFIX_TO_PANEL_ID).find((key) =>
         product.productId.startsWith(key),
@@ -99,12 +118,33 @@ export const UpsellSequence = () => {
       .map((id) => panelMap.get(id))
       .filter((panel): panel is PanelStep => panel !== undefined);
 
-    return [
-      IntroStep,
-      ...selectedPanels.flatMap((panel) => [panel.preview, panel.detail]),
-      OutroStep,
-    ];
+    const ids = selectedPanels.map((p) => p.id);
+
+    return {
+      steps: [
+        IntroStep,
+        ...selectedPanels.flatMap((panel) => [
+          withPanelId(panel.preview, panel.id),
+          withPanelId(panel.detail, panel.id),
+        ]),
+        OutroStep,
+      ],
+      panelIds: ids,
+      panelKey: ids.join(','),
+    };
   }, [recommendations]);
+
+  // Track which panels were shown (once recommendations have loaded, ref guard prevents duplicate tracking).
+  useEffect(() => {
+    if (
+      !hasRecommendations ||
+      !panelKey ||
+      trackedPanelsRef.current === panelKey
+    )
+      return;
+    trackedPanelsRef.current = panelKey;
+    track('upsell_panels_shown', { panel_ids: panelIds });
+  }, [hasRecommendations, panelKey, panelIds, track]);
 
   const { Screen, screenIndex, sequenceValue } = useScreenSequence({
     screens: steps,
@@ -113,22 +153,24 @@ export const UpsellSequence = () => {
   });
 
   return (
-    <SequenceProvider value={sequenceValue}>
-      <Head title="Build Your Testing Plan" />
-      <Sequence.Layout>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={screenIndex}
-            className="flex min-h-0 flex-1 flex-col"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={FADE_TRANSITION}
-          >
-            <Screen />
-          </motion.div>
-        </AnimatePresence>
-      </Sequence.Layout>
-    </SequenceProvider>
+    <UpsellPanelIdsProvider value={panelIds}>
+      <SequenceProvider value={sequenceValue}>
+        <Head title="Build Your Testing Plan" />
+        <Sequence.Layout>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={screenIndex}
+              className="flex min-h-0 flex-1 flex-col"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={FADE_TRANSITION}
+            >
+              <Screen />
+            </motion.div>
+          </AnimatePresence>
+        </Sequence.Layout>
+      </SequenceProvider>
+    </UpsellPanelIdsProvider>
   );
 };

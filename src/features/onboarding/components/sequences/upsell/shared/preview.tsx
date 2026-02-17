@@ -2,12 +2,15 @@ import { ChevronLeft, Sparkle } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
+import { Button } from '@/components/ui/button';
+import { useAnalytics } from '@/hooks/use-analytics';
 import { cn } from '@/lib/utils';
 
 import { useSequence } from '../../../../hooks/use-screen-sequence';
 import { Sequence } from '../../../sequence';
 
 import { BackButton } from './back-button';
+import { usePanelId, useUpsellPanelIds } from './panel-id-context';
 
 /**
  * Preview.Layout - Responsive layout for upsell preview screens
@@ -161,11 +164,24 @@ const SkipButton = ({
   className,
 }: PropsWithChildren<{ className?: string }>) => {
   const { skipNext } = useSequence();
+  const panelId = usePanelId();
+  const shownPanelIds = useUpsellPanelIds();
+  const { track } = useAnalytics();
+
+  const handleSkip = () => {
+    if (panelId) {
+      track('upsell_preview_skipped', {
+        panel_id: panelId,
+        shown_panel_ids: shownPanelIds,
+      });
+    }
+    skipNext();
+  };
 
   return (
     <button
       type="button"
-      onClick={skipNext}
+      onClick={handleSkip}
       className={cn(
         'hidden py-4 text-base text-zinc-500 transition-all duration-150 hover:text-primary md:block',
         className,
@@ -176,6 +192,33 @@ const SkipButton = ({
   );
 };
 
+const PrimaryButton = () => {
+  const { next } = useSequence();
+  const panelId = usePanelId();
+  const shownPanelIds = useUpsellPanelIds();
+  const { track } = useAnalytics();
+
+  const handleClick = () => {
+    if (panelId) {
+      track('upsell_preview_cta_clicked', {
+        panel_id: panelId,
+        shown_panel_ids: shownPanelIds,
+      });
+    }
+    next();
+  };
+
+  return (
+    <Button
+      onClick={handleClick}
+      variant="white"
+      className="w-full md:bg-zinc-900 md:text-white md:hover:bg-zinc-800"
+    >
+      See testing options
+    </Button>
+  );
+};
+
 export const Preview = {
   Layout,
   Header,
@@ -183,4 +226,5 @@ export const Preview = {
   Content,
   Footer,
   SkipButton,
+  PrimaryButton,
 };

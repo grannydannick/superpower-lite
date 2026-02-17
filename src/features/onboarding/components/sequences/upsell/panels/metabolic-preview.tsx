@@ -1,12 +1,9 @@
-import { Button } from '@/components/ui/button';
 import { Body1, H2 } from '@/components/ui/typography';
 import { useGender } from '@/hooks/use-gender';
 
-import { useSequence } from '../../../../hooks/use-screen-sequence';
 import { Preview } from '../shared';
 
 export const MetabolicPreview = () => {
-  const { next } = useSequence();
   const { gender } = useGender();
 
   const backgroundImage =
@@ -28,13 +25,7 @@ export const MetabolicPreview = () => {
         </Body1>
       </Preview.Content>
       <Preview.Footer>
-        <Button
-          onClick={next}
-          variant="white"
-          className="w-full md:bg-zinc-900 md:text-white md:hover:bg-zinc-800"
-        >
-          See testing options
-        </Button>
+        <Preview.PrimaryButton />
       </Preview.Footer>
     </Preview.Layout>
   );

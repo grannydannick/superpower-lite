@@ -410,6 +410,12 @@ export const QuestionnaireFormItem = ({
                 valueInteger: value,
               });
             }}
+            onPaste={(e) => {
+              const pasted = e.clipboardData.getData('text');
+              if (!/^-?\d+$/.test(pasted.trim())) {
+                e.preventDefault();
+              }
+            }}
             onKeyDown={(e) => {
               if (e.key === '.' || e.key === ',') {
                 e.preventDefault();

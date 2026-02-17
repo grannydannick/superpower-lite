@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, Body2, H2, H3 } from '@/components/ui/typography';
-import { TOTAL_TOXIN_TEST_ID } from '@/const/services';
+import { SUPERPOWER_BLOOD_PANEL, TOTAL_TOXIN_TEST_ID } from '@/const/services';
 import { useCreateCredit, useCredits } from '@/features/orders/api/credits';
 import { useServices } from '@/features/services/api';
 import { usePaymentMethods } from '@/features/settings/api';
@@ -196,7 +196,9 @@ export const AddOnPanelsStep = () => {
     ];
 
     const filteredServices = rawServices.filter(
-      (service) => service.id !== TOTAL_TOXIN_TEST_ID,
+      (service) =>
+        service.id !== TOTAL_TOXIN_TEST_ID &&
+        service.name !== SUPERPOWER_BLOOD_PANEL,
     );
 
     const orderedServices = filteredServices.sort((a, b) => {
