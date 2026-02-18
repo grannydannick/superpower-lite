@@ -242,26 +242,50 @@
 
 @keyframes logo-unified-reveal {
   0% {
-    -webkit-mask-size: 0% 0%, 200% 200%;
-    mask-size: 0% 0%, 200% 200%;
-    -webkit-mask-position: 50% 50%, 200% 0;
-    mask-position: 50% 50%, 200% 0;
+    -webkit-mask-size:
+      0% 0%,
+      200% 200%;
+    mask-size:
+      0% 0%,
+      200% 200%;
+    -webkit-mask-position:
+      50% 50%,
+      200% 0;
+    mask-position:
+      50% 50%,
+      200% 0;
     opacity: 0;
   }
   10% {
     opacity: 1;
   }
   40% {
-    -webkit-mask-size: 120% 120%, 200% 200%;
-    mask-size: 120% 120%, 200% 200%;
-    -webkit-mask-position: 50% 50%, 100% 0;
-    mask-position: 50% 50%, 100% 0;
+    -webkit-mask-size:
+      120% 120%,
+      200% 200%;
+    mask-size:
+      120% 120%,
+      200% 200%;
+    -webkit-mask-position:
+      50% 50%,
+      100% 0;
+    mask-position:
+      50% 50%,
+      100% 0;
   }
   70% {
-    -webkit-mask-size: 180% 180%, 200% 200%;
-    mask-size: 180% 180%, 200% 200%;
-    -webkit-mask-position: 50% 50%, 0% 0;
-    mask-position: 50% 50%, 0% 0;
+    -webkit-mask-size:
+      180% 180%,
+      200% 200%;
+    mask-size:
+      180% 180%,
+      200% 200%;
+    -webkit-mask-position:
+      50% 50%,
+      0% 0;
+    mask-position:
+      50% 50%,
+      0% 0;
     opacity: 1;
   }
   85% {
@@ -269,10 +293,18 @@
     filter: blur(0px);
   }
   100% {
-    -webkit-mask-size: 200% 200%, 200% 200%;
-    mask-size: 200% 200%, 200% 200%;
-    -webkit-mask-position: 50% 50%, -100% 0;
-    mask-position: 50% 50%, -100% 0;
+    -webkit-mask-size:
+      200% 200%,
+      200% 200%;
+    mask-size:
+      200% 200%,
+      200% 200%;
+    -webkit-mask-position:
+      50% 50%,
+      -100% 0;
+    mask-position:
+      50% 50%,
+      -100% 0;
     opacity: 0;
     filter: blur(8px);
   }
@@ -305,10 +337,18 @@
       rgba(255, 255, 255, 0.6) 55%,
       transparent 80%
     );
-  -webkit-mask-size: 0% 0%, 200% 200%;
-  mask-size: 0% 0%, 200% 200%;
-  -webkit-mask-position: 50% 50%, 200% 0;
-  mask-position: 50% 50%, 200% 0;
+  -webkit-mask-size:
+    0% 0%,
+    200% 200%;
+  mask-size:
+    0% 0%,
+    200% 200%;
+  -webkit-mask-position:
+    50% 50%,
+    200% 0;
+  mask-position:
+    50% 50%,
+    200% 0;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   -webkit-mask-composite: source-in;

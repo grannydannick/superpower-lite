@@ -2,34 +2,19 @@
 #
 # Usage: make help
 #
-# NOTE: The frontend app is only ran in Docker for dev and staging environments!
-#       In production, the app is deployed to AWS Cloudfront.
+# NOTE: Staging and feature branches are deployed via Vercel.
+#       Production is deployed to AWS CloudFront via `make deploy/app/prd`.
 #
 
 export VERSION ?= $(shell git rev-parse --short=7 HEAD)
 export SERVICE = superpower-app
 export ORG = superpowerdotcom
-export ARCH ?= $(shell uname -m)
 export USER ?= $(shell whoami)
 
 SHELL := /bin/bash
 AWS_REGION ?= us-east-1
-AWS_ACCOUNT_ID ?= $(shell command -v aws >/dev/null 2>&1 || { echo "ERROR: 'aws' CLI tool is not installed." >&2; exit 1; }; aws sts get-caller-identity --query Account --output text)
-AWS_REGISTRY_ID ?= $(shell command -v aws >/dev/null 2>&1 || { echo "ERROR: 'aws' CLI tool is not installed." >&2; exit 1; }; aws ecr describe-registry --region us-east-1 --query registryId --output text)
-AWS_ECR_URL ?= $(AWS_ACCOUNT_ID).dkr.ecr.us-east-1.amazonaws.com
-STG_DEPLOYMENT_MSG = ":large_yellow_circle: *[STG]* Deployment :large_yellow_circle:"
 PRD_DEPLOYMENT_MSG = ":large_green_circle: *[PRD]* Deployment :large_green_circle:"
 SHARED_SCRIPT=./assets/scripts/shared.sh
-DEPLOY_SCRIPT=./assets/scripts/deploy.py
-KSP_SCRIPT=./assets/scripts/ksp.sh
-DOPPLER_CONFIG ?= dev
-
-# Utility functions
-check_defined = \
-	$(strip $(foreach 1,$1, \
-		$(call __check_defined,$1,$(strip $(value 2)))))
-__check_defined = $(if $(value $1),, \
-	$(error undefined '$1' variable: $2))
 
 # Pattern #1 example: "example : description = Description for example target"
 # Pattern #2 example: "### Example separator text
@@ -48,30 +33,10 @@ help:
 
 .PHONY: run
 run: description = Run the app locally
-run: prereq util/k8s/context/dev
-	@bash $(SHARED_SCRIPT) info "Running $@ ..."
+run:
 	doppler run --project=superpower-app --config=dev -- bun run dev
 
-.PHONY: run/skaffold
-run/skaffold: description = Run the app with all dependencies via skaffold
-run/skaffold: prereq build/env/dev util/k8s/context/dev
-	@bash $(SHARED_SCRIPT) info "Running $@ ..."
-	cd deployment/dev && /bin/bash -c "skaffold dev -f skaffold.yaml"
-
 ### Build
-
-.PHONY: build/staging
-build/staging: description = Trigger GitHub Actions staging workflow and watch for completion
-build/staging:
-	@bash $(SHARED_SCRIPT) info "Triggering staging workflow..."
-	@run_id=$$(gh workflow run staging.yml --ref $$(git rev-parse --abbrev-ref HEAD) --json id -q .id); \
-	echo "Workflow started with run ID: $$run_id"; \
-	gh run watch $$run_id && status=$$(gh run view $$run_id --json conclusion -q .conclusion) && say "Staging workflow $$status"
-
-.PHONY: build/env/dev
-build/env/dev: description = Build the .env file
-build/env/dev:
-	doppler secrets download -p superpower-app -c dev --no-file --format=env > .env
 
 .PHONY: build/local
 build/local: description = Build the app locally
@@ -79,106 +44,7 @@ build/local: util/install
 	@bash $(SHARED_SCRIPT) info "Running $@ ..."
 	bun run build
 
-.PHONY: build/docker/app/dev
-build/docker/app/dev: description = Build app/frontend docker image for dev (minikube)
-build/docker/app/dev: prereq util/login-aws-ecr
-	@bash $(SHARED_SCRIPT) info "Running $@ ..."
-	AWS_ECR_URL=$(AWS_ECR_URL) \
-	VERSION=$(VERSION) \
-	bash ./assets/scripts/build-docker-app.sh dev
-
-.PHONY: build/docker/app/stg
-build/docker/app/stg: description = Build and push app/frontend docker image for stg (staging)
-build/docker/app/stg: util/login-aws-ecr
-	@bash $(SHARED_SCRIPT) info "Running $@ ..."
-	AWS_ECR_URL=$(AWS_ECR_URL) \
-	VERSION=$(VERSION) \
-	bash ./assets/scripts/build-docker-app.sh stg
-
-.PHONY: build/docker/app/stg-scheduling
-build/docker/app/stg-scheduling: description = Build and push app/frontend docker image for stg-scheduling
-build/docker/app/stg-scheduling: util/login-aws-ecr
-	@bash $(SHARED_SCRIPT) info "Running $@ ..."
-	AWS_ECR_URL=$(AWS_ECR_URL) \
-	VERSION=stg-scheduling-$(VERSION) \
-	bash ./assets/scripts/build-docker-app-stg-scheduling.sh stg-scheduling
-
-.PHONY: build/docker/app/stg-emr
-build/docker/app/stg-emr: description = Build and push app/frontend docker image for stg-emr (staging EMR)
-build/docker/app/stg-emr: util/login-aws-ecr
-	@bash $(SHARED_SCRIPT) info "Running $@ ..."
-	AWS_ECR_URL=$(AWS_ECR_URL) \
-	VERSION=$(VERSION) \
-	bash ./assets/scripts/build-docker-app-emr.sh stg
-
-
-.PHONY: build/docker/app/feature
-build/docker/app/feature: description = Build and push app docker image for feature
-build/docker/app/feature: FEATURE_NAME ?= $(shell git branch --show-current | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]' | cut -c -44)
-build/docker/app/feature: util/login-aws-ecr
-	@bash $(SHARED_SCRIPT) info "Building Docker image for feature deployment..."
-	AWS_ECR_URL=$(AWS_ECR_URL) \
-	VERSION=$(VERSION) \
-	FEATURE_NAME=$(FEATURE_NAME) \
-	bash ./assets/scripts/build-docker-app-feature.sh
-
 ### Deploy
-
-.PHONY: deploy/app/dev
-deploy/app/dev: description = Deploy app to dev (minikube)
-deploy/app/dev: prereq util/k8s/context/dev
-	@bash $(SHARED_SCRIPT) info "Running $@ ..."
-	minikube status || minikube start
-	kubectl create namespace superpower --dry-run=client -o yaml | kubectl apply -f -
-	doppler secrets substitute -p superpower-app -c dev deployment/deploy.dev.yaml | \
-	sed "s/__VERSION__/$(VERSION)/g" | \
-	kubectl apply -f -
-	kubectl rollout restart deployment/react-app -n superpower
-
-.PHONY: deploy/app/stg
-deploy/app/stg: description = Deploy app to staging
-deploy/app/stg: prereq
-	K8S_CLUSTER=staging-cluster \
-	DOPPLER_PROJECT=superpower-app \
-	DOPPLER_CONFIG=stg \
-	DEPLOY_ENV=STG \
-	DEPLOY_CONFIG=deployment/deploy.app.yaml \
-	KSP_SERVICE=app \
-	python3 $(DEPLOY_SCRIPT) -r superpower-app -t deploy/hidden
-
-.PHONY: deploy/app/stg-scheduling
-deploy/app/stg-scheduling: description = Deploy app to stg-scheduling
-deploy/app/stg-scheduling: prereq
-	K8S_CLUSTER=staging-cluster \
-	DOPPLER_PROJECT=superpower-app \
-	DOPPLER_CONFIG=stg_scheduling \
-	DEPLOY_ENV=STG \
-	DEPLOY_CONFIG=deployment/deploy.app.stg-scheduling.yaml \
-	KSP_SERVICE=app \
-	KSP_NAMESPACE=stg-scheduling \
-	python3 $(DEPLOY_SCRIPT) -r superpower-app -t deploy/hidden
-
-.PHONY: deploy/app/stg-emr
-deploy/app/stg-emr: description = Deploy app to staging EMR
-deploy/app/stg-emr: prereq
-	K8S_CLUSTER=staging-cluster \
-	DOPPLER_PROJECT=superpower-app \
-	DOPPLER_CONFIG=stg_emr \
-	DEPLOY_ENV=STG-EMR \
-	DEPLOY_CONFIG=deployment/deploy.app-emr.yaml \
-	KSP_SERVICE=app \
-	python3 $(DEPLOY_SCRIPT) -r superpower-app -t deploy/hidden
-
-.PHONY: deploy/story/stg
-deploy/story/stg: description = Deploy story to staging
-deploy/story/stg: prereq
-	K8S_CLUSTER=staging-cluster \
-	DOPPLER_PROJECT=superpower-app \
-	DOPPLER_CONFIG=stg \
-	DEPLOY_ENV=STG \
-	DEPLOY_CONFIG=deployment/deploy.story.yaml \
-	KSP_SERVICE=story \
-	python3 $(DEPLOY_SCRIPT) -r superpower-app -t deploy/hidden
 
 .PHONY: deploy/app/prd
 deploy/app/prd: description = Deploy app to prd (production)
@@ -199,46 +65,6 @@ deploy/app/prd:
 	doppler run -p $(SERVICE) -c prd -- sh ./assets/scripts/deploy-app-cloudfront.sh
 	@bash $(SHARED_SCRIPT) info "Creating deployment notification in Slack ..."
 	@TARGET=$@ bash $(SHARED_SCRIPT) notify $(PRD_DEPLOYMENT_MSG)
-	doppler run -p $(SERVICE) -c prd -- sh ./assets/scripts/deploy-app-cloudfront.sh
-
-### Deploy (FEATURE)
-
-.PHONY: deploy/app/feature
-deploy/app/feature: description = Deploy app to feature environment
-deploy/app/feature: FEATURE_NAME ?= $(shell git branch --show-current | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]' | cut -c -44)
-deploy/app/feature: prereq
-	@echo "🚀 Deploying app feature: $(FEATURE_NAME)"
-	@echo "🔗 App URL: https://app-$(FEATURE_NAME).superpower-staging.com"
-	@echo "⏱️  Deployment typically takes ~2 minutes"
-	@kubectl create namespace superpower-feature-$(FEATURE_NAME) --dry-run=client -o yaml | kubectl apply -f - || true
-	K8S_CLUSTER=staging-cluster \
-	DOPPLER_PROJECT=superpower-app \
-	DOPPLER_CONFIG=stg \
-	DEPLOY_ENV=FEATURE \
-	DEPLOY_CONFIG=deployment/deploy.app.feature.yaml \
-	FEATURE_NAME=$(FEATURE_NAME) \
-	KSP_SERVICE=app \
-	python3 $(DEPLOY_SCRIPT) -r superpower-app -t deploy/feature/automated
-	@echo "✅ App deployment completed for feature: $(FEATURE_NAME)"
-
-.PHONY: cleanup/app/feature
-cleanup/app/feature: description = Clean up feature app environment
-cleanup/app/feature: FEATURE_NAME ?= $(shell git branch --show-current | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]' | cut -c -44)
-cleanup/app/feature: prereq
-	@echo "Cleaning up feature app environment: $(FEATURE_NAME)"
-	@if [ "$(FEATURE_NAME)" = "main" ]; then echo "❌ ERROR: Cannot cleanup main branch environment"; exit 1; fi
-	@if [ "$(FEATURE_NAME)" = "master" ]; then echo "❌ ERROR: Cannot cleanup master branch environment"; exit 1; fi
-	@if [ "$(FEATURE_NAME)" = "prod" ]; then echo "❌ ERROR: Cannot cleanup prod branch environment"; exit 1; fi
-	@if [ "$(FEATURE_NAME)" = "production" ]; then echo "❌ ERROR: Cannot cleanup production branch environment"; exit 1; fi
-	@if [ "$(FEATURE_NAME)" = "stg" ]; then echo "❌ ERROR: Cannot cleanup stg branch environment"; exit 1; fi
-	@if [ "$(FEATURE_NAME)" = "staging" ]; then echo "❌ ERROR: Cannot cleanup staging branch environment"; exit 1; fi
-	@if [ -z "$(FEATURE_NAME)" ]; then echo "❌ ERROR: Feature name is empty"; exit 1; fi
-	@if [ "$$(echo '$(FEATURE_NAME)' | wc -c)" -gt 50 ]; then echo "❌ ERROR: Feature name too long (max 50 chars)"; exit 1; fi
-	@echo "🔧 Setting kubectl context to staging cluster..."
-	aws eks update-kubeconfig --name staging-cluster --region $(AWS_REGION) || (echo "Failed to update kubeconfig" && exit 1)
-	@echo "🗑️  Deleting namespace: superpower-feature-$(FEATURE_NAME)"
-	kubectl delete namespace superpower-feature-$(FEATURE_NAME) --ignore-not-found=true
-	@echo "✅ Cleanup completed for feature: $(FEATURE_NAME)"
 
 ### Test
 
@@ -284,103 +110,7 @@ test/e2e: util/install
 
 ### Utility
 
-.PHONY: util/login-aws-ecr
-util/login-aws-ecr: description = Login to AWS ECR
-util/login-aws-ecr:
-	@bash $(SHARED_SCRIPT) info "Running $@ ..."
-	aws ecr get-login-password --region us-east-1 | \
-	docker login --username AWS --password-stdin $(AWS_ECR_URL)
-
-.PHONY: util/k8s/context/dev
-util/k8s/context/dev: description = Set K8S context to minikube
-util/k8s/context/dev:
-	@bash $(SHARED_SCRIPT) info "Running $@ ..."
-	kubectl config use-context minikube
-
-.PHONY: util/k8s/context/stg
-util/k8s/context/stg: description = Set K8S context to staging cluster
-util/k8s/context/stg:
-	@bash $(SHARED_SCRIPT) info "Running $@ ..."
-	aws eks update-kubeconfig --name staging-cluster --region $(AWS_REGION)
-
 .PHONY: util/install
 util/install: description = Fetch and install Node.js dependencies
 util/install:
 	bun install --frozen-lockfile
-
-.PHONY: util/dev/start
-util/dev/start: description = Start minikube
-util/dev/start:
-	minikube status || minikube start
-
-.PHONY: util/dev/stop
-util/dev/stop: description = Stop minikube
-util/dev/stop:
-	minikube status && minikube stop
-
-.PHONY: util/dev/reset
-util/dev/reset: description = Reset minikube (delete all imgs, pods, etc)
-util/dev/reset:
-	minikube status && minikube delete
-
-# ------------------- "Hidden" / non-public targets --------------------
-
-# Check if user is logged into Doppler
-.PHONY: check-doppler-token
-check-doppler-token:
-	@bash $(SHARED_SCRIPT) info "Checking Doppler token ..."
-	@if ! doppler configure get token > /dev/null 2>&1; then \
-    	bash $(SHARED_SCRIPT) fatal "Doppler is not configured. Please log in using 'doppler login'"; \
- 	fi
-
-# Check if any secrets are missing (ie. have 'no-value') in Doppler
-.PHONY: check-doppler-secrets
-check-doppler-secrets:
-	@bash $(SHARED_SCRIPT) info "Checking for missing secrets in $(DEPLOY_CONFIG) ..."
-	@if doppler secrets substitute -p $(SERVICE) -c $(DOPPLER_CONFIG) $(DEPLOY_CONFIG) | grep -B 1 "<no value>"; then \
-		bash $(SHARED_SCRIPT) fatal "Found missing secret(s) in '$(DEPLOY_CONFIG)'"; \
-	fi
-
-.PHONY: prereq
-prereq:
-	@bash $(SHARED_SCRIPT) info "Checking prerequisites ..."
-	@bash $(SHARED_SCRIPT) prereq
-
-.PHONY: debug/slack
-debug/slack:
-	@bash $(SHARED_SCRIPT) info "Sending a slack message ..."
-	@TARGET=$@ bash $(SHARED_SCRIPT) notify "This is a test message"
-
-.PHONY: debug/log
-debug/log:
-	@bash $(SHARED_SCRIPT) info "Installing tools ..."
-
-.PHONY: deploy/hidden
-deploy/hidden: prereq check-doppler-secrets
-	$(call check_defined, K8S_CLUSTER DOPPLER_PROJECT DOPPLER_CONFIG DEPLOY_CONFIG DEPLOY_ENV, Variable is not set)
-	@bash $(SHARED_SCRIPT) info "Performing K8S deployment to $(DEPLOY_ENV)..."
-	aws eks update-kubeconfig --name $(K8S_CLUSTER) --region $(AWS_REGION) || (echo "Failed to update kubeconfig" && exit 1)
-	@if [ "$(DEPLOY_ENV)" = "STG" ]; then \
-		bash $(SHARED_SCRIPT) notify $(STG_DEPLOYMENT_MSG); \
-	elif [ "$(DEPLOY_ENV)" = "PRD" ]; then \
-		bash $(SHARED_SCRIPT) notify $(PRD_DEPLOYMENT_MSG); \
-	fi
-	@bash $(SHARED_SCRIPT) info "Previous image: $(shell bash $(KSP_SCRIPT) image $(KSP_SERVICE))"
-	doppler secrets substitute -p $(DOPPLER_PROJECT) -c $(DOPPLER_CONFIG) $(DEPLOY_CONFIG) | \
-	sed "s/__VERSION__/$(VERSION)/g" | \
-	sed "s/__SERVICE__/$(SERVICE)/g" | \
-	sed "s/__AWS_ECR_URL__/$(AWS_ECR_URL)/g" | \
-	kubectl apply -f -
-
-.PHONY: deploy/feature/automated
-deploy/feature/automated: prereq
-	$(call check_defined, K8S_CLUSTER DOPPLER_PROJECT DOPPLER_CONFIG DEPLOY_CONFIG DEPLOY_ENV FEATURE_NAME, Variable is not set)
-	@bash $(SHARED_SCRIPT) info "Performing K8S deployment to $(DEPLOY_ENV) for feature: $(FEATURE_NAME)..."
-	aws eks update-kubeconfig --name $(K8S_CLUSTER) --region $(AWS_REGION) || (echo "Failed to update kubeconfig" && exit 1)
-	@echo "Deploying feature environment: https://app-$(FEATURE_NAME).superpower-staging.com"
-	cat $(DEPLOY_CONFIG) | \
-	sed "s/__VERSION__/$(VERSION)/g" | \
-	sed "s/__SERVICE__/$(SERVICE)/g" | \
-	sed "s/__AWS_ECR_URL__/$(AWS_ECR_URL)/g" | \
-	sed "s/__FEATURE_NAME__/$(FEATURE_NAME)/g" | \
-	kubectl apply -f -

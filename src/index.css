@@ -263,7 +263,12 @@
 
 /* Dune gradient styles */
 .dune-fade-mask {
-  -webkit-mask-image: linear-gradient(to top, transparent 0%, black 30%, black 100%);
+  -webkit-mask-image: linear-gradient(
+    to top,
+    transparent 0%,
+    black 30%,
+    black 100%
+  );
   mask-image: linear-gradient(to top, transparent 0%, black 30%, black 100%);
 }
 
@@ -281,7 +286,7 @@
 /* Color fade animation for token highlighting */
 @keyframes color-highlight {
   0% {
-    color: #FC5F2A; /* text-vermillion-900 */
+    color: #fc5f2a; /* text-vermillion-900 */
   }
   100% {
     color: hsl(var(--secondary)); /* text-secondary */

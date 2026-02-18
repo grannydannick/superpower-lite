@@ -4,7 +4,7 @@
  * This pulls the OpenAPI schema from the running ts-server
  * and generates type-safe client types for oRPC.
  *
- * Run with: yarn generate:orpc-types
+ * Run with: bun generate:orpc-types
  */
 import fs from 'node:fs';
 

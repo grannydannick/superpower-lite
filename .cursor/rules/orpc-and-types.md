@@ -139,7 +139,7 @@ When backend routes change, regenerate types:
 
 ```bash
 # In react-app workspace
-yarn generate:orpc-types
+bun generate:orpc-types
 ```
 
 ## Troubleshooting Type Issues
@@ -150,22 +150,22 @@ If you encounter type errors or mismatches, the first step is to regenerate the 
 
 ```bash
 # In react-app workspace
-yarn generate:orpc-types
+bun generate:orpc-types
 ```
 
 This command fetches the latest OpenAPI schema from the running ts-server and regenerates the TypeScript types.
 
 ### Step 2: Ensure ts-server is Running
 
-If `yarn generate:orpc-types` fails with a connection error, tell the user to ensure that ts-server is running and accessible at the expected URL. Do not try and start ts-server for them.
+If `bun generate:orpc-types` fails with a connection error, tell the user to ensure that ts-server is running and accessible at the expected URL. Do not try and start ts-server for them.
 
 The type generation command needs ts-server to be running because it fetches the OpenAPI schema from the `/rpc/openapi.json` endpoint.
 
 ### Common Type Issues
 
-1. **"Property does not exist on type"** → Run `yarn generate:orpc-types`
+1. **"Property does not exist on type"** → Run `bun generate:orpc-types`
 2. **"Type is not assignable"** → Backend schema changed, regenerate types
-3. **"Cannot find module '@/orpc/types.generated'"** → Run `yarn generate:orpc-types`
+3. **"Cannot find module '@/orpc/types.generated'"** → Run `bun generate:orpc-types`
 4. **Connection refused during type generation** → Tell the user to ensure that ts-server is running and accessible at the expected URL.
 
 ## Anti-Patterns (Don't Do This)

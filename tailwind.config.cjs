@@ -30,9 +30,11 @@ module.exports = {
     extend: {
       backgroundImage: {
         male: "url('/onboarding/shared/backgrounds/bg-male.webp')",
-        'female-face': "url('/onboarding/shared/backgrounds/bg-female-face.webp')",
+        'female-face':
+          "url('/onboarding/shared/backgrounds/bg-female-face.webp')",
         spine: "url('/onboarding/shared/backgrounds/bg-spine.webp')",
-        'female-hands': "url('/onboarding/shared/backgrounds/bg-female-hands.webp')",
+        'female-hands':
+          "url('/onboarding/shared/backgrounds/bg-female-hands.webp')",
         'baseline-membership': "url('/settings/membership/baseline.webp')",
         'advanced-membership': "url('/settings/membership/advanced.webp')",
         home: "url('/home/default.webp')",
