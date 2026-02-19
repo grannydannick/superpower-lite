@@ -1,6 +1,10 @@
+import { IconEditSmall1 } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconEditSmall1';
+import { IconMagnifyingGlass } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconMagnifyingGlass';
+import { IconSidebarSimpleLeftSquare } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconSidebarSimpleLeftSquare';
 import { isToday, isYesterday, subMonths, subWeeks } from 'date-fns';
-import { MoreHorizontalIcon, PanelLeft, Search, SquarePen } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { MoreHorizontalIcon } from 'lucide-react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
@@ -28,12 +32,19 @@ import { Chat } from '@/types/api';
 
 import { scrollToBottom } from '../../utils/scroll-to-bottom';
 
+import { ChatSearchCommand } from './chat-search-command';
+
 type GroupedChats = {
   today: Chat[];
   yesterday: Chat[];
   lastWeek: Chat[];
   lastMonth: Chat[];
   older: Chat[];
+};
+
+const sidebarItemVariants = {
+  open: { opacity: 1, filter: 'blur(0px)', transition: { duration: 0.25 } },
+  closed: { opacity: 0, filter: 'blur(2px)', transition: { duration: 0.15 } },
 };
 
 const ChatItem = ({ chat, isActive }: { chat: Chat; isActive: boolean }) => {
@@ -83,7 +94,7 @@ const ChatItem = ({ chat, isActive }: { chat: Chat; isActive: boolean }) => {
           <span className="sr-only">More</span>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent side="bottom" align="end">
+        <DropdownMenuContent side="bottom" align="end" className="z-[60]">
           <DropdownMenuItem
             className="cursor-pointer text-pink-700 focus:bg-pink-50 focus:text-pink-700"
             onSelect={() => {
@@ -108,14 +119,8 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
   const navigate = useNavigate();
   const { data: history, isLoading } = useHistory();
 
-  const [search, setSearch] = useState('');
   const [isOpen, setIsOpen] = useState(true);
-
-  const filteredChats = useMemo(() => {
-    return history?.filter((chat) =>
-      chat.title.toLowerCase().includes(search.toLowerCase()),
-    );
-  }, [history, search]);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   if (isLoading) {
     return <LoadingChatItem />;
@@ -165,71 +170,184 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
   return (
     <>
       {(() => {
-        const groupedChats = groupChatsByDate(filteredChats || []);
+        const groupedChats = groupChatsByDate(history || []);
 
         return (
-          <div className={cn('xl:w-full xl:max-w-[259px]')}>
-            <div
-              className={cn(
-                'relative transition-all duration-500 ease-in-out',
-                isOpen ? 'w-full lg:max-w-[259px]' : 'max-w-0 w-full',
-              )}
-            >
-              <div
-                className={cn(
-                  'absolute top-1 hidden items-center gap-2 transition-all duration-500 lg:flex',
-                  isOpen ? 'xl:right-0 -right-4' : '-right-14',
+          <div
+            className={cn(
+              'relative lg:shrink-0 lg:transition-[max-width] lg:duration-500 lg:ease-in-out',
+              isOpen ? 'lg:max-w-[259px]' : 'lg:max-w-10',
+            )}
+          >
+            {/* Collapsed icon bar */}
+            <div className="absolute left-0 top-0 hidden w-10 flex-col items-center gap-3 pt-1 lg:flex">
+              <AnimatePresence>
+                {!isOpen && (
+                  <>
+                    <motion.div
+                      key="sidebar-toggle"
+                      initial={{ opacity: 0, filter: 'blur(2px)' }}
+                      animate={{ opacity: 1, filter: 'blur(0px)' }}
+                      exit={{ opacity: 0, transition: { duration: 0 } }}
+                      transition={{ duration: 0.25, delay: 0.15 }}
+                    >
+                      <TooltipProvider delayDuration={0}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="rounded-md p-1 text-zinc-400 hover:text-zinc-700"
+                              onClick={() => setIsOpen(true)}
+                            >
+                              <IconSidebarSimpleLeftSquare
+                                size={16}
+                                className="[&_path]:stroke-2"
+                              />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="right">
+                            Show Sidebar
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </motion.div>
+                    <motion.div
+                      key="new-chat"
+                      initial={{ opacity: 0, filter: 'blur(2px)' }}
+                      animate={{ opacity: 1, filter: 'blur(0px)' }}
+                      exit={{ opacity: 0, transition: { duration: 0 } }}
+                      transition={{ duration: 0.25, delay: 0.2 }}
+                    >
+                      <TooltipProvider delayDuration={0}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              disabled={!id}
+                              className="rounded-md p-1 text-zinc-400 hover:text-zinc-700"
+                              onClick={() => navigate('/concierge')}
+                            >
+                              <IconEditSmall1
+                                size={16}
+                                className="[&_path]:stroke-2"
+                              />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="right">New Chat</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </motion.div>
+                    <motion.div
+                      key="care-team"
+                      initial={{ opacity: 0, filter: 'blur(2px)' }}
+                      animate={{ opacity: 1, filter: 'blur(0px)' }}
+                      exit={{ opacity: 0, transition: { duration: 0 } }}
+                      transition={{ duration: 0.25, delay: 0.25 }}
+                    >
+                      <TooltipProvider delayDuration={0}>
+                        <Tooltip>
+                          <CareTeamDialog
+                            trigger={
+                              <TooltipTrigger asChild>
+                                <button className="rounded-full transition-opacity hover:opacity-80">
+                                  <img
+                                    className="size-5 rounded-full object-cover"
+                                    src="/services/doctors/doc_1.webp"
+                                    alt="Text Care Team"
+                                  />
+                                </button>
+                              </TooltipTrigger>
+                            }
+                          />
+                          <TooltipContent side="right">
+                            Text Care Team
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </motion.div>
+                    <motion.div
+                      key="search"
+                      initial={{ opacity: 0, filter: 'blur(2px)' }}
+                      animate={{ opacity: 1, filter: 'blur(0px)' }}
+                      exit={{ opacity: 0, transition: { duration: 0 } }}
+                      transition={{ duration: 0.25, delay: 0.3 }}
+                    >
+                      <TooltipProvider delayDuration={0}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="rounded-md p-1 text-zinc-400 hover:text-zinc-700"
+                              onClick={() => setSearchOpen(true)}
+                            >
+                              <IconMagnifyingGlass
+                                size={16}
+                                className="[&_path]:stroke-2"
+                              />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="right">
+                            Search (⌘K)
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </motion.div>
+                  </>
                 )}
-              >
-                <TooltipProvider delayDuration={0}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        disabled={!id}
-                        className={cn(
-                          'rounded-md p-1 text-zinc-400 transition-all hover:text-zinc-700',
-                          isOpen
-                            ? 'pointer-events-none hidden opacity-0'
-                            : 'opacity-100',
-                        )}
-                        onClick={() => navigate('/concierge')}
-                      >
-                        <SquarePen size={15} />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>New Chat</TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="rounded-md p-1 text-zinc-400 hover:text-zinc-700"
-                        onClick={() => setIsOpen(!isOpen)}
-                      >
-                        <AnimatedSidebarButton isSidebarOpen={isOpen} />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      {isOpen ? 'Hide Sidebar' : 'Show Sidebar'}
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-              <div
-                className={cn(
-                  'flex w-full flex-col overflow-hidden transition-all duration-500 ease-in-out',
-                  className,
-                  !isOpen
-                    ? 'opacity-0 md:max-w-0'
-                    : 'opacity-100 lg:max-w-[259px]',
-                )}
-              >
-                <H3 className="mb-4">Concierge</H3>
+              </AnimatePresence>
+            </div>
 
-                <div className="flex flex-col">
+            {/* Full sidebar - wrapped in overflow-hidden so tooltips on collapsed bar aren't clipped */}
+            <div className="lg:overflow-hidden lg:-ml-3.5">
+              <motion.div
+                animate={isOpen ? 'open' : 'closed'}
+                initial={false}
+                variants={{
+                  open: {
+                    transition: { staggerChildren: 0.05, delayChildren: 0.1 },
+                  },
+                  closed: { transition: { duration: 0.15 } },
+                }}
+                className={cn(
+                  'flex w-full flex-col lg:w-[259px]',
+                  className,
+                  !isOpen && 'lg:pointer-events-none',
+                )}
+              >
+                <motion.div
+                  variants={sidebarItemVariants}
+                  className="mb-4 pl-3.5 flex items-center justify-between"
+                >
+                  <H3>Concierge</H3>
+                  <div className="hidden lg:block">
+                    <TooltipProvider delayDuration={0}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="rounded-md p-1 text-zinc-400 hover:text-zinc-700"
+                            onClick={() => setIsOpen(false)}
+                          >
+                            <IconSidebarSimpleLeftSquare
+                              size={16}
+                              className="[&_path]:stroke-2"
+                            />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Hide Sidebar</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  variants={sidebarItemVariants}
+                  className="flex flex-col"
+                >
                   <Button
                     variant="ghost"
                     size="medium"
@@ -238,7 +356,7 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
                       navigate('/concierge');
                     }}
                   >
-                    <SquarePen size={15} />
+                    <IconEditSmall1 size={16} className="[&_path]:stroke-2" />
                     New Chat
                   </Button>
                   <CareTeamDialog
@@ -257,27 +375,21 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
                       </Button>
                     }
                   />
-                  <div
-                    className={cn(
-                      'flex items-center gap-2 px-3 py-2 rounded-xl transition-colors duration-200',
-                      search && 'bg-zinc-100',
-                    )}
+                  <Button
+                    variant="ghost"
+                    size="medium"
+                    className="justify-start gap-2 px-3 py-2 text-secondary"
+                    onClick={() => setSearchOpen(true)}
                   >
-                    <Search
-                      size={15}
-                      className="shrink-0 -translate-y-px text-secondary"
+                    <IconMagnifyingGlass
+                      size={16}
+                      className="[&_path]:stroke-2"
                     />
-                    <input
-                      type="text"
-                      placeholder="Search..."
-                      className="w-full border-none bg-transparent text-sm text-secondary outline-none placeholder:text-secondary"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                    />
-                  </div>
-                </div>
+                    Search
+                  </Button>
+                </motion.div>
 
-                <div className="relative">
+                <motion.div variants={sidebarItemVariants} className="relative">
                   <div className="pointer-events-none absolute top-0 z-10 h-6 w-full bg-gradient-to-t from-transparent to-zinc-50" />
                   <div className="pointer-events-none absolute bottom-0 z-10 h-6 w-full bg-gradient-to-b from-transparent to-zinc-50" />
                   <div className="scrollbar-w-1.5 flex max-h-[calc(100vh-16rem)] flex-col gap-4 overflow-y-scroll px-px py-6 scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300 hover:scrollbar-thumb-zinc-400">
@@ -352,50 +464,16 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
                       </div>
                     )}
                   </div>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             </div>
           </div>
         );
       })()}
+      <ChatSearchCommand open={searchOpen} onOpenChange={setSearchOpen} />
     </>
   );
 }
-
-const AnimatedSidebarButton = ({
-  isSidebarOpen,
-}: {
-  isSidebarOpen: boolean;
-}) => {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M12.6667 2H3.33333C2.59695 2 2 2.59695 2 3.33333V12.6667C2 13.403 2.59695 14 3.33333 14H12.6667C13.403 14 14 13.403 14 12.6667V3.33333C14 2.59695 13.403 2 12.6667 2Z"
-        stroke="currentColor"
-        strokeWidth="1.33333"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M6 2V8V14"
-        stroke="currentColor"
-        strokeWidth="1.33333"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={cn(
-          'transition-transform delay-200 duration-500 ease-in-out',
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-1 opacity-0',
-        )}
-      />
-    </svg>
-  );
-};
 
 const LoadingChatItem = () => {
   return (
@@ -431,9 +509,12 @@ export const ChatHistory = () => {
         <div className="flex w-full items-center gap-4 pt-4">
           <div className="flex items-center gap-4">
             <SheetTrigger>
-              <PanelLeft size={24} className="text-zinc-400" />
+              <IconSidebarSimpleLeftSquare
+                size={20}
+                className="text-zinc-400 [&_path]:stroke-2"
+              />
             </SheetTrigger>
-            <H3>Concierge</H3>
+            <H3 className="mt-0.5">Concierge</H3>
           </div>
         </div>
         <SheetContent
