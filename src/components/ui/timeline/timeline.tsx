@@ -2,7 +2,7 @@ import { cva, VariantProps } from 'class-variance-authority';
 import { CircleAlert, CircleCheck, PlusIcon } from 'lucide-react';
 import * as React from 'react';
 import { ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { LockIcon } from '@/components/icons';
 import { Body1, Body2 } from '@/components/ui/typography';
@@ -43,7 +43,7 @@ const TimelineConnector = React.forwardRef<
         ...props.style,
       }}
       className={cn(
-        'absolute transition-all duration-500 top-[48px] left-[10px] h-full -translate-x-1/2 translate-y-2 w-px bg-[linear-gradient(#d4d4d8_33%,_transparent_0%)] bg-right bg-repeat-y bg-[length:1px_5px] animate-timeline-flow hidden md:block',
+        'absolute left-[10px] top-[48px] hidden h-full w-px -translate-x-1/2 translate-y-2 animate-timeline-flow bg-[linear-gradient(#d4d4d8_33%,_transparent_0%)] bg-[length:1px_5px] bg-right bg-repeat-y transition-all duration-500 md:block',
         className,
       )}
       {...props}
@@ -112,14 +112,15 @@ type TimelineDotVariant =
   | 'action_required';
 
 interface TimelineDotProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof timelineDotVariants> {
   customIcon?: React.ReactNode;
 }
 
 const TimelineDot = React.forwardRef<HTMLDivElement, TimelineDotProps>(
   ({ className, status, customIcon, ...props }, ref) => (
-    <div className={cn('z-[1] py-2 backdrop-blur bg-white')}>
+    <div className={cn('z-[1] bg-white py-2 backdrop-blur')}>
       <div
         role="status"
         className={cn(
@@ -158,7 +159,8 @@ const timelineCardVariants = cva(
 );
 
 interface TimelineCardProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof timelineCardVariants> {
   image: string;
   title: string;
@@ -264,7 +266,7 @@ const TimelineLabel = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'flex flex-col items-start px-6 sm:px-12 text-zinc-500 sm:text-base text-sm',
+      'flex flex-col items-start px-6 text-sm text-zinc-500 sm:px-12 sm:text-base',
       className,
     )}
     {...props}

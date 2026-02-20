@@ -12,7 +12,7 @@ export const CopyToClipboard: React.FC<{
     <>
       <button
         className={cn(
-          'p-0.5 border dark:border-neutral-800 rounded-md backdrop-blur-2xl hover:bg-zinc-100 transition-all',
+          'rounded-md border p-0.5 backdrop-blur-2xl transition-all hover:bg-zinc-100 dark:border-neutral-800',
           className,
         )}
         onClick={() => {

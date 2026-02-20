@@ -7,7 +7,7 @@ export const OnboardingCard = () => {
   return (
     <motion.div
       className={cn(
-        'relative aspect-[16/9] shadow-2xl h-56 w-96 overflow-hidden rounded-2xl bg-cover bg-center outline outline-1 -outline-offset-1 outline-white/20 bg-[url("/onboarding/shared/backgrounds/card-organic-bg.webp")]',
+        'relative aspect-[16/9] h-56 w-96 overflow-hidden rounded-2xl bg-[url("/onboarding/shared/backgrounds/card-organic-bg.webp")] bg-cover bg-center shadow-2xl outline outline-1 -outline-offset-1 outline-white/20',
       )}
       initial={{ rotate: 0, scale: 0.7, opacity: 0, filter: 'blur(2px)' }}
       animate={{

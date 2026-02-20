@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 
 import { NotFoundRoute } from '@/app/routes/not-found';
 import { Spinner } from '@/components/ui/spinner';

@@ -1,5 +1,5 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React, { Fragment } from 'react';
+import { useParams } from 'react-router';
 
 import { Body2, Body3, H2, H4, Mono } from '@/components/ui/typography';
 import { AiSuggestions } from '@/features/messages/components/ai-suggestions';
@@ -99,14 +99,13 @@ export function ProtocolGoal({
             <H4>Biomarkers to improve:</H4>
             <div className="divide-y divide-zinc-200 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
               {goal.targetBiomarkerIds.map((id) => (
-                <>
+                <Fragment key={id}>
                   <div className="relative z-10 mx-auto -mt-px h-px w-[calc(100%-2rem)] bg-zinc-200" />
                   <ProtocolGoalObservation
-                    key={id}
                     id={id}
                     className="rounded-none border-none shadow-none first:rounded-t-2xl last:rounded-b-2xl"
                   />
-                </>
+                </Fragment>
               ))}
             </div>
           </div>

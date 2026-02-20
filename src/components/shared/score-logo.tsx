@@ -63,7 +63,7 @@ export const SuperpowerScoreLogo = ({
   logoColor?: string;
 }) => {
   return (
-    <div className={cn('flex gap-1 py-2 max-w-fit', className)}>
+    <div className={cn('flex max-w-fit gap-1 py-2', className)}>
       <SuperpowerLogo fill={logoColor} />
       <ScoreLogo fill={logoColor} />
     </div>

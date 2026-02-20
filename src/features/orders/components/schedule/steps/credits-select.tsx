@@ -1,6 +1,6 @@
 import { Info } from 'lucide-react';
 import React, { useCallback, useMemo } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router';
 
 import { SelectableCard } from '@/components/shared/selectable-card';
 import { Badge } from '@/components/ui/badge';

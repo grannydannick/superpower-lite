@@ -5,7 +5,7 @@ import { isToday, isYesterday, subMonths, subWeeks } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MoreHorizontalIcon } from 'lucide-react';
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -66,7 +66,7 @@ const ChatItem = ({ chat, isActive }: { chat: Chat; isActive: boolean }) => {
       to={`/concierge/${chat.id}`}
       preventScrollReset
       className={cn(
-        'group flex w-full rounded-xl justify-between gap-2 transition-all duration-200 ease-out px-4 py-2.5',
+        'group flex w-full justify-between gap-2 rounded-xl px-4 py-2.5 transition-all duration-200 ease-out',
         isActive ? 'bg-zinc-200/60' : 'hover:bg-zinc-100',
       )}
       onClick={() => {
@@ -301,7 +301,7 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
             </div>
 
             {/* Full sidebar - wrapped in overflow-hidden so tooltips on collapsed bar aren't clipped */}
-            <div className="lg:overflow-hidden lg:-ml-3.5">
+            <div className="lg:-ml-3.5 lg:overflow-hidden">
               <motion.div
                 animate={isOpen ? 'open' : 'closed'}
                 initial={false}
@@ -319,7 +319,7 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
               >
                 <motion.div
                   variants={sidebarItemVariants}
-                  className="mb-4 pl-3.5 flex items-center justify-between"
+                  className="mb-4 flex items-center justify-between pl-3.5"
                 >
                   <H3>Concierge</H3>
                   <div className="hidden lg:block">

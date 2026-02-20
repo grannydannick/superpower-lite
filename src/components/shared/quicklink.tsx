@@ -42,7 +42,7 @@ const QuickLink = forwardRef<
         className={cn(
           'group relative z-0 overflow-y-auto rounded-xl border border-zinc-200 p-4 shadow-md shadow-black/[.02] transition-colors',
           disabled
-            ? 'cursor-not-allowed animate-pulse'
+            ? 'animate-pulse cursor-not-allowed'
             : 'cursor-pointer hover:bg-zinc-50',
           title && 'pt-12',
           className,

@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 
 import { cn } from '@/lib/utils';
 
@@ -213,9 +213,9 @@ const TabsTrigger = forwardRef<
     ref={ref}
     className={cn(
       'relative z-10 inline-flex items-center justify-center whitespace-nowrap rounded-full px-4 py-1.5 text-base font-medium transition-all duration-200',
-      'gap-2 text-secondary hover:text-primary data-[state=active]:text-primary',
-      'disabled:pointer-events-none disabled:text-secondary/60 disabled:hover:text-secondary/60 disabled:opacity-70',
-      'data-[disabled]:pointer-events-none data-[disabled]:text-secondary/60 data-[disabled]:hover:text-secondary/60 data-[disabled]:opacity-70',
+      'gap-2 text-secondary data-[state=active]:text-primary hover:text-primary',
+      'disabled:pointer-events-none disabled:text-secondary/60 disabled:opacity-70 disabled:hover:text-secondary/60',
+      'data-[disabled]:pointer-events-none data-[disabled]:text-secondary/60 data-[disabled]:opacity-70 data-[disabled]:hover:text-secondary/60',
       className,
     )}
     {...props}
@@ -234,7 +234,7 @@ const TabsContent = forwardRef<
     className={cn(
       'ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
       'data-[state=inactive]:hidden',
-      'data-[state=active]:animate-in data-[state=active]:fade-in data-[state=active]:duration-150',
+      'data-[state=active]:duration-150 data-[state=active]:animate-in data-[state=active]:fade-in',
       className,
     )}
     {...props}

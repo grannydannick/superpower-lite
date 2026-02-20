@@ -251,7 +251,7 @@ const UpdateInfoContent = () => {
                         >
                           <SelectTrigger
                             className={cn(
-                              ` px-6 py-4`,
+                              `px-6 py-4`,
                               field.value
                                 ? 'text-primary'
                                 : fieldState.error
@@ -329,7 +329,7 @@ const UpdateInfoContent = () => {
                     strokeWidth={2}
                     className="shrink-0 text-vermillion-900"
                   />
-                  <Body2 className=" text-zinc-700">{feature}</Body2>
+                  <Body2 className="text-zinc-700">{feature}</Body2>
                 </motion.div>
               ))}
               <motion.div variants={checklistItem}>

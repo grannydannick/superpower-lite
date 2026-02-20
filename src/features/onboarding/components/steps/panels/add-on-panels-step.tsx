@@ -140,8 +140,8 @@ const TestCard = ({
         className={cn(
           'absolute -bottom-1 -right-1 flex size-8 items-center justify-center rounded-full border shadow-md transition-colors',
           isSelected
-            ? 'bg-zinc-950 text-white border-zinc-800'
-            : 'bg-white text-zinc-900 hover:bg-zinc-50 border-white',
+            ? 'border-zinc-800 bg-zinc-950 text-white'
+            : 'border-white bg-white text-zinc-900 hover:bg-zinc-50',
           disabled && 'cursor-not-allowed opacity-50',
         )}
         aria-label={isSelected ? 'Remove from cart' : 'Add to cart'}

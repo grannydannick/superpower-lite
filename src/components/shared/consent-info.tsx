@@ -12,7 +12,7 @@ export const ConsentInfo = forwardRef<
       {...props}
       ref={ref}
       className={cn(
-        'text-sm leading-5 text-zinc-500 cursor-pointer',
+        'cursor-pointer text-sm leading-5 text-zinc-500',
         className,
       )}
     >

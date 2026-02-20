@@ -49,13 +49,13 @@ export const MembershipCard = (): JSX.Element => {
   return (
     <div
       className={cn(
-        `flex items-center justify-center w-full lg:max-w-[450px] mx-auto`,
+        `mx-auto flex w-full items-center justify-center lg:max-w-[450px]`,
         !isActive && !isLoading && 'opacity-50',
       )}
     >
       <Hover3D
         className={cn(
-          'aspect-[5/3.15] max-w-[calc(100vw-4rem)] bg-cover flex flex-col justify-between w-full md:h-72 p-6 rounded-xl md:rounded-2xl border border-white/10',
+          'flex aspect-[5/3.15] w-full max-w-[calc(100vw-4rem)] flex-col justify-between rounded-xl border border-white/10 bg-cover p-6 md:h-72 md:rounded-2xl',
           membershipCardVariants({
             isActive,
             isLoading,

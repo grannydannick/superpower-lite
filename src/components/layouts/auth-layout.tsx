@@ -44,7 +44,7 @@ export const AuthLayout = ({ children, title, progress }: LayoutProps) => {
       <Head title={title} />
       <div
         className={cn(
-          'relative w-full flex flex-col',
+          'relative flex w-full flex-col',
           'md:min-h-screen md:items-center md:justify-center',
         )}
       >

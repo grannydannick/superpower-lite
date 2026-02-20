@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { Spinner } from '@/components/ui/spinner';
 import { OnboardingFlow } from '@/features/onboarding/components/flow/onboarding-flow';

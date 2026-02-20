@@ -82,7 +82,7 @@ export const GaugeChart = ({
   return (
     <div
       className={cn(
-        'relative w-full max-w-[250px] max-h-[250px] mb-7',
+        'relative mb-7 max-h-[250px] w-full max-w-[250px]',
         className,
       )}
     >

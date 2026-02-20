@@ -136,7 +136,7 @@ export const OrderInvoiceContent = ({
             <TableRow className="border-b hover:bg-transparent" key={index}>
               <TableCell className="hidden py-3 pl-0 sm:table-cell" />
               <TableCell className="hidden py-3 sm:table-cell" />
-              <TableCell className="px-0 py-3  md:px-4">
+              <TableCell className="px-0 py-3 md:px-4">
                 {invoiceQuery.isPending ? (
                   <Skeleton className="h-6 w-full" />
                 ) : (

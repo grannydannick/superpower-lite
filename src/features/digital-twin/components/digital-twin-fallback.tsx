@@ -13,7 +13,7 @@ export const DigitalTwinFallback = ({
   return (
     <div
       className={cn(
-        'w-full h-[28rem] md:mt-0 -mt-12 md:[@media(max-height:800px)]:h-[48rem] md:h-[80vh] md:max-h-[56rem] flex items-center justify-center',
+        '-mt-12 flex h-[28rem] w-full items-center justify-center md:mt-0 md:h-[80vh] md:max-h-[56rem] md:[@media(max-height:800px)]:h-[48rem]',
         className,
       )}
     >

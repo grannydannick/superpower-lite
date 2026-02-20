@@ -13,14 +13,14 @@ const FilesSearch = forwardRef<HTMLInputElement, FilesSearchProps>(
     return (
       <div
         className={cn(
-          'flex w-full md:max-w-[278px] flex-col gap-3',
+          'flex w-full flex-col gap-3 md:max-w-[278px]',
           props.className,
         )}
       >
         <div className="relative w-full">
           <SearchIcon
             className={cn(
-              'absolute top-1/2 transform -translate-y-1/2 size-4 text-zinc-400 peer-focus:text-zinc-900',
+              'absolute top-1/2 size-4 -translate-y-1/2 transform text-zinc-400 peer-focus:text-zinc-900',
               'left-4',
             )}
           />

@@ -174,10 +174,10 @@ const DatetimeGrid = forwardRef<
     return (
       <div
         className={cn(
-          'flex items-center px-6 py-4 border rounded-xl gap-1 selection:bg-transparent selection:text-foreground',
+          'flex items-center gap-1 rounded-xl border px-6 py-4 selection:bg-transparent selection:text-foreground',
           variant === 'error'
-            ? 'border-pink-700 bg-pink-50 focus-within:ring-1 focus-within:ring-pink-700 transition-none duration-0'
-            : 'border-input bg-white shadow-sm focus-within:ring-2 focus-within:ring-ring  transition-[box-shadow] duration-150',
+            ? 'border-pink-700 bg-pink-50 transition-none duration-0 focus-within:ring-1 focus-within:ring-pink-700'
+            : 'border-input bg-white shadow-sm transition-[box-shadow] duration-150 focus-within:ring-2 focus-within:ring-ring',
           className,
         )}
         ref={ref}
@@ -193,10 +193,10 @@ const DatetimeGrid = forwardRef<
                     : yearRef
               }
               className={cn(
-                'p-0 inline h-fit shadow-none border-none outline-none select-none content-box focus-visible:bg-zinc-100 rounded-sm w-full text-center focus-visible:ring-0 focus-visible:outline-none min-w-8',
+                'content-box inline h-fit w-full min-w-8 select-none rounded-sm border-none p-0 text-center shadow-none outline-none focus-visible:bg-zinc-100 focus-visible:outline-none focus-visible:ring-0',
                 { 'min-w-12': unit === 'years' },
                 variant === 'error' &&
-                  'bg-transparent focus-visible:!bg-transparent placeholder:text-pink-700 transition-none duration-0',
+                  'bg-transparent transition-none duration-0 placeholder:text-pink-700 focus-visible:!bg-transparent',
               )}
               inputMode="numeric"
               value={values[unit]}

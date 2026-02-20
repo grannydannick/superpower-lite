@@ -58,7 +58,7 @@ export const AgeShareCard = ({
         <div className="flex flex-col items-center">
           <div
             className={cn(
-              'relative animate-in overflow-hidden zoom-in-95 flex w-64 flex-col',
+              'relative flex w-64 flex-col overflow-hidden animate-in zoom-in-95',
               cardVariants({ type: 'ageCard' }),
             )}
           >
@@ -66,7 +66,7 @@ export const AgeShareCard = ({
               <div className="flex size-full items-start justify-end gap-4 p-1">
                 <H4
                   className={cn(
-                    'text-white absolute transition-all duration-300 text-center truncate',
+                    'absolute truncate text-center text-white transition-all duration-300',
                     showAge ? 'left-2' : 'left-1/2 -translate-x-1/2',
                   )}
                 >
@@ -74,9 +74,9 @@ export const AgeShareCard = ({
                 </H4>
                 <span
                   className={cn(
-                    'mr-1 text-3xl transition-all text-white overflow-hidden text-ellipsis',
+                    'mr-1 overflow-hidden text-ellipsis text-3xl text-white transition-all',
                     !showAge
-                      ? 'max-w-0 opacity-0 -mr-4'
+                      ? '-mr-4 max-w-0 opacity-0'
                       : 'max-w-16 opacity-100',
                   )}
                 >
@@ -119,7 +119,7 @@ export const AgeShareCard = ({
       >
         <Body1
           className={cn(
-            'text-zinc-400 text-sm group-hover:text-zinc-500 transition-colors duration-200',
+            'text-sm text-zinc-400 transition-colors duration-200 group-hover:text-zinc-500',
             !showAge && 'text-zinc-500',
           )}
         >

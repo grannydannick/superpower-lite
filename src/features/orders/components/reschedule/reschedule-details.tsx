@@ -202,7 +202,7 @@ const Pill = ({
 }) => (
   <div
     className={cn(
-      'rounded-lg bg-vermillion-100 py-[3px] pl-1.5 pr-2 mix-blend-multiply w-fit',
+      'w-fit rounded-lg bg-vermillion-100 py-[3px] pl-1.5 pr-2 mix-blend-multiply',
       className,
     )}
   >

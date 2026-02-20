@@ -6,7 +6,7 @@ import {
   subWeeks,
 } from 'date-fns';
 import { useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import {
   Command,
@@ -113,7 +113,7 @@ export function ChatSearchCommand({
       <DialogOverlay className="z-[60]" />
       <DialogContent
         isStacked
-        className="z-[60] rounded-[14px] overflow-hidden md:max-w-3xl max-w-[calc(100%-1rem)] p-0 shadow-lg"
+        className="z-[60] max-w-[calc(100%-1rem)] overflow-hidden rounded-[14px] p-0 shadow-lg md:max-w-3xl"
       >
         <Command className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:size-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:size-5">
           <CommandInput placeholder="Search conversations..." />

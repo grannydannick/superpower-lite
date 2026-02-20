@@ -55,7 +55,7 @@ export const CardInfo = ({ className }: { className?: string }) => {
   return (
     <div
       className={cn(
-        'space-y-2 lg:space-y-4 rounded-[20px] border p-4 shadow-sm bg-white w-full',
+        'w-full space-y-2 rounded-[20px] border bg-white p-4 shadow-sm lg:space-y-4',
         className,
       )}
     >

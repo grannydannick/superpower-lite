@@ -85,7 +85,7 @@ export function RadioButtons({
         {formattedOptions.map(([optionName, optionValue], index) => (
           <div
             className={cn(
-              'flex items-center relative space-x-1 rounded-xl bg-white hover:bg-zinc-50 overflow-hidden transition-all outline-none ring-0 focus-visible:ring-2 focus-visible:ring-secondary py-4',
+              'relative flex items-center space-x-1 overflow-hidden rounded-xl bg-white py-4 outline-none ring-0 transition-all hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-secondary',
               selectedAnswer === optionValue.value && 'ring-2 ring-black',
             )}
             data-radio-group={item.linkId}

@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { AnimatedTimeline } from '@/components/ui/animated-timeline';
 import { Button } from '@/components/ui/button';

@@ -18,7 +18,7 @@ export const FloatingLogDebug = ({
 
   const copy = () => navigator.clipboard?.writeText(pretty).catch(() => {});
 
-  if (process.env.NODE_ENV !== 'development' && !isAdmin) return null;
+  if (!import.meta.env.DEV && !isAdmin) return null;
 
   return (
     <div className="pointer-events-auto absolute bottom-5 left-5 z-50 w-[min(36rem,90vw)] text-xs">

@@ -1,4 +1,4 @@
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 
 import { Button } from '@/components/ui/button';
 import { URLTabs, TabsContent } from '@/components/ui/slider-tabs';
@@ -47,7 +47,7 @@ export const OrdersRoute = () => {
                   size={isMobile ? 'small' : 'medium'}
                   variant={isActive ? 'default' : 'outline'}
                   className={cn(
-                    'shrink-0 whitespace-nowrap rounded-full py-2.5 border shadow-none transition-colors',
+                    'shrink-0 whitespace-nowrap rounded-full border py-2.5 shadow-none transition-colors',
                     isActive ? 'border-primary' : 'border-input text-secondary',
                   )}
                   aria-pressed={isActive}

@@ -21,7 +21,7 @@ export function TextShimmer({
   // Memoize to prevent creating new component reference on every render
   // which would cause React to unmount/remount and reset the animation
   const MotionComponent = useMemo(
-    () => motion(Component as keyof JSX.IntrinsicElements),
+    () => motion.create(Component as keyof JSX.IntrinsicElements),
     [Component],
   );
 

@@ -16,7 +16,7 @@ export const BackButton = ({ className }: BackButtonProps) => {
       type="button"
       onClick={back}
       className={cn(
-        'group flex self-start items-center gap-1 text-zinc-500 transition-colors hover:text-zinc-700',
+        'group flex items-center gap-1 self-start text-zinc-500 transition-colors hover:text-zinc-700',
         className,
       )}
       aria-label="Go back"

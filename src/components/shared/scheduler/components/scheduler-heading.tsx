@@ -1,7 +1,7 @@
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import moment from 'moment-timezone';
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';

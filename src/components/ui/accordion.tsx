@@ -35,7 +35,7 @@ const AccordionTrigger = React.forwardRef<
         className={cn(
           'group flex flex-1 cursor-pointer items-center justify-between py-4 text-left font-medium transition-all',
           variant === 'plusMinus'
-            ? '[&>span>svg:last-child]:absolute [&>span>svg:last-child]:opacity-0 [&>span>svg:last-child]:rotate-90 [&>span>svg]:transition-all [&>span>svg]:duration-250 [&>span>svg]:ease-in-out [&[data-state=open]>span>svg:first-child]:-rotate-90 [&[data-state=open]>span>svg:first-child]:opacity-0 [&[data-state=open]>span>svg:last-child]:opacity-100 [&[data-state=open]>span>svg:last-child]:rotate-0'
+            ? '[&>span>svg]:duration-250 [&>span>svg:last-child]:absolute [&>span>svg:last-child]:rotate-90 [&>span>svg:last-child]:opacity-0 [&>span>svg]:transition-all [&>span>svg]:ease-in-out [&[data-state=open]>span>svg:first-child]:-rotate-90 [&[data-state=open]>span>svg:first-child]:opacity-0 [&[data-state=open]>span>svg:last-child]:rotate-0 [&[data-state=open]>span>svg:last-child]:opacity-100'
             : '[&[data-state=open]>svg]:rotate-180',
           className,
         )}

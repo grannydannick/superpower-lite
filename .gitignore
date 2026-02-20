@@ -8,10 +8,6 @@
 # testing
 /coverage
 /test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
-/e2e/.auth/
 
 # storybook
 migration-storybook.log
@@ -40,9 +36,7 @@ mocked-db.json
 
 .idea
 
-# vscode
-.vscode/settings.json
-
 # cursor
 .cursor/plans/
 .vercel
+.env*.local

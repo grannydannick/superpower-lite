@@ -99,7 +99,7 @@ export const BiomarkersAccordion = ({
             '[&_tr]:after:h-px [&_tr]:after:w-full [&_tr]:after:bg-zinc-200',
             "[&_tr]:after:content-[''] [&_tr]:hover:outline-none",
             '[&_tr:last-child]:after:hidden [&_tr_td]:!w-1/4',
-            '[&>div]:[content-visibility:visible!important] [&>div]:[contain-intrinsic-size:none!important]',
+            '[&>div]:[contain-intrinsic-size:none!important] [&>div]:[content-visibility:visible!important]',
           )}
         >
           {rows.length > 0 && (

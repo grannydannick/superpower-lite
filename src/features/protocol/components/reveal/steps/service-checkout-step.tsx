@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { CircleCheckBig } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';

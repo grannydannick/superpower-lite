@@ -1,6 +1,6 @@
 import * as TabsPrimitive from '@radix-ui/react-tabs';
 import * as React from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 
 import { cn } from '@/lib/utils';
 
@@ -125,7 +125,7 @@ const TabsList = React.forwardRef<
           tabsRef.current = node;
         }}
         className={cn(
-          'inline-flex flex-wrap gap-4 items-center justify-center bg-transparent p-1 text-zinc-300',
+          'inline-flex flex-wrap items-center justify-center gap-4 bg-transparent p-1 text-zinc-300',
           className,
         )}
         {...props}
@@ -133,7 +133,7 @@ const TabsList = React.forwardRef<
 
       <div
         className={cn(
-          'absolute h-0.5 bg-vermillion-900 rounded-full transition-all duration-150 ease-in-out',
+          'absolute h-0.5 rounded-full bg-vermillion-900 transition-all duration-150 ease-in-out',
           isInitialLoad ? 'opacity-0' : 'opacity-100',
         )}
         style={{
@@ -159,7 +159,7 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      'inline-flex items-center transition-colors duration-200 hover:text-zinc-400 justify-center whitespace-nowrap text-base md:text-xl font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+      'inline-flex items-center justify-center whitespace-nowrap text-base font-medium ring-offset-background transition-colors duration-200 hover:text-zinc-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 md:text-xl',
       'data-[state=active]:text-zinc-900 data-[state=active]:hover:text-zinc-900',
       className,
     )}
@@ -177,7 +177,7 @@ const TabsContent = React.forwardRef<
     className={cn(
       'mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
       'data-[state=inactive]:hidden',
-      'data-[state=active]:animate-in data-[state=active]:fade-in data-[state=active]:duration-150',
+      'data-[state=active]:duration-150 data-[state=active]:animate-in data-[state=active]:fade-in',
       className,
     )}
     {...props}

@@ -1,6 +1,6 @@
 import type { ComponentType, ReactNode, SVGProps } from 'react';
 import { useCallback, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 
 import {
   AllProducts,
@@ -50,7 +50,7 @@ export const MarketplaceTabs = () => {
       : 'all';
   const [filter, setFilter] = useState<MarketplaceFilter>('all');
   const {
-    query: query,
+    query,
     setQuery: setSearchQuery,
     searchTitle,
     isSearching,

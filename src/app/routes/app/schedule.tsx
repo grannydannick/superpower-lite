@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 import { ScheduleFlow } from '@/features/orders/components/schedule';
 import { ServiceGroup } from '@/types/api';

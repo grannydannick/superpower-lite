@@ -45,12 +45,12 @@ export const CheckoutNavbar = ({
                 className={cn(
                   'h-[5px] w-full rounded-full transition-all duration-200 ease-out',
                   currentIndex === -1
-                    ? 'bg-zinc-200 min-w-4'
+                    ? 'min-w-4 bg-zinc-200'
                     : isPast
                       ? 'bg-vermillion-900'
                       : isCurrent
-                        ? 'bg-vermillion-900 w-3/4 shrink-0'
-                        : 'bg-zinc-200 min-w-4',
+                        ? 'w-3/4 shrink-0 bg-vermillion-900'
+                        : 'min-w-4 bg-zinc-200',
                 )}
               />
             );

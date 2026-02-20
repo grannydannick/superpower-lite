@@ -1,7 +1,7 @@
 import { Reorder } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { WearablesSearch } from '@/features/settings/components/wearables/wearables-search';
 import { Wearable } from '@/types/api';

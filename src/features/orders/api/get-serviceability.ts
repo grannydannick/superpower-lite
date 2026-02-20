@@ -32,8 +32,13 @@ export const useGetServiceability = ({
   const { onSuccess, ...restConfig } = mutationConfig || {};
 
   return useMutation({
-    onSuccess: (response, variables, context) => {
-      onSuccess?.(response, variables, context);
+    onSuccess: (
+      response,
+      variables,
+      onMutateResult,
+      mutationFunctionContext,
+    ) => {
+      onSuccess?.(response, variables, onMutateResult, mutationFunctionContext);
     },
     ...restConfig,
     mutationFn: getServiceability,

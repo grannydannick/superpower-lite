@@ -23,7 +23,7 @@ export const CitationCard = ({
       target="_blank"
       rel="noopener noreferrer"
       className={cn(
-        'flex items-center gap-3 group rounded-2xl border border-zinc-200 bg-white p-1 shadow-sm transition-colors',
+        'group flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white p-1 shadow-sm transition-colors',
         'hover:bg-zinc-50',
       )}
     >

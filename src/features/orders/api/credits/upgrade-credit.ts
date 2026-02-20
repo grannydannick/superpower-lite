@@ -35,11 +35,16 @@ export const useUpgradeCredit = ({
 
   return useMutation({
     mutationFn: upgradeCredt,
-    onSuccess: (response, variables, context) => {
+    onSuccess: (
+      response,
+      variables,
+      onMutateResult,
+      mutationFunctionContext,
+    ) => {
       queryClient.invalidateQueries({
         queryKey: getCreditsQueryOptions().queryKey,
       });
-      onSuccess?.(response, variables, context);
+      onSuccess?.(response, variables, onMutateResult, mutationFunctionContext);
     },
     ...restConfig,
   });

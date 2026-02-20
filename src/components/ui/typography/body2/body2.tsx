@@ -31,7 +31,7 @@ const Body2 = forwardRef<
     <p
       {...props}
       ref={ref}
-      className={cn('text-sm text-zinc-900 font-normal', props.className)}
+      className={cn('text-sm font-normal text-zinc-900', props.className)}
     >
       {props.children}
     </p>

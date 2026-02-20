@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { AnimatedCheckbox } from '@/components/ui/checkbox';
 import { ProgressiveImage } from '@/components/ui/progressive-image';
@@ -95,8 +95,8 @@ export function ProtocolItemCard({
       onKeyDown={isInteractive ? handleKeyDown : undefined}
       aria-pressed={onSelectChange ? selected : undefined}
       className={cn(
-        'rounded-2xl cursor-default transition-all duration-200 flex flex-col justify-start items-start border border-zinc-200 relative bg-white shadow-sm p-4',
-        isInteractive && 'cursor-pointer hover:bg-zinc-50 outline-none',
+        'relative flex cursor-default flex-col items-start justify-start rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm transition-all duration-200',
+        isInteractive && 'cursor-pointer outline-none hover:bg-zinc-50',
         className,
       )}
     >

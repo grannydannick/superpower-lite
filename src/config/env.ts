@@ -24,34 +24,15 @@ const createEnv = () => {
       .default('false'),
     APP_URL: z.string().optional().default('http://localhost:3000'),
     WEBSITE_URL: z.string().optional().default('http://localhost:2999'),
-    APP_MOCK_API_PORT: z.string().optional().default('8080'),
     VITAL_ENV: z.string(),
     GOOGLE_API_KEY: z.string(),
-    CALENDLY_TOKEN: z.string(),
-    TYPEFORM_FORM_ID: z.string(),
-    BRIDGE_PUBLISHABLE_KEY: z.string(),
-    BRIDGE_ENDPOINT: z.string(),
-    NEW_RELIC_INFO_LICENSE_KEY: z.string(),
-    NEW_RELIC_INFO_APPLICATION_ID: z.string(),
-    NEW_RELIC_LOADER_ACCOUNT_ID: z.string(),
-    NEW_RELIC_LOADER_TRUST_KEY: z.string(),
-    NEW_RELIC_LOADER_AGENT_ID: z.string(),
-    NEW_RELIC_LOADER_LICENSE_KEY: z.string(),
-    NEW_RELIC_LOADER_APPLICATION_ID: z.string(),
     KLAVIYO_PUBLIC_API_KEY: z.string(),
     KLAVIYO_WAITLIST_LIST_ID: z.string(),
     KLAVIYO_LEADS_LIST_ID: z.string(),
-    ENABLE_WAITLIST: z
-      .string()
-      .refine((s) => s === 'true' || s === 'false')
-      .transform((s) => s === 'true')
-      .optional()
-      .default('true'),
     POSTHOG_HOST: z.string().optional(),
     POSTHOG_UI_HOST: z.string().optional(),
     POSTHOG_KEY: z.string().optional(),
     POSTHOG_DEBUG: z.string().optional(),
-    GO_RX_URL: z.string(),
     MARKETING_SITE_URL: z.string(),
   });
 

@@ -1,7 +1,9 @@
 import { useState } from 'react';
 
-interface ProgressiveImageProps
-  extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src' | 'alt'> {
+interface ProgressiveImageProps extends Omit<
+  React.ImgHTMLAttributes<HTMLImageElement>,
+  'src' | 'alt'
+> {
   src: string;
   /** Alt text for accessibility (required) */
   alt: string;
@@ -27,11 +29,7 @@ export function ProgressiveImage({
       alt={alt}
       loading="lazy"
       onLoad={() => setLoaded(true)}
-      className={`
-        ${className}
-        pointer-events-none select-none transition-[filter,transform] duration-500 ease-out
-        ${loaded ? 'filter-none' : 'bg-muted  blur-sm'}
-      `}
+      className={` ${className} pointer-events-none select-none transition-[filter,transform] duration-500 ease-out ${loaded ? 'filter-none' : 'bg-muted blur-sm'} `}
       {...rest}
     />
   );

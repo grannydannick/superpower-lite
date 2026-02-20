@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router';
 
 import { Head } from '@/components/seo';
 import { Spinner } from '@/components/ui/spinner';

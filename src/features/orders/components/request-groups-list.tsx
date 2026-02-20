@@ -1,6 +1,6 @@
 import { ChevronDown, CalendarPlus } from 'lucide-react';
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -100,8 +100,8 @@ export const RequestGroupsListListEmpty = ({
       <div className="group relative">
         <div
           className={cn(
-            'mx-auto flex max-w-[420px] flex-col items-center justify-center text-center py-10 transition-all ease-out',
-            'lg:group-hover:blur-sm lg:group-hover:opacity-30',
+            'mx-auto flex max-w-[420px] flex-col items-center justify-center py-10 text-center transition-all ease-out',
+            'lg:group-hover:opacity-30 lg:group-hover:blur-sm',
           )}
         >
           <h3 className="mt-4 text-lg">No {status} orders yet</h3>
@@ -120,9 +120,9 @@ export const RequestGroupsListListEmpty = ({
           to="/services"
           className={cn(
             'absolute inset-0 flex items-center justify-center',
-            'pointer-events-none opacity-0 scale-95 transition-all duration-200 ease-out',
-            'lg:group-hover:opacity-100 lg:group-hover:scale-100 lg:pointer-events-auto',
-            'active:opacity-100 active:scale-100',
+            'pointer-events-none scale-95 opacity-0 transition-all duration-200 ease-out',
+            'lg:pointer-events-auto lg:group-hover:scale-100 lg:group-hover:opacity-100',
+            'active:scale-100 active:opacity-100',
           )}
           aria-label="Get started with services"
         >

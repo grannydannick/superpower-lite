@@ -45,7 +45,8 @@ const multiSelectVariants = cva('m-1', {
  * Props for MultiSelect component
  */
 interface MultiSelectProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof multiSelectVariants> {
   /**
    * An array of option objects to be displayed in the multi-select component.
@@ -180,7 +181,7 @@ export const MultiSelect = React.forwardRef<
             {...props}
             onClick={handleTogglePopover}
             className={cn(
-              'flex w-full px-6 py-[13px] border items-center justify-between bg-inherit hover:bg-inherit [&_svg]:pointer-events-auto',
+              'flex w-full items-center justify-between border bg-inherit px-6 py-[13px] hover:bg-inherit [&_svg]:pointer-events-auto',
               className,
             )}
           >
@@ -216,7 +217,7 @@ export const MultiSelect = React.forwardRef<
                   {selectedValues.length > maxCount && (
                     <Badge
                       className={cn(
-                        'bg-transparent text-foreground border-foreground/1 hover:bg-transparent',
+                        'border-foreground/1 bg-transparent text-foreground hover:bg-transparent',
                         // isAnimating ? 'animate-bounce' : '',
                         multiSelectVariants({ variant }),
                       )}

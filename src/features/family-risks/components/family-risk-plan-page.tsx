@@ -1,7 +1,7 @@
 import { motion, Variants } from 'framer-motion';
 import { ChevronLeft, Share2 } from 'lucide-react';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { SuperpowerSignature } from '@/components/shared/superpower-signature';
 import { Button } from '@/components/ui/button';

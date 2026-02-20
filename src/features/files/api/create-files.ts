@@ -67,7 +67,8 @@ export const useCreateFiles = ({
     onSuccess: (
       response: UploadFilesAPIResponse,
       variables,
-      mutationContext,
+      onMutateResult,
+      mutationFunctionContext,
     ) => {
       // Track file upload for AI context only
       if (
@@ -108,7 +109,7 @@ export const useCreateFiles = ({
         });
       }
 
-      onSuccess?.(response, variables, mutationContext);
+      onSuccess?.(response, variables, onMutateResult, mutationFunctionContext);
     },
     ...restConfig,
     mutationFn: createFiles,

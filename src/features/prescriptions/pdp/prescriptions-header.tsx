@@ -1,5 +1,5 @@
 import { Check } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router';
 
 import { HomeTreatment } from '@/components/icons/marketplace/prescriptions/home-treatment';
 import { Lab } from '@/components/icons/marketplace/prescriptions/lab-tested';

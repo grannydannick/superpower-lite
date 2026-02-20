@@ -72,7 +72,7 @@ export function PaymentMethodCard({
   return (
     <div
       className={cn(
-        'flex border-2 border-solid rounded-2xl px-6 py-6 md:py-6 md:px-8',
+        'flex rounded-2xl border-2 border-solid px-6 py-6 md:px-8 md:py-6',
         defaultMethod ? 'border-zinc-900' : 'border-zinc-200',
       )}
     >

@@ -1,6 +1,6 @@
 import { sleep } from '@medplum/core';
 import React, { Dispatch, SetStateAction, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { Button } from '@/components/ui/button';
 import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner';
@@ -52,7 +52,7 @@ export const HealthcareServiceRescheduleFooter = ({
   return (
     <div
       className={cn(
-        'backdrop-blur-sm flex items-center md:justify-end gap-4 px-4 py-4 md:py-8',
+        'flex items-center gap-4 px-4 py-4 backdrop-blur-sm md:justify-end md:py-8',
       )}
     >
       {mode === 'cancel' ? (
@@ -65,7 +65,7 @@ export const HealthcareServiceRescheduleFooter = ({
             Go back
           </Button>
           <Button
-            className="w-full md:w-auto "
+            className="w-full md:w-auto"
             onClick={handleConfirm}
             disabled={updateOrderMutation.isPending || isProcessing}
           >

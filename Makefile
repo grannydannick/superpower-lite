@@ -59,20 +59,20 @@ deploy/app/prd:
 ### Test
 
 .PHONY: test
-test: description = Run build, unit tests, lint, type checks
-test: util/install build/local test/lint test/type-check test/unit
+test: description = Run build, unit tests, lint, format check (lint includes type checks)
+test: util/install build/local test/fmt-check test/lint test/unit
+
+.PHONY: test/fmt-check
+test/fmt-check: description = Check formatting
+test/fmt-check: util/install
+	@echo "Checking formatting..."
+	bun run fmt:check
 
 .PHONY: test/lint
 test/lint: description = Run linting
 test/lint: util/install
 	@echo "Running linting..."
 	bun run lint
-
-.PHONY: test/type-check
-test/type-check: description = Run type checks
-test/type-check: util/install
-	@echo "Running type checks..."
-	bun run check-types
 
 .PHONY: test/unit
 test/unit: description = Run unit tests
@@ -84,19 +84,6 @@ test/unit: util/install
 	fi && \
 	cp .env.example .env && \
 	bun run test --run'
-
-.PHONY: test/e2e
-test/e2e: description = Run end-to-end tests
-test/e2e: util/install
-	@echo "Running end-to-end tests..."
-	@bash -c 'if [ -f .env ]; then \
-	    trap "mv -f .env.bak .env; echo Restored .env from backup" EXIT SIGINT SIGTERM; \
-	    cp .env .env.bak; \
-	fi && \
-	cp .env.example-e2e .env && \
-        rm -f mocked-db.json && \
-	bun run playwright install --with-deps && \
-	bun run test-e2e'
 
 ### Utility
 

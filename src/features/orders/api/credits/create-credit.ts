@@ -38,11 +38,16 @@ export const useCreateCredit = ({
   const { onSuccess, ...restConfig } = mutationConfig || {};
 
   return useMutation({
-    onSuccess: async (response, variables, context) => {
+    onSuccess: async (
+      response,
+      variables,
+      onMutateResult,
+      mutationFunctionContext,
+    ) => {
       queryClient.invalidateQueries({
         queryKey: getCreditsQueryOptions().queryKey,
       });
-      onSuccess?.(response, variables, context);
+      onSuccess?.(response, variables, onMutateResult, mutationFunctionContext);
     },
     ...restConfig,
     mutationFn: createCredit,

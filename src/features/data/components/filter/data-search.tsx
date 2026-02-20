@@ -51,7 +51,7 @@ export const DataSearch = ({
   return (
     <div
       className={cn(
-        'flex items-center flex-1 gap-2 relative md:h-12 h-10',
+        'relative flex h-10 flex-1 items-center gap-2 md:h-12',
         className,
       )}
     >
@@ -73,7 +73,7 @@ export const DataSearch = ({
         className={cn(
           'absolute right-0 top-1/2 aspect-square size-5 -translate-y-1/2 transition-all duration-200',
           inputRef.current?.value.length === 0 &&
-            'opacity-0 pointer-events-none',
+            'pointer-events-none opacity-0',
         )}
       >
         <X size={16} />

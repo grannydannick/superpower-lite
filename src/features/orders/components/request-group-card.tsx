@@ -1,6 +1,6 @@
 import moment from 'moment-timezone';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { ChevronRightIcon } from '@/components/icons/chevron-right-icon';
 import { Badge } from '@/components/ui/badge';
@@ -118,7 +118,7 @@ function RequestItemRow({
           <Body2 className="text-zinc-500">
             {createdWithTz && price
               ? `${createdWithTz} · ${formatMoney(price)}`
-              : createdWithTz ?? (price ? formatMoney(price) : null)}
+              : (createdWithTz ?? (price ? formatMoney(price) : null))}
           </Body2>
         </div>
         {onManage && (

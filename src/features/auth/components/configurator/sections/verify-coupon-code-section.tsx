@@ -61,7 +61,7 @@ const AccessCodeInputSection = () => {
 
   return (
     <section id="subscriptions" className="space-y-6">
-      <div className=" space-y-2">
+      <div className="space-y-2">
         <div className="flex items-center justify-between">
           <H3 className="text-[#1E1E1E]">Access code</H3>
 

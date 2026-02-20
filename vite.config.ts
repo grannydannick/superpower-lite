@@ -1,13 +1,13 @@
-/// <reference types="vitest" />
+/// <reference types="vitest/config" />
 /// <reference types="vite/client" />
 
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
-import viteTsconfigPaths from 'vite-tsconfig-paths';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   base: './',
-  plugins: [react(), viteTsconfigPaths()],
+  plugins: [react(), tsconfigPaths()],
   server: {
     port: 3000,
     // proxy to local avatar api providing the images. As soon as the social go-img-kit service provides urls itself, we can safely remove this.
@@ -28,7 +28,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/testing/setup-tests.tsx',
-    exclude: ['**/node_modules/**', '**/e2e/**'],
+    exclude: ['**/node_modules/**'],
     coverage: {
       include: ['src/**'],
     },

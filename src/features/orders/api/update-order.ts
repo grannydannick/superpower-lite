@@ -31,8 +31,13 @@ export const useUpdateOrder = ({
   const { onSuccess, ...restConfig } = mutationConfig || {};
 
   return useMutation({
-    onSuccess: async (response, variables, context) => {
-      onSuccess?.(response, variables, context);
+    onSuccess: async (
+      response,
+      variables,
+      onMutateResult,
+      mutationFunctionContext,
+    ) => {
+      onSuccess?.(response, variables, onMutateResult, mutationFunctionContext);
     },
     ...restConfig,
     mutationFn: updateOrder,

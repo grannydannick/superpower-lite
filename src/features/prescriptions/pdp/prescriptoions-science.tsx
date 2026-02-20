@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router';
 
 import {
   Accordion,
@@ -53,7 +53,7 @@ export const Science = ({
   return (
     <section
       className={cn(
-        'my-12 lg:my-16 grid gap-7 lg:gap-16 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]',
+        'my-12 grid gap-7 lg:my-16 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-16',
         className,
       )}
     >

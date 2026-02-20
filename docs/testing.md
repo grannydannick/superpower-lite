@@ -162,14 +162,6 @@ test(
 );
 ```
 
-### E2E
-
-End-to-End Testing is a method that evaluates an application as a whole. These tests involve automating the complete application, including both the frontend and backend, to confirm that the entire system functions correctly. End-to-End tests simulate how a user would interact with the application.
-
-To run locally, make sure you ran `bun run playwright install --with-deps` before.
-
-[E2E Example Code](../e2e/tests/smoke.spec.ts)
-
 ## Tooling:
 
 #### [Vitest](https://vitest.dev)
@@ -179,14 +171,6 @@ Vitest is a powerful testing framework with features similar to Jest, but it's m
 #### [Testing Library](https://testing-library.com/)
 
 Testing library is a set of libraries and tools that makes testing easier than ever before. Its philosophy is to test your app in a way it is being used by a real world user instead of testing implementation details. For example, don't test what is the current state value in a component, but test what that component renders on the screen for its user. If you refactor your app to use a different state management solution for example, the tests should still be relevant as the actual component output to the user shouldn't change.
-
-#### [Playwright](https://playwright.dev)
-
-Playwright is a tool for running e2e tests in an automated way.
-You define all the commands a real world user would execute when using the app and then start the test. It can be started in 2 modes:
-
-- Browser mode - it will open a dedicated browser and run your application from start to finish. You get a nice set of tools to visualize and inspect your application on each step. Since this is a more expensive option, you want to run it only locally when developing the application.
-- Headless mode - it will start a headless browser and run your application. Very useful for integrating with CI/CD to run it on every deploy.
 
 #### [MSW](https://mswjs.io)
 

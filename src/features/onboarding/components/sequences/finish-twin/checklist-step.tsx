@@ -356,9 +356,9 @@ const SetupItem = ({
       </div>
       <div
         className={cn(
-          'mb-3 flex flex-1 items-center bg-white gap-4 rounded-2xl border p-4',
+          'mb-3 flex flex-1 items-center gap-4 rounded-2xl border bg-white p-4',
           isActive
-            ? 'border-vermillion-900 outline-2 outline outline-vermillion-900/20'
+            ? 'border-vermillion-900 outline outline-2 outline-vermillion-900/20'
             : 'border-zinc-200 shadow-sm',
         )}
       >

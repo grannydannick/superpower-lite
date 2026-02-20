@@ -73,13 +73,10 @@ export const getAccessCode = (): string | null => {
 
   // 3. Get dub.co partner coupon if exists
   const dubCookie = getPartnerData();
-  if (dubCookie?.discount?.couponId && process.env.NODE_ENV === 'production') {
+  if (dubCookie?.discount?.couponId && import.meta.env.PROD) {
     console.log(`coupon ${dubCookie.discount.couponId} used`);
     return dubCookie.discount.couponId;
-  } else if (
-    dubCookie?.discount?.couponTestId &&
-    process.env.NODE_ENV !== 'production'
-  ) {
+  } else if (dubCookie?.discount?.couponTestId && !import.meta.env.PROD) {
     console.log(`test coupon ${dubCookie.discount.couponTestId} used`);
     return dubCookie.discount.couponTestId;
   }

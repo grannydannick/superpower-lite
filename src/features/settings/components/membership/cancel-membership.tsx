@@ -31,7 +31,7 @@ function CancelMembershipCard(): JSX.Element {
   return (
     <div
       className={cn(
-        `z-[110] overflow-y-scroll px-6 md:px-14 py-12 flex flex-col justify-between gap-12`,
+        `z-[110] flex flex-col justify-between gap-12 overflow-y-scroll px-6 py-12 md:px-14`,
         activeStep === methods.all.length - 1
           ? 'max-w-[432px]'
           : 'rounded-[24px]',

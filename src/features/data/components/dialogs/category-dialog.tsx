@@ -161,9 +161,9 @@ export const CategoryDialog = ({
       </DialogTrigger>
       <DialogContent
         className={cn(
-          'flex flex-col !px-0 overflow-x-hidden gap-0',
+          'flex flex-col gap-0 overflow-x-hidden !px-0',
           dialogVariants({ size: '2xlarge' }),
-          'md:min-h-[750px] max-h-[70vh]',
+          'max-h-[70vh] md:min-h-[750px]',
         )}
       >
         {content}

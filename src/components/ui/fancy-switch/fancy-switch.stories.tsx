@@ -29,7 +29,7 @@ const DefaultSwitch = () => {
       aria-label="Order type"
       radioClassName={cn(
         'relative mx-2 flex h-9 cursor-pointer items-center justify-center',
-        'rounded-full px-3.5 text-sm font-medium transition-colors focus:outline-none data-[checked]:text-primary-foreground',
+        'rounded-full px-3.5 text-sm font-medium transition-colors data-[checked]:text-primary-foreground focus:outline-none',
         'data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
       )}
       highlighterIncludeMargin={true}

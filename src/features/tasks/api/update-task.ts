@@ -36,7 +36,7 @@ export const useUpdateTask = ({
   const { onSuccess, ...restConfig } = mutationConfig || {};
 
   return useMutation({
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, variables, onMutateResult, mutationFunctionContext) => {
       const prefix = `task_${data.task.name}`.toLowerCase();
 
       const set: Record<string, any> = {};
@@ -57,7 +57,7 @@ export const useUpdateTask = ({
       queryClient.invalidateQueries({
         queryKey: getTaskQueryOptions(variables.taskName).queryKey,
       });
-      onSuccess?.(data, variables, context);
+      onSuccess?.(data, variables, onMutateResult, mutationFunctionContext);
     },
     ...restConfig,
     mutationFn: updateTask,

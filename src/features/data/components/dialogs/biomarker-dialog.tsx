@@ -1,7 +1,7 @@
 import { Description } from '@radix-ui/react-dialog';
 import { Lock, X } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import NumberFlow from '@/components/shared/number-flow';
 import { Button } from '@/components/ui/button';
@@ -137,9 +137,9 @@ export const BiomarkerDialog = ({
       </DialogTrigger>
       <DialogContent
         className={cn(
-          'flex flex-col overflow-x-hidden gap-0',
+          'flex flex-col gap-0 overflow-x-hidden',
           dialogVariants({ size: '2xlarge' }),
-          'md:min-h-[750px] max-h-[70vh]',
+          'max-h-[70vh] md:min-h-[750px]',
         )}
       >
         {content}

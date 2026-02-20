@@ -39,7 +39,7 @@ export const ScoreShareCard = () => {
         <div className="flex flex-col items-center">
           <div
             className={cn(
-              'relative animate-in overflow-hidden zoom-in-95 flex w-64 flex-col',
+              'relative flex w-64 flex-col overflow-hidden animate-in zoom-in-95',
               cardVariants({ type: 'scoreCard' }),
             )}
           >

@@ -169,7 +169,7 @@ const Step1 = ({ onNext }: { onNext: () => void }) => {
                 strokeWidth={2}
                 className="shrink-0 text-vermillion-900"
               />
-              <Body2 className=" text-zinc-700">{feature}</Body2>
+              <Body2 className="text-zinc-700">{feature}</Body2>
             </div>
           ))}
         </Card>

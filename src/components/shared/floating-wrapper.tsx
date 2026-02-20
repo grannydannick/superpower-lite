@@ -2,7 +2,7 @@
 // In particular, it is used to position the assistant modal (Ask Superpower AI and on the AIAP the checkout modal).
 // We use it to reduce the amount of context providers solely to position things. Instead, this component flexes the layout natively.
 
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 import { AssistantModal } from '@/features/messages/components/assistant/assistant-modal';
 import { cn } from '@/lib/utils';
@@ -22,9 +22,9 @@ export const FloatingWrapper = () => {
   return (
     <div
       className={cn(
-        'fixed bottom-24 right-4 w-52 pointer-events-none z-[51] flex flex-col items-end gap-3 lg:bottom-4',
+        'pointer-events-none fixed bottom-24 right-4 z-[51] flex w-52 flex-col items-end gap-3 lg:bottom-4',
         HIDE_WRAPPER_PATHNAMES.some((segment) => pathname.includes(segment)) &&
-          'opacity-0 pointer-events-none',
+          'pointer-events-none opacity-0',
       )}
     >
       <AssistantModal />

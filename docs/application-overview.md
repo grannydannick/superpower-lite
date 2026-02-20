@@ -5,7 +5,6 @@
 The application contains the following models:
 
 - User - can have one of these roles:
-
   - `ADMIN` can:
     - create/edit action plans
     - upload/complete appointments

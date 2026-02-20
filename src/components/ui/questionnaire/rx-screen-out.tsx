@@ -1,6 +1,6 @@
 import { QuestionnaireResponse } from '@medplum/fhirtypes';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { Button } from '@/components/ui/button';

@@ -4,8 +4,10 @@ import { cn } from '@/lib/utils';
 
 import { Input, InputProps } from './input';
 
-export interface NumericInputProps
-  extends Omit<InputProps, 'type' | 'inputMode' | 'onChange'> {
+export interface NumericInputProps extends Omit<
+  InputProps,
+  'type' | 'inputMode' | 'onChange'
+> {
   /**
    * Maximum number of digits allowed
    */

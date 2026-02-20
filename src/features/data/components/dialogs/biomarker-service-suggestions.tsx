@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 
 import { SelectableCard } from '@/components/shared/selectable-card';
 import { buttonVariants } from '@/components/ui/button';

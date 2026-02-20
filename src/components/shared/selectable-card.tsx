@@ -134,10 +134,10 @@ export const SelectableCard = ({
       {detailsResult?.content ? (
         <div
           className={cn(
-            'ml-0 flex-1 border-t border-zinc-200 p-4 md:ml-32 md:mr-4 md:px-0 transition-all',
+            'ml-0 flex-1 border-t border-zinc-200 p-4 transition-all md:ml-32 md:mr-4 md:px-0',
             isExpanded
               ? 'max-h-screen overflow-y-auto'
-              : 'max-h-0 overflow-hidden opacity-0 pointer-events-none p-0',
+              : 'pointer-events-none max-h-0 overflow-hidden p-0 opacity-0',
           )}
         >
           {detailsResult?.content}

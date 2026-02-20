@@ -1,5 +1,5 @@
 import { GitCompare, RefreshCcw, TestTube } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 import { AIIcon } from '@/components/icons/ai-icon';
 import { Button } from '@/components/ui/button';

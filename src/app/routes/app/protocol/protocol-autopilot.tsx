@@ -1,6 +1,6 @@
 import { Check, CheckCircle, X } from 'lucide-react';
 import React from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { ChevronLeft } from '@/components/icons/chevron-left-icon';

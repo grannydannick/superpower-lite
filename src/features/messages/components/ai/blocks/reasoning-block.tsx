@@ -37,8 +37,8 @@ export const ReasoningBlock = memo(function ReasoningBlock({
     timingMs != null && timingMs > 0 ? formatDurationMs(timingMs) : null;
 
   // Initialize: open if thinking, closed if already done (history)
-  const [accordionValue, setAccordionValue] = useState<string | undefined>(
-    () => (isThinking ? 'thinking' : undefined),
+  const [accordionValue, setAccordionValue] = useState<string | undefined>(() =>
+    isThinking ? 'thinking' : undefined,
   );
 
   // Auto-close when thinking completes (but not on initial render for history)

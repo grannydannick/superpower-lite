@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 
 import { Link } from '@/components/ui/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -169,9 +169,9 @@ const PureDataSidebar = () => {
 
       <div
         className={cn(
-          'flex items-center transition-all z-[51]',
-          'md:w-auto w-full md:[mask-image:none] [mask-image:linear-gradient(to_right,transparent_0%,black_5%,black_85%,transparent_95%)] px-4',
-          'md:sticky md:inset-auto md:top-28 md:px-0 md:pt-0 md:z-20 md:my-4 md:max-w-none md:-translate-y-3',
+          'z-[51] flex items-center transition-all',
+          'w-full px-4 [mask-image:linear-gradient(to_right,transparent_0%,black_5%,black_85%,transparent_95%)] md:w-auto md:[mask-image:none]',
+          'md:sticky md:inset-auto md:top-28 md:z-20 md:my-4 md:max-w-none md:-translate-y-3 md:px-0 md:pt-0',
         )}
       >
         <div
@@ -182,7 +182,7 @@ const PureDataSidebar = () => {
             <div
               ref={selectorRef}
               className={cn(
-                'pointer-events-none absolute top-0 translate-y-8 h-full w-full max-h-[30px] rounded-full transition-all duration-300 ease-out',
+                'pointer-events-none absolute top-0 h-full max-h-[30px] w-full translate-y-8 rounded-full transition-all duration-300 ease-out',
                 isLoading && 'opacity-0',
               )}
             >

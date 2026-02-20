@@ -92,7 +92,7 @@ const TestingFrequencyCard = ({
             variant="secondary"
             className={cn(
               'whitespace-nowrap bg-transparent text-xs text-zinc-500',
-              selected && ' text-white',
+              selected && 'text-white',
             )}
           >
             {frequency.badge}
@@ -110,7 +110,7 @@ const TestingFrequencyCard = ({
           type="button"
           onClick={() => onSelect(frequency)}
           className={cn(
-            'relative flex h-full w-full min-h-32 outline-0 outline-transparent flex-col justify-end items-start rounded-2xl border bg-white p-4 transition-all',
+            'relative flex h-full min-h-32 w-full flex-col items-start justify-end rounded-2xl border bg-white p-4 outline-0 outline-transparent transition-all',
             selected
               ? 'border-vermillion-900 bg-vermillion-50 outline outline-2 outline-vermillion-900/20'
               : 'border-zinc-200 hover:bg-zinc-50',

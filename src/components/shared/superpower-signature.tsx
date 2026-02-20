@@ -54,7 +54,7 @@ const SignatureAnimation = ({ className }: { className?: string }) => {
   const { RiveComponent } = useRive(riveConfig);
 
   return (
-    <div ref={ref} className={cn('w-48 h-14', className)}>
+    <div ref={ref} className={cn('h-14 w-48', className)}>
       {isInView && <RiveComponent />}
     </div>
   );

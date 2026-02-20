@@ -35,12 +35,12 @@ export const WaitingScreen = () => {
               <img
                 src="/data/pdf-stack-1.webp"
                 alt="Upload existing health records PDF"
-                className="ease-[cubic-bezier(0.68,-0.6,0.32,1.6)] absolute -bottom-20 z-10 aspect-[0.707] w-[150px] -translate-x-4 translate-y-8 -rotate-2 rounded-[4px] border border-zinc-200 object-cover shadow-lg transition-all duration-700 animate-in fade-in slide-in-from-bottom-10 group-hover:-translate-x-1 group-hover:rotate-0 group-hover:duration-300"
+                className="transition-timing-function-[cubic-bezier(0.68,-0.6,0.32,1.6)] absolute -bottom-20 z-10 aspect-[0.707] w-[150px] -translate-x-4 translate-y-8 -rotate-2 rounded-[4px] border border-zinc-200 object-cover shadow-lg transition-all duration-700 animate-in fade-in slide-in-from-bottom-10 group-hover:-translate-x-1 group-hover:rotate-0 group-hover:duration-300"
               />
               <img
                 src="/data/pdf-stack-1.webp"
                 alt="Upload existing health records PDF"
-                className="ease-[cubic-bezier(0.68,-0.6,0.32,1.6)] absolute -bottom-20 aspect-[0.707] w-[150px] translate-x-4 translate-y-8 rotate-6 rounded-[4px] border border-zinc-200 object-cover shadow-lg transition-all duration-1000 animate-in fade-in slide-in-from-bottom-10 group-hover:translate-x-1 group-hover:rotate-2 group-hover:duration-300"
+                className="transition-timing-function-[cubic-bezier(0.68,-0.6,0.32,1.6)] absolute -bottom-20 aspect-[0.707] w-[150px] translate-x-4 translate-y-8 rotate-6 rounded-[4px] border border-zinc-200 object-cover shadow-lg transition-all duration-1000 animate-in fade-in slide-in-from-bottom-10 group-hover:translate-x-1 group-hover:rotate-2 group-hover:duration-300"
               />
             </div>
           </QuickLink>
@@ -56,12 +56,12 @@ export const WaitingScreen = () => {
               muted
               playsInline
               preload="metadata"
-              className="ease-[cubic-bezier(0.68,-0.6,0.32,1.6)] pointer-events-none -mt-8 h-40 w-full flex-1 origin-bottom object-cover object-top transition-all duration-300 will-change-transform group-hover:scale-[.97]"
+              className="transition-timing-function-[cubic-bezier(0.68,-0.6,0.32,1.6)] pointer-events-none -mt-8 h-40 w-full flex-1 origin-bottom object-cover object-top transition-all duration-300 will-change-transform group-hover:scale-[.97]"
             />*/}
             <img
               src="/data/wearables.webp"
               alt="Wearables"
-              className="ease-[cubic-bezier(0.68,-0.6,0.32,1.6)] pointer-events-none h-32 w-full flex-1 origin-bottom translate-x-16 translate-y-4 object-contain object-bottom transition-all duration-300 group-hover:scale-[.97]"
+              className="transition-timing-function-[cubic-bezier(0.68,-0.6,0.32,1.6)] pointer-events-none h-32 w-full flex-1 origin-bottom translate-x-16 translate-y-4 object-contain object-bottom transition-all duration-300 group-hover:scale-[.97]"
             />
           </QuickLink>
         </div>

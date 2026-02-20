@@ -1,6 +1,5 @@
 import { UseChatHelpers } from '@ai-sdk/react';
 import { UIMessage } from 'ai';
-import cx from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
 import { InfoIcon } from 'lucide-react';
 import React, { memo, useMemo, useState } from 'react';
@@ -338,7 +337,7 @@ export const PreviewMessage = PurePreviewMessage;
 export const ThinkingMessage = () => {
   return (
     <div
-      className={cx(
+      className={cn(
         'flex w-full gap-2 rounded-xl group-data-[role=user]/message:ml-auto group-data-[role=user]/message:w-fit group-data-[role=user]/message:max-w-2xl group-data-[role=user]/message:px-3 group-data-[role=user]/message:py-2',
         {
           'group-data-[role=user]/message:bg-muted': true,

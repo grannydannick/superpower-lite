@@ -4,18 +4,18 @@
   function r(n) {
     if (t[n]) return t[n].exports;
     var o = (t[n] = { i: n, l: !1, exports: {} });
-    return e[n].call(o.exports, o, o.exports, r), (o.l = !0), o.exports;
+    return (e[n].call(o.exports, o, o.exports, r), (o.l = !0), o.exports);
   }
-  (r.m = e),
+  ((r.m = e),
     (r.c = t),
     (r.d = function (e, t, n) {
       r.o(e, t) || Object.defineProperty(e, t, { enumerable: !0, get: n });
     }),
     (r.r = function (e) {
-      'undefined' !== typeof Symbol &&
+      ('undefined' !== typeof Symbol &&
         Symbol.toStringTag &&
         Object.defineProperty(e, Symbol.toStringTag, { value: 'Module' }),
-        Object.defineProperty(e, '__esModule', { value: !0 });
+        Object.defineProperty(e, '__esModule', { value: !0 }));
     }),
     (r.t = function (e, t) {
       if ((1 & t && (e = r(e)), 8 & t)) return e;
@@ -45,13 +45,13 @@
           : function () {
               return e;
             };
-      return r.d(t, 'a', t), t;
+      return (r.d(t, 'a', t), t);
     }),
     (r.o = function (e, t) {
       return Object.prototype.hasOwnProperty.call(e, t);
     }),
     (r.p = 'https://cdn.getrewardful.com/packs/'),
-    r((r.s = 133));
+    r((r.s = 133)));
 })({
   133: function (e, t, r) {
     'use strict';
@@ -62,11 +62,11 @@
       var r = Object.keys(e);
       if (Object.getOwnPropertySymbols) {
         var n = Object.getOwnPropertySymbols(e);
-        t &&
+        (t &&
           (n = n.filter(function (t) {
             return Object.getOwnPropertyDescriptor(e, t).enumerable;
           })),
-          r.push.apply(r, n);
+          r.push.apply(r, n));
       }
       return r;
     }
@@ -105,10 +105,10 @@
     function c(e, t) {
       for (var r = 0; r < t.length; r++) {
         var n = t[r];
-        (n.enumerable = n.enumerable || !1),
+        ((n.enumerable = n.enumerable || !1),
           (n.configurable = !0),
           'value' in n && (n.writable = !0),
-          Object.defineProperty(e, n.key, n);
+          Object.defineProperty(e, n.key, n));
       }
     }
     var l = (function () {
@@ -174,21 +174,21 @@
     function f(e, t) {
       for (var r = 0; r < t.length; r++) {
         var n = t[r];
-        (n.enumerable = n.enumerable || !1),
+        ((n.enumerable = n.enumerable || !1),
           (n.configurable = !0),
           'value' in n && (n.writable = !0),
-          Object.defineProperty(e, n.key, n);
+          Object.defineProperty(e, n.key, n));
       }
     }
     function s(e, t) {
       var r = Object.keys(e);
       if (Object.getOwnPropertySymbols) {
         var n = Object.getOwnPropertySymbols(e);
-        t &&
+        (t &&
           (n = n.filter(function (t) {
             return Object.getOwnPropertyDescriptor(e, t).enumerable;
           })),
-          r.push.apply(r, n);
+          r.push.apply(r, n));
       }
       return r;
     }
@@ -240,7 +240,7 @@
         (o.responseType = 'json'),
         (o.onload = function () {
           var r;
-          200 !== o.status
+          (200 !== o.status
             ? (console.error(
                 '[Rewardful] Request failed: '.concat(e, ' ').concat(t),
               ),
@@ -263,7 +263,7 @@
                   l.set(w.storeKey, o.response.referral, o.response.cookie),
               (L._trackComplete = !0),
               window.dispatchEvent(new CustomEvent('Rewardful.tracked'))),
-            L.initialized();
+            L.initialized());
         }),
         (o.onerror = function () {
           console.error(
@@ -391,7 +391,7 @@
               key: 'clear',
               value: function () {
                 var e = y();
-                return h(), e;
+                return (h(), e);
               },
             },
           ]),
@@ -403,10 +403,10 @@
       })(),
       b = function (e, t) {
         var r = new URLSearchParams(e.search.substring(1));
-        Object.keys(t).forEach(function (e) {
+        (Object.keys(t).forEach(function (e) {
           return r.set(e, t[e]);
         }),
-          (e.search = r.toString());
+          (e.search = r.toString()));
       },
       m = function (e) {
         try {
@@ -440,7 +440,7 @@
               })
               .forEach(function (e) {
                 k(e).forEach(function (e) {
-                  b(e, { referral: t }), (e.dataset.referral = !0);
+                  (b(e, { referral: t }), (e.dataset.referral = !0));
                 });
               });
         },
@@ -448,10 +448,10 @@
     function O(e, t) {
       for (var r = 0; r < t.length; r++) {
         var n = t[r];
-        (n.enumerable = n.enumerable || !1),
+        ((n.enumerable = n.enumerable || !1),
           (n.configurable = !0),
           'value' in n && (n.writable = !0),
-          Object.defineProperty(e, n.key, n);
+          Object.defineProperty(e, n.key, n));
       }
     }
     function _(e, t) {
@@ -463,11 +463,11 @@
     }
     var j = (function () {
       function e(t) {
-        !(function (e, t) {
+        (!(function (e, t) {
           if (!(e instanceof t))
             throw new TypeError('Cannot call a class as a function');
         })(this, e),
-          (this._location = t);
+          (this._location = t));
       }
       var t, r, n;
       return (
@@ -540,10 +540,10 @@
     function P(e, t) {
       for (var r = 0; r < t.length; r++) {
         var n = t[r];
-        (n.enumerable = n.enumerable || !1),
+        ((n.enumerable = n.enumerable || !1),
           (n.configurable = !0),
           'value' in n && (n.writable = !0),
-          Object.defineProperty(e, n.key, n);
+          Object.defineProperty(e, n.key, n));
       }
     }
     var R = function (e, t, r) {
@@ -608,10 +608,10 @@
     function S(e, t) {
       for (var r = 0; r < t.length; r++) {
         var n = t[r];
-        (n.enumerable = n.enumerable || !1),
+        ((n.enumerable = n.enumerable || !1),
           (n.configurable = !0),
           'value' in n && (n.writable = !0),
-          Object.defineProperty(e, n.key, n);
+          Object.defineProperty(e, n.key, n));
       }
     }
     var C = (function () {
@@ -655,10 +655,10 @@
     function x(e, t) {
       for (var r = 0; r < t.length; r++) {
         var n = t[r];
-        (n.enumerable = n.enumerable || !1),
+        ((n.enumerable = n.enumerable || !1),
           (n.configurable = !0),
           'value' in n && (n.writable = !0),
-          Object.defineProperty(e, n.key, n);
+          Object.defineProperty(e, n.key, n));
       }
     }
     var T = (function () {
@@ -703,10 +703,10 @@
     function A(e, t) {
       for (var r = 0; r < t.length; r++) {
         var n = t[r];
-        (n.enumerable = n.enumerable || !1),
+        ((n.enumerable = n.enumerable || !1),
           (n.configurable = !0),
           'value' in n && (n.writable = !0),
-          Object.defineProperty(e, n.key, n);
+          Object.defineProperty(e, n.key, n));
       }
     }
     var N = (function () {
@@ -752,17 +752,17 @@
         function e(e, t) {
           t = t || { bubbles: !1, cancelable: !1, detail: void 0 };
           var r = document.createEvent('CustomEvent');
-          return r.initCustomEvent(e, t.bubbles, t.cancelable, t.detail), r;
+          return (r.initCustomEvent(e, t.bubbles, t.cancelable, t.detail), r);
         }
-        (e.prototype = window.Event.prototype), (window.CustomEvent = e);
+        ((e.prototype = window.Event.prototype), (window.CustomEvent = e));
       };
     function K(e, t) {
       for (var r = 0; r < t.length; r++) {
         var n = t[r];
-        (n.enumerable = n.enumerable || !1),
+        ((n.enumerable = n.enumerable || !1),
           (n.configurable = !0),
           'value' in n && (n.writable = !0),
-          Object.defineProperty(e, n.key, n);
+          Object.defineProperty(e, n.key, n));
       }
     }
     var D = (function () {
@@ -779,14 +779,14 @@
           {
             key: 'reset',
             value: function () {
-              (this._apiKey = null),
+              ((this._apiKey = null),
                 (this._paramNames = null),
                 (this._location = !1),
                 (this._tracked = !1),
                 (this._trackComplete = !1),
                 (this._link = null),
                 (this._setup = !1),
-                (this._initialized = !1);
+                (this._initialized = !1));
             },
           },
           {
@@ -1008,31 +1008,31 @@
         e
       );
     })();
-    (D.Forms = E),
+    ((D.Forms = E),
       (D.Links = g),
       (D.BuyButtons = C),
       (D.PaymentLinks = T),
       (D.PricingTables = N),
-      D.reset();
+      D.reset());
     var L = D;
     function z(e, t) {
       for (var r = 0; r < t.length; r++) {
         var n = t[r];
-        (n.enumerable = n.enumerable || !1),
+        ((n.enumerable = n.enumerable || !1),
           (n.configurable = !0),
           'value' in n && (n.writable = !0),
-          Object.defineProperty(e, n.key, n);
+          Object.defineProperty(e, n.key, n));
       }
     }
     var I = (function () {
         function e(t, r, n) {
-          !(function (e, t) {
+          (!(function (e, t) {
             if (!(e instanceof t))
               throw new TypeError('Cannot call a class as a function');
           })(this, e),
             (this.window = t),
             (this.queueName = r),
-            (this.receiver = n);
+            (this.receiver = n));
         }
         var t, r, n;
         return (
@@ -1074,13 +1074,13 @@
                 try {
                   n.apply(this.receiver, r);
                 } catch (o) {
-                  console.error(
+                  (console.error(
                     'Error executing `'
                       .concat(this.queueName, '.')
                       .concat(t, '`: ')
                       .concat(o),
                   ),
-                    console.error('Arguments: ', r);
+                    console.error('Arguments: ', r));
                 }
               },
             },
@@ -1100,30 +1100,30 @@
         try {
           var e = document.querySelector('script[data-rewardful]');
           if (e) {
-            (window.Rewardful = L),
+            ((window.Rewardful = L),
               L.setup({
                 apiKey: e.getAttribute('data-rewardful'),
                 paramNames: e.getAttribute('data-rewardful-params'),
                 window: window,
-              });
+              }));
             var t = function () {
-                L.Forms.attach(),
+                (L.Forms.attach(),
                   L.BuyButtons.attach(),
                   L.PaymentLinks.attach(),
                   L.PricingTables.attach(),
                   L.Links.attach({
                     domains: e.getAttribute('data-domains'),
                     location: window.location,
-                  });
+                  }));
               },
               r = new B(window, window._rwq || 'rewardful', L);
-            window.addEventListener('Rewardful.initialized', function () {
+            (window.addEventListener('Rewardful.initialized', function () {
               r.flush();
             }),
               window.addEventListener('Rewardful.tracked', function () {
-                t(), document.addEventListener('readystatechange', t);
+                (t(), document.addEventListener('readystatechange', t));
               }),
-              L.track();
+              L.track());
           } else
             console.error(
               "Could not load Rewardful: make sure the <script> tag includes data-rewardful='<API-KEY>'",
@@ -1154,7 +1154,7 @@
         i(e)
       );
     }
-    (a = function () {
+    ((a = function () {
       'use strict';
       function e(e) {
         for (var t = 1; t < arguments.length; t++) {
@@ -1166,12 +1166,12 @@
       var t = (function t(r, n) {
         function o(t, o, a) {
           if ('undefined' !== typeof document) {
-            'number' === typeof (a = e({}, n, a)).expires &&
+            ('number' === typeof (a = e({}, n, a)).expires &&
               (a.expires = new Date(Date.now() + 864e5 * a.expires)),
               a.expires && (a.expires = a.expires.toUTCString()),
               (t = encodeURIComponent(t)
                 .replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent)
-                .replace(/[()]/g, escape));
+                .replace(/[()]/g, escape)));
             var i = '';
             for (var u in a)
               a[u] &&
@@ -1240,6 +1240,6 @@
         ? (e.exports = a())
         : void 0 ===
             (o = 'function' === typeof (n = a) ? n.call(t, r, t, e) : n) ||
-          (e.exports = o);
+          (e.exports = o));
   },
 });

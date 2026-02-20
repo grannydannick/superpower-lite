@@ -2,7 +2,7 @@ import NumberFlow from '@number-flow/react';
 import moment from 'moment';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { Button } from '@/components/ui/button';
 import { STATUS_TO_COLOR } from '@/const/status-to-color';
@@ -481,7 +481,7 @@ export const TimeSeriesChart = ({
             side="top"
             className={cn(
               data.dataPoints[displayedPoint.pointIndex].status ===
-                'next-test' && 'p-1.5 -mt-20 rounded-xl',
+                'next-test' && '-mt-20 rounded-xl p-1.5',
             )}
             onMouseEnter={handleTooltipMouseEnter}
             onMouseLeave={handleTooltipMouseLeave}

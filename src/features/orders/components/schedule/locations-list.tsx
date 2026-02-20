@@ -115,7 +115,7 @@ export const LocationListOption = ({
   return (
     <div
       className={cn(
-        'flex gap-4 border p-3 rounded-[20px] bg-white border-zinc-200',
+        'flex gap-4 rounded-[20px] border border-zinc-200 bg-white p-3',
         isRadioButton ? 'flex-row' : 'flex-col',
         isSelected
           ? 'border-vermillion-900 shadow-lg shadow-vermillion-900/10'

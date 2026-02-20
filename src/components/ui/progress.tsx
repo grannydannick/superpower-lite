@@ -29,7 +29,8 @@ const indicatorCva = cva('size-full flex-1 transition-all', {
 });
 
 interface ProgressProps
-  extends React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>,
+  extends
+    React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>,
     VariantProps<typeof progressCva> {
   value?: number;
 }

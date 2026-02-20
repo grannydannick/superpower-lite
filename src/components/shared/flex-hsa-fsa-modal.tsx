@@ -72,7 +72,7 @@ export const FlexHSAFSAModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="size-full max-h-[80vh] max-w-[80vw] md:max-h-[90vh] md:max-w-[70vw] p-0">
+      <DialogContent className="size-full max-h-[80vh] max-w-[80vw] p-0 md:max-h-[90vh] md:max-w-[70vw]">
         {loading || !checkoutUrl || !shouldRenderIframe ? (
           <div className="flex h-full flex-col items-center justify-center space-y-4">
             <Spinner size="lg" variant="primary" />

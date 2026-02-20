@@ -35,21 +35,21 @@ export const DataFilter = ({ isLoading }: { isLoading: boolean }) => {
       />
       <div
         className={cn(
-          'sticky top-0 md:top-0 z-10 bg-gradient-to-b from-zinc-50 to-transparent transition-all duration-500',
-          isIntersecting && 'md:pt-20 pt-4',
+          'sticky top-0 z-10 bg-gradient-to-b from-zinc-50 to-transparent transition-all duration-500 md:top-0',
+          isIntersecting && 'pt-4 md:pt-20',
         )}
       >
         <div
           className={cn(
-            'transition-all border border-white mx-auto flex-1 overflow-y-auto rounded-3xl bg-white shadow-md shadow-black/[.02] scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300',
-            isIntersecting && 'shadow-xl shadow-black/[.03] border-zinc-100',
+            'mx-auto flex-1 overflow-y-auto rounded-3xl border border-white bg-white shadow-md shadow-black/[.02] transition-all scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300',
+            isIntersecting && 'border-zinc-100 shadow-xl shadow-black/[.03]',
           )}
         >
           <div className="flex flex-col gap-4">
             <div
               className={cn(
-                'flex flex-col gap-2 p-6 pb-0 transition-all duration-500 overflow-hidden',
-                isIntersecting ? 'max-h-0 -mt-[41px]' : 'max-h-64 md:max-h-40',
+                'flex flex-col gap-2 overflow-hidden p-6 pb-0 transition-all duration-500',
+                isIntersecting ? '-mt-[41px] max-h-0' : 'max-h-64 md:max-h-40',
               )}
             >
               <Body2 className="font-semibold">Biomarkers</Body2>

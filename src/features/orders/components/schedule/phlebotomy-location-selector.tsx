@@ -45,7 +45,7 @@ export const PhlebotomyLocationSelector = () => {
         <div
           key={option.value}
           className={cn(
-            'flex space-x-4 border rounded-2xl px-4 py-5 flex-1 bg-white',
+            'flex flex-1 space-x-4 rounded-2xl border bg-white px-4 py-5',
             collectionMethod === option.value
               ? 'border-vermillion-900 shadow-lg shadow-vermillion-900/10'
               : 'border-zinc-200 hover:bg-zinc-50',

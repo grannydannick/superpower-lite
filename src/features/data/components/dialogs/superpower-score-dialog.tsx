@@ -1,7 +1,7 @@
 import { Description } from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 
 import { Button } from '@/components/ui/button';
 import { TimeSeriesChart } from '@/components/ui/charts/time-series-chart/time-series-chart';
@@ -181,7 +181,7 @@ export const SuperpowerScoreDialog = ({
           className={cn(
             'flex flex-col overflow-x-hidden',
             dialogVariants({ size: '2xlarge' }),
-            'md:min-h-[750px] max-h-[70vh]',
+            'max-h-[70vh] md:min-h-[750px]',
             sharingOptionsOpen && '-mt-10 scale-[.92] opacity-75',
           )}
         >

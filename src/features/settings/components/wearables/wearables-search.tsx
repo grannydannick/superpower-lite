@@ -4,8 +4,7 @@ import React, { forwardRef } from 'react';
 
 import { cn } from '@/lib/utils';
 
-interface WearablesSearchProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+interface WearablesSearchProps extends React.InputHTMLAttributes<HTMLInputElement> {
   sorted: boolean;
   sortFn: () => void;
 }
@@ -17,7 +16,7 @@ const WearablesSearch = forwardRef<HTMLInputElement, WearablesSearchProps>(
         <div className="relative w-full">
           <SearchIcon
             className={cn(
-              'absolute top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 peer-focus:text-gray-900',
+              'absolute top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-500 peer-focus:text-gray-900',
               'left-4',
             )}
           />
@@ -32,7 +31,7 @@ const WearablesSearch = forwardRef<HTMLInputElement, WearablesSearchProps>(
           {value ? (
             <XIcon
               className={cn(
-                'absolute top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 peer-focus:text-gray-900 cursor-pointer',
+                'absolute top-1/2 h-4 w-4 -translate-y-1/2 transform cursor-pointer text-gray-500 peer-focus:text-gray-900',
                 'right-4',
               )}
               onClick={() =>
@@ -45,7 +44,7 @@ const WearablesSearch = forwardRef<HTMLInputElement, WearablesSearchProps>(
           ) : (
             <ArrowDownWideNarrow
               className={cn(
-                'absolute top-1/2 transform -translate-y-1/2 h-4 w-4 peer-focus:text-gray-900 cursor-pointer',
+                'absolute top-1/2 h-4 w-4 -translate-y-1/2 transform cursor-pointer peer-focus:text-gray-900',
                 'right-4',
                 sorted ? 'text-[#FC5F2B]' : 'text-gray-500',
               )}

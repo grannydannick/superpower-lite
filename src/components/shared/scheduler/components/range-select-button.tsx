@@ -3,8 +3,7 @@ import React, { ReactNode, forwardRef, ButtonHTMLAttributes } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-export interface RangeSelectButtonProps
-  extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface RangeSelectButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Icon to display inside the button */
   icon: ReactNode;
 
@@ -25,7 +24,7 @@ const RangeSelectButton = forwardRef<HTMLButtonElement, RangeSelectButtonProps>(
         ref={ref}
         variant="ghost"
         className={cn(
-          'h-auto flex items-center justify-center rounded-md p-0',
+          'flex h-auto items-center justify-center rounded-md p-0',
           className,
         )}
         onClick={onClick}

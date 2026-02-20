@@ -1,6 +1,6 @@
 import { UIMessage } from 'ai';
 import { useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router';
 
 import { useMessages } from '@/features/messages/api/get-messages';
 import { Chat } from '@/features/messages/components/ai/chat';

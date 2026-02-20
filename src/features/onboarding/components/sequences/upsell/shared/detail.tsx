@@ -89,7 +89,7 @@ const Content = ({
   children,
   className,
 }: PropsWithChildren<{ className?: string }>) => (
-  <div className={cn('flex-1 overflow-y-auto px-6 py-4 mt-6', className)}>
+  <div className={cn('mt-6 flex-1 overflow-y-auto px-6 py-4', className)}>
     {children}
   </div>
 );
@@ -104,7 +104,7 @@ const Footer = ({
   <Sequence.StepFooter className="md:hidden">
     <div
       className={cn(
-        'w-full space-y-3 fixed bottom-0 inset-x-0 z-50 px-6 py-4 -mt-8 pt-6 bg-zinc-50',
+        'fixed inset-x-0 bottom-0 z-50 -mt-8 w-full space-y-3 bg-zinc-50 px-6 py-4 pt-6',
         className,
       )}
       style={{
@@ -139,7 +139,7 @@ const Tabs = ({
 const TabList = ({ className }: { className?: string }) => (
   <TabsList
     showUnderline
-    className={cn('w-full justify-start px-5 pt-4 gap-4', className)}
+    className={cn('w-full justify-start gap-4 px-5 pt-4', className)}
   >
     <TabsTrigger value="overview" className="py-1 text-base">
       Overview

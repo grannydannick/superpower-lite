@@ -24,8 +24,9 @@ const cardVariants = cva(
   },
 );
 
-export interface CreditActionCardProps
-  extends VariantProps<typeof cardVariants> {
+export interface CreditActionCardProps extends VariantProps<
+  typeof cardVariants
+> {
   credit: Credit;
   className?: string;
 }

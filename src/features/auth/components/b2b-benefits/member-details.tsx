@@ -1,6 +1,6 @@
 import { ChevronLeft } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { SplitScreenLayout } from '@/components/layouts';

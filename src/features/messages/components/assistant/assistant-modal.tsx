@@ -1,8 +1,8 @@
 import { ChevronsDownUp, Link, Maximize2, Minimize2 } from 'lucide-react';
 import { useCallback, useMemo, useState, type Ref } from 'react';
 import { Resizable } from 'react-resizable';
-import 'react-resizable/css/styles.css';
 
+import 'react-resizable/css/styles.css';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import {
@@ -109,17 +109,15 @@ export const AssistantModal = () => {
     >
       {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
       <div
-        role={!isExpanded ? 'button' : undefined}
+        role="button"
         tabIndex={!isExpanded ? 0 : -1}
         aria-expanded={isExpanded}
-        onClick={() => {
-          if (!isExpanded) open();
-        }}
+        onClick={!isExpanded ? () => open() : undefined}
         className={cn(
-          'relative pointer-events-auto hidden lg:flex gap-2 flex-col border border-zinc-200 bg-white px-4 py-3 shadow-lg shadow-black/[.07] transition-all ease-out duration-200',
+          'pointer-events-auto relative hidden flex-col gap-2 border border-zinc-200 bg-white px-4 py-3 shadow-lg shadow-black/[.07] transition-all duration-200 ease-out lg:flex',
           isExpanded
-            ? 'pb-2 rounded-3xl items-start cursor-default'
-            : 'items-center rounded-xl justify-center w-52 cursor-pointer hover:bg-zinc-50',
+            ? 'cursor-default items-start rounded-3xl pb-2'
+            : 'w-52 cursor-pointer items-center justify-center rounded-xl hover:bg-zinc-50',
           isResizing &&
             'select-none border-vermillion-900/50 ring-2 ring-vermillion-900/5',
         )}
@@ -139,7 +137,7 @@ export const AssistantModal = () => {
           <div
             className={cn(
               'flex items-center gap-0.5 overflow-hidden transition-all duration-200 ease-out',
-              isExpanded ? 'max-w-32' : 'max-w-0 pointer-events-none',
+              isExpanded ? 'max-w-32' : 'pointer-events-none max-w-0',
             )}
           >
             <TooltipProvider>

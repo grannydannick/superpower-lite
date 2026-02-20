@@ -146,7 +146,7 @@ export const CheckEmailScreen = ({
               Follow the link in your email or input the code here.
             </Body1>
 
-            {process.env.NODE_ENV === 'development' ? (
+            {import.meta.env.DEV ? (
               <H3 className="text-white">
                 DEBUG: Use 000000 to bypass OTP verification
               </H3>

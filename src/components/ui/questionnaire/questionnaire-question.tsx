@@ -282,7 +282,7 @@ export const QuestionnaireQuestion = ({
           'mb-8 text-zinc-500',
           isRxSafetyIntroQuestion && 'text-base text-primary',
           // We need to force orange link color for consistency. inline-links come with blue style attributes so important is needed.
-          ' [&>a]:!text-vermillion-900',
+          '[&>a]:!text-vermillion-900',
         )}
         // We need this to render hyperlinks
         // I don't see a case for XSS because the only way to edit this is in Medplum
@@ -331,7 +331,7 @@ export const QuestionnaireQuestion = ({
       isRxIdentityVerificationQuestion && isIdentityVerificationBlocking;
 
     return (
-      <div className={cn('flex flex-col gap-2 mt-12 md:mt-0')}>
+      <div className={cn('mt-12 flex flex-col gap-2 md:mt-0')}>
         {showBackButton && (
           <button
             tabIndex={-1}

@@ -9,7 +9,7 @@ import {
 } from '@stripe/stripe-js';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { toast } from '@/components/ui/sonner';
 import { useCreateConsent } from '@/features/announcements/api/create-consent';
@@ -25,7 +25,6 @@ import { getActiveLogin } from '@/lib/utils';
 import { ConsentType, User } from '@/types/api';
 import { getAccessCode } from '@/utils/access-code';
 import { getReferralId } from '@/utils/referral-id';
-import { getUtmData } from '@/utils/utm-middleware';
 import { getState } from '@/utils/verify-state-from-postal';
 
 export const useCheckout = ({
@@ -118,7 +117,7 @@ export const useCheckout = ({
           state: getState(postalCode)?.state ?? 'CA',
           code: getAccessCode() ?? undefined,
           referralId: getReferralId() ?? undefined,
-          campaignData: getUtmData() ?? undefined,
+          campaignData: undefined,
           paymentMethod,
           hsaFsaCheckoutSessionId,
         },

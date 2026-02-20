@@ -1,6 +1,6 @@
 import { Pencil } from 'lucide-react';
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 import { Button } from '@/components/ui/button';
 import { Body1, Body2, Body3 } from '@/components/ui/typography';
@@ -42,7 +42,7 @@ export const CurrentAddressCard = ({
   return (
     <div
       className={cn(
-        'w-full space-y-3 rounded-2xl border border-zinc-200 px-8 py-6 relative bg-white',
+        'relative w-full space-y-3 rounded-2xl border border-zinc-200 bg-white px-8 py-6',
         className,
       )}
     >

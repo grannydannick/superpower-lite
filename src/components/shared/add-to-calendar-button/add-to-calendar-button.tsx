@@ -41,9 +41,9 @@ export function AddToCalendar({
         <Button
           variant={variant === 'button' ? 'outline' : 'ghost'}
           className={cn(
-            'gap-1 group',
+            'group gap-1',
             variant === 'vermillion'
-              ? 'px-0 py-0 hover:opacity-75 transition-all duration-200'
+              ? 'px-0 py-0 transition-all duration-200 hover:opacity-75'
               : '',
             className,
           )}

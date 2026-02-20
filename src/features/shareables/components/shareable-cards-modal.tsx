@@ -1,7 +1,7 @@
 import { Description } from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -159,7 +159,7 @@ export const ShareableCardsModal = ({
       <DialogContent
         className={cn(
           dialogVariants({ size: '2xlarge' }),
-          'md:max-h-[750px] h-full',
+          'h-full md:max-h-[750px]',
         )}
       >
         {content}

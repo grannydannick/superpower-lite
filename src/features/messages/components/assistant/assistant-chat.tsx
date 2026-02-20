@@ -2,7 +2,7 @@ import { useChat } from '@ai-sdk/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DefaultChatTransport, FileUIPart } from 'ai';
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 import { env } from '@/config/env';
 import { useCreateFollowups } from '@/features/messages/api/create-followups';

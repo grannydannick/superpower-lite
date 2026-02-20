@@ -84,7 +84,7 @@ const Header = ({ className }: { className?: string }) => {
   return (
     <Sequence.StepHeader
       className={cn(
-        'relative z-10 pt-0 flex items-center justify-between md:hidden',
+        'relative z-10 flex items-center justify-between pt-0 md:hidden',
         className,
       )}
     >

@@ -1,6 +1,6 @@
 import { LucideIcon } from 'lucide-react';
 import { FC, ReactNode, SVGProps } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router';
 
 import {
   DropdownMenu,
@@ -85,10 +85,10 @@ export function ProfileDropdown({
                   return cn(
                     isLogout
                       ? 'flex cursor-pointer items-center gap-3 rounded-[18px] p-4 text-secondary transition duration-200 ease-in-out hover:text-zinc-600'
-                      : 'flex cursor-pointer items-center border hover:text-zinc-600 text-secondary border-transparent gap-3 rounded-[18px] p-4 transition duration-200 ease-in-out',
+                      : 'flex cursor-pointer items-center gap-3 rounded-[18px] border border-transparent p-4 text-secondary transition duration-200 ease-in-out hover:text-zinc-600',
                     shouldBeActive &&
                       !isLogout &&
-                      'bg-white border-zinc-200 shadow-sm text-zinc-900',
+                      'border-zinc-200 bg-white text-zinc-900 shadow-sm',
                   );
                 }}
               >

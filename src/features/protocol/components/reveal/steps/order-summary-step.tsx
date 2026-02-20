@@ -1,7 +1,7 @@
 import NumberFlow from '@number-flow/react';
 import { useFeatureFlagEnabled } from 'posthog-js/react';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { ChevronLeft } from '@/components/icons/chevron-left-icon';
 import { SuperpowerUserSignature } from '@/components/shared/superpower-user-signature';
@@ -225,7 +225,7 @@ export function OrderSummaryStep({
         </div> */}
         <div
           className={cn(
-            'transition-all overflow-hidden duration-300 ease-out',
+            'overflow-hidden transition-all duration-300 ease-out',
             subtotalDiscounted > 0
               ? 'max-h-40'
               : 'max-h-0 opacity-0 blur-[1px]',
@@ -240,7 +240,7 @@ export function OrderSummaryStep({
             </div>
             <div
               className={cn(
-                'flex items-center justify-between overflow-hidden transition-all ease-out duration-200',
+                'flex items-center justify-between overflow-hidden transition-all duration-200 ease-out',
                 memberDiscount <= 0 ? 'h-0 opacity-0 blur-[1px]' : 'h-12',
               )}
             >

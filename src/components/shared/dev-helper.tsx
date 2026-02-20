@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 import {
   CommandDialog,
@@ -33,7 +33,7 @@ const ONBOARDING_QUESTIONNAIRES = [
 ] as const;
 
 export function DevHelper() {
-  const isDev = process.env.NODE_ENV === 'development';
+  const isDev = import.meta.env.DEV;
   const location = useLocation();
   const isOnboarding = location.pathname === '/onboarding';
 

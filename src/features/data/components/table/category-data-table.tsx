@@ -1,5 +1,5 @@
 import { useEffect, useState, useTransition } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { SelectableCard } from '@/components/shared/selectable-card';
@@ -64,12 +64,12 @@ export const CategoryDataTable = ({ category }: { category?: Category }) => {
       <div className="space-y-3">
         <div
           className={cn(
-            'sticky md:top-20 top-4 z-10 bg-gradient-to-b from-zinc-50 to-transparent transition-all duration-500',
+            'sticky top-4 z-10 bg-gradient-to-b from-zinc-50 to-transparent transition-all duration-500 md:top-20',
           )}
         >
           <div
             className={cn(
-              'transition-all mx-auto flex-1 overflow-y-auto rounded-3xl bg-white border border-zinc-100 shadow-md shadow-black/[.02] scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300',
+              'mx-auto flex-1 overflow-y-auto rounded-3xl border border-zinc-100 bg-white shadow-md shadow-black/[.02] transition-all scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300',
             )}
           >
             <div className="flex flex-col gap-4">

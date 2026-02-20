@@ -35,8 +35,7 @@ type PlacePrediction = {
  * Idea is that its library-agnostic and we can also use it outside of the
  * use-hook-form context
  */
-export interface AddressAutocompleteProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface AddressAutocompleteProps extends React.InputHTMLAttributes<HTMLInputElement> {
   placeholder?: string;
   onFormSubmit: (address: FormAddressInput) => void;
   value: string | undefined;
@@ -92,6 +91,7 @@ export const AddressAutocomplete = forwardRef<
     const [isFocused, setIsFocused] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
     const isSelectingRef = useRef(false);
+    const listboxId = React.useId();
     const places = useMapsLibrary('places');
 
     const autocompleteService = useMemo(() => {
@@ -266,8 +266,8 @@ export const AddressAutocomplete = forwardRef<
             }
           }}
           role="combobox"
+          aria-controls={listboxId}
           aria-expanded={showPredictions}
-          aria-haspopup="listbox"
           aria-autocomplete="list"
           {...rest}
         />
@@ -283,7 +283,7 @@ export const AddressAutocomplete = forwardRef<
               <div className="absolute top-1 z-40 w-full rounded-2xl bg-white outline-none animate-in fade-in-0 zoom-in-95">
                 <div
                   className={cn(
-                    'max-h-[200px] rounded-2xl overflow-scroll border border-zinc-200',
+                    'max-h-[200px] overflow-scroll rounded-2xl border border-zinc-200',
                   )}
                 >
                   {isPlacePredictionsLoading && placePredictions.length === 0
@@ -299,7 +299,7 @@ export const AddressAutocomplete = forwardRef<
                         ))
                     : null}
                   {placePredictions.length > 0 ? (
-                    <div role="listbox">
+                    <div role="listbox" id={listboxId}>
                       {placePredictions.map(
                         (
                           option: {
@@ -328,7 +328,7 @@ export const AddressAutocomplete = forwardRef<
                               }}
                               onMouseEnter={() => setHighlightedIndex(index)}
                               className={cn(
-                                'flex w-full py-4 rounded-[10px] px-[28px] flex-col items-start cursor-pointer data-[disabled]:opacity-100 hover:bg-zinc-50 hover:rounded-[10px] data-[disabled]:pointer-events-auto',
+                                'flex w-full cursor-pointer flex-col items-start rounded-[10px] px-[28px] py-4 data-[disabled]:pointer-events-auto data-[disabled]:opacity-100 hover:rounded-[10px] hover:bg-zinc-50',
                                 isHighlighted || isSelected
                                   ? 'bg-zinc-50'
                                   : null,

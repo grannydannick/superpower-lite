@@ -32,7 +32,7 @@ export const SchedulerDaySlot = ({
       </Body2>
       <div
         className={cn(
-          'px-3 py-2 border rounded-xl w-full transition-all duration-200 border-zinc-200 bg-white cursor-pointer space-y-1',
+          'w-full cursor-pointer space-y-1 rounded-xl border border-zinc-200 bg-white px-3 py-2 transition-all duration-200',
           disabled ? 'cursor-not-allowed opacity-50' : '',
           selected && !disabled
             ? 'border-vermillion-900 shadow-lg shadow-vermillion-900/10'

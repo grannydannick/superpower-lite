@@ -208,7 +208,8 @@
 }
 
 .logo-combined-reveal {
-  -webkit-mask-image: radial-gradient(
+  -webkit-mask-image:
+    radial-gradient(
       ellipse 100% 100% at 50% 50%,
       black 0%,
       black 40%,
@@ -222,7 +223,8 @@
       transparent 60%,
       transparent 100%
     );
-  mask-image: radial-gradient(
+  mask-image:
+    radial-gradient(
       ellipse 100% 100% at 50% 50%,
       black 0%,
       black 40%,
@@ -311,11 +313,8 @@
 }
 
 .logo-unified-reveal {
-  -webkit-mask-image: radial-gradient(
-      ellipse 60% 60% at 50% 50%,
-      black 30%,
-      transparent 70%
-    ),
+  -webkit-mask-image:
+    radial-gradient(ellipse 60% 60% at 50% 50%, black 30%, transparent 70%),
     linear-gradient(
       115deg,
       transparent 20%,
@@ -324,11 +323,8 @@
       rgba(255, 255, 255, 0.6) 55%,
       transparent 80%
     );
-  mask-image: radial-gradient(
-      ellipse 60% 60% at 50% 50%,
-      black 30%,
-      transparent 70%
-    ),
+  mask-image:
+    radial-gradient(ellipse 60% 60% at 50% 50%, black 30%, transparent 70%),
     linear-gradient(
       115deg,
       transparent 20%,

@@ -29,8 +29,7 @@ export const useSummary = ({ queryConfig }: UseSummaryOptions = {}) => {
 
   // Dev override for hasCompletedCarePlan
   if (
-    process.env.NODE_ENV === 'development' &&
-    typeof window !== 'undefined' &&
+    import.meta.env.DEV &&
     localStorage.getItem(DEV_BYPASS_CARE_PLAN_KEY) === 'true' &&
     query.data
   ) {

@@ -30,7 +30,7 @@ export function ProtocolItemRow({
   return (
     <div
       className={cn(
-        'flex w-full items-center gap-8 p-4 border-b border-zinc-200 last:border-b-0',
+        'flex w-full items-center gap-8 border-b border-zinc-200 p-4 last:border-b-0',
         className,
       )}
     >

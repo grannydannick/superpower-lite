@@ -1,4 +1,4 @@
-import { NavLink, useNavigate, useParams } from 'react-router-dom';
+import { NavLink, useNavigate, useParams } from 'react-router';
 
 import { NotFoundRoute } from '@/app/routes/not-found';
 import {

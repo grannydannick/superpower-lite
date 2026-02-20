@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigation } from 'react-router-dom';
+import { useNavigation } from 'react-router';
 
 export const NavigationProgress = () => {
   const { state, location } = useNavigation();

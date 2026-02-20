@@ -32,7 +32,7 @@ export const buildQuestionnaireStatusMap = (
 
     const current = map.get(name);
     const responsePriority = statusPriority[response.status] ?? 0;
-    const currentPriority = current ? statusPriority[current] ?? 0 : -1;
+    const currentPriority = current ? (statusPriority[current] ?? 0) : -1;
     if (responsePriority > currentPriority) {
       map.set(name, response.status);
     }

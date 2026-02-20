@@ -56,7 +56,7 @@ export const ProductCitationCard = memo(function ProductCitationCard({
     ? getPricingDetails(product)
     : {
         hasDiscount: false,
-        discountedPrice: isService ? product.price / 100 : product.price ?? 0,
+        discountedPrice: isService ? product.price / 100 : (product.price ?? 0),
       };
 
   const { hasDiscount, discountedPrice } = pricingDetails;
@@ -64,7 +64,7 @@ export const ProductCitationCard = memo(function ProductCitationCard({
     ? product.price
     : isService
       ? product.price / 100
-      : product.price ?? 0;
+      : (product.price ?? 0);
 
   // Build the product URL
   const productUrl = getProductUrl(product);
@@ -80,7 +80,7 @@ export const ProductCitationCard = memo(function ProductCitationCard({
       rel="noreferrer"
       aria-label={`Citation ${citation.number}: ${product.name}`}
       className={cn(
-        'flex h-[76px] items-center justify-between overflow-clip scroll-mt-4',
+        'flex h-[76px] scroll-mt-4 items-center justify-between overflow-clip',
         'rounded-[20px] border border-zinc-200 bg-white pl-2 pr-4',
         'shadow-[0px_2px_2px_0px_rgba(0,0,0,0.02)]',
         'cursor-pointer transition-all hover:border-zinc-300',

@@ -2,7 +2,7 @@ import { UseChatHelpers } from '@ai-sdk/react';
 import { UIMessage } from 'ai';
 import { ArrowDown } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -199,8 +199,8 @@ function ScrollDownButton({
   return (
     <div
       className={cn(
-        'sticky bottom-5 z-30 mx-auto transition-all duration-300 ease-out pr-2',
-        !show && 'opacity-0 bottom-0 blur-[1px]',
+        'sticky bottom-5 z-30 mx-auto pr-2 transition-all duration-300 ease-out',
+        !show && 'bottom-0 opacity-0 blur-[1px]',
       )}
     >
       <Button
@@ -208,7 +208,7 @@ function ScrollDownButton({
         variant="ghost"
         size="icon"
         className={cn(
-          'rounded-full border bg-white mx-auto p-2 text-zinc-500 shadow-sm hover:bg-zinc-50 hover:text-black active:scale-[.98]',
+          'mx-auto rounded-full border bg-white p-2 text-zinc-500 shadow-sm hover:bg-zinc-50 hover:text-black active:scale-[.98]',
           show ? 'pointer-events-auto' : 'pointer-events-none',
         )}
         onClick={handleClick}

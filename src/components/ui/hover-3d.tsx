@@ -188,7 +188,7 @@ export const Hover3D = ({
           transition: `transform var(--duration, ${options?.resetDuration || 500}ms)`,
         }}
         className={cn(
-          'relative z-10 will-change-transform overflow-hidden',
+          'relative z-10 overflow-hidden will-change-transform',
           className,
         )}
       >

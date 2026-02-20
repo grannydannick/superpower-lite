@@ -90,8 +90,8 @@ export function RatingScale({
         {options.map(([optionName, optionValue], index) => (
           <div
             className={cn(
-              'flex flex-1 md:h-16 items-center relative space-x-1 rounded-xl bg-white hover:bg-zinc-50 overflow-hidden transition-all outline-none ring-0 focus-visible:ring-2 focus-visible:ring-secondary',
-              options.length > 5 ? 'py-5' : 'md:aspect-auto aspect-square',
+              'relative flex flex-1 items-center space-x-1 overflow-hidden rounded-xl bg-white outline-none ring-0 transition-all hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-secondary md:h-16',
+              options.length > 5 ? 'py-5' : 'aspect-square md:aspect-auto',
             )}
             data-scale-id={item.linkId}
             tabIndex={0}
@@ -127,7 +127,7 @@ export function RatingScale({
             <Label
               htmlFor={optionName}
               className={cn(
-                'absolute text-base font-normal inset-0 h-16 cursor-pointer text-center top-1/2 m-0 flex items-center justify-center -translate-y-1/2 z-10 text-white mix-blend-difference',
+                'absolute inset-0 top-1/2 z-10 m-0 flex h-16 -translate-y-1/2 cursor-pointer items-center justify-center text-center text-base font-normal text-white mix-blend-difference',
               )}
             >
               {optionValue.value}

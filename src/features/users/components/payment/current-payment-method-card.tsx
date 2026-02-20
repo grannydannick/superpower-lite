@@ -29,7 +29,7 @@ export const CurrentPaymentMethodCard = ({
     <div className="space-y-2">
       <div
         className={cn(
-          'w-full space-y-3 rounded-2xl border px-8 py-6 bg-white',
+          'w-full space-y-3 rounded-2xl border bg-white px-8 py-6',
           error ? 'border-pink-700 bg-pink-50' : 'border-zinc-200',
           className,
         )}

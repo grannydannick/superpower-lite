@@ -216,7 +216,7 @@ export function FancySwitch<T extends OptionType>({
             onClick: () => handleChange(index),
             className: cn(
               'relative mx-2 flex h-9 cursor-pointer items-center justify-center capitalize',
-              'rounded-full px-3.5 text-sm font-medium transition-colors focus:outline-none data-[checked]:text-primary-foreground',
+              'rounded-full px-3.5 text-sm font-medium transition-colors data-[checked]:text-primary-foreground focus:outline-none',
               'data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
               radioClassName,
             ),
@@ -232,13 +232,20 @@ export function FancySwitch<T extends OptionType>({
       return (
         <div
           ref={(el) => (radioRefs.current[index] = el)}
-          role="presentation"
-          // aria-checked={isSelected}
+          role="radio"
+          aria-checked={isSelected}
           tabIndex={isSelected && !option.disabled ? 0 : -1}
           onClick={() => handleChange(index)}
+          onKeyDown={(e) => {
+            if (option.disabled) return;
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleChange(index);
+            }
+          }}
           className={cn(
             'relative mx-2 flex h-9 cursor-pointer items-center justify-center capitalize',
-            'rounded-full px-3.5 text-sm font-medium transition-colors focus:outline-none data-[checked]:text-primary-foreground',
+            'rounded-full px-3.5 text-sm font-medium transition-colors data-[checked]:text-primary-foreground focus:outline-none',
             'data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
             radioClassName,
           )}
@@ -278,7 +285,7 @@ export function FancySwitch<T extends OptionType>({
 
   return (
     <div
-      role="presentation"
+      role="radiogroup"
       aria-label="Fancy switch options"
       ref={containerRef}
       className={cn('flex rounded-full bg-transparent p-2', className)}
@@ -310,7 +317,7 @@ export function FancySwitch<T extends OptionType>({
       {...props}
     >
       <div
-        className={cn('bg-primary rounded-full', highlighterClassName)}
+        className={cn('rounded-full bg-primary', highlighterClassName)}
         style={{
           position: 'absolute',
           transitionProperty: 'all',

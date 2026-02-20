@@ -49,9 +49,9 @@ export const CurrentMembership = (): JSX.Element => {
             <CancelMembershipDialog membership={superpowerMembership}>
               <Card
                 className={cn(
-                  `w-full px-5 rounded-2xl shadow-none py-4 lg:bg-transparent pointer-events-none`,
+                  `pointer-events-none w-full rounded-2xl px-5 py-4 shadow-none lg:bg-transparent`,
                   superpowerMembership?.status === 'active' &&
-                    'cursor-pointer pointer-events-auto',
+                    'pointer-events-auto cursor-pointer',
                 )}
               >
                 <div className="flex flex-col">

@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { Fragment, ReactNode } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -59,7 +59,7 @@ export function ScheduleSummaryStep(): ReactNode {
 
   const isTestKit = mode === 'test-kit';
   const price =
-    collectionMethod === 'AT_HOME' ? upgradePriceData?.price ?? 0 : 0;
+    collectionMethod === 'AT_HOME' ? (upgradePriceData?.price ?? 0) : 0;
 
   const createOrderFn = async (): Promise<void> => {
     const data = buildCreateOrderData();
@@ -177,8 +177,8 @@ function ScheduleSummaryItems(): ReactNode {
         if (!s) return;
 
         return (
-          <>
-            <div className="flex items-center gap-3" key={s.id}>
+          <Fragment key={s.id}>
+            <div className="flex items-center gap-3">
               <img
                 src={getServiceImage(s.name)}
                 alt={s.name}
@@ -196,7 +196,7 @@ function ScheduleSummaryItems(): ReactNode {
             {i !== ownedCredits.length - 1 ? (
               <Separator className="my-4" />
             ) : null}
-          </>
+          </Fragment>
         );
       })}
       {servicesQuery.isLoading ? <Skeleton className="h-16 w-full" /> : null}

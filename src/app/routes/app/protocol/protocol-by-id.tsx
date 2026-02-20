@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 
 import { Head } from '@/components/seo/head';
 import { ProtocolOverview } from '@/features/protocol/components/protocol-overview';

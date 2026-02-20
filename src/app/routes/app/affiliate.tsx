@@ -20,7 +20,7 @@ export const AffiliateRoute = () => {
           <div className="absolute bottom-0 z-50 h-40 w-full rounded-t-[32px] bg-white" />
         </div>
       </div>
-      <div className="relative -top-40 w-full bg-white lg:-top-32 ">
+      <div className="relative -top-40 w-full bg-white lg:-top-32">
         <AffiliateBody />
       </div>
     </ContentLayout>

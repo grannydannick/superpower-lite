@@ -4,11 +4,11 @@ All deployments are handled by **Vercel**. Environment variables are managed in 
 
 ## Environments
 
-| Environment | Trigger | Domain | Doppler Config |
-|---|---|---|---|
-| Preview | Push to any PR branch | Auto-generated `*.vercel.app` URL | `stg` |
-| Staging | Push to `main` | https://app.superpower-staging.com | `stg` |
-| Production | Manual promotion | https://app.superpower.com | `prd` |
+| Environment | Trigger               | Domain                             | Doppler Config |
+| ----------- | --------------------- | ---------------------------------- | -------------- |
+| Preview     | Push to any PR branch | Auto-generated `*.vercel.app` URL  | `stg`          |
+| Staging     | Push to `main`        | https://app.superpower-staging.com | `stg`          |
+| Production  | Manual promotion      | https://app.superpower.com         | `prd`          |
 
 ## Vercel Project
 

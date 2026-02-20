@@ -130,7 +130,7 @@ const SimpleTabsTrigger = React.memo(
     <TabsPrimitive.Trigger
       ref={ref}
       className={cn(
-        'inline-flex items-center justify-center whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 relative z-10',
+        'relative z-10 inline-flex items-center justify-center whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
         'data-[state=active]:text-zinc-900',
         'hover:text-zinc-700',
         className,
@@ -151,7 +151,7 @@ const SimpleTabsContent = React.memo(
       className={cn(
         'mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
         'data-[state=inactive]:hidden',
-        'data-[state=active]:animate-in data-[state=active]:fade-in data-[state=active]:duration-150',
+        'data-[state=active]:duration-150 data-[state=active]:animate-in data-[state=active]:fade-in',
         className,
       )}
       {...props}

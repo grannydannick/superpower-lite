@@ -28,8 +28,8 @@ export const AddressCard = memo(
     return (
       <div
         className={cn(
-          'flex items-center justify-between border border-transparent rounded-xl transition-all p-4',
-          isPrimary && 'bg-zinc-50 shadow-sm border-zinc-200',
+          'flex items-center justify-between rounded-xl border border-transparent p-4 transition-all',
+          isPrimary && 'border-zinc-200 bg-zinc-50 shadow-sm',
         )}
       >
         <div className="flex items-center gap-4">

@@ -6,7 +6,7 @@ import {
   DollarSignIcon,
 } from 'lucide-react';
 import { useMemo } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router';
 
 import { Body1, Body2 } from '@/components/ui/typography';
 import {

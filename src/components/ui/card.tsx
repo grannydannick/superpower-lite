@@ -9,7 +9,7 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'rounded-3xl bg-card text-card-foreground overflow-hidden',
+      'overflow-hidden rounded-3xl bg-card text-card-foreground',
       // We check if the card has a white background or no background set, if so we add a shadow
       // Otherwise we remove the shadow as grey cards look better without it
       className?.includes('bg-white') || !className?.includes('bg-zinc')

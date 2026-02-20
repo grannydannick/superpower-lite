@@ -15,7 +15,7 @@ export const CheckoutLayout = ({
       {step !== REVEAL_STEPS.AUTOPILOT && <CheckoutNavbar step={step} />}
       <div
         className={cn(
-          'mx-auto w-full max-w-[1600px] items-start grid-cols-2 gap-8 px-6 lg:grid lg:gap-16',
+          'mx-auto w-full max-w-[1600px] grid-cols-2 items-start gap-8 px-6 lg:grid lg:gap-16',
           className,
         )}
       >

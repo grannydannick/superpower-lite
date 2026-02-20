@@ -1,5 +1,5 @@
 import { ChevronRight } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router';
 
 import { H2 } from '@/components/ui/typography';
 import { Product } from '@/types/api';

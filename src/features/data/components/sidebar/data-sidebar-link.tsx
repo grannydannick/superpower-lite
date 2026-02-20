@@ -33,10 +33,10 @@ export const DataSidebarLink = ({
       id={`selector-${category.category.toLowerCase()}`}
       key={category.category}
       className={cn(
-        'flex self-start border-transparent gap-2 shrink-0 rounded-full border p-0.5 pr-3 transition-colors relative z-[1] truncate md:w-full lg:w-auto',
+        'relative z-[1] flex shrink-0 gap-2 self-start truncate rounded-full border border-transparent p-0.5 pr-3 transition-colors md:w-full lg:w-auto',
         isActive
           ? 'text-black'
-          : 'text-zinc-400 group hover:text-zinc-700 hover:bg-zinc-100',
+          : 'group text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700',
         className,
       )}
     >

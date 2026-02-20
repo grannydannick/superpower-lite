@@ -32,7 +32,7 @@ const DisplayH = forwardRef<
       {...props}
       ref={ref}
       className={cn(
-        'text-9xl font-normal text-zinc-900 tracking-display-heading',
+        'text-9xl font-normal tracking-display-heading text-zinc-900',
         props.className,
       )}
     >

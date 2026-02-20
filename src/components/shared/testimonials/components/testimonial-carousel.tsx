@@ -35,7 +35,7 @@ export const TestimonialCarousel = ({ darkMode }: { darkMode: boolean }) => {
                   <img
                     src={testimonial.avatar}
                     alt={testimonial.name}
-                    className="size-full  object-cover"
+                    className="size-full object-cover"
                   />
                 </div>
                 <Body2
@@ -67,7 +67,7 @@ export const TestimonialCarousel = ({ darkMode }: { darkMode: boolean }) => {
                 'size-2 shadow-none data-[active="true"]:!bg-vermillion-900',
                 darkMode
                   ? 'data-[active="false"]:bg-zinc-300/25'
-                  : 'data-[active="false"]:bg-zinc-300/30 ',
+                  : 'data-[active="false"]:bg-zinc-300/30',
               )}
             />
           ))}

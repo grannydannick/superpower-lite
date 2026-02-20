@@ -73,7 +73,7 @@ export const PurchaseDialogFooter = ({
     <div
       className={cn(
         // sticky footer only if parent has overflow: auto/scroll
-        'bottom-0 z-50 backdrop-blur-sm flex items-center px-6 py-4 md:py-8 md:px-16 [.overflow-auto_&]:sticky [.overflow-y-scroll_&]:sticky',
+        'bottom-0 z-50 flex items-center px-6 py-4 backdrop-blur-sm md:px-16 md:py-8 [.overflow-auto_&]:sticky [.overflow-y-scroll_&]:sticky',
         className,
       )}
     >

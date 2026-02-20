@@ -3,8 +3,7 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
-export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   variant?: 'individual' | 'error';
 }
 
@@ -19,11 +18,11 @@ const AuthInput = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div
         className={cn(
-          'flex border relative border-input items-center rounded-xl',
+          'relative flex items-center rounded-xl border border-input',
           variant === 'individual' &&
-            'shadow-sm transition-all duration-150 gap-3 h-14',
+            'h-14 gap-3 shadow-sm transition-all duration-150',
           variant === 'error' &&
-            'border-pink-700 bg-pink-50 focus-within:ring-1 focus-within:ring-pink-700 transition-none duration-0',
+            'border-pink-700 bg-pink-50 transition-none duration-0 focus-within:ring-1 focus-within:ring-pink-700',
         )}
       >
         <input
@@ -32,12 +31,12 @@ const AuthInput = React.forwardRef<HTMLInputElement, InputProps>(
             type === 'password' ? (showPassword ? 'text' : 'password') : type
           }
           className={cn(
-            'flex w-full rounded-xl caret-vermillion-900 px-6 py-4 text-base transition-colors placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none',
+            'flex w-full rounded-xl px-6 py-4 text-base caret-vermillion-900 transition-colors placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
             // Distinguish between connected and individual variants - individual ones should act like default inputs
             variant === 'individual' &&
-              'flex absolute inset-0 w-full caret-vermillion-900 rounded-xl text-base transition-all duration-150 placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-ring',
+              'absolute inset-0 flex w-full rounded-xl text-base caret-vermillion-900 transition-all duration-150 placeholder:text-muted-foreground focus-visible:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
             variant === 'error' &&
-              'border-pink-700 bg-pink-50 caret-vermillion-900 placeholder:text-pink-700 focus-visible:bg-pink-50 focus-visible:ring-pink-700 transition-none duration-0',
+              'border-pink-700 bg-pink-50 caret-vermillion-900 transition-none duration-0 placeholder:text-pink-700 focus-visible:bg-pink-50 focus-visible:ring-pink-700',
             className,
           )}
           ref={ref}

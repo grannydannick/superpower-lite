@@ -24,14 +24,19 @@ export const useCreateVerificationSession = ({
   const { onSuccess, ...restConfig } = mutationConfig || {};
 
   return useMutation({
-    onSuccess: (session, variables, context) => {
+    onSuccess: (
+      session,
+      variables,
+      onMutateResult,
+      mutationFunctionContext,
+    ) => {
       // Track identity verification
       track('verified_id', {
         verification_method: 'stripe_identity',
         session_created: session.created,
       });
 
-      onSuccess?.(session, variables, context);
+      onSuccess?.(session, variables, onMutateResult, mutationFunctionContext);
     },
     ...restConfig,
     mutationFn: createVerificationSession,

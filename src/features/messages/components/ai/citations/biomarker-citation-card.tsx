@@ -76,7 +76,7 @@ export const BiomarkerCitationCard = memo(function BiomarkerCitationCard({
         role="note"
         aria-label={`Citation ${citation.number}: ${name}`}
         className={cn(
-          'flex h-[76px] items-center justify-between overflow-clip scroll-mt-4',
+          'flex h-[76px] scroll-mt-4 items-center justify-between overflow-clip',
           'rounded-[20px] border border-zinc-200 bg-white',
           'shadow-[0px_2px_2px_0px_rgba(0,0,0,0.02)]',
           'cursor-pointer transition-all hover:border-zinc-300',

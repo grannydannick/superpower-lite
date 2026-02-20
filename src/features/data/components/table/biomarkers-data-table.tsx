@@ -127,7 +127,7 @@ const getColumns = (
           Name
           <ChevronDown
             className={cn(
-              'transition-transform duration-200 size-4',
+              'size-4 transition-transform duration-200',
               column.getIsSorted() === 'asc' ? 'rotate-180' : null,
             )}
           />
@@ -157,7 +157,7 @@ const getColumns = (
           Status
           <ChevronDown
             className={cn(
-              'transition-transform duration-200 size-4',
+              'size-4 transition-transform duration-200',
               column.getIsSorted() === 'desc' && 'rotate-180',
             )}
           />
@@ -174,7 +174,7 @@ const getColumns = (
           return (
             <Body2
               className={cn(
-                'text-zinc-500 whitespace-nowrap',
+                'whitespace-nowrap text-zinc-500',
                 !isDesktop && 'text-sm',
               )}
             >
@@ -471,7 +471,7 @@ const BiomarkersDataTableComponent = ({
         className={cn(
           'border-separate',
           screenSize === 'mobile'
-            ? 'border-spacing-y-1 border-spacing-x-0'
+            ? 'border-spacing-x-0 border-spacing-y-1'
             : 'border-spacing-y-2',
         )}
         style={{
@@ -503,7 +503,7 @@ const BiomarkersDataTableComponent = ({
                       : '60px'
                     : 'auto';
                   const headerTextClass = cn(
-                    'font-medium text-zinc-400 mt-5',
+                    'mt-5 font-medium text-zinc-400',
                     screenSize === 'mobile' && 'text-xs',
                   );
 

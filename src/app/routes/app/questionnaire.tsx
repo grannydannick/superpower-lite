@@ -3,7 +3,7 @@ import {
   QuestionnaireResponse,
   QuestionnaireResponseItem,
 } from '@medplum/fhirtypes';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 
 import { NotFoundRoute } from '@/app/routes/not-found';
 import { Head } from '@/components/seo';

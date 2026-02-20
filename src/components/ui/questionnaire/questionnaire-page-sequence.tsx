@@ -303,7 +303,7 @@ export const QuestionnaireFormPageSequence = ({
                           className={cn(
                             'h-2.5 w-1.5 rounded-[2px] transition-colors duration-300',
                             index <= currentGroupIndex
-                              ? 'bg-vermillion-900 animate-jump-up'
+                              ? 'animate-jump-up bg-vermillion-900'
                               : 'bg-zinc-200',
                           )}
                         />

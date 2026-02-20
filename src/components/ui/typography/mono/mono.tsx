@@ -32,7 +32,7 @@ const Mono = forwardRef<
       {...props}
       ref={ref}
       className={cn(
-        'text-xs text-zinc-900 font-normal uppercase font-mono',
+        'font-mono text-xs font-normal uppercase text-zinc-900',
         props.className,
       )}
     >

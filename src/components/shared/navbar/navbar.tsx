@@ -6,7 +6,7 @@ import {
   Package,
 } from 'lucide-react';
 import { FC, SVGProps, useEffect, useMemo, useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router';
 
 import {
   DataIcon,
@@ -120,9 +120,9 @@ export const DesktopNavbar = () => {
   return (
     <nav
       className={cn(
-        'sticky top-0 z-[49] hidden w-full lg:block transition-colors duration-200',
+        'sticky top-0 z-[49] hidden w-full transition-colors duration-200 lg:block',
         isBlurred
-          ? 'bg-opacity-10 bg-white backdrop-blur-sm rounded-b-2xl'
+          ? 'rounded-b-2xl bg-white bg-opacity-10 backdrop-blur-sm'
           : null,
       )}
     >
@@ -159,7 +159,7 @@ export const DesktopNavbar = () => {
                   cn(
                     'group relative z-10 truncate px-4 py-1.5 transition-all duration-150 active:scale-[98%]',
                     isActive
-                      ? 'text-white bg-primary rounded-full'
+                      ? 'rounded-full bg-primary text-white'
                       : 'text-secondary hover:text-secondary/75',
                   )
                 }
@@ -178,11 +178,11 @@ export const DesktopNavbar = () => {
                   'group relative z-10 truncate px-4 py-1.5 transition-all duration-150',
                   isLight
                     ? isBlurred
-                      ? 'hover:text-secondary text-black'
+                      ? 'text-black hover:text-secondary'
                       : 'text-white'
                     : isActive
                       ? 'text-black hover:text-secondary'
-                      : 'hover:text-secondary text-black',
+                      : 'text-black hover:text-secondary',
                 )
               }
             >
@@ -196,12 +196,12 @@ export const DesktopNavbar = () => {
               >
                 <button
                   className={cn(
-                    'border-0 bg-transparent px-4 focus:outline-none flex items-center gap-1.5',
+                    'flex items-center gap-1.5 border-0 bg-transparent px-4 focus:outline-none',
                     isLight
                       ? isBlurred
-                        ? 'hover:text-secondary text-black'
+                        ? 'text-black hover:text-secondary'
                         : 'text-white'
-                      : 'hover:text-secondary text-black',
+                      : 'text-black hover:text-secondary',
                   )}
                   data-testid="navbar-more-btn"
                 >
@@ -221,7 +221,7 @@ export const DesktopNavbar = () => {
                     data-testid={link.testid}
                     className={({ isActive }) =>
                       cn(
-                        'flex cursor-pointer items-center gap-3 transition duration-200 ease-in-out rounded-[10px]',
+                        'flex cursor-pointer items-center gap-3 rounded-[10px] transition duration-200 ease-in-out',
                         isActive && 'bg-accent',
                       )
                     }
@@ -283,7 +283,7 @@ export const MobileNavbar = () => {
     <div className="fixed inset-x-3 bottom-3 z-[51] flex h-16 items-center gap-2 lg:hidden">
       <div
         className={cn(
-          'flex flex-1 justify-between items-center h-full px-1 rounded-3xl bg-white border border-zinc-100 shadow-lg shadow-black/[.03]',
+          'flex h-full flex-1 items-center justify-between rounded-3xl border border-zinc-100 bg-white px-1 shadow-lg shadow-black/[.03]',
         )}
       >
         {baseLinks
@@ -298,14 +298,14 @@ export const MobileNavbar = () => {
                 }
               }}
               className={cn(
-                'flex justify-center group shrink-0 h-[calc(100%-0.5rem)] transition-colors rounded-[20px] flex-col md:flex-row items-center gap-2 aspect-square p-4 md:min-w-0 cursor-pointer',
+                'group flex aspect-square h-[calc(100%-0.5rem)] shrink-0 cursor-pointer flex-col items-center justify-center gap-2 rounded-[20px] p-4 transition-colors md:min-w-0 md:flex-row',
               )}
             >
               {({ isActive }) => (
                 <link.icon
                   fill="currentColor"
                   className={cn(
-                    'min-w-5 h-5 transition duration-150',
+                    'h-5 min-w-5 transition duration-150',
                     isActive
                       ? 'text-zinc-900'
                       : 'text-zinc-300 group-hover:text-secondary',
@@ -343,7 +343,7 @@ export const MobileNavbar = () => {
         <NavLink
           to={'./concierge'}
           className={cn(
-            'flex justify-center rounded-[20px] group transition-colors flex-col md:flex-row items-center gap-2 aspect-square p-4 md:min-w-0 cursor-pointer',
+            'group flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 rounded-[20px] p-4 transition-colors md:min-w-0 md:flex-row',
           )}
         >
           <CircleAiIcon

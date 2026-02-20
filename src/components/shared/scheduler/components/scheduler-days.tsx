@@ -1,6 +1,5 @@
 import { Moment } from 'moment';
 import 'moment-timezone';
-
 import { Skeleton } from '@/components/ui/skeleton';
 import { Body1 } from '@/components/ui/typography';
 import { Slot } from '@/types/api';

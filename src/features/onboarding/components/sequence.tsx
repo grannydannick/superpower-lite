@@ -28,7 +28,7 @@ const StepLayout = ({
     className={cn(
       'flex flex-1 flex-col',
       centered &&
-        'md:flex-none md:self-center md:my-auto md:max-h-[900px] md:w-full py-12',
+        'py-12 md:my-auto md:max-h-[900px] md:w-full md:flex-none md:self-center',
       fullHeight && 'md:min-h-screen',
       className,
     )}
@@ -51,7 +51,7 @@ const StepMedia = ({
   <div className="mx-auto rounded-mask">
     <div
       className={cn(
-        'mx-auto flex-1 flex items-center max-h-[calc(100dvh-24rem)] min-h-80 md:max-w-md h-80 overflow-hidden media-organic-reveal',
+        'media-organic-reveal mx-auto flex h-80 max-h-[calc(100dvh-24rem)] min-h-80 flex-1 items-center overflow-hidden md:max-w-md',
         className,
       )}
     >
@@ -64,7 +64,7 @@ const StepContent = ({
   children,
   className,
 }: PropsWithChildren<{ className?: string }>) => (
-  <div className={cn('shrink-0 space-y-2 p-6 md:pb-0 mb-6', className)}>
+  <div className={cn('mb-6 shrink-0 space-y-2 p-6 md:pb-0', className)}>
     {children}
   </div>
 );
@@ -75,8 +75,8 @@ const StepFooter = ({
 }: PropsWithChildren<{ className?: string }>) => (
   <div
     className={cn(
-      'fixed bottom-0 left-0 right-0 z-50 p-6 pt-0 flex items-center md:relative md:bg-transparent md:z-auto md:pb-20',
-      'animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300 fill-mode-both',
+      'fixed bottom-0 left-0 right-0 z-50 flex items-center p-6 pt-0 md:relative md:z-auto md:bg-transparent md:pb-20',
+      'delay-300 duration-700 animate-in fade-in slide-in-from-bottom-4 fill-mode-both',
       className,
     )}
   >
@@ -119,8 +119,8 @@ export const ProgressHeader = ({
   return (
     <div
       className={cn(
-        'shrink-0 p-4 relative py-4 flex items-center justify-center',
-        'md:fixed md:top-0 md:left-0 md:right-0 md:z-20',
+        'relative flex shrink-0 items-center justify-center p-4 py-4',
+        'md:fixed md:left-0 md:right-0 md:top-0 md:z-20',
         className,
       )}
     >

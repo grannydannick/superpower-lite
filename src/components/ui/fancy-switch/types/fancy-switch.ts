@@ -8,8 +8,10 @@ export interface OptionObject {
 
 export type OptionType = OptionValue | OptionObject;
 
-export interface FancySwitchProps<T extends OptionType>
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+export interface FancySwitchProps<T extends OptionType> extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'onChange'
+> {
   value?: T extends OptionObject ? T[keyof T] : T;
   onChange?: (value: T extends OptionObject ? T[keyof T] : T) => void;
   options: T[];

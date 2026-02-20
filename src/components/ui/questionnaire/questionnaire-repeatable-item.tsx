@@ -92,10 +92,10 @@ export const QuestionnaireFormRepeatableItem = ({
         <Body1
           className={cn(
             nested
-              ? 'text-base mb-2 mt-1.5'
+              ? 'mb-2 mt-1.5 text-base'
               : description || isMultipleChoice
-                ? 'text-2xl mb-3'
-                : 'text-2xl mb-5',
+                ? 'mb-3 text-2xl'
+                : 'mb-5 text-2xl',
           )}
           // This is needed to allow for a underline inside the question text
           // I don't see a case for XSS because the only way to edit this is in Medplum

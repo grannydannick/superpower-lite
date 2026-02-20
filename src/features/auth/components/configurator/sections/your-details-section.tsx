@@ -186,7 +186,7 @@ export const YourDetailsSection = ({
                       >
                         <SelectTrigger
                           className={cn(
-                            ` px-6 py-4`,
+                            `px-6 py-4`,
                             field.value
                               ? 'text-primary'
                               : fieldState.error
@@ -250,7 +250,7 @@ export const YourDetailsSection = ({
                       className={cn(
                         'flex aspect-square size-5 items-center justify-center rounded-md border',
                         fieldState.error
-                          ? 'border-pink-700 bg-pink-50 focus-within:ring-1 focus-within:ring-pink-700 transition-none duration-0'
+                          ? 'border-pink-700 bg-pink-50 transition-none duration-0 focus-within:ring-1 focus-within:ring-pink-700'
                           : 'transition-all duration-150',
                         !fieldState.error &&
                           (field.value === true
@@ -284,7 +284,7 @@ export const YourDetailsSection = ({
                       className={cn(
                         'flex aspect-square size-5 items-center justify-center rounded-md border',
                         fieldState.error
-                          ? 'border-pink-700 bg-pink-50 focus-within:ring-1 focus-within:ring-pink-700 transition-none duration-0'
+                          ? 'border-pink-700 bg-pink-50 transition-none duration-0 focus-within:ring-1 focus-within:ring-pink-700'
                           : 'transition-all duration-150',
                         !fieldState.error &&
                           (field.value === true

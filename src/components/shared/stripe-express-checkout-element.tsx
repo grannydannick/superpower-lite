@@ -84,7 +84,7 @@ export const StripeExpressCheckoutElement = ({
             // available through either Apple Pay or Google Pay
             const available = Boolean(
               availablePaymentMethods?.applePay ||
-                availablePaymentMethods?.googlePay,
+              availablePaymentMethods?.googlePay,
             );
             onAvailabilityChange?.(available);
             setIsReady(available);

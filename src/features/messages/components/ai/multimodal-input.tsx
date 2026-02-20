@@ -173,7 +173,7 @@ function PureMultimodalInput({
       let files = Array.from(event.target.files || []);
 
       files = files.filter((f) => {
-        const isDev = process.env.NODE_ENV === 'development';
+        const isDev = import.meta.env.DEV;
         if (f.type.startsWith('image')) {
           // we need this check because images are not supported locally
           if (isDev) {
@@ -268,7 +268,7 @@ function PureMultimodalInput({
         <div
           ref={inputWrapperRef}
           className={cn(
-            'relative flex flex-col rounded-2xl border border-input bg-white pb-4 shadow-lg shadow-black/5 transition-all min-h-[56px] shrink-0',
+            'relative flex min-h-[56px] shrink-0 flex-col rounded-2xl border border-input bg-white pb-4 shadow-lg shadow-black/5 transition-all',
             isAttachmentPresent
               ? 'justify-between pt-2'
               : 'justify-center pt-4',

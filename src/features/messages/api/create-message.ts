@@ -33,13 +33,18 @@ export const useCreateMessage = ({
   const { onSuccess, ...restConfig } = mutationConfig || {};
 
   return useMutation({
-    onSuccess: (message, variables, context) => {
+    onSuccess: (
+      message,
+      variables,
+      onMutateResult,
+      mutationFunctionContext,
+    ) => {
       // Track concierge message
       if (variables.data.type === 'concierge') {
         track('sent_message_concierge');
       }
 
-      onSuccess?.(message, variables, context);
+      onSuccess?.(message, variables, onMutateResult, mutationFunctionContext);
     },
     ...restConfig,
     mutationFn: createMessage,

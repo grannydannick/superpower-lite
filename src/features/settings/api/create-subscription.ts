@@ -8,7 +8,6 @@ import { MutationConfig } from '@/lib/react-query';
 import { Subscription } from '@/types/api';
 import { getAccessCode } from '@/utils/access-code';
 import { getReferralId } from '@/utils/referral-id';
-import { getUtmData } from '@/utils/utm-middleware';
 
 export const createSubscriptionInputSchema = z.object({
   code: z.string().optional(),
@@ -28,10 +27,6 @@ export const createSubscription = ({
 }: {
   data: CreateSubscriptionInput;
 }): Promise<{ subscription: Subscription }> => {
-  // Get UTM data from cookie if not provided
-  if (!data.campaignData) {
-    data.campaignData = getUtmData() || undefined;
-  }
   return api.post(`/billing/subscriptions`, data);
 };
 

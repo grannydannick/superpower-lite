@@ -91,7 +91,7 @@ export const SchedulerLocation = ({
                 <div
                   key={slot.start}
                   className={cn(
-                    'cursor-pointer rounded-xl border bg-white px-3 py-2 text-nowrap transition-all duration-200',
+                    'cursor-pointer text-nowrap rounded-xl border bg-white px-3 py-2 transition-all duration-200',
                     isSelected
                       ? 'border-vermillion-900 shadow-lg shadow-vermillion-900/10'
                       : 'hover:border-zinc-300',

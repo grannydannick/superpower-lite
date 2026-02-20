@@ -22,7 +22,7 @@ export const SchedulerTimeSlot = ({
   return (
     <div
       className={cn(
-        'flex rounded-xl cursor-pointer ease-in-out duration-200 p-3 text-nowrap border bg-white',
+        'flex cursor-pointer text-nowrap rounded-xl border bg-white p-3 duration-200 ease-in-out',
         selected
           ? 'border-vermillion-900 shadow-lg shadow-vermillion-900/10'
           : '',

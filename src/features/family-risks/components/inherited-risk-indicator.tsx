@@ -24,7 +24,7 @@ export function InheritedRiskIndicator({
   const isDark = variant === 'dark';
 
   return (
-    <div className={cn('space-y-3 max-w-xl mx-auto', className)}>
+    <div className={cn('mx-auto max-w-xl space-y-3', className)}>
       <div className="relative">
         <div
           className={cn(

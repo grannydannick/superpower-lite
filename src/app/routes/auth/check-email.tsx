@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 
 import { CheckEmailScreen } from '@/features/auth/components/check-email-screen';
 import { useAnalytics } from '@/hooks/use-analytics';

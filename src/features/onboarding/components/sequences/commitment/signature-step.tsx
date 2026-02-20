@@ -1,6 +1,6 @@
 import { X } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import SignatureCanvas from 'react-signature-canvas';
 
 import { Button } from '@/components/ui/button';
@@ -82,7 +82,7 @@ export const SignatureStep = () => {
         <Button
           onClick={handleNext}
           disabled={isEmpty || isProcessing}
-          className=" w-full max-w-md"
+          className="w-full max-w-md"
         >
           {isProcessing ? 'Processing...' : 'See your home for health'}
         </Button>

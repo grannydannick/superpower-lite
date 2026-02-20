@@ -49,7 +49,7 @@ const BiomarkerFilterButton = forwardRef<
       ref={ref}
       type="button"
       className={cn(
-        'flex select-none text-left flex-col rounded-lg p-1.5 outline-none transition-all duration-200 focus-visible:bg-zinc-100 focus-visible:outline-none',
+        'flex select-none flex-col rounded-lg p-1.5 text-left outline-none transition-all duration-200 focus-visible:bg-zinc-100 focus-visible:outline-none',
         'cursor-pointer disabled:cursor-default',
         className,
       )}

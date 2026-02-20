@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { Head } from '@/components/seo';
 import { Button } from '@/components/ui/button';

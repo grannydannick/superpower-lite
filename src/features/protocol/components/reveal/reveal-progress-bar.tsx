@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 
 import { cn } from '@/lib/utils';
 
@@ -104,7 +104,7 @@ export const RevealProgressBar = ({ className }: { className?: string }) => {
   return (
     <div
       className={cn(
-        'w-full flex items-center justify-between gap-1',
+        'flex w-full items-center justify-between gap-1',
         className,
       )}
     >
@@ -112,7 +112,7 @@ export const RevealProgressBar = ({ className }: { className?: string }) => {
         <div
           key={`${item.id}-${index}`}
           className={cn(
-            'h-1 flex-1 relative bg-white/50 rounded-full overflow-hidden',
+            'relative h-1 flex-1 overflow-hidden rounded-full bg-white/50',
           )}
         >
           <div

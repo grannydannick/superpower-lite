@@ -54,7 +54,7 @@ export const useOnboardingFlowStore = create<OnboardingFlowStore>()(
       const newCurrentStep =
         currentStep && steps.includes(currentStep)
           ? currentStep
-          : steps[0] ?? null;
+          : (steps[0] ?? null);
       set({
         validSteps: steps,
         currentStep: newCurrentStep,

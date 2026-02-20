@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 
 import { AuthLayout } from '@/components/layouts';
 import { SetPasswordForm } from '@/features/auth/components/set-password-form';

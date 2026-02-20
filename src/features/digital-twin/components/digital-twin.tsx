@@ -85,7 +85,7 @@ export const DigitalTwin = ({ category }: { category?: Category }) => {
   return (
     <div
       className={cn(
-        'w-full h-[28rem] md:mt-0 -mt-12 md:[@media(max-height:800px)]:h-[48rem] [&>div]:!touch-pan-y md:h-[80vh] md:max-h-[56rem] cursor-grab active:cursor-grabbing transition-opacity duration-1000 will-change-opacity',
+        'will-change-opacity -mt-12 h-[28rem] w-full cursor-grab transition-opacity duration-1000 active:cursor-grabbing md:mt-0 md:h-[80vh] md:max-h-[56rem] [&>div]:!touch-pan-y md:[@media(max-height:800px)]:h-[48rem]',
         loadState === 0 && 'opacity-0',
       )}
     >

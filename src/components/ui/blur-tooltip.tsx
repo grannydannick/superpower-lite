@@ -67,9 +67,9 @@ export const BlurTooltip = ({
       {/* Tooltip with pure Tailwind CSS */}
       <div
         className={cn(
-          'absolute pointer-events-none -inset-3 flex items-center justify-center overflow-hidden bg-white/5 transition-all ease-out',
-          'opacity-0 scale-90 md:group-hover:opacity-100 md:group-hover:scale-100',
-          showMobileBadge && 'opacity-100 scale-100',
+          'pointer-events-none absolute -inset-3 flex items-center justify-center overflow-hidden bg-white/5 transition-all ease-out',
+          'scale-90 opacity-0 md:group-hover:scale-100 md:group-hover:opacity-100',
+          showMobileBadge && 'scale-100 opacity-100',
         )}
       >
         <div className="px-4 py-1.5 text-center text-zinc-400/90 md:text-2xl">

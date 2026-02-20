@@ -1,6 +1,6 @@
 import { Collapsible } from '@radix-ui/react-collapsible';
 import { ChevronDown } from 'lucide-react';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 
 import { CreditActionCard } from '@/features/orders/components/credit-action-card';
 import { ProtocolActionCard } from '@/features/protocol/components/protocol-action-card';
@@ -49,10 +49,10 @@ export const ActionableAccordion = ({
           <div>
             <Separator />
             {credits.map((c, index) => (
-              <>
-                <CreditActionCard key={c.id} credit={c} />
+              <Fragment key={c.id}>
+                <CreditActionCard credit={c} />
                 {index !== credits.length - 1 ? <Separator /> : null}
-              </>
+              </Fragment>
             ))}
             {carePlans.length > 0 ? <Separator /> : null}
             {carePlans.map((c) => (

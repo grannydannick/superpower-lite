@@ -105,7 +105,7 @@ const Trigger = forwardRef<
     ref={ref}
     variant="ghost"
     className={cn(
-      'hover:bg-zinc-100 hover:text-primary py-2 gap-3 pl-4',
+      'gap-3 py-2 pl-4 hover:bg-zinc-100 hover:text-primary',
       className,
     )}
     {...props}

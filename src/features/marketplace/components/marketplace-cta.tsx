@@ -1,4 +1,4 @@
-import { NavLink, useSearchParams } from 'react-router-dom';
+import { NavLink, useSearchParams } from 'react-router';
 
 import { Orders } from '@/components/icons/marketplace/orders';
 import { Subscriptions } from '@/components/icons/marketplace/subscriptions';

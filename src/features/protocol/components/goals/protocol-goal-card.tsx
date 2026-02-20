@@ -36,7 +36,7 @@ export function ProtocolGoalCard({
           backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3)), url(${src})`,
         }}
         className={cn(
-          'w-full relative z-10 p-6 overflow-hidden rounded-2xl lg:border border-white/10 bg-cover bg-center',
+          'relative z-10 w-full overflow-hidden rounded-2xl border-white/10 bg-cover bg-center p-6 lg:border',
           className,
         )}
       >

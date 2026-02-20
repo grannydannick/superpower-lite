@@ -165,11 +165,11 @@ export function MultipleChoice({
                 tabIndex={0}
                 key={idx}
                 className={cn(
-                  'relative flex w-full cursor-pointer group items-center justify-between space-x-2 rounded-xl bg-white transition-all outline-none ring-0 focus-visible:ring-2 focus-visible:ring-secondary',
+                  'group relative flex w-full cursor-pointer items-center justify-between space-x-2 rounded-xl bg-white outline-none ring-0 transition-all focus-visible:ring-2 focus-visible:ring-secondary',
                   isSelected
                     ? 'bg-black text-white hover:bg-zinc-800'
                     : isDisabled
-                      ? 'opacity-50 cursor-not-allowed'
+                      ? 'cursor-not-allowed opacity-50'
                       : 'hover:bg-zinc-50',
                 )}
                 onKeyDown={(e) => {

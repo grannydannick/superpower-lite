@@ -1,0 +1,35 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "endOfLine": "lf",
+  "singleQuote": true,
+  "trailingComma": "all",
+  "printWidth": 80,
+  "tabWidth": 2,
+  "useTabs": false,
+  "experimentalSortPackageJson": false,
+  "experimentalSortImports": {
+    "groups": [
+      "builtin",
+      "external",
+      "internal",
+      "parent",
+      "sibling",
+      "index",
+      "style",
+      "unknown"
+    ],
+    "ignoreCase": true,
+    "newlinesBetween": true,
+    "order": "asc",
+    "internalPattern": ["@/"]
+  },
+  "experimentalTailwindcss": {
+    "config": "./tailwind.config.cjs",
+    "functions": ["clsx", "cn", "cva", "twMerge"]
+  },
+  "ignorePatterns": [
+    "*.hbs",
+    "public/mockServiceWorker.js",
+    "src/orpc/types.generated.ts"
+  ]
+}

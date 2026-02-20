@@ -1,6 +1,6 @@
 import { ArrowUpRight } from 'lucide-react';
 import { useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 
 import { Button } from '@/components/ui/button';
 import { ScoreChart } from '@/components/ui/charts/score-chart/score-chart';

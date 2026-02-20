@@ -125,7 +125,7 @@ export const ScoreChart = ({
           strokeLinecap="round"
           className={
             hasInteraction
-              ? 'ease-[cubic-bezier(0.4,0,0.2,1)] transition-[d,fill,stroke] duration-500'
+              ? 'transition-timing-function-[cubic-bezier(0.4,0,0.2,1)] transition-[d,fill,stroke] duration-500'
               : ''
           }
         />

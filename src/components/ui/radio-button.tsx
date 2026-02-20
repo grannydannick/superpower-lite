@@ -12,7 +12,7 @@ export const RadioButton = ({
   return (
     <div
       className={cn(
-        'size-2.5 rounded-full outline outline-[1.5px] outline-black mr-4 outline-offset-2',
+        'mr-4 size-2.5 rounded-full outline outline-[1.5px] outline-offset-2 outline-black',
         className,
       )}
       onClick={onChange}

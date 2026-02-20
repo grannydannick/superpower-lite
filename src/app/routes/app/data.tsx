@@ -1,5 +1,5 @@
 import { Lock } from 'lucide-react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router';
 
 import { ContentLayout } from '@/components/layouts';
 import { Badge } from '@/components/ui/badge';

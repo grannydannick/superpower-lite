@@ -39,7 +39,7 @@ export const AnimatedTimeline = ({
             <div className="flex items-center gap-4">
               <div
                 className={cn(
-                  'flex size-5 items-center justify-center rounded-full border-2 shrink-0',
+                  'flex size-5 shrink-0 items-center justify-center rounded-full border-2',
                   isComplete
                     ? 'border-vermillion-900 bg-vermillion-900'
                     : 'border-zinc-300',
@@ -79,7 +79,7 @@ export const AnimatedTimeline = ({
                 animate={{ scaleY: 1 }}
                 transition={{ delay: i * 0.3 + 0.3, duration: 0.6 }}
                 className={cn(
-                  'ml-[10px] h-5 my-2 w-px rounded-full',
+                  'my-2 ml-[10px] h-5 w-px rounded-full',
                   isComplete ? 'bg-vermillion-900' : 'bg-zinc-300',
                   timeline.filter((step) => step.complete).length - 1 === i &&
                     'bg-gradient-to-b from-vermillion-900 to-zinc-300',

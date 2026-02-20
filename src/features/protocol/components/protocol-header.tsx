@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 
 import { ChevronLeft } from '@/components/icons/chevron-left-icon';
 import { Button } from '@/components/ui/button';
@@ -23,8 +23,8 @@ export const ProtocolHeader = ({
         backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3)), url(${src})`,
       }}
       className={cn(
-        'w-full relative overflow-hidden sm:border border-white/10 bg-cover bg-center',
-        'sm:mb-8 -mb-8 sm:pb-0 pb-12 lg:rounded-3xl rounded-t-none sm:rounded-b-3xl',
+        'relative w-full overflow-hidden border-white/10 bg-cover bg-center sm:border',
+        '-mb-8 rounded-t-none pb-12 sm:mb-8 sm:rounded-b-3xl sm:pb-0 lg:rounded-3xl',
         className,
       )}
     >

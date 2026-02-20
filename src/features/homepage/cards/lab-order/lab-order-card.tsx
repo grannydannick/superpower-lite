@@ -1,7 +1,7 @@
 import { ArrowUpRightIcon, Calendar, MapPin } from 'lucide-react';
 import moment from 'moment-timezone';
 import { useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 import { AddToCalendar } from '@/components/shared/add-to-calendar-button';
 import { Button } from '@/components/ui/button';

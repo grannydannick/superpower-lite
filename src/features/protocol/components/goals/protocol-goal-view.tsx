@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { ChevronLeft } from '@/components/icons/chevron-left-icon';
 import { Button } from '@/components/ui/button';

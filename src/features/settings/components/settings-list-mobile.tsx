@@ -76,9 +76,9 @@ export const SettingsListMobile = () => {
                   <Fragment key={index}>
                     <div
                       className={cn(
-                        'p-5 flex gap-4 cursor-pointer',
+                        'flex cursor-pointer gap-4 p-5',
                         item.disabled &&
-                          'cursor-not-allowed disabled pointer-events-none opacity-50',
+                          'disabled pointer-events-none cursor-not-allowed opacity-50',
                       )}
                       role="presentation"
                       onClick={() => setCurrent(item.value as MobileMenu)}

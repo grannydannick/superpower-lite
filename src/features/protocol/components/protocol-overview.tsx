@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router';
 
 import { ChevronLeft } from '@/components/icons/chevron-left-icon';
 import { Link } from '@/components/ui/link';

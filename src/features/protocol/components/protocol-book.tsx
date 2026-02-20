@@ -21,7 +21,7 @@ export const ProtocolBook = ({
   return (
     <div
       className={cn(
-        'mx-auto aspect-[1/1.414] w-32 [perspective:1000px] [perspective-origin:left_center]',
+        'mx-auto aspect-[1/1.414] w-32 [perspective-origin:left_center] [perspective:1000px]',
         className,
       )}
     >
@@ -32,11 +32,11 @@ export const ProtocolBook = ({
         {/* front cover */}
         <div
           className={cn(
-            'absolute left-0 top-0 size-full z-40 overflow-hidden rounded-[10px]',
+            'absolute left-0 top-0 z-40 size-full overflow-hidden rounded-[10px]',
             'origin-left transform-gpu [backface-visibility:hidden]',
             'transition-all duration-500 ease-out will-change-transform',
-            '[transform:translateZ(3px)_rotateY(0deg)] delay-[360ms]',
-            'group-hover:[transform:translateZ(3px)_rotateY(-80deg)] group-hover:delay-[0ms]',
+            'transition-delay-[360ms] [transform:translateZ(3px)_rotateY(0deg)]',
+            'group-hover:transition-delay-[0ms] group-hover:[transform:translateZ(3px)_rotateY(-80deg)]',
             'group-hover:shadow-xl',
           )}
         >
@@ -54,11 +54,11 @@ export const ProtocolBook = ({
         {/* inner page (slightly smaller than cover) */}
         <div
           className={cn(
-            'absolute flex flex-col overflow-hidden md:break-words pl-3 pr-1 pt-2 md:pt-6 md:pr-6 md:pl-8 pb-2 left-0 top-1 h-[calc(100%-8px)] w-[calc(100%-8px)] z-30 bg-gradient-to-r from-zinc-300 via-white via-50% to-white rounded-lg',
+            'absolute left-0 top-1 z-30 flex h-[calc(100%-8px)] w-[calc(100%-8px)] flex-col overflow-hidden rounded-lg bg-gradient-to-r from-zinc-300 via-white via-50% to-white pb-2 pl-3 pr-1 pt-2 md:break-words md:pl-8 md:pr-6 md:pt-6',
             'origin-left transform-gpu [backface-visibility:hidden]',
             'transition-all duration-500 ease-out will-change-transform',
-            '[transform:translateZ(2px)_rotateY(0deg)] delay-[240ms]',
-            'group-hover:[transform:translateZ(2px)_rotateY(-30deg)] group-hover:delay-[120ms]',
+            'transition-delay-[240ms] [transform:translateZ(2px)_rotateY(0deg)]',
+            'group-hover:transition-delay-[120ms] group-hover:[transform:translateZ(2px)_rotateY(-30deg)]',
             'group-hover:shadow-md',
           )}
         >
@@ -80,11 +80,11 @@ export const ProtocolBook = ({
         {/* back cover */}
         <div
           className={cn(
-            'absolute left-0 top-0 size-full z-20 overflow-hidden bg-vermillion-900 rounded-[10px]',
+            'absolute left-0 top-0 z-20 size-full overflow-hidden rounded-[10px] bg-vermillion-900',
             'origin-left transform-gpu [backface-visibility:hidden]',
             'transition-all duration-500 ease-out will-change-transform',
-            '[transform:translateZ(0)_rotateY(0deg)] delay-[0ms]',
-            'group-hover:[transform:translateZ(0)_rotateY(-1deg)] group-hover:delay-[360ms]',
+            'transition-delay-[0ms] [transform:translateZ(0)_rotateY(0deg)]',
+            'group-hover:transition-delay-[360ms] group-hover:[transform:translateZ(0)_rotateY(-1deg)]',
           )}
         >
           <img

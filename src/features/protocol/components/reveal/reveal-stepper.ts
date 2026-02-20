@@ -1,6 +1,6 @@
 import { defineStepper } from '@stepperize/react';
 import { useCallback, useMemo, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { useAnalytics } from '@/hooks/use-analytics';
 

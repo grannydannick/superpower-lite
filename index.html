@@ -1,11 +1,13 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- React Scan -->
-    <!--    <script src="https://unpkg.com/react-scan/dist/auto.global.js"></script>-->
     <!-- Google Tag Manager -->
     <script>
       (function (w, d, s, l, i) {
+        if ('%PROD%' !== 'true') {
+          return;
+        }
+
         if (
           window.location.pathname.startsWith('/onboarding') ||
           window.location.pathname.startsWith('/register')

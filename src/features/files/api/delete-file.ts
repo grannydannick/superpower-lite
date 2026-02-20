@@ -24,8 +24,8 @@ export const useDeleteFile = ({
   const { onError, onMutate, ...restConfig } = mutationConfig || {};
 
   return useMutation({
-    onMutate: async (variables) => {
-      const userContext = await onMutate?.(variables);
+    onMutate: async (variables, mutationFunctionContext) => {
+      const userContext = await onMutate?.(variables, mutationFunctionContext);
 
       await queryClient.cancelQueries({
         queryKey: getFilesQueryOptions().queryKey,
@@ -49,14 +49,19 @@ export const useDeleteFile = ({
         ...(userContext as Record<string, unknown>),
       };
     },
-    onError: (context, ...args) => {
-      if (context && 'previousFiles' in context && context.previousFiles) {
+    onError: (error, variables, onMutateResult, mutationFunctionContext) => {
+      if (
+        onMutateResult &&
+        typeof onMutateResult === 'object' &&
+        'previousFiles' in onMutateResult &&
+        onMutateResult.previousFiles
+      ) {
         queryClient.setQueryData<FilesData>(
           getFilesQueryOptions().queryKey,
-          () => context.previousFiles as FilesData,
+          () => onMutateResult.previousFiles as FilesData,
         );
       }
-      onError?.(context, ...args);
+      onError?.(error, variables, onMutateResult, mutationFunctionContext);
     },
     ...restConfig,
     mutationFn: deleteFile,

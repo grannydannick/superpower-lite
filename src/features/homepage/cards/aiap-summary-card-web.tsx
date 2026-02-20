@@ -1,5 +1,5 @@
 import { ChevronRightIcon } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 import { Body1, Body2 } from '@/components/ui/typography';
 import { useLatestCompletedPlan } from '@/features/protocol/hooks/use-latest-completed-plan';

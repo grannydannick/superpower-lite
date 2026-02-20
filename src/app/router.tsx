@@ -1,10 +1,6 @@
 import { useMemo } from 'react';
-import {
-  createBrowserRouter,
-  Navigate,
-  redirect,
-  RouterProvider,
-} from 'react-router-dom';
+import { createBrowserRouter, Navigate, redirect } from 'react-router';
+import { RouterProvider } from 'react-router/dom';
 
 import { MainErrorFallback } from '@/components/errors/main';
 import { ConciergeLayout } from '@/features/messages/layouts/concierge-layout';
@@ -27,9 +23,8 @@ export const createRouter = () =>
     {
       path: '/claim-benefit',
       lazy: async () => {
-        const { ClaimBenefitRoute } = await import(
-          './routes/auth/claim-benefit'
-        );
+        const { ClaimBenefitRoute } =
+          await import('./routes/auth/claim-benefit');
         return { Component: ClaimBenefitRoute };
       },
     },
@@ -50,9 +45,8 @@ export const createRouter = () =>
     {
       path: '/resetpassword',
       lazy: async () => {
-        const { ResetPasswordRoute } = await import(
-          './routes/auth/reset-password'
-        );
+        const { ResetPasswordRoute } =
+          await import('./routes/auth/reset-password');
         return { Component: ResetPasswordRoute };
       },
     },
@@ -134,15 +128,13 @@ export const createRouter = () =>
         {
           path: 'questionnaire/:type',
           lazy: async () => {
-            const { QuestionnaireRoute } = await import(
-              './routes/app/questionnaire'
-            );
+            const { QuestionnaireRoute } =
+              await import('./routes/app/questionnaire');
             return { Component: QuestionnaireRoute };
           },
           loader: async () => {
-            const { questionnaireLoader } = await import(
-              './routes/app/questionnaire'
-            );
+            const { questionnaireLoader } =
+              await import('./routes/app/questionnaire');
             return questionnaireLoader()();
           },
         },
@@ -175,9 +167,8 @@ export const createRouter = () =>
             {
               path: 'plan',
               lazy: async () => {
-                const { FamilyRiskPlanRoute } = await import(
-                  './routes/app/family-risk/family-risk-plan'
-                );
+                const { FamilyRiskPlanRoute } =
+                  await import('./routes/app/family-risk/family-risk-plan');
                 return { Component: FamilyRiskPlanRoute };
               },
             },
@@ -193,18 +184,16 @@ export const createRouter = () =>
         {
           path: 'marketplace',
           lazy: async () => {
-            const { MarketplaceRoute } = await import(
-              './routes/app/marketplace'
-            );
+            const { MarketplaceRoute } =
+              await import('./routes/app/marketplace');
             return { Component: MarketplaceRoute };
           },
         },
         {
           path: 'prescriptions/:id',
           lazy: async () => {
-            const { PrescriptionRoute } = await import(
-              './routes/app/prescription'
-            );
+            const { PrescriptionRoute } =
+              await import('./routes/app/prescription');
             return { Component: PrescriptionRoute };
           },
         },
@@ -222,9 +211,8 @@ export const createRouter = () =>
             return { Component: OnboardingRoute };
           },
           loader: async () => {
-            const { onboardingLoader } = await import(
-              './routes/app/onboarding'
-            );
+            const { onboardingLoader } =
+              await import('./routes/app/onboarding');
             return onboardingLoader()();
           },
           errorElement: <MainErrorFallback />,

@@ -77,7 +77,7 @@ const ProductCard = memo(function ProductCard({
     ? getPricingDetails(product)
     : {
         hasDiscount: false,
-        discountedPrice: isService ? product.price / 100 : product.price ?? 0,
+        discountedPrice: isService ? product.price / 100 : (product.price ?? 0),
       };
 
   const { hasDiscount, discountedPrice } = pricingDetails;
@@ -85,7 +85,7 @@ const ProductCard = memo(function ProductCard({
     ? product.price
     : isService
       ? product.price / 100
-      : product.price ?? 0;
+      : (product.price ?? 0);
   const discount = isProduct(product) ? product.discount : 0;
 
   const productUrl = getProductUrl(product);

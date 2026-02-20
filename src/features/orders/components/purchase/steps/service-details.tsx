@@ -28,7 +28,7 @@ export const ServiceDetailsStep = () => {
         <div className="flex flex-col justify-center gap-4 md:max-w-[278px]">
           <img
             src={getServiceImage(service.name)}
-            className="block size-[70px] rounded-2xl border border-zinc-200 bg-white  object-cover md:hidden"
+            className="block size-[70px] rounded-2xl border border-zinc-200 bg-white object-cover md:hidden"
             alt={service.name}
           />
           <div className="max-w-[220px] space-y-4 md:max-w-none">
@@ -65,7 +65,7 @@ export const ServiceDetailsStep = () => {
 
         <img
           src={getServiceImage(service.name)}
-          className="hidden h-[362px] w-full rounded-2xl border border-zinc-200  bg-white object-cover md:block md:size-[362px]"
+          className="hidden h-[362px] w-full rounded-2xl border border-zinc-200 bg-white object-cover md:block md:size-[362px]"
           alt={service.name}
         />
       </div>

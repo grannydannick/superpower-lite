@@ -101,7 +101,7 @@ const FamilyInsightsDialog = ({ children }: { children: ReactNode }) => {
   });
   const { track } = useAnalytics();
 
-  const isDev = process.env.NODE_ENV === 'development';
+  const isDev = import.meta.env.DEV;
 
   const questionnaireInsights = data?.insights ?? [];
   const shouldUseMock = isDev && questionnaireInsights.length === 0;

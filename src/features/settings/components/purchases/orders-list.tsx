@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { ChevronRight } from 'lucide-react';
 import { HTMLAttributes } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { Card } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -154,7 +154,7 @@ const OrderRowCard = ({
     <div
       {...rest}
       className={cn(
-        'flex items-center py-[14px] pr-[14px] pl-5 bg-white rounded-2xl cursor-pointer hover:bg-zinc-50',
+        'flex cursor-pointer items-center rounded-2xl bg-white py-[14px] pl-5 pr-[14px] hover:bg-zinc-50',
       )}
     >
       <div className="flex items-center justify-center gap-3">
@@ -170,9 +170,9 @@ const OrderRowCard = ({
         <div className="flex flex-col">
           <Body1
             className={cn(
-              'text-zinc-600 line-clamp-1',
+              'line-clamp-1 text-zinc-600',
               multiPlatformOrder.type === 'service' &&
-                'md:hover:text-vermillion-900 cursor-pointer',
+                'cursor-pointer md:hover:text-vermillion-900',
             )}
             role="presentation"
             onClick={onClickHandler}

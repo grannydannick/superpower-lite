@@ -45,7 +45,7 @@ export const Greeting = () => {
               className={cn(
                 'flex size-12 items-center justify-center rounded-full',
                 'bg-gradient-to-br from-orange-400 via-vermillion-900 to-vermillion-700',
-                'text-white font-semibold text-lg leading-none pt-0.5',
+                'pt-0.5 text-lg font-semibold leading-none text-white',
                 'outline outline-1 -outline-offset-1 outline-black/10',
               )}
             >

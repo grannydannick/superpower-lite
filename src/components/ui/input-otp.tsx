@@ -17,7 +17,7 @@ const InputOTP = React.forwardRef<
       containerClassName,
     )}
     className={cn(
-      'disabled:cursor-not-allowed will-change-transform',
+      'will-change-transform disabled:cursor-not-allowed',
       className,
     )}
     {...props}
@@ -31,7 +31,7 @@ const InputOTPGroup = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('flex items-center justify-center gap-2 w-full', className)}
+    className={cn('flex w-full items-center justify-center gap-2', className)}
     {...props}
   />
 ));
@@ -48,8 +48,8 @@ const InputOTPSlot = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        'relative flex flex-1 aspect-square max-w-14 items-center justify-center rounded-[12px] backdrop-blur-lg transition-all',
-        'bg-black/12 bg-white/20 border border-white',
+        'relative flex aspect-square max-w-14 flex-1 items-center justify-center rounded-[12px] backdrop-blur-lg transition-all',
+        'bg-black/12 border border-white bg-white/20',
         !isActive && 'border-opacity-20',
         className,
       )}

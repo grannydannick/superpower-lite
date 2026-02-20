@@ -428,7 +428,7 @@ const Trigger = forwardRef<
     ref={ref}
     variant="ghost"
     size="medium"
-    className={cn('hover:bg-zinc-100 hover:text-primary py-2', className)}
+    className={cn('py-2 hover:bg-zinc-100 hover:text-primary', className)}
     {...props}
   >
     <Share size={16} className="mr-2" />

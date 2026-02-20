@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { jwtDecode } from 'jwt-decode';
 import { useEffect, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { Spinner } from '@/components/ui/spinner/spinner';
@@ -148,8 +148,8 @@ export const VerifyEmailRoute = () => {
       </div>
 
       <div className="absolute inset-0 z-10 flex items-center justify-center">
-        <div className="text-center space-y-8">
-          <H1 className="text-white text-4xl md:text-6xl">
+        <div className="space-y-8 text-center">
+          <H1 className="text-4xl text-white md:text-6xl">
             <div className="opacity-100">Verifying email</div>
           </H1>
 

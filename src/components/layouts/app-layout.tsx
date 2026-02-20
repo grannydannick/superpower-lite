@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import * as React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 import { FloatingWrapper } from '@/components/shared/floating-wrapper';
 import { NavigationProgress } from '@/components/ui/navigation-progress';
@@ -43,9 +43,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <NavigationProgress />
       <motion.div
         className={cn(
-          'flex flex-col flex-1',
+          'flex flex-1 flex-col',
           !hideNavBar
-            ? 'mb-[72px] md:mb-0 min-h-[calc(100dvh-72px)] md:min-h-[calc(100dvh-68px)]'
+            ? 'mb-[72px] min-h-[calc(100dvh-72px)] md:mb-0 md:min-h-[calc(100dvh-68px)]'
             : null,
         )}
       >

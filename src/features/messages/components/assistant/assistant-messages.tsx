@@ -24,8 +24,8 @@ export function AssistantMessages({
     <div className={cn('relative flex min-h-0 flex-1')}>
       <div
         className={cn(
-          'relative  flex min-h-0 flex-1 min-w-0 flex-col gap-6 overflow-auto overscroll-contain overflow-x-auto py-4',
-          'scrollbar scrollbar-thumb-zinc-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:h-2',
+          'relative flex min-h-0 min-w-0 flex-1 flex-col gap-6 overflow-auto overflow-x-auto overscroll-contain py-4',
+          'scrollbar scrollbar-thumb-zinc-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar]:w-2',
         )}
         style={{
           maskImage:

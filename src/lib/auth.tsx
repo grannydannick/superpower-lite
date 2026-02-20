@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
 import * as React from 'react';
 import { configureAuth } from 'react-query-auth';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router';
 import { z } from 'zod';
 
 import { SuperpowerLoadingLogo } from '@/components/icons/superpower-logo';
@@ -25,7 +25,6 @@ import {
   User,
 } from '@/types/api';
 import { parseJWTPayload } from '@/utils/jwt';
-import { getUtmData } from '@/utils/utm-middleware';
 
 import { api } from './api-client';
 
@@ -135,7 +134,7 @@ const registerUser = (
         ),
       ),
     },
-    campaignData: getUtmData(),
+    campaignData: {},
   };
   return api.post('/auth/newuser', registerData);
 };
@@ -349,7 +348,7 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const { task } = taskQuery.data;
     const isTaskIncomplete = task.status !== 'completed';
     const isSubscribed = !!userQuery.data?.subscribed;
-    const isDev = import.meta.env.DEV || process.env.NODE_ENV === 'development';
+    const isDev = import.meta.env.DEV;
 
     let target: string | null = null;
 

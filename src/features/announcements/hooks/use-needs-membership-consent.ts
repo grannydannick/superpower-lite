@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 import { useUser } from '@/lib/auth';
 import { useAuthorization } from '@/lib/authorization';
