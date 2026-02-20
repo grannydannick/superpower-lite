@@ -144,6 +144,13 @@ export const createRouter = () =>
               },
               errorElement: <MainErrorFallback />,
             },
+            {
+              path: 'settings',
+              lazy: async () => {
+                const { SettingsRoute } = await import('./routes/app/settings');
+                return { Component: SettingsRoute };
+              },
+            },
           ],
         },
         {
@@ -201,13 +208,6 @@ export const createRouter = () =>
               },
             },
           ],
-        },
-        {
-          path: 'settings',
-          lazy: async () => {
-            const { SettingsRoute } = await import('./routes/app/settings');
-            return { Component: SettingsRoute };
-          },
         },
         {
           path: 'marketplace',
