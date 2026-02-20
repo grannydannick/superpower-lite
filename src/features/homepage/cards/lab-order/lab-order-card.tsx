@@ -1,5 +1,4 @@
 import { ArrowUpRightIcon, Calendar, MapPin } from 'lucide-react';
-import moment from 'moment-timezone';
 import { useCallback } from 'react';
 import { Link } from 'react-router';
 
@@ -15,14 +14,20 @@ import { PreparationTipsCarousel } from './preparation-tips';
 
 const getDaysUntilAppointment = (timestamp?: string): number | null => {
   if (!timestamp) return null;
-  const now = moment();
-  const appointmentDate = moment(timestamp);
+  const now = new Date();
+  const appointmentDate = new Date(timestamp);
+  if (Number.isNaN(appointmentDate.getTime())) return null;
 
-  if (now.isSame(appointmentDate, 'day')) {
+  if (
+    now.getFullYear() === appointmentDate.getFullYear() &&
+    now.getMonth() === appointmentDate.getMonth() &&
+    now.getDate() === appointmentDate.getDate()
+  ) {
     return 0;
   }
 
-  const diff = appointmentDate.diff(now, 'days', true);
+  const diff =
+    (appointmentDate.getTime() - now.getTime()) / (24 * 60 * 60 * 1000);
   return diff > 0 ? Math.ceil(diff) : Math.floor(diff);
 };
 
@@ -84,15 +89,16 @@ export const LabOrderCard = () => {
 
   const daysUntil = getDaysUntilAppointment(activeLabOrder.startTimestamp);
 
-  const appointmentStatus = (() => {
-    if (
-      activeLabOrder.startTimestamp &&
-      moment(activeLabOrder.startTimestamp).add(1, 'hour').isBefore(moment())
-    ) {
-      return 'processing';
+  let appointmentStatus: 'processing' | 'scheduled' = 'scheduled';
+  if (activeLabOrder.startTimestamp) {
+    const start = new Date(activeLabOrder.startTimestamp);
+    if (!Number.isNaN(start.getTime())) {
+      const oneHourAfter = start.getTime() + 60 * 60 * 1000;
+      if (oneHourAfter < Date.now()) {
+        appointmentStatus = 'processing';
+      }
     }
-    return 'scheduled';
-  })();
+  }
 
   const hasValidLocation = isValidAddress(activeLabOrder.address);
   const slot =
@@ -103,21 +109,16 @@ export const LabOrderCard = () => {
         }
       : null;
 
-  const headerMessage = (() => {
-    if (appointmentStatus === 'processing') {
-      return "We're analyzing your sample";
-    }
-    if (daysUntil === 0) {
-      return 'Your appointment is today';
-    }
-    if (daysUntil === 1) {
-      return 'Your appointment is tomorrow';
-    }
-    if (daysUntil !== null && daysUntil > 1) {
-      return `Your appointment is in ${daysUntil} days`;
-    }
-    return 'Your appointment is scheduled';
-  })();
+  let headerMessage = 'Your appointment is scheduled';
+  if (appointmentStatus === 'processing') {
+    headerMessage = "We're analyzing your sample";
+  } else if (daysUntil === 0) {
+    headerMessage = 'Your appointment is today';
+  } else if (daysUntil === 1) {
+    headerMessage = 'Your appointment is tomorrow';
+  } else if (daysUntil !== null && daysUntil > 1) {
+    headerMessage = `Your appointment is in ${daysUntil} days`;
+  }
 
   const primaryMessage =
     appointmentStatus === 'processing'
@@ -149,12 +150,32 @@ export const LabOrderCard = () => {
         }
       : null;
 
-  const formattedDateTime = activeLabOrder.startTimestamp
-    ? moment(activeLabOrder.startTimestamp)
-        // TODO: moment.guess()
-        .tz(activeLabOrder.timezone || 'America/Los_Angeles')
-        .format('MMM Do, YYYY, h:mm A')
-    : null;
+  let formattedDateTime: string | null = null;
+  if (activeLabOrder.startTimestamp) {
+    const date = new Date(activeLabOrder.startTimestamp);
+    if (!Number.isNaN(date.getTime())) {
+      const timeZone = activeLabOrder.timezone ?? 'America/Los_Angeles';
+      const baseFormat: Intl.DateTimeFormatOptions = {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+      };
+
+      try {
+        formattedDateTime = new Intl.DateTimeFormat('en-US', {
+          ...baseFormat,
+          timeZone,
+        }).format(date);
+      } catch {
+        formattedDateTime = new Intl.DateTimeFormat('en-US', baseFormat).format(
+          date,
+        );
+      }
+    }
+  }
 
   return (
     <div className="md:rounded-3xl md:bg-white md:p-6 md:shadow-sm">

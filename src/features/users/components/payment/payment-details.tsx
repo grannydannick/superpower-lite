@@ -1,11 +1,10 @@
-import { H4 } from '@/components/ui/typography';
-
 import {
   AmericanExpressIcon,
   HSAFSAIcon,
   MasterCardIcon,
   VisaIcon,
-} from '../../../../components/icons';
+} from '@/components/icons/credit-card-icons';
+import { H4 } from '@/components/ui/typography';
 
 const AVAILABLE_PAYMENT_METHODS = [
   { icon: <AmericanExpressIcon />, key: 'american-express' },

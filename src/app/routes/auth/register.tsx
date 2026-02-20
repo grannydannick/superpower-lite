@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 
 import { RegisterForm } from '@/features/auth/components/register-form';
+import { StripeProvider } from '@/lib/stripe';
 
 export const RegisterRoute = () => {
   // this is basic hook to prevent refreshses during checkout operation
@@ -16,5 +17,9 @@ export const RegisterRoute = () => {
     };
   }, []);
 
-  return <RegisterForm />;
+  return (
+    <StripeProvider>
+      <RegisterForm />
+    </StripeProvider>
+  );
 };

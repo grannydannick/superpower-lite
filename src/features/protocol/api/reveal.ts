@@ -11,6 +11,8 @@ import type { operations } from '@/orpc/types.generated';
 
 import type { CheckoutItem } from '../stores/checkout-store';
 
+import { revealLatestQueryOptions } from './reveal-latest';
+
 // Extract response types from generated operations
 type RevealLatestResponse =
   operations['protocol.reveal.getOrCreateReveal']['responses'][200]['content']['application/json'];
@@ -55,12 +57,7 @@ export type RevealRxItem = NonNullable<
   RevealStatusPayload['reveal']['protocolOrder']
 >['rxItems'][number];
 
-const revealLatestQueryOptions = $api.queryOptions(
-  'post',
-  '/protocol/reveal/latest',
-);
-
-export const revealLatestQueryKey = revealLatestQueryOptions.queryKey;
+export { revealLatestQueryKey } from './reveal-latest';
 
 const getRevealStatusQueryOptions = (carePlanId: string) =>
   $api.queryOptions('get', '/protocol/reveal/{carePlanId}/status', {
@@ -169,7 +166,7 @@ const useRevealQueryInvalidation = () => {
 
   const invalidateRevealLatest = () => {
     void queryClient.invalidateQueries({
-      queryKey: revealLatestQueryKey,
+      queryKey: revealLatestQueryOptions.queryKey,
     });
   };
 

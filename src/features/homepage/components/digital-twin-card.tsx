@@ -1,15 +1,41 @@
 import { IconArrowUpRight } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconArrowUpRight';
 import { format } from 'date-fns';
+import { Suspense, lazy, useEffect, useState } from 'react';
 
 import { Link } from '@/components/ui/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useBiomarkers } from '@/features/data/api';
-import { DigitalTwin } from '@/features/digital-twin/components/digital-twin';
 import { useUser } from '@/lib/auth';
 
+const LG_BREAKPOINT = 1024;
+
+const DigitalTwin = lazy(() =>
+  import('@/features/digital-twin/components/digital-twin').then((mod) => ({
+    default: mod.DigitalTwin,
+  })),
+);
+
 export const DigitalTwinCard = () => {
+  const [isLgUp, setIsLgUp] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth >= LG_BREAKPOINT;
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mql = window.matchMedia(`(min-width: ${LG_BREAKPOINT}px)`);
+    const onChange = () => {
+      setIsLgUp(mql.matches);
+    };
+    mql.addEventListener('change', onChange);
+    onChange();
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
+
   const { data: user } = useUser();
-  const { data: biomarkers, isLoading } = useBiomarkers();
+  const { data: biomarkers, isLoading } = useBiomarkers({
+    queryConfig: { enabled: isLgUp },
+  });
 
   // TODO: just add this field on backend...
   const mostRecentBiomarkerTimestamp = biomarkers?.biomarkers
@@ -64,7 +90,11 @@ export const DigitalTwinCard = () => {
           )
         )}
 
-        <DigitalTwin />
+        {isLgUp ? (
+          <Suspense fallback={null}>
+            <DigitalTwin />
+          </Suspense>
+        ) : null}
       </div>
     </div>
   );

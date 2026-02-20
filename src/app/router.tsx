@@ -3,10 +3,8 @@ import { createBrowserRouter, Navigate, redirect } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
 
 import { MainErrorFallback } from '@/components/errors/main';
-import { ConciergeLayout } from '@/features/messages/layouts/concierge-layout';
 import { ProtectedRoute } from '@/lib/auth';
 
-import { ConciergeRoute } from './routes/app/concierge';
 import { protocolRoutes } from './routes/app/protocol/protocol-router';
 import { AppRoot } from './routes/app/root';
 import { NotFoundRoute } from './routes/not-found';
@@ -112,11 +110,41 @@ export const createRouter = () =>
           },
         },
         {
-          path: 'schedule',
           lazy: async () => {
-            const { ScheduleRoute } = await import('./routes/app/schedule');
-            return { Component: ScheduleRoute };
+            const { MapsLayout } = await import('./routes/app/maps-layout');
+            return { Component: MapsLayout };
           },
+          children: [
+            {
+              path: 'schedule',
+              lazy: async () => {
+                const { ScheduleRoute } = await import('./routes/app/schedule');
+                return { Component: ScheduleRoute };
+              },
+            },
+            {
+              path: 'onboarding',
+              lazy: async () => {
+                const { OnboardingRoute } =
+                  await import('./routes/app/onboarding');
+                return { Component: OnboardingRoute };
+              },
+              loader: async () => {
+                const { onboardingLoader } =
+                  await import('./routes/app/onboarding');
+                return onboardingLoader()();
+              },
+              errorElement: <MainErrorFallback />,
+            },
+            {
+              path: 'users',
+              lazy: async () => {
+                const { UsersRoute } = await import('./routes/app/users');
+                return { Component: UsersRoute };
+              },
+              errorElement: <MainErrorFallback />,
+            },
+          ],
         },
         {
           path: 'invite',
@@ -205,24 +233,29 @@ export const createRouter = () =>
           },
         },
         {
-          path: 'onboarding',
-          lazy: async () => {
-            const { OnboardingRoute } = await import('./routes/app/onboarding');
-            return { Component: OnboardingRoute };
-          },
-          loader: async () => {
-            const { onboardingLoader } =
-              await import('./routes/app/onboarding');
-            return onboardingLoader()();
-          },
-          errorElement: <MainErrorFallback />,
-        },
-        {
           path: 'concierge',
-          element: <ConciergeLayout />,
+          lazy: async () => {
+            const { ConciergeLayout } =
+              await import('@/features/messages/layouts/concierge-layout');
+            return { Component: ConciergeLayout };
+          },
           children: [
-            { index: true, element: <ConciergeRoute /> }, // new chat
-            { path: ':id', element: <ConciergeRoute /> }, // existing chat
+            {
+              index: true,
+              lazy: async () => {
+                const { ConciergeRoute } =
+                  await import('./routes/app/concierge');
+                return { Component: ConciergeRoute };
+              },
+            }, // new chat
+            {
+              path: ':id',
+              lazy: async () => {
+                const { ConciergeRoute } =
+                  await import('./routes/app/concierge');
+                return { Component: ConciergeRoute };
+              },
+            }, // existing chat
           ],
         },
         {
@@ -230,14 +263,6 @@ export const createRouter = () =>
           lazy: async () => {
             const { DataRoute } = await import('./routes/app/data');
             return { Component: DataRoute };
-          },
-          errorElement: <MainErrorFallback />,
-        },
-        {
-          path: 'users',
-          lazy: async () => {
-            const { UsersRoute } = await import('./routes/app/users');
-            return { Component: UsersRoute };
           },
           errorElement: <MainErrorFallback />,
         },

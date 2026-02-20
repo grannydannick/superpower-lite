@@ -1,8 +1,16 @@
 import { ChevronsDownUp, Link, Maximize2, Minimize2 } from 'lucide-react';
-import { useCallback, useMemo, useState, type Ref } from 'react';
+import {
+  Suspense,
+  lazy,
+  useCallback,
+  useMemo,
+  useState,
+  type Ref,
+} from 'react';
 import { Resizable } from 'react-resizable';
 
 import 'react-resizable/css/styles.css';
+import { CircleAiIcon } from '@/components/icons/circle-ai-icon';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import {
@@ -11,7 +19,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { AnimatedIcon } from '@/features/messages/components/ai/animated-icon';
 import {
   getDefaultAssistantSize,
   useResizeAssistant,
@@ -20,7 +27,17 @@ import { useAssistantStore } from '@/features/messages/stores/assistant-store';
 import { cn } from '@/lib/utils';
 import { generateUUID } from '@/utils/generate-uiud';
 
-import { AssistantChat } from './assistant-chat';
+const AnimatedIcon = lazy(() =>
+  import('@/features/messages/components/ai/animated-icon').then((mod) => ({
+    default: mod.AnimatedIcon,
+  })),
+);
+
+const AssistantChat = lazy(() =>
+  import('./assistant-chat').then((mod) => ({
+    default: mod.AssistantChat,
+  })),
+);
 
 export const AssistantModal = () => {
   const isExpanded = useAssistantStore((s) => s.isExpanded);
@@ -131,7 +148,15 @@ export const AssistantModal = () => {
       >
         <div className="flex w-full items-center justify-between gap-4">
           <div className="flex shrink-0 items-center gap-2">
-            <AnimatedIcon state="idle" />
+            {isExpanded ? (
+              <Suspense
+                fallback={<CircleAiIcon size={24} className="text-current" />}
+              >
+                <AnimatedIcon state="idle" />
+              </Suspense>
+            ) : (
+              <CircleAiIcon size={24} className="text-current" />
+            )}
             Ask Superpower AI
           </div>
           <div
@@ -187,11 +212,15 @@ export const AssistantModal = () => {
           </div>
         </div>
         <div className={cn('min-h-0 w-full flex-1', !isExpanded && 'hidden')}>
-          <AssistantChat
-            chatId={chatId}
-            isActive={isExpanded}
-            isResizing={isResizing}
-          />
+          {isExpanded ? (
+            <Suspense fallback={null}>
+              <AssistantChat
+                chatId={chatId}
+                isActive={isExpanded}
+                isResizing={isResizing}
+              />
+            </Suspense>
+          ) : null}
         </div>
       </div>
     </Resizable>

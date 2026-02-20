@@ -17,12 +17,9 @@ import { toast } from '@/components/ui/sonner';
 import { Body1, H1 } from '@/components/ui/typography';
 import { useBenefits, useGetEligibleBenefits } from '@/features/b2b/api';
 import { useAnalytics } from '@/hooks/use-analytics';
-import {
-  RegisterInput,
-  registerInputSchema,
-  useLogout,
-  useUser,
-} from '@/lib/auth';
+import { useLogout, useUser } from '@/lib/auth';
+import { registerInputSchema } from '@/lib/auth-schemas';
+import type { RegisterInput } from '@/lib/auth-schemas';
 
 import { useB2BCheckout } from '../../hooks/use-b2b-checkout';
 

@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import * as React from 'react';
 import { useLocation } from 'react-router';
 
@@ -10,12 +9,36 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 
-import { DevHelper } from '../shared/dev-helper';
 import { Navbar } from '../shared/navbar';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { data } = useUser();
   const { pathname } = useLocation();
+  const isDev = import.meta.env.DEV;
+
+  const [DevHelperComponent, setDevHelperComponent] =
+    React.useState<React.ComponentType | null>(null);
+
+  React.useEffect(() => {
+    if (!isDev) {
+      return;
+    }
+
+    let active = true;
+
+    import('@/components/shared/dev-helper')
+      .then((mod) => {
+        if (!active) return;
+        setDevHelperComponent(() => mod.DevHelper);
+      })
+      .catch(() => {
+        // ignore – dev helper is non-critical
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [isDev]);
 
   // matches theme colors
   useThemeColor();
@@ -38,10 +61,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <main className={isWhiteBg ? 'bg-white' : 'bg-zinc-50'}>
-      <DevHelper />
+      {isDev && DevHelperComponent ? <DevHelperComponent /> : null}
       {!hideNavBar && <Navbar />}
       <NavigationProgress />
-      <motion.div
+      <div
         className={cn(
           'flex flex-1 flex-col',
           !hideNavBar
@@ -50,7 +73,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         )}
       >
         {children}
-      </motion.div>
+      </div>
       <FloatingWrapper />
       <Announcements />
     </main>

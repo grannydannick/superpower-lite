@@ -1,6 +1,4 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { APIProvider } from '@vis.gl/react-google-maps';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -9,15 +7,21 @@ import { HelmetProvider } from 'react-helmet-async';
 import { MainErrorFallback } from '@/components/errors/main';
 import { SuperpowerLoadingLogo } from '@/components/icons/superpower-logo';
 import { Toaster } from '@/components/ui/sonner';
-import { env } from '@/config/env';
 import { useUser } from '@/lib/auth';
 import { PHProvider } from '@/lib/posthog';
 import { queryConfig } from '@/lib/react-query';
-import { StripeProvider } from '@/lib/stripe';
 
 type AppProviderProps = {
   children: React.ReactNode;
 };
+
+const ReactQueryDevtools = import.meta.env.DEV
+  ? React.lazy(() =>
+      import('@tanstack/react-query-devtools').then((mod) => ({
+        default: mod.ReactQueryDevtools,
+      })),
+    )
+  : null;
 
 function AuthLoader({ children }: { children: React.ReactNode }) {
   const userQuery = useUser();
@@ -66,15 +70,13 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       <HelmetProvider>
         <QueryClientProvider client={queryClient}>
           <PHProvider>
-            <APIProvider apiKey={env.GOOGLE_API_KEY} libraries={['places']}>
-              <StripeProvider>
-                {import.meta.env.DEV && (
-                  <ReactQueryDevtools buttonPosition="top-right" />
-                )}
-                <Toaster />
-                <AuthLoader>{children}</AuthLoader>
-              </StripeProvider>
-            </APIProvider>
+            {ReactQueryDevtools ? (
+              <React.Suspense fallback={null}>
+                <ReactQueryDevtools buttonPosition="top-right" />
+              </React.Suspense>
+            ) : null}
+            <Toaster />
+            <AuthLoader>{children}</AuthLoader>
           </PHProvider>
         </QueryClientProvider>
       </HelmetProvider>

@@ -1,7 +1,4 @@
-import {
-  Config,
-  removeBackground as imglyRemoveBackground,
-} from '@imgly/background-removal';
+import type { Config } from '@imgly/background-removal';
 
 type ImgSource = ImageData | ArrayBuffer | Uint8Array | Blob | URL | string;
 
@@ -11,6 +8,11 @@ const config: Config = {
 };
 
 export const removeBackground = async (img: ImgSource): Promise<Blob> => {
+  const { removeBackground: imglyRemoveBackground } =
+    await import('@imgly/background-removal');
   const result = await imglyRemoveBackground(img, config);
-  return result as Blob;
+  if (!(result instanceof Blob)) {
+    throw new Error('Background removal returned a non-Blob result.');
+  }
+  return result;
 };

@@ -11,4 +11,3 @@ export * from './mp4-file-icon';
 export * from './pdf-file-icon';
 export * from './unknown-file-icon';
 export * from './present-icon';
-export * from './credit-card-icons';

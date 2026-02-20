@@ -18,7 +18,9 @@ import { Body2, H1 } from '@/components/ui/typography';
 import { env } from '@/config/env';
 import { useSendMagicLink } from '@/features/auth/api/send-magic-link';
 import { AuthInput } from '@/features/auth/components/auth-input';
-import { LoginInput, loginInputSchema, useLogin } from '@/lib/auth';
+import { useLogin } from '@/lib/auth';
+import { loginInputSchema } from '@/lib/auth-schemas';
+import type { LoginInput } from '@/lib/auth-schemas';
 import { User } from '@/types/api';
 
 const magicLinkLoginSchema = z.object({

@@ -1,9 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
 import * as React from 'react';
 import { configureAuth } from 'react-query-auth';
 import { Navigate, useLocation } from 'react-router';
-import { z } from 'zod';
 
 import { SuperpowerLoadingLogo } from '@/components/icons/superpower-logo';
 import { env } from '@/config/env';
@@ -11,7 +9,7 @@ import {
   buildQuestionnaireStatusMap,
   getQuestionnaireStatus,
 } from '@/features/onboarding/utils/get-questionnaire-status';
-import { revealLatestQueryKey } from '@/features/protocol/api';
+import { revealLatestQueryKey } from '@/features/protocol/api/reveal-latest';
 import { useQuestionnaireResponseList } from '@/features/questionnaires/api/questionnaire-response';
 import { useTask } from '@/features/tasks/api/get-task';
 import { isIntakeDismissed } from '@/lib/intake-dismiss';
@@ -27,6 +25,21 @@ import {
 import { parseJWTPayload } from '@/utils/jwt';
 
 import { api } from './api-client';
+import type {
+  BaseLoginInput,
+  LoginInput,
+  RegisterInput,
+  ResetPasswordInput,
+  SetPasswordInput,
+} from './auth-schemas';
+
+export type {
+  BaseLoginInput,
+  LoginInput,
+  RegisterInput,
+  ResetPasswordInput,
+  SetPasswordInput,
+} from './auth-schemas';
 
 const getUser = (): Promise<User> => {
   return api.get('/auth/me');
@@ -39,25 +52,6 @@ const logout = async (): Promise<void> => {
 };
 
 const orpcClient = rawOrpcClient as any;
-
-export const baseLoginInputSchema = z.object({
-  redirectUri: z.string().optional(),
-});
-
-export const loginInputSchema = baseLoginInputSchema.merge(
-  z.object({
-    email: z
-      .string()
-      .min(1, 'Please enter your email address.')
-      .email('Please enter a valid email address.'),
-    password: z.string().min(5, 'Please enter your password.'),
-    authMethod: z.enum(['admin']).optional(),
-  }),
-);
-
-export type BaseLoginInput = z.infer<typeof baseLoginInputSchema>;
-
-export type LoginInput = z.infer<typeof loginInputSchema>;
 const loginWithEmailAndPassword = (
   data: LoginInput,
 ): Promise<LoginAuthenticationResponse> => {
@@ -70,55 +64,6 @@ const loginWithEmailAndPassword = (
 
   return api.post('/auth/login', data);
 };
-
-const REQUIRED_MSG = 'This is required.';
-
-const requiredString = () =>
-  z.string({ required_error: REQUIRED_MSG }).min(1, REQUIRED_MSG);
-
-export const registerInputSchema = z.object({
-  email: requiredString().email('Please enter a valid email address.'),
-  phone: requiredString().refine(
-    (value) => {
-      if (!isValidPhoneNumber(value)) return false;
-
-      const phoneNumber = parsePhoneNumber(value);
-      return (
-        phoneNumber &&
-        (phoneNumber.country === 'US' || phoneNumber.country === 'CA')
-      );
-    },
-    {
-      message: 'Please enter a valid US or Canadian phone number.',
-    },
-  ),
-  dateOfBirth: z.date({ required_error: REQUIRED_MSG }).refine((data) => {
-    const today = new Date();
-    const birthDate = new Date(data);
-    let age = today.getFullYear() - birthDate.getFullYear();
-
-    // Check if the user has not had their birthday this year yet
-    const m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-
-    return age >= 18;
-  }, 'You must be over 18 years old to register.'),
-  consent: z
-    .boolean({ required_error: 'Please agree to the Terms to continue.' })
-    .refine((v) => v === true, {
-      message: 'Please agree to the Terms to continue.',
-    }),
-  postalCode: requiredString().min(5, {
-    message: 'Please enter a valid zip code.',
-  }),
-  phiMarketingConsent: z.boolean().optional(),
-  gender: z.enum(['MALE', 'FEMALE']).optional(),
-  state: z.string().optional(),
-});
-
-export type RegisterInput = z.infer<typeof registerInputSchema>;
 
 const registerUser = (
   data: RegisterInput,
@@ -166,12 +111,6 @@ const authConfig = {
   logoutFn: logout,
 };
 
-export const resetPasswordInputSchema = z.object({
-  email: z.string().email().min(1),
-});
-
-export type ResetPasswordInput = z.infer<typeof resetPasswordInputSchema>;
-
 export const resetPassword = ({
   data,
 }: {
@@ -197,17 +136,6 @@ export const useResetPassword = ({
     mutationFn: resetPassword,
   });
 };
-
-export const setPasswordInputSchema = z
-  .object({
-    password: z.string().min(8),
-    confirmPassword: z.string().min(8),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ['confirmPassword'],
-  });
-export type SetPasswordInput = z.infer<typeof setPasswordInputSchema>;
 
 export const setPassword = ({
   data,

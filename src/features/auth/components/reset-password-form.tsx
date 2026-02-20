@@ -14,11 +14,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { Body1, H3 } from '@/components/ui/typography';
-import {
-  ResetPasswordInput,
-  resetPasswordInputSchema,
-  useResetPassword,
-} from '@/lib/auth';
+import { useResetPassword } from '@/lib/auth';
+import { resetPasswordInputSchema } from '@/lib/auth-schemas';
+import type { ResetPasswordInput } from '@/lib/auth-schemas';
 
 export function ResetPasswordForm(): JSX.Element {
   const resetPasswordMutation = useResetPassword();

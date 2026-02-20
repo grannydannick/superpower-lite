@@ -18,12 +18,9 @@ import { Body1, Body2, H1 } from '@/components/ui/typography';
 import { useCheckoutContext } from '@/features/auth/stores';
 import { useAvailableSubscriptions } from '@/features/settings/api';
 import { useAnalytics } from '@/hooks/use-analytics';
-import {
-  RegisterInput,
-  registerInputSchema,
-  useLogout,
-  useUser,
-} from '@/lib/auth';
+import { useLogout, useUser } from '@/lib/auth';
+import { registerInputSchema } from '@/lib/auth-schemas';
+import type { RegisterInput } from '@/lib/auth-schemas';
 import { getState } from '@/utils/verify-state-from-postal';
 
 import { BaselineSummary } from './configurator/baseline-summary';

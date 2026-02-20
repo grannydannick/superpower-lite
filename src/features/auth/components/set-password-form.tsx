@@ -13,11 +13,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { Body2, H1 } from '@/components/ui/typography';
-import {
-  SetPasswordInput,
-  setPasswordInputSchema,
-  useSetPassword,
-} from '@/lib/auth';
+import { useSetPassword } from '@/lib/auth';
+import { setPasswordInputSchema } from '@/lib/auth-schemas';
+import type { SetPasswordInput } from '@/lib/auth-schemas';
 
 export const SetPasswordForm = ({
   id,
