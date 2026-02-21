@@ -1,5 +1,6 @@
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
+import { useMutation } from '@tanstack/react-query';
 import { useResizeObserver } from '@wojtekmaj/react-hooks';
 import { Download, X } from 'lucide-react';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
@@ -18,6 +19,10 @@ interface PdfViewerProps {
   showDownload?: boolean;
   showClose?: boolean;
   onDownload?: () => void;
+}
+
+interface FetchPdfVariables {
+  url: string;
 }
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -42,6 +47,28 @@ export const PdfViewer = ({
   const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
   const [containerWidth, setContainerWidth] = useState<number>();
   const firstPageRenderedRef = useRef(false);
+
+  const { mutate: fetchPdf } = useMutation({
+    mutationFn: async ({ url }: FetchPdfVariables) => {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          return undefined;
+        }
+        return await response.blob();
+      } catch (error) {
+        console.error('Failed to load PDF:', error);
+        return undefined;
+      }
+    },
+    onSuccess: (data) => {
+      if (data == null) {
+        return;
+      }
+
+      setFile(data);
+    },
+  });
 
   const onDocumentLoadSuccess = async (
     pdf: PDFDocumentProxy,
@@ -93,24 +120,15 @@ export const PdfViewer = ({
   useResizeObserver(containerRef, resizeObserverOptions, onResize);
 
   useEffect(() => {
-    const loadPdf = async (): Promise<void> => {
-      if (fileBlob) {
-        setFile(fileBlob);
-      } else if (url) {
-        try {
-          const response = await fetch(url);
-          if (response.ok) {
-            const blob = await response.blob();
-            setFile(blob);
-          }
-        } catch (error) {
-          console.error('Failed to load PDF:', error);
-        }
-      }
-    };
+    if (fileBlob) {
+      setFile(fileBlob);
+      return;
+    }
 
-    loadPdf();
-  }, [url, fileBlob]);
+    if (url) {
+      fetchPdf({ url });
+    }
+  }, [url, fileBlob, fetchPdf]);
 
   if (!url && !fileBlob) {
     return (
