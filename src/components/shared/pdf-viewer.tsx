@@ -23,6 +23,8 @@ interface PdfViewerProps {
 
 interface FetchPdfVariables {
   url: string;
+  fetchId: number;
+  signal: AbortSignal;
 }
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -47,10 +49,14 @@ export const PdfViewer = ({
   const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
   const [containerWidth, setContainerWidth] = useState<number>();
   const firstPageRenderedRef = useRef(false);
+  const fileBlobRef = useRef<Blob | undefined>(undefined);
+  fileBlobRef.current = fileBlob;
+  const activeFetchIdRef = useRef(0);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  const { mutate: fetchPdf } = useMutation<Blob, Error, FetchPdfVariables>({
-    mutationFn: async ({ url }: FetchPdfVariables) => {
-      const response = await fetch(url);
+  const fetchPdfMutation = useMutation<Blob, Error, FetchPdfVariables>({
+    mutationFn: async ({ url, signal }: FetchPdfVariables) => {
+      const response = await fetch(url, { signal });
       if (!response.ok) {
         throw new Error(
           `Failed to fetch PDF (${response.status} ${response.statusText})`,
@@ -59,13 +65,35 @@ export const PdfViewer = ({
 
       return await response.blob();
     },
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
+      if (variables.fetchId !== activeFetchIdRef.current) {
+        return;
+      }
+
+      if (variables.signal.aborted) {
+        return;
+      }
+
+      if (fileBlobRef.current != null) {
+        return;
+      }
+
       setFile(data);
     },
-    onError: (error) => {
+    onError: (error, variables) => {
+      if (variables?.fetchId !== activeFetchIdRef.current) {
+        return;
+      }
+
+      if (variables.signal.aborted) {
+        return;
+      }
+
       console.error('Failed to load PDF:', error);
     },
   });
+  const fetchPdfRef = useRef(fetchPdfMutation.mutate);
+  fetchPdfRef.current = fetchPdfMutation.mutate;
 
   const onDocumentLoadSuccess = async (
     pdf: PDFDocumentProxy,
@@ -117,15 +145,31 @@ export const PdfViewer = ({
   useResizeObserver(containerRef, resizeObserverOptions, onResize);
 
   useEffect(() => {
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = null;
+    activeFetchIdRef.current += 1;
+
     if (fileBlob) {
       setFile(fileBlob);
       return;
     }
 
     if (url) {
-      fetchPdf({ url });
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+      fetchPdfRef.current({
+        url,
+        fetchId: activeFetchIdRef.current,
+        signal: controller.signal,
+      });
     }
-  }, [url, fileBlob, fetchPdf]);
+  }, [url, fileBlob]);
+
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
 
   if (!url && !fileBlob) {
     return (
