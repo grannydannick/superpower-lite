@@ -3,8 +3,19 @@ import { Dispatch, SetStateAction } from 'react';
 
 import { IconList } from '@/components/shared/icon-list';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import { Body1, H2, H4 } from '@/components/ui/typography';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
@@ -42,6 +53,10 @@ export const WalkInNotice = ({
         }}
       >
         <SheetContent className="flex max-h-full flex-col rounded-t-[10px] p-6">
+          <SheetTitle className="sr-only">Walk-in notice</SheetTitle>
+          <SheetDescription className="sr-only">
+            Opening hours and walk-in visit instructions.
+          </SheetDescription>
           <WalkInNoticeContent location={location} />
         </SheetContent>
       </Sheet>
@@ -56,6 +71,10 @@ export const WalkInNotice = ({
       }}
     >
       <DialogContent className="w-full max-w-[592px] gap-0 p-10">
+        <DialogTitle className="sr-only">Walk-in notice</DialogTitle>
+        <DialogDescription className="sr-only">
+          Opening hours and walk-in visit instructions.
+        </DialogDescription>
         <div className="fixed right-10 top-8">
           <DialogClose>
             <X className="size-6 cursor-pointer p-1" />
@@ -104,8 +123,8 @@ const WalkInNoticeContent = ({
         </div>
       </div>
       <div className="flex justify-end pt-6">
-        <DialogClose>
-          <Button>Continue</Button>
+        <DialogClose asChild>
+          <Button type="button">Continue</Button>
         </DialogClose>
       </div>
     </>
