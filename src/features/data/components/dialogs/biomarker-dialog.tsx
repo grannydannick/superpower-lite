@@ -42,16 +42,19 @@ export const BiomarkerDialog = ({
   const { track } = useAnalytics();
   const navigate = useNavigate();
 
-  const handleOpenChange = useCallback((newOpen: boolean) => {
-    setOpen(newOpen);
+  const handleOpenChange = useCallback(
+    (newOpen: boolean) => {
+      setOpen(newOpen);
 
-    if (newOpen) {
-      track('viewed_biomarker', {
-        biomarker_name: biomarker.name,
-        biomarker_interpretation: biomarker.status,
-      });
-    }
-  }, []);
+      if (newOpen) {
+        track('viewed_biomarker', {
+          biomarker_name: biomarker.name,
+          biomarker_interpretation: biomarker.status,
+        });
+      }
+    },
+    [track, biomarker.name, biomarker.status],
+  );
 
   const content = (
     <>

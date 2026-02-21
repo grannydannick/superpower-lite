@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import type {
   TargetAndTransition,
   Transition,
@@ -116,30 +116,30 @@ const AnimationComponent: React.FC<{
 }> = React.memo(({ segment, variants, per, segmentWrapperClassName }) => {
   const content =
     per === 'line' ? (
-      <motion.span variants={variants} className="block">
+      <m.span variants={variants} className="block">
         {segment}
-      </motion.span>
+      </m.span>
     ) : per === 'word' ? (
-      <motion.span
+      <m.span
         aria-hidden="true"
         variants={variants}
         className="inline-block whitespace-pre"
       >
         {segment}
-      </motion.span>
+      </m.span>
     ) : (
-      <motion.span className="inline-block whitespace-pre">
+      <m.span className="inline-block whitespace-pre">
         {segment.split('').map((char, charIndex) => (
-          <motion.span
+          <m.span
             key={`char-${charIndex}`}
             aria-hidden="true"
             variants={variants}
             className="inline-block whitespace-pre"
           >
             {char}
-          </motion.span>
+          </m.span>
         ))}
-      </motion.span>
+      </m.span>
     );
 
   if (!segmentWrapperClassName) {
@@ -220,7 +220,7 @@ export function TextEffect({
   style,
 }: TextEffectProps) {
   const segments = splitText(children, per);
-  const MotionTag = motion[as as keyof typeof motion] as typeof motion.div;
+  const MotionTag = m[as as keyof typeof m] as typeof m.div;
 
   const baseVariants = preset
     ? presetVariants[preset]
@@ -259,6 +259,21 @@ export function TextEffect({
     }),
   };
 
+  const segmentNodes: React.ReactNode[] = [];
+  let segmentOffset = 0;
+  for (const segment of segments) {
+    segmentNodes.push(
+      <AnimationComponent
+        key={`${per}-${segmentOffset}-${segment}`}
+        segment={segment}
+        variants={computedVariants.item}
+        per={per}
+        segmentWrapperClassName={segmentWrapperClassName}
+      />,
+    );
+    segmentOffset += segment.length;
+  }
+
   return (
     <AnimatePresence mode="popLayout">
       {trigger && (
@@ -273,15 +288,7 @@ export function TextEffect({
           style={style}
         >
           {per !== 'line' ? <span className="sr-only">{children}</span> : null}
-          {segments.map((segment, index) => (
-            <AnimationComponent
-              key={`${per}-${index}-${segment}`}
-              segment={segment}
-              variants={computedVariants.item}
-              per={per}
-              segmentWrapperClassName={segmentWrapperClassName}
-            />
-          ))}
+          {segmentNodes}
         </MotionTag>
       )}
     </AnimatePresence>

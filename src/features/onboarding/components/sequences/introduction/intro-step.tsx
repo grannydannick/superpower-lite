@@ -1,4 +1,4 @@
-import { motion, type Variants } from 'framer-motion';
+import { m, type Variants } from 'framer-motion';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { ShimmerDune } from '@/components/ui/shimmer-dune';
@@ -44,7 +44,7 @@ export const IntroStep = () => {
         <div className="absolute inset-0 z-20 flex items-center justify-center">
           <div className="relative h-16 w-48 md:h-20 md:w-56">
             {/* Base logo that gets revealed with soft radial mask */}
-            <motion.div
+            <m.div
               className="absolute inset-0"
               style={{
                 WebkitMaskImage:
@@ -94,10 +94,10 @@ export const IntroStep = () => {
               }}
             >
               <SuperpowerLogo className="size-full" />
-            </motion.div>
+            </m.div>
 
             {/* Shimmer highlight overlay */}
-            <motion.div
+            <m.div
               className="pointer-events-none absolute inset-0 overflow-hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: [0, 0, 0.8, 0.8, 0] }}
@@ -107,7 +107,7 @@ export const IntroStep = () => {
                 ease: 'easeInOut',
               }}
             >
-              <motion.div
+              <m.div
                 className="absolute inset-0"
                 style={{
                   background:
@@ -124,11 +124,11 @@ export const IntroStep = () => {
                   ease: [0.4, 0, 0.2, 1],
                 }}
               />
-            </motion.div>
+            </m.div>
           </div>
         </div>
 
-        <motion.div
+        <m.div
           className="flex size-full flex-col items-center justify-center px-6 pt-12 md:px-16"
           variants={contentVariants}
           initial="initial"
@@ -144,10 +144,10 @@ export const IntroStep = () => {
               For people taking control of their health
             </Body1>
           </div>
-        </motion.div>
+        </m.div>
       </Sequence.StepMedia>
       <Sequence.StepFooter>
-        <motion.div
+        <m.div
           className="relative mx-auto h-16 w-full max-w-sm"
           variants={footerVariants}
           initial="initial"
@@ -176,7 +176,7 @@ export const IntroStep = () => {
               <div className="size-0.5 shrink-0 bg-zinc-200" />
             </div>
           </SlideToUnlock>
-        </motion.div>
+        </m.div>
       </Sequence.StepFooter>
     </Sequence.StepLayout>
   );

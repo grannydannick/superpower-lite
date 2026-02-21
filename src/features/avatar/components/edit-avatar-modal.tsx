@@ -1,5 +1,5 @@
 import { Description } from '@radix-ui/react-dialog';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { ImagePlus, RefreshCcw, X } from 'lucide-react';
 import { useState } from 'react';
 
@@ -230,7 +230,7 @@ const CircleLoadingIndicator = () => {
           const extendedY2 =
             24 + Math.sin((angle * Math.PI) / 180) * randomRadius;
           return (
-            <motion.line
+            <m.line
               key={i}
               x1={x1}
               y1={y1}

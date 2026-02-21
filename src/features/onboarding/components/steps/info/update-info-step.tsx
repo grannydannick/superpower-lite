@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { AlertCircle, ArrowRight, Check } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm, useFormContext } from 'react-hook-form';
@@ -309,18 +309,18 @@ const UpdateInfoContent = () => {
           </div>
 
           <Card className="space-y-4 p-6 shadow-none">
-            <motion.div
+            <m.div
               className="space-y-4"
               initial="hidden"
               animate="show"
               variants={checklistContainer}
             >
-              <motion.div variants={checklistItem}>
+              <m.div variants={checklistItem}>
                 <H4>Here’s what you have unlocked:</H4>
-              </motion.div>
-              {FEATURES.map((feature, i) => (
-                <motion.div
-                  key={i}
+              </m.div>
+              {FEATURES.map((feature) => (
+                <m.div
+                  key={feature}
                   className="flex items-center gap-2.5"
                   variants={checklistItem}
                 >
@@ -330,9 +330,9 @@ const UpdateInfoContent = () => {
                     className="shrink-0 text-vermillion-900"
                   />
                   <Body2 className="text-zinc-700">{feature}</Body2>
-                </motion.div>
+                </m.div>
               ))}
-              <motion.div variants={checklistItem}>
+              <m.div variants={checklistItem}>
                 <AvailableBiomarkersDialog>
                   <Button
                     variant="ghost"
@@ -342,8 +342,8 @@ const UpdateInfoContent = () => {
                     <ArrowRight size={16} />
                   </Button>
                 </AvailableBiomarkersDialog>
-              </motion.div>
-            </motion.div>
+              </m.div>
+            </m.div>
           </Card>
         </div>
       </div>

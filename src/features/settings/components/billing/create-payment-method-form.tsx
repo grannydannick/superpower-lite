@@ -4,7 +4,7 @@ import {
   useStripe,
 } from '@stripe/react-stripe-js';
 import { StripeError } from '@stripe/stripe-js';
-import React, { FormEvent, useEffect, useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 
 import { StripeCardElement } from '@/components/shared/stripe-card-element';
 import { Button } from '@/components/ui/button';
@@ -35,16 +35,10 @@ export const CreatePaymentMethodForm = ({
 }: PaymentMethodFormProps) => {
   const stripe = useStripe();
   const elements = useElements();
-  const { mutateAsync, isSuccess } = useAddPaymentMethod();
+  const { mutateAsync } = useAddPaymentMethod();
 
   const [error, setError] = useState<StripeError | undefined>(undefined);
   const [processing, setProcessing] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (isSuccess) {
-      onSuccess && onSuccess();
-    }
-  }, [isSuccess]);
 
   const handleSubmit = async (event: FormEvent): Promise<void> => {
     // We don't want to let default form submission happen here,
@@ -81,6 +75,7 @@ export const CreatePaymentMethodForm = ({
       await mutateAsync({ data: { paymentMethodId: id } });
 
       setProcessing(false);
+      onSuccess?.();
     } catch (e) {
       setProcessing(false);
       return;

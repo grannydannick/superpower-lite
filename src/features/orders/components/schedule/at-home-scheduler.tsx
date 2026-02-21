@@ -22,6 +22,7 @@ export const AtHomeScheduler = () => {
   };
 
   const serviceabilityQuery = useGetServiceability();
+  const { mutateAsync, isPending } = serviceabilityQuery;
   const isServiceable = serviceabilityQuery.data?.serviceable;
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export const AtHomeScheduler = () => {
 
       const { postalCode } = user.primaryAddress;
 
-      const response = await serviceabilityQuery.mutateAsync({
+      const response = await mutateAsync({
         data: {
           zipCode: postalCode,
           collectionMethod: collectionMethod || 'AT_HOME',
@@ -52,23 +53,19 @@ export const AtHomeScheduler = () => {
     };
 
     checkServiceable();
-  }, [collectionMethod, user?.primaryAddress]);
+  }, [collectionMethod, user?.primaryAddress, mutateAsync, updateLocation]);
 
   return (
     <div className="space-y-8">
       <div className="space-y-4">
         <CurrentAddressCard
           className={cn(
-            !serviceabilityQuery.isPending &&
-              !isServiceable &&
-              user?.primaryAddress
+            !isPending && !isServiceable && user?.primaryAddress
               ? 'border-pink-700 bg-pink-50'
               : null,
           )}
         />
-        {!isServiceable &&
-        !serviceabilityQuery.isPending &&
-        user?.primaryAddress ? (
+        {!isServiceable && !isPending && user?.primaryAddress ? (
           <Body2 className="text-pink-700">
             Sorry, at-home service is currently not available in your area.
             Please go back and try a different address or contact support for

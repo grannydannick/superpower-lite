@@ -216,7 +216,6 @@ export const SlideToUnlock = ({
       handleStart(e.touches[0].clientX);
 
       const onTouchMove = (e: TouchEvent) => {
-        e.preventDefault();
         handleMove(e.touches[0].clientX);
       };
       const onTouchEnd = () => {
@@ -225,8 +224,8 @@ export const SlideToUnlock = ({
         document.removeEventListener('touchend', onTouchEnd);
       };
 
-      document.addEventListener('touchmove', onTouchMove, { passive: false });
-      document.addEventListener('touchend', onTouchEnd);
+      document.addEventListener('touchmove', onTouchMove, { passive: true });
+      document.addEventListener('touchend', onTouchEnd, { passive: true });
     },
     [handleStart, handleMove, handleEnd, disabled],
   );

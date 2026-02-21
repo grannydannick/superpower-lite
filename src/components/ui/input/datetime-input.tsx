@@ -237,37 +237,61 @@ export const DatetimePicker = forwardRef<HTMLDivElement, DateTimeInput>(
     },
     ref,
   ) => {
-    const [month, setMonth] = useState<string>('');
-    const [day, setDay] = useState<string>('');
-    const [year, setYear] = useState<string>('');
+    const [parts, setParts] = useState<{
+      month: string;
+      day: string;
+      year: string;
+    }>({
+      month: '',
+      day: '',
+      year: '',
+    });
 
     useEffect(() => {
-      if (value && !isNaN(value.getTime())) {
-        setMonth(String(value.getMonth() + 1));
-        setDay(String(value.getDate()));
-        setYear(String(value.getFullYear()));
+      if (!value || isNaN(value.getTime())) {
+        setParts({
+          month: '',
+          day: '',
+          year: '',
+        });
+        return;
       }
-    }, []);
+
+      const nextMonth = String(value.getMonth() + 1);
+      const nextDay = String(value.getDate());
+      const nextYear = String(value.getFullYear());
+
+      setParts({
+        month: nextMonth,
+        day: nextDay,
+        year: nextYear,
+      });
+    }, [value]);
 
     const handleChange = useCallback(
       (type: DateFormat, newValue: string) => {
-        let updatedMonth = month;
-        let updatedDay = day;
-        let updatedYear = year;
+        let updatedMonth = parts.month;
+        let updatedDay = parts.day;
+        let updatedYear = parts.year;
+
         switch (type) {
           case 'months':
-            setMonth(newValue);
             updatedMonth = newValue;
             break;
           case 'days':
-            setDay(newValue);
             updatedDay = newValue;
             break;
           case 'years':
-            setYear(newValue);
             updatedYear = newValue;
             break;
         }
+
+        setParts({
+          month: updatedMonth,
+          day: updatedDay,
+          year: updatedYear,
+        });
+
         // Only update parent's value when all fields are nonempty.
         if (updatedMonth === '' || updatedDay === '' || updatedYear === '') {
           return;
@@ -289,13 +313,13 @@ export const DatetimePicker = forwardRef<HTMLDivElement, DateTimeInput>(
           onChange?.(newDate);
         }
       },
-      [month, day, year, onChange],
+      [parts.month, parts.day, parts.year, onChange],
     );
 
     const values: Record<DateFormat, string> = {
-      months: month,
-      days: day,
-      years: year,
+      months: parts.month,
+      days: parts.day,
+      years: parts.year,
     };
 
     return (
@@ -304,20 +328,7 @@ export const DatetimePicker = forwardRef<HTMLDivElement, DateTimeInput>(
         className={className}
         variant={variant}
         values={values}
-        onChange={(type, value) => {
-          switch (type) {
-            case 'months':
-              setMonth(value);
-              break;
-            case 'days':
-              setDay(value);
-              break;
-            case 'years':
-              setYear(value);
-              break;
-          }
-          handleChange(type, value);
-        }}
+        onChange={handleChange}
         placeholders={placeholders ?? INPUT_PLACEHOLDERS}
         ref={ref}
       />

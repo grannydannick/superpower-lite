@@ -6,6 +6,8 @@ import { Header } from './prescriptions-header';
 import { HowTo } from './prescriptions-how-to';
 import { Science } from './prescriptoions-science';
 
+const EMPTY_PRESCRIPTIONS: Rx[] = [];
+
 type PrescriptionDetailsProps = {
   prescription: Rx;
   otherPopularPrescriptions?: Rx[];
@@ -13,7 +15,7 @@ type PrescriptionDetailsProps = {
 
 export const PrescriptionDetails = ({
   prescription,
-  otherPopularPrescriptions = [],
+  otherPopularPrescriptions = EMPTY_PRESCRIPTIONS,
 }: PrescriptionDetailsProps) => {
   return (
     <div className="space-y-12 lg:space-y-32">

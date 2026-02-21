@@ -9,6 +9,8 @@ import {
   OptionValue,
 } from './types/fancy-switch';
 
+const EMPTY_DISABLED_OPTIONS: never[] = [];
+
 /**
  * React Fancy Switch is a customizable React component that provides an elegant and interactive way to switch between multiple options.
  * It's designed to be flexible, accessible, and easy to integrate into your React applications, all without requiring framer-motion.
@@ -54,7 +56,7 @@ export function FancySwitch<T extends OptionType>({
   highlighterClassName,
   highlighterIncludeMargin = false,
   highlighterStyle: customHighlighterStyle,
-  disabledOptions = [],
+  disabledOptions = EMPTY_DISABLED_OPTIONS,
   renderOption,
   ...props
 }: FancySwitchProps<T>) {
@@ -200,68 +202,6 @@ export function FancySwitch<T extends OptionType>({
     [memoizedOptions, onChange],
   );
 
-  const renderOptionContent = React.useCallback(
-    (option: (typeof memoizedOptions)[0], index: number) => {
-      const isSelected = index === activeIndex;
-
-      if (renderOption) {
-        return renderOption({
-          option,
-          isSelected,
-          getOptionProps: () => ({
-            ref: (el: HTMLDivElement | null) => (radioRefs.current[index] = el),
-            role: 'radio',
-            'aria-checked': isSelected,
-            tabIndex: isSelected && !option.disabled ? 0 : -1,
-            onClick: () => handleChange(index),
-            className: cn(
-              'relative mx-2 flex h-9 cursor-pointer items-center justify-center capitalize',
-              'rounded-full px-3.5 text-sm font-medium transition-colors data-[checked]:text-primary-foreground focus:outline-none',
-              'data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
-              radioClassName,
-            ),
-            ...(isSelected ? { 'data-checked': true } : {}),
-            ...(option.disabled
-              ? { 'aria-disabled': true, 'data-disabled': true }
-              : {}),
-            'aria-label': `${option.label} option`,
-          }),
-        });
-      }
-
-      return (
-        <div
-          ref={(el) => (radioRefs.current[index] = el)}
-          role="radio"
-          aria-checked={isSelected}
-          tabIndex={isSelected && !option.disabled ? 0 : -1}
-          onClick={() => handleChange(index)}
-          onKeyDown={(e) => {
-            if (option.disabled) return;
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              handleChange(index);
-            }
-          }}
-          className={cn(
-            'relative mx-2 flex h-9 cursor-pointer items-center justify-center capitalize',
-            'rounded-full px-3.5 text-sm font-medium transition-colors data-[checked]:text-primary-foreground focus:outline-none',
-            'data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
-            radioClassName,
-          )}
-          {...(isSelected ? { 'data-checked': true } : {})}
-          {...(option.disabled
-            ? { 'aria-disabled': true, 'data-disabled': true }
-            : {})}
-          aria-label={`${option.label} option`}
-        >
-          {option.label}
-        </div>
-      );
-    },
-    [activeIndex, renderOption, radioClassName, handleChange],
-  );
-
   React.useEffect(() => {
     updateToggle();
   }, [updateToggle]);
@@ -330,11 +270,70 @@ export function FancySwitch<T extends OptionType>({
         data-highlighter
       />
 
-      {memoizedOptions.map((option, index) => (
-        <React.Fragment key={option.value.toString()}>
-          {renderOptionContent(option, index)}
-        </React.Fragment>
-      ))}
+      {memoizedOptions.map((option, index) => {
+        const isSelected = index === activeIndex;
+
+        if (renderOption) {
+          return (
+            <React.Fragment key={option.value.toString()}>
+              {React.createElement(renderOption, {
+                option,
+                isSelected,
+                getOptionProps: () => ({
+                  ref: (el: HTMLDivElement | null) =>
+                    (radioRefs.current[index] = el),
+                  role: 'radio',
+                  'aria-checked': isSelected,
+                  tabIndex: isSelected && !option.disabled ? 0 : -1,
+                  onClick: () => handleChange(index),
+                  className: cn(
+                    'relative mx-2 flex h-9 cursor-pointer items-center justify-center capitalize',
+                    'rounded-full px-3.5 text-sm font-medium transition-colors data-[checked]:text-primary-foreground focus:outline-none',
+                    'data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
+                    radioClassName,
+                  ),
+                  ...(isSelected ? { 'data-checked': true } : {}),
+                  ...(option.disabled
+                    ? { 'aria-disabled': true, 'data-disabled': true }
+                    : {}),
+                  'aria-label': `${option.label} option`,
+                }),
+              })}
+            </React.Fragment>
+          );
+        }
+
+        return (
+          <div
+            key={option.value.toString()}
+            ref={(el) => (radioRefs.current[index] = el)}
+            role="radio"
+            aria-checked={isSelected}
+            tabIndex={isSelected && !option.disabled ? 0 : -1}
+            onClick={() => handleChange(index)}
+            onKeyDown={(e) => {
+              if (option.disabled) return;
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleChange(index);
+              }
+            }}
+            className={cn(
+              'relative mx-2 flex h-9 cursor-pointer items-center justify-center capitalize',
+              'rounded-full px-3.5 text-sm font-medium transition-colors data-[checked]:text-primary-foreground focus:outline-none',
+              'data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
+              radioClassName,
+            )}
+            {...(isSelected ? { 'data-checked': true } : {})}
+            {...(option.disabled
+              ? { 'aria-disabled': true, 'data-disabled': true }
+              : {})}
+            aria-label={`${option.label} option`}
+          >
+            {option.label}
+          </div>
+        );
+      })}
 
       <div
         aria-live="polite"

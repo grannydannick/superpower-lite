@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from 'react';
+import { useLayoutEffect, useMemo, useRef } from 'react';
 import {
   MeshBasicMaterial,
   BackSide,
@@ -14,6 +14,8 @@ import {
   createColorTween,
 } from '../../utils/create-tween-values';
 
+const MAX_GLOW = 0.9;
+
 export const AvatarClone = ({
   area,
   level = 'good',
@@ -25,56 +27,58 @@ export const AvatarClone = ({
   object: Group<Object3DEventMap>;
   layers: number;
 }) => {
-  const maxGlow = 0.9;
-  const opacity =
-    maxGlow * (!!level && !!area && (SCENES as any)?.[area]?.glow ? 1 : 0);
+  const initialGlowRef = useRef<number>(
+    !!level && !!area && (SCENES as any)?.[area]?.glow ? 1 : 0,
+  );
+  const initialColorRef = useRef<string>((level && COLORS[level]) || '#ffffff');
 
   const material = useMemo(
     () =>
       new MeshBasicMaterial({
         side: BackSide,
         transparent: true,
-        opacity: opacity,
-        color: level && COLORS[level],
+        opacity: MAX_GLOW * initialGlowRef.current,
+        color: initialColorRef.current,
         depthWrite: false,
       }),
     [],
   );
 
-  object.traverse((child) => {
-    if ((child as Mesh).isMesh) {
-      const mesh = child as Mesh;
-      mesh.layers.set(layers);
-      mesh.material = material;
-    }
-  });
+  useLayoutEffect(() => {
+    object.traverse((child) => {
+      if ((child as Mesh).isMesh) {
+        const mesh = child as Mesh;
+        mesh.layers.set(layers);
+        mesh.material = material;
+      }
+    });
+  }, [layers, material, object]);
 
   const { setTarget } = useMemo(
     () =>
-      createColorTween((level && COLORS[level]) || '#ffffff', (color) => {
-        material?.color.set(color);
+      createColorTween(material.color, (color) => {
+        material.color.set(color);
       }),
-    [],
+    [material],
   );
 
-  const materalTween = createTweenValue(material.opacity, {
-    duration: 1.5,
-    onStart: () => {},
-    onUpdate: (value) => {
-      !!material && (material.opacity = maxGlow * value);
-    },
-    onComplete: () => {},
-  });
+  const materialTween = useMemo(
+    () =>
+      createTweenValue(initialGlowRef.current, {
+        duration: 1.5,
+        onUpdate: (value) => {
+          material.opacity = MAX_GLOW * value;
+        },
+      }),
+    [material],
+  );
 
-  useEffect(() => {
-    if (level && Object.keys(COLORS).includes(level)) {
-      setTarget(COLORS[level]);
-    }
-
-    materalTween.set(
+  useLayoutEffect(() => {
+    setTarget((level && COLORS[level]) || '#ffffff');
+    materialTween.set(
       !!level && !!area && (SCENES as any)?.[area]?.glow ? 1 : 0,
     );
-  }, [area, level]);
+  }, [area, level, materialTween, setTarget]);
 
   return <primitive object={object} scale={[1, 1, 1]} />;
 };

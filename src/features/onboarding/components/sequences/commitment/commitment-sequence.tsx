@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 
 import { Head } from '@/components/seo';
 
@@ -30,7 +30,7 @@ export const CommitmentSequence = () => {
       <Head title="Commitment" />
       <Sequence.Layout>
         <AnimatePresence mode="wait">
-          <motion.div
+          <m.div
             key={screenIndex}
             className="flex min-h-0 flex-1 flex-col"
             initial={{ opacity: 0 }}
@@ -39,7 +39,7 @@ export const CommitmentSequence = () => {
             transition={FADE_TRANSITION}
           >
             <Screen />
-          </motion.div>
+          </m.div>
         </AnimatePresence>
       </Sequence.Layout>
     </SequenceProvider>

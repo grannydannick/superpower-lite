@@ -1,6 +1,6 @@
 import { UseChatHelpers } from '@ai-sdk/react';
 import { UIMessage } from 'ai';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { InfoIcon } from 'lucide-react';
 import React, { memo, useMemo, useState } from 'react';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
@@ -256,15 +256,12 @@ const PurePreviewMessage = ({
 }) => {
   const [mode] = useState<'view' | 'edit'>('view');
 
-  const renderIcon = () => {
-    if (message.role !== 'assistant') return null;
-
-    return isLoading ? (
+  const icon =
+    message.role !== 'assistant' ? null : isLoading ? (
       <AnimatedIcon state="thinking" className="mt-1" />
     ) : (
       <AIIcon fill="#A1A1AA" className="mt-1" />
     );
-  };
 
   const isEmptyMessage =
     !message.parts?.length ||
@@ -272,7 +269,7 @@ const PurePreviewMessage = ({
 
   return (
     <AnimatePresence>
-      <motion.div
+      <m.div
         className="group/message mx-auto w-full max-w-3xl px-0.5"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -293,7 +290,7 @@ const PurePreviewMessage = ({
             },
           )}
         >
-          {renderIcon()}
+          {icon}
 
           <div className="flex w-full flex-col gap-2">
             {mode === 'view' && (
@@ -323,7 +320,7 @@ const PurePreviewMessage = ({
             )}
           </div>
         </div>
-      </motion.div>
+      </m.div>
     </AnimatePresence>
   );
 };

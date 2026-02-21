@@ -43,8 +43,7 @@ function OrderFileLinkFromFiles({ orderIds }: { orderIds: string[] }) {
 
   const { mutateAsync } = useDownloadFile();
 
-  const handleDownload = async (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleDownload = async () => {
     if (!file) return;
     const blob = await mutateAsync({ fileId: file.id });
     downloadBlob(blob, file.name);
@@ -59,13 +58,15 @@ function OrderFileLinkFromFiles({ orderIds }: { orderIds: string[] }) {
       </div>
       <div className="space-y-2">
         <Body1>Lab Order</Body1>
-        <a
-          href="#"
-          onClick={handleDownload}
+        <button
+          type="button"
+          onClick={() => {
+            void handleDownload();
+          }}
           className="line-clamp-1 max-w-[180px] text-sm font-medium text-vermillion-900"
         >
           {file.name}
-        </a>
+        </button>
       </div>
     </div>
   );
@@ -84,19 +85,6 @@ export function AppointmentDetails({
   if (!location?.address) {
     return null;
   }
-
-  const renderAddToCalendar = () => {
-    if (!slot || !collectionMethod || !location?.address) return null;
-
-    return (
-      <AddToCalendar
-        address={location.address}
-        slot={slot}
-        collectionMethod={collectionMethod}
-        variant="vermillion"
-      />
-    );
-  };
 
   const collectionMethodLabel = (() => {
     if (isAdvisory === true) return 'Video call';
@@ -149,7 +137,14 @@ export function AppointmentDetails({
                       {moment(slot.end).tz(timezone).format('h:mma z')}
                     </Body1>
                   </div>
-                  {renderAddToCalendar()}
+                  {collectionMethod ? (
+                    <AddToCalendar
+                      address={location.address}
+                      slot={slot}
+                      collectionMethod={collectionMethod}
+                      variant="vermillion"
+                    />
+                  ) : null}
                 </div>
               </div>
             </div>

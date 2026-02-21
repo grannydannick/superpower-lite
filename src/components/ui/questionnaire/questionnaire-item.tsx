@@ -56,11 +56,12 @@ export const QuestionnaireFormItem = ({
   onChange,
   isError = false,
   onKeyDown,
-  nested,
+  nested: _nested,
   onValidationChange,
 }: QuestionnaireFormItemProps) => {
-  const [localError, setLocalError] = useState(isError);
+  const [localError, setLocalError] = useState(false);
   const [rangeError, setRangeError] = useState<string | null>(null);
+  const isErrored = isError || localError;
 
   // Ensure parent state is reset if the component unmounts (e.g. when navigating away)
   useEffect(() => {
@@ -165,7 +166,7 @@ export const QuestionnaireFormItem = ({
   if (isConsentPaymentSingleConfirm) {
     const confirmLabel = item.answerOption?.[0].valueString as string;
     return (
-      <QuestionnaireErrorWrapper isError={localError}>
+      <QuestionnaireErrorWrapper isError={isErrored}>
         <Button
           type="button"
           className="w-full"
@@ -239,7 +240,7 @@ export const QuestionnaireFormItem = ({
     // Boolean item type, used for yes/no questions
     case QuestionnaireItemType.boolean:
       return (
-        <QuestionnaireErrorWrapper isError={localError}>
+        <QuestionnaireErrorWrapper isError={isErrored}>
           <div className="flex items-center space-x-2">
             <Checkbox
               id={item.linkId}
@@ -254,7 +255,7 @@ export const QuestionnaireFormItem = ({
               htmlFor={item.linkId}
               className={cn(
                 'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
-                localError ? 'text-destructive' : null,
+                isErrored ? 'text-destructive' : null,
               )}
             >
               {item.text}
@@ -284,7 +285,7 @@ export const QuestionnaireFormItem = ({
 
       return (
         <QuestionnaireErrorWrapper
-          isError={localError || !!rangeError}
+          isError={isErrored || !!rangeError}
           message={rangeError ?? undefined}
         >
           <Input
@@ -293,8 +294,6 @@ export const QuestionnaireFormItem = ({
             step="any"
             id={name}
             inputMode="decimal" // mobile devices show decimal keypad
-            // eslint-disable-next-line jsx-a11y/no-autofocus
-            autoFocus={!nested}
             name={name}
             required={item.required}
             defaultValue={defaultValue?.value}
@@ -360,7 +359,7 @@ export const QuestionnaireFormItem = ({
 
       return (
         <QuestionnaireErrorWrapper
-          isError={localError || !!rangeError}
+          isError={isErrored || !!rangeError}
           message={rangeError ?? undefined}
         >
           <Input
@@ -370,8 +369,6 @@ export const QuestionnaireFormItem = ({
             id={name}
             inputMode="numeric" // mobile devices show numeric keypad
             pattern="[0-9]*" // reinforces that input should be numeric
-            // eslint-disable-next-line jsx-a11y/no-autofocus
-            autoFocus={!nested}
             name={name}
             required={item.required}
             defaultValue={defaultValue?.value}
@@ -432,7 +429,7 @@ export const QuestionnaireFormItem = ({
         ? parse(defaultValue.value, 'yyyy-MM-dd', new Date())
         : undefined;
       return (
-        <QuestionnaireErrorWrapper isError={localError}>
+        <QuestionnaireErrorWrapper isError={isErrored}>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -471,7 +468,7 @@ export const QuestionnaireFormItem = ({
     // Time item type, used for time questions
     case QuestionnaireItemType.time:
       return (
-        <QuestionnaireErrorWrapper isError={localError}>
+        <QuestionnaireErrorWrapper isError={isErrored}>
           <Input
             placeholder="Tell us here..."
             type="time"
@@ -489,13 +486,11 @@ export const QuestionnaireFormItem = ({
     // String or url item type, used for text questions
     case QuestionnaireItemType.string:
       return (
-        <QuestionnaireErrorWrapper isError={localError}>
+        <QuestionnaireErrorWrapper isError={isErrored}>
           <Input
             placeholder={entryFormatPlaceholder ?? ''}
             id={name}
             name={name}
-            // eslint-disable-next-line jsx-a11y/no-autofocus
-            autoFocus={!nested}
             required={item.required}
             defaultValue={defaultValue?.value}
             onChange={(e) => {
@@ -508,13 +503,11 @@ export const QuestionnaireFormItem = ({
       );
     case QuestionnaireItemType.url:
       return (
-        <QuestionnaireErrorWrapper isError={localError}>
+        <QuestionnaireErrorWrapper isError={isErrored}>
           <Input
             placeholder="Tell us here..."
             id={name}
             name={name}
-            // eslint-disable-next-line jsx-a11y/no-autofocus
-            autoFocus={!nested}
             required={item.required}
             defaultValue={defaultValue?.value}
             onChange={(e) => {
@@ -528,13 +521,11 @@ export const QuestionnaireFormItem = ({
     // Text item type, used for longer text questions (e.g. free text that needs textarea)
     case QuestionnaireItemType.text:
       return (
-        <QuestionnaireErrorWrapper isError={localError}>
+        <QuestionnaireErrorWrapper isError={isErrored}>
           <Textarea
             id={name}
             name={name}
             required={item.required}
-            // eslint-disable-next-line jsx-a11y/no-autofocus
-            autoFocus={!nested}
             defaultValue={defaultValue?.value}
             placeholder={entryFormatPlaceholder}
             onChange={(e) => {
@@ -574,7 +565,7 @@ export const QuestionnaireFormItem = ({
           <MultipleChoice
             item={item}
             response={response}
-            isError={localError}
+            isError={isErrored}
             onChange={onChange}
           />
         );
@@ -588,7 +579,7 @@ export const QuestionnaireFormItem = ({
             name={name}
             response={response}
             initial={initial}
-            isError={localError}
+            isError={isErrored}
             onChangeAnswer={onChangeAnswer}
           />
         );
@@ -602,14 +593,14 @@ export const QuestionnaireFormItem = ({
             item={item}
             name={name}
             response={response}
-            isError={localError}
+            isError={isErrored}
             onChangeAnswer={onChangeAnswer}
           />
         );
       } else if (isMultipleChoice(item) && !item.answerValueSet) {
         return (
           <QuestionnaireChoiceDropDownInput
-            isError={localError}
+            isError={isErrored}
             name={name}
             item={item}
             initial={initial}
@@ -620,7 +611,7 @@ export const QuestionnaireFormItem = ({
       } else {
         return (
           <QuestionnaireChoiceSetInput
-            isError={localError}
+            isError={isErrored}
             name={name}
             item={item}
             initial={initial}
@@ -633,7 +624,7 @@ export const QuestionnaireFormItem = ({
       if (isMultipleChoice(item) && !item.answerValueSet) {
         return (
           <QuestionnaireChoiceDropDownInput
-            isError={localError}
+            isError={isErrored}
             name={name}
             item={item}
             initial={initial}
@@ -644,7 +635,7 @@ export const QuestionnaireFormItem = ({
       } else {
         return (
           <QuestionnaireChoiceSetInput
-            isError={localError}
+            isError={isErrored}
             name={name}
             item={item}
             initial={initial}

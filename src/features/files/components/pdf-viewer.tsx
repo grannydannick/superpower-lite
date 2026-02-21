@@ -85,7 +85,7 @@ export const PdfViewer = ({ id, name }: PdfViewerProps) => {
     };
 
     loadUrl();
-  }, [data?.file]);
+  }, [data?.file, mutateAsync]);
 
   return (
     <div

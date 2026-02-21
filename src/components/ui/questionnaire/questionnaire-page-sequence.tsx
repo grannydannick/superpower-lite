@@ -2,7 +2,7 @@ import {
   QuestionnaireItem,
   QuestionnaireResponseItem,
 } from '@medplum/fhirtypes';
-import { AnimatePresence, motion, Variants } from 'framer-motion';
+import { AnimatePresence, m, type Variants } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
@@ -187,14 +187,14 @@ export const QuestionnaireFormPageSequence = ({
       : 0;
   const progressBarPercent = Math.max(groupProgress, progressFloor);
 
-  const fadeAnimation = {
+  const fadeAnimation: Variants = {
     hidden: { opacity: 0, filter: 'blur(1px)', pointerEvents: 'none' },
     visible: { opacity: 1, filter: 'blur(0px)', pointerEvents: 'auto' },
     exit: { opacity: 0, filter: 'blur(1px)', pointerEvents: 'none' },
   };
 
   return (
-    <motion.div
+    <m.div
       key="questionnaire"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -213,12 +213,12 @@ export const QuestionnaireFormPageSequence = ({
             </div>
             <SuperpowerLogo className="my-10 hidden md:block" />
             <AnimatePresence mode="wait">
-              <motion.div
+              <m.div
                 key={`question-${currentQuestion.item.linkId}`}
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                variants={fadeAnimation as Variants}
+                variants={fadeAnimation}
                 transition={{ duration: 0.2, ease: 'easeInOut' }}
                 className="flex h-full flex-1 flex-col space-y-6"
               >
@@ -228,7 +228,7 @@ export const QuestionnaireFormPageSequence = ({
                   onChange={setItems}
                   onSave={onSave}
                 />
-              </motion.div>
+              </m.div>
             </AnimatePresence>
           </div>
         </div>
@@ -316,6 +316,6 @@ export const QuestionnaireFormPageSequence = ({
           </div>
         </div>
       </main>
-    </motion.div>
+    </m.div>
   );
 };

@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { ArrowDownWideNarrow, SearchIcon, XIcon } from 'lucide-react';
 import React, { forwardRef } from 'react';
 
@@ -55,15 +55,15 @@ const WearablesSearch = forwardRef<HTMLInputElement, WearablesSearchProps>(
         <AnimatePresence mode="wait">
           <div className="min-h-[26px]">
             {value ? (
-              <motion.h3
+              <m.h3
                 initial={{ y: 10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -10, opacity: 0 }}
                 transition={{ duration: 0.2 }}
                 className="text-sm text-[#A5A5AE]"
-              >{`Showing results for "${value}"`}</motion.h3>
+              >{`Showing results for "${value}"`}</m.h3>
             ) : sorted ? (
-              <motion.h3
+              <m.h3
                 initial={{ y: 10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -10, opacity: 0 }}
@@ -71,7 +71,7 @@ const WearablesSearch = forwardRef<HTMLInputElement, WearablesSearchProps>(
                 className="text-sm text-[#A5A5AE]"
               >
                 Sorting by most recent
-              </motion.h3>
+              </m.h3>
             ) : (
               ''
             )}

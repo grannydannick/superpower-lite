@@ -1,4 +1,4 @@
-import { motion, type Variants } from 'framer-motion';
+import { m, type Variants } from 'framer-motion';
 import { Pie, PieChart } from 'recharts';
 
 import NumberFlow from '@/components/shared/number-flow';
@@ -86,7 +86,7 @@ export const GaugeChart = ({
         className,
       )}
     >
-      <motion.div
+      <m.div
         initial={animate ? 'hidden' : 'visible'}
         animate="visible"
         variants={chartVariants}
@@ -106,10 +106,10 @@ export const GaugeChart = ({
             />
           </PieChart>
         </ChartContainer>
-      </motion.div>
+      </m.div>
 
       {/* Separate text overlay that can be animated independently */}
-      <motion.div
+      <m.div
         className="absolute inset-0 top-10 flex flex-col items-center justify-center"
         initial={animate ? 'hidden' : 'visible'}
         animate="visible"
@@ -121,7 +121,7 @@ export const GaugeChart = ({
         <span className="-mt-4 text-sm" style={{ color: labelColor }}>
           out of 100
         </span>
-      </motion.div>
+      </m.div>
     </div>
   );
 };

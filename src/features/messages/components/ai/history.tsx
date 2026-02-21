@@ -2,7 +2,7 @@ import { IconEditSmall1 } from '@central-icons-react/round-outlined-radius-3-str
 import { IconMagnifyingGlass } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconMagnifyingGlass';
 import { IconSidebarSimpleLeftSquare } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconSidebarSimpleLeftSquare';
 import { isToday, isYesterday, subMonths, subWeeks } from 'date-fns';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { MoreHorizontalIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
@@ -184,7 +184,7 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
               <AnimatePresence>
                 {!isOpen && (
                   <>
-                    <motion.div
+                    <m.div
                       key="sidebar-toggle"
                       initial={{ opacity: 0, filter: 'blur(2px)' }}
                       animate={{ opacity: 1, filter: 'blur(0px)' }}
@@ -211,8 +211,8 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
-                    </motion.div>
-                    <motion.div
+                    </m.div>
+                    <m.div
                       key="new-chat"
                       initial={{ opacity: 0, filter: 'blur(2px)' }}
                       animate={{ opacity: 1, filter: 'blur(0px)' }}
@@ -238,8 +238,8 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
                           <TooltipContent side="right">New Chat</TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
-                    </motion.div>
-                    <motion.div
+                    </m.div>
+                    <m.div
                       key="care-team"
                       initial={{ opacity: 0, filter: 'blur(2px)' }}
                       animate={{ opacity: 1, filter: 'blur(0px)' }}
@@ -266,8 +266,8 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
-                    </motion.div>
-                    <motion.div
+                    </m.div>
+                    <m.div
                       key="search"
                       initial={{ opacity: 0, filter: 'blur(2px)' }}
                       animate={{ opacity: 1, filter: 'blur(0px)' }}
@@ -294,7 +294,7 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
-                    </motion.div>
+                    </m.div>
                   </>
                 )}
               </AnimatePresence>
@@ -302,7 +302,7 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
 
             {/* Full sidebar - wrapped in overflow-hidden so tooltips on collapsed bar aren't clipped */}
             <div className="lg:-ml-3.5 lg:overflow-hidden">
-              <motion.div
+              <m.div
                 animate={isOpen ? 'open' : 'closed'}
                 initial={false}
                 variants={{
@@ -317,7 +317,7 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
                   !isOpen && 'lg:pointer-events-none',
                 )}
               >
-                <motion.div
+                <m.div
                   variants={sidebarItemVariants}
                   className="mb-4 flex items-center justify-between pl-3.5"
                 >
@@ -342,12 +342,9 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
                       </Tooltip>
                     </TooltipProvider>
                   </div>
-                </motion.div>
+                </m.div>
 
-                <motion.div
-                  variants={sidebarItemVariants}
-                  className="flex flex-col"
-                >
+                <m.div variants={sidebarItemVariants} className="flex flex-col">
                   <Button
                     variant="ghost"
                     size="medium"
@@ -387,9 +384,9 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
                     />
                     Search
                   </Button>
-                </motion.div>
+                </m.div>
 
-                <motion.div variants={sidebarItemVariants} className="relative">
+                <m.div variants={sidebarItemVariants} className="relative">
                   <div className="pointer-events-none absolute top-0 z-10 h-6 w-full bg-gradient-to-t from-transparent to-zinc-50" />
                   <div className="pointer-events-none absolute bottom-0 z-10 h-6 w-full bg-gradient-to-b from-transparent to-zinc-50" />
                   <div className="scrollbar-w-1.5 flex max-h-[calc(100vh-16rem)] flex-col gap-4 overflow-y-scroll px-px py-6 scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300 hover:scrollbar-thumb-zinc-400">
@@ -464,8 +461,8 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
                       </div>
                     )}
                   </div>
-                </motion.div>
-              </motion.div>
+                </m.div>
+              </m.div>
             </div>
           </div>
         );
@@ -475,21 +472,39 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
   );
 }
 
+interface LoadingChatSkeletonRow {
+  key: string;
+  widthPercent: number;
+}
+
+const LOADING_CHAT_SKELETON_ROWS: LoadingChatSkeletonRow[] = [
+  { key: 'w-44-a', widthPercent: 44 },
+  { key: 'w-100', widthPercent: 100 },
+  { key: 'w-28', widthPercent: 28 },
+  { key: 'w-64', widthPercent: 64 },
+  { key: 'w-52', widthPercent: 52 },
+  { key: 'w-22', widthPercent: 22 },
+  { key: 'w-78', widthPercent: 78 },
+  { key: 'w-44-b', widthPercent: 44 },
+  { key: 'w-54', widthPercent: 54 },
+  { key: 'w-86', widthPercent: 86 },
+];
+
 const LoadingChatItem = () => {
   return (
     <div>
       <Body3 className="px-2 pb-1 text-zinc-700">Today</Body3>
       <div className="flex w-[258px] flex-col">
-        {[44, 100, 28, 64, 52, 22, 78, 44, 54, 86].map((item, idx) => (
+        {LOADING_CHAT_SKELETON_ROWS.map((row) => (
           <div
-            key={`${item}-${idx}`}
+            key={row.key}
             className="flex h-8 items-center gap-2 rounded-md px-2"
           >
             <div
               className="h-4 max-w-[--skeleton-width] flex-1 rounded-md bg-muted"
               style={
                 {
-                  '--skeleton-width': `${item}%`,
+                  '--skeleton-width': `${row.widthPercent}%`,
                 } as React.CSSProperties
               }
             />

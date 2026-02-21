@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMapsLibrary } from '@vis.gl/react-google-maps';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { forwardRef, useMemo, useRef, useState } from 'react';
 import * as React from 'react';
 
@@ -301,7 +301,7 @@ export const AddressAutocomplete = forwardRef<
         />
         <AnimatePresence>
           {showPredictions && !selectedPlaceId ? (
-            <motion.div
+            <m.div
               className="relative"
               variants={container}
               initial="hidden"
@@ -314,18 +314,26 @@ export const AddressAutocomplete = forwardRef<
                     'max-h-[200px] overflow-scroll rounded-2xl border border-zinc-200',
                   )}
                 >
-                  {isPlacePredictionsLoading && placePredictions.length === 0
-                    ? Array(6)
-                        .fill(0)
-                        .map((_, i) => (
-                          <div
-                            className="flex w-full flex-col items-start rounded-[10px] px-[28px] py-4"
-                            key={i}
-                          >
-                            <Skeleton className="h-10 w-full" />
-                          </div>
-                        ))
-                    : null}
+                  {isPlacePredictionsLoading &&
+                  placePredictions.length === 0 ? (
+                    <>
+                      {[
+                        'skeleton-1',
+                        'skeleton-2',
+                        'skeleton-3',
+                        'skeleton-4',
+                        'skeleton-5',
+                        'skeleton-6',
+                      ].map((key) => (
+                        <div
+                          className="flex w-full flex-col items-start rounded-[10px] px-[28px] py-4"
+                          key={key}
+                        >
+                          <Skeleton className="h-10 w-full" />
+                        </div>
+                      ))}
+                    </>
+                  ) : null}
                   {placePredictions.length > 0 ? (
                     <div role="listbox" id={listboxId}>
                       {placePredictions.map(
@@ -386,7 +394,7 @@ export const AddressAutocomplete = forwardRef<
                   ) : null}
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           ) : null}
         </AnimatePresence>
       </div>

@@ -11,9 +11,12 @@ import { CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
 import { Separator } from '../ui/separator';
 import { Body1 } from '../ui/typography';
 
+const EMPTY_CREDITS: Credit[] = [];
+const EMPTY_CARE_PLANS: FhirCarePlan[] = [];
+
 export const ActionableAccordion = ({
-  credits = [],
-  carePlans = [],
+  credits = EMPTY_CREDITS,
+  carePlans = EMPTY_CARE_PLANS,
 }: {
   credits?: Credit[];
   carePlans?: FhirCarePlan[];

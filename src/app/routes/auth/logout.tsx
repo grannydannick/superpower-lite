@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
 
 import { useAnalytics } from '@/hooks/use-analytics';
@@ -11,8 +11,12 @@ export const LogoutRoute = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { reset } = useAnalytics();
+  const didLogoutRef = useRef(false);
 
   useEffect(() => {
+    if (didLogoutRef.current) return;
+    didLogoutRef.current = true;
+
     logout.mutate({});
     navigate('/signin');
 
@@ -23,7 +27,7 @@ export const LogoutRoute = () => {
     clearActiveLogin();
     // needed to remove all previous user queries and refetch for the new one
     queryClient.removeQueries();
-  }, []);
+  }, [logout, navigate, queryClient, reset]);
 
   return null;
 };

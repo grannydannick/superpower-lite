@@ -124,12 +124,21 @@ export const AssistantModal = () => {
       onResizeStop={() => setIsResizing(false)}
       onResize={(_e, { size }) => setSize(size)}
     >
-      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
       <div
         role="button"
         tabIndex={!isExpanded ? 0 : -1}
         aria-expanded={isExpanded}
         onClick={!isExpanded ? () => open() : undefined}
+        onKeyDown={
+          !isExpanded
+            ? (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  open();
+                }
+              }
+            : undefined
+        }
         className={cn(
           'pointer-events-auto relative hidden flex-col gap-2 border border-zinc-200 bg-white px-4 py-3 shadow-lg shadow-black/[.07] transition-all duration-200 ease-out lg:flex',
           isExpanded

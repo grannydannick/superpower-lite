@@ -1,6 +1,6 @@
 import { IconClock } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconClock';
 import type React from 'react';
-import { forwardRef, useMemo, useState } from 'react';
+import { forwardRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -34,7 +34,7 @@ export const CareTeamDialog = ({
   };
 
   const { width } = useWindowDimensions();
-  const isMobile = useMemo(() => width <= 768, [width]);
+  const isMobile = width <= 768;
 
   const content = () => (
     <div className="space-y-6">

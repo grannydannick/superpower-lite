@@ -15,12 +15,15 @@ import { Body1, H2 } from '@/components/ui/typography';
 import { MAX_TUBE_COUNT } from '@/const';
 import { useServices } from '@/features/services/api';
 import { cn } from '@/lib/utils';
-import { Credit } from '@/types/api';
+import { Credit, HealthcareService } from '@/types/api';
 import { getServiceImage } from '@/utils/service';
 
 import { useCredits } from '../../../api/credits';
 import { useScheduleStore } from '../../../stores/schedule-store';
 import { ScheduleFlowFooter } from '../schedule-flow-footer';
+
+const EMPTY_SERVICES: HealthcareService[] = [];
+const EMPTY_CREDITS: Credit[] = [];
 
 export const CreditsSelectStep = () => {
   const { selectedCreditIds, updateSelectedCreditIds, mode } = useScheduleStore(
@@ -87,8 +90,8 @@ const CreditsSelectContent = ({
 
   const isQueryLoading = servicesQuery.isLoading || creditsQuery.isLoading;
 
-  const services = servicesQuery.data?.services ?? [];
-  const credits = creditsQuery.data?.credits ?? [];
+  const services = servicesQuery.data?.services ?? EMPTY_SERVICES;
+  const credits = creditsQuery.data?.credits ?? EMPTY_CREDITS;
 
   const uniqueCredits = useMemo(() => {
     const seen = new Set<string>();

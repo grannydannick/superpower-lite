@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import {
   ActivityIcon,
   ChevronRightIcon,
@@ -65,7 +65,7 @@ export const RecommendationCard: React.FC<{
     <NavLink to={link} onClick={handleClick}>
       <div className="group relative flex cursor-pointer justify-between gap-4 rounded-3xl bg-white px-5 py-4 shadow-sm shadow-black/[.04]">
         <div className="relative my-auto size-24 shrink-0">
-          <motion.img
+          <m.img
             src="/home/rx.webp"
             alt={recommendation?.name}
             className="pointer-events-none absolute bottom-0 size-full select-none object-cover object-top px-2 pt-5"

@@ -1,5 +1,4 @@
 import { Map, Marker } from '@vis.gl/react-google-maps';
-import moment from 'moment';
 import { useEffect, useMemo, useState } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
@@ -15,6 +14,18 @@ import {
   LocationsSchedulerStoreProvider,
   useLocationsScheduler,
 } from './stores/locations-scheduler';
+
+const LOCATIONS_SCHEDULER_DAY_SKELETON_KEYS = [
+  'day-1',
+  'day-2',
+  'day-3',
+  'day-4',
+  'day-5',
+  'day-6',
+  'day-7',
+];
+
+const LOCATIONS_SCHEDULER_LOCATION_SKELETON_KEYS = ['loc-1', 'loc-2', 'loc-3'];
 
 function LocationsSchedulerLoader({ className }: { className?: string }) {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -48,17 +59,13 @@ function LocationsSchedulerLoader({ className }: { className?: string }) {
         {getMessage()}
       </TextShimmer>
       <div className="flex gap-2">
-        {Array(7)
-          .fill(0)
-          .map((_, i) => (
-            <Skeleton key={i} className="h-[70px] w-full rounded-xl" />
-          ))}
-      </div>
-      {Array(3)
-        .fill(0)
-        .map((_, i) => (
-          <Skeleton key={i} className="h-[180px] w-full rounded-2xl" />
+        {LOCATIONS_SCHEDULER_DAY_SKELETON_KEYS.map((key) => (
+          <Skeleton key={key} className="h-[70px] w-full rounded-xl" />
         ))}
+      </div>
+      {LOCATIONS_SCHEDULER_LOCATION_SKELETON_KEYS.map((key) => (
+        <Skeleton key={key} className="h-[180px] w-full rounded-2xl" />
+      ))}
     </div>
   );
 }
@@ -127,15 +134,11 @@ function LocationsSchedulerConsumer({
     onSelectionChange,
   } = useLocationsScheduler((s) => s);
 
-  useEffect(
-    () => {
-      if (postalCode) {
-        fetchLocations(postalCode);
-      }
-    },
-    // fetchLocations is stable from zustand, no need to put it in deps
-    [postalCode],
-  );
+  useEffect(() => {
+    if (postalCode) {
+      fetchLocations(postalCode);
+    }
+  }, [postalCode, fetchLocations]);
 
   const allSlots = getAllSlots();
 
@@ -147,7 +150,7 @@ function LocationsSchedulerConsumer({
       .map((location) => ({
         ...location,
         slots: location.slots.filter((slot) =>
-          selectedDay.isSame(moment(slot.start), 'day'),
+          selectedDay.isSame(slot.start, 'day'),
         ),
       }))
       .filter((location) => location.slots.length > 0);

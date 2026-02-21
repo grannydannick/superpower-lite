@@ -1,4 +1,4 @@
-import { MotionConfig } from 'framer-motion';
+import { domMax, LazyMotion, MotionConfig } from 'framer-motion';
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 
@@ -31,7 +31,9 @@ const bootstrap = async () => {
   createRoot(root).render(
     <React.StrictMode>
       <MotionConfig reducedMotion="user">
-        <App />
+        <LazyMotion features={domMax}>
+          <App />
+        </LazyMotion>
       </MotionConfig>
     </React.StrictMode>,
   );

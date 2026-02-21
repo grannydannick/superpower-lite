@@ -80,7 +80,7 @@ export const LoginForm = ({
   useEffect(() => {
     const email = form.getValues('email');
     form.reset({ email, password: '' });
-  }, [loginMode]);
+  }, [form, loginMode]);
 
   useEffect(() => {
     if (defaultEmail) {

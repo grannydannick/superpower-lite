@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import React, { useMemo, type JSX } from 'react';
 
 import { cn } from '@/lib/utils';
@@ -21,13 +21,11 @@ export function TextShimmer({
   // Memoize to prevent creating new component reference on every render
   // which would cause React to unmount/remount and reset the animation
   const MotionComponent = useMemo(
-    () => motion.create(Component as keyof JSX.IntrinsicElements),
+    () => m.create(Component as keyof JSX.IntrinsicElements),
     [Component],
   );
 
-  const dynamicSpread = useMemo(() => {
-    return children.length * spread;
-  }, [children, spread]);
+  const dynamicSpread = children.length * spread;
 
   return (
     <MotionComponent

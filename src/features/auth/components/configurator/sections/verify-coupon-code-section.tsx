@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,15 +50,6 @@ const AccessCodeInputSection = () => {
     });
   };
 
-  useEffect(() => {
-    if (!code.trim() && !isFirstRender) {
-      clearManualCouponOverride();
-      setCoupon(getAccessCode());
-      validateCodeMutation.reset();
-      setCouponMetadata(null);
-    }
-  }, [code, isFirstRender]);
-
   return (
     <section id="subscriptions" className="space-y-6">
       <div className="space-y-2">
@@ -102,7 +93,17 @@ const AccessCodeInputSection = () => {
             }}
             value={code}
             disabled={processing}
-            onChange={(e) => setCode(e.target.value)}
+            onChange={(e) => {
+              const nextCode = e.target.value;
+              setCode(nextCode);
+
+              if (!nextCode.trim() && !isFirstRender) {
+                clearManualCouponOverride();
+                setCoupon(getAccessCode());
+                validateCodeMutation.reset();
+                setCouponMetadata(null);
+              }
+            }}
             aria-invalid={validateCodeMutation.isError}
           />
           <Button

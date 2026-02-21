@@ -336,10 +336,12 @@ const getColumns = (
   );
 };
 
+const EMPTY_HIDDEN_COLUMNS: string[] = [];
+
 const BiomarkersDataTableComponent = ({
   biomarkers,
   hideHeader = false,
-  hiddenColumns = [],
+  hiddenColumns = EMPTY_HIDDEN_COLUMNS,
   displayPending = false,
   isLoading,
   hideDialog = false,

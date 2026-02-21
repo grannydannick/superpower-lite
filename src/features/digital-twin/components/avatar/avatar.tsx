@@ -1,6 +1,6 @@
 import { useGLTF } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Mesh, AnimationMixer } from 'three';
 
 import { useRenderSetup } from '../../hooks/use-render-setup';
@@ -20,12 +20,15 @@ export const Avatar = ({
   onLoadingStateChange,
 }: DigitalTwinProps) => {
   const { gl } = useThree();
+  const onLoadingStateChangeRef = useRef(onLoadingStateChange);
+
+  useEffect(() => {
+    onLoadingStateChangeRef.current = onLoadingStateChange;
+  }, [onLoadingStateChange]);
 
   // load the glb model
-  const modelUrl = useMemo(() => {
-    // Files in Vite's public folder are served from the root
-    return `/models/${model}/${model}OptimisedV8.glb`;
-  }, [model]);
+  // Files in Vite's public folder are served from the root
+  const modelUrl = `/models/${model}/${model}OptimisedV8.glb`;
   const { scene: modelScene, animations } = useGLTF(modelUrl);
 
   useEffect(() => {
@@ -50,7 +53,7 @@ export const Avatar = ({
       model,
       gl,
       onLoadingStateChange: (state) => {
-        onLoadingStateChange && onLoadingStateChange(state);
+        onLoadingStateChangeRef.current?.(state);
       },
     }).then((base) => {
       if (cancelled) return;
@@ -61,7 +64,7 @@ export const Avatar = ({
         model,
         alreadyLoaded: 1,
         onLoadingStateChange: (state) => {
-          onLoadingStateChange && onLoadingStateChange(state);
+          onLoadingStateChangeRef.current?.(state);
         },
       }).then((rest) => {
         if (cancelled) return;
@@ -72,7 +75,7 @@ export const Avatar = ({
     return () => {
       cancelled = true;
     };
-  }, [model]);
+  }, [gl, model]);
 
   // initiating the multi-texture shader material
   const shaderMaterial = useShaderMaterial({ textures, area, level });

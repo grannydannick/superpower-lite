@@ -21,6 +21,8 @@ export const Toxins = memo(
     layers: number;
   }) => {
     const toxinsRef = useRef<Group>(null);
+    const initialAreaRef = useRef(area);
+    const initialLevelRef = useRef(level);
 
     const toxinsLevel = !!level && area === 'toxic' ? 1 : 0;
     const toxinsScale = 0.97 + toxinsLevel * 0.03;
@@ -30,8 +32,13 @@ export const Toxins = memo(
         new MeshBasicMaterial({
           // Render the front faces so spheres appear solid
           transparent: true,
-          opacity: toxinsLevel,
-          color: level && COLORS[level],
+          opacity:
+            !!initialLevelRef.current && initialAreaRef.current === 'toxic'
+              ? 1
+              : 0,
+          color:
+            (initialLevelRef.current && COLORS[initialLevelRef.current]) ||
+            '#ffffff',
           depthWrite: true,
         }),
       [],
@@ -39,39 +46,41 @@ export const Toxins = memo(
 
     const { setTarget } = useMemo(
       () =>
-        createColorTween((level && COLORS[level]) || '#ffffff', (color) => {
-          material?.color.set(color);
+        createColorTween(material.color, (color) => {
+          material.color.set(color);
         }),
-      [],
+      [material],
     );
 
-    const toxinsTween = useMemo(
-      () =>
-        createTweenValue(toxinsLevel, {
+    const toxinsTween = useMemo(() => {
+      let lastValue = 0;
+
+      return createTweenValue(
+        !!initialLevelRef.current && initialAreaRef.current === 'toxic' ? 1 : 0,
+        {
           duration: 1,
           onStart: () => {
             toxinsRef.current && (toxinsRef.current.visible = true);
           },
           onUpdate: (value) => {
+            lastValue = value;
             const scale = 0.97 + value * 0.03;
             toxinsRef.current?.scale.set(scale, scale, scale);
-            !!material && (material.opacity = value);
+            material.opacity = value;
           },
           onComplete: () => {
-            if (!material.opacity && toxinsRef.current) {
+            if (lastValue === 0 && toxinsRef.current) {
               toxinsRef.current.visible = false;
             }
           },
-        }),
-      [],
-    );
+        },
+      );
+    }, [material]);
 
     useEffect(() => {
-      if (level && Object.keys(COLORS).includes(level)) {
-        setTarget(COLORS[level]);
-      }
+      setTarget((level && COLORS[level]) || '#ffffff');
       toxinsTween.set(!!level && area === 'toxic' ? 1 : 0);
-    }, [area, level]);
+    }, [area, level, setTarget, toxinsTween]);
 
     const SPHERES: {
       pos: [number, number, number]; // tuple of 3 numbers
@@ -98,9 +107,9 @@ export const Toxins = memo(
         scale={[toxinsScale, toxinsScale, toxinsScale]}
         position={position}
       >
-        {SPHERES.map(({ pos, r }, i) => (
+        {SPHERES.map(({ pos, r }) => (
           <mesh
-            key={i}
+            key={`${pos[0]}-${pos[1]}-${pos[2]}-${r}`}
             visible
             layers={layers}
             position={pos}

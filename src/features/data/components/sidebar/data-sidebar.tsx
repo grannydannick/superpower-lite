@@ -7,12 +7,15 @@ import { H3 } from '@/components/ui/typography';
 import { useSummary } from '@/features/summary/api/get-summary';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
+import { Category } from '@/types/api';
 
 import { useCategories } from '../../api/get-categories';
 import { useDataFilterStore } from '../../stores/data-filter-store';
 import { encodeCategory } from '../../utils/category/encode-category';
 
 import { DataSidebarLink } from './data-sidebar-link';
+
+const EMPTY_CATEGORIES: Category[] = [];
 
 const PureDataSidebar = () => {
   const selectorRef = useRef<HTMLDivElement>(null);
@@ -24,7 +27,7 @@ const PureDataSidebar = () => {
 
   const isLoading = categoriesQuery.isLoading || summaryQuery.isLoading;
 
-  const categories = categoriesQuery.data?.categories ?? [];
+  const categories = categoriesQuery.data?.categories ?? EMPTY_CATEGORIES;
   const gating = summaryQuery.data;
 
   const [searchParams] = useSearchParams();
@@ -34,7 +37,7 @@ const PureDataSidebar = () => {
   const { updateCategories, clearCategories } = useDataFilterStore();
 
   const { width } = useWindowDimensions();
-  const isMobile = useMemo(() => width < 767, [width]);
+  const isMobile = width < 767;
 
   const updateCategoryFilter = useCallback(
     (category: string | null) => {

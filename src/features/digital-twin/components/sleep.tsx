@@ -59,14 +59,18 @@ export const Sleep = memo(
     );
 
     const sleepRef = useRef<Group>(null);
+    const initialAreaRef = useRef(area);
+    const initialLevelRef = useRef(level);
 
     const material = useMemo(
       () =>
         new MeshBasicMaterial({
           side: BackSide,
           transparent: true,
-          opacity: area === 'sleep' ? 1 : 0,
-          color: level && COLORS[level],
+          opacity: initialAreaRef.current === 'sleep' ? 1 : 0,
+          color:
+            (initialLevelRef.current && COLORS[initialLevelRef.current]) ||
+            '#ffffff',
           depthWrite: false,
         }),
       [],
@@ -74,39 +78,38 @@ export const Sleep = memo(
 
     const { setTarget } = useMemo(
       () =>
-        createColorTween((level && COLORS[level]) || '#ffffff', (color) => {
-          material?.color.set(color);
+        createColorTween(material.color, (color) => {
+          material.color.set(color);
         }),
-      [],
+      [material],
     );
 
-    const sleepTween = useMemo(
-      () =>
-        createTweenValue(area === 'sleep' ? 1 : 0, {
-          duration: 1,
-          onStart: () => {
-            sleepRef.current && (sleepRef.current.visible = true);
-          },
-          onUpdate: (value) => {
-            const scale = 0.98 + value * 0.02;
-            sleepRef.current?.scale.set(scale, scale, scale);
-            !!material && (material.opacity = value);
-          },
-          onComplete: () => {
-            if (!material.opacity && sleepRef.current) {
-              sleepRef.current.visible = false;
-            }
-          },
-        }),
-      [],
-    );
+    const sleepTween = useMemo(() => {
+      let lastValue = 0;
+
+      return createTweenValue(initialAreaRef.current === 'sleep' ? 1 : 0, {
+        duration: 1,
+        onStart: () => {
+          sleepRef.current && (sleepRef.current.visible = true);
+        },
+        onUpdate: (value) => {
+          lastValue = value;
+          const scale = 0.98 + value * 0.02;
+          sleepRef.current?.scale.set(scale, scale, scale);
+          material.opacity = value;
+        },
+        onComplete: () => {
+          if (lastValue === 0 && sleepRef.current) {
+            sleepRef.current.visible = false;
+          }
+        },
+      });
+    }, [material]);
 
     useEffect(() => {
-      if (level && Object.keys(COLORS).includes(level)) {
-        setTarget(COLORS[level]);
-      }
+      setTarget((level && COLORS[level]) || '#ffffff');
       sleepTween.set(!!level && area === 'sleep' ? 1 : 0);
-    }, [area, level]);
+    }, [area, level, setTarget, sleepTween]);
 
     const positions: [number, number, number][] = [
       [0.046, 0.691, 0.01],
@@ -120,7 +123,7 @@ export const Sleep = memo(
       <group ref={sleepRef} visible={area === 'sleep'} position={position}>
         {positions.map((pos, idx) => (
           <TextMesh
-            key={idx}
+            key={`${pos[0]}-${pos[1]}-${pos[2]}`}
             position={pos}
             size={sizes[idx]}
             material={material}

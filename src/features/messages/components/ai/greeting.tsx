@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
@@ -13,7 +13,7 @@ export const Greeting = () => {
       className="relative mx-auto flex size-full flex-col items-center"
     >
       <DuneGradient />
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 10 }}
@@ -22,14 +22,14 @@ export const Greeting = () => {
       >
         <AnimatedIcon state="idle" />
         Hi {user?.firstName ?? 'from Superpower'}, how can we help you?
-      </motion.div>
+      </m.div>
     </div>
   );
 };
 
 export const DuneGradient = ({ className }: { className?: string }) => {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 40, x: '-50%' }}
       animate={{
         opacity: [0, 0.6, 0.6, 0],
@@ -48,7 +48,7 @@ export const DuneGradient = ({ className }: { className?: string }) => {
       )}
     >
       <div className="dune-fade-mask absolute inset-0 bg-[url('/concierge/dune.png')] bg-contain bg-center bg-no-repeat" />
-      <motion.div
+      <m.div
         initial={{ x: '-100%' }}
         animate={{ x: '200%' }}
         transition={{
@@ -58,6 +58,6 @@ export const DuneGradient = ({ className }: { className?: string }) => {
         }}
         className="dune-shimmer dune-fade-mask absolute inset-0"
       />
-    </motion.div>
+    </m.div>
   );
 };

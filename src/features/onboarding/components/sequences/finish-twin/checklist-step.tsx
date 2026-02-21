@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 import { Button } from '@/components/ui/button';
 import { Body1, H2 } from '@/components/ui/typography';
@@ -310,7 +310,7 @@ const InactiveIndicator = () => (
 );
 
 const AnimatedDottedLine = () => (
-  <motion.div
+  <m.div
     className="mt-2 h-full w-px"
     style={{
       backgroundImage:
@@ -340,7 +340,7 @@ const SetupItem = ({
   index: number;
 }) => {
   return (
-    <motion.div
+    <m.div
       className="flex gap-2"
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
@@ -370,7 +370,7 @@ const SetupItem = ({
         </div>
         <img src={item.image} alt="" className="h-14 w-auto object-contain" />
       </div>
-    </motion.div>
+    </m.div>
   );
 };
 
@@ -381,7 +381,7 @@ export const ChecklistStep = () => {
     <Sequence.StepLayout centered className="bg-zinc-50">
       <div className="flex flex-1 flex-col px-6 py-8">
         <div className="mx-auto w-full max-w-md">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
@@ -391,9 +391,9 @@ export const ChecklistStep = () => {
               The more information you share the better your insights and
               recommendations will be.
             </Body1>
-          </motion.div>
+          </m.div>
 
-          <motion.div
+          <m.div
             className="mt-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -413,7 +413,7 @@ export const ChecklistStep = () => {
                 />
               ))}
             </div>
-          </motion.div>
+          </m.div>
 
           <p className="mt-8 text-center text-sm text-zinc-400">
             All your health data is private and secure,

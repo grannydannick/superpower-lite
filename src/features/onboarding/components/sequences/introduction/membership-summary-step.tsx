@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 import { Button } from '@/components/ui/button';
 import { Body1, H2 } from '@/components/ui/typography';
@@ -40,21 +40,21 @@ export const MembershipSummaryStep = () => {
   return (
     <Sequence.StepLayout centered className="justify-between">
       <Sequence.StepContent className="mx-auto mb-8 max-w-md text-center md:p-0">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
           <H2 className="mb-8">Your membership also includes...</H2>
-        </motion.div>
-        <motion.div
+        </m.div>
+        <m.div
           className="w-full space-y-3 rounded-2xl bg-white p-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
         >
           {FEATURES.map((feature, index) => (
-            <motion.div
+            <m.div
               key={feature.title}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -83,9 +83,9 @@ export const MembershipSummaryStep = () => {
                   aria-hidden="true"
                 />
               )}
-            </motion.div>
+            </m.div>
           ))}
-        </motion.div>
+        </m.div>
       </Sequence.StepContent>
       <Sequence.StepFooter>
         <Button onClick={next} className="mx-auto w-full max-w-md">

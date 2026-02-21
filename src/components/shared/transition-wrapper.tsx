@@ -1,4 +1,4 @@
-import { motion, MotionProps } from 'framer-motion';
+import { m, MotionProps } from 'framer-motion';
 import { ReactNode } from 'react';
 
 type TransitionType = 'fade-in';
@@ -34,7 +34,7 @@ export const TransitionWrapper = ({
   const configDelay = (config.transition as { delay?: number })?.delay;
 
   return (
-    <motion.div
+    <m.div
       className={className}
       initial={config.initial}
       animate={config.animate}
@@ -44,6 +44,6 @@ export const TransitionWrapper = ({
       }}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 };

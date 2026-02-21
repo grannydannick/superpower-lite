@@ -73,13 +73,9 @@ function SchedulerConsumer({
     onSlotUpdate,
   } = useScheduler((s) => s);
 
-  useEffect(
-    () => {
-      fetchSlots();
-    },
-    // fetchLocations is stable from zustand, no need to put it in deps
-    [],
-  );
+  useEffect(() => {
+    fetchSlots();
+  }, [fetchSlots]);
 
   const handleSlotSelect = (slot: Slot) => {
     onSlotUpdate?.(slot, tz);

@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -99,7 +99,7 @@ export const DigitalTwinExplainerStep = () => {
         />
         {/* Animated images for crossfade */}
         <AnimatePresence initial={false}>
-          <motion.img
+          <m.img
             key={currentImageNumber}
             src={imageSrc}
             alt="Digital Twin Visualization"
@@ -115,7 +115,7 @@ export const DigitalTwinExplainerStep = () => {
 
       <Sequence.StepContent className="mx-auto mb-8 max-w-md text-center">
         <AnimatePresence mode="wait">
-          <motion.div
+          <m.div
             key={currentSubStep}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -124,7 +124,7 @@ export const DigitalTwinExplainerStep = () => {
           >
             <H2 className="mb-1">{content.title}</H2>
             <Body1 className="text-secondary">{content.description}</Body1>
-          </motion.div>
+          </m.div>
         </AnimatePresence>
       </Sequence.StepContent>
 

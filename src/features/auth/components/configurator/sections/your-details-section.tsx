@@ -52,28 +52,6 @@ export const YourDetailsSection = ({
   const processing = useCheckoutContext((s) => s.processing);
   const postalCode = form.watch('postalCode');
 
-  const handleZipCodeCheck = async (): Promise<boolean> => {
-    const response = await getServiceabilityMutation.mutateAsync({
-      data: {
-        zipCode: postalCode,
-        collectionMethod: 'IN_LAB',
-      },
-    });
-
-    if (response.serviceable === false) {
-      track('register_not_serviceable', {
-        postal_code: postalCode,
-        state: getState(postalCode),
-        reason: response.reason,
-      });
-
-      setNonServiceabilityReason(response.reason);
-      return false;
-    }
-
-    return true;
-  };
-
   const handleNonServiceableClose = () => {
     setNonServiceabilityReason(undefined);
     form.setValue('postalCode', '');
@@ -82,8 +60,35 @@ export const YourDetailsSection = ({
   useEffect(() => {
     if (postalCode.length !== 5) return;
 
-    handleZipCodeCheck();
-  }, [postalCode]);
+    let cancelled = false;
+
+    const checkZipCode = async () => {
+      const response = await getServiceabilityMutation.mutateAsync({
+        data: {
+          zipCode: postalCode,
+          collectionMethod: 'IN_LAB',
+        },
+      });
+
+      if (cancelled) return;
+
+      if (response.serviceable === false) {
+        track('register_not_serviceable', {
+          postal_code: postalCode,
+          state: getState(postalCode),
+          reason: response.reason,
+        });
+
+        setNonServiceabilityReason(response.reason);
+      }
+    };
+
+    void checkZipCode();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [postalCode, getServiceabilityMutation, track]);
 
   return (
     <>

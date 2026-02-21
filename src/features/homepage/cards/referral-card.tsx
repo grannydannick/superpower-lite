@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 
 import { Link } from '@/components/ui/link';
@@ -15,7 +15,7 @@ export const ReferralCard: React.FC = () => {
           className="relative flex items-center justify-between bg-zinc-900 pr-6"
         >
           <div className="absolute -left-12 top-0 h-full overflow-hidden md:inset-0">
-            <motion.img
+            <m.img
               src="/home/refer-a-friend.png"
               alt="Refer a friend illustration"
               className="pointer-events-none h-full w-auto select-none object-contain object-left md:size-full md:object-left-top"

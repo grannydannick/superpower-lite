@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { MoreVertical } from 'lucide-react';
 import { memo } from 'react';
 
@@ -37,20 +37,20 @@ export const AddressCard = memo(
             <div className="flex items-center gap-2">
               <Body1 className="text-zinc-600">{address.line.join(' ')}</Body1>
               {isPrimary && (
-                <motion.div
+                <m.div
                   className="hidden items-center gap-2 md:flex"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <motion.span
+                  <m.span
                     animate={{ opacity: [1, 0.7, 1] }}
                     transition={{ duration: 0.8, repeat: Infinity }}
                   >
                     <DotIcon className="text-zinc-500" />
-                  </motion.span>
+                  </m.span>
                   <Body3 className="text-zinc-500">Default address</Body3>
-                </motion.div>
+                </m.div>
               )}
             </div>
             <Body3 className="text-zinc-400">

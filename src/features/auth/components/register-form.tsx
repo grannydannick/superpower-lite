@@ -159,8 +159,8 @@ const Step1 = ({ onNext }: { onNext: () => void }) => {
 
       <div>
         <Card className="space-y-4 border border-zinc-200 bg-white p-6 shadow-md">
-          {REGISTER_FEATURES.map((feature, i) => (
-            <div key={i} className="flex items-center gap-2.5">
+          {REGISTER_FEATURES.map((feature) => (
+            <div key={feature} className="flex items-center gap-2.5">
               <Check
                 size={20}
                 strokeWidth={2}
@@ -187,15 +187,16 @@ export const Configurator = ({ onPrev }: { onPrev: () => void }) => {
     state: getState(postalCode)?.state,
   });
 
-  const availableSubscriptions = availableSubscriptionsQuery.data ?? [];
-
   useEffect(() => {
-    if (availableSubscriptions.length > 0) {
-      updateMembership(availableSubscriptions[0]);
-    } else {
+    const subscriptions = availableSubscriptionsQuery.data;
+
+    if (subscriptions == null || subscriptions.length === 0) {
       updateMembership(null);
+      return;
     }
-  }, [availableSubscriptions]);
+
+    updateMembership(subscriptions[0]);
+  }, [availableSubscriptionsQuery.data, updateMembership]);
 
   return <ConfiguratorSections onPrev={onPrev} />;
 };

@@ -1,5 +1,5 @@
 import NumberFlow from '@number-flow/react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { forwardRef, type ButtonHTMLAttributes } from 'react';
 
 import { Body2, H3 } from '@/components/ui/typography';
@@ -122,7 +122,7 @@ export const BiomarkersDistributionBar = ({
 
   return (
     <div className="mb-3 space-y-2">
-      <motion.div
+      <m.div
         className="flex w-full items-center justify-between"
         initial={{ opacity: 0, width: '75%' }}
         animate={{ opacity: 1, width: '100%' }}
@@ -139,10 +139,10 @@ export const BiomarkersDistributionBar = ({
             disabled={!enableToggle}
           />
         ))}
-      </motion.div>
+      </m.div>
       <div className="flex h-1.5 w-full justify-start gap-1">
         {optimalPercent > 0 && (
-          <motion.div
+          <m.div
             className="h-full rounded-full"
             style={{
               backgroundColor: STATUS_TO_COLOR.optimal,
@@ -157,7 +157,7 @@ export const BiomarkersDistributionBar = ({
           />
         )}
         {normalPercent > 0 && (
-          <motion.div
+          <m.div
             className="h-full rounded-full"
             style={{
               backgroundColor: STATUS_TO_COLOR.normal,
@@ -170,7 +170,7 @@ export const BiomarkersDistributionBar = ({
           />
         )}
         {outOfRangePercent > 0 && (
-          <motion.div
+          <m.div
             className="h-full rounded-full"
             style={{
               backgroundColor: STATUS_TO_COLOR['out of range'],
@@ -184,7 +184,7 @@ export const BiomarkersDistributionBar = ({
             transition={{ duration: 1.5, ease: EASE }}
           />
         )}
-        <motion.div
+        <m.div
           className="h-full rounded-full bg-zinc-200"
           initial={{ width: 0 }}
           animate={{

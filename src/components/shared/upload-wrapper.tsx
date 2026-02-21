@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Upload } from 'lucide-react';
 import { ReactNode, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
@@ -148,7 +148,7 @@ export const FileUpload = ({
       className="w-full border border-zinc-200 bg-white"
       {...getRootProps()}
     >
-      <motion.div
+      <m.div
         onClick={handleClick}
         whileHover="animate"
         className="group/file relative block w-full cursor-pointer overflow-hidden rounded-lg p-10"
@@ -176,7 +176,7 @@ export const FileUpload = ({
               </div>
             )}
             {!files.length && (
-              <motion.div
+              <m.div
                 layoutId="file-upload"
                 variants={mainVariant}
                 transition={{
@@ -190,29 +190,29 @@ export const FileUpload = ({
                 )}
               >
                 {isDragActive ? (
-                  <motion.p
+                  <m.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className="flex flex-col items-center text-neutral-600"
                   >
                     Drop it
                     <Upload className="size-4 text-neutral-600 dark:text-neutral-400" />
-                  </motion.p>
+                  </m.p>
                 ) : (
                   <Upload className="size-4 text-neutral-600 dark:text-neutral-300" />
                 )}
-              </motion.div>
+              </m.div>
             )}
 
             {!files.length && (
-              <motion.div
+              <m.div
                 variants={secondaryVariant}
                 className="absolute inset-0 z-30 mx-auto mt-4 flex h-32 w-full max-w-32 items-center justify-center rounded-md border border-dashed border-vermillion-900 bg-transparent opacity-0"
-              ></motion.div>
+              ></m.div>
             )}
           </div>
         </div>
-      </motion.div>
+      </m.div>
     </Card>
   );
 };

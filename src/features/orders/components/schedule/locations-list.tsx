@@ -22,6 +22,8 @@ import { formatDistanceText } from '@/utils/format-distance';
 import { useScheduleStore } from '../../stores/schedule-store';
 import { openInMaps } from '../../utils/open-in-maps';
 
+const EMPTY_SLOTS: Slot[] = [];
+
 export const LocationList = ({
   locations,
   isLoading,
@@ -68,7 +70,7 @@ export const LocationListOptions = ({
     >
       {locations.map((option, index) => (
         <LocationListOption
-          key={index}
+          key={formatAddress(option.address)}
           option={option}
           index={index}
           isSelected={
@@ -85,7 +87,7 @@ export const LocationListOption = ({
   index,
   isSelected,
   isRadioButton = true,
-  slots = [],
+  slots = EMPTY_SLOTS,
   timezone,
 }: {
   option: PhlebotomyLocation;
@@ -219,19 +221,17 @@ const LocationSlots = ({
 export const LocationListSkeleton = () => {
   return (
     <div className="flex h-full flex-col gap-2 p-2">
-      {Array(4)
-        .fill(0)
-        .map((_, index) => (
-          <div key={index} className="flex items-center rounded-lg p-4">
-            <div className="flex w-full items-center gap-4">
-              <Skeleton className="size-5 shrink-0 rounded-full" />
-              <div className="w-full space-y-2">
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-3 w-1/2" />
-              </div>
+      {['row-1', 'row-2', 'row-3', 'row-4'].map((key) => (
+        <div key={key} className="flex items-center rounded-lg p-4">
+          <div className="flex w-full items-center gap-4">
+            <Skeleton className="size-5 shrink-0 rounded-full" />
+            <div className="w-full space-y-2">
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-3 w-1/2" />
             </div>
           </div>
-        ))}
+        </div>
+      ))}
     </div>
   );
 };

@@ -2,13 +2,15 @@ import moment from 'moment-timezone';
 import { useMemo } from 'react';
 
 import { ADVANCED_BLOOD_PANEL, SUPERPOWER_BLOOD_PANEL } from '@/const';
-import { RequestGroup } from '@/types/api';
+import { Credit, RequestGroup } from '@/types/api';
 
 import { useOrders } from '../api';
 import { useCredits } from '../api/credits';
 import { useScheduleStore } from '../stores/schedule-store';
 
 const DAYS_30_MS = 30 * 24 * 60 * 60 * 1000;
+const EMPTY_REQUEST_GROUPS: RequestGroup[] = [];
+const EMPTY_CREDITS: Credit[] = [];
 
 function normalizeServiceName(name: string): string {
   if (name === SUPERPOWER_BLOOD_PANEL || name === ADVANCED_BLOOD_PANEL)
@@ -23,8 +25,8 @@ export const useScheduleDuplicate = () => {
   const ordersQuery = useOrders();
   const creditsQuery = useCredits();
 
-  const requestGroups = ordersQuery.data?.requestGroups ?? [];
-  const credits = creditsQuery.data?.credits ?? [];
+  const requestGroups = ordersQuery.data?.requestGroups ?? EMPTY_REQUEST_GROUPS;
+  const credits = creditsQuery.data?.credits ?? EMPTY_CREDITS;
 
   const selectedCredits = useMemo(() => {
     const idSet = new Set(selectedCreditIds ?? []);

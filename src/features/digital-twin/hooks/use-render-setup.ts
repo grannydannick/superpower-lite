@@ -21,6 +21,7 @@ export const useRenderSetup = ({
   mixer: AnimationMixer;
 }) => {
   const { gl, scene, camera, size } = useThree();
+  const sizeRef = useRef({ width: size.width, height: size.height });
 
   const composer = useRef<EffectComposer>();
   const cameraShadows = useRef<Camera>();
@@ -30,7 +31,12 @@ export const useRenderSetup = ({
   const blurShader = useBlurShader({ area });
 
   useEffect(() => {
-    const { width, height } = size;
+    sizeRef.current.width = size.width;
+    sizeRef.current.height = size.height;
+  }, [size.width, size.height]);
+
+  useEffect(() => {
+    const { width, height } = sizeRef.current;
     const aspect = width / height;
 
     // camera for ground shadows (rendered separately from the blurred background scene)
@@ -47,19 +53,27 @@ export const useRenderSetup = ({
 
     const rtWidth = Math.max(1, Math.floor(width / 1.5));
     const rtHeight = Math.max(1, Math.floor(height / 1.5));
-    composer.current = new EffectComposer(
+    const nextComposer = new EffectComposer(
       gl,
       new WebGLRenderTarget(rtWidth, rtHeight),
     );
-    composer.current.addPass(new RenderPass(scene, cameraBackground.current));
+    nextComposer.addPass(new RenderPass(scene, cameraBackground.current));
+    composer.current = nextComposer;
 
-    const blurAmount = size.width * 0.0022;
+    const blurAmount = width * 0.0022;
     [blurShader.horizontal, blurShader.vertical].forEach((shader, i) => {
       shader.uniforms.resolution.value.set(width, height);
       shader.uniforms.blurAmount.value = !i ? blurAmount : blurAmount / aspect;
-      composer.current?.addPass(shader);
+      nextComposer.addPass(shader);
     });
-  }, []);
+
+    return () => {
+      if (composer.current === nextComposer) {
+        composer.current = undefined;
+      }
+      nextComposer.dispose?.();
+    };
+  }, [blurShader.horizontal, blurShader.vertical, camera, gl, scene]);
 
   // Respond to resizes once, avoid work in the frame loop
   useEffect(() => {
@@ -86,7 +100,13 @@ export const useRenderSetup = ({
       c.far = main.far;
       c.updateProjectionMatrix();
     });
-  }, [size.width, size.height]);
+  }, [
+    blurShader.horizontal,
+    blurShader.vertical,
+    camera,
+    size.width,
+    size.height,
+  ]);
 
   useFrame((_, delta) => {
     // advancing animation every frame

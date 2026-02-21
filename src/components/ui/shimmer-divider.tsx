@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import type React from 'react';
 
 import { cn } from '@/lib/utils';
@@ -34,7 +34,7 @@ export function ShimmerDivider({
           'linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%)',
       }}
     >
-      <motion.div
+      <m.div
         className="pointer-events-none absolute inset-0 h-16"
         initial={{
           ['--pos']: direction === 'up' ? '-20%' : '200%',

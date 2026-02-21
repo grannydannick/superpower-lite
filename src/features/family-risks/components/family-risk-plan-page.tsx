@@ -1,4 +1,4 @@
-import { motion, Variants } from 'framer-motion';
+import { m, type Variants } from 'framer-motion';
 import { ChevronLeft, Share2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
@@ -103,66 +103,66 @@ export function FamilyRiskPlanPage() {
         </div>
         <div className="flex flex-col items-center gap-6 px-6 pb-8 text-center">
           {/* Hero reveals first */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           >
             <FamilyRiskHero />
-          </motion.div>
+          </m.div>
 
           {/* Then reveal each subsequent item in sequence */}
-          <motion.div
+          <m.div
             variants={listContainer}
             initial="hidden"
             animate="visible"
             className="contents"
           >
-            <motion.div variants={fadeBlur} className="space-y-2">
+            <m.div variants={fadeBlur} className="space-y-2">
               <Body2 className="text-white/50">Family insights</Body2>
               <H1 className="max-w-xs text-white md:text-4xl">
                 Knowledge that goes beyond you
               </H1>
-            </motion.div>
-            <motion.div variants={fadeBlur}>
+            </m.div>
+            <m.div variants={fadeBlur}>
               <ShimmerDivider className="h-6" />
-            </motion.div>
-            <motion.div variants={fadeBlur}>
+            </m.div>
+            <m.div variants={fadeBlur}>
               <Body2 className="max-w-sm text-white">
                 We don’t just share memories and traditions with our families.
                 We also share biology and parts of our health.
               </Body2>
-            </motion.div>
-            <motion.div variants={fadeBlur}>
+            </m.div>
+            <m.div variants={fadeBlur}>
               <ShimmerDivider className="h-6" />
-            </motion.div>
-            <motion.div variants={fadeBlur}>
+            </m.div>
+            <m.div variants={fadeBlur}>
               <Body2 className="max-w-sm text-white/80">
                 Because of that, your results can point to trends that matter
                 for your family, too.
               </Body2>
-            </motion.div>
-            <motion.div variants={fadeBlur}>
+            </m.div>
+            <m.div variants={fadeBlur}>
               <ShimmerDivider className="h-6" />
-            </motion.div>
-            <motion.div variants={fadeBlur}>
+            </m.div>
+            <m.div variants={fadeBlur}>
               <Body1 className="max-w-sm text-xl text-white">
                 Based on your results, we&apos;ve identified {riskCount} pattern
                 {riskCount !== 1 ? 's' : ''} that may be shared across your
                 family.
               </Body1>
-            </motion.div>
-            <motion.div variants={fadeBlur}>
+            </m.div>
+            <m.div variants={fadeBlur}>
               <ShimmerDivider className="h-6" />
-            </motion.div>
-            <motion.div variants={fadeBlur}>
+            </m.div>
+            <m.div variants={fadeBlur}>
               <Body2 className="max-w-sm italic text-white/80">
                 This isn’t a diagnosis or medical advice - just shared learnings
                 based on your data.
               </Body2>
-            </motion.div>
+            </m.div>
             <ShimmerDivider className="h-6" />
-          </motion.div>
+          </m.div>
         </div>
         <div className="flex flex-col gap-24 px-6 pb-6">
           <div className="space-y-6">

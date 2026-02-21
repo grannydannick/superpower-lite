@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 
 import { Head } from '@/components/seo';
 
@@ -28,7 +28,7 @@ export const HeardAboutUsSequence = () => {
       <Head title="How Did You Hear About Us?" />
       <Sequence.Layout>
         <AnimatePresence mode="wait">
-          <motion.div
+          <m.div
             key={screenIndex}
             className="flex min-h-0 flex-1 flex-col"
             initial={{ opacity: 0 }}
@@ -37,7 +37,7 @@ export const HeardAboutUsSequence = () => {
             transition={FADE_TRANSITION}
           >
             <Screen />
-          </motion.div>
+          </m.div>
         </AnimatePresence>
       </Sequence.Layout>
     </SequenceProvider>

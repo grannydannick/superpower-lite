@@ -106,8 +106,8 @@ export const SelectableCard = ({
               {description ?? 'No description.'}
             </Body2>
             {detailsResult?.trigger ? (
-              /* eslint-disable-next-line jsx-a11y/no-static-element-interactions */
               <div
+                role="presentation"
                 className="mt-1"
                 onClick={(e) => {
                   e.stopPropagation();

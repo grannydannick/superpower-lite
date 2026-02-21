@@ -1,5 +1,5 @@
 import { QuestionnaireResponse } from '@medplum/fhirtypes';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useNavigate } from 'react-router';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
@@ -70,13 +70,13 @@ export const RxScreenOut = ({
   return (
     <div className="min-h-screen bg-zinc-100 px-8">
       <div className="mx-auto max-w-[570px] py-24 md:py-36">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
           <SuperpowerLogo className="w-32" />
-        </motion.div>
+        </m.div>
         <RxScreenOutInformation text={text} />
         {/* NOTE: We don't render this button if it's a front door experiment since
           their Superpower membership is cancelled; we don't want them going anywhere unintended! */}
@@ -129,7 +129,7 @@ function RxScreenOutInformation({
   text: typeof RX_SCREEN_OUT_TEXT | typeof RX_SCREEN_OUT_FRONT_DOOR_TEXT;
 }) {
   return (
-    <motion.section
+    <m.section
       id="main"
       className="space-y-8 pt-10"
       initial={{ opacity: 0, y: 20 }}
@@ -137,7 +137,7 @@ function RxScreenOutInformation({
       transition={{ duration: 0.6, ease: 'easeOut' }}
     >
       {text.map((item: any, idx: number) => (
-        <motion.div
+        <m.div
           key={item.heading || idx}
           className="space-y-3"
           initial={{ opacity: 0, y: 20 }}
@@ -151,14 +151,14 @@ function RxScreenOutInformation({
           <H3>{item.title}</H3>
           <H4>{item.heading}</H4>
           <div className="space-y-4">
-            {item.body.map((body: string, index: number) => (
-              <Body2 key={index} className="text-secondary">
+            {item.body.map((body: string) => (
+              <Body2 key={body} className="text-secondary">
                 {body
                   .split(/(concierge@superpower\.com)/g)
-                  .map((part: string, i: number) =>
+                  .map((part: string) =>
                     part.match(/concierge@superpower\.com/) ? (
                       <a
-                        key={i}
+                        key={part}
                         href={`mailto:concierge@superpower.com`}
                         className="text-vermillion-900 underline-offset-1 hover:underline"
                       >
@@ -171,8 +171,8 @@ function RxScreenOutInformation({
               </Body2>
             ))}
           </div>
-        </motion.div>
+        </m.div>
       ))}
-    </motion.section>
+    </m.section>
   );
 }

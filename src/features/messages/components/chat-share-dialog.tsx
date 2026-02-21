@@ -1,5 +1,5 @@
 import { UIMessage } from 'ai';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Copy, Share, X } from 'lucide-react';
 import { forwardRef, useEffect, useMemo, useState } from 'react';
 import type React from 'react';
@@ -210,7 +210,7 @@ export function ChatShareDialog({
   const consentContent = () => (
     <>
       <div className='w-full overflow-hidden bg-[url("/chat/share-chat.webp")] bg-cover px-8 pt-14'>
-        <motion.div
+        <m.div
           className="pointer-events-none space-y-6"
           initial="hidden"
           animate="show"
@@ -220,7 +220,7 @@ export function ChatShareDialog({
             },
           }}
         >
-          <motion.div
+          <m.div
             variants={{
               hidden: { opacity: 0, y: 24, filter: 'blur(6px)' },
               show: {
@@ -233,8 +233,8 @@ export function ChatShareDialog({
             className="ml-auto w-fit max-w-xs rounded-xl border border-white/10 bg-black/15 p-2 backdrop-blur"
           >
             <Body1 className="text-white">{lastUserMessage}</Body1>
-          </motion.div>
-          <motion.div
+          </m.div>
+          <m.div
             variants={{
               hidden: { opacity: 0, y: 24, filter: 'blur(6px)' },
               show: {
@@ -254,8 +254,8 @@ export function ChatShareDialog({
                 {lastAiMessage ?? ''}
               </Streamdown>
             </div>
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       </div>
       <div className="space-y-6 p-6 pt-10">
         <div className="space-y-2">
@@ -289,7 +289,7 @@ export function ChatShareDialog({
   const shareContent = () => (
     <>
       <div className='w-full overflow-hidden bg-[url("/chat/share-chat.webp")] bg-cover px-8 pt-14'>
-        <motion.div
+        <m.div
           className="pointer-events-none space-y-6"
           initial="hidden"
           animate="show"
@@ -299,7 +299,7 @@ export function ChatShareDialog({
             },
           }}
         >
-          <motion.div
+          <m.div
             variants={{
               hidden: { opacity: 0, y: 24, filter: 'blur(6px)' },
               show: {
@@ -312,8 +312,8 @@ export function ChatShareDialog({
             className="ml-auto w-fit max-w-xs rounded-xl border border-white/10 bg-black/15 p-2 backdrop-blur"
           >
             <Body1 className="text-white">{lastUserMessage}</Body1>
-          </motion.div>
-          <motion.div
+          </m.div>
+          <m.div
             variants={{
               hidden: { opacity: 0, y: 24, filter: 'blur(6px)' },
               show: {
@@ -333,8 +333,8 @@ export function ChatShareDialog({
                 {lastAiMessage ?? ''}
               </Streamdown>
             </div>
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       </div>
       <div className="space-y-6 p-6 pt-10">
         <div className="space-y-2">
