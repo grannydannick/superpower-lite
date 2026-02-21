@@ -1,4 +1,4 @@
-import { useEffect, useState, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { useNavigate } from 'react-router';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -29,10 +29,6 @@ import { BiomarkersDataTable } from './biomarkers-data-table';
 export const CategoryDataTable = ({ category }: { category?: Category }) => {
   const searchQuery = useDataFilterStore((s) => s.searchQuery);
   const updateSearchQuery = useDataFilterStore((s) => s.updateSearchQuery);
-  useEffect(() => {
-    setLocalQuery(searchQuery);
-  }, [searchQuery]);
-
   const [localQuery, setLocalQuery] = useState(searchQuery);
 
   const ordersQuery = useOrders();
