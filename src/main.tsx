@@ -1,6 +1,6 @@
+import { MotionConfig } from 'framer-motion';
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
-import { MotionConfig } from 'framer-motion';
 
 import './index.css';
 import { captureCampaignParameters } from '@/utils/campaign-tracking';
