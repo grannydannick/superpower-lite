@@ -1,6 +1,5 @@
 import { Reorder } from 'framer-motion';
 import { MoreHorizontal } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { FileName } from '@/features/files/components/patterns/file-name';
@@ -15,26 +14,18 @@ interface MobileFilesProps {
 }
 
 export function MobileFiles({ files }: MobileFilesProps): JSX.Element {
-  const [newFiles, setNewFiles] = useState(files);
-
-  useEffect(() => {
-    setNewFiles(files);
-  }, [files]);
-
   return (
     <div className="relative left-1/2 flex w-full -translate-x-1/2 flex-col justify-between rounded-[20px] bg-white sm:w-auto md:hidden">
       <div className="flex w-full flex-col justify-between">
         <div>
           <Reorder.Group
-            onReorder={(newOrder) => {
-              setNewFiles(newOrder);
-            }}
+            onReorder={() => {}}
             axis="y"
             transition={{ duration: 0.2 }}
-            values={newFiles}
+            values={files}
             className="space-y-1"
           >
-            {newFiles.map((file, index) => {
+            {files.map((file, index) => {
               return (
                 <Reorder.Item
                   drag={false}
@@ -45,7 +36,7 @@ export function MobileFiles({ files }: MobileFilesProps): JSX.Element {
                   <div
                     className={cn(
                       'flex items-center border-b border-zinc-100 py-3',
-                      index === newFiles.length - 1 && 'border-b-0',
+                      index === files.length - 1 && 'border-b-0',
                     )}
                   >
                     {file.contentType === 'application/pdf' ? (
