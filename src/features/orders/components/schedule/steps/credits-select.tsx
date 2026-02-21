@@ -1,5 +1,5 @@
 import { Info } from 'lucide-react';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { NavLink } from 'react-router';
 
 import { SelectableCard } from '@/components/shared/selectable-card';
@@ -121,9 +121,12 @@ const CreditsSelectContent = ({
       sum += tubeCount;
     });
 
-    onTotalTubesChange?.(sum);
     return sum;
-  }, [selectedIds, uniqueCredits, tubeCountByServiceId, onTotalTubesChange]);
+  }, [selectedIds, uniqueCredits, tubeCountByServiceId]);
+
+  useEffect(() => {
+    onTotalTubesChange?.(totalTubes);
+  }, [onTotalTubesChange, totalTubes]);
 
   const anyWouldExceed = useMemo(() => {
     return services.some((service) => {
