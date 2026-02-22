@@ -1,5 +1,4 @@
 import NumberFlow from '@number-flow/react';
-import { useFeatureFlagEnabled } from 'posthog-js/react';
 import React from 'react';
 import { useNavigate } from 'react-router';
 
@@ -21,6 +20,7 @@ import { useProtocolCheckout } from '@/features/protocol/hooks/use-protocol-chec
 import { useShippingFee } from '@/features/protocol/hooks/use-shipping-fee';
 import { getActivityPricing } from '@/features/protocol/utils/get-activity-pricing';
 import { useAnalytics } from '@/hooks/use-analytics';
+import { usePosthogFeatureFlagEnabled } from '@/hooks/use-posthog-feature-flag-enabled';
 import { useUser } from '@/lib/auth';
 import { FeatureFlags } from '@/lib/posthog';
 import { cn } from '@/lib/utils';
@@ -52,7 +52,7 @@ export function OrderSummaryStep({
   const completeRevealMutation = useCompleteReveal();
   const { track } = useAnalytics();
   const showAutopilotCard =
-    useFeatureFlagEnabled(FeatureFlags.ProtocolAutopilot) === true;
+    usePosthogFeatureFlagEnabled(FeatureFlags.ProtocolAutopilot) === true;
 
   const navigate = useNavigate();
 

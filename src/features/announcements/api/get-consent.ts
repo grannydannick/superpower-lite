@@ -1,18 +1,13 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
-import { z } from 'zod';
 
 import { api } from '@/lib/api-client';
 import { QueryConfig } from '@/lib/react-query';
 import { Consent, ConsentType } from '@/types/api';
 
-export const getConsentInputSchema = z.object({
-  userId: z.string().min(1, 'This is required.'),
-  type: z
-    .enum([ConsentType.MEMBERSHIP_AGREEMENT, ConsentType.PHI_MARKETING])
-    .optional(),
-});
-
-export type GetConsentInput = z.infer<typeof getConsentInputSchema>;
+export interface GetConsentInput {
+  userId: string;
+  type?: ConsentType;
+}
 
 export const getConsent = ({
   userId,
@@ -32,7 +27,7 @@ export const getConsentQueryOptions = (userId: string, type?: ConsentType) => {
   return queryOptions({
     queryKey: ['consent', userId, type],
     queryFn: () => getConsent({ userId, type }),
-    enabled: !!userId,
+    enabled: userId.length > 0,
   });
 };
 

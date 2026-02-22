@@ -1,14 +1,14 @@
-import { OrbitControls as DreiOrbitControls } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
 import { MathUtils } from 'three';
-import type { OrbitControls } from 'three-stdlib';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 export const SoftLimitedOrbitControls = ({
   target,
 }: {
   target: [number, number, number];
 }) => {
+  const { camera, gl } = useThree();
   const controlsRef = useRef<OrbitControls | null>(null);
 
   const [isUserInteracting, setIsUserInteracting] = useState(false);
@@ -19,11 +19,33 @@ export const SoftLimitedOrbitControls = ({
   const recenterSpeed = 0.05;
 
   useEffect(() => {
-    const controls = controlsRef.current;
-    if (controls == null) return;
+    const domElement = gl.domElement;
+    const controls = new OrbitControls(camera, domElement);
+    controlsRef.current = controls;
+
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.2;
+    controls.enablePan = false;
+    controls.enableZoom = false;
+    controls.minPolarAngle = Math.PI / 2;
+    controls.maxPolarAngle = Math.PI / 2;
+    controls.target.set(target[0], target[1], target[2]);
+    controls.update();
+
+    const onStart = () => setIsUserInteracting(true);
+    const onEnd = () => setIsUserInteracting(false);
+    controls.addEventListener('start', onStart);
+    controls.addEventListener('end', onEnd);
 
     radiusRef.current = controls.getDistance();
-  }, []);
+    return () => {
+      controls.removeEventListener('start', onStart);
+      controls.removeEventListener('end', onEnd);
+      controls.dispose();
+      controlsRef.current = null;
+      radiusRef.current = null;
+    };
+  }, [camera, gl, target]);
 
   useFrame(() => {
     const controls = controlsRef.current;
@@ -59,18 +81,5 @@ export const SoftLimitedOrbitControls = ({
     controls.update();
   });
 
-  return (
-    <DreiOrbitControls
-      ref={controlsRef}
-      enableDamping
-      enablePan={false}
-      enableZoom={false}
-      target={target}
-      dampingFactor={0.2}
-      minPolarAngle={Math.PI / 2}
-      maxPolarAngle={Math.PI / 2}
-      onStart={() => setIsUserInteracting(true)}
-      onEnd={() => setIsUserInteracting(false)}
-    />
-  );
+  return null;
 };

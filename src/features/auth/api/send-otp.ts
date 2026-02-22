@@ -1,12 +1,12 @@
 import { useMutation } from '@tanstack/react-query';
-import validator from 'validator';
+import isMobilePhone from 'validator/es/lib/isMobilePhone';
 import { z } from 'zod';
 
 import { api } from '@/lib/api-client';
 import { MutationConfig } from '@/lib/react-query';
 
 export const sendOtpInputSchema = z.object({
-  phone: z.string().refine(validator.isMobilePhone),
+  phone: z.string().refine(isMobilePhone),
   toc: z.literal<boolean>(true),
 });
 

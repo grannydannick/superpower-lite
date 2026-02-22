@@ -1,5 +1,4 @@
-import { Properties } from 'posthog-js';
-import { usePostHog } from 'posthog-js/react';
+import type { Properties } from 'posthog-js';
 import { useCallback } from 'react';
 
 import { captureEvent } from '@/lib/gtm';
@@ -30,8 +29,6 @@ export type TrackProperties = Properties & {
 };
 
 export const useAnalytics = () => {
-  const posthog = usePostHog();
-
   /**
    * https://posthog.com/docs/getting-started/send-events#sending-custom-properties-on-an-event
    * @param eventName The name of the event to track
@@ -40,13 +37,14 @@ export const useAnalytics = () => {
    */
   const track = useCallback(
     (eventName: string, properties?: TrackProperties) => {
-      if (posthog) {
-        posthog.capture(eventName, properties);
+      const client = typeof window === 'undefined' ? undefined : window.posthog;
+      if (client != null) {
+        client.capture(eventName, properties);
       }
 
-      captureEvent(eventName, properties || {});
+      captureEvent(eventName, properties ?? {});
     },
-    [posthog],
+    [],
   );
 
   /**
@@ -63,22 +61,24 @@ export const useAnalytics = () => {
         $set_once?: PersonProperties;
       },
     ): void => {
-      if (posthog) {
-        posthog.identify(userId, properties?.$set, properties?.$set_once);
+      const client = typeof window === 'undefined' ? undefined : window.posthog;
+      if (client != null) {
+        client.identify(userId, properties?.$set, properties?.$set_once);
       }
 
       captureEvent('identify', { user_id: userId, ...properties });
     },
-    [posthog],
+    [],
   );
 
   const reset = useCallback(() => {
-    if (posthog) {
-      posthog.reset();
+    const client = typeof window === 'undefined' ? undefined : window.posthog;
+    if (client != null) {
+      client.reset();
     }
 
     captureEvent('reset', {});
-  }, [posthog]);
+  }, []);
 
   return {
     track,

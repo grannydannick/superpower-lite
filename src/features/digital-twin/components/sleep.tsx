@@ -1,10 +1,17 @@
 import { extend } from '@react-three/fiber';
-import { useRef, useEffect, useMemo, memo } from 'react';
+import {
+  useRef,
+  useEffect,
+  useMemo,
+  useState,
+  useLayoutEffect,
+  memo,
+} from 'react';
 import { Group, Material, Vector3, MeshBasicMaterial, BackSide } from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 import { Font, FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 
-import NBInternationalPro from '@/assets/fonts/NBInternationalPro/nbinternationalpro.json';
+import nbInternationalProUrl from '@/assets/fonts/NBInternationalPro/nbinternationalpro.json?url';
 
 extend({ TextGeometry });
 
@@ -14,6 +21,33 @@ import {
   createTweenValue,
   createColorTween,
 } from '../utils/create-tween-values';
+
+let cachedFont: Font | null = null;
+let cachedFontPromise: Promise<Font> | null = null;
+
+const loadFont = () => {
+  if (cachedFont) {
+    return Promise.resolve(cachedFont);
+  }
+
+  if (cachedFontPromise) {
+    return cachedFontPromise;
+  }
+
+  cachedFontPromise = fetch(nbInternationalProUrl)
+    .then((res) => res.json())
+    .then((data) => {
+      const font = new FontLoader().parse(data);
+      cachedFont = font;
+      return font;
+    })
+    .catch((error: unknown) => {
+      cachedFontPromise = null;
+      throw error;
+    });
+
+  return cachedFontPromise;
+};
 
 const TextMesh = ({
   position,
@@ -53,10 +87,29 @@ export const Sleep = memo(
     position: Vector3 | [number, number, number];
     layers: number;
   }) => {
-    const font = useMemo(
-      () => new FontLoader().parse(NBInternationalPro as any),
-      [],
-    );
+    const [font, setFont] = useState<Font | null>(() => cachedFont);
+
+    useEffect(() => {
+      if (font) {
+        return;
+      }
+
+      let cancelled = false;
+      void loadFont()
+        .then((loaded) => {
+          if (cancelled) {
+            return;
+          }
+          setFont(loaded);
+        })
+        .catch((error: unknown) => {
+          console.error('Failed to load 3D font', error);
+        });
+
+      return () => {
+        cancelled = true;
+      };
+    }, [font]);
 
     const sleepRef = useRef<Group>(null);
     const initialAreaRef = useRef(area);
@@ -111,6 +164,20 @@ export const Sleep = memo(
       sleepTween.set(!!level && area === 'sleep' ? 1 : 0);
     }, [area, level, setTarget, sleepTween]);
 
+    useLayoutEffect(() => {
+      if (!font) {
+        return;
+      }
+
+      const value = sleepTween.get();
+      const scale = 0.98 + value * 0.02;
+      sleepRef.current?.scale.set(scale, scale, scale);
+      material.opacity = value;
+      if (sleepRef.current) {
+        sleepRef.current.visible = value !== 0;
+      }
+    }, [font, material, sleepTween]);
+
     const positions: [number, number, number][] = [
       [0.046, 0.691, 0.01],
       [0.065, 0.7125, 0],
@@ -118,6 +185,10 @@ export const Sleep = memo(
     ];
 
     const sizes = [0.023, 0.018, 0.015];
+
+    if (!font) {
+      return null;
+    }
 
     return (
       <group ref={sleepRef} visible={area === 'sleep'} position={position}>

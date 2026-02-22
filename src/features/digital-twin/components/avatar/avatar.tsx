@@ -1,7 +1,8 @@
-import { useGLTF } from '@react-three/drei';
-import { useThree } from '@react-three/fiber';
+import { useLoader, useThree } from '@react-three/fiber';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Mesh, AnimationMixer } from 'three';
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { clone as cloneSkeleton } from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 import { useRenderSetup } from '../../hooks/use-render-setup';
@@ -30,12 +31,20 @@ export const Avatar = ({
   // load the glb model
   // Files in Vite's public folder are served from the root
   const modelUrl = `/models/${model}/${model}OptimisedV8.glb`;
-  const { scene: modelScene, animations } = useGLTF(modelUrl);
+  const { scene: modelScene, animations } = useLoader(
+    GLTFLoader,
+    modelUrl,
+    (loader) => {
+      loader.setMeshoptDecoder(MeshoptDecoder);
+    },
+  );
 
   useEffect(() => {
     // Preload the GLB for snappier swaps between models
     try {
-      useGLTF.preload(modelUrl);
+      useLoader.preload(GLTFLoader, modelUrl, (loader) => {
+        loader.setMeshoptDecoder(MeshoptDecoder);
+      });
     } catch (_) {
       // noop if preload is not supported in this context
     }

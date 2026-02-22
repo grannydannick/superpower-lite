@@ -1,5 +1,77 @@
-import gsap from 'gsap';
 import { Color } from 'three';
+
+const easeOutPower2 = (t: number) => {
+  const inv = 1 - t;
+  return 1 - inv * inv;
+};
+
+const getEase = (name: string | undefined) => {
+  if (name === 'power2.out') {
+    return easeOutPower2;
+  }
+  return (t: number) => t;
+};
+
+const startTween = ({
+  from,
+  to,
+  durationMs,
+  ease,
+  onStart,
+  onUpdate,
+  onComplete,
+}: {
+  from: number;
+  to: number;
+  durationMs: number;
+  ease: (t: number) => number;
+  onStart?: () => void;
+  onUpdate: (value: number) => void;
+  onComplete?: () => void;
+}) => {
+  if (durationMs <= 0 || from === to) {
+    onStart?.();
+    onUpdate(to);
+    onComplete?.();
+    return () => {};
+  }
+
+  let rafId: number | null = null;
+  let cancelled = false;
+  const start = performance.now();
+
+  onStart?.();
+  onUpdate(from);
+
+  const tick = (now: number) => {
+    if (cancelled) {
+      return;
+    }
+
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / durationMs, 1);
+    const eased = ease(progress);
+    const value = from + (to - from) * eased;
+    onUpdate(value);
+
+    if (progress >= 1) {
+      onComplete?.();
+      rafId = null;
+      return;
+    }
+
+    rafId = requestAnimationFrame(tick);
+  };
+
+  rafId = requestAnimationFrame(tick);
+
+  return () => {
+    cancelled = true;
+    if (rafId !== null) {
+      cancelAnimationFrame(rafId);
+    }
+  };
+};
 
 export const createTweenValue = (
   initial = 0,
@@ -12,22 +84,34 @@ export const createTweenValue = (
   },
 ) => {
   const ref = { value: initial };
-  let tween: gsap.core.Tween | null = null;
+  let cancel: (() => void) | null = null;
   let lastTarget = initial;
 
   const set = (target: number) => {
     if (target === lastTarget) return;
     lastTarget = target;
 
-    if (tween) tween.kill();
+    if (cancel) {
+      cancel();
+      cancel = null;
+    }
 
-    tween = gsap.to(ref, {
-      value: target,
-      duration: options?.duration ?? 1.5,
-      ease: options?.ease ?? 'power2.out',
-      onStart: () => options?.onStart?.(),
-      onUpdate: () => options?.onUpdate?.(ref.value),
-      onComplete: () => options?.onComplete?.(),
+    const from = ref.value;
+    const durationMs = (options?.duration ?? 1.5) * 1000;
+    cancel = startTween({
+      from,
+      to: target,
+      durationMs,
+      ease: getEase(options?.ease ?? 'power2.out'),
+      onStart: options?.onStart,
+      onUpdate: (value) => {
+        ref.value = value;
+        options?.onUpdate?.(value);
+      },
+      onComplete: () => {
+        cancel = null;
+        options?.onComplete?.();
+      },
     });
   };
 
@@ -41,8 +125,7 @@ export const createColorTween = (
   onUpdate: (color: Color) => void,
 ) => {
   const current = new Color(initial);
-  const target = { r: current.r, g: current.g, b: current.b };
-  let tween: gsap.core.Tween | null = null;
+  let cancel: (() => void) | null = null;
 
   const setTarget = (
     newColor: Color | string,
@@ -56,19 +139,31 @@ export const createColorTween = (
 
     if (current.equals(next)) return;
 
-    tween?.kill();
+    if (cancel) {
+      cancel();
+      cancel = null;
+    }
 
-    tween = gsap.to(target, {
-      r: next.r,
-      g: next.g,
-      b: next.b,
-      duration: options.duration ?? 1.5,
-      ease: options.ease ?? 'power2.out',
-      onUpdate: () => {
-        current.setRGB(target.r, target.g, target.b);
+    const from = { r: current.r, g: current.g, b: current.b };
+    const to = { r: next.r, g: next.g, b: next.b };
+
+    cancel = startTween({
+      from: 0,
+      to: 1,
+      durationMs: (options.duration ?? 1.5) * 1000,
+      ease: getEase(options.ease ?? 'power2.out'),
+      onUpdate: (p) => {
+        current.setRGB(
+          from.r + (to.r - from.r) * p,
+          from.g + (to.g - from.g) * p,
+          from.b + (to.b - from.b) * p,
+        );
         onUpdate(current);
       },
-      onComplete: options.onComplete,
+      onComplete: () => {
+        cancel = null;
+        options.onComplete?.();
+      },
     });
   };
 

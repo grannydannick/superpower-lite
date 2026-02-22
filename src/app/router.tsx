@@ -9,10 +9,11 @@ import { protocolRoutes } from './routes/app/protocol/protocol-router';
 import { AppRoot } from './routes/app/root';
 import { NotFoundRoute } from './routes/not-found';
 
-export const createRouter = () =>
+const createRouter = () =>
   createBrowserRouter([
     {
       path: '/register',
+      HydrateFallback: () => null,
       lazy: async () => {
         const { RegisterRoute } = await import('./routes/auth/register');
         return { Component: RegisterRoute };
@@ -20,6 +21,7 @@ export const createRouter = () =>
     },
     {
       path: '/claim-benefit',
+      HydrateFallback: () => null,
       lazy: async () => {
         const { ClaimBenefitRoute } =
           await import('./routes/auth/claim-benefit');
@@ -28,6 +30,7 @@ export const createRouter = () =>
     },
     {
       path: '/signin',
+      HydrateFallback: () => null,
       lazy: async () => {
         const { LoginRoute } = await import('./routes/auth/login');
         return { Component: LoginRoute };
@@ -35,6 +38,7 @@ export const createRouter = () =>
     },
     {
       path: '/logout',
+      HydrateFallback: () => null,
       lazy: async () => {
         const { LogoutRoute } = await import('./routes/auth/logout');
         return { Component: LogoutRoute };
@@ -42,6 +46,7 @@ export const createRouter = () =>
     },
     {
       path: '/resetpassword',
+      HydrateFallback: () => null,
       lazy: async () => {
         const { ResetPasswordRoute } =
           await import('./routes/auth/reset-password');
@@ -50,6 +55,7 @@ export const createRouter = () =>
     },
     {
       path: '/setpassword/:id/:secret',
+      HydrateFallback: () => null,
       lazy: async () => {
         const { SetPasswordRoute } = await import('./routes/auth/set-password');
         return { Component: SetPasswordRoute };
@@ -57,6 +63,7 @@ export const createRouter = () =>
     },
     {
       path: '/check-email',
+      HydrateFallback: () => null,
       lazy: async () => {
         const { CheckEmailRoute } = await import('./routes/auth/check-email');
         return { Component: CheckEmailRoute };
@@ -64,6 +71,7 @@ export const createRouter = () =>
     },
     {
       path: '/verify-email',
+      HydrateFallback: () => null,
       lazy: async () => {
         const { VerifyEmailRoute } = await import('./routes/auth/verify-email');
         return { Component: VerifyEmailRoute };
@@ -71,6 +79,7 @@ export const createRouter = () =>
     },
     {
       path: '/',
+      HydrateFallback: () => null,
       element: (
         <ProtectedRoute>
           <AppRoot />
@@ -270,6 +279,7 @@ export const createRouter = () =>
     },
     {
       path: '*',
+      HydrateFallback: () => null,
       element: (
         <ProtectedRoute>
           <NotFoundRoute />

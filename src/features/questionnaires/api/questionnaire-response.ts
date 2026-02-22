@@ -1,12 +1,11 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod';
 
 import { $api } from '@/orpc/client';
 import type { operations } from '@/orpc/types.generated';
 
-// UUID validation using Zod (matches server-side validation)
-const uuidSchema = z.string().uuid();
-const isUuid = (value: string): boolean => uuidSchema.safeParse(value).success;
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const isUuid = (value: string): boolean => UUID_RE.test(value);
 
 // Extract types from generated operations
 type GetQuestionnaireResponseByIdResponse =

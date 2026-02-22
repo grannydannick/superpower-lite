@@ -4,6 +4,7 @@
     "rules": ["knip/exports", "knip/types", "knip/files", "knip/duplicates"],
     "files": [
       "src/features/digital-twin/components/ground-shadow.tsx",
+      "src/features/digital-twin/components/contact-shadows.tsx",
       "src/features/digital-twin/components/avatar/avatar.tsx",
       "src/features/digital-twin/components/avatar/avatar-clone.tsx",
       "src/features/digital-twin/components/toxins.tsx",

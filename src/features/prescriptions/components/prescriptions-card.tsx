@@ -1,9 +1,9 @@
-import { usePostHog } from 'posthog-js/react';
 import { useNavigate } from 'react-router';
 
 import { Button } from '@/components/ui/button';
 import { ProgressiveImage } from '@/components/ui/progressive-image';
 import { Body1, Body2, Body3, H4 } from '@/components/ui/typography';
+import { useAnalytics } from '@/hooks/use-analytics';
 import { Rx } from '@/types/api';
 import { getPrescriptionImage } from '@/utils/prescription';
 
@@ -17,7 +17,7 @@ export const PrescriptionCard = ({ prescription }: { prescription: Rx }) => {
 };
 
 const DesktopCard = ({ prescription }: { prescription: Rx }) => {
-  const posthog = usePostHog();
+  const { track } = useAnalytics();
   const navigate = useNavigate();
 
   return (
@@ -26,7 +26,7 @@ const DesktopCard = ({ prescription }: { prescription: Rx }) => {
       tabIndex={0}
       className="group relative hidden cursor-pointer flex-col gap-4 overflow-hidden sm:flex"
       onClick={() => {
-        posthog?.capture('prescription_card_clicked', {
+        track('prescription_card_clicked', {
           prescriptionId: prescription.id,
         });
         navigate(`/prescriptions/${prescription.id}`);
@@ -34,7 +34,7 @@ const DesktopCard = ({ prescription }: { prescription: Rx }) => {
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          posthog?.capture('prescription_card_clicked', {
+          track('prescription_card_clicked', {
             prescriptionId: prescription.id,
           });
           navigate(`/prescriptions/${prescription.id}`);
@@ -70,7 +70,7 @@ const DesktopCard = ({ prescription }: { prescription: Rx }) => {
 };
 
 const MobileCard = ({ prescription }: { prescription: Rx }) => {
-  const posthog = usePostHog();
+  const { track } = useAnalytics();
   const navigate = useNavigate();
 
   return (
@@ -79,7 +79,7 @@ const MobileCard = ({ prescription }: { prescription: Rx }) => {
       tabIndex={0}
       className="flex flex-col gap-2 sm:hidden"
       onClick={() => {
-        posthog?.capture('prescription_card_clicked', {
+        track('prescription_card_clicked', {
           prescriptionId: prescription.id,
         });
         navigate(`/prescriptions/${prescription.id}`);
@@ -87,7 +87,7 @@ const MobileCard = ({ prescription }: { prescription: Rx }) => {
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          posthog?.capture('prescription_card_clicked', {
+          track('prescription_card_clicked', {
             prescriptionId: prescription.id,
           });
           navigate(`/prescriptions/${prescription.id}`);

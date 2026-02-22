@@ -74,8 +74,6 @@ export default defineConfig({
     include: [
       'three',
       '@react-three/fiber',
-      '@react-three/drei',
-      'three-stdlib',
     ],
     exclude: ['fsevents'],
   },
