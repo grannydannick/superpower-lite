@@ -6,7 +6,9 @@ import { env } from '@/config/env';
 import { useUser } from './auth';
 
 const shouldEnablePosthog =
-  typeof env.POSTHOG_KEY === 'string' && env.POSTHOG_KEY.length > 0;
+  typeof env.POSTHOG_KEY === 'string' &&
+  env.POSTHOG_KEY.length > 0 &&
+  !import.meta.env.TEST;
 
 function startPosthogInit(
   initPromiseRef: React.RefObject<Promise<PostHog | null> | null>,
@@ -62,9 +64,12 @@ export function PHProvider({
 }): JSX.Element {
   const user = useUser();
   const userId = user.data?.id;
+  const userEmail = user.data?.email;
+  const userFirstName = user.data?.firstName;
+  const userLastName = user.data?.lastName;
+  const userPhone = user.data?.phone;
   const identified = React.useRef(null as string | null);
   const initPromiseRef = React.useRef<Promise<PostHog | null> | null>(null);
-  const didScheduleInit = React.useRef(false);
 
   React.useEffect(() => {
     if (!shouldEnablePosthog) {
@@ -79,63 +84,57 @@ export function PHProvider({
       return;
     }
 
-    if (didScheduleInit.current) {
-      return;
-    }
-    didScheduleInit.current = true;
-
-    if (typeof window.requestIdleCallback === 'function') {
-      const idleId = window.requestIdleCallback(
-        () => startPosthogInit(initPromiseRef),
-        { timeout: 2000 },
-      );
-      return () => window.cancelIdleCallback(idleId);
-    }
-
-    const timeoutId = window.setTimeout(
-      () => startPosthogInit(initPromiseRef),
-      1000,
-    );
-    return () => window.clearTimeout(timeoutId);
-  }, [userId]);
-
-  React.useEffect(() => {
-    if (!shouldEnablePosthog) {
+    if (identified.current === userId) {
       return;
     }
 
-    const userData = user.data;
-    if (!userData) {
-      return;
-    }
+    let cancelled = false;
 
-    if (identified.current === userData.id) {
-      return;
-    }
-
-    const maybePromise = startPosthogInit(initPromiseRef);
-    if (maybePromise == null) {
-      return;
-    }
-
-    const userId = userData.id;
-    void maybePromise.then((client) => {
-      if (!client) {
+    const initAndIdentify = () => {
+      const maybePromise = startPosthogInit(initPromiseRef);
+      if (maybePromise == null) {
         return;
       }
-      try {
-        client.identify(userId, {
-          email: userData.email,
-          first_name: userData.firstName,
-          last_name: userData.lastName,
-          phone: userData.phone,
-        });
-        identified.current = userId;
-      } catch (error: unknown) {
-        console.error('PostHog identify failed', error);
-      }
-    });
-  }, [user.data]);
+
+      void maybePromise.then((client) => {
+        if (cancelled) {
+          return;
+        }
+
+        if (!client) {
+          return;
+        }
+
+        try {
+          client.identify(userId, {
+            email: userEmail,
+            first_name: userFirstName,
+            last_name: userLastName,
+            phone: userPhone,
+          });
+          identified.current = userId;
+        } catch (error: unknown) {
+          console.error('PostHog identify failed', error);
+        }
+      });
+    };
+
+    if (typeof window.requestIdleCallback === 'function') {
+      const idleId = window.requestIdleCallback(initAndIdentify, {
+        timeout: 2000,
+      });
+      return () => {
+        cancelled = true;
+        window.cancelIdleCallback(idleId);
+      };
+    }
+
+    const timeoutId = window.setTimeout(initAndIdentify, 1000);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeoutId);
+    };
+  }, [userId, userEmail, userFirstName, userLastName, userPhone]);
 
   return <>{children}</>;
 }

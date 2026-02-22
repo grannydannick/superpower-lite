@@ -4,9 +4,11 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { ReactNode } from 'react';
 import { RouterProvider, createMemoryRouter } from 'react-router';
 
 import { AppProvider } from '@/app/provider';
+import { useUser } from '@/lib/auth';
 import { stringify } from '@/lib/utils';
 
 import { createUser as generateUser } from './data-generators';
@@ -34,14 +36,36 @@ export const loginAsUser = async (incomingUser: any) => {
   return user;
 };
 
-export const waitForLoadingToFinish = () =>
-  waitForElementToBeRemoved(
-    () => [
-      ...screen.queryAllByTestId(/loading/i),
-      ...screen.queryAllByText(/loading/i),
-    ],
-    { timeout: 4000 },
-  );
+export const waitForLoadingToFinish = async () => {
+  const loadingElements = [
+    ...screen.queryAllByTestId(/loading/i),
+    ...screen.queryAllByText(/loading/i),
+  ];
+
+  if (loadingElements.length === 0) {
+    return;
+  }
+
+  await waitForElementToBeRemoved(loadingElements, { timeout: 4000 });
+};
+
+const TestAuthGate = ({ children }: { children: ReactNode }) => {
+  const hasActiveLogin = localStorage.getItem('activeLogin') !== null;
+
+  const userQuery = useUser({
+    enabled: hasActiveLogin,
+  });
+
+  if (!hasActiveLogin) {
+    return children;
+  }
+
+  if (!userQuery.isFetched) {
+    return <div data-testid="loading">Loading</div>;
+  }
+
+  return children;
+};
 
 const initializeUser = async (user: any) => {
   if (typeof user === 'undefined') {
@@ -50,6 +74,7 @@ const initializeUser = async (user: any) => {
   } else if (user) {
     return loginAsUser(user);
   } else {
+    localStorage.removeItem('activeLogin');
     return null;
   }
 };
@@ -79,7 +104,9 @@ export const renderApp = async (
       wrapper: () => {
         return (
           <AppProvider>
-            <RouterProvider router={router} />
+            <TestAuthGate>
+              <RouterProvider router={router} />
+            </TestAuthGate>
           </AppProvider>
         );
       },

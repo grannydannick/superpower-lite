@@ -1,20 +1,18 @@
-import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
 import z from 'zod';
 
 export const baseLoginInputSchema = z.object({
   redirectUri: z.string().optional(),
 });
 
-export const loginInputSchema = baseLoginInputSchema.merge(
-  z.object({
-    email: z
-      .string()
-      .min(1, 'Please enter your email address.')
-      .email('Please enter a valid email address.'),
-    password: z.string().min(5, 'Please enter your password.'),
-    authMethod: z.enum(['admin']).optional(),
-  }),
-);
+export const loginInputSchema = z.object({
+  ...baseLoginInputSchema.shape,
+  email: z
+    .string()
+    .min(1, 'Please enter your email address.')
+    .email('Please enter a valid email address.'),
+  password: z.string().min(5, 'Please enter your password.'),
+  authMethod: z.enum(['admin']).optional(),
+});
 
 export type BaseLoginInput = z.infer<typeof baseLoginInputSchema>;
 export type LoginInput = z.infer<typeof loginInputSchema>;
@@ -29,14 +27,23 @@ export const registerInputSchema = z.object({
     .string({ error: REQUIRED_MSG })
     .min(1, REQUIRED_MSG)
     .refine(
-      (value) => {
-        if (!isValidPhoneNumber(value)) return false;
+      async (value) => {
+        try {
+          const { isValidPhoneNumber, parsePhoneNumber } =
+            await import('libphonenumber-js');
 
-        const phoneNumber = parsePhoneNumber(value);
-        return (
-          phoneNumber &&
-          (phoneNumber.country === 'US' || phoneNumber.country === 'CA')
-        );
+          if (!isValidPhoneNumber(value)) {
+            return false;
+          }
+
+          const phoneNumber = parsePhoneNumber(value);
+          return (
+            phoneNumber != null &&
+            (phoneNumber.country === 'US' || phoneNumber.country === 'CA')
+          );
+        } catch {
+          return false;
+        }
       },
       {
         message: 'Please enter a valid US or Canadian phone number.',

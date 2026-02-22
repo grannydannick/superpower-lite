@@ -7,6 +7,26 @@ import { mockAddressComponents } from '../../__mocks__/use-places-service';
 
 vi.mock('zustand');
 
+class ProgressEventShim extends Event {
+  lengthComputable: boolean;
+  loaded: number;
+  total: number;
+
+  constructor(type: string, init: ProgressEventInit = {}) {
+    super(type, init);
+    this.lengthComputable = init.lengthComputable ?? false;
+    this.loaded = init.loaded ?? 0;
+    this.total = init.total ?? 0;
+  }
+}
+
+if (!('ProgressEvent' in globalThis)) {
+  Object.defineProperty(globalThis, 'ProgressEvent', {
+    value: ProgressEventShim,
+    writable: true,
+  });
+}
+
 vi.mock('@rive-app/react-canvas-lite', () => {
   return {
     // useRiveFile will "load" instantly
@@ -89,4 +109,5 @@ afterEach(() => {
   server.resetHandlers();
   resetDb();
   queryClient.clear();
+  localStorage.clear();
 });
