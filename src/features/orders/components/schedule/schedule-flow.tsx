@@ -27,10 +27,11 @@ export const ScheduleFlow: React.FC<ScheduleStoreProps> = ({
       </div>
       <div className="mx-auto flex w-full max-w-[656px] flex-1 flex-col space-y-8 px-6 py-8 md:my-auto md:flex-none md:px-16">
         {!isOnOnboarding && (
-          <div className="flex items-center justify-between gap-2">
+          <div className="relative z-[60] flex items-center justify-between gap-2">
             <Button
+              type="button"
               variant="ghost"
-              className="flex items-center gap-2 p-0"
+              className="relative flex items-center gap-2 p-0"
               onClick={() => navigate(-1)}
             >
               <ChevronLeft className="size-[18px] text-zinc-400" />

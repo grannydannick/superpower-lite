@@ -3,13 +3,14 @@ import {
   QuestionnaireResponse,
   QuestionnaireResponseItem,
 } from '@medplum/fhirtypes';
+import { useContext } from 'react';
 
 import { User } from '@/types/api';
 
 import { QuestionnaireFormPageSequence } from './questionnaire-page-sequence';
 import {
+  QuestionnaireStoreContext,
   QuestionnaireStoreProvider,
-  useQuestionnaireStore,
 } from './stores/questionnaire-store';
 import { isResponseEmpty, mergeResponseItems } from './utils';
 
@@ -71,17 +72,26 @@ const QuestionnaireFormConsumer = ({
   className?: string;
   initialProgressPercent?: number;
 }) => {
-  const response = useQuestionnaireStore((s) => s.response);
-  const activeStep = useQuestionnaireStore((s) => s.activeStep);
-  const checkForQuestionEnabled = useQuestionnaireStore(
-    (s) => s.checkForQuestionEnabled,
-  );
-  const numberOfPages = useQuestionnaireStore((s) => s.getNumberOfPages());
-  const lastQuestion = useQuestionnaireStore((s) => s.getLastQuestion());
-
-  const isLastStep = activeStep === numberOfPages - 1;
+  const questionnaireStoreContext = useContext(QuestionnaireStoreContext);
+  if (questionnaireStoreContext == null) {
+    throw new Error(
+      'QuestionnaireForm must be used within QuestionnaireStoreProvider',
+    );
+  }
 
   const handleSubmit = () => {
+    const {
+      response,
+      activeStep,
+      checkForQuestionEnabled,
+      getNumberOfPages,
+      getLastQuestion,
+    } = questionnaireStoreContext.getState();
+
+    const numberOfPages = getNumberOfPages();
+    const lastQuestion = getLastQuestion();
+    const isLastStep = activeStep === numberOfPages - 1;
+
     if (!isLastStep || !lastQuestion) {
       return;
     }

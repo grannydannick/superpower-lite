@@ -44,6 +44,7 @@ export interface QuestionnaireFormItemProps {
   index: number;
   response: QuestionnaireResponseItem;
   onChange: (newResponseItem: QuestionnaireResponseItem) => void;
+  onAutoSubmit?: () => void;
   isError?: boolean;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   nested?: boolean;
@@ -55,6 +56,7 @@ export const QuestionnaireFormItem = ({
   index,
   response,
   onChange,
+  onAutoSubmit,
   isError = false,
   onKeyDown,
   nested: _nested,
@@ -158,14 +160,18 @@ export const QuestionnaireFormItem = ({
   )?.valueString;
 
   // Special case: render a single confirm action as a submit button
-  const isConsentPaymentSingleConfirm =
+  const consentPaymentSingleConfirmLabel =
     item.linkId === RX_CONSENT_PAYMENT_LINKID &&
     Array.isArray(item.answerOption) &&
-    item.answerOption.length === 1 &&
-    !!item.answerOption[0].valueString;
+    item.answerOption.length === 1
+      ? item.answerOption[0].valueString
+      : undefined;
+  const isConsentPaymentSingleConfirm =
+    typeof consentPaymentSingleConfirmLabel === 'string' &&
+    consentPaymentSingleConfirmLabel.length > 0;
 
   if (isConsentPaymentSingleConfirm) {
-    const confirmLabel = item.answerOption?.[0].valueString as string;
+    const confirmLabel = consentPaymentSingleConfirmLabel;
     return (
       <QuestionnaireErrorWrapper isError={isErrored}>
         <Button
@@ -175,23 +181,34 @@ export const QuestionnaireFormItem = ({
             // 1) set the answer
             onChangeAnswer({ valueString: confirmLabel });
 
-            // 2) submit on the next microtask so the store has the new answer
-            const formEl =
-              (e.currentTarget.closest('form') as HTMLFormElement | null) ??
-              (document.querySelector('form') as HTMLFormElement | null);
+            const autoSubmit = onAutoSubmit;
+            if (autoSubmit != null) {
+              setTimeout(() => {
+                autoSubmit();
+              }, 0);
+              return;
+            }
 
-            queueMicrotask(() => {
-              if (!formEl) return;
-              const maybeRequestSubmit = (formEl as HTMLFormElement)
-                .requestSubmit;
-              if (typeof maybeRequestSubmit === 'function') {
-                (formEl as HTMLFormElement).requestSubmit();
-              } else {
-                formEl.dispatchEvent(
-                  new Event('submit', { bubbles: true, cancelable: true }),
-                );
+            // Fallback: submit the nearest form (if any) on next microtask.
+            const closestForm = e.currentTarget.closest('form');
+            const queryForm = document.querySelector('form');
+            const formEl =
+              closestForm instanceof HTMLFormElement
+                ? closestForm
+                : queryForm instanceof HTMLFormElement
+                  ? queryForm
+                  : null;
+
+            setTimeout(() => {
+              if (formEl == null) return;
+              if (typeof formEl.requestSubmit === 'function') {
+                formEl.requestSubmit();
+                return;
               }
-            });
+              formEl.dispatchEvent(
+                new Event('submit', { bubbles: true, cancelable: true }),
+              );
+            }, 0);
           }}
         >
           {confirmLabel}

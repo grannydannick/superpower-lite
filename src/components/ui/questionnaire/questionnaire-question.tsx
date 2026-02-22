@@ -216,6 +216,7 @@ export const QuestionnaireQuestion = ({
         item={item}
         response={response}
         onChange={onChange}
+        onAutoSubmit={onSubmit}
         isError={localErrors.includes(item.linkId)}
         onKeyDown={handleKeyDown}
         onValidationChange={handleValidationChange}

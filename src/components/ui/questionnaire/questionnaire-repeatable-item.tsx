@@ -22,6 +22,7 @@ interface QuestionnaireFormRepeatableItemProps {
   item: QuestionnaireItem;
   response?: QuestionnaireResponseItem;
   onChange: (items: QuestionnaireResponseItem[]) => void;
+  onAutoSubmit?: () => void;
   nested?: boolean;
   isError?: boolean;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
@@ -37,6 +38,7 @@ export const QuestionnaireFormRepeatableItem = ({
   item,
   response,
   onChange,
+  onAutoSubmit,
   nested,
   isError = false,
   onKeyDown,
@@ -60,6 +62,11 @@ export const QuestionnaireFormRepeatableItem = ({
 
   const isRxConsentPaymentQuestion = item.linkId === RX_CONSENT_PAYMENT_LINKID;
 
+  let autoSubmit: (() => void) | undefined;
+  if (isRxConsentPaymentQuestion) {
+    autoSubmit = onAutoSubmit;
+  }
+
   if (!checkForQuestionEnabled(item)) {
     return null;
   }
@@ -80,6 +87,7 @@ export const QuestionnaireFormRepeatableItem = ({
         response={response}
         onChange={(r) => onChange([r])}
         index={0}
+        onAutoSubmit={autoSubmit}
         isError={isError}
         onKeyDown={onKeyDown}
         onValidationChange={onValidationChange}
@@ -128,6 +136,7 @@ export const QuestionnaireFormRepeatableItem = ({
           onChange([r]);
         }}
         index={0}
+        onAutoSubmit={autoSubmit}
         isError={isError}
         onKeyDown={onKeyDown}
         nested={nested}
