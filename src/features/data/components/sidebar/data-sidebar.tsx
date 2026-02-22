@@ -44,8 +44,7 @@ const PureDataSidebar = () => {
 
     for (const category of categories) {
       if (
-        encodeCategory(category.category) ===
-        encodeCategory(activeCategory)
+        encodeCategory(category.category) === encodeCategory(activeCategory)
       ) {
         return category.category;
       }
