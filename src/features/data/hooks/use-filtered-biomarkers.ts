@@ -101,7 +101,7 @@ export const useFilteredBiomarkers = ({
       selectedCategories: enabledFilters.categories ? selectedCategories : [],
       selectedOrder: enabledFilters.date ? selectedOrder : undefined,
       selectedRange: enabledFilters.range ? selectedRange : undefined,
-      searchQuery: enabledFilters.search === false ? '' : deferredQuery,
+      searchQuery: enabledFilters.search ? deferredQuery : '',
     });
   }, [
     biomarkers,
