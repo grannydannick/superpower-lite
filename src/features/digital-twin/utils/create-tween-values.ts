@@ -5,14 +5,14 @@ const easeOutPower2 = (t: number) => {
   return 1 - inv * inv;
 };
 
-const getEase = (name: string | undefined) => {
+export const getEase = (name: string | undefined) => {
   if (name === 'power2.out') {
     return easeOutPower2;
   }
   return (t: number) => t;
 };
 
-const startTween = ({
+export const startTween = ({
   from,
   to,
   durationMs,

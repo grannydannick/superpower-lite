@@ -1,5 +1,7 @@
 import { ShaderMaterial, Texture } from 'three';
 
+import { getEase, startTween } from '../create-tween-values';
+
 type MultiTextureFaderOptions = {
   duration?: number;
   easing?: string;
@@ -15,20 +17,13 @@ export function createShaderMaterialFader(
   options: MultiTextureFaderOptions = {},
 ): MultiTextureFader {
   const { duration = 1, easing = 'power2.out' } = options;
+  const ease = getEase(easing);
 
   const baseTexture = material.uniforms.baseMap.value;
   let currentTexture: Texture | null = material.uniforms.baseMap.value ?? null;
   let isFading = false;
   const queue: (Texture | null)[] = [];
   let cancelFade: (() => void) | null = null;
-
-  const ease = (t: number) => {
-    if (easing === 'power2.out') {
-      const inv = 1 - t;
-      return 1 - inv * inv;
-    }
-    return t;
-  };
 
   const setTexture = (texture: Texture | null) => {
     if (!baseTexture) texture = baseTexture;
@@ -52,11 +47,6 @@ export function createShaderMaterialFader(
       cancelFade = null;
     }
 
-    const durationMs = duration * 1000;
-    const start = performance.now();
-    let rafId: number | null = null;
-    let cancelled = false;
-
     const complete = () => {
       currentTexture = next;
       material.uniforms.baseMap.value = next;
@@ -69,34 +59,20 @@ export function createShaderMaterialFader(
       if (queue.length > 0) runNextFade();
     };
 
-    const tick = (now: number) => {
-      if (cancelled) {
-        return;
-      }
-
-      const elapsed = now - start;
-      const t = durationMs <= 0 ? 1 : Math.min(elapsed / durationMs, 1);
-      material.uniforms.alpha.value = ease(t);
-      material.needsUpdate = true;
-
-      if (t >= 1) {
+    cancelFade = startTween({
+      from: 0,
+      to: 1,
+      durationMs: duration * 1000,
+      ease,
+      onUpdate: (alpha) => {
+        material.uniforms.alpha.value = alpha;
+        material.needsUpdate = true;
+      },
+      onComplete: () => {
         cancelFade = null;
-        rafId = null;
         complete();
-        return;
-      }
-
-      rafId = requestAnimationFrame(tick);
-    };
-
-    rafId = requestAnimationFrame(tick);
-
-    cancelFade = () => {
-      cancelled = true;
-      if (rafId !== null) {
-        cancelAnimationFrame(rafId);
-      }
-    };
+      },
+    });
   };
 
   return {

@@ -3,9 +3,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { $api } from '@/orpc/client';
 import type { operations } from '@/orpc/types.generated';
 
-const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const isUuid = (value: string): boolean => UUID_RE.test(value);
+import { isUuid } from './uuid';
 
 // Extract response types from generated operations
 type GetQuestionnaireByIdResponse =

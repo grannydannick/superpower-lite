@@ -48,6 +48,7 @@ function startPosthogInit(
     })
     .catch((error: unknown) => {
       console.error('PostHog init failed', error);
+      initPromiseRef.current = null;
       return null;
     });
 
@@ -106,17 +107,22 @@ export function PHProvider({
       return;
     }
 
-    identified.current = userData.id;
+    const userId = userData.id;
     void maybePromise.then((client) => {
       if (!client) {
         return;
       }
-      client.identify(userData.id, {
-        email: userData.email,
-        first_name: userData.firstName,
-        last_name: userData.lastName,
-        phone: userData.phone,
-      });
+      try {
+        client.identify(userId, {
+          email: userData.email,
+          first_name: userData.firstName,
+          last_name: userData.lastName,
+          phone: userData.phone,
+        });
+        identified.current = userId;
+      } catch (error: unknown) {
+        console.error('PostHog identify failed', error);
+      }
     });
   }, [user.data]);
 
