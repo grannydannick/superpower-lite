@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { getState } from '@/utils/verify-state-from-postal';
 

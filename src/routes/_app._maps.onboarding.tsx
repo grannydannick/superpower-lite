@@ -7,7 +7,7 @@ import { OnboardingFlow } from '@/features/onboarding/components/flow/onboarding
 import { useTask } from '@/features/tasks/api/get-task';
 
 export const Route = createFileRoute('/_app/_maps/onboarding')({
-  loader: async () => {
+  loader: () => {
     preload('/onboarding/shared/backgrounds/bg-female-face.webp', {
       as: 'image',
     });

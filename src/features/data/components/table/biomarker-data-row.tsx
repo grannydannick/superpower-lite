@@ -11,6 +11,11 @@ import { BiomarkerDialog } from '../dialogs/biomarker-dialog';
 
 type ScreenSize = 'mobile' | 'tablet' | 'desktop' | 'widescreen';
 
+const rowContentVisibilityStyle: CSSProperties = {
+  contentVisibility: 'auto',
+  containIntrinsicSize: 'auto none auto 96px',
+};
+
 const cellClass = cva('', {
   variants: {
     screenSize: {
@@ -94,6 +99,7 @@ export const BiomarkerDataRow = ({
           ? trackRecommendedClick()
           : undefined
       }
+      style={rowContentVisibilityStyle}
       className={cn(
         'h-24 cursor-pointer rounded-xl border-transparent',
         row.original.status === 'RECOMMENDED'

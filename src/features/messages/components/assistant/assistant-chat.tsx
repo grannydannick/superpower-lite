@@ -12,7 +12,6 @@ import { AssistantMessages } from '@/features/messages/components/assistant/assi
 import { useAssistantStore } from '@/features/messages/stores/assistant-store';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { cn, getActiveLogin } from '@/lib/utils';
-import { generateUUID } from '@/utils/generate-uiud';
 
 import { ChatSuggestion } from '../chat-suggestion';
 
@@ -91,7 +90,7 @@ export function AssistantChat({
     transport,
     messages: [],
     resume: true, // Enable auto-resume for durable streams
-    generateId: generateUUID,
+    generateId: () => crypto.randomUUID(),
     onFinish: ({ message }) => {
       refetch();
 

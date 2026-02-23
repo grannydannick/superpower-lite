@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as React from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { Button } from '@/components/ui/button';
 import {

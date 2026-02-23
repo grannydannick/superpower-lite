@@ -1,9 +1,7 @@
 import { Lock } from 'lucide-react';
-import { useState } from 'react';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { EditAvatarModal } from '@/features/avatar/components/edit-avatar-modal';
 import { useUser } from '@/lib/auth';
 import { capitalize } from '@/utils/format';
 
@@ -13,7 +11,7 @@ export function PersonalInformationForm(): JSX.Element {
   //   username: user?.username ?? '',
   // });
 
-  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+  // const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
 
   if (!user) {
     return <div className="md:p-16">No profile information found.</div>;
@@ -108,10 +106,10 @@ export function PersonalInformationForm(): JSX.Element {
           <Lock className="absolute right-4 top-1/2 size-4 -translate-y-1/2 text-zinc-300" />
         </div>
       </div>
-      <EditAvatarModal
+      {/* <EditAvatarModal
         open={isAvatarModalOpen}
         onOpenChange={setIsAvatarModalOpen}
-      />
+      /> */}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { env } from '@/config/env';
 import { MutationConfig } from '@/lib/react-query';

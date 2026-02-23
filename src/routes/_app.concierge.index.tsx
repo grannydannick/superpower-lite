@@ -4,15 +4,14 @@ import { useState } from 'react';
 
 import { Chat } from '@/features/messages/components/ai/chat';
 import { useUser } from '@/lib/auth';
-import { generateUUID } from '@/utils/generate-uiud';
 
 export const Route = createFileRoute('/_app/concierge/')({
   component: ConciergeIndexComponent,
 });
 
 function ConciergeIndexComponent() {
-  const [generatedUUID] = useState(() => generateUUID());
-  const [presetMessageId] = useState(() => generateUUID());
+  const [generatedUUID] = useState(() => crypto.randomUUID());
+  const [presetMessageId] = useState(() => crypto.randomUUID());
   const preset = Route.useSearch({ select: (s) => s.preset });
   const { data: user } = useUser();
 

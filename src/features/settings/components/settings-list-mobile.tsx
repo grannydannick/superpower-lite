@@ -1,18 +1,55 @@
-import { ChevronLeft } from 'lucide-react';
+import {
+  ChevronLeft,
+  CreditCard,
+  Heart,
+  History,
+  UserIcon,
+} from 'lucide-react';
 import { Fragment, useState } from 'react';
 
+import { IntegrationsIcon } from '@/components/icons';
 import { Header } from '@/components/shared/header';
 import { Billing } from '@/features/settings/components/billing/billing';
 import { Membership } from '@/features/settings/components/membership/membership';
 import { Profile } from '@/features/settings/components/profile/profile';
 import { OrdersList } from '@/features/settings/components/purchases/orders-list';
 import { WearablesTable } from '@/features/settings/components/wearables/wearables-table';
-import { SETTINGS_MOBILE } from '@/features/settings/const/settings-mobile';
 import { MobileMenu } from '@/features/settings/types/mobile-menu';
 import { cn } from '@/lib/utils';
 import { capitalize } from '@/utils/format';
 
-import { Vault } from './vault/vault';
+const SETTINGS_MOBILE = [
+  {
+    icon: UserIcon,
+    value: 'profile',
+    description: 'Update information about your account',
+    disabled: false,
+  },
+  {
+    icon: CreditCard,
+    value: 'billing',
+    description: 'Manage your payment information and details.',
+    disabled: false,
+  },
+  {
+    icon: Heart,
+    value: 'membership',
+    description: 'Manage your Superpower Membership',
+    disabled: false,
+  },
+  {
+    icon: History,
+    value: 'order history',
+    description: 'Manage orders',
+    disabled: false,
+  },
+  {
+    icon: IntegrationsIcon,
+    value: 'integrations',
+    description: 'Manage wearable and other platform integrations',
+    disabled: false,
+  },
+];
 
 // TODO: had not a lot of time to refactor this, need to come up with better global approach for mobile (NM 09/04/2024)
 
@@ -43,7 +80,6 @@ export const SettingsListMobile = () => {
         )}
         {current === 'profile' && <Profile />}
         {current === 'billing' && <Billing />}
-        {current === 'health records' && <Vault />}
         {current === 'membership' && <Membership />}
         {current === 'order history' && <OrdersList />}
         {current === 'integrations' && <WearablesTable />}

@@ -1,5 +1,5 @@
 import { useSearch } from '@tanstack/react-router';
-import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { Link } from '@/components/ui/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -17,7 +17,7 @@ import { DataSidebarLink } from './data-sidebar-link';
 
 const EMPTY_CATEGORIES: Category[] = [];
 
-const PureDataSidebar = () => {
+export function DataSidebar() {
   const selectorRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const rafIdRef = useRef<number | null>(null);
@@ -195,7 +195,7 @@ const PureDataSidebar = () => {
       >
         <div
           ref={containerRef}
-          className="relative -ml-2 flex max-h-svh w-full place-items-start items-start justify-start gap-3 overflow-x-auto overflow-y-hidden p-2 scrollbar scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-300 md:max-h-none md:flex-col md:overflow-visible md:px-2 md:py-8"
+          className="relative -ml-2 flex max-h-svh w-full place-items-start items-start justify-start gap-3 overflow-x-auto overflow-y-hidden p-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-300 md:max-h-none md:flex-col md:overflow-visible md:px-2 md:py-8"
         >
           {!isLoading && (
             <div
@@ -216,6 +216,4 @@ const PureDataSidebar = () => {
       </div>
     </aside>
   );
-};
-
-export const DataSidebar = memo(PureDataSidebar);
+}

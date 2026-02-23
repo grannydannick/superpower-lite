@@ -13,7 +13,6 @@ import {
 } from '@tanstack/react-table';
 import { ChevronDown, Lock } from 'lucide-react';
 import {
-  memo,
   useCallback,
   useDeferredValue,
   useEffect,
@@ -43,7 +42,7 @@ import { STATUS_TO_COLOR } from '../../../../const/status-to-color';
 import { BiomarkerDataRow } from './biomarker-data-row';
 import { BiomarkerSkeletonRow } from './biomarker-skeleton-row';
 
-const BiomarkersTableBodyContent = ({
+function BiomarkersTableBodyContent({
   rows,
   isFiltering,
   isLoading,
@@ -57,7 +56,7 @@ const BiomarkersTableBodyContent = ({
   skeletonColSpan: number;
   screenSize: 'mobile' | 'tablet' | 'desktop' | 'widescreen';
   hideDialog?: boolean;
-}) => {
+}) {
   if (isFiltering || isLoading) {
     return (
       <>
@@ -87,13 +86,9 @@ const BiomarkersTableBodyContent = ({
       ))}
     </>
   );
-};
+}
 
-const LazySparklineChart = memo(function LazySparklineChart({
-  biomarker,
-}: {
-  biomarker: Biomarker;
-}) {
+function LazySparklineChart({ biomarker }: { biomarker: Biomarker }) {
   return (
     <InView triggerOnce rootMargin="200px">
       {({ ref, inView }) => (
@@ -107,7 +102,7 @@ const LazySparklineChart = memo(function LazySparklineChart({
       )}
     </InView>
   );
-});
+}
 
 const getColumns = (
   screenSize: 'mobile' | 'tablet' | 'desktop' | 'widescreen' = 'desktop',
@@ -338,7 +333,7 @@ const getColumns = (
 
 const EMPTY_HIDDEN_COLUMNS: string[] = [];
 
-const BiomarkersDataTableComponent = ({
+export function BiomarkersDataTable({
   biomarkers,
   hideHeader = false,
   hiddenColumns = EMPTY_HIDDEN_COLUMNS,
@@ -352,7 +347,9 @@ const BiomarkersDataTableComponent = ({
   isLoading?: boolean;
   displayPending?: boolean;
   hideDialog?: boolean;
-}) => {
+}) {
+  'use no memo';
+
   const [isFiltering, setIsFiltering] = useState(false);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -547,7 +544,4 @@ const BiomarkersDataTableComponent = ({
       </Table>
     </div>
   );
-};
-
-export const BiomarkersDataTable = memo(BiomarkersDataTableComponent);
-BiomarkersDataTable.displayName = 'BiomarkersDataTable';
+}

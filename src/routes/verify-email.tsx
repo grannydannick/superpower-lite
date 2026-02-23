@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { zodValidator } from '@tanstack/zod-adapter';
 import { jwtDecode } from 'jwt-decode';
 import { useEffect, useRef } from 'react';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { Spinner } from '@/components/ui/spinner/spinner';

@@ -9,7 +9,6 @@ import { H4 } from '@/components/ui/typography';
 import { AnimatedIcon } from '@/features/messages/components/ai/animated-icon';
 import { useAssistantStore } from '@/features/messages/stores/assistant-store';
 import { useUser } from '@/lib/auth';
-import { generateUUID } from '@/utils/generate-uiud';
 
 import { useBiomarkers } from '../api';
 import { useBiomarkerSummary } from '../api/get-biomarker-summary';
@@ -95,7 +94,7 @@ export const CategoryView = () => {
 
                   openWithMessages([
                     {
-                      id: generateUUID(),
+                      id: crypto.randomUUID(),
                       role: 'assistant',
                       parts: [{ type: 'text', text: presetMessage }],
                     },

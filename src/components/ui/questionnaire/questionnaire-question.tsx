@@ -13,7 +13,7 @@ import { Body1, H2 } from '@/components/ui/typography';
 // TODO: move User address components to a shared location so i don't have to do this hack.
 // it's quite a lift so if someone could do this it would be greatly appreciated <3 ~A.S 11-03-2025
 import { CurrentAddressCard } from '@/features/users/components/current-address-card';
-import { useIdentityVerification } from '@/hooks/use-identity-verification';
+import { useIdentityVerificationStatus } from '@/hooks/use-identity-verification';
 import { cn } from '@/lib/utils';
 
 import {
@@ -103,7 +103,7 @@ export const QuestionnaireQuestion = ({
   const isRxIdentityVerificationQuestion =
     item.linkId === RX_IDENTITY_VERIFICATION_LINKID;
 
-  const { needsVerification } = useIdentityVerification();
+  const { needsVerification } = useIdentityVerificationStatus();
   const isIdentityVerificationBlocking =
     isRxIdentityVerificationQuestion && needsVerification;
 

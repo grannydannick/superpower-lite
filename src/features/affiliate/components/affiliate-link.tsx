@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { CheckIcon, LinkIcon, SendIcon } from 'lucide-react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import z from 'zod';
+import * as z from 'zod';
 
 import { Button } from '@/components/ui/button';
 import {

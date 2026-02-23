@@ -20,7 +20,6 @@ import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 import { Biomarker, Category } from '@/types/api';
-import { generateUUID } from '@/utils/generate-uiud';
 
 import { PersonalizedExplanation } from '../personalized-explanation';
 
@@ -108,7 +107,7 @@ export const CategoryDialog = ({
               const presetMessage = `Hi ${user?.firstName ?? 'there'}, what would you like to update about your medical history? This could be things like a new therapy, updated diet, new habits or anything else you would like us to remember about you.`;
               openWithMessages([
                 {
-                  id: generateUUID(),
+                  id: crypto.randomUUID(),
                   role: 'assistant',
                   parts: [{ type: 'text', text: presetMessage }],
                 },

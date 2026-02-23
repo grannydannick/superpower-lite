@@ -25,7 +25,6 @@ import {
 } from '@/features/messages/hooks/use-resize-assistant';
 import { useAssistantStore } from '@/features/messages/stores/assistant-store';
 import { cn } from '@/lib/utils';
-import { generateUUID } from '@/utils/generate-uiud';
 
 const AnimatedIcon = lazy(() =>
   import('@/features/messages/components/ai/animated-icon').then((mod) => ({
@@ -49,7 +48,7 @@ export const AssistantModal = () => {
 
   const [isResizing, setIsResizing] = useState(false);
   const collapsedHeight = 48; // equals Tailwind h-12
-  const chatId = useMemo(() => generateUUID(), []);
+  const chatId = useMemo(() => crypto.randomUUID(), []);
   const boxHeight = isExpanded ? height : collapsedHeight;
   const boxWidth = isExpanded ? width : undefined;
 

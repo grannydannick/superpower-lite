@@ -54,21 +54,11 @@ export default function DigitalTwinModel({
       <SoftLimitedOrbitControls target={controlsTarget} />
 
       {area === 'sleep' && (
-        <Sleep
-          area={area}
-          level={level}
-          layers={1}
-          position={sleepPos as any}
-        />
+        <Sleep area={area} level={level} layers={1} position={sleepPos} />
       )}
 
       {area === 'toxic' && (
-        <Toxins
-          area={area}
-          level={level}
-          layers={1}
-          position={toxinsPos as any}
-        />
+        <Toxins area={area} level={level} layers={1} position={toxinsPos} />
       )}
 
       <Avatar

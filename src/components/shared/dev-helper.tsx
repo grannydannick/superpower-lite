@@ -1,6 +1,6 @@
 'use client';
 
-import { useLocation } from '@tanstack/react-router';
+import { useMatchRoute } from '@tanstack/react-router';
 import * as React from 'react';
 
 import {
@@ -12,8 +12,8 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { INTAKE_QUESTIONNAIRE } from '@/const/questionnaire';
-import { STEP_IDS } from '@/features/onboarding/config/step-config';
 import type { StepId } from '@/features/onboarding/config/step-config';
+import { STEP_IDS } from '@/features/onboarding/config/step-config';
 import { useOnboardingFlowStore } from '@/features/onboarding/stores/onboarding-flow-store';
 import { useQuestionnaire } from '@/features/questionnaires/api/questionnaire';
 import {
@@ -47,8 +47,6 @@ const SEQUENCE_STEPS: Array<{ id: StepId; label: string }> = [
 
 export function DevHelper() {
   const isDev = import.meta.env.DEV;
-  const location = useLocation();
-  const isOnboarding = location.pathname === '/onboarding';
 
   const [open, setOpen] = React.useState(false);
   const [bypassCarePlan, setBypassCarePlan] = React.useState(() =>
@@ -56,6 +54,49 @@ export function DevHelper() {
       ? localStorage.getItem(DEV_BYPASS_CARE_PLAN_KEY) === 'true'
       : false,
   );
+
+  React.useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (!isDev) return;
+
+      if (e.key === 'd' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setOpen((open) => !open);
+      }
+    };
+
+    document.addEventListener('keydown', down);
+    return () => document.removeEventListener('keydown', down);
+  }, [isDev]);
+
+  if (!isDev) return null;
+
+  return (
+    <DevHelperMenu open={open} setOpen={setOpen}>
+      {open ? (
+        <DevHelperMenuContent
+          bypassCarePlan={bypassCarePlan}
+          setBypassCarePlan={setBypassCarePlan}
+          closeMenu={() => setOpen(false)}
+        />
+      ) : null}
+    </DevHelperMenu>
+  );
+}
+
+interface DevHelperMenuContentProps {
+  bypassCarePlan: boolean;
+  setBypassCarePlan: React.Dispatch<React.SetStateAction<boolean>>;
+  closeMenu: () => void;
+}
+
+function DevHelperMenuContent({
+  bypassCarePlan,
+  setBypassCarePlan,
+  closeMenu,
+}: DevHelperMenuContentProps) {
+  const matchRoute = useMatchRoute();
+  const isOnboarding = matchRoute({ to: '/onboarding' }) !== false;
 
   const goToStep = useOnboardingFlowStore((state) => state.goTo);
   const updateQuestionnaireResponseMutation = useUpdateQuestionnaireResponse();
@@ -70,19 +111,15 @@ export function DevHelper() {
 
   const onboardingPrimerQuery = useQuestionnaire({
     identifier: ONBOARDING_QUESTIONNAIRES[0],
-    queryConfig: { enabled: isDev },
   });
   const onboardingMedicalHistoryQuery = useQuestionnaire({
     identifier: ONBOARDING_QUESTIONNAIRES[1],
-    queryConfig: { enabled: isDev },
   });
   const onboardingFemaleHealthQuery = useQuestionnaire({
     identifier: ONBOARDING_QUESTIONNAIRES[2],
-    queryConfig: { enabled: isDev },
   });
   const onboardingLifestyleQuery = useQuestionnaire({
     identifier: ONBOARDING_QUESTIONNAIRES[3],
-    queryConfig: { enabled: isDev },
   });
   const questionnaireQueries = [
     onboardingPrimerQuery,
@@ -91,36 +128,50 @@ export function DevHelper() {
     onboardingLifestyleQuery,
   ];
 
-  // Fetch all onboarding questionnaire responses
-  const questionnaireResponsesQuery = useQuestionnaireResponseList(
-    {
-      questionnaireName: ONBOARDING_QUESTIONNAIRES.join(','),
-      status: 'in-progress,completed,stopped',
-    },
-    { enabled: isDev },
-  );
+  const questionnaireResponsesQuery = useQuestionnaireResponseList({
+    questionnaireName: ONBOARDING_QUESTIONNAIRES.join(','),
+    status: 'in-progress,completed,stopped',
+  });
 
   const getQuestionnaireId = (questionnaireName: string) => {
-    const index = ONBOARDING_QUESTIONNAIRES.indexOf(
-      questionnaireName as (typeof ONBOARDING_QUESTIONNAIRES)[number],
-    );
-    return questionnaireQueries[index]?.data?.questionnaire?.id;
+    let index = 0;
+    for (const name of ONBOARDING_QUESTIONNAIRES) {
+      if (name === questionnaireName) {
+        return questionnaireQueries[index]?.data?.questionnaire?.id;
+      }
+      index++;
+    }
+    return undefined;
   };
 
   const findQuestionnaireResponse = (questionnaireName: string) => {
-    const responses = questionnaireResponsesQuery.data ?? [];
-    const questionnaireId = getQuestionnaireId(questionnaireName);
+    const responses = questionnaireResponsesQuery.data;
+    if (responses == null) return undefined;
 
-    return (
-      responses.find((response) =>
-        questionnaireId
-          ? response.questionnaire?.includes(questionnaireId)
-          : response.questionnaire?.includes(questionnaireName),
-      ) ??
-      responses.find((response) =>
-        response.questionnaire?.includes(questionnaireName),
-      )
-    );
+    const questionnaireId = getQuestionnaireId(questionnaireName);
+    if (questionnaireId == null) {
+      for (const response of responses) {
+        if (response.questionnaire?.includes(questionnaireName) === true) {
+          return response;
+        }
+      }
+      return undefined;
+    }
+
+    let fallback: (typeof responses)[number] | undefined;
+    for (const response of responses) {
+      if (response.questionnaire?.includes(questionnaireId) === true) {
+        return response;
+      }
+
+      if (
+        fallback == null &&
+        response.questionnaire?.includes(questionnaireName) === true
+      ) {
+        fallback = response;
+      }
+    }
+    return fallback;
   };
 
   const onCompleteIntake = () => {
@@ -132,7 +183,7 @@ export function DevHelper() {
       return;
     }
 
-    if (!intakeResponseId) {
+    if (intakeResponseId == null) {
       toast.error('No intake questionnaire response found');
       return;
     }
@@ -157,12 +208,27 @@ export function DevHelper() {
       return;
     }
 
-    const responses = questionnaireResponsesQuery.data ?? [];
-    const hasWork =
-      responses.some((response) => response.status !== 'completed') ||
-      ONBOARDING_QUESTIONNAIRES.some(
-        (name) => !findQuestionnaireResponse(name),
-      );
+    const responses = questionnaireResponsesQuery.data;
+    let hasWork = false;
+
+    if (responses != null) {
+      for (const response of responses) {
+        if (response.status !== 'completed') {
+          hasWork = true;
+          break;
+        }
+      }
+    }
+
+    if (!hasWork) {
+      for (const name of ONBOARDING_QUESTIONNAIRES) {
+        const response = findQuestionnaireResponse(name);
+        if (response == null) {
+          hasWork = true;
+          break;
+        }
+      }
+    }
 
     if (!hasWork) {
       toast.info('All questionnaires already completed');
@@ -171,7 +237,6 @@ export function DevHelper() {
 
     toast.info('Completing questionnaires...');
 
-    // Complete each questionnaire sequentially
     for (const questionnaireName of ONBOARDING_QUESTIONNAIRES) {
       const response = findQuestionnaireResponse(questionnaireName);
 
@@ -179,7 +244,7 @@ export function DevHelper() {
         continue;
       }
 
-      if (response?.id) {
+      if (response?.id != null) {
         await updateQuestionnaireResponseMutation.mutateAsync({
           id: response.id,
           data: { status: 'completed', item: [] },
@@ -188,7 +253,7 @@ export function DevHelper() {
       }
 
       const questionnaireId = getQuestionnaireId(questionnaireName);
-      if (!questionnaireId) {
+      if (questionnaireId == null) {
         toast.error(`Missing questionnaire for ${questionnaireName}`);
         continue;
       }
@@ -211,10 +276,9 @@ export function DevHelper() {
     }
 
     const response = findQuestionnaireResponse(questionnaireName);
-
-    if (!response) {
+    if (response == null) {
       const questionnaireId = getQuestionnaireId(questionnaireName);
-      if (!questionnaireId) {
+      if (questionnaireId == null) {
         toast.error(`Missing questionnaire for ${questionnaireName}`);
         return;
       }
@@ -234,7 +298,7 @@ export function DevHelper() {
       return;
     }
 
-    if (response.id) {
+    if (response.id != null) {
       await updateQuestionnaireResponseMutation.mutateAsync({
         id: response.id,
         data: { status: 'completed', item: [] },
@@ -249,71 +313,93 @@ export function DevHelper() {
     toast.success(`Jumped to ${stepId}`);
   };
 
-  React.useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (!isDev) return;
+  const onToggleBypassCarePlan = () => {
+    const newValue = !bypassCarePlan;
+    localStorage.setItem(DEV_BYPASS_CARE_PLAN_KEY, newValue.toString());
+    setBypassCarePlan(newValue);
+    toast.success(
+      `Bypass care plan: ${newValue ? 'ON' : 'OFF'}. Refreshing...`,
+    );
+    window.location.reload();
+  };
 
-      if (e.key === 'd' && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setOpen((open) => !open);
-      }
-    };
+  const questionnaireItems: JSX.Element[] = [];
+  for (const name of ONBOARDING_QUESTIONNAIRES) {
+    questionnaireItems.push(
+      <CommandItem
+        key={name}
+        onSelect={() => {
+          void onCompleteQuestionnaire(name);
+          closeMenu();
+        }}
+      >
+        <span>Complete {name}</span>
+      </CommandItem>,
+    );
+  }
 
-    document.addEventListener('keydown', down);
-    return () => document.removeEventListener('keydown', down);
-  }, [isDev]);
-
-  if (!isDev) return null;
+  const sequenceItems: JSX.Element[] = [];
+  for (const step of SEQUENCE_STEPS) {
+    sequenceItems.push(
+      <CommandItem
+        key={step.id}
+        onSelect={() => {
+          onJumpToStep(step.id);
+          closeMenu();
+        }}
+      >
+        <span>{step.label}</span>
+      </CommandItem>,
+    );
+  }
 
   return (
-    <DevHelperMenu
-      open={open}
-      setOpen={setOpen}
-      bypassCarePlan={bypassCarePlan}
-      onCompleteIntake={onCompleteIntake}
-      onCompleteAllQuestionnaires={onCompleteAllQuestionnaires}
-      onCompleteQuestionnaire={onCompleteQuestionnaire}
-      isOnboarding={isOnboarding}
-      sequenceSteps={SEQUENCE_STEPS}
-      onJumpToStep={onJumpToStep}
-      onToggleBypassCarePlan={() => {
-        const newValue = !bypassCarePlan;
-        localStorage.setItem(DEV_BYPASS_CARE_PLAN_KEY, newValue.toString());
-        setBypassCarePlan(newValue);
-        toast.success(
-          `Bypass care plan: ${newValue ? 'ON' : 'OFF'}. Refreshing...`,
-        );
-        window.location.reload();
-      }}
-    />
+    <>
+      <CommandGroup heading="Intake Actions">
+        <CommandItem
+          onSelect={() => {
+            onCompleteIntake();
+            closeMenu();
+          }}
+        >
+          <span>Complete intake</span>
+        </CommandItem>
+        <CommandItem
+          onSelect={() => {
+            onToggleBypassCarePlan();
+            closeMenu();
+          }}
+        >
+          <span>Bypass care plan check [{bypassCarePlan ? 'ON' : 'OFF'}]</span>
+        </CommandItem>
+      </CommandGroup>
+
+      <CommandGroup heading="Questionnaire Actions">
+        <CommandItem
+          onSelect={() => {
+            void onCompleteAllQuestionnaires();
+            closeMenu();
+          }}
+        >
+          <span>Complete All Questionnaires</span>
+        </CommandItem>
+        {questionnaireItems}
+      </CommandGroup>
+
+      {isOnboarding ? (
+        <CommandGroup heading="Jump to Sequences">{sequenceItems}</CommandGroup>
+      ) : null}
+    </>
   );
 }
 
 interface DevHelperMenuProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  bypassCarePlan: boolean;
-  onCompleteIntake: () => void;
-  onToggleBypassCarePlan: () => void;
-  onCompleteAllQuestionnaires: () => Promise<void>;
-  onCompleteQuestionnaire: (questionnaireName: string) => Promise<void>;
-  isOnboarding: boolean;
-  sequenceSteps: Array<{ id: StepId; label: string }>;
-  onJumpToStep: (stepId: StepId) => void;
+  children?: React.ReactNode;
 }
 
-function DevHelperMenu({
-  open,
-  setOpen,
-  bypassCarePlan,
-  onCompleteIntake,
-  onToggleBypassCarePlan,
-  onCompleteAllQuestionnaires,
-  onCompleteQuestionnaire,
-  isOnboarding,
-  sequenceSteps,
-  onJumpToStep,
-}: DevHelperMenuProps) {
+function DevHelperMenu({ open, setOpen, children }: DevHelperMenuProps) {
   return (
     <>
       <div className="fixed bottom-3 left-3 z-[9999999] flex items-center gap-2 rounded-md border bg-white p-2">
@@ -328,63 +414,7 @@ function DevHelperMenu({
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Intake Actions">
-            <CommandItem
-              onSelect={() => {
-                onCompleteIntake();
-                setOpen(false);
-              }}
-            >
-              <span>Complete intake</span>
-            </CommandItem>
-            <CommandItem
-              onSelect={() => {
-                onToggleBypassCarePlan();
-                setOpen(false);
-              }}
-            >
-              <span>
-                Bypass care plan check [{bypassCarePlan ? 'ON' : 'OFF'}]
-              </span>
-            </CommandItem>
-          </CommandGroup>
-          <CommandGroup heading="Questionnaire Actions">
-            <CommandItem
-              onSelect={() => {
-                void onCompleteAllQuestionnaires();
-                setOpen(false);
-              }}
-            >
-              <span>Complete All Questionnaires</span>
-            </CommandItem>
-            {ONBOARDING_QUESTIONNAIRES.map((name) => (
-              <CommandItem
-                key={name}
-                onSelect={() => {
-                  void onCompleteQuestionnaire(name);
-                  setOpen(false);
-                }}
-              >
-                <span>Complete {name}</span>
-              </CommandItem>
-            ))}
-          </CommandGroup>
-
-          {isOnboarding && (
-            <CommandGroup heading="Jump to Sequences">
-              {sequenceSteps.map((step) => (
-                <CommandItem
-                  key={step.id}
-                  onSelect={() => {
-                    onJumpToStep(step.id);
-                    setOpen(false);
-                  }}
-                >
-                  <span>{step.label}</span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          )}
+          {children}
         </CommandList>
       </CommandDialog>
     </>

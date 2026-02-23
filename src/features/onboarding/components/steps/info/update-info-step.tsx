@@ -3,7 +3,7 @@ import { m } from 'framer-motion';
 import { AlertCircle, ArrowRight, Check } from 'lucide-react';
 import { useState } from 'react';
 import { useForm, useFormContext, useWatch } from 'react-hook-form';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { SplitScreenLayout } from '@/components/layouts';

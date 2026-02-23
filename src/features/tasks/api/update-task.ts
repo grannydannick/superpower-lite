@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { getTaskQueryOptions } from '@/features/tasks/api/get-task';
 import { useAnalytics } from '@/hooks/use-analytics';

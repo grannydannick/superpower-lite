@@ -1,6 +1,6 @@
 import { Lock } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useEffect, useRef, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import PhoneInput from 'react-phone-number-input/input';
 
 import { AtHomeNoticeAlert } from '@/components/shared/at-home-notice-section';
@@ -17,10 +17,10 @@ import {
 import { DatetimePicker, Input, NumericInput } from '@/components/ui/input';
 import {
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import { H3 } from '@/components/ui/typography';
 import { useCheckoutContext } from '@/features/auth/stores';
@@ -50,49 +50,38 @@ export const YourDetailsSection = ({
 
   const form = useFormContext<RegisterInput>();
   const processing = useCheckoutContext((s) => s.processing);
-  const postalCode = useWatch({
-    control: form.control,
-    name: 'postalCode',
-  });
-  const postalCodeValue = postalCode ?? '';
 
+  const phoneDebounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const pendingPhoneRef = useRef<string | undefined | null>(null);
+
+  useEffect(() => {
+    return () => clearTimeout(phoneDebounceRef.current);
+  }, []);
   const handleNonServiceableClose = () => {
     setNonServiceabilityReason(undefined);
     form.setValue('postalCode', '');
   };
 
-  useEffect(() => {
-    if (postalCodeValue.length !== 5) return;
+  const checkZipCode = async (zipCode: string) => {
+    if (zipCode.length !== 5) return;
 
-    let cancelled = false;
+    const response = await getServiceabilityMutation.mutateAsync({
+      data: {
+        zipCode,
+        collectionMethod: 'IN_LAB',
+      },
+    });
 
-    const checkZipCode = async () => {
-      const response = await getServiceabilityMutation.mutateAsync({
-        data: {
-          zipCode: postalCodeValue,
-          collectionMethod: 'IN_LAB',
-        },
+    if (response.serviceable === false) {
+      track('register_not_serviceable', {
+        postal_code: zipCode,
+        state: getState(zipCode),
+        reason: response.reason,
       });
 
-      if (cancelled) return;
-
-      if (response.serviceable === false) {
-        track('register_not_serviceable', {
-          postal_code: postalCodeValue,
-          state: getState(postalCodeValue),
-          reason: response.reason,
-        });
-
-        setNonServiceabilityReason(response.reason);
-      }
-    };
-
-    void checkZipCode();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [postalCodeValue, getServiceabilityMutation, track]);
+      setNonServiceabilityReason(response.reason);
+    }
+  };
 
   return (
     <>
@@ -147,7 +136,10 @@ export const YourDetailsSection = ({
                         value={field.value}
                         onBlur={field.onBlur}
                         name={field.name}
-                        onChange={(value) => field.onChange(value)}
+                        onChange={(value) => {
+                          field.onChange(value);
+                          void checkZipCode(value);
+                        }}
                       />
                     </FormControl>
                     {fieldState.error ? (
@@ -235,7 +227,25 @@ export const YourDetailsSection = ({
                   <FormLabel>Phone Number</FormLabel>
                   <FormControl>
                     <PhoneInput
-                      {...field}
+                      ref={field.ref}
+                      name={field.name}
+                      value={field.value}
+                      onChange={(value) => {
+                        pendingPhoneRef.current = value;
+                        clearTimeout(phoneDebounceRef.current);
+                        phoneDebounceRef.current = setTimeout(() => {
+                          field.onChange(value);
+                          pendingPhoneRef.current = null;
+                        }, 100);
+                      }}
+                      onBlur={() => {
+                        clearTimeout(phoneDebounceRef.current);
+                        if (pendingPhoneRef.current !== null) {
+                          field.onChange(pendingPhoneRef.current);
+                          pendingPhoneRef.current = null;
+                        }
+                        field.onBlur();
+                      }}
                       placeholder="Your phone number"
                       defaultCountry="US"
                       variant={fieldState.error ? 'error' : 'default'}

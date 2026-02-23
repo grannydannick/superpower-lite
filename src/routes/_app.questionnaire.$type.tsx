@@ -26,7 +26,7 @@ import { pruneResponseItems } from '@/features/questionnaires/utils/prune-respon
 import { useUser } from '@/lib/auth';
 
 export const Route = createFileRoute('/_app/questionnaire/$type')({
-  loader: async () => {
+  loader: () => {
     preload('/onboarding/questionnaire/rx.webp', { as: 'image' });
     preload('/rx/identity.webp', { as: 'image' });
     return null;

@@ -121,7 +121,7 @@ const BiologicalAge = ({
   );
 };
 
-export const Overview = () => {
+export function Overview() {
   const { clearRange, clearCategories, clearSelectedOrder, clearSearchQuery } =
     useDataFilterStore();
   const { data: user, isLoading: isUserLoading } = useUser();
@@ -254,4 +254,4 @@ export const Overview = () => {
       </div>
     </div>
   );
-};
+}

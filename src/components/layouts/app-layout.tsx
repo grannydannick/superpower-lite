@@ -1,7 +1,7 @@
 import { useRouterState } from '@tanstack/react-router';
+import { lazy, Suspense } from 'react';
 import type React from 'react';
 
-import { DevHelper } from '@/components/shared/dev-helper';
 import { FloatingWrapper } from '@/components/shared/floating-wrapper';
 import { NavigationProgress } from '@/components/ui/navigation-progress';
 import { WHITE_BACKGROUND_PATHS } from '@/const/white-background-paths';
@@ -12,10 +12,17 @@ import { cn } from '@/lib/utils';
 
 import { Navbar } from '../shared/navbar';
 
+const LazyDevHelper = import.meta.env.DEV
+  ? lazy(() =>
+      import('@/components/shared/dev-helper').then((mod) => ({
+        default: mod.DevHelper,
+      })),
+    )
+  : null;
+
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { data } = useUser();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isDev = import.meta.env.DEV;
 
   // matches theme colors
   useThemeColor();
@@ -42,7 +49,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <main className={isWhiteBg ? 'bg-white' : 'bg-zinc-50'}>
-      {isDev ? <DevHelper /> : null}
+      {LazyDevHelper ? (
+        <Suspense fallback={null}>
+          <LazyDevHelper />
+        </Suspense>
+      ) : null}
       {!hideNavBar && <Navbar />}
       <NavigationProgress />
       <div

@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { zodValidator } from '@tanstack/zod-adapter';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { ConciergeLayout } from '@/features/messages/layouts/concierge-layout';
 

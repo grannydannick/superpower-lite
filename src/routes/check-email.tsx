@@ -1,6 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
-import { useLocation } from '@tanstack/react-router';
+import { createFileRoute, useLocation } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
 import { CheckEmailScreen } from '@/features/auth/components/check-email-screen';

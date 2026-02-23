@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { useAnalytics } from '@/hooks/use-analytics';
 import { api } from '@/lib/api-client';

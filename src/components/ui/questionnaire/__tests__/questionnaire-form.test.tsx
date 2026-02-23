@@ -13,6 +13,11 @@ vi.mock('@/hooks/use-identity-verification', () => ({
     isExpired: false,
     verificationMutation: { mutate: vi.fn() },
   }),
+  useIdentityVerificationStatus: () => ({
+    needsVerification: false,
+    isVerified: true,
+    isExpired: false,
+  }),
 }));
 vi.mock('../consent-payment-summary', () => ({
   ConsentPaymentSummary: () => null,

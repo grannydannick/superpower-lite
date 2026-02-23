@@ -1,18 +1,22 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, notFound } from '@tanstack/react-router';
 
 import { ContentLayout } from '@/components/layouts';
 import { UsersList } from '@/features/users/components/users-list';
-import { Authorization, ROLES } from '@/lib/authorization';
+import { authenticatedUserQueryOptions } from '@/lib/auth';
+import { ROLES } from '@/lib/authorization';
 
 export const Route = createFileRoute('/_app/_maps/users')({
+  beforeLoad: async ({ context }) => {
+    const user = await context.queryClient
+      .ensureQueryData(authenticatedUserQueryOptions())
+      .catch(() => null);
+    if (user === null || !user.role.includes(ROLES.SUPER_ADMIN)) {
+      throw notFound();
+    }
+  },
   component: () => (
     <ContentLayout title="Admin - Users">
-      <Authorization
-        forbiddenFallback={<div>Only admin can view this.</div>}
-        allowedRoles={[ROLES.SUPER_ADMIN]}
-      >
-        <UsersList />
-      </Authorization>
+      <UsersList />
     </ContentLayout>
   ),
 });

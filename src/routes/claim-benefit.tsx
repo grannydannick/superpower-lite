@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { zodValidator } from '@tanstack/zod-adapter';
 import { Suspense, useEffect } from 'react';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { SuperpowerLoadingLogo } from '@/components/icons/superpower-logo';
 import { ClaimBenefitForm } from '@/features/auth/components/b2b-benefits/claim-benefit-form';

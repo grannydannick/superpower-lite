@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useSearch } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -22,7 +22,8 @@ import { loginInputSchema } from '@/lib/auth-schemas';
 import { User } from '@/types/api';
 
 const passwordLoginSchema = loginInputSchema;
-const magicLinkLoginSchema = loginInputSchema.extend({
+const magicLinkLoginSchema = z.object({
+  ...loginInputSchema.shape,
   // allow blank password in magic-link mode (we don’t render the field)
   password: z.string(),
 });

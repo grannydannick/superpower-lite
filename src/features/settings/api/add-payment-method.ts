@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { getPaymentMethodsQueryOptions } from '@/features/settings/api/get-payment-methods';
 import { api } from '@/lib/api-client';

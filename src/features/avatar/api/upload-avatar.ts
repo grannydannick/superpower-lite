@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { MutationConfig } from '@/lib/react-query';
 

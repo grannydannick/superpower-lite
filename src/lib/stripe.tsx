@@ -6,6 +6,14 @@ import { env } from '@/config/env';
 
 let stripePromise: ReturnType<typeof loadStripe> | null = null;
 
+/** Lazily initialises and returns the shared Stripe instance promise. */
+export function getStripe() {
+  if (stripePromise === null) {
+    stripePromise = loadStripe(env.STRIPE_PUBLISHABLE_KEY);
+  }
+  return stripePromise;
+}
+
 /** Children of this component have access to useStripe */
 export function StripeProvider(props: {
   children: ReactNode | ReactNode[];

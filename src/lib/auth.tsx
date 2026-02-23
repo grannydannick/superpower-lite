@@ -1,21 +1,8 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { Navigate, useRouterState } from '@tanstack/react-router';
-import * as React from 'react';
+import { queryOptions, useMutation } from '@tanstack/react-query';
 import { configureAuth } from 'react-query-auth';
 
-import { SuperpowerLoadingLogo } from '@/components/icons/superpower-logo';
-import { env } from '@/config/env';
-import {
-  buildQuestionnaireStatusMap,
-  getQuestionnaireStatus,
-} from '@/features/onboarding/utils/get-questionnaire-status';
-import { revealLatestQueryKey } from '@/features/protocol/api/reveal-latest';
-import { useQuestionnaireResponseList } from '@/features/questionnaires/api/questionnaire-response';
-import { useTask } from '@/features/tasks/api/get-task';
-import { isIntakeDismissed } from '@/lib/intake-dismiss';
 import { MutationConfig } from '@/lib/react-query';
 import { clearActiveLogin, setActiveLogin } from '@/lib/utils';
-import { api as rawOrpcClient } from '@/orpc/client';
 import {
   LoginAuthenticationResponse,
   OAuthGrantType,
@@ -33,14 +20,6 @@ import type {
   SetPasswordInput,
 } from './auth-schemas';
 
-function ExternalRedirect({ href }: { href: string }) {
-  React.useEffect(() => {
-    window.location.href = href;
-  }, [href]);
-
-  return null;
-}
-
 export type {
   BaseLoginInput,
   LoginInput,
@@ -49,8 +28,15 @@ export type {
   SetPasswordInput,
 } from './auth-schemas';
 
-const getUser = (): Promise<User> => {
+export const getUser = (): Promise<User> => {
   return api.get('/auth/me');
+};
+
+export const authenticatedUserQueryOptions = () => {
+  return queryOptions({
+    queryKey: ['authenticated-user'],
+    queryFn: getUser,
+  });
 };
 
 const logout = async (): Promise<void> => {
@@ -59,7 +45,6 @@ const logout = async (): Promise<void> => {
   return clearActiveLogin();
 };
 
-const orpcClient = rawOrpcClient as any;
 const loginWithEmailAndPassword = (
   data: LoginInput,
 ): Promise<LoginAuthenticationResponse> => {
@@ -181,184 +166,6 @@ export const useSetPassword = ({
 
 export const { useUser, useLogin, useLogout, useRegister } =
   configureAuth(authConfig);
-
-type RevealLatestResponse = {
-  carePlanId: string | null;
-  showReveal: boolean | null;
-  revealCompleted: boolean;
-};
-
-export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const userQuery = useUser();
-  const taskQuery = useTask({
-    taskName: 'onboarding',
-    queryConfig: {
-      enabled: userQuery.isSuccess,
-      retry: 3,
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000), // 1s, 2s, 4s, max 5s
-    },
-  });
-  const { data: revealLatest } = useQuery<RevealLatestResponse>({
-    queryKey: revealLatestQueryKey,
-    queryFn: async () => {
-      const response = await orpcClient.POST('/protocol/reveal/latest');
-      if (response.error) throw response.error;
-      return response.data;
-    },
-    enabled: userQuery.isSuccess,
-  });
-
-  const onboardingDone = taskQuery.data?.task.status === 'completed';
-  const { data: intakeResponses, isLoading: intakeLoading } =
-    useQuestionnaireResponseList(
-      {
-        questionnaireName:
-          'onboarding-primer,onboarding-medical-history,onboarding-female-health,onboarding-lifestyle',
-        status: 'completed',
-      },
-      { enabled: userQuery.isSuccess && onboardingDone },
-    );
-
-  if (!userQuery.isFetched) {
-    return (
-      <div className="flex h-screen w-screen items-center justify-center">
-        <SuperpowerLoadingLogo />
-        <span className="sr-only">Loading</span>
-      </div>
-    );
-  }
-
-  if (taskQuery.isLoading) {
-    return (
-      <div className="flex h-screen w-screen items-center justify-center">
-        <SuperpowerLoadingLogo />
-        <span className="sr-only">Loading</span>
-      </div>
-    );
-  }
-
-  if (!userQuery.data) {
-    return (
-      <Navigate
-        to="/signin"
-        search={{
-          redirectTo: pathname,
-        }}
-        replace
-      />
-    );
-  }
-
-  // note: we should probably never get to this state anyways
-  if (taskQuery.isError) {
-    return (
-      <div className="p-4">
-        <p className="text-red-600">Ooops...Error loading onboarding status.</p>
-        <button onClick={() => taskQuery.refetch()}>Retry</button>
-      </div>
-    );
-  }
-
-  const onOnboarding = pathname.includes('/onboarding');
-
-  const revealPermissiblePaths = [
-    '/protocol/reveal',
-    '/protocol/autopilot',
-    '/onboarding', // Prevent infinite redirect loop
-    '/intake', // Medical intake for legacy members
-    '/action-plan/intro', // Videos
-  ];
-  let onPermissiblePath = false;
-  for (const path of revealPermissiblePaths) {
-    if (pathname.startsWith(path)) {
-      onPermissiblePath = true;
-      break;
-    }
-  }
-
-  // Check if user should be redirected to protocol reveal flow
-  const shouldRedirectToReveal =
-    !!revealLatest?.carePlanId &&
-    revealLatest.showReveal === true &&
-    !revealLatest.revealCompleted;
-
-  if (
-    shouldRedirectToReveal &&
-    !onPermissiblePath &&
-    taskQuery.data?.task.status === 'completed' &&
-    !userQuery.data?.adminActor
-  ) {
-    const target = '/protocol/reveal';
-    console.warn(
-      `Redirecting to protocol reveal: ${target}, current location: ${pathname}`,
-    );
-    return <Navigate to={target} replace />;
-  }
-
-  if (taskQuery.data) {
-    const { task } = taskQuery.data;
-    const isTaskIncomplete = task.status !== 'completed';
-    const isSubscribed = !!userQuery.data?.subscribed;
-    const isDev = import.meta.env.DEV;
-
-    let target: string | null = null;
-
-    if (isTaskIncomplete) {
-      // If a user isn't subscribed, send them to checkout
-      if (!isSubscribed) {
-        return <ExternalRedirect href={`${env.MARKETING_SITE_URL}/checkout`} />;
-      }
-      // otherwise, send to onboarding (but not if already there)
-      else if (!onOnboarding) {
-        target = '/onboarding';
-      }
-    }
-
-    if (target && target !== pathname) {
-      console.warn(`Redirecting to ${target}, current location: ${pathname}`);
-      return <Navigate to={target} replace />;
-    }
-
-    // Redirect legacy members (account > 6 months old) with incomplete intakes
-    if (
-      onboardingDone &&
-      !isDev &&
-      !intakeLoading &&
-      !userQuery.data?.adminActor &&
-      !onPermissiblePath
-    ) {
-      const sixMonthsAgo = new Date();
-      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-      // Clamp to last day of target month if day-of-month overflowed
-      const now = new Date();
-      if (sixMonthsAgo.getDate() !== now.getDate()) {
-        sixMonthsAgo.setDate(0);
-      }
-
-      const isLegacy =
-        userQuery.data?.createdAt &&
-        new Date(userQuery.data.createdAt) < sixMonthsAgo;
-
-      const statusMap = buildQuestionnaireStatusMap(intakeResponses);
-      const done = (name: string) =>
-        getQuestionnaireStatus(statusMap, name) === 'completed';
-
-      const isFemale = userQuery.data?.gender?.toLowerCase() === 'female';
-      const hasAllIntakes =
-        done('onboarding-primer') &&
-        done('onboarding-medical-history') &&
-        (!isFemale || done('onboarding-female-health')) &&
-        done('onboarding-lifestyle');
-
-      if (isLegacy && !hasAllIntakes && !isIntakeDismissed()) {
-        return <Navigate to="/intake" replace />;
-      }
-    }
-  }
-
-  return children;
-};
 
 /**
  * Verifies the tokens received from the auth server.

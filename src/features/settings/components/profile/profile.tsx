@@ -2,7 +2,7 @@ import { Card } from '@/components/ui/card';
 import { H3 } from '@/components/ui/typography';
 import { ContactForm } from '@/features/settings/components/profile/contact-form';
 import { PasswordManagement } from '@/features/settings/components/profile/password-management';
-import { PersonalInformationForm } from '@/features/settings/components/profile/personal-informartion-form';
+import { PersonalInformationForm } from '@/features/settings/components/profile/personal-information-form';
 
 export const Profile = () => {
   return (

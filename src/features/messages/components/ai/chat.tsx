@@ -24,14 +24,12 @@ import { useChatStore } from '@/features/messages/stores/chat-store';
 import { extractTiming } from '@/features/messages/utils/extract-timing';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { cn, getActiveLogin } from '@/lib/utils';
-import { generateUUID } from '@/utils/generate-uiud';
 
 import { classifyChatError } from './chat-error-utils';
 import { Greeting } from './greeting';
 import { Messages } from './messages';
 import { MultimodalInput } from './multimodal-input';
 import { SuggestedActions } from './suggested-actions';
-
 const publicErrors = [
   'Too many requests, please try again later.',
   'This chat has ended. Please start a new chat.',
@@ -297,7 +295,7 @@ function useConciergeChatController({
     id,
     transport,
     messages: initialMessages,
-    generateId: generateUUID,
+    generateId: () => crypto.randomUUID(),
     onFinish: ({ message }) => {
       refetch();
 
