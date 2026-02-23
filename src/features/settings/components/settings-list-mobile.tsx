@@ -12,6 +12,8 @@ import { MobileMenu } from '@/features/settings/types/mobile-menu';
 import { cn } from '@/lib/utils';
 import { capitalize } from '@/utils/format';
 
+import { Vault } from './vault/vault';
+
 // TODO: had not a lot of time to refactor this, need to come up with better global approach for mobile (NM 09/04/2024)
 
 export const SettingsListMobile = () => {
@@ -41,9 +43,10 @@ export const SettingsListMobile = () => {
         )}
         {current === 'profile' && <Profile />}
         {current === 'billing' && <Billing />}
+        {current === 'health records' && <Vault />}
         {current === 'membership' && <Membership />}
-        {current === 'integrations' && <WearablesTable />}
         {current === 'order history' && <OrdersList />}
+        {current === 'integrations' && <WearablesTable />}
         {!current && (
           <>
             <div className="mb-2 flex h-[160px] gap-2">
