@@ -30,6 +30,7 @@
   "ignorePatterns": [
     "*.hbs",
     "public/mockServiceWorker.js",
-    "src/orpc/types.generated.ts"
+    "src/orpc/types.generated.ts",
+    "src/routeTree.gen.ts"
   ]
 }

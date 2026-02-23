@@ -1,9 +1,9 @@
 /// <reference types="vitest/config" />
 /// <reference types="vite/client" />
 
-import react from '@vitejs/plugin-react';
 import { devtools } from '@tanstack/devtools-vite';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
+import react from '@vitejs/plugin-react';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
@@ -78,10 +78,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: [
-      'three',
-      '@react-three/fiber',
-    ],
+    include: ['three', '@react-three/fiber'],
     exclude: ['fsevents'],
   },
 });
