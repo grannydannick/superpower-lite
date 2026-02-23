@@ -59,6 +59,12 @@ export function extractCampaignParameters(): CampaignData {
   if (params.has('rewardfulCode'))
     campaignData.rewardfulCode = params.get('rewardfulCode') ?? undefined;
 
+  // Check for coupon code in URL (hook-free for early init before React)
+  const urlCode = params.get('code')?.trim();
+  if (urlCode != null && urlCode.length > 0 && urlCode !== '$') {
+    campaignData.coupon = urlCode;
+  }
+
   return campaignData;
 }
 
