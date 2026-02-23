@@ -2,7 +2,7 @@ import NumberFlow from '@number-flow/react';
 
 import { BiologicalAgeLogo } from '@/components/shared/biological-age-logo';
 import { SuperpowerScoreLogo } from '@/components/shared/score-logo';
-import { QuickLink } from '@/components/ui/quick-link';
+import { QuickLinkButton } from '@/components/ui/quick-link';
 import { Spinner } from '@/components/ui/spinner';
 import { Body2, H2 } from '@/components/ui/typography';
 import { useLatestHealthScore } from '@/features/data/api';
@@ -53,7 +53,7 @@ const SuperpowerScore = ({
 
   return (
     <ShareableCardsModal disabled={isLoading} preselectedTab="score">
-      <QuickLink className="flex h-full flex-1 flex-col justify-between overflow-hidden bg-white lg:gap-2">
+      <QuickLinkButton className="flex h-full flex-1 flex-col justify-between overflow-hidden bg-white lg:gap-2">
         <SuperpowerScoreLogo
           logoColor="currentColor"
           className="mb-2 w-11 sm:w-40"
@@ -81,7 +81,7 @@ const SuperpowerScore = ({
             </Body2>
           )}
         </div>
-      </QuickLink>
+      </QuickLinkButton>
     </ShareableCardsModal>
   );
 };
@@ -97,7 +97,7 @@ const BiologicalAge = ({
 }) => {
   return (
     <ShareableCardsModal disabled={isLoading} preselectedTab="age">
-      <QuickLink className="flex h-full flex-1 flex-col justify-between gap-2 overflow-hidden bg-white">
+      <QuickLinkButton className="flex h-full flex-1 flex-col justify-between gap-2 overflow-hidden bg-white">
         <BiologicalAgeLogo className="mt-1" />
         <div>
           <div className="mb-1 flex items-end justify-start gap-1">
@@ -131,7 +131,7 @@ const BiologicalAge = ({
             </Body2>
           )}
         </div>
-      </QuickLink>
+      </QuickLinkButton>
     </ShareableCardsModal>
   );
 };

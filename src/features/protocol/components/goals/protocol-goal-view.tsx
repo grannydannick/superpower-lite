@@ -1,8 +1,7 @@
-import { useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 
 import { ChevronLeft } from '@/components/icons/chevron-left-icon';
 import { Button } from '@/components/ui/button';
-import { Link } from '@/components/ui/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, Body2 } from '@/components/ui/typography';
 
@@ -99,7 +98,7 @@ export function ProtocolGoalView({
         {isLatestProtocol ? (
           <Link
             to="/protocol"
-            className="group -ml-1.5 flex items-center gap-0.5 p-0"
+            className="group -ml-1.5 flex items-center gap-0.5 p-0 text-slate-600 hover:text-slate-900"
           >
             <ChevronLeft className="-mt-px w-[15px] text-zinc-400 transition-all duration-150 group-hover:-translate-x-0.5 group-hover:text-zinc-600" />
             <Body2 className="text-zinc-500 transition-all duration-150 group-hover:text-zinc-700">
@@ -108,8 +107,9 @@ export function ProtocolGoalView({
           </Link>
         ) : (
           <Link
-            to={`/protocol/plans/${protocolId}`}
-            className="group -ml-1.5 flex items-center gap-0.5 p-0"
+            to="/protocol/plans/$id"
+            params={{ id: protocolId }}
+            className="group -ml-1.5 flex items-center gap-0.5 p-0 text-slate-600 hover:text-slate-900"
           >
             <ChevronLeft className="-mt-px w-[15px] text-zinc-400 transition-all duration-150 group-hover:-translate-x-0.5 group-hover:text-zinc-600" />
             <Body2 className="text-zinc-500 transition-all duration-150 group-hover:text-zinc-700">

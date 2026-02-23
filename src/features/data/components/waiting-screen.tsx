@@ -1,4 +1,4 @@
-import QuickLink from '@/components/shared/quicklink';
+import { QuickLink } from '@/components/ui/quick-link';
 import { Body2, H4 } from '@/components/ui/typography';
 import { useSummary } from '@/features/summary/api/get-summary';
 import { useUser } from '@/lib/auth';
@@ -45,7 +45,8 @@ export const WaitingScreen = () => {
             </div>
           </QuickLink>
           <QuickLink
-            to="/settings?tab=integrations"
+            to="/settings"
+            search={{ tab: 'integrations' }}
             title="Connect your health trackers"
             className="flex-1 overflow-hidden pb-0 md:w-1/2"
           >

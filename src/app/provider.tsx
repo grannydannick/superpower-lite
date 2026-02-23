@@ -19,6 +19,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     });
   });
 
+  const shouldRenderDevtools = import.meta.env.MODE === 'development';
+
   return (
     <ErrorBoundary FallbackComponent={MainErrorFallback}>
       <HelmetProvider>
@@ -26,21 +28,23 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
           <PHProvider>
             <Toaster />
             {children}
-            <TanStackDevtools
-              config={{ position: 'top-right' }}
-              plugins={[
-                {
-                  name: 'TanStack Query',
-                  render: <ReactQueryDevtoolsPanel />,
-                  defaultOpen: true,
-                },
-                {
-                  name: 'TanStack Router',
-                  render: <TanStackRouterDevtoolsPanel router={router} />,
-                  defaultOpen: false,
-                },
-              ]}
-            />
+            {shouldRenderDevtools ? (
+              <TanStackDevtools
+                config={{ position: 'top-right' }}
+                plugins={[
+                  {
+                    name: 'TanStack Query',
+                    render: <ReactQueryDevtoolsPanel />,
+                    defaultOpen: true,
+                  },
+                  {
+                    name: 'TanStack Router',
+                    render: <TanStackRouterDevtoolsPanel router={router} />,
+                    defaultOpen: false,
+                  },
+                ]}
+              />
+            ) : null}
           </PHProvider>
         </QueryClientProvider>
       </HelmetProvider>

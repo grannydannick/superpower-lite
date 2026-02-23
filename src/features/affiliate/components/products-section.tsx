@@ -9,13 +9,14 @@ import { useProductRecommendations } from '../hooks/use-product-recommendations'
 
 export const ProductsSection = () => {
   const { recommendedProducts, isLoading, plan } = useProductRecommendations();
+  const planId: string | null = plan?.id ?? null;
 
   return (
     <section>
       <H3>Turn your credits into results</H3>
       <Body1 className="text-secondary">
         Shop recommendations from{' '}
-        {plan ? 'your last action plan' : 'our marketplace'}
+        {planId != null ? 'your last action plan' : 'our marketplace'}
       </Body1>
       <div className="mt-6">
         {isLoading ? (
@@ -31,9 +32,11 @@ export const ProductsSection = () => {
             </ul>
             <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-white to-transparent" />
             <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
-              {plan ? (
+              {planId != null ? (
                 <Button asChild className="rounded-full">
-                  <Link to={'/plans/' + plan.id}>View your action plan</Link>
+                  <Link to="/plans/$id" params={{ id: planId }}>
+                    View your action plan
+                  </Link>
                 </Button>
               ) : (
                 <Button asChild className="rounded-full">

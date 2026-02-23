@@ -4,6 +4,7 @@ import {
   QuestionnaireResponseItem,
 } from '@medplum/fhirtypes';
 import { createFileRoute, notFound } from '@tanstack/react-router';
+import { preload } from 'react-dom';
 
 import { Head } from '@/components/seo';
 import { QuestionnaireForm } from '@/components/ui/questionnaire';
@@ -23,21 +24,11 @@ import { RxQuestionnaire } from '@/features/questionnaires/components/rx-questio
 import { useQuestionnaireResponseController } from '@/features/questionnaires/hooks/use-questionnaire-response-controller';
 import { pruneResponseItems } from '@/features/questionnaires/utils/prune-response-items';
 import { useUser } from '@/lib/auth';
-import { preloadImage } from '@/utils/preload-image';
 
 export const Route = createFileRoute('/_app/questionnaire/$type')({
   loader: async () => {
-    const preloadedImages = [
-      '/onboarding/questionnaire/rx.webp',
-      '/rx/identity.webp',
-    ];
-
-    const imagesPromiseList: Array<ReturnType<typeof preloadImage>> = [];
-    for (const src of preloadedImages) {
-      imagesPromiseList.push(preloadImage(src));
-    }
-
-    await Promise.all(imagesPromiseList);
+    preload('/onboarding/questionnaire/rx.webp', { as: 'image' });
+    preload('/rx/identity.webp', { as: 'image' });
     return null;
   },
   component: QuestionnaireComponent,

@@ -1,26 +1,22 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useRef } from 'react';
+import { preload } from 'react-dom';
 
 import { Spinner } from '@/components/ui/spinner';
 import { OnboardingFlow } from '@/features/onboarding/components/flow/onboarding-flow';
 import { useTask } from '@/features/tasks/api/get-task';
-import { preloadImage } from '@/utils/preload-image';
 
 export const Route = createFileRoute('/_app/_maps/onboarding')({
   loader: async () => {
-    const preloadedImages = [
-      '/onboarding/shared/backgrounds/bg-female-face.webp',
-      '/onboarding/shared/backgrounds/bg-male.webp',
-      '/onboarding/shared/backgrounds/bg-spine.webp',
-      '/onboarding/shared/backgrounds/bg-female-hands.webp',
-    ];
+    preload('/onboarding/shared/backgrounds/bg-female-face.webp', {
+      as: 'image',
+    });
+    preload('/onboarding/shared/backgrounds/bg-male.webp', { as: 'image' });
+    preload('/onboarding/shared/backgrounds/bg-spine.webp', { as: 'image' });
+    preload('/onboarding/shared/backgrounds/bg-female-hands.webp', {
+      as: 'image',
+    });
 
-    const imagesPromiseList: Array<ReturnType<typeof preloadImage>> = [];
-    for (const src of preloadedImages) {
-      imagesPromiseList.push(preloadImage(src));
-    }
-
-    await Promise.all(imagesPromiseList);
     return null;
   },
   component: OnboardingComponent,

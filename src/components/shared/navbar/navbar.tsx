@@ -160,10 +160,13 @@ export const DesktopNavbar = () => {
                   }
                 }}
                 className={cn(
-                  'group relative z-10 truncate px-4 py-1.5 text-secondary transition-all duration-150 hover:text-secondary/75 active:scale-[98%]',
+                  'group relative z-10 truncate px-4 py-1.5 transition-all duration-150 active:scale-[98%]',
                 )}
                 activeProps={{
                   className: 'rounded-full bg-primary text-white',
+                }}
+                inactiveProps={{
+                  className: 'text-secondary hover:text-secondary/75',
                 }}
               >
                 <span className="truncate">{link.name}</span>

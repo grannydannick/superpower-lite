@@ -117,7 +117,7 @@ export const MarketplaceList = ({
           title="Top tests for you"
           subtitle="Most recommended"
           services={recommendedServices}
-          path="?tab=tests"
+          viewAllTab="tests"
         />
       )}
       {recommendedSupplements.length > 0 && (
@@ -125,7 +125,7 @@ export const MarketplaceList = ({
           title="Top supplements for you"
           subtitle="Most recommended"
           products={recommendedSupplements}
-          path="?tab=supplements"
+          viewAllTab="supplements"
         />
       )}
       {recommendedPrescriptions.length > 0 && (
@@ -133,7 +133,7 @@ export const MarketplaceList = ({
           title="Top prescriptions for you"
           subtitle="Most recommended"
           prescriptions={recommendedPrescriptions}
-          path="?tab=prescriptions"
+          viewAllTab="prescriptions"
         />
       )}
     </div>

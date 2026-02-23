@@ -1,3 +1,4 @@
+import { linkOptions } from '@tanstack/react-router';
 import { cva, VariantProps } from 'class-variance-authority';
 import { ChevronRight } from 'lucide-react';
 
@@ -43,13 +44,13 @@ export const CreditActionCard = ({
   const getUrl = () => {
     const service = services.find((s) => s.id === credit.serviceId);
 
-    if (!service || !service?.group) return '/schedule';
+    if (!service || !service?.group) return linkOptions({ to: '/schedule' });
 
-    return `/schedule?mode=${service.group}`;
+    return linkOptions({ to: '/schedule', search: { mode: service.group } });
   };
 
   return (
-    <Link to={getUrl()} className={cn(cardVariants({ variant, className }))}>
+    <Link {...getUrl()} className={cn(cardVariants({ variant, className }))}>
       <div className="flex shrink-0 items-center">
         <div className="relative flex size-4 items-center justify-center rounded-full bg-vermillion-100">
           <div className="size-1.5 rounded-full bg-vermillion-900" />

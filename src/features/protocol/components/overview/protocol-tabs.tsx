@@ -198,7 +198,8 @@ const ProtocolTabContent = ({
         previousProtocolNodes.push(
           <Link
             key={historicalProtocol.id}
-            to={`/protocol/plans/${historicalProtocol.id}`}
+            to="/protocol/plans/$id"
+            params={{ id: historicalProtocol.id }}
             className="group flex items-center gap-8 rounded-2xl border border-zinc-200 bg-white px-6 py-4 shadow-sm lg:rounded-none lg:border-none lg:p-0 lg:shadow-none"
           >
             <div className="flex items-center gap-4">

@@ -113,28 +113,64 @@ export const ProtocolOverview = ({
       )}
       <div className="relative z-30 mb-4 flex w-full items-center justify-between gap-8 lg:hidden">
         <div className="flex gap-4">
-          <Link to={`?tab=protocol`}>
-            <H3
-              className={
-                currentTab === 'protocol'
-                  ? 'text-black'
-                  : 'text-black/20 transition-all hover:text-black/40'
-              }
+          {id != null ? (
+            <Link
+              to="/protocol/plans/$id"
+              params={{ id }}
+              search={{ tab: 'protocol' }}
             >
-              {name}
-            </H3>
-          </Link>
-          <Link to={`?tab=goals`}>
-            <H3
-              className={
-                currentTab === 'goals'
-                  ? 'text-black'
-                  : 'text-black/20 transition-all hover:text-black/40'
-              }
+              <H3
+                className={
+                  currentTab === 'protocol'
+                    ? 'text-black'
+                    : 'text-black/20 transition-all hover:text-black/40'
+                }
+              >
+                {name}
+              </H3>
+            </Link>
+          ) : (
+            <Link to="/protocol" search={{ tab: 'protocol' }}>
+              <H3
+                className={
+                  currentTab === 'protocol'
+                    ? 'text-black'
+                    : 'text-black/20 transition-all hover:text-black/40'
+                }
+              >
+                {name}
+              </H3>
+            </Link>
+          )}
+          {id != null ? (
+            <Link
+              to="/protocol/plans/$id"
+              params={{ id }}
+              search={{ tab: 'goals' }}
             >
-              Goals
-            </H3>
-          </Link>
+              <H3
+                className={
+                  currentTab === 'goals'
+                    ? 'text-black'
+                    : 'text-black/20 transition-all hover:text-black/40'
+                }
+              >
+                Goals
+              </H3>
+            </Link>
+          ) : (
+            <Link to="/protocol" search={{ tab: 'goals' }}>
+              <H3
+                className={
+                  currentTab === 'goals'
+                    ? 'text-black'
+                    : 'text-black/20 transition-all hover:text-black/40'
+                }
+              >
+                Goals
+              </H3>
+            </Link>
+          )}
         </div>
         {id && (
           <Body2 className="text-secondary">

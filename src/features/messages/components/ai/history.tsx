@@ -1,7 +1,7 @@
 import { IconEditSmall1 } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconEditSmall1';
 import { IconMagnifyingGlass } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconMagnifyingGlass';
 import { IconSidebarSimpleLeftSquare } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconSidebarSimpleLeftSquare';
-import { useNavigate, useParams } from '@tanstack/react-router';
+import { Link, useNavigate, useParams } from '@tanstack/react-router';
 import { isToday, isYesterday, subMonths, subWeeks } from 'date-fns';
 import { AnimatePresence, m } from 'framer-motion';
 import { MoreHorizontalIcon } from 'lucide-react';
@@ -14,7 +14,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown';
-import { Link } from '@/components/ui/link';
 import {
   Sheet,
   SheetContent,
@@ -70,10 +69,11 @@ const ChatItem = ({ chat, isActive }: { chat: Chat; isActive: boolean }) => {
 
   return (
     <Link
-      to={`/concierge/${chat.id}`}
+      to="/concierge/$id"
+      params={{ id: chat.id }}
       resetScroll={false}
       className={cn(
-        'group flex w-full justify-between gap-2 rounded-xl px-4 py-2.5 transition-all duration-200 ease-out',
+        'group flex w-full justify-between gap-2 rounded-xl px-4 py-2.5 text-slate-600 transition-all duration-200 ease-out hover:text-slate-900',
         isActive ? 'bg-zinc-200/60' : 'hover:bg-zinc-100',
       )}
       onClick={() => {

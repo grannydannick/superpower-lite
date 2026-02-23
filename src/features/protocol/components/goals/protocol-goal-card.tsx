@@ -23,7 +23,8 @@ export function ProtocolGoalCard({
 }: ProtocolGoalCardProps) {
   return (
     <Link
-      to={`/protocol/plans/${protocol.id}/goals/${goal.id}`}
+      to="/protocol/plans/$planId/goals/$goalId"
+      params={{ planId: protocol.id, goalId: goal.id }}
       className="group relative"
     >
       <img

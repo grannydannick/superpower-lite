@@ -27,7 +27,7 @@ export const PrescriptionDetails = ({
         <PrescriptionsCategory
           title="Other popular products"
           prescriptions={otherPopularPrescriptions}
-          path="/marketplace?tab=prescriptions"
+          viewAllTab="prescriptions"
         />
       )}
     </div>

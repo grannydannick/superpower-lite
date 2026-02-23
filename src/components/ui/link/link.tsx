@@ -1,17 +1,23 @@
-import { Link as RouterLink } from '@tanstack/react-router';
-import type { ComponentProps } from 'react';
+import { createLink } from '@tanstack/react-router';
+import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
-type LinkProps = ComponentProps<typeof RouterLink>;
+interface BaseLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {}
 
-export const Link = ({ className, children, ...props }: LinkProps) => {
-  return (
-    <RouterLink
-      className={cn('text-slate-600 hover:text-slate-900', className)}
-      {...props}
-    >
-      {children}
-    </RouterLink>
-  );
-};
+const BaseLinkComponent = React.forwardRef<HTMLAnchorElement, BaseLinkProps>(
+  ({ className, 'aria-label': ariaLabel, ...props }, ref) => {
+    return (
+      <a
+        ref={ref}
+        {...props}
+        aria-label={ariaLabel}
+        className={cn('text-slate-600 hover:text-slate-900', className)}
+      />
+    );
+  },
+);
+
+BaseLinkComponent.displayName = 'BaseLinkComponent';
+
+export const Link = createLink(BaseLinkComponent);
