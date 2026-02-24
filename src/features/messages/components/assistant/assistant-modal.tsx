@@ -1,16 +1,7 @@
 import { ChevronsDownUp, Link, Maximize2, Minimize2 } from 'lucide-react';
-import {
-  Suspense,
-  lazy,
-  useCallback,
-  useMemo,
-  useState,
-  type Ref,
-} from 'react';
+import { useCallback, useMemo, useState, type Ref } from 'react';
 import { Resizable } from 'react-resizable';
 
-import 'react-resizable/css/styles.css';
-import { CircleAiIcon } from '@/components/icons/circle-ai-icon';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import {
@@ -26,17 +17,10 @@ import {
 import { useAssistantStore } from '@/features/messages/stores/assistant-store';
 import { cn } from '@/lib/utils';
 
-const AnimatedIcon = lazy(() =>
-  import('@/features/messages/components/ai/animated-icon').then((mod) => ({
-    default: mod.AnimatedIcon,
-  })),
-);
+import 'react-resizable/css/styles.css';
+import { AnimatedIcon } from '../ai/animated-icon';
 
-const AssistantChat = lazy(() =>
-  import('./assistant-chat').then((mod) => ({
-    default: mod.AssistantChat,
-  })),
-);
+import { AssistantChat } from './assistant-chat';
 
 export const AssistantModal = () => {
   const isExpanded = useAssistantStore((s) => s.isExpanded);
@@ -160,15 +144,7 @@ export const AssistantModal = () => {
       >
         <div className="flex w-full items-center justify-between gap-4">
           <div className="flex shrink-0 items-center gap-2">
-            {isExpanded ? (
-              <Suspense
-                fallback={<CircleAiIcon size={24} className="text-current" />}
-              >
-                <AnimatedIcon state="idle" />
-              </Suspense>
-            ) : (
-              <CircleAiIcon size={24} className="text-current" />
-            )}
+            <AnimatedIcon state="idle" />
             Ask Superpower AI
           </div>
           <div
@@ -224,15 +200,11 @@ export const AssistantModal = () => {
           </div>
         </div>
         <div className={cn('min-h-0 w-full flex-1', !isExpanded && 'hidden')}>
-          {isExpanded ? (
-            <Suspense fallback={null}>
-              <AssistantChat
-                chatId={chatId}
-                isActive={isExpanded}
-                isResizing={isResizing}
-              />
-            </Suspense>
-          ) : null}
+          <AssistantChat
+            chatId={chatId}
+            isActive={isExpanded}
+            isResizing={isResizing}
+          />
         </div>
       </div>
     </Resizable>
