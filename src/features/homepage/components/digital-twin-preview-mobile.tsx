@@ -1,7 +1,10 @@
 import { LockKeyholeIcon } from 'lucide-react';
 import { Suspense, lazy } from 'react';
 
-import { useLatestProtocol } from '@/features/protocol/api';
+import {
+  useLatestProtocol,
+  useLegacyLatestProtocol,
+} from '@/features/protocol/api';
 
 const LazyDigitalTwin = lazy(() =>
   import('@/features/digital-twin/components/digital-twin').then((mod) => ({
@@ -10,8 +13,11 @@ const LazyDigitalTwin = lazy(() =>
 );
 
 export const DigitalTwinPreviewMobile = () => {
-  const { data: protocolData, isLoading } = useLatestProtocol();
-  const hasProtocol = Boolean(protocolData?.protocol);
+  const { data: protocolData, isLoading: sp2Loading } = useLatestProtocol();
+  const { data: legacyData, isLoading: legacyLoading } =
+    useLegacyLatestProtocol();
+  const isLoading = sp2Loading || legacyLoading;
+  const hasProtocol = Boolean(protocolData?.protocol) || Boolean(legacyData);
 
   return (
     <div className="relative h-56 w-full overflow-hidden lg:hidden">
