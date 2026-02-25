@@ -19,12 +19,26 @@ import { cn } from '@/lib/utils';
 import { capitalize } from '@/utils/format';
 
 export const PaymentMethodsSelect = () => {
-  const { activePaymentMethodId, setActivePaymentMethod, paymentMethods } =
-    usePaymentMethodSelection();
+  const {
+    activePaymentMethodId,
+    setActivePaymentMethod,
+    paymentMethods,
+    stopSelectingPaymentMethod,
+  } = usePaymentMethodSelection();
 
   return (
     <div className="space-y-2">
-      <Label className="text-sm text-zinc-500">Active payment methods</Label>
+      <div className="flex items-center justify-between">
+        <Label className="text-sm text-zinc-500">Active payment methods</Label>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="p-0"
+          onClick={() => stopSelectingPaymentMethod()}
+        >
+          <Body3 className="flex items-center text-zinc-500">Go back</Body3>
+        </Button>
+      </div>
       <div className="rounded-xl border border-zinc-200 bg-white">
         {paymentMethods.length > 0 && (
           <div className="p-2">

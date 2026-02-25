@@ -122,6 +122,13 @@ const prescriptionInfoMap: Record<string, PrescriptionInfo> = {
   [TIRZEPATIDE]: PrescriptionInfoData.TIRZEPATIDE,
 };
 
+export const getRxImageUrl = (medicationDisplay: string): string => {
+  const base = medicationDisplay.includes('/')
+    ? medicationDisplay.split('/')[0]
+    : medicationDisplay;
+  return `/rx/transparent/${base.toLowerCase().trim().replaceAll(' ', '-')}.webp`;
+};
+
 export const getPrescriptionInfo = (
   prescriptionName: string,
 ): PrescriptionInfo | null => {

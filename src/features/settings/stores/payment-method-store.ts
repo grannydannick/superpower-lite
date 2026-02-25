@@ -10,6 +10,7 @@ interface PaymentMethodStoreState {
   isSelectingPaymentMethod: boolean;
   setActivePaymentMethod: (paymentMethodId: string) => void;
   startSelectingPaymentMethod: () => void;
+  stopSelectingPaymentMethod: () => void;
 
   // Selectors
   getDefaultPaymentMethod: (
@@ -38,6 +39,11 @@ export const usePaymentMethodStore = create<PaymentMethodStoreState>()(
     startSelectingPaymentMethod: () =>
       set(() => ({
         isSelectingPaymentMethod: true,
+      })),
+    // NM: this is bs but I dont want to change many files that already use startSelectingPaymentMethod
+    stopSelectingPaymentMethod: () =>
+      set(() => ({
+        isSelectingPaymentMethod: false,
       })),
     getDefaultPaymentMethod: (paymentMethods) =>
       paymentMethods.find((pm) => pm.default) ??

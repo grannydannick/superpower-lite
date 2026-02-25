@@ -3,27 +3,23 @@ import { ChevronDown } from 'lucide-react';
 import { Fragment, useState } from 'react';
 
 import { CreditActionCard } from '@/features/orders/components/credit-action-card';
-import { ProtocolActionCard } from '@/features/protocol/components/protocol-action-card';
 import { cn } from '@/lib/utils';
-import { Credit, FhirCarePlan } from '@/types/api';
+import { Credit } from '@/types/api';
 
 import { CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
 import { Separator } from '../ui/separator';
 import { Body1 } from '../ui/typography';
 
 const EMPTY_CREDITS: Credit[] = [];
-const EMPTY_CARE_PLANS: FhirCarePlan[] = [];
 
 export const ActionableAccordion = ({
   credits = EMPTY_CREDITS,
-  carePlans = EMPTY_CARE_PLANS,
 }: {
   credits?: Credit[];
-  carePlans?: FhirCarePlan[];
 }) => {
   const [open, setOpen] = useState(false);
 
-  const totalActionable = credits.length + carePlans.length;
+  const totalActionable = credits.length;
 
   return (
     <div className="rounded-[20px] border border-vermillion-900 bg-white shadow-[0_0_4px_0_rgba(252,95,43,0.5)]">
@@ -56,10 +52,6 @@ export const ActionableAccordion = ({
                 <CreditActionCard credit={c} />
                 {index !== credits.length - 1 ? <Separator /> : null}
               </Fragment>
-            ))}
-            {carePlans.length > 0 ? <Separator /> : null}
-            {carePlans.map((c) => (
-              <ProtocolActionCard carePlan={c} key={c.id} />
             ))}
           </div>
         </CollapsibleContent>

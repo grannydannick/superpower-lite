@@ -130,7 +130,6 @@ export const SchedulerHeading = ({
             <Calendar
               mode="single"
               showOutsideDays
-              captionLayout="dropdown"
               disabled={{ before: tomorrow }}
               timeZone={tz}
               onSelect={handleCalendarSelect}

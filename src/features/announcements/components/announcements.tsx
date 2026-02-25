@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 
+import { useRxTasks } from '@/features/rx/api/get-tasks';
+import { RxActionDialog } from '@/features/rx/components/rx-action-card';
 import { useAuthorization } from '@/lib/authorization';
 
 import { useNeedsMembershipConsent } from '../hooks/use-needs-membership-consent';
@@ -25,7 +27,12 @@ export const Announcements = () => {
   const { needsConsent: needsPhiConsent, isLoading: isPhiConsentLoading } =
     useNeedsPhiMarketingConsent();
 
-  const isLoading = isMembershipConsentLoading || isPhiConsentLoading;
+  const rxTasksQuery = useRxTasks();
+
+  const isLoading =
+    isMembershipConsentLoading || isPhiConsentLoading || rxTasksQuery.isLoading;
+
+  const failedRxPayments = rxTasksQuery.data?.failed_payments ?? 0;
 
   const queue = useMemo<QueueItem[]>(() => {
     const items: QueueItem[] = [];
@@ -41,6 +48,21 @@ export const Announcements = () => {
               /* This modal is required */
             }}
             onFinished={advance}
+          />
+        ),
+      });
+    }
+
+    if (failedRxPayments > 0) {
+      items.push({
+        key: 'failed-rx-payment',
+        required: true,
+        render: (advance) => (
+          <RxActionDialog
+            config="FAILED_PAYMENT"
+            onOpenChange={(next) => {
+              if (!next) advance();
+            }}
           />
         ),
       });
@@ -62,7 +84,7 @@ export const Announcements = () => {
     }
 
     return items;
-  }, [needsMembershipConsent, needsPhiConsent]);
+  }, [needsMembershipConsent, needsPhiConsent, failedRxPayments]);
 
   const [index, setIndex] = useState(0);
 

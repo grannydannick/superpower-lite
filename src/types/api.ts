@@ -403,6 +403,8 @@ export type RequestGroup = Entity<{
   appointmentType?: AppointmentType;
 }>;
 
+export type CreditType = 'default' | 'rx';
+
 export type Credit = Entity<{
   serviceId: string;
   serviceName: string;
@@ -828,6 +830,38 @@ export interface RxService {
   active: boolean;
   tags: string[];
 }
+
+export interface RxSubscription {
+  contract: RxContract;
+  medicationRequest: RxMedicationRequest;
+  serviceRequest: RxServiceRequest;
+}
+
+export interface RxContract {
+  id: string;
+  status: string;
+  billingCycleStatus: string;
+  anchorDate: string; // consider Date if you parse it
+  stripeSubscriptionId: string;
+  totalFills: number;
+  fillsRemaining: number;
+  daysSupply: number;
+}
+
+export interface RxMedicationRequest {
+  id: string;
+  status: string;
+  medicationDisplay: string;
+  rxCode: string;
+  serviceRequestId: string;
+}
+
+export interface RxServiceRequest {
+  id: string;
+  status: string;
+  rxCode: string;
+}
+
 export interface SummaryResult {
   hasCompletedCarePlan: boolean;
   hasPartialResults: boolean;

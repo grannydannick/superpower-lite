@@ -23,7 +23,7 @@ const cardVariants = cva(
   },
 );
 
-export interface CreditActionCardProps extends VariantProps<
+export interface ProtocolActionCardProps extends VariantProps<
   typeof cardVariants
 > {
   carePlan: FhirCarePlan;
@@ -34,7 +34,7 @@ export const ProtocolActionCard = ({
   carePlan,
   variant,
   className,
-}: CreditActionCardProps) => {
+}: ProtocolActionCardProps) => {
   const getUrl = () => {
     return `/plans/${carePlan.id}`;
   };

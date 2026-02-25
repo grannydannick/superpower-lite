@@ -20,6 +20,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
 import { Route as AppVaultRouteImport } from './routes/_app.vault'
 import { Route as AppServicesRouteImport } from './routes/_app.services'
+import { Route as AppRxSubscriptionsRouteImport } from './routes/_app.rx-subscriptions'
 import { Route as AppProtocolRouteImport } from './routes/_app.protocol'
 import { Route as AppOrdersRouteImport } from './routes/_app.orders'
 import { Route as AppMarketplaceRouteImport } from './routes/_app.marketplace'
@@ -30,12 +31,14 @@ import { Route as AppDataRouteImport } from './routes/_app.data'
 import { Route as AppConciergeRouteImport } from './routes/_app.concierge'
 import { Route as AppMapsRouteImport } from './routes/_app._maps'
 import { Route as AppServicesIndexRouteImport } from './routes/_app.services.index'
+import { Route as AppRxSubscriptionsIndexRouteImport } from './routes/_app.rx-subscriptions.index'
 import { Route as AppProtocolIndexRouteImport } from './routes/_app.protocol.index'
 import { Route as AppOrdersIndexRouteImport } from './routes/_app.orders.index'
 import { Route as AppDataIndexRouteImport } from './routes/_app.data.index'
 import { Route as AppConciergeIndexRouteImport } from './routes/_app.concierge.index'
 import { Route as SetpasswordIdSecretRouteImport } from './routes/setpassword.$id.$secret'
 import { Route as AppServicesIdRouteImport } from './routes/_app.services.$id'
+import { Route as AppRxSubscriptionsIdRouteImport } from './routes/_app.rx-subscriptions.$id'
 import { Route as AppQuestionnaireTypeRouteImport } from './routes/_app.questionnaire.$type'
 import { Route as AppProtocolRevealRouteImport } from './routes/_app.protocol.reveal'
 import { Route as AppProtocolPlansRouteImport } from './routes/_app.protocol.plans'
@@ -111,6 +114,11 @@ const AppServicesRoute = AppServicesRouteImport.update({
   path: '/services',
   getParentRoute: () => AppRoute,
 } as any)
+const AppRxSubscriptionsRoute = AppRxSubscriptionsRouteImport.update({
+  id: '/rx-subscriptions',
+  path: '/rx-subscriptions',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppProtocolRoute = AppProtocolRouteImport.update({
   id: '/protocol',
   path: '/protocol',
@@ -160,6 +168,11 @@ const AppServicesIndexRoute = AppServicesIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppServicesRoute,
 } as any)
+const AppRxSubscriptionsIndexRoute = AppRxSubscriptionsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRxSubscriptionsRoute,
+} as any)
 const AppProtocolIndexRoute = AppProtocolIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -189,6 +202,11 @@ const AppServicesIdRoute = AppServicesIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => AppServicesRoute,
+} as any)
+const AppRxSubscriptionsIdRoute = AppRxSubscriptionsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AppRxSubscriptionsRoute,
 } as any)
 const AppQuestionnaireTypeRoute = AppQuestionnaireTypeRouteImport.update({
   id: '/questionnaire/$type',
@@ -310,6 +328,7 @@ export interface FileRoutesByFullPath {
   '/marketplace': typeof AppMarketplaceRoute
   '/orders': typeof AppOrdersRouteWithChildren
   '/protocol': typeof AppProtocolRouteWithChildren
+  '/rx-subscriptions': typeof AppRxSubscriptionsRouteWithChildren
   '/services': typeof AppServicesRouteWithChildren
   '/vault': typeof AppVaultRoute
   '/onboarding': typeof AppMapsOnboardingRoute
@@ -326,12 +345,14 @@ export interface FileRoutesByFullPath {
   '/protocol/plans': typeof AppProtocolPlansRouteWithChildren
   '/protocol/reveal': typeof AppProtocolRevealRouteWithChildren
   '/questionnaire/$type': typeof AppQuestionnaireTypeRoute
+  '/rx-subscriptions/$id': typeof AppRxSubscriptionsIdRoute
   '/services/$id': typeof AppServicesIdRoute
   '/setpassword/$id/$secret': typeof SetpasswordIdSecretRoute
   '/concierge/': typeof AppConciergeIndexRoute
   '/data/': typeof AppDataIndexRoute
   '/orders/': typeof AppOrdersIndexRoute
   '/protocol/': typeof AppProtocolIndexRoute
+  '/rx-subscriptions/': typeof AppRxSubscriptionsIndexRoute
   '/services/': typeof AppServicesIndexRoute
   '/protocol/legacy/$id': typeof AppProtocolLegacyIdRoute
   '/protocol/plans/$id': typeof AppProtocolPlansIdRoute
@@ -367,12 +388,14 @@ export interface FileRoutesByTo {
   '/protocol/legacy': typeof AppProtocolLegacyRouteWithChildren
   '/protocol/plans': typeof AppProtocolPlansRouteWithChildren
   '/questionnaire/$type': typeof AppQuestionnaireTypeRoute
+  '/rx-subscriptions/$id': typeof AppRxSubscriptionsIdRoute
   '/services/$id': typeof AppServicesIdRoute
   '/setpassword/$id/$secret': typeof SetpasswordIdSecretRoute
   '/concierge': typeof AppConciergeIndexRoute
   '/data': typeof AppDataIndexRoute
   '/orders': typeof AppOrdersIndexRoute
   '/protocol': typeof AppProtocolIndexRoute
+  '/rx-subscriptions': typeof AppRxSubscriptionsIndexRoute
   '/services': typeof AppServicesIndexRoute
   '/protocol/legacy/$id': typeof AppProtocolLegacyIdRoute
   '/protocol/plans/$id': typeof AppProtocolPlansIdRoute
@@ -400,6 +423,7 @@ export interface FileRoutesById {
   '/_app/marketplace': typeof AppMarketplaceRoute
   '/_app/orders': typeof AppOrdersRouteWithChildren
   '/_app/protocol': typeof AppProtocolRouteWithChildren
+  '/_app/rx-subscriptions': typeof AppRxSubscriptionsRouteWithChildren
   '/_app/services': typeof AppServicesRouteWithChildren
   '/_app/vault': typeof AppVaultRoute
   '/_app/': typeof AppIndexRoute
@@ -417,12 +441,14 @@ export interface FileRoutesById {
   '/_app/protocol/plans': typeof AppProtocolPlansRouteWithChildren
   '/_app/protocol/reveal': typeof AppProtocolRevealRouteWithChildren
   '/_app/questionnaire/$type': typeof AppQuestionnaireTypeRoute
+  '/_app/rx-subscriptions/$id': typeof AppRxSubscriptionsIdRoute
   '/_app/services/$id': typeof AppServicesIdRoute
   '/setpassword/$id/$secret': typeof SetpasswordIdSecretRoute
   '/_app/concierge/': typeof AppConciergeIndexRoute
   '/_app/data/': typeof AppDataIndexRoute
   '/_app/orders/': typeof AppOrdersIndexRoute
   '/_app/protocol/': typeof AppProtocolIndexRoute
+  '/_app/rx-subscriptions/': typeof AppRxSubscriptionsIndexRoute
   '/_app/services/': typeof AppServicesIndexRoute
   '/_app/protocol/legacy/$id': typeof AppProtocolLegacyIdRoute
   '/_app/protocol/plans/$id': typeof AppProtocolPlansIdRoute
@@ -450,6 +476,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/orders'
     | '/protocol'
+    | '/rx-subscriptions'
     | '/services'
     | '/vault'
     | '/onboarding'
@@ -466,12 +493,14 @@ export interface FileRouteTypes {
     | '/protocol/plans'
     | '/protocol/reveal'
     | '/questionnaire/$type'
+    | '/rx-subscriptions/$id'
     | '/services/$id'
     | '/setpassword/$id/$secret'
     | '/concierge/'
     | '/data/'
     | '/orders/'
     | '/protocol/'
+    | '/rx-subscriptions/'
     | '/services/'
     | '/protocol/legacy/$id'
     | '/protocol/plans/$id'
@@ -507,12 +536,14 @@ export interface FileRouteTypes {
     | '/protocol/legacy'
     | '/protocol/plans'
     | '/questionnaire/$type'
+    | '/rx-subscriptions/$id'
     | '/services/$id'
     | '/setpassword/$id/$secret'
     | '/concierge'
     | '/data'
     | '/orders'
     | '/protocol'
+    | '/rx-subscriptions'
     | '/services'
     | '/protocol/legacy/$id'
     | '/protocol/plans/$id'
@@ -539,6 +570,7 @@ export interface FileRouteTypes {
     | '/_app/marketplace'
     | '/_app/orders'
     | '/_app/protocol'
+    | '/_app/rx-subscriptions'
     | '/_app/services'
     | '/_app/vault'
     | '/_app/'
@@ -556,12 +588,14 @@ export interface FileRouteTypes {
     | '/_app/protocol/plans'
     | '/_app/protocol/reveal'
     | '/_app/questionnaire/$type'
+    | '/_app/rx-subscriptions/$id'
     | '/_app/services/$id'
     | '/setpassword/$id/$secret'
     | '/_app/concierge/'
     | '/_app/data/'
     | '/_app/orders/'
     | '/_app/protocol/'
+    | '/_app/rx-subscriptions/'
     | '/_app/services/'
     | '/_app/protocol/legacy/$id'
     | '/_app/protocol/plans/$id'
@@ -662,6 +696,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppServicesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/rx-subscriptions': {
+      id: '/_app/rx-subscriptions'
+      path: '/rx-subscriptions'
+      fullPath: '/rx-subscriptions'
+      preLoaderRoute: typeof AppRxSubscriptionsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/protocol': {
       id: '/_app/protocol'
       path: '/protocol'
@@ -732,6 +773,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppServicesIndexRouteImport
       parentRoute: typeof AppServicesRoute
     }
+    '/_app/rx-subscriptions/': {
+      id: '/_app/rx-subscriptions/'
+      path: '/'
+      fullPath: '/rx-subscriptions/'
+      preLoaderRoute: typeof AppRxSubscriptionsIndexRouteImport
+      parentRoute: typeof AppRxSubscriptionsRoute
+    }
     '/_app/protocol/': {
       id: '/_app/protocol/'
       path: '/'
@@ -773,6 +821,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/services/$id'
       preLoaderRoute: typeof AppServicesIdRouteImport
       parentRoute: typeof AppServicesRoute
+    }
+    '/_app/rx-subscriptions/$id': {
+      id: '/_app/rx-subscriptions/$id'
+      path: '/$id'
+      fullPath: '/rx-subscriptions/$id'
+      preLoaderRoute: typeof AppRxSubscriptionsIdRouteImport
+      parentRoute: typeof AppRxSubscriptionsRoute
     }
     '/_app/questionnaire/$type': {
       id: '/_app/questionnaire/$type'
@@ -1046,6 +1101,19 @@ const AppProtocolRouteWithChildren = AppProtocolRoute._addFileChildren(
   AppProtocolRouteChildren,
 )
 
+interface AppRxSubscriptionsRouteChildren {
+  AppRxSubscriptionsIdRoute: typeof AppRxSubscriptionsIdRoute
+  AppRxSubscriptionsIndexRoute: typeof AppRxSubscriptionsIndexRoute
+}
+
+const AppRxSubscriptionsRouteChildren: AppRxSubscriptionsRouteChildren = {
+  AppRxSubscriptionsIdRoute: AppRxSubscriptionsIdRoute,
+  AppRxSubscriptionsIndexRoute: AppRxSubscriptionsIndexRoute,
+}
+
+const AppRxSubscriptionsRouteWithChildren =
+  AppRxSubscriptionsRoute._addFileChildren(AppRxSubscriptionsRouteChildren)
+
 interface AppServicesRouteChildren {
   AppServicesIdRoute: typeof AppServicesIdRoute
   AppServicesIndexRoute: typeof AppServicesIndexRoute
@@ -1070,6 +1138,7 @@ interface AppRouteChildren {
   AppMarketplaceRoute: typeof AppMarketplaceRoute
   AppOrdersRoute: typeof AppOrdersRouteWithChildren
   AppProtocolRoute: typeof AppProtocolRouteWithChildren
+  AppRxSubscriptionsRoute: typeof AppRxSubscriptionsRouteWithChildren
   AppServicesRoute: typeof AppServicesRouteWithChildren
   AppVaultRoute: typeof AppVaultRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -1088,6 +1157,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppMarketplaceRoute: AppMarketplaceRoute,
   AppOrdersRoute: AppOrdersRouteWithChildren,
   AppProtocolRoute: AppProtocolRouteWithChildren,
+  AppRxSubscriptionsRoute: AppRxSubscriptionsRouteWithChildren,
   AppServicesRoute: AppServicesRouteWithChildren,
   AppVaultRoute: AppVaultRoute,
   AppIndexRoute: AppIndexRoute,

@@ -3,4 +3,5 @@ export const WHITE_BACKGROUND_PATHS = [
   'marketplace',
   'prescription',
   'orders',
+  'rx-subscriptions',
 ];
