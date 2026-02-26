@@ -6,19 +6,21 @@ import { useDropzone } from 'react-dropzone';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/components/ui/sonner';
 import { Body1 } from '@/components/ui/typography';
-import { acceptedFileContentTypes } from '@/const/accepted-file-types';
+import {
+  acceptedFileContentTypes,
+  MAX_FILE_SIZE_BYTES,
+  MAX_FILE_SIZE_MB,
+} from '@/const/accepted-file-types';
 import { cn } from '@/lib/utils';
 
 const ONE_MB = 1048576; // bytes
-const MAX_FILE_SIZE_MB = 100; // 100MB per file
-const MAX_FILE_SIZE = ONE_MB * MAX_FILE_SIZE_MB; // 100MB in bytes
 const MAX_TOTAL_SIZE_MB = 512; // 0.5GB total
 const MAX_TOTAL_SIZE = ONE_MB * MAX_TOTAL_SIZE_MB; // 0.5GB in bytes
 const MAX_FILENAME_LENGTH = 255; // 255 bytes
 
 function fileValidator(file: File, existingFiles: File[] = []) {
   // Check individual file size
-  if (file.size > MAX_FILE_SIZE) {
+  if (file.size > MAX_FILE_SIZE_BYTES) {
     const fileSizeMB = Math.round(file.size / ONE_MB);
     return {
       code: 'file-too-large',

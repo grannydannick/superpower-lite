@@ -3,7 +3,7 @@ import 'react-pdf/dist/Page/TextLayer.css';
 import { useResizeObserver } from '@wojtekmaj/react-hooks';
 import { format } from 'date-fns';
 import { Download, Trash2, X } from 'lucide-react';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Document, Page, pdfjs, type DocumentProps } from 'react-pdf';
 
 import {
@@ -14,8 +14,8 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, Body2 } from '@/components/ui/typography';
-import { useDownloadFile } from '@/features/files/api/download-file';
-import { useGetFileUrl } from '@/features/files/api/get-file-url';
+import { downloadFile } from '@/features/files/api/download-file';
+import { useGetFile } from '@/features/files/api/get-file';
 import { ConfirmDelete } from '@/features/files/components/file-dialogs/confirm-delete';
 import { downloadBlob } from '@/features/files/utils/download-blob';
 
@@ -41,26 +41,17 @@ type DocumentLoadSuccessArg = Parameters<
 >[0];
 
 export const PdfViewer = ({ id, name }: PdfViewerProps) => {
-  const { data } = useGetFileUrl({ fileId: id });
-  const [file, setFile] = useState<Blob | undefined>(undefined);
+  const { data } = useGetFile({ fileId: id });
   const [numPages, setNumPages] = useState<number | undefined>(undefined);
   const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
   const [containerWidth, setContainerWidth] = useState<number>();
-
-  const { mutateAsync } = useDownloadFile({
-    mutationConfig: {
-      onSuccess: (data) => {
-        setFile(data);
-      },
-    },
-  });
 
   const onDocumentLoadSuccess = (pdf: DocumentLoadSuccessArg) => {
     setNumPages(pdf.numPages);
   };
 
   const onDownload = async (): Promise<void> => {
-    const blob = await mutateAsync({ fileId: id });
+    const blob = await downloadFile({ fileId: id });
     downloadBlob(blob, name);
   };
 
@@ -73,20 +64,6 @@ export const PdfViewer = ({ id, name }: PdfViewerProps) => {
   }, []);
 
   useResizeObserver(containerRef, resizeObserverOptions, onResize);
-
-  useEffect(() => {
-    const url = data?.file.presignedUrl;
-
-    const loadUrl = async (): Promise<void> => {
-      if (url) {
-        await mutateAsync({
-          fileId: data.file.id,
-        });
-      }
-    };
-
-    loadUrl();
-  }, [data?.file, mutateAsync]);
 
   return (
     <div
@@ -125,7 +102,7 @@ export const PdfViewer = ({ id, name }: PdfViewerProps) => {
       {numPages && <hr />}
       <Document
         className="rounded-lg border border-zinc-200"
-        file={file}
+        file={data?.file.presignedUrl}
         onLoadSuccess={onDocumentLoadSuccess}
         onLoadError={(error) => {
           console.log(error);

@@ -1,18 +1,24 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { api } from '@/lib/api-client';
 import { MutationConfig } from '@/lib/react-query';
 
-type DownloadFileDTO = {
-  fileId: string;
-};
+import { getFile } from './get-file';
 
 export const downloadFile = async ({
   fileId,
-}: DownloadFileDTO): Promise<Blob> => {
-  return await api.get(`/files/${fileId}`, {
-    responseType: 'blob',
-  });
+}: {
+  fileId: string;
+}): Promise<Blob> => {
+  const { file } = await getFile({ fileId });
+  const response = await fetch(file.presignedUrl, { credentials: 'omit' });
+
+  if (!response.ok) {
+    throw new Error(
+      `Download failed: ${response.status} ${response.statusText}`,
+    );
+  }
+
+  return response.blob();
 };
 
 type UseDownloadFileOptions = {

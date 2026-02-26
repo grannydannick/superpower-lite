@@ -17,8 +17,12 @@ import { useDropzone } from 'react-dropzone';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import { Textarea } from '@/components/ui/textarea';
-import { acceptedFileContentTypes } from '@/const';
-import { useCreateFiles } from '@/features/files/api';
+import {
+  acceptedFileContentTypes,
+  MAX_FILE_SIZE_BYTES,
+  MAX_FILE_SIZE_MB,
+} from '@/const';
+import { useUploadFiles } from '@/features/files/api';
 import { AttachmentsButton } from '@/features/messages/components/ai/attachements-button';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
@@ -55,7 +59,9 @@ function PureMultimodalInput({
   const inputWrapperRef = useRef<HTMLDivElement>(null);
   const { width } = useWindowDimensions();
   const { track } = useAnalytics();
-  const createFilesMutation = useCreateFiles({ context: 'ai-chat' });
+  const { mutateAsync: uploadFilesAsync } = useUploadFiles({
+    context: 'ai-chat',
+  });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
@@ -144,19 +150,14 @@ function PureMultimodalInput({
   const uploadFiles = useCallback(
     async (files: File[]) => {
       try {
-        const { successful } = await createFilesMutation.mutateAsync({
-          data: {
-            files: files.map((file) => ({
-              rawFile: file,
-              source: 'user',
-            })),
-          },
+        const { uploaded } = await uploadFilesAsync({
+          data: { files },
         });
 
-        return successful.map((superpowerFile) => ({
-          url: `/files/${superpowerFile.id}`,
-          name: superpowerFile.name,
-          contentType: superpowerFile.contentType,
+        return uploaded.map((file) => ({
+          url: `/files/${file.id}`,
+          name: file.name,
+          contentType: file.contentType,
         }));
       } catch (error) {
         toast.error('Failed to upload files, please try again!');
@@ -164,7 +165,7 @@ function PureMultimodalInput({
         return [];
       }
     },
-    [createFilesMutation],
+    [uploadFilesAsync],
   );
 
   const handleFileChange = useCallback(
@@ -195,18 +196,21 @@ function PureMultimodalInput({
       try {
         const uploadedAttachments = await uploadFiles(files);
 
-        setAttachments((currentAttachments) => [
-          ...currentAttachments,
-          ...uploadedAttachments.map(
-            (attachment) =>
-              ({
-                url: attachment.url,
-                filename: attachment.name,
-                type: 'file' as const,
-                mediaType: attachment.contentType,
-              }) satisfies FileUIPart,
-          ),
-        ]);
+        setAttachments((currentAttachments) => {
+          const existingUrls = new Set(currentAttachments.map((a) => a.url));
+          const newAttachments = uploadedAttachments
+            .filter((a) => !existingUrls.has(a.url))
+            .map(
+              (attachment) =>
+                ({
+                  url: attachment.url,
+                  filename: attachment.name,
+                  type: 'file' as const,
+                  mediaType: attachment.contentType,
+                }) satisfies FileUIPart,
+            );
+          return [...currentAttachments, ...newAttachments];
+        });
       } catch (error) {
         console.error('Error uploading files!', error);
       }
@@ -219,6 +223,7 @@ function PureMultimodalInput({
   const { getRootProps, isDragActive } = useDropzone({
     // We only want to handle files that can actually be stored for now
     accept: acceptedFileContentTypes,
+    maxSize: MAX_FILE_SIZE_BYTES,
     onDrop: (acceptedFiles) => {
       const fileList = {
         item: (index: number) => acceptedFiles[index] ?? null,
@@ -231,6 +236,19 @@ function PureMultimodalInput({
           files: fileList,
         } as ChangeEvent<HTMLInputElement>['target'],
       } as ChangeEvent<HTMLInputElement>);
+    },
+    onDropRejected: (rejectedFiles) => {
+      rejectedFiles.forEach(({ file, errors }) => {
+        const sizeError = errors.find((e) => e.code === 'file-too-large');
+        if (sizeError) {
+          const sizeMB = Math.round(file.size / (1024 * 1024));
+          toast.error(
+            `"${file.name}" is too large (${sizeMB}MB). Maximum is ${MAX_FILE_SIZE_MB}MB.`,
+          );
+          return;
+        }
+        toast.error(`File type not supported: ${file.type}`);
+      });
     },
     noClick: true,
     noDragEventsBubbling: true,

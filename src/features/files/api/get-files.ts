@@ -4,7 +4,7 @@ import { api } from '@/lib/api-client';
 import { QueryConfig } from '@/lib/react-query';
 import { File } from '@/types/api';
 
-export const getFiles = (page = 1): Promise<{ files: File[] }> => {
+const getFiles = (page = 1): Promise<{ files: File[] }> => {
   return api.get(`/files`, {
     params: {
       page,

@@ -1,54 +1,19 @@
 import { Upload } from 'lucide-react';
-import { ReactNode } from 'react';
 
 import { FileUpload } from '@/components/shared/upload-wrapper';
 import { Button } from '@/components/ui/button';
-import { toast } from '@/components/ui/sonner';
-import { useCreateFile } from '@/features/files/api';
-
-export const FileUploadBanner = ({ children }: { children?: ReactNode }) => {
-  const { mutate } = useCreateFile({
-    mutationConfig: {
-      onSuccess: () => {
-        toast.success('File uploaded successfully.');
-      },
-    },
-  });
-
-  const onChange = (files: File[]) => {
-    const file = files[0];
-
-    if (file) {
-      mutate({
-        data: { file },
-      });
-    }
-  };
-
-  return <FileUpload onChange={onChange}>{children}</FileUpload>;
-};
+import { useUploadFiles } from '@/features/files/api';
 
 export const FileUploadButton = () => {
-  const { mutate } = useCreateFile({
-    mutationConfig: {
-      onSuccess: () => {
-        toast.success('File uploaded successfully.');
-      },
-    },
-  });
+  const { mutate } = useUploadFiles();
 
   const onChange = (files: File[]) => {
-    const file = files[0];
-
-    if (file) {
-      mutate({
-        data: { file },
-      });
-    }
+    if (files.length === 0) return;
+    mutate({ data: { files } });
   };
 
   return (
-    <FileUpload onChange={onChange}>
+    <FileUpload multiple onChange={onChange}>
       <Button className="space-x-2.5 py-2.5">
         <div>
           <Upload className="size-4" />

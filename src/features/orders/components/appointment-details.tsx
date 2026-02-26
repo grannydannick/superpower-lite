@@ -40,7 +40,7 @@ function OrderFileLinkFromFiles({ orderIds }: { orderIds: string[] }) {
   const file = data?.files?.find(
     (f) =>
       f.name?.startsWith('lab-order-') &&
-      f.orderIds?.some((id) => orderIds.includes(id)),
+      orderIds.some((id) => f.name?.includes(id)),
   );
 
   const { mutateAsync } = useDownloadFile();

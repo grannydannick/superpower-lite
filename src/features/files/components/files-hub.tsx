@@ -2,12 +2,16 @@ import React, { useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 import { toast } from '@/components/ui/sonner';
-import { acceptedFileContentTypes } from '@/const';
+import {
+  acceptedFileContentTypes,
+  MAX_FILE_SIZE_BYTES,
+  MAX_FILE_SIZE_MB,
+} from '@/const';
 import { FilesTable } from '@/features/files/components/views/files-table';
 import { File } from '@/types/api';
 
-import { useCreateFile } from '../api/create-file';
 import { useFiles } from '../api/get-files';
+import { useUploadFiles } from '../api/upload-files';
 import { MEDIA_TYPES, VIRTUAL_MEDIA_TYPE } from '../const/content-type';
 import { getFileTypeName } from '../utils/get-file-type';
 
@@ -27,13 +31,7 @@ type FilterType = File['contentType'] | 'media';
  * It displays filters, sorting options, and grid + table views to find files
  */
 export const FilesHub = ({ headerSlot }: { headerSlot?: React.ReactNode }) => {
-  const { mutate } = useCreateFile({
-    mutationConfig: {
-      onSuccess: () => {
-        toast.success('File uploaded successfully.');
-      },
-    },
-  });
+  const { mutate } = useUploadFiles();
 
   const { data: filesData, isLoading: filesIsLoading } = useFiles();
 
@@ -83,18 +81,23 @@ export const FilesHub = ({ headerSlot }: { headerSlot?: React.ReactNode }) => {
 
   const { getRootProps, isDragActive } = useDropzone({
     accept: acceptedFileContentTypes,
+    maxSize: MAX_FILE_SIZE_BYTES,
     onDrop: (acceptedFiles) => {
-      acceptedFiles.forEach((file) => {
-        mutate({
-          data: { file },
-        });
-      });
+      if (acceptedFiles.length === 0) return;
+      mutate({ data: { files: acceptedFiles } });
     },
     onDropRejected: (rejectedFiles) => {
-      const uploadedTypes = new Set(rejectedFiles.map(({ file }) => file.type));
-      toast.error(
-        `File type not supported: ${Array.from(uploadedTypes).slice(0, 3).join(', ')}`,
-      );
+      rejectedFiles.forEach(({ file, errors }) => {
+        const sizeError = errors.find((e) => e.code === 'file-too-large');
+        if (sizeError) {
+          const sizeMB = Math.round(file.size / (1024 * 1024));
+          toast.error(
+            `"${file.name}" is too large (${sizeMB}MB). Maximum is ${MAX_FILE_SIZE_MB}MB.`,
+          );
+          return;
+        }
+        toast.error(`File type not supported: ${file.type}`);
+      });
     },
     noClick: true,
     noDragEventsBubbling: true,
