@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils';
 
 import {
   RX_CONSENT_PAYMENT_LINKID,
+  RX_CONSENT_QUESTION_LINKID,
   RX_IDENTITY_VERIFICATION_LINKID,
   RX_SAFETY_ADDRESS_LINKID,
   RX_SAFETY_INTRO_LINKID,
@@ -514,7 +515,8 @@ function QuestionnaireNavigationButtons({
         </button>
       )}
       {isLastQuestion ? (
-        item.linkId === RX_CONSENT_PAYMENT_LINKID ? null : (
+        item.linkId === RX_CONSENT_PAYMENT_LINKID ||
+        item.linkId === RX_CONSENT_QUESTION_LINKID ? null : (
           <Button
             type="button"
             className="ml-auto w-full"

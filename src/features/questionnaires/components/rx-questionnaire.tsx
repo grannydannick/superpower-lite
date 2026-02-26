@@ -1,19 +1,64 @@
 import {
   Questionnaire,
+  QuestionnaireItem,
   QuestionnaireResponse,
   QuestionnaireResponseItem,
 } from '@medplum/fhirtypes';
-import { notFound } from '@tanstack/react-router';
-import { useState } from 'react';
+import { notFound, useSearch } from '@tanstack/react-router';
+import { useMemo, useState } from 'react';
 
 // TODO: move data fetching upstream, or make this a global component
 import { QuestionnaireForm } from '@/components/ui/questionnaire';
+import { RX_BILLING_PERIOD_LINKID } from '@/components/ui/questionnaire/const/special-linkids';
 import { RxScreenOut } from '@/components/ui/questionnaire/rx-screen-out';
 import { Spinner } from '@/components/ui/spinner';
 import { RxQuestionnaireName } from '@/const/questionnaire';
 import { useQuestionnaireResponseController } from '@/features/questionnaires/hooks/use-questionnaire-response-controller';
 import { isMemberIneligible } from '@/features/questionnaires/utils/is-member-ineligible';
 import { useUser } from '@/lib/auth';
+
+function injectBillingCodeIntoQuestionnaire(
+  q: Questionnaire,
+  billingCode: string,
+): Questionnaire {
+  return {
+    ...q,
+    item: q.item?.map((item) => {
+      if (item.type !== 'group' || !item.item) return item;
+      return {
+        ...item,
+        item: item.item.map((subItem: QuestionnaireItem) => {
+          if (subItem.linkId === RX_BILLING_PERIOD_LINKID) {
+            return { ...subItem, initial: [{ valueString: billingCode }] };
+          }
+          return subItem;
+        }),
+      };
+    }),
+  };
+}
+
+function injectBillingCodeIntoResponse(
+  response: QuestionnaireResponse,
+  billingCode: string,
+): QuestionnaireResponse {
+  if (!response.item) return response;
+  return {
+    ...response,
+    item: response.item.map((item) => {
+      if (!item.item) return item;
+      return {
+        ...item,
+        item: item.item.map((subItem) => {
+          if (subItem.linkId === RX_BILLING_PERIOD_LINKID) {
+            return { ...subItem, answer: [{ valueString: billingCode }] };
+          }
+          return subItem;
+        }),
+      };
+    }),
+  };
+}
 
 export const RxQuestionnaire = ({
   name,
@@ -22,6 +67,10 @@ export const RxQuestionnaire = ({
   name: RxQuestionnaireName;
   onSubmit?: () => void;
 }) => {
+  const billingCode = useSearch({
+    strict: false,
+    select: (s: Record<string, unknown>) => s.billingCode as string | undefined,
+  });
   const [showIneligibleScreen, setShowIneligibleScreen] =
     useState<boolean>(false);
   const userQuery = useUser();
@@ -35,6 +84,18 @@ export const RxQuestionnaire = ({
     questionnaireName: name,
     statuses: ['in-progress', 'stopped'],
   });
+
+  const preparedQuestionnaire = useMemo(() => {
+    const q = questionnaire as unknown as Questionnaire;
+    if (!q || !billingCode) return q;
+    return injectBillingCodeIntoQuestionnaire(q, billingCode);
+  }, [questionnaire, billingCode]);
+
+  const preparedResponse = useMemo(() => {
+    const r = questionnaireResponse as unknown as QuestionnaireResponse;
+    if (!billingCode || !r) return r ?? undefined;
+    return injectBillingCodeIntoResponse(r, billingCode);
+  }, [questionnaireResponse, billingCode]);
 
   if (isQuestionnaireLoading || userQuery.isLoading) {
     return (
@@ -93,10 +154,8 @@ export const RxQuestionnaire = ({
   return (
     <QuestionnaireForm
       key={questionnaire.id}
-      questionnaire={questionnaire as unknown as Questionnaire}
-      response={
-        (questionnaireResponse as unknown as QuestionnaireResponse) ?? undefined
-      }
+      questionnaire={preparedQuestionnaire}
+      response={preparedResponse}
       user={userQuery.data}
       onSave={handleSave}
       onSubmit={handleSubmit}

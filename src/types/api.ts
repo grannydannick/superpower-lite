@@ -572,6 +572,15 @@ export type Product = {
 
 /* RX */
 
+export type RxPrice = {
+  amount: number;
+  interval: string;
+  interval_count: number;
+  lookup_key: string;
+  billing_code: string;
+  charge_item_definition_slug: string;
+};
+
 export type Rx = {
   id: string;
   url?: string | null;
@@ -582,6 +591,7 @@ export type Rx = {
   active?: boolean | null;
   source?: string | null;
   additionalClassification?: string[] | null;
+  prices?: RxPrice[] | null;
 };
 
 /* MARKETPLACE */
@@ -604,6 +614,7 @@ export type Marketplace = {
   group?: ServiceGroup;
   supportsLabOrder?: boolean | null;
   bloodTubeCount?: number | null;
+  prices?: RxPrice[] | null;
 };
 
 export type MarketplaceResponse<

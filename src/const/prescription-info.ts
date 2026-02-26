@@ -5,12 +5,26 @@ export const NAD_INTRANASAL = {
     'DNA repair enhancement',
     'Cognitive function improvement',
   ],
-  includes: [
-    '30 day supply of medication',
-    'Free overnight shipping',
-    'Medical evaluation',
-    'Unlimited messaging',
-  ],
+  includes: {
+    monthly: [
+      '30-day supply, delivered monthly',
+      'Medical evaluation',
+      'Free shipping',
+      'Unlimited messaging with your care team',
+    ],
+    quarterly: [
+      '90-day supply, delivered monthly',
+      'Medical evaluation',
+      'Free shipping',
+      'Unlimited messaging with your care team',
+    ],
+    biannual: [
+      '6 months of medication, delivered in monthly shipments',
+      'Medical evaluation',
+      'Free shipping',
+      'Unlimited messaging with your care team',
+    ],
+  },
   science: {
     activeIngredients:
       'Nicotinamide adenine dinucleotide (NAD+), saline solution, preservatives, stabilizers, and possibly flavoring agents.',
@@ -86,12 +100,29 @@ export const SERMORELIN_INJECTION = {
     'Balanced Mood',
     'Collagen Formation for Skin Health',
   ],
-  includes: [
-    '30-day medication supply',
-    'Free 2-day shipping',
-    'Medical evaluation',
-    'Unlimited messaging',
-  ],
+  includes: {
+    monthly: [
+      '30-day supply, delivered monthly',
+      'Medical evaluation',
+      'Free shipping',
+      'Repeat labs',
+      'Unlimited messaging with your care team',
+    ],
+    quarterly: [
+      '90-day supply, delivered monthly',
+      'Medical evaluation',
+      'Free shipping',
+      'Repeat labs',
+      'Unlimited messaging with your care team',
+    ],
+    biannual: [
+      '6 months of medication, delivered in monthly shipments',
+      'Medical evaluation',
+      'Free shipping',
+      'Repeat labs',
+      'Unlimited messaging with your care team',
+    ],
+  },
   science: {
     activeIngredients:
       'Sermorelin is a synthetic peptide made up of a chain of amino acids, specifically 29 amino acids. The primary ingredient in sermorelin is the peptide itself, which mimics the effects of natural growth hormone-releasing hormone (GHRH) produced by the hypothalamus in the brain. Additionally, the formulation may include other compounds necessary for stability and administration, such as bacteriostatic water or other solvents used for reconstitution.',
@@ -165,13 +196,29 @@ export const VIP_NASAL_SPRAY = {
     'Respiratory and Circulatory Support',
     'Hormonal and Cellular Balance',
   ],
-  includes: [
-    '30-day medication supply',
-    'Free overnight shipping',
-    'Medical evaluation',
-    'Regular symptom tracking & progress monitoring',
-    'Unlimited messaging with your provider',
-  ],
+  includes: {
+    monthly: [
+      '30-day medication supply',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Regular symptom tracking & progress monitoring',
+      'Unlimited messaging with your provider',
+    ],
+    quarterly: [
+      '90-day medication supply',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Regular symptom tracking & progress monitoring',
+      'Unlimited messaging with your provider',
+    ],
+    biannual: [
+      '6 months of medication',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Regular symptom tracking & progress monitoring',
+      'Unlimited messaging with your provider',
+    ],
+  },
   science: {
     activeIngredients:
       'Vasoactive Intestinal Peptide (VIP): The active peptide, typically at a concentration prescribed by the physician (e.g., 50 mcg/mL or 100 mcg/mL).Sterile Water: Acts as the primary solvent for the peptide.Sodium Chloride (NaCl): Often included to make the solution isotonic and more comfortable for nasal administration.Benzyl Alcohol or Preservative: Sometimes used to maintain sterility and stability of the solution.Buffering Agents: Ingredients like sodium phosphate may be added to maintain a stable pH, ensuring the peptide remains effective.',
@@ -249,14 +296,32 @@ export const SEMAGLUTIDE = {
     'Blood sugar control',
     'Anti-inflammatory effects',
   ],
-  includes: [
-    '30 day supply of medication',
-    'Overnight shipping',
-    'Repeat labs',
-    'Medical evaluation',
-    'Unlimited messaging',
-    'Dr guided titration plan',
-  ],
+  includes: {
+    monthly: [
+      '30-day medication supply',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Regular symptom tracking & progress monitoring',
+      'Regular lab testing every 6 months',
+      'Unlimited messaging with your provider',
+    ],
+    quarterly: [
+      '90-day medication supply',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Regular symptom tracking & progress monitoring',
+      'Regular lab testing every 6 months',
+      'Unlimited messaging with your provider',
+    ],
+    biannual: [
+      '6 months of medication',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Regular symptom tracking & progress monitoring',
+      'Regular lab testing every 6 months',
+      'Unlimited messaging with your provider',
+    ],
+  },
   science: {
     activeIngredients:
       'Semaglutide is the primary active ingredient, which is the same as in commercial products like Ozempic® and Wegovy®. It’s a GLP-1 receptor agonist used to manage blood sugar levels and promote weight loss. Additional excipients, stabilizers and solvents are added to help with absorption.',
@@ -335,13 +400,29 @@ export const GONADORELIN = {
     ' Bone Density & Muscle Mass: Adequate testosterone and estrogen are crucial for maintaining strong bones and healthy muscle composition.',
     'Metabolic Support: Hormonal balance helps regulate metabolism, influencing weight management and body composition.',
   ],
-  includes: [
-    '30-day medication supply',
-    'Free 2-day shipping',
-    'Repeat labs',
-    'Medical evaluation',
-    'Unlimited messaging',
-  ],
+  includes: {
+    monthly: [
+      '30-day supply, delivered monthly',
+      'Medical evaluation',
+      'Free shipping',
+      'Repeat labs',
+      'Unlimited messaging with your care team',
+    ],
+    quarterly: [
+      '90-day supply, delivered monthly',
+      'Medical evaluation',
+      'Free shipping',
+      'Repeat labs',
+      'Unlimited messaging with your care team',
+    ],
+    biannual: [
+      '6 months of medication, delivered in monthly shipments',
+      'Medical evaluation',
+      'Free shipping',
+      'Repeat labs',
+      'Unlimited messaging with your care team',
+    ],
+  },
   science: {
     activeIngredients:
       'Active Ingredient: Gonadorelin acetate (a synthetic version of the naturally occurring Gonadotropin-Releasing Hormone).Inactive Ingredients: May include sterile water, mannitol, or other stabilizers depending on the formulation.',
@@ -425,12 +506,29 @@ export const OXYTOCIN_BREMELANOTIDE_TADALAFIL_TROCHES = {
     'Improved satisfaction and quality of intimate experiences',
     'Cutting-edge blend tailored for enhanced sexual health',
   ],
-  includes: [
-    '10-count of mini troches',
-    'Free overnight shipping',
-    'Regular symptom tracking & progress monitoring',
-    'Unlimited messaging with your provider',
-  ],
+  includes: {
+    monthly: [
+      '10-count of mini troches',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Regular symptom tracking & progress monitoring',
+      'Unlimited messaging with your provider',
+    ],
+    quarterly: [
+      '30-count of mini troches',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Regular symptom tracking & progress monitoring',
+      'Unlimited messaging with your provider',
+    ],
+    biannual: [
+      '60-count of mini troches',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Regular symptom tracking & progress monitoring',
+      'Unlimited messaging with your provider',
+    ],
+  },
   science: {
     activeIngredients: `- Oxytocin (40 IU)
 - Bremelanotide (2 mg)
@@ -536,12 +634,26 @@ export const TADALAFIL = {
     'Extended duration of action for up to 36 hours',
     'Enhanced sexual performance and satisfaction',
   ],
-  includes: [
-    '30 day supply of medication',
-    'Overnight shipping',
-    'Medical evaluation',
-    'Unlimited messaging',
-  ],
+  includes: {
+    monthly: [
+      '30-day medication supply with your choice of 5mg, 10mg or 20mg Tadalafil',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Unlimited messaging with your provider',
+    ],
+    quarterly: [
+      '90-day medication supply',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Unlimited messaging with your provider',
+    ],
+    biannual: [
+      '6 months of medication',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Unlimited messaging with your provider',
+    ],
+  },
   science: {
     activeIngredients: `Tadalafil, the active ingredient in Tadalafil medications, is a phosphodiesterase type 5 (PDE5) inhibitor. Inactive ingredients in Tadalafil tablets may include lactose monohydrate, hydroxypropyl cellulose, croscarmellose sodium, magnesium stearate, hypromellose, iron oxide, titanium dioxide, and triacetin.`,
     mechanism: `Tadalafil is typically taken orally before anticipated sexual activity, with or without food, as directed by a healthcare professional.`,
@@ -604,12 +716,29 @@ export const METFORMIN = {
     'Potential anti-aging effects',
     'Ongoing research for broader health benefits',
   ],
-  includes: [
-    '30-day medication supply',
-    'Free 2-day shipping',
-    'Medical evaluation',
-    'Unlimited messaging',
-  ],
+  includes: {
+    monthly: [
+      '30-day medication supply',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Regular symptom tracking & progress monitoring',
+      'Unlimited messaging with your provider',
+    ],
+    quarterly: [
+      '90-day medication supply',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Regular symptom tracking & progress monitoring',
+      'Unlimited messaging with your provider',
+    ],
+    biannual: [
+      '6 months of medication',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Regular symptom tracking & progress monitoring',
+      'Unlimited messaging with your provider',
+    ],
+  },
   science: {
     activeIngredients: `The active ingredient in metformin is metformin hydrochloride. In addition to the active ingredient, metformin tablets may also contain inactive ingredients such as microcrystalline cellulose, magnesium stearate, hypromellose, and polyethylene glycol. These inactive ingredients serve various purposes, including as binders, lubricants, and fillers to form the tablet and aid in its dissolution.`,
     mechanism: `Metformin is typically taken orally with meals to reduce gastrointestinal side effects. The prescribed dosage varies depending on individual health conditions, and healthcare providers may recommend starting with a lower dose and gradually increasing it to achieve optimal therapeutic effects. Regular monitoring of blood glucose levels and adherence to healthcare provider instructions are essential for maximizing the benefits of Metformin therapy.`,
@@ -675,12 +804,26 @@ export const TRETINOIN = {
     'Reduces comedone formation and pore congestion',
     'Delivers cumulative structural improvements that build over months of consistent use',
   ],
-  includes: [
-    '30-day supply, delivered monthly',
-    'Medical evaluation',
-    'Free shipping',
-    'Unlimited messaging with your care team',
-  ],
+  includes: {
+    monthly: [
+      '30-day supply, delivered monthly',
+      'Medical evaluation',
+      'Free shipping',
+      'Unlimited messaging with your care team',
+    ],
+    quarterly: [
+      '90-day supply, delivered quarterly',
+      'Medical evaluation',
+      'Free shipping',
+      'Unlimited messaging with your care team',
+    ],
+    biannual: [
+      '6 months of medication, delivered in two shipments',
+      'Medical evaluation',
+      'Free shipping',
+      'Unlimited messaging with your care team',
+    ],
+  },
   science: {
     activeIngredients: `The active ingredient is Tretinoin (0.025%), a direct metabolite of vitamin A and the most clinically validated topical retinoid. The cream base includes emollients and stabilizers designed for even distribution and absorption across the skin surface.`,
     mechanism: `Apply a pea-sized amount to clean, completely dry skin in the evening. Spread evenly across the face, avoiding the eye area, corners of the nose, and lips.
@@ -763,13 +906,29 @@ export const HCG = {
     'Aids in fertility treatments',
     'Contributes to weight loss efforts when used in specific diet plans',
   ],
-  includes: [
-    'Free overnight shipping',
-    'Medical evaluation',
-    'Repeat labs',
-    'Regular symptom tracking & progress monitoring',
-    'Unlimited messaging with your provider',
-  ],
+  includes: {
+    monthly: [
+      '30-day supply, delivered monthly',
+      'Medical evaluation',
+      'Free shipping',
+      'Repeat labs',
+      'Unlimited messaging with your care team',
+    ],
+    quarterly: [
+      '90-day supply',
+      'Medical evaluation',
+      'Free shipping',
+      'Repeat labs',
+      'Unlimited messaging with your care team',
+    ],
+    biannual: [
+      '6 months of medication, delivered in two shipments',
+      'Medical evaluation',
+      'Free shipping',
+      'Repeat labs',
+      'Unlimited messaging with your care team',
+    ],
+  },
   science: {
     activeIngredients: `The primary ingredient in HCG, or human chorionic gonadotropin, is a hormone produced during pregnancy. It is typically derived from the urine of pregnant women or produced synthetically. HCG products may also contain other inactive ingredients such as preservatives, stabilizers, and solvents to maintain the stability and effectiveness of the hormone.`,
     mechanism: `To use HCG, first, ensure proper reconstitution of the medication as instructed by your healthcare provider. Administer the prescribed dosage through subcutaneous or intramuscular injection, rotating injection sites. Follow the recommended injection schedule diligently, and consult healthcare professionals if you have any concerns or experience difficulties during the administration process.`,
@@ -831,13 +990,26 @@ export const LOW_DOSE_NALTREXONE = {
     'Anti-Inflammatory Effects',
     'Mental health benefits',
   ],
-  includes: [
-    '30 day supply of medication',
-    'Overnight shipping',
-    'Medical evaluation',
-    'Dr guided titration plan',
-    'Unlimited messaging',
-  ],
+  includes: {
+    monthly: [
+      '30-day supply, delivered monthly',
+      'Medical evaluation',
+      'Free shipping',
+      'Unlimited messaging with your care team',
+    ],
+    quarterly: [
+      '90-day supply',
+      'Medical evaluation',
+      'Free shipping',
+      'Unlimited messaging with your care team',
+    ],
+    biannual: [
+      '6 month supply',
+      'Medical evaluation',
+      'Free shipping',
+      'Unlimited messaging with your care team',
+    ],
+  },
   science: {
     activeIngredients: `The active ingredient in low dose naltrexone (LDN) is naltrexone hydrochloride, typically administered in very low doses ranging from 1.5 to 4.5 milligrams. In addition to the active ingredient, LDN formulations may contain inactive ingredients such as fillers, binders, and coating agents to facilitate proper dosage form and administration.`,
     mechanism: `Low Dose Naltrexone (LDN) is typically administered orally, and the recommended dosage often falls within the range of 1 to 5 mg. It is crucial to follow the prescribed dosage and administration guidelines provided by healthcare professionals. LDN is commonly taken at night before bedtime to minimize potential side effects, and it is advisable to avoid consuming opioid-containing medications during the LDN regimen to prevent interference with its effects.`,
@@ -934,13 +1106,29 @@ export const VITAMIN_B12_INJECTION = {
     'Enhanced neurological function',
     'Support for DNA synthesis',
   ],
-  includes: [
-    '1 x 10mL vial of Methylcobolamin',
-    'Overnight shipping',
-    'Medical evaluation',
-    'Dr guided titration plan',
-    'Unlimited messaging',
-  ],
+  includes: {
+    monthly: [
+      '30-day supply, delivered monthly',
+      'Medical evaluation',
+      'Free shipping',
+      'Repeat labs',
+      'Unlimited messaging with your care team',
+    ],
+    quarterly: [
+      '90-day supply, delivered monthly',
+      'Medical evaluation',
+      'Free shipping',
+      'Repeat labs',
+      'Unlimited messaging with your care team',
+    ],
+    biannual: [
+      '6 months of medication, delivered in monthly shipments',
+      'Medical evaluation',
+      'Free shipping',
+      'Repeat labs',
+      'Unlimited messaging with your care team',
+    ],
+  },
   science: {
     activeIngredients: `B12 injections contain cyanocobalamin, a synthetic form of vitamin B12, along with sterile water and sometimes other additives for preservation. These injections provide a direct and efficient way to deliver a concentrated dose of vitamin B12, bypassing the digestive system for maximum absorption and effectiveness.`,
     mechanism: `B12 Injections are administered through intramuscular injection, a process typically performed by healthcare professionals. The precise technique and dosage are determined by healthcare providers, ensuring accurate and safe administration.`,
@@ -1017,13 +1205,26 @@ export const GHK_CU_CREAM = {
     'Faster Healing',
     'Overall Skin Rejuvenation',
   ],
-  includes: [
-    '30-day medication supply',
-    'Free overnight shipping',
-    'Medical evaluation',
-    'Regular symptom tracking & progress monitoring',
-    'Unlimited messaging with your provider',
-  ],
+  includes: {
+    monthly: [
+      '30-day supply, delivered monthly',
+      'Medical evaluation',
+      'Free shipping',
+      'Unlimited messaging with your care team',
+    ],
+    quarterly: [
+      '90-day supply',
+      'Medical evaluation',
+      'Free shipping',
+      'Unlimited messaging with your care team',
+    ],
+    biannual: [
+      '6 month supply',
+      'Medical evaluation',
+      'Free shipping',
+      'Unlimited messaging with your care team',
+    ],
+  },
   science: {
     activeIngredients: `GHK-Cu (Copper Tripeptide-1) 0.5% (Anhydrous): Signals skin renewal and supports collagen-rich, resilient skin. Anhydrous Cream Base: Water-free blend of emollients and occlusives (e.g., squalane, caprylic/capric triglyceride, dimethicone, shea butter, beeswax) that locks in moisture, enhances glide, and improves peptide stability. No water, no glycerin, and typically no added preservatives required.`,
     mechanism: `GHK-CU is administered via a cream. Apply a small, pea sized amount to your face or affected areas. If there is no skin irritation, you can increase to 2 x pea sized amounts daily, as long as it isn't being combined with other skincare products like retinoids, vitamin c, AHAs/BHAs.`,
@@ -1078,12 +1279,26 @@ export const NAD_INJECTION = {
     'DNA repair enhancement',
     'Cognitive function improvement',
   ],
-  includes: [
-    '30-day supply of medication',
-    'Overnight shipping',
-    'Medical evaluation',
-    'Unlimited messaging',
-  ],
+  includes: {
+    monthly: [
+      '30-day supply, delivered monthly',
+      'Medical evaluation',
+      'Free shipping',
+      'Unlimited messaging with your care team',
+    ],
+    quarterly: [
+      '90-day supply, delivered monthly',
+      'Medical evaluation',
+      'Free shipping',
+      'Unlimited messaging with your care team',
+    ],
+    biannual: [
+      '6 months of medication, delivered in monthly shipments',
+      'Medical evaluation',
+      'Free shipping',
+      'Unlimited messaging with your care team',
+    ],
+  },
   science: {
     activeIngredients: `NAD+ injections typically contain Nicotinamide Adenine Dinucleotide (NAD+), a coenzyme naturally produced in the body that plays a crucial role in cellular energy production and DNA repair.`,
     mechanism: `NAD+ solution, injection materials, and user instructions will be provided upon purchase.`,
@@ -1174,12 +1389,26 @@ export const ENCLOMIPHENE = {
     'Stimulates pituitary release of LH (luteinizing hormone)',
     'Promotes testosterone production in the testes',
   ],
-  includes: [
-    '30-day supply of medication',
-    'Free 2-day shipping',
-    'Medical evaluation',
-    'Unlimited messaging',
-  ],
+  includes: {
+    monthly: [
+      '30-day supply of medication',
+      'Free 2-day shipping',
+      'Medical evaluation',
+      'Unlimited messaging',
+    ],
+    quarterly: [
+      '90-day supply of medication',
+      'Free 2-day shipping',
+      'Medical evaluation',
+      'Unlimited messaging',
+    ],
+    biannual: [
+      '6 month supply of medication',
+      'Free 2-day shipping',
+      'Medical evaluation',
+      'Unlimited messaging',
+    ],
+  },
   science: {
     activeIngredients: `Enclomiphene citrate, the active pharmaceutical ingredient, is the primary component of enclomiphene. It's formulated with inactive ingredients like microcrystalline cellulose, lactose monohydrate, magnesium stearate, and colloidal silicon dioxide to form tablets for oral administration.`,
     mechanism: `Enclomiphene is administered orally in tablet form. The recommended dosage and duration of treatment vary based on the specific medical condition being addressed and goals of treatment. A Superpower physician will prescribe in individual protocol including dosing plans, follow-up testing, and surveys to ensure proper monitoring and adjustment of the treatment plan if necessary.`,
@@ -1263,14 +1492,32 @@ export const TIRZEPATIDE = {
     'Appetite suppression',
     'Reduced risk of cardiovascular disease',
   ],
-  includes: [
-    '30 day supply of medication',
-    'Overnight shipping',
-    'Repeat labs',
-    'Medical evaluation',
-    'Unlimited messaging',
-    'Dr guided titration plan',
-  ],
+  includes: {
+    monthly: [
+      '30-day medication supply',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Regular symptom tracking & progress monitoring',
+      'Regular lab testing every 6 months',
+      'Unlimited messaging with your provider',
+    ],
+    quarterly: [
+      '90-day medication supply',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Regular symptom tracking & progress monitoring',
+      'Regular lab testing every 6 months',
+      'Unlimited messaging with your provider',
+    ],
+    biannual: [
+      '6 months of medication',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Regular symptom tracking & progress monitoring',
+      'Regular lab testing every 6 months',
+      'Unlimited messaging with your provider',
+    ],
+  },
   science: {
     activeIngredients:
       "Tirzepatide is the primary active ingredient, which is the same as in commercial products like Mounjaro® and Zepbound®. It's a GLP-1 / GIP receptor agonist used to manage blood sugar levels and promote weight loss. Additional excipients, stabilizers and solvents are added to help with absorption.",
@@ -1352,12 +1599,32 @@ export const SERMORELIN_TROCHES = {
     'Balanced Mood',
     'Collagen Formation for Skin Health',
   ],
-  includes: [
-    '30-day supply of medication',
-    'Free 2-day shipping',
-    'Medical evaluation',
-    'Unlimited messaging',
-  ],
+  includes: {
+    monthly: [
+      '30-day medication supply',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Regular symptom tracking & progress monitoring',
+      'Regular lab testing every 6 months',
+      'Unlimited messaging with your provider',
+    ],
+    quarterly: [
+      '90-day medication supply',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Regular symptom tracking & progress monitoring',
+      'Regular lab testing every 6 months',
+      'Unlimited messaging with your provider',
+    ],
+    biannual: [
+      '6 months of medication',
+      'Free overnight shipping',
+      'Medical evaluation',
+      'Regular symptom tracking & progress monitoring',
+      'Regular lab testing every 6 months',
+      'Unlimited messaging with your provider',
+    ],
+  },
   science: {
     activeIngredients: `Sermorelin is a synthetic peptide made up of a chain of amino acids, specifically 29 amino acids. The primary ingredient in sermorelin is the peptide itself, which mimics the effects of natural growth hormone-releasing hormone (GHRH) produced by the hypothalamus in the brain. Additionally, the formulation may include other compounds necessary for stability and administration, such as bacteriostatic water or other solvents used for reconstitution.`,
     mechanism: `Sermorelin troches are administered orally by placing the troche under the tongue or in the cheek (buccal area) and allowing it to dissolve. The specific dosage and frequency will be determined by healthcare professionals based on individual needs. It is typically taken before bedtime since the body naturally releases growth hormone during sleep. Strict adherence to the prescribed administration guidelines is crucial for optimal results.`,

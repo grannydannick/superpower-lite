@@ -5,11 +5,40 @@ import { isGLP1FrontDoorExperiment } from '@/components/ui/questionnaire/utils/q
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from '@/components/ui/sonner';
 import { useMarketplace } from '@/features/marketplace/api/get-marketplace';
-import { Rx } from '@/types/api';
+import { Rx, RxPrice } from '@/types/api';
 
 import { getPrescriptionImage } from '../../../utils/prescription';
 
+import { RX_BILLING_PERIOD_LINKID } from './const/special-linkids';
 import { useQuestionnaireStore } from './stores/questionnaire-store';
+
+type ResponseItem = {
+  linkId: string;
+  answer?: { valueString?: string }[];
+  item?: ResponseItem[];
+};
+
+function getBillingCodeFromResponse(
+  items: ResponseItem[] | undefined,
+): string | undefined {
+  if (!items) return undefined;
+  for (const item of items) {
+    if (item.linkId === RX_BILLING_PERIOD_LINKID) {
+      return item.answer?.[0]?.valueString;
+    }
+    if (item.item) {
+      const found = getBillingCodeFromResponse(item.item);
+      if (found) return found;
+    }
+  }
+  return undefined;
+}
+
+function getIntervalLabel(intervalCount: number): string {
+  if (intervalCount <= 30) return '/month';
+  if (intervalCount <= 90) return '/quarter';
+  return '/6 months';
+}
 
 export const ConsentPaymentSummary = () => {
   const questionnaireName = useQuestionnaireStore((s) => s.questionnaire?.name);
@@ -20,10 +49,25 @@ export const ConsentPaymentSummary = () => {
   const { prescription, isLoading } =
     useConsentPaymentPrescription(questionnaireName);
 
+  const billingCode = getBillingCodeFromResponse(questionnaireResponse?.item);
+
+  const matchedPrice: RxPrice | undefined = useMemo(() => {
+    if (!billingCode || !prescription?.prices) return undefined;
+    return prescription.prices.find((p) => p.billing_code === billingCode);
+  }, [billingCode, prescription?.prices]);
+
+  const displayPrice = matchedPrice
+    ? matchedPrice.amount / 100
+    : prescription?.price;
+
+  const intervalLabel = matchedPrice
+    ? getIntervalLabel(matchedPrice.interval_count)
+    : '/month';
+
   const formattedPrice = isFrontdoorExperiment
     ? formatCurrency(0)
-    : prescription
-      ? formatCurrency(prescription.price)
+    : displayPrice != null
+      ? formatCurrency(displayPrice)
       : null;
 
   const showSkeleton = isLoading || !formattedPrice || !prescription;
@@ -62,7 +106,7 @@ export const ConsentPaymentSummary = () => {
               ) : formattedPrice ? (
                 <>
                   <span className="text-base text-black">{formattedPrice}</span>
-                  <span className="text-sm text-zinc-500">/month</span>
+                  <span className="text-sm text-zinc-500">{intervalLabel}</span>
                 </>
               ) : (
                 '—'
@@ -95,7 +139,7 @@ export const ConsentPaymentSummary = () => {
               ) : formattedPrice ? (
                 <>
                   <span className="text-base text-black">{formattedPrice}</span>
-                  <span className="text-sm text-zinc-500">/month</span>
+                  <span className="text-sm text-zinc-500">{intervalLabel}</span>
                 </>
               ) : (
                 '—'

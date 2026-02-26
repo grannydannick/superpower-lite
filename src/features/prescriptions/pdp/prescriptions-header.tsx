@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { Check } from 'lucide-react';
+import { useState } from 'react';
 
 import { HomeTreatment } from '@/components/icons/marketplace/prescriptions/home-treatment';
 import { Lab } from '@/components/icons/marketplace/prescriptions/lab-tested';
@@ -149,37 +150,10 @@ export const Header = ({ className, prescription }: HeaderProps) => {
             )}
           </div>
 
-          <div className="space-y-4">
-            <div className="flex items-start gap-2 rounded-2xl border border-zinc-200 p-4 shadow-sm">
-              <div className="flex w-full flex-col gap-3">
-                <div className="flex items-baseline justify-between gap-4">
-                  <Body1>Monthly plan</Body1>
-                  <p className="text-base font-semibold text-primary">
-                    ${prescription.price}/mo
-                  </p>
-                </div>
-
-                <ul className="space-y-2">
-                  {includes.map((item) => (
-                    <li key={item} className="flex items-center gap-3">
-                      <span className="inline-flex size-1 rounded-full bg-zinc-200" />
-                      <Body2 className="flex-1 text-secondary">{item}</Body2>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {prescription.url ? (
-              <Button asChild className="w-full">
-                <Link to={prescription.url}>Get started</Link>
-              </Button>
-            ) : (
-              <Button className="w-full" disabled>
-                Get started
-              </Button>
-            )}
-          </div>
+          <BillingTierSelector
+            prescription={prescription}
+            includes={includes}
+          />
 
           <div className="mt-5 hidden flex-col lg:flex">
             <H4>FAQs</H4>
@@ -220,6 +194,193 @@ export const Header = ({ className, prescription }: HeaderProps) => {
         ))}
       </div>
     </section>
+  );
+};
+
+const getIntervalLabel = (intervalCount: number): string => {
+  if (intervalCount <= 30) return 'Monthly';
+  if (intervalCount <= 90) return 'Quarterly';
+  return 'Biannual';
+};
+
+const getPerMonthPrice = (amount: number, intervalCount: number): number => {
+  const months = Math.max(1, Math.round(intervalCount / 30));
+  return amount / months;
+};
+
+const formatPrice = (cents: number): string => {
+  const dollars = cents / 100;
+  return dollars % 1 === 0 ? `$${dollars}` : `$${dollars.toFixed(2)}`;
+};
+
+type BillingTierIncludes = {
+  monthly: string[];
+  quarterly: string[];
+  biannual: string[];
+};
+
+type BillingTierSelectorProps = {
+  prescription: Rx;
+  includes: string[] | BillingTierIncludes;
+};
+
+const getIncludesForTier = (
+  includes: string[] | BillingTierIncludes,
+  intervalCount: number,
+): string[] => {
+  if (Array.isArray(includes)) return includes;
+  if (intervalCount <= 30) return includes.monthly;
+  if (intervalCount <= 90) return includes.quarterly;
+  return includes.biannual;
+};
+
+const BillingTierSelector = ({
+  prescription,
+  includes,
+}: BillingTierSelectorProps) => {
+  const prices = [...(prescription.prices ?? [])].sort(
+    (a, b) => a.interval_count - b.interval_count,
+  );
+  const monthlyPrice = prices.find((p) => p.interval_count <= 30);
+  const [selectedCode, setSelectedCode] = useState<string>(
+    monthlyPrice?.billing_code ?? prices[0]?.billing_code ?? '',
+  );
+  const basePerMonth = monthlyPrice
+    ? getPerMonthPrice(monthlyPrice.amount, monthlyPrice.interval_count)
+    : 0;
+
+  const getStartedUrl = prescription.url
+    ? `${prescription.url}${prescription.url.includes('?') ? '&' : '?'}billingCode=${encodeURIComponent(selectedCode)}`
+    : undefined;
+
+  if (prices.length === 0) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-start gap-2 rounded-2xl border border-zinc-200 p-4 shadow-sm">
+          <div className="flex w-full flex-col gap-3">
+            <div className="flex items-baseline justify-between gap-4">
+              <Body1>Monthly plan</Body1>
+              <p className="text-base font-semibold text-primary">
+                ${prescription.price}/mo
+              </p>
+            </div>
+            <ul className="space-y-2">
+              {getIncludesForTier(includes, 30).map((item) => (
+                <li key={item} className="flex items-center gap-3">
+                  <span className="inline-flex size-1 rounded-full bg-zinc-200" />
+                  <Body2 className="flex-1 text-secondary">{item}</Body2>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        {prescription.url ? (
+          <Button asChild className="w-full">
+            <Link to={prescription.url}>Get started</Link>
+          </Button>
+        ) : (
+          <Button className="w-full" disabled>
+            Get started
+          </Button>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div
+        className="flex flex-col"
+        role="radiogroup"
+        aria-label="Billing plan"
+      >
+        {prices.map((price) => {
+          const isSelected = price.billing_code === selectedCode;
+          const perMonth = getPerMonthPrice(price.amount, price.interval_count);
+          const savingsPercent =
+            basePerMonth > 0 && price.interval_count > 30
+              ? Math.round((1 - perMonth / basePerMonth) * 100)
+              : 0;
+
+          return (
+            <button
+              key={price.billing_code}
+              type="button"
+              role="radio"
+              aria-checked={isSelected}
+              onClick={() => setSelectedCode(price.billing_code)}
+              className="flex items-start gap-3 border border-zinc-200 px-4 py-3 text-left transition-colors first:rounded-t-2xl last:rounded-b-2xl [&:not(:last-child)]:border-b-0"
+            >
+              <span
+                className={cn(
+                  'mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border',
+                  isSelected
+                    ? 'border-vermillion-900 bg-vermillion-900'
+                    : 'border-zinc-300',
+                )}
+              >
+                {isSelected && (
+                  <span className="size-1.5 rounded-full bg-white" />
+                )}
+              </span>
+              <div className="flex w-full flex-col">
+                <div className="flex items-baseline justify-between gap-4">
+                  <Body1 className="font-semibold">
+                    {getIntervalLabel(price.interval_count)} plan
+                  </Body1>
+                  <div className="flex items-center gap-2">
+                    {savingsPercent > 0 && (
+                      <Badge variant="vermillion" className="py-0.5 text-xs">
+                        Save {savingsPercent}%
+                      </Badge>
+                    )}
+                    <Body1 className="font-semibold">
+                      {formatPrice(perMonth)}/mo
+                    </Body1>
+                  </div>
+                </div>
+                {isSelected && (
+                  <>
+                    <ul className="mt-2 space-y-1">
+                      {getIncludesForTier(includes, price.interval_count).map(
+                        (item) => (
+                          <li key={item} className="flex items-center gap-2">
+                            <span className="inline-flex size-1 rounded-full bg-zinc-300" />
+                            <Body3 className="text-secondary">{item}</Body3>
+                          </li>
+                        ),
+                      )}
+                    </ul>
+                    {price.interval_count > 30 && (
+                      <div className="mt-3 flex items-baseline justify-between border-t border-zinc-200 pt-3">
+                        <Body2 className="text-secondary">Total</Body2>
+                        <Body2 className="text-secondary">
+                          {formatPrice(perMonth)}/mo &times;{' '}
+                          {Math.round(price.interval_count / 30)} ={' '}
+                          <span className="font-semibold text-primary">
+                            {formatPrice(price.amount)}
+                          </span>
+                        </Body2>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {getStartedUrl ? (
+        <Button asChild className="w-full">
+          <Link to={getStartedUrl}>Get started</Link>
+        </Button>
+      ) : (
+        <Button className="w-full" disabled>
+          Get started
+        </Button>
+      )}
+    </div>
   );
 };
 

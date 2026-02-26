@@ -31,6 +31,7 @@ export const AnimatedIcon = ({
     if (rive == null) return;
 
     const inputs = rive.stateMachineInputs('states');
+    if (!inputs) return;
     for (const input of inputs) {
       if (input.name === 'thinking') {
         const nextThinking = state === 'thinking';

@@ -37,6 +37,7 @@ const toRx = (product: Marketplace): Rx => {
     price: product.price,
     active: product.active,
     additionalClassification: product.additionalClassification,
+    prices: product.prices,
   };
 };
 
