@@ -5,7 +5,7 @@ import { Link, useNavigate, useParams } from '@tanstack/react-router';
 import { isToday, isYesterday, subMonths, subWeeks } from 'date-fns';
 import { AnimatePresence, m } from 'framer-motion';
 import { MoreHorizontalIcon } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -524,7 +524,7 @@ function ChatHistoryGroup({
   chats: Chat[];
   activeChatId: string | undefined;
 }) {
-  const items: JSX.Element[] = [];
+  const items: React.ReactElement[] = [];
   for (const chat of chats) {
     items.push(
       <ChatItem

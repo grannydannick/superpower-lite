@@ -1,3 +1,5 @@
+import React from 'react';
+
 import {
   Dialog,
   DialogContent,
@@ -17,7 +19,7 @@ import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { Subscription } from '@/types/api';
 
 interface CancelMembershipDialogProps {
-  children: JSX.Element;
+  children: React.ReactNode;
   membership?: Subscription;
 }
 

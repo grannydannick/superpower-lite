@@ -4,7 +4,7 @@ import { mostRecent } from '@/features/data/utils/most-recent-biomarker';
 
 export const BIO_AGE = 'Biological Age';
 
-export const BiologicalAgeInfo = (): React.ReactNode => {
+export const BiologicalAgeInfo = () => {
   const { data: biomarkersData } = useBiomarkers();
   const bioAgeMarker = biomarkersData?.biomarkers.find(
     (b) => b.name == BIO_AGE,

@@ -15,9 +15,7 @@ export function getStripe() {
 }
 
 /** Children of this component have access to useStripe */
-export function StripeProvider(props: {
-  children: ReactNode | ReactNode[];
-}): JSX.Element {
+export function StripeProvider(props: { children: ReactNode | ReactNode[] }) {
   const { children } = props;
   const [stripe] = React.useState(() => {
     if (stripePromise) return stripePromise;

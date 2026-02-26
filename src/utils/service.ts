@@ -77,7 +77,7 @@ export const getSampleReportLinkForService = (service: string) => {
  * If the service does not have a specific disclaimer, the generic disclaimer is used by default.
  *
  * @param service - The healthcare service for which to retrieve the legal disclaimer.
- * @returns {JSX.Element} The corresponding legal disclaimer for the given healthcare service.
+ * @returns {React.ReactElement} The corresponding legal disclaimer for the given healthcare service.
  *
  * The function includes a default case where the generic disclaimer is returned.
  * This default is applied when the healthcare service does not have a predefined legal disclaimer or falls under unspecified services.
@@ -94,7 +94,7 @@ export const getSampleReportLinkForService = (service: string) => {
  *   name: 'Unspecified Service'
  * });
  */
-export const getInformedConsentForService = (service: string): JSX.Element => {
+export const getInformedConsentForService = (service: string) => {
   switch (service) {
     case GRAIL_GALLERI_MULTI_CANCER_TEST:
       return LEGAL_DESCLAIMERS.grail;
@@ -112,9 +112,7 @@ export const getInformedConsentForService = (service: string): JSX.Element => {
   }
 };
 
-export const getDefaultAgreementCopyForService = (
-  service: string,
-): JSX.Element => {
+export const getDefaultAgreementCopyForService = (service: string) => {
   switch (service) {
     case GRAIL_GALLERI_MULTI_CANCER_TEST:
       return AGREEMENT_COPIES.grail;

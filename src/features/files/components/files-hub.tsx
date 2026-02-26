@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 import { toast } from '@/components/ui/sonner';
@@ -26,11 +26,7 @@ type FilterType = File['contentType'] | 'media';
  *
  * It displays filters, sorting options, and grid + table views to find files
  */
-export const FilesHub = ({
-  headerSlot,
-}: {
-  headerSlot?: React.ReactNode;
-}): JSX.Element => {
+export const FilesHub = ({ headerSlot }: { headerSlot?: React.ReactNode }) => {
   const { mutate } = useCreateFile({
     mutationConfig: {
       onSuccess: () => {

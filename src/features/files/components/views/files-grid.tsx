@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { MoreHorizontal } from 'lucide-react';
+import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -22,7 +23,7 @@ export function FilesGrid({
 }: {
   files: File[];
   isLoading: boolean;
-}): JSX.Element {
+}) {
   if (isLoading) {
     return (
       <div className="grid w-full grid-cols-2 gap-4 md:grid-cols-4">

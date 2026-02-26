@@ -11,7 +11,7 @@ export const ScheduleFlowSteps = () => {
   );
 };
 
-const ScheduleFlowStepsContent = (): React.ReactElement => {
+const ScheduleFlowStepsContent = () => {
   const methods = useScheduleFlowStepper();
 
   useEffect(() => {

@@ -1,4 +1,5 @@
 import { X } from 'lucide-react';
+import React from 'react';
 
 import { DialogClose } from '@/components/ui/dialog';
 import { MembershipStoreProvider } from '@/features/settings/stores/membership-store';
@@ -12,9 +13,7 @@ interface CancelMembershipProps {
   subscription: Subscription;
 }
 
-export function CancelMembership({
-  subscription,
-}: CancelMembershipProps): JSX.Element {
+export function CancelMembership({ subscription }: CancelMembershipProps) {
   return (
     <MembershipStoreProvider subscription={subscription}>
       <CancelMembershipCard />
@@ -22,7 +21,7 @@ export function CancelMembership({
   );
 }
 
-function CancelMembershipCard(): JSX.Element {
+function CancelMembershipCard() {
   return (
     <CancelMembershipStepper.Scoped>
       <CancelMembershipCardContent />
@@ -30,7 +29,7 @@ function CancelMembershipCard(): JSX.Element {
   );
 }
 
-function CancelMembershipCardContent(): JSX.Element {
+function CancelMembershipCardContent() {
   const methods = CancelMembershipStepper.useStepper();
   const activeStep = methods.state.current.index;
   const totalSteps = methods.state.all.length;

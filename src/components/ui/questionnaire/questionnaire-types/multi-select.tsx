@@ -9,6 +9,7 @@ import {
   QuestionnaireItemInitial,
   QuestionnaireResponseItem,
 } from '@medplum/fhirtypes';
+import React from 'react';
 
 import { MultiSelect } from '@/components/ui/multi-select';
 import {
@@ -38,7 +39,7 @@ interface QuestionnaireChoiceInputProps {
 
 export function QuestionnaireChoiceDropDownInput(
   props: QuestionnaireChoiceInputProps,
-): JSX.Element {
+) {
   const { item, initial, response, isError } = props;
   const initialValue = getTypedPropertyValue(
     { type: 'QuestionnaireItemInitial', value: initial },
@@ -127,7 +128,7 @@ export function QuestionnaireChoiceDropDownInput(
 
 export function QuestionnaireChoiceSetInput(
   props: QuestionnaireChoiceInputProps,
-): JSX.Element {
+) {
   const { name, item, onChangeAnswer, response, isError } = props;
 
   if (!item.answerOption?.length && !item.answerValueSet) {

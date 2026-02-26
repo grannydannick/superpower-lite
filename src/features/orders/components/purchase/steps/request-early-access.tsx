@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 
 import { SHARED_CONTAINER_STYLE } from '../../../const/config';
 
-export const RequestEarlyAccessStep = (): JSX.Element => {
+export const RequestEarlyAccessStep = () => {
   const [message, setMessage] = useState('');
   const service = usePurchaseStore((s) => s.service);
   const { mutateAsync, isSuccess, isPending, isError } =

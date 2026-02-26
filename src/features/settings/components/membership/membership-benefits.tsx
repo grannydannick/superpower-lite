@@ -1,10 +1,12 @@
+import React from 'react';
+
 import { Card } from '@/components/ui/card';
 import { MembershipBenefit } from '@/features/settings/types/membership';
 import { cn } from '@/lib/utils';
 
 export const MembershipBenefits = (props: {
   benefits: MembershipBenefit[];
-}): JSX.Element => {
+}) => {
   return (
     <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
       {props.benefits.map((benefit, idx) => (

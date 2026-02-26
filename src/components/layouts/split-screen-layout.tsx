@@ -1,9 +1,11 @@
+import React from 'react';
+
 import { Head } from '@/components/seo';
 import { cn } from '@/lib/utils';
 
 type Props = {
   title: string;
-  children: JSX.Element;
+  children: React.ReactNode;
   className?: string;
 };
 

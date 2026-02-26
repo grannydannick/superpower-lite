@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import {
@@ -15,10 +15,7 @@ interface MenuDropdownProps {
   wearable: Wearable;
 }
 
-export function MenuDropdown({
-  children,
-  wearable,
-}: MenuDropdownProps): JSX.Element {
+export function MenuDropdown({ children, wearable }: MenuDropdownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
@@ -32,7 +29,7 @@ export function MenuDropdown({
   );
 }
 
-function DeleteMenuItem({ provider }: Wearable): JSX.Element {
+function DeleteMenuItem({ provider }: Wearable) {
   return (
     <Dialog>
       <DialogTrigger asChild>

@@ -1,4 +1,5 @@
 import { CircleCheckBig, MoreVertical } from 'lucide-react';
+import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -18,7 +19,7 @@ import { cn } from '@/lib/utils';
 import { PaymentMethod } from '@/types/api';
 import { capitalize } from '@/utils/format';
 
-export function PaymentMethodList(): JSX.Element {
+export function PaymentMethodList() {
   const paymentMethodsQuery = usePaymentMethods({});
 
   if (paymentMethodsQuery.isLoading) {
@@ -67,7 +68,7 @@ export function PaymentMethodCard({
   paymentMethod: PaymentMethod;
   defaultMethod: boolean;
   paymentMethodsCount: number;
-}): JSX.Element {
+}) {
   const isFlexCard = paymentMethod.paymentProvider?.toLowerCase() === 'flex';
   return (
     <div
@@ -159,7 +160,7 @@ export function SetDefaultPaymentMethodMenuItem({
 }: {
   paymentMethodId: string;
   setDefault: boolean;
-}): JSX.Element {
+}) {
   const { mutate } = useSetDefaultPaymentMethod();
 
   const onClick = async (): Promise<void> => {
@@ -175,7 +176,7 @@ export function SetDefaultPaymentMethodMenuItem({
 
 export function DeletePaymentMethodMenuItem({
   stripePaymentMethodId,
-}: PaymentMethod): JSX.Element {
+}: PaymentMethod) {
   const { mutate } = useDeletePaymentMethod();
 
   const onClick = async (): Promise<void> => {

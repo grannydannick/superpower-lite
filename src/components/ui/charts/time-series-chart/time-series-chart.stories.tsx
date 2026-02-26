@@ -1,4 +1,5 @@
 import { Meta } from '@storybook/react';
+import React from 'react';
 
 import { Biomarker } from '@/types/api';
 
@@ -272,7 +273,7 @@ const biomarker: Biomarker = {
   },
 };
 
-export const TimeSeriesChartComponent = (): JSX.Element => {
+export const TimeSeriesChartComponent = () => {
   return (
     <>
       <TimeSeriesChart biomarker={biomarker} height={512} />
@@ -363,7 +364,7 @@ const singleValueBiomarker: Biomarker = {
   },
 };
 
-export const SingleValueTimeSeriesChart = (): JSX.Element => {
+export const SingleValueTimeSeriesChart = () => {
   return (
     <>
       <TimeSeriesChart biomarker={singleValueBiomarker} height={512} />
@@ -636,7 +637,7 @@ const extremeBoundaryBiomarker: Biomarker = {
   },
 };
 
-export const ExtremeBoundaryTimeSeriesChart = (): JSX.Element => {
+export const ExtremeBoundaryTimeSeriesChart = () => {
   return (
     <>
       <TimeSeriesChart biomarker={extremeBoundaryBiomarker} height={512} />
@@ -779,7 +780,7 @@ const extremeDateClusteringBiomarker: Biomarker = {
   },
 };
 
-export const ExtremeDateClusteringTimeSeriesChart = (): JSX.Element => {
+export const ExtremeDateClusteringTimeSeriesChart = () => {
   return (
     <>
       <TimeSeriesChart

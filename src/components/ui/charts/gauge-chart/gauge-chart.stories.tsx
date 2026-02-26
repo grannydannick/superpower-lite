@@ -1,4 +1,5 @@
 import { Meta } from '@storybook/react';
+import React from 'react';
 
 import { GaugeChart } from './gauge-chart';
 
@@ -7,7 +8,7 @@ export default {
   component: GaugeChart,
 } as Meta;
 
-export const BasicGauge = (): JSX.Element => {
+export const BasicGauge = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-gray-900">
       <GaugeChart value={75} />
@@ -15,7 +16,7 @@ export const BasicGauge = (): JSX.Element => {
   );
 };
 
-export const LowScore = (): JSX.Element => {
+export const LowScore = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-gray-900">
       <GaugeChart value={25} />
@@ -23,7 +24,7 @@ export const LowScore = (): JSX.Element => {
   );
 };
 
-export const HighScore = (): JSX.Element => {
+export const HighScore = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-gray-900">
       <GaugeChart value={95} />
@@ -31,7 +32,7 @@ export const HighScore = (): JSX.Element => {
   );
 };
 
-export const WithCustomColors = (): JSX.Element => {
+export const WithCustomColors = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-gray-900">
       <GaugeChart
@@ -44,7 +45,7 @@ export const WithCustomColors = (): JSX.Element => {
   );
 };
 
-export const WithRichColors = (): JSX.Element => {
+export const WithRichColors = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-gray-900">
       <GaugeChart value={42} richColors={true} />
@@ -52,7 +53,7 @@ export const WithRichColors = (): JSX.Element => {
   );
 };
 
-export const WithAnimation = (): JSX.Element => {
+export const WithAnimation = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-gray-900">
       <GaugeChart value={78} animate={true} />
@@ -60,7 +61,7 @@ export const WithAnimation = (): JSX.Element => {
   );
 };
 
-export const WithAnimationAndRichColors = (): JSX.Element => {
+export const WithAnimationAndRichColors = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-gray-900">
       <GaugeChart value={85} animate={true} richColors={true} />
@@ -68,7 +69,7 @@ export const WithAnimationAndRichColors = (): JSX.Element => {
   );
 };
 
-export const LightBackground = (): JSX.Element => {
+export const LightBackground = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-white">
       <GaugeChart
@@ -81,7 +82,7 @@ export const LightBackground = (): JSX.Element => {
   );
 };
 
-export const CustomSizedGauge = (): JSX.Element => {
+export const CustomSizedGauge = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-gray-900">
       <GaugeChart value={55} className="max-h-[400px] max-w-[400px]" />
@@ -89,7 +90,7 @@ export const CustomSizedGauge = (): JSX.Element => {
   );
 };
 
-export const MultipleGauges = (): JSX.Element => {
+export const MultipleGauges = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center gap-8 bg-gray-900">
       <div className="grid grid-cols-3 gap-8">

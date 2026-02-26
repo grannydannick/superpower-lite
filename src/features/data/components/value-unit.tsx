@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { Body2 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 import { BiomarkerResult } from '@/types/api';
@@ -19,7 +21,7 @@ export const BiomarkerValueUnit = ({
   result,
   baseUnit,
   textClassName,
-}: ValueUnitProps): JSX.Element => {
+}: ValueUnitProps) => {
   const value =
     result?.quantity.value !== undefined ? result?.quantity.value : '-';
   const unit = result?.quantity.unit || baseUnit || '';

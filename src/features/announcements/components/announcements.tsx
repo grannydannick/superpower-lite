@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { useRxTasks } from '@/features/rx/api/get-tasks';
 import { RxActionDialog } from '@/features/rx/components/rx-action-card';
@@ -13,7 +13,7 @@ import { PhiConsentDialog } from './modals/phi-consent-dialog';
 type QueueItem = {
   key: string;
   required: boolean;
-  render: (advance: () => void) => JSX.Element | null;
+  render: (advance: () => void) => React.ReactElement | null;
 };
 
 export const Announcements = () => {

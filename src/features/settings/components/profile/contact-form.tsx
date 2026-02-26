@@ -1,9 +1,11 @@
+import React from 'react';
+
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AddressSelect } from '@/features/users/components/address-select';
 import { useUser } from '@/lib/auth';
 
-export function ContactForm(): JSX.Element {
+export function ContactForm() {
   const { data: user } = useUser();
 
   if (!user) {

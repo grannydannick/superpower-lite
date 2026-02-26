@@ -68,7 +68,7 @@ export const AiSuggestions = ({
     's12',
   ];
 
-  const skeletons: JSX.Element[] = [];
+  const skeletons: React.ReactElement[] = [];
   for (const key of skeletonKeys) {
     if (skeletons.length >= limit) break;
     skeletons.push(

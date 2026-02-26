@@ -25,7 +25,7 @@ type Body1Props = React.HTMLAttributes<HTMLParagraphElement> & {
  *
  * @param {Body1Props} props - The props for the element.
  * @param {React.Ref<HTMLParagraphElement | HTMLDivElement | HTMLSpanElement>} ref - The ref to the element.
- * @returns {JSX.Element} The styled element.
+ * @returns {React.ReactElement} The styled element.
  */
 const Body1 = forwardRef<
   HTMLParagraphElement | HTMLDivElement | HTMLSpanElement,

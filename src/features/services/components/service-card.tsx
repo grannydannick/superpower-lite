@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router';
 import { Check } from 'lucide-react';
+import React from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -37,7 +38,7 @@ const DesktopCard = ({
 }) => {
   const navigate = useNavigate();
 
-  let actionButton: JSX.Element;
+  let actionButton: React.ReactElement;
   if (draftOrder) {
     actionButton = (
       <Button className="absolute inset-x-4 bottom-4" size="medium">

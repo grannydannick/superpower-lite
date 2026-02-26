@@ -1,7 +1,7 @@
 import { useNavigate } from '@tanstack/react-router';
 import { Reorder } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import { WearablesSearch } from '@/features/settings/components/wearables/wearables-search';
 import { Wearable } from '@/types/api';
@@ -10,9 +10,7 @@ interface MobileWearablesProps {
   wearables: Wearable[];
 }
 
-export function WearablesMobile({
-  wearables,
-}: MobileWearablesProps): JSX.Element {
+export function WearablesMobile({ wearables }: MobileWearablesProps) {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState(false);
   const [orderedProviders, setOrderedProviders] = useState<string[] | null>(
@@ -53,7 +51,7 @@ export function WearablesMobile({
     seen.add(provider);
   }
 
-  const itemNodes: JSX.Element[] = [];
+  const itemNodes: React.ReactElement[] = [];
   for (const provider of displayProviders) {
     const wearable = wearableByProvider.get(provider);
     if (!wearable) continue;

@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import React from 'react';
 
 import {
   CsvFileIcon,
@@ -11,8 +12,8 @@ import { Body1, Body3 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 import { File } from '@/types/api';
 
-export function FileName({ file }: { file: File }): JSX.Element {
-  const extension = (): JSX.Element => {
+export function FileName({ file }: { file: File }) {
+  const extension = () => {
     // Otherwise we display the file icon
     switch (file.contentType) {
       case 'application/pdf':

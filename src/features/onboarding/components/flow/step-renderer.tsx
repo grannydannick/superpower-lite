@@ -1,4 +1,5 @@
 import { AnimatePresence } from 'framer-motion';
+import React from 'react';
 
 import {
   CommitmentSequence,
@@ -17,7 +18,7 @@ import { useOnboardingFlowStore } from '@/features/onboarding/stores/onboarding-
 export const StepRenderer = () => {
   const currentStep = useOnboardingFlowStore((state) => state.currentStep);
 
-  let content: JSX.Element;
+  let content: React.ReactElement;
   switch (currentStep) {
     case STEP_IDS.UPDATE_INFO:
       content = <Steps.UpdateInfoStep />;

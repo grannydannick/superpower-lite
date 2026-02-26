@@ -3,7 +3,7 @@ import React from 'react';
 interface DateHeaderProps {
   occurrence: string;
 }
-export function DateHeader({ occurrence }: DateHeaderProps): JSX.Element {
+export function DateHeader({ occurrence }: DateHeaderProps) {
   const month = occurrence.split(' ')[0];
   const year = occurrence.split(' ')[1];
   return (

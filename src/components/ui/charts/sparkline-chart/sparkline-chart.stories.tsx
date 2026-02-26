@@ -1,4 +1,5 @@
 import { Meta } from '@storybook/react';
+import React from 'react';
 
 import { Biomarker } from '@/types/api';
 
@@ -147,7 +148,7 @@ const optimalBoundedBiomarker: Biomarker = {
   ],
 };
 
-export const OptimalBounded = (): JSX.Element => {
+export const OptimalBounded = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center">
       <SparklineChart biomarker={optimalBoundedBiomarker} />
@@ -190,7 +191,7 @@ const singleOptimalUnboundedUpperBiomarker: Biomarker = {
   ],
 };
 
-export const SingleOptimalUnboundedUpper = (): JSX.Element => {
+export const SingleOptimalUnboundedUpper = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center">
       <SparklineChart biomarker={singleOptimalUnboundedUpperBiomarker} />
@@ -249,7 +250,7 @@ const doubleOptimalUnboundedUpperBiomarker: Biomarker = {
   ],
 };
 
-export const DoubleOptimalUnboundedUpper = (): JSX.Element => {
+export const DoubleOptimalUnboundedUpper = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center">
       <SparklineChart biomarker={doubleOptimalUnboundedUpperBiomarker} />
@@ -364,7 +365,7 @@ const optimalUnboundedUpperBiomarker: Biomarker = {
   ],
 };
 
-export const OptimalUnboundedUpper = (): JSX.Element => {
+export const OptimalUnboundedUpper = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center">
       <SparklineChart biomarker={optimalUnboundedUpperBiomarker} />
@@ -479,7 +480,7 @@ const optimalUnboundedLowerBiomarker: Biomarker = {
   ],
 };
 
-export const OptimalUnboundedLower = (): JSX.Element => {
+export const OptimalUnboundedLower = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center">
       <SparklineChart biomarker={optimalUnboundedLowerBiomarker} />
@@ -596,7 +597,7 @@ const optimalAndNormalBoundedBiomarker: Biomarker = {
   ],
 };
 
-export const OptimalAndNormalBounded = (): JSX.Element => {
+export const OptimalAndNormalBounded = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center">
       <SparklineChart biomarker={optimalAndNormalBoundedBiomarker} />
@@ -707,7 +708,7 @@ const optimalAndNormalUnboundedUpperBiomarker: Biomarker = {
   ],
 };
 
-export const OptimalAndNormalUnboundedUpper = (): JSX.Element => {
+export const OptimalAndNormalUnboundedUpper = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center">
       <SparklineChart biomarker={optimalAndNormalUnboundedUpperBiomarker} />
@@ -818,7 +819,7 @@ const optimalAndNormalUnboundedLowerBiomarker: Biomarker = {
   ],
 };
 
-export const OptimalAndNormalUnboundedLower = (): JSX.Element => {
+export const OptimalAndNormalUnboundedLower = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center">
       <SparklineChart biomarker={optimalAndNormalUnboundedLowerBiomarker} />
@@ -881,7 +882,7 @@ const multiSourceBiomarker: Biomarker = {
   ],
 };
 
-export const MultiSourceDynamicRanges = (): JSX.Element => {
+export const MultiSourceDynamicRanges = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center">
       <SparklineChart biomarker={multiSourceBiomarker} />

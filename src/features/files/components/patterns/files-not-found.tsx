@@ -1,6 +1,8 @@
+import React from 'react';
+
 import { Body1, H4 } from '@/components/ui/typography';
 
-export const FilesNotFound = (): JSX.Element => {
+export const FilesNotFound = () => {
   return (
     <div className="mx-auto flex min-h-[calc(100svh-400px)] max-w-sm flex-col items-center justify-center text-center duration-500">
       <H4 className="mb-2">Nothing to be found</H4>

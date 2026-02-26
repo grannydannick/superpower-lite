@@ -1,7 +1,7 @@
 import { useNavigate } from '@tanstack/react-router';
 import { format } from 'date-fns';
 import { ChevronRight } from 'lucide-react';
-import { HTMLAttributes } from 'react';
+import React, { HTMLAttributes } from 'react';
 
 import { Card } from '@/components/ui/card';
 import {
@@ -24,7 +24,7 @@ import { MultiPlatformOrder } from '@/types/api';
 import { capitalize } from '@/utils/format';
 import { formatMoney } from '@/utils/format-money';
 
-export function OrdersList(): JSX.Element {
+export function OrdersList() {
   const { data, isLoading, error } = useMultiPlatformOrders();
   const { width } = useWindowDimensions();
 
@@ -55,7 +55,7 @@ export function OrdersList(): JSX.Element {
   const groupedMultiPlatformOrders =
     groupOrdersByMonthAndYear(multiPlatformOrders);
 
-  const content = (): JSX.Element[] =>
+  const content = () =>
     Object.keys(groupedMultiPlatformOrders).map((date) => (
       <OrderBlock
         key={date}
@@ -76,10 +76,7 @@ interface OrderTableProps {
   date: string;
 }
 
-function OrderBlock({
-  multiPlatformOrders,
-  date,
-}: OrderTableProps): JSX.Element {
+function OrderBlock({ multiPlatformOrders, date }: OrderTableProps) {
   return (
     <div className="border-separate border-spacing-y-3">
       <div>

@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { Head } from '@/components/seo';
 import {
@@ -11,7 +13,7 @@ import { cn } from '@/lib/utils';
 type Props = {
   className?: string;
   title: string;
-  children: JSX.Element;
+  children: React.ReactNode;
   blockBackButton?: boolean;
   showAvailableStates?: boolean;
 };

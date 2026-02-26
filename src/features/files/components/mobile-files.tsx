@@ -1,5 +1,6 @@
 import { Reorder } from 'framer-motion';
 import { MoreHorizontal } from 'lucide-react';
+import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { FileName } from '@/features/files/components/patterns/file-name';
@@ -13,7 +14,7 @@ interface MobileFilesProps {
   files: File[];
 }
 
-export function MobileFiles({ files }: MobileFilesProps): JSX.Element {
+export function MobileFiles({ files }: MobileFilesProps) {
   return (
     <div className="relative left-1/2 flex w-full -translate-x-1/2 flex-col justify-between rounded-[20px] bg-white sm:w-auto md:hidden">
       <div className="flex w-full flex-col justify-between">

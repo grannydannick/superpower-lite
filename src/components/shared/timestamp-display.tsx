@@ -1,5 +1,6 @@
 import { TZDateMini, tzName } from '@date-fns/tz';
 import { format } from 'date-fns';
+import React from 'react';
 
 import { resolveTimeZone } from '@/utils/timezone';
 
@@ -13,7 +14,7 @@ export function TimestampDisplay({
   timestamp,
   timezone,
   dayOnly = false,
-}: TimestampDisplayProps): JSX.Element {
+}: TimestampDisplayProps) {
   if (timestamp == null) return <></>;
 
   const timeZone = resolveTimeZone(timezone);

@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { ChevronDown } from 'lucide-react';
+import React from 'react';
 
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -9,7 +10,7 @@ import { cn } from '@/lib/utils';
 
 import { CancelMembershipDialog } from './cancel-membership-dialog';
 
-export const CurrentMembership = (): JSX.Element => {
+export const CurrentMembership = () => {
   const { data: subscriptionsData, isLoading } = useSubscriptions();
   const superpowerMembership = subscriptionsData?.subscriptions.find(
     (subscription) => subscription.name === 'membership',

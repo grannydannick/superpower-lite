@@ -1,4 +1,5 @@
 import { AnimatePresence } from 'framer-motion';
+import React from 'react';
 
 import * as QuestionnaireSequence from '@/features/onboarding/components/sequences/questionnaire';
 import { STEP_IDS } from '@/features/onboarding/config/step-config';
@@ -10,7 +11,7 @@ import { SplashStep } from './splash-step';
 export const IntakeStepRenderer = () => {
   const step = useOnboardingFlowStore((s) => s.currentStep);
 
-  let content: JSX.Element;
+  let content: React.ReactElement;
   switch (step) {
     case STEP_IDS.INTAKE_SPLASH:
       content = <SplashStep />;

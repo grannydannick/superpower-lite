@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils';
  *
  * @param {React.HTMLAttributes<HTMLParagraphElement>} props - The props for the paragraph element.
  * @param {React.Ref<HTMLParagraphElement>} ref - The ref to the paragraph element.
- * @returns {JSX.Element} The styled paragraph element.
+ * @returns {React.ReactElement} The styled paragraph element.
  */
 
 const Body2 = forwardRef<

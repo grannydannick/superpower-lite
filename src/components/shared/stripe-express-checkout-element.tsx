@@ -4,7 +4,7 @@ import {
   StripeExpressCheckoutElementConfirmEvent,
   StripeExpressCheckoutElementOptions,
 } from '@stripe/stripe-js';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 export const StripeExpressCheckoutElement = ({
   onConfirm,
@@ -20,7 +20,7 @@ export const StripeExpressCheckoutElement = ({
   membershipAmountInCents?: number;
   processing: boolean;
   onAvailabilityChange?: (available: boolean) => void;
-}): JSX.Element => {
+}) => {
   const [isReady, setIsReady] = useState(false);
 
   const options: StripeExpressCheckoutElementOptions = {

@@ -1,6 +1,7 @@
 import { TZDateMini } from '@date-fns/tz';
 import { format } from 'date-fns';
 import { CornerUpRight } from 'lucide-react';
+import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -193,7 +194,7 @@ const LocationSlots = ({
   if (timezone == null) return null;
 
   const timeZone = resolveTimeZone(timezone);
-  const slotNodes: JSX.Element[] = [];
+  const slotNodes: React.ReactElement[] = [];
 
   for (const s of slots) {
     const isSelected = slot?.start === s.start;

@@ -3,7 +3,7 @@ import 'react-pdf/dist/Page/TextLayer.css';
 import { useResizeObserver } from '@wojtekmaj/react-hooks';
 import { format } from 'date-fns';
 import { Download, Trash2, X } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Document, Page, pdfjs, type DocumentProps } from 'react-pdf';
 
 import {
@@ -155,7 +155,7 @@ export const PdfViewer = ({ id, name }: PdfViewerProps) => {
   );
 };
 
-const Loader = (): JSX.Element => {
+const Loader = () => {
   return (
     <div className="flex items-center justify-center">
       <Skeleton className="h-screen w-full" />
@@ -163,7 +163,7 @@ const Loader = (): JSX.Element => {
   );
 };
 
-const Error = (): JSX.Element => {
+const Error = () => {
   return (
     <div className="flex items-center justify-center">
       <h3>Failed to load your PDF 😢</h3>

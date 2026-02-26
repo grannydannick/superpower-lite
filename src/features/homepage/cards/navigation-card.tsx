@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { Syringe, Pill, FileText, Package, ChevronRight } from 'lucide-react';
+import React from 'react';
 
 import { HomepageCard } from '../components/homepage-card';
 
@@ -22,7 +23,7 @@ const marketplaceNavigationItems = [
 ] as const;
 
 export const NavigationCard = () => {
-  const links: JSX.Element[] = [];
+  const links: React.ReactElement[] = [];
 
   for (const item of marketplaceNavigationItems) {
     const Icon = item.icon;

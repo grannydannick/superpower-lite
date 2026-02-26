@@ -297,7 +297,7 @@ function DevHelperMenuContent({
     window.location.reload();
   };
 
-  const questionnaireItems: React.JSX.Element[] = [];
+  const questionnaireItems: React.ReactElement[] = [];
   for (const name of ONBOARDING_QUESTIONNAIRES) {
     questionnaireItems.push(
       <CommandItem
@@ -312,7 +312,7 @@ function DevHelperMenuContent({
     );
   }
 
-  const sequenceItems: React.JSX.Element[] = [];
+  const sequenceItems: React.ReactElement[] = [];
   for (const step of SEQUENCE_STEPS) {
     sequenceItems.push(
       <CommandItem

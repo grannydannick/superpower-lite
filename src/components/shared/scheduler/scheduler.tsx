@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import { Body1 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
@@ -59,7 +59,7 @@ function SchedulerConsumer({
   className?: string;
   displayCancellationNote?: boolean;
   selectedSlot?: Slot | null;
-}): JSX.Element {
+}) {
   const {
     slots,
     fetchSlots,

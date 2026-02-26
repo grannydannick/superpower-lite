@@ -21,7 +21,7 @@ export function CreatePaymentMethodDialog({
   children,
 }: {
   children: ReactNode;
-}): JSX.Element {
+}) {
   const [open, setOpen] = useState<boolean>(false);
   const { width } = useWindowDimensions();
 

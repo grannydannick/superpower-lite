@@ -1,7 +1,7 @@
 import { TZDateMini } from '@date-fns/tz';
 import { Map, Marker } from '@vis.gl/react-google-maps';
 import { isSameDay } from 'date-fns';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { TextShimmer } from '@/components/ui/text-shimmer';
@@ -218,7 +218,7 @@ function LocationsSchedulerConsumer({
   const mapCenter = locationCenter ?? DEFAULT_MAP_CENTER;
   const mapZoom = hasLocationCenter ? 12 : DEFAULT_MAP_ZOOM;
 
-  const locationMarkerNodes: JSX.Element[] = [];
+  const locationMarkerNodes: React.ReactElement[] = [];
   for (const lr of locationRefs) {
     locationMarkerNodes.push(
       <Marker
@@ -228,7 +228,7 @@ function LocationsSchedulerConsumer({
     );
   }
 
-  const filteredLocationNodes: JSX.Element[] = [];
+  const filteredLocationNodes: React.ReactElement[] = [];
   for (const location of filteredLocations) {
     filteredLocationNodes.push(
       <SchedulerLocation

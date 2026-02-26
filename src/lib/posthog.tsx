@@ -57,11 +57,7 @@ function startPosthogInit(
   return initPromiseRef.current;
 }
 
-export function PHProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}): JSX.Element {
+export function PHProvider({ children }: { children: React.ReactNode }) {
   const user = useUser();
   const userId = user.data?.id;
   const userEmail = user.data?.email;

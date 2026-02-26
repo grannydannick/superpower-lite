@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { useBiomarkers } from '@/features/data/api';
@@ -9,7 +11,7 @@ import { Biomarker } from '@/types/api';
 import { CancelMembershipStepper } from '../cancel-membership-stepper';
 import { MembershipBenefits } from '../membership-benefits';
 
-export const BenefitsStep = (): JSX.Element => {
+export const BenefitsStep = () => {
   const { data: biomarkersData, isLoading } = useBiomarkers();
   const { data: user } = useUser();
   const { daysRemaining } = useMembership((s) => s);

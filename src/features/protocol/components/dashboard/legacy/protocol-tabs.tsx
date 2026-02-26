@@ -1,6 +1,6 @@
 import { TZDateMini } from '@date-fns/tz';
 import { format } from 'date-fns';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import { AIIcon } from '@/components/icons/ai-icon';
 import { Button } from '@/components/ui/button';
@@ -57,8 +57,8 @@ const ProtocolTabContent = ({
 
       let hasAdditionalProducts = false;
       let hasAvoidProducts = false;
-      const additionalProductNodes: JSX.Element[] = [];
-      const avoidProductNodes: JSX.Element[] = [];
+      const additionalProductNodes: React.ReactElement[] = [];
+      const avoidProductNodes: React.ReactElement[] = [];
 
       for (const [index, activity] of protocol.activities.entries()) {
         if (activity.type === 'avoid-product') {
@@ -156,7 +156,7 @@ const ProtocolTabContent = ({
     case 'general':
     case 'lifestyle':
     case 'nutrition': {
-      const currentTabNodes: JSX.Element[] = [];
+      const currentTabNodes: React.ReactElement[] = [];
 
       for (const [index, activity] of protocol.activities.entries()) {
         if (activity.type !== tabValue) continue;
@@ -182,7 +182,7 @@ const ProtocolTabContent = ({
         return <ProtocolTabEmpty />;
       }
 
-      const previousProtocolNodes: JSX.Element[] = [];
+      const previousProtocolNodes: React.ReactElement[] = [];
 
       for (const historicalProtocol of historicalProtocols) {
         const supportingInfo = historicalProtocol.supportingInfo;
@@ -289,7 +289,7 @@ export const ProtocolTabs = ({
     }
   }
 
-  const tabNodes: JSX.Element[] = [];
+  const tabNodes: React.ReactElement[] = [];
   for (const tab of tabsToShow) {
     const isActive = activeTab === tab.value;
 

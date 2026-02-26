@@ -1,5 +1,6 @@
 import { cva } from 'class-variance-authority';
 import { format } from 'date-fns';
+import React from 'react';
 
 import { Hover3D } from '@/components/ui/hover-3d';
 import { H2 } from '@/components/ui/typography';
@@ -24,7 +25,7 @@ const membershipCardVariants = cva(
   },
 );
 
-export const MembershipCard = (): JSX.Element => {
+export const MembershipCard = () => {
   const { data: user } = useUser();
   const { data: subscriptionsData, isLoading } = useSubscriptions({});
 

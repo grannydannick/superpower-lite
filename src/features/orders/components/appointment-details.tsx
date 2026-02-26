@@ -83,7 +83,7 @@ export function AppointmentDetails({
   isAdvisory,
   isTestKit,
   price,
-}: AppointmentDetailsProps): React.ReactNode {
+}: AppointmentDetailsProps) {
   if (!location?.address) {
     return null;
   }

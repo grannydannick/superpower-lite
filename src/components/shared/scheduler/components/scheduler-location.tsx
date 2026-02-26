@@ -1,7 +1,7 @@
 import { TZDateMini } from '@date-fns/tz';
 import { format } from 'date-fns';
 import { CornerUpRight } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import { Body2, Body1, Body3 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
@@ -58,7 +58,7 @@ export const SchedulerLocation = ({
     return `${format(start, 'h:mmaaa')} — ${format(end, 'h:mmaaa')}`;
   };
 
-  const slotNodes: JSX.Element[] = [];
+  const slotNodes: React.ReactElement[] = [];
   for (const slot of location.slots) {
     const isSelected = isLocationSelected && selectedSlot?.start === slot.start;
 

@@ -1,6 +1,7 @@
 import { TZDateMini } from '@date-fns/tz';
 import { format } from 'date-fns';
 import { Calendar, ChevronDownIcon } from 'lucide-react';
+import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -56,7 +57,7 @@ export const DateFilter = () => {
     }
   }
 
-  const requestGroupNodes: JSX.Element[] = [];
+  const requestGroupNodes: React.ReactElement[] = [];
 
   for (const rg of requestGroups) {
     const timeZone = resolveTimeZone(rg.timezone);

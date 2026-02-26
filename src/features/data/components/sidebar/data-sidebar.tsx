@@ -1,5 +1,5 @@
 import { useSearch } from '@tanstack/react-router';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { Link } from '@/components/ui/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -119,7 +119,7 @@ export function DataSidebar() {
 
   const categoriesContent = useMemo(() => {
     if (isLoading) {
-      const nodes: JSX.Element[] = [];
+      const nodes: React.ReactElement[] = [];
 
       for (let i = 0; i < 17; i++) {
         const width = 96 + ((i * 10) % 33);
@@ -137,7 +137,7 @@ export function DataSidebar() {
       return nodes;
     }
 
-    const items = [] as JSX.Element[];
+    const items: React.ReactElement[] = [];
 
     items.push(
       <DataSidebarLink

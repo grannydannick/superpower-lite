@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 
 import {
   DropdownMenu,
@@ -47,7 +47,7 @@ export function FileDropdown({ children, file }: FileDropdownProps) {
   );
 }
 
-function DownloadMenuItem({ id, name }: File): JSX.Element {
+function DownloadMenuItem({ id, name }: File) {
   const { mutateAsync } = useDownloadFile();
 
   const onClick = async (): Promise<void> => {
@@ -59,7 +59,7 @@ function DownloadMenuItem({ id, name }: File): JSX.Element {
   return <DropdownMenuItem onClick={onClick}>Download</DropdownMenuItem>;
 }
 
-function DeleteMenuItem({ id }: File): JSX.Element {
+function DeleteMenuItem({ id }: File) {
   const [isConfirming, setIsConfirming] = useState(false);
   const { mutateAsync, isPending } = useDeleteFile({
     mutationConfig: {

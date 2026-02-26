@@ -22,11 +22,7 @@ import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 
 import { useInviteLink } from '../hooks/use-invite-link';
 
-export function AffiliateLink({
-  className,
-}: {
-  className?: string;
-}): JSX.Element {
+export function AffiliateLink({ className }: { className?: string }) {
   const { link } = useInviteLink();
 
   const { copyToClipboard, copied } = useCopyToClipboard(link, {

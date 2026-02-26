@@ -1,5 +1,6 @@
 import { TZDateMini, tzName, type TZDate } from '@date-fns/tz';
 import { isSameDay } from 'date-fns';
+import React from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { Body1 } from '@/components/ui/typography';
@@ -55,7 +56,7 @@ export const SchedulerTimes = ({
     }
   }
 
-  const timeSlotNodes: JSX.Element[] = [];
+  const timeSlotNodes: React.ReactElement[] = [];
   if (loading === false) {
     for (const slot of timeSlots) {
       timeSlotNodes.push(
@@ -70,7 +71,7 @@ export const SchedulerTimes = ({
     }
   }
 
-  const skeletonTimeNodes: JSX.Element[] = [];
+  const skeletonTimeNodes: React.ReactElement[] = [];
   if (loading) {
     for (const key of TIME_SKELETON_KEYS) {
       skeletonTimeNodes.push(

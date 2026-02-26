@@ -94,7 +94,7 @@ RequestGroupsList.displayName = 'OrdersList';
 
 export const RequestGroupsListListEmpty = ({
   status,
-}: RequestGroupsListProps): JSX.Element => {
+}: RequestGroupsListProps) => {
   return (
     <div className="relative overflow-hidden rounded-3xl border border-dashed border-zinc-300">
       <div className="group relative">

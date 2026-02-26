@@ -2,8 +2,7 @@ import { UseChatHelpers } from '@ai-sdk/react';
 import { FileUIPart, UIMessage } from 'ai';
 import equal from 'fast-deep-equal';
 import { ArrowUpIcon } from 'lucide-react';
-import type React from 'react';
-import {
+import React, {
   memo,
   useCallback,
   useEffect,
@@ -313,7 +312,7 @@ function MultimodalInputView({
   disableFileUpload,
   submitForm,
 }: MultimodalInputViewProps) {
-  const previews: JSX.Element[] = [];
+  const previews: React.ReactElement[] = [];
   for (const attachment of attachments) {
     previews.push(
       <PreviewAttachment
@@ -324,7 +323,7 @@ function MultimodalInputView({
     );
   }
 
-  const uploading: JSX.Element[] = [];
+  const uploading: React.ReactElement[] = [];
   for (const filename of uploadQueue) {
     uploading.push(
       <PreviewAttachment

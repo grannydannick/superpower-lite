@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
 import { ArrowUpIcon, Clock, Loader, XIcon } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
@@ -29,7 +29,7 @@ import {
   useCreateMessage,
 } from '../api/create-message';
 
-export const CreateMessageForm = (): JSX.Element => {
+export const CreateMessageForm = () => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
   const form = useForm<CreateMessageInput>({

@@ -18,7 +18,7 @@ import { useResetPassword } from '@/lib/auth';
 import { resetPasswordInputSchema } from '@/lib/auth-schemas';
 import type { ResetPasswordInput } from '@/lib/auth-schemas';
 
-export function ResetPasswordForm(): JSX.Element {
+export function ResetPasswordForm() {
   const resetPasswordMutation = useResetPassword();
   const navigate = useNavigate();
   const form = useForm<ResetPasswordInput>({

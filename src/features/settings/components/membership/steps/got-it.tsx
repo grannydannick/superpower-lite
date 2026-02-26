@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { DialogClose } from '@/components/ui/dialog';
@@ -6,7 +7,7 @@ import { useMembership } from '@/features/settings/stores/membership-store';
 
 import { CancelMembershipStepper } from '../cancel-membership-stepper';
 
-export const GotItStep = (): JSX.Element => {
+export const GotItStep = () => {
   const { endDate } = useMembership((s) => s);
   const methods = CancelMembershipStepper.useStepper();
 

@@ -44,7 +44,7 @@ export function WearablesTable() {
   );
 }
 
-function IntegrationsTableEmpty(): JSX.Element {
+function IntegrationsTableEmpty() {
   const queryClient = useQueryClient();
 
   return (

@@ -21,7 +21,7 @@ import { cn } from '@/lib/utils';
  *
  * @param {React.HTMLAttributes<HTMLHeadingElement>} props - The props for the heading element.
  * @param {React.Ref<HTMLHeadingElement>} ref - The ref to the heading element.
- * @returns {JSX.Element} The styled heading element.
+ * @returns {React.ReactElement} The styled heading element.
  */
 const H4 = forwardRef<
   HTMLHeadingElement,

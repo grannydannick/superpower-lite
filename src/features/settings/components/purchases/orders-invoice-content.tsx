@@ -36,7 +36,7 @@ export const OrderInvoiceContent = ({
 
   const invoice = invoiceQuery.data.invoice;
 
-  const invoiceLineRows: JSX.Element[] = [];
+  const invoiceLineRows: React.ReactElement[] = [];
   const invoiceLineKeyCounts = new Map<string, number>();
 
   for (const line of invoice.lines) {

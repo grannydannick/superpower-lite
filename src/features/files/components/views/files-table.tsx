@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { Skeleton } from '@/components/ui/skeleton';
 import { columns } from '@/features/files/components/desktop/columns';
 import { DataTable } from '@/features/files/components/desktop/data-table';
@@ -17,7 +19,7 @@ export function FilesTable({
 }: {
   files: File[];
   isLoading: boolean;
-}): JSX.Element {
+}) {
   if (isLoading) {
     return (
       <div className="flex flex-col gap-4">

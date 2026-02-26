@@ -1,11 +1,12 @@
 import { Lock } from 'lucide-react';
+import React from 'react';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useUser } from '@/lib/auth';
 import { capitalize } from '@/utils/format';
 
-export function PersonalInformationForm(): JSX.Element {
+export function PersonalInformationForm() {
   const { data: user } = useUser();
   // const { data: avatar, isLoading: isAvatarLoading } = useAvatar({
   //   username: user?.username ?? '',

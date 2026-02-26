@@ -3,7 +3,7 @@ import {
   QuestionnaireResponseItem,
 } from '@medplum/fhirtypes';
 import { ArrowLeftIcon, SmileIcon } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { SanitizedRichText } from '@/components/shared/sanitized-rich-text';
@@ -187,7 +187,7 @@ export const QuestionnaireQuestion = ({
     );
   }
 
-  let questionContent: JSX.Element;
+  let questionContent: React.ReactElement;
   if (item.type === QuestionnaireItemType.group) {
     questionContent = (
       <QuestionnaireGroupQuestion

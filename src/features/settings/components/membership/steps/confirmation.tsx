@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { Ellipsis } from 'lucide-react';
+import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
@@ -8,7 +9,7 @@ import { useMembership } from '@/features/settings/stores/membership-store';
 
 import { CancelMembershipStepper } from '../cancel-membership-stepper';
 
-export const ConfirmationStep = (): JSX.Element => {
+export const ConfirmationStep = () => {
   const methods = CancelMembershipStepper.useStepper();
   const { daysRemaining, startDate, endDate } = useMembership((s) => s);
 
@@ -75,7 +76,7 @@ export const ConfirmationStep = (): JSX.Element => {
   );
 };
 
-const BestValueBadge = (): JSX.Element => {
+const BestValueBadge = () => {
   return (
     <div className="flex items-center justify-center rounded-[6px] bg-[#FFEDD5] px-2 py-1">
       <p className="text-nowrap text-xs text-[#FC5F2B]">Best Value</p>

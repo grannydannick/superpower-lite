@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -54,7 +54,7 @@ const CarouselContent = ({
     };
   }, [emblaMainApi, onSelect, timestamps.length]);
 
-  const timestampNodes: JSX.Element[] = [];
+  const timestampNodes: React.ReactElement[] = [];
   const seen = new Map<string, number>();
 
   for (let i = timestamps.length - 1; i >= 0; i--) {
