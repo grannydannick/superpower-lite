@@ -47,7 +47,7 @@ export default function DigitalTwinModel({
       camera={cameraProps}
       // Lower max DPR to reduce initial shader/RT cost on first paint
       dpr={[1, 1.25]}
-      gl={{ powerPreference: 'high-performance', antialias: false }}
+      gl={{ powerPreference: 'high-performance' }}
     >
       {/* <Stats showPanel={0} className="stats" /> */}
 
