@@ -59,7 +59,7 @@ const actionableOrdersCardConfig: CardConfig = {
   id: 'actionableCards',
   component: ActionableCards,
   shouldShow: (state: HomepageState) => state.hasActionableOrders,
-  getPriority: () => 20,
+  getPriority: () => 5,
 };
 
 /**
