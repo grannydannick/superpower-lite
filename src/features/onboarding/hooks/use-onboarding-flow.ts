@@ -159,9 +159,6 @@ export const useOnboardingFlow = () => {
     // B2B benefits
     const hasClaimedBenefits = (claimedBenefitsData?.length ?? 0) > 0;
 
-    // Resume flow context
-    const hasAdditionalCredits = userHasAdvancedUpgrade || credits.length > 1;
-
     let hasStartedIntake = false;
     for (const name of ONBOARDING_QUESTIONNAIRES) {
       if (questionnaireStatusMap.has(name)) {
@@ -207,7 +204,6 @@ export const useOnboardingFlow = () => {
       lifestyleCompleted,
       userHasAdvancedUpgrade,
       userHasOrganAge,
-      hasAdditionalCredits,
       baselineCreditsCount,
       hasStartedIntake,
       rxQuestionnaireContext,

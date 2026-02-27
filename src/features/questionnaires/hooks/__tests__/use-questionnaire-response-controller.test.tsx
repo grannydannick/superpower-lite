@@ -41,12 +41,35 @@ beforeEach(() => {
   useQuestionnaireMock.mockReturnValue({
     data: { questionnaire: { id: 'questionnaire-id' } },
     isLoading: false,
+    isPending: false,
   });
   useQuestionnaireResponseMock.mockReturnValue({
     data: { questionnaireResponse: null },
     isLoading: false,
   });
   createQuestionnaireResponseMock.mockResolvedValue({ id: 'created-id' });
+});
+
+test('treats pending questionnaire query as loading (react-query v5 enabled gap)', () => {
+  useQuestionnaireResponseMock.mockReturnValue({
+    data: { questionnaireResponse: null },
+    isLoading: false,
+  });
+
+  useQuestionnaireMock.mockReturnValue({
+    data: undefined,
+    isLoading: false,
+    isPending: true,
+  });
+
+  const { result } = renderHook(() =>
+    useQuestionnaireResponseController({
+      questionnaireName: 'demo',
+      statuses: ['in-progress'],
+    }),
+  );
+
+  expect(result.current.isLoading).toBe(true);
 });
 
 test('save creates response by default', async () => {

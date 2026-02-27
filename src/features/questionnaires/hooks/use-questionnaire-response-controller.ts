@@ -36,11 +36,15 @@ export const useQuestionnaireResponseController = ({
     queryConfig: { enabled: !!questionnaireName },
   });
 
+  const responseSettled = !responseQuery.isLoading;
   const response = responseQuery.data?.questionnaireResponse ?? undefined;
 
   const questionnaireQuery = useQuestionnaire({
-    identifier: questionnaireName,
-    queryConfig: { placeholderData: keepPreviousData },
+    identifier: response?.questionnaire ?? questionnaireName,
+    queryConfig: {
+      placeholderData: keepPreviousData,
+      enabled: responseSettled,
+    },
   });
 
   const questionnaireId = questionnaireQuery.data?.questionnaire?.id;
@@ -138,7 +142,7 @@ export const useQuestionnaireResponseController = ({
     questionnaire: questionnaireQuery.data?.questionnaire,
     response,
     responseId,
-    isLoading: questionnaireQuery.isLoading || responseQuery.isLoading,
+    isLoading: questionnaireQuery.isPending || responseQuery.isLoading,
     save,
     submit,
   };

@@ -12,7 +12,6 @@ const baseContext: FlowContext = {
   lifestyleCompleted: false,
   userHasAdvancedUpgrade: false,
   userHasOrganAge: false,
-  hasAdditionalCredits: false,
   baselineCreditsCount: 1,
   hasStartedIntake: false,
   rxQuestionnaireContext: { status: 'none' },
@@ -24,20 +23,13 @@ const baseContext: FlowContext = {
 
 describe('getValidSteps', () => {
   describe('introduction step', () => {
-    it('includes introduction for fresh user with no credits and no intake started', () => {
+    it('includes introduction for fresh user with no intake started', () => {
       const ctx = {
         ...baseContext,
-        hasAdditionalCredits: false,
         hasStartedIntake: false,
       };
       const steps = getValidSteps(ctx);
       expect(steps).toContain(STEP_IDS.INTRODUCTION);
-    });
-
-    it('excludes introduction when user has additional credits', () => {
-      const ctx = { ...baseContext, hasAdditionalCredits: true };
-      const steps = getValidSteps(ctx);
-      expect(steps).not.toContain(STEP_IDS.INTRODUCTION);
     });
 
     it('excludes introduction when user has started intake', () => {
@@ -48,20 +40,13 @@ describe('getValidSteps', () => {
   });
 
   describe('digital-twin step', () => {
-    it('includes digital-twin for fresh user with no credits and no intake started', () => {
+    it('includes digital-twin for fresh user with no intake started', () => {
       const ctx = {
         ...baseContext,
-        hasAdditionalCredits: false,
         hasStartedIntake: false,
       };
       const steps = getValidSteps(ctx);
       expect(steps).toContain(STEP_IDS.DIGITAL_TWIN);
-    });
-
-    it('excludes digital-twin when user has additional credits', () => {
-      const ctx = { ...baseContext, hasAdditionalCredits: true };
-      const steps = getValidSteps(ctx);
-      expect(steps).not.toContain(STEP_IDS.DIGITAL_TWIN);
     });
 
     it('excludes digital-twin when user has started intake', () => {
@@ -121,15 +106,6 @@ describe('getValidSteps', () => {
       const steps = getValidSteps(ctx);
       expect(steps).not.toContain(STEP_IDS.ADVANCED_UPGRADE);
     });
-
-    it('excludes advanced-upgrade for members with any matching RX questionnaire response', () => {
-      const ctx = {
-        ...baseContext,
-        rxQuestionnaireContext: { status: 'completed' as const },
-      };
-      const steps = getValidSteps(ctx);
-      expect(steps).not.toContain(STEP_IDS.ADVANCED_UPGRADE);
-    });
   });
 
   describe('bundled-discount step', () => {
@@ -172,15 +148,6 @@ describe('getValidSteps', () => {
       const steps = getValidSteps(ctx);
       expect(steps).toContain(STEP_IDS.BUNDLED_DISCOUNT);
     });
-
-    it('excludes bundled-discount for members with any matching RX questionnaire response', () => {
-      const ctx = {
-        ...baseContext,
-        rxQuestionnaireContext: { status: 'completed' as const },
-      };
-      const steps = getValidSteps(ctx);
-      expect(steps).not.toContain(STEP_IDS.BUNDLED_DISCOUNT);
-    });
   });
 
   describe('organ-age step', () => {
@@ -215,15 +182,6 @@ describe('getValidSteps', () => {
       const steps = getValidSteps(ctx);
       expect(steps).not.toContain(STEP_IDS.ORGAN_AGE);
     });
-
-    it('excludes organ-age for members with any matching RX questionnaire response', () => {
-      const ctx = {
-        ...baseContext,
-        rxQuestionnaireContext: { status: 'completed' as const },
-      };
-      const steps = getValidSteps(ctx);
-      expect(steps).not.toContain(STEP_IDS.ORGAN_AGE);
-    });
   });
 
   describe('rx-assessment step', () => {
@@ -239,7 +197,7 @@ describe('getValidSteps', () => {
       expect(steps).toContain(STEP_IDS.RX_ASSESSMENT);
     });
 
-    it('does not skip pre-intake steps when rx-assessment is required and intake not started', () => {
+    it('shows intro steps but hides upsell steps when rx-assessment is required and intake not started', () => {
       const ctx = {
         ...baseContext,
         hasStartedIntake: false,
@@ -562,7 +520,6 @@ describe('getValidSteps', () => {
         lifestyleCompleted: true,
         userHasAdvancedUpgrade: true,
         userHasOrganAge: true,
-        hasAdditionalCredits: true,
         baselineCreditsCount: 2,
         hasStartedIntake: true,
         rxQuestionnaireContext: { status: 'none' },

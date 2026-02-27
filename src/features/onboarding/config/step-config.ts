@@ -47,7 +47,6 @@ export interface FlowContext {
   // Credits/purchases
   userHasAdvancedUpgrade: boolean;
   userHasOrganAge: boolean;
-  hasAdditionalCredits: boolean; // hasAdvanced || credits > 1
   baselineCreditsCount: number; // count of SUPERPOWER_BLOOD_PANEL credits
 
   // Resume state
@@ -89,19 +88,18 @@ const STEP_CONFIGS: StepConfig[] = [
   },
   {
     id: STEP_IDS.INTRODUCTION,
-    shouldShow: (ctx) => !ctx.hasAdditionalCredits && !ctx.hasStartedIntake,
+    shouldShow: (ctx) => !ctx.hasStartedIntake,
   },
   {
     id: STEP_IDS.DIGITAL_TWIN,
-    shouldShow: (ctx) => !ctx.hasAdditionalCredits && !ctx.hasStartedIntake,
+    shouldShow: (ctx) => !ctx.hasStartedIntake,
   },
-  // Hide purchase/upsell steps when the member has any Rx intake response.
   {
     id: STEP_IDS.ADVANCED_UPGRADE,
     shouldShow: (ctx) =>
       !ctx.hasStartedIntake &&
       !ctx.userHasAdvancedUpgrade &&
-      ctx.rxQuestionnaireContext.status === 'none' &&
+      ctx.rxQuestionnaireContext.status !== 'required' &&
       !ctx.hasClaimedBenefits,
   },
   {
@@ -109,7 +107,7 @@ const STEP_CONFIGS: StepConfig[] = [
     shouldShow: (ctx) =>
       !ctx.hasClaimedBenefits &&
       !ctx.hasStartedIntake &&
-      ctx.rxQuestionnaireContext.status === 'none' &&
+      ctx.rxQuestionnaireContext.status !== 'required' &&
       ctx.baselineCreditsCount <= 1,
   },
   {
@@ -117,7 +115,7 @@ const STEP_CONFIGS: StepConfig[] = [
     shouldShow: (ctx) =>
       !ctx.userHasOrganAge &&
       !ctx.hasClaimedBenefits &&
-      ctx.rxQuestionnaireContext.status === 'none',
+      ctx.rxQuestionnaireContext.status !== 'required',
   },
   {
     id: STEP_IDS.FINISH_TWIN,
