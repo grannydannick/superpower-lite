@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
 
 import { ProtocolStepLayout } from '../../../layouts/protocol-step-layout';
 
-const MIN_COMMITTED_ACTIONS = 3;
+const MIN_COMMITTED_ACTIONS = 1;
 
 const ProtocolReviewSkeleton = () => {
   return (
@@ -243,8 +243,8 @@ export const ProtocolReviewStep = () => {
 
       {committedActions.length < MIN_COMMITTED_ACTIONS && (
         <Body1 className="text-center text-sm text-secondary">
-          Select at least {MIN_COMMITTED_ACTIONS} actions so we can best support
-          your protocol ({committedActions.length}/{MIN_COMMITTED_ACTIONS})
+          Select at least {MIN_COMMITTED_ACTIONS} action to continue (
+          {committedActions.length}/{MIN_COMMITTED_ACTIONS})
         </Body1>
       )}
 
