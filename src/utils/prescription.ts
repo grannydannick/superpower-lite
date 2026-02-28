@@ -122,7 +122,8 @@ const prescriptionInfoMap: Record<string, PrescriptionInfo> = {
   [TIRZEPATIDE]: PrescriptionInfoData.TIRZEPATIDE,
 };
 
-export const getRxImageUrl = (medicationDisplay: string): string => {
+export const getRxImageUrl = (medicationDisplay?: string): string => {
+  if (!medicationDisplay) return '/rx/prescription-empty.webp';
   const base = medicationDisplay.includes('/')
     ? medicationDisplay.split('/')[0]
     : medicationDisplay;

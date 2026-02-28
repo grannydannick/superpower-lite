@@ -16,7 +16,9 @@ export const Route = createFileRoute('/_app/rx-subscriptions/')({
 function RxSubscriptionsComponent() {
   const subscriptionsQuery = useSubscriptions();
 
-  const subscriptions = subscriptionsQuery.data?.data ?? [];
+  const subscriptions = (subscriptionsQuery.data?.data ?? []).filter(
+    (s) => s.medicationRequest,
+  );
 
   if (subscriptionsQuery.isLoading) {
     return (

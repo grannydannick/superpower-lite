@@ -13,6 +13,8 @@ export const RxSubscriptionCard = ({
 }: {
   subscription: RxSubscription;
 }) => {
+  if (!subscription.medicationRequest) return null;
+
   const imgUrl = getRxImageUrl(
     subscription.medicationRequest.medicationDisplay,
   );

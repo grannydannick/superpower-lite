@@ -808,8 +808,8 @@ export interface RxService {
 
 export interface RxSubscription {
   contract: RxContract;
-  medicationRequest: RxMedicationRequest;
-  serviceRequest: RxServiceRequest;
+  medicationRequest?: RxMedicationRequest;
+  serviceRequest?: RxServiceRequest;
 }
 
 export interface RxContract {

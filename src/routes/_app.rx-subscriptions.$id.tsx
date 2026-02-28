@@ -29,7 +29,7 @@ function RxSubscriptionsComponent() {
     (s) => s.medicationRequest?.id === id,
   );
 
-  if (!subscription) {
+  if (!subscription?.medicationRequest) {
     return null;
   }
 

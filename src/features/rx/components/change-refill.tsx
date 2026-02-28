@@ -145,7 +145,7 @@ const ChangeRefillConfirmation = ({
   subscription: RxSubscription;
 }) => {
   const imgUrl = getRxImageUrl(
-    subscription.medicationRequest.medicationDisplay,
+    subscription.medicationRequest?.medicationDisplay,
   );
 
   return (
@@ -153,7 +153,7 @@ const ChangeRefillConfirmation = ({
       <img
         className="size-[287px] object-cover"
         src={imgUrl}
-        alt={subscription.medicationRequest.medicationDisplay}
+        alt={subscription.medicationRequest?.medicationDisplay}
       />
       <div className="space-y-2 text-center">
         <H3>Refill date confirmed</H3>
