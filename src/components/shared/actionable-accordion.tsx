@@ -31,7 +31,7 @@ export const ActionableAccordion = ({
             </div>
             <div className="flex flex-1 items-center justify-between">
               <Body1 className="text-zinc-900">
-                You have {totalActionable} actionable
+                You have {totalActionable} task
                 {totalActionable === 1 ? '' : 's'}
               </Body1>
               <ChevronDown
