@@ -11,7 +11,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Body1, Body2, H2, H3 } from '@/components/ui/typography';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { RxSubscription } from '@/types/api';
-import { getRxImageUrl } from '@/utils/prescription';
+import { getPrescriptionImage } from '@/utils/prescription';
 
 import { useUpdateRefillDate } from '../api/update-refill-date';
 
@@ -144,8 +144,8 @@ const ChangeRefillConfirmation = ({
 }: {
   subscription: RxSubscription;
 }) => {
-  const imgUrl = getRxImageUrl(
-    subscription.medicationRequest?.medicationDisplay,
+  const imgUrl = getPrescriptionImage(
+    subscription.medicationRequest?.medicationDisplay ?? '',
   );
 
   return (

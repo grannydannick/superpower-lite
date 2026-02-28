@@ -16,9 +16,7 @@ export const Route = createFileRoute('/_app/rx-subscriptions/')({
 function RxSubscriptionsComponent() {
   const subscriptionsQuery = useSubscriptions();
 
-  const subscriptions = (subscriptionsQuery.data?.data ?? []).filter(
-    (s) => s.medicationRequest,
-  );
+  const subscriptions = subscriptionsQuery.data?.data ?? [];
 
   if (subscriptionsQuery.isLoading) {
     return (
@@ -40,8 +38,12 @@ function RxSubscriptionsComponent() {
     (s) => s.medicationRequest?.status === 'active',
   );
 
+  const pendingSubscriptions = subscriptions.filter(
+    (s) => !s.medicationRequest && s.contract,
+  );
+
   const inactiveSubscriptions = subscriptions.filter(
-    (s) => s.medicationRequest?.status !== 'active',
+    (s) => s.medicationRequest && s.medicationRequest.status !== 'active',
   );
 
   return (
@@ -49,6 +51,7 @@ function RxSubscriptionsComponent() {
       <H3>Manage Subscriptions</H3>
       <RxTasks />
       <RxActiveSubscriptions subscriptions={activeSubscriptions} />
+      <RxPendingSubscriptions subscriptions={pendingSubscriptions} />
       <RxInactiveSubscriptions subscriptions={inactiveSubscriptions} />
     </div>
   );
@@ -80,6 +83,25 @@ const RxActiveSubscriptions = ({
   return (
     <div className="space-y-2">
       <H4>Active Subscriptions</H4>
+      <div>
+        {subscriptions.map((s, i) => (
+          <RxSubscriptionCard key={i} subscription={s} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const RxPendingSubscriptions = ({
+  subscriptions,
+}: {
+  subscriptions: RxSubscription[];
+}) => {
+  if (subscriptions.length === 0) return null;
+
+  return (
+    <div className="space-y-2">
+      <H4>Pending Subscriptions</H4>
       <div>
         {subscriptions.map((s, i) => (
           <RxSubscriptionCard key={i} subscription={s} />

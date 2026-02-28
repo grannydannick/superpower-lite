@@ -821,6 +821,7 @@ export interface RxContract {
   totalFills: number;
   fillsRemaining: number;
   daysSupply: number;
+  rxCode?: string;
 }
 
 export interface RxMedicationRequest {

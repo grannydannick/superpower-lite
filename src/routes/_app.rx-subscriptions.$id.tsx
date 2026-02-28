@@ -12,7 +12,7 @@ import { ChangeRefillDialog } from '@/features/rx/components/change-refill';
 import { PauseOrCancelRxSubscriptionDialog } from '@/features/rx/components/pause-or-cancel-rx-subscription';
 import { CurrentAddressCard } from '@/features/users/components/current-address-card';
 import { CurrentPaymentMethodCard } from '@/features/users/components/payment';
-import { getRxImageUrl } from '@/utils/prescription';
+import { getPrescriptionImage } from '@/utils/prescription';
 
 export const Route = createFileRoute('/_app/rx-subscriptions/$id')({
   component: RxSubscriptionsComponent,
@@ -33,7 +33,7 @@ function RxSubscriptionsComponent() {
     return null;
   }
 
-  const imgUrl = getRxImageUrl(
+  const imgUrl = getPrescriptionImage(
     subscription.medicationRequest.medicationDisplay,
   );
 

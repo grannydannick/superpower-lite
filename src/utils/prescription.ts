@@ -122,12 +122,30 @@ const prescriptionInfoMap: Record<string, PrescriptionInfo> = {
   [TIRZEPATIDE]: PrescriptionInfoData.TIRZEPATIDE,
 };
 
-export const getRxImageUrl = (medicationDisplay?: string): string => {
-  if (!medicationDisplay) return '/rx/prescription-empty.webp';
-  const base = medicationDisplay.includes('/')
-    ? medicationDisplay.split('/')[0]
-    : medicationDisplay;
-  return `/rx/transparent/${base.toLowerCase().trim().replaceAll(' ', '-')}.webp`;
+const rxCodeDisplayNames: Record<string, string> = {
+  'rx-semaglutide': SEMAGLUTIDE,
+  'rx-tirzepatide': TIRZEPATIDE,
+  'rx-enclomiphene': ENCLOMIPHENE,
+  'rx-tadalafil': TADALAFIL,
+  'rx-metformin': METFORMIN,
+  'rx-sermorelin-injectable': SERMORELIN_INJECTION,
+  'rx-sermorelin-troche': SERMORELIN_TROCHES,
+  'rx-vip-nasal-spray': VIP_NASAL_SPRAY,
+  'rx-gonadorelin': GONADORELIN,
+  'rx-nad-injectable': NAD_INJECTION,
+  'rx-nad-intranasal': NAD_INTRANASAL,
+  'rx-hcg-pregnyl': HCG,
+  'rx-aloe-vera-tretinoin': TRETINOIN,
+  'rx-ghk-cu': GHK_CU_CREAM,
+  'rx-low-dose-naltrexone': LOW_DOSE_NALTREXONE,
+  'rx-methylcobalamin-b12': VITAMIN_B12_INJECTION,
+};
+
+export const getDisplayNameFromRxCode = (
+  rxCode?: string,
+): string | undefined => {
+  if (!rxCode) return undefined;
+  return rxCodeDisplayNames[rxCode];
 };
 
 export const getPrescriptionInfo = (
