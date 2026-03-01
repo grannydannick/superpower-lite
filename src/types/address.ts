@@ -20,7 +20,7 @@ export const formAddressInputSchema = z
     line1: z
       .string()
       .min(3, { message: 'Please enter a valid address.' })
-      .regex(/^[a-zA-Z0-9 .-]+$/, {
+      .regex(/^[a-zA-Z0-9 ./-]+$/, {
         message: `Address Line 1 has invalid characters`,
       }),
     line2: z
@@ -30,7 +30,7 @@ export const formAddressInputSchema = z
         (val) =>
           val === undefined ||
           val.trim() === '' ||
-          /^[a-zA-Z0-9 .-]+$/.test(val),
+          /^[a-zA-Z0-9 ./-]+$/.test(val),
         {
           message: `Address Line 2 has invalid characters`,
         },
