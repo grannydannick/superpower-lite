@@ -173,6 +173,10 @@ module.exports = {
           '0%': { opacity: '0', color: '#FC5F2B', filter: 'blur(2px)' },
           '100%': { opacity: '1', filter: 'blur(0px)' },
         },
+        shimmer: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(200%)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -191,6 +195,7 @@ module.exports = {
         dot2: 'dot-wave 1.3s infinite 0.2s',
         dot3: 'dot-wave 1.3s infinite 0.4s',
         'ai-streaming': 'ai-streaming 0.5s ease-out',
+        shimmer: 'shimmer 2.5s ease-in-out infinite',
       },
       screens: {
         xs: '475px',
