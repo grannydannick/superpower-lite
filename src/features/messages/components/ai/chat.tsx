@@ -24,6 +24,8 @@ import {
 import { useChatStore } from '@/features/messages/stores/chat-store';
 import { createChatV2Transport } from '@/features/messages/utils/chatv2-transport';
 import { extractTiming } from '@/features/messages/utils/extract-timing';
+import { OnboardingCircle } from '@/features/onboarding-circle/components/onboarding-circle';
+import { useOnboardingCircleStore } from '@/features/onboarding-circle/stores/onboarding-circle-store';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
@@ -997,6 +999,9 @@ function ChatView({
     isUploadLabsPreset && !hasUserMessages && attachments.length === 0;
 
   const { data: user } = useUser();
+  const onboardingComplete = useOnboardingCircleStore(
+    (s) => s.completedSources.size >= 4,
+  );
   const showImportMemory = shouldShowImportMemory(user?.createdAt);
 
   const setupActions = useMemo(() => {
@@ -1060,12 +1065,16 @@ function ChatView({
           <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
             <Greeting />
             <div className="flex w-full">
-              <SuggestedActions
-                onSendSuggestion={(text) => {
-                  void sendMessage({ text, files: [] }, undefined);
-                }}
-                setupActions={setupActions}
-              />
+              {onboardingComplete ? (
+                <SuggestedActions
+                  onSendSuggestion={(text) => {
+                    void sendMessage({ text, files: [] }, undefined);
+                  }}
+                  setupActions={setupActions}
+                />
+              ) : (
+                <OnboardingCircle />
+              )}
             </div>
           </div>
         )}
