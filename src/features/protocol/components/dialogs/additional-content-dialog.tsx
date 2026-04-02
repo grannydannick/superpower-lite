@@ -15,21 +15,33 @@ import { useAnalytics } from '@/hooks/use-analytics';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import type { Product } from '@/types/api';
 
+import type { ProtocolCitation } from '../../api';
+import { ACTION_TYPE_FALLBACK_IMAGE } from '../../const/protocol-constants';
 import { ProtocolMarkdown } from '../protocol-markdown';
 import { SupplementPreview } from '../supplement-preview';
+
+import { CitationCard } from './citations-dialog';
 
 type AdditionalContentDialogProps = {
   children: ReactNode;
   actionTitle?: string;
-  additionalContent: string;
+  actionImage?: string;
+  whyContent?: string | null;
+  lookOutForContent?: string | null;
+  additionalContent?: string | null;
   supplementProduct?: Product | null;
+  citations?: ProtocolCitation[];
 };
 
 export function AdditionalContentDialog({
   children,
   actionTitle,
+  actionImage,
+  whyContent,
+  lookOutForContent,
   additionalContent,
   supplementProduct,
+  citations,
 }: AdditionalContentDialogProps) {
   const [open, setOpen] = useState(false);
   const { track } = useAnalytics();
@@ -56,9 +68,24 @@ export function AdditionalContentDialog({
   );
 
   const content = (
-    <div className="flex flex-col gap-6 p-6 md:p-8">
+    <div className="flex flex-col gap-6 overflow-y-auto p-6 md:p-8">
+      {/* Header */}
       <div className="flex items-start justify-between gap-4">
-        <H3 className="text-2xl">More details</H3>
+        {actionImage ? (
+          <div className="flex items-center gap-3">
+            <img
+              src={actionImage}
+              alt={actionTitle}
+              className="size-10 rounded-lg object-cover rounded-mask"
+              onError={(e) => {
+                e.currentTarget.src = ACTION_TYPE_FALLBACK_IMAGE;
+              }}
+            />
+            <H3 className="text-xl">{actionTitle}</H3>
+          </div>
+        ) : (
+          <H3 className="text-2xl">{actionTitle || 'More details'}</H3>
+        )}
         <DialogClose asChild>
           <Button
             variant="ghost"
@@ -70,26 +97,77 @@ export function AdditionalContentDialog({
         </DialogClose>
       </div>
 
-      <div className="space-y-4">
-        <ProtocolMarkdown
-          content={additionalContent}
-          className="[&>div]:text-secondary"
-        />
-      </div>
+      {/* Why we recommend this */}
+      {whyContent && (
+        <div className="space-y-2">
+          <H4 className="text-base">Why we recommend this</H4>
+          <ProtocolMarkdown
+            content={whyContent}
+            className="text-sm [&>div]:text-secondary"
+          />
+        </div>
+      )}
 
+      {/* What to look for */}
+      {lookOutForContent && (
+        <div className="space-y-2">
+          <H4 className="text-base">What to look for</H4>
+          <ProtocolMarkdown
+            content={lookOutForContent}
+            className="text-sm [&>div]:text-secondary"
+          />
+        </div>
+      )}
+
+      {/* Additional content / Member success */}
+      {additionalContent && (
+        <div className="space-y-2">
+          <ProtocolMarkdown
+            content={additionalContent}
+            className="text-sm [&>div]:text-secondary"
+          />
+        </div>
+      )}
+
+      {/* Recommended product */}
       {supplementProduct && (
         <div className="space-y-2">
-          <H4>Recommended product</H4>
+          <H4 className="text-base">Recommended product</H4>
           <SupplementPreview product={supplementProduct} />
         </div>
       )}
 
+      {/* Citations */}
+      {citations && citations.length > 0 && (
+        <div className="space-y-3">
+          <H4 className="text-base">Clinical Evidence</H4>
+          {citations.map((citation, index) => (
+            <CitationCard
+              key={index}
+              citation={citation}
+              onLinkClick={() => {
+                track('protocol_reveal_citation_link_clicked', {
+                  citation_title: citation.title,
+                  citation_url:
+                    citation.url ||
+                    (citation.doi
+                      ? `https://doi.org/${citation.doi}`
+                      : undefined),
+                });
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* AI suggestions */}
       <div className="space-y-3">
-        <H4>Ask Superpower AI</H4>
+        <H4 className="text-base">Ask Superpower AI</H4>
         <AiSuggestions
-          context={`I'm reviewing additional details${actionTitle ? ` for: ${actionTitle}` : ''}.${additionalContent ? ` Key info: ${additionalContent.slice(0, 200)}...` : ''} Suggest helpful questions.`}
+          context={`I'm reviewing details${actionTitle ? ` for: ${actionTitle}` : ''}.${whyContent ? ` Why: ${whyContent.slice(0, 150)}` : ''}${additionalContent ? ` Details: ${additionalContent.slice(0, 150)}` : ''} Suggest helpful questions.`}
           limit={3}
           eventName="clicked_additional_content_ai_suggestion"
+          showAskOwn
         />
       </div>
     </div>

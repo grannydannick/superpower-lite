@@ -8,6 +8,7 @@ import { Link } from '@/components/ui/link';
 import { Body2, H4 } from '@/components/ui/typography';
 import { AiSuggestions } from '@/features/messages/components/ai-suggestions';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 
 import { LegacyProtocol } from '../../../api';
@@ -43,11 +44,13 @@ const ProtocolTabContent = ({
   protocol,
   historicalProtocols,
   isMobile,
+  hasRxAccess,
 }: {
   tabValue: ProtocolTabValue;
   protocol: LegacyProtocol;
   historicalProtocols: LegacyProtocol[] | undefined;
   isMobile: boolean;
+  hasRxAccess: boolean;
 }) => {
   switch (tabValue) {
     case 'products': {
@@ -107,7 +110,7 @@ const ProtocolTabContent = ({
           continue;
         }
 
-        if (activity.type === 'prescription') {
+        if (activity.type === 'prescription' && hasRxAccess) {
           hasAdditionalProducts = true;
           const key = `prescription:${activity.prescription.pdpUrl ?? activity.prescription.name}`;
 
@@ -119,6 +122,10 @@ const ProtocolTabContent = ({
             />,
           );
         }
+      }
+
+      if (!hasAdditionalProducts && !hasAvoidProducts) {
+        return <ProtocolTabEmpty />;
       }
 
       return (
@@ -251,6 +258,9 @@ export const ProtocolTabs = ({
 }) => {
   const [activeTab, setActiveTab] = useState<ProtocolTabValue>('products');
   const isMobile = useIsMobile();
+  const userQuery = useUser();
+  const hasRxAccess =
+    userQuery.isFetched && userQuery.data?.access?.rx !== false;
 
   let hasLifestyle = false;
   let hasNutrition = false;
@@ -324,6 +334,7 @@ export const ProtocolTabs = ({
         protocol={protocol}
         historicalProtocols={historicalProtocols}
         isMobile={isMobile}
+        hasRxAccess={hasRxAccess}
       />
     </div>
   );

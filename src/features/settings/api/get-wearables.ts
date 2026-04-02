@@ -5,12 +5,14 @@ import { QueryConfig } from '@/lib/react-query';
 import { Wearable } from '@/types/api';
 
 export const getWearables = (): Promise<{ wearables: Wearable[] }> => {
-  return api.get('/wearables');
+  return api.get('/wearables', {
+    headers: { 'x-hide-toast': 'true' },
+  });
 };
 
 export const getWearablesQueryOptions = () => {
   return queryOptions({
-    queryKey: ['invoices'],
+    queryKey: ['wearables'],
     queryFn: () => getWearables(),
   });
 };

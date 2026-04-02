@@ -51,7 +51,7 @@ export const ProtocolBook = ({
           )}
         >
           <div className="absolute left-0 h-full w-2 bg-black/20" />
-          <div className="absolute z-10 flex size-full flex-col py-2 pl-2.5 pr-12 lg:py-3 lg:pl-5">
+          <div className="absolute z-10 flex size-full flex-col py-2 pl-2.5 pr-12 lg:py-3 lg:pl-3">
             <Body1
               className={cn('flex-1 leading-tight text-white', titleClassName)}
             >

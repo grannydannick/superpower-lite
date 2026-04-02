@@ -7,6 +7,7 @@ import { ChevronRightIcon } from '@/components/icons/chevron-right-icon';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Body1, Body2 } from '@/components/ui/typography';
+import { isScheduledRedrawOrder } from '@/features/redraw/utils/get-scheduled-redraw-order';
 import {
   HealthcareService,
   Order,
@@ -108,6 +109,20 @@ function RequestItemRow({
       ? undefined
       : format(new TZDateMini(order.createdAt, timeZone), 'MMM d, yyyy');
   const price = services.find((s) => s.id === order.serviceId)?.price;
+  const isScheduledRedraw = isScheduledRedrawOrder(order);
+  let scheduledForLabel = scheduledFor;
+
+  if (
+    isScheduledRedraw &&
+    order.redrawDetails?.startTimestamp != null &&
+    order.redrawDetails?.timezone != null
+  ) {
+    const redrawTimeZone = resolveTimeZone(order.redrawDetails.timezone);
+    scheduledForLabel = format(
+      new TZDateMini(order.redrawDetails.startTimestamp, redrawTimeZone),
+      'MMM d, yyyy',
+    );
+  }
 
   return (
     <div className="flex items-center gap-3 py-2">
@@ -118,12 +133,17 @@ function RequestItemRow({
       />
       <div className="flex flex-1 items-center justify-between">
         <div className="flex flex-col">
-          {scheduledFor && (
+          {scheduledForLabel && (
             <Badge variant="vermillion" className="mb-1 w-fit">
-              Scheduled for: {scheduledFor}
+              Scheduled for: {scheduledForLabel}
             </Badge>
           )}
-          <Body1>{order.serviceName}</Body1>
+          <div className="flex items-center gap-2">
+            <Body1>{order.serviceName}</Body1>
+            {isScheduledRedraw ? (
+              <Badge variant="vermillion">RECOLLECTION</Badge>
+            ) : null}
+          </div>
           <Body2 className="text-zinc-500">
             {createdWithTz && price
               ? `${createdWithTz} · ${formatMoney(price)}`

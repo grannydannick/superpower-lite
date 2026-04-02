@@ -16,6 +16,12 @@ export type ProfileDropdownLink = {
   testid?: string;
 };
 
+export type ProfileDropdownAction = {
+  name: string;
+  icon: LucideIcon | FC<SVGProps<SVGSVGElement>>;
+  onClick: () => void;
+};
+
 interface ProfileDropdownLinkState {
   from?: string;
 }
@@ -23,6 +29,7 @@ interface ProfileDropdownLinkState {
 type ProfileDropdownProps = {
   trigger: ReactNode;
   links: ProfileDropdownLink[];
+  actions?: ProfileDropdownAction[];
   side?: 'top' | 'bottom' | 'left' | 'right';
   align?: 'start' | 'center' | 'end';
   sideOffset?: number;
@@ -40,6 +47,7 @@ type ProfileDropdownProps = {
 export function ProfileDropdown({
   trigger,
   links,
+  actions,
   side = 'bottom',
   align = 'end',
   sideOffset = 16,
@@ -67,6 +75,23 @@ export function ProfileDropdown({
         align={align}
       >
         <ul className="flex flex-col gap-1.5">
+          {actions?.map((action) => {
+            const Icon = action.icon;
+            return (
+              <li key={action.name}>
+                <button
+                  onClick={() => {
+                    action.onClick();
+                    onItemClick?.();
+                  }}
+                  className="flex w-full cursor-pointer items-center gap-3 rounded-[18px] p-4 text-secondary transition duration-200 ease-in-out hover:text-zinc-600"
+                >
+                  <Icon width={12} height={12} color="currentColor" />
+                  <p className="text-sm">{action.name}</p>
+                </button>
+              </li>
+            );
+          })}
           {links.map((link) => {
             const isLogout =
               link.to === '/logout' || /log\s*out/i.test(link.name);

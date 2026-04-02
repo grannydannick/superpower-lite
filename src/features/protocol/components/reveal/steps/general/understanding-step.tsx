@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Body1, Body2, H2, H4 } from '@/components/ui/typography';
 import { Body4 } from '@/components/ui/typography/body4/body4';
 import { useProtocolStepperContext } from '@/features/protocol/components/reveal/protocol-stepper-context';
+import { useGender } from '@/hooks/use-gender';
 import { useUser } from '@/lib/auth';
 
 import { ProtocolStepLayout } from '../../../layouts/protocol-step-layout';
@@ -15,6 +16,7 @@ export const UnderstandingStep = () => {
   const { next, healthWinners, areasToImprove, biomarkers } =
     useProtocolStepperContext();
   const { data: user } = useUser();
+  const { gender } = useGender();
 
   const handleNext = useCallback(() => {
     next();
@@ -57,29 +59,29 @@ export const UnderstandingStep = () => {
                   <div>
                     <H4 className="mb-6 text-xl font-semibold">{userName}</H4>
 
-                    <div className="grid grid-cols-[4.5rem_1fr] items-center gap-x-3 gap-y-2">
-                      <Body1 className="bg-gradient-to-t from-vermillion-900 to-vermillion-500 bg-clip-text text-right font-semibold tabular-nums text-transparent">
+                    <div className="grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2">
+                      <Body1 className="bg-gradient-to-t from-vermillion-900 to-vermillion-500 bg-clip-text font-semibold tabular-nums text-transparent">
                         {biologicalAge ?? '--'}
                       </Body1>
                       <Body2 className="whitespace-nowrap text-secondary">
                         Biological Age
                       </Body2>
 
-                      <Body1 className="bg-gradient-to-t from-vermillion-900 to-vermillion-500 bg-clip-text text-right font-semibold tabular-nums text-transparent">
+                      <Body1 className="bg-gradient-to-t from-vermillion-900 to-vermillion-500 bg-clip-text font-semibold tabular-nums text-transparent">
                         {superpowerScore ?? '--'}
                       </Body1>
                       <Body2 className="whitespace-nowrap text-secondary">
                         Superpower Score
                       </Body2>
 
-                      <Body1 className="bg-gradient-to-t from-vermillion-900 to-vermillion-500 bg-clip-text text-right font-semibold tabular-nums text-transparent">
+                      <Body1 className="bg-gradient-to-t from-vermillion-900 to-vermillion-500 bg-clip-text font-semibold tabular-nums text-transparent">
                         {healthWinners.length}
                       </Body1>
                       <Body2 className="whitespace-nowrap text-secondary">
                         Health Winners
                       </Body2>
 
-                      <Body1 className="bg-gradient-to-t from-vermillion-900 to-vermillion-500 bg-clip-text text-right font-semibold tabular-nums text-transparent">
+                      <Body1 className="bg-gradient-to-t from-vermillion-900 to-vermillion-500 bg-clip-text font-semibold tabular-nums text-transparent">
                         {areasToImprove.length}
                       </Body1>
                       <Body2 className="whitespace-nowrap text-secondary">
@@ -88,7 +90,7 @@ export const UnderstandingStep = () => {
                     </div>
                   </div>
                   <img
-                    src="/protocol/twins/twin-neutral.webp"
+                    src={`/protocol/twins/${gender === 'female' ? 'female' : 'male'}-twin-neutral.png`}
                     className="ml-auto max-w-32 pt-4 rounded-mask"
                     alt=""
                   />

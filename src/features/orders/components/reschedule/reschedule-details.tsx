@@ -33,7 +33,6 @@ export function RescheduleDetails({
   return (
     <div className="flex flex-col justify-center gap-10 md:max-w-none">
       <div className="space-y-6">
-        {/* The bg-zinc-50 helps prevent strobing on transparent images; see comment in progressive-image.tsx */}
         <ProgressiveImage
           src={
             serviceName
@@ -48,7 +47,9 @@ export function RescheduleDetails({
           <div className="space-y-4">
             <div className="flex flex-col justify-between md:flex-row md:items-center">
               <H3 className="text-zinc-900">
-                {requestGroup.orders.map((o) => o.serviceName).join(', ')}
+                {requestGroup.orders
+                  .map((order) => order.serviceName)
+                  .join(', ')}
               </H3>
               <StatusDisplay requestGroup={requestGroup} />
             </div>
@@ -56,6 +57,7 @@ export function RescheduleDetails({
               <div className="flex flex-col gap-2 md:flex-row md:items-center">
                 <button
                   className="flex w-full items-center justify-between rounded-xl border px-3 py-2"
+                  type="button"
                   onClick={() => setMode('reschedule')}
                 >
                   <div className="flex flex-col items-start gap-1.5">
@@ -79,6 +81,7 @@ export function RescheduleDetails({
 
                 <button
                   className="flex w-full items-center justify-between rounded-xl border px-3 py-2"
+                  type="button"
                   onClick={() => setMode('cancel')}
                 >
                   <div className="flex flex-col items-start gap-1.5">
@@ -109,7 +112,7 @@ export function RescheduleDetails({
 
       {requestGroup.appointmentType ? (
         <AppointmentDetails
-          collectionMethod={requestGroup?.collectionMethod}
+          collectionMethod={requestGroup.collectionMethod}
           slot={
             requestGroup.startTimestamp && requestGroup.endTimestamp
               ? {
@@ -120,7 +123,7 @@ export function RescheduleDetails({
           }
           timezone={requestGroup.timezone}
           location={
-            requestGroup?.address
+            requestGroup.address
               ? {
                   address: requestGroup.address,
                   capabilities: requestGroup.appointmentType
@@ -129,14 +132,13 @@ export function RescheduleDetails({
                           ? 'WALK_IN'
                           : 'APPOINTMENT_SCHEDULING',
                       ]
-                    : // fallback for legacy to always appointment schedyuling
-                      ['APPOINTMENT_SCHEDULING'],
+                    : ['APPOINTMENT_SCHEDULING'],
                   name: '',
                   slots: [],
                 }
               : undefined
           }
-          orderIds={requestGroup.orders.map((o) => o.id)}
+          orderIds={requestGroup.orders.map((order) => order.id)}
         />
       ) : !isAdvisoryCall ? (
         <div className="flex flex-col gap-4">

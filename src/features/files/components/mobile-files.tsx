@@ -1,14 +1,20 @@
 import { Reorder } from 'framer-motion';
 import { MoreHorizontal } from 'lucide-react';
-import React from 'react';
 
 import { Button } from '@/components/ui/button';
+import { Body3 } from '@/components/ui/typography';
 import { FileName } from '@/features/files/components/patterns/file-name';
+import { FILE_CLASSIFICATION_LABELS } from '@/features/files/const/extraction-labels';
 import { cn } from '@/lib/utils';
 import { File } from '@/types/api';
 
-import { ViewPdfDialog } from './file-dialogs/view-pdf-dialog';
+import { CONTENT_TYPE_MAP } from '../const/content-type';
+
+import { PdfPreviewTrigger } from './file-dialogs/pdf-preview-trigger';
+import { ExtractionBadge } from './patterns/extraction-badge';
+import { ExtractionSummary } from './patterns/extraction-summary';
 import { FileDropdown } from './patterns/file-dropdown';
+import { LabSummaryLink } from './patterns/lab-summary-link';
 
 interface MobileFilesProps {
   files: File[];
@@ -27,6 +33,25 @@ export function MobileFiles({ files }: MobileFilesProps) {
             className="space-y-1"
           >
             {files.map((file, index) => {
+              const extraction = file.ingestion?.extraction;
+              const typeLabel =
+                file.ingestion?.classification != null
+                  ? FILE_CLASSIFICATION_LABELS[file.ingestion.classification]
+                  : (CONTENT_TYPE_MAP[file.contentType] ?? 'Document');
+
+              const fileDetails = (
+                <div className="min-w-0">
+                  <FileName file={file} />
+                  <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <Body3 className="text-zinc-500">{typeLabel}</Body3>
+                    <ExtractionBadge extraction={extraction} />
+                    {extraction?.status === 'final' ? (
+                      <ExtractionSummary extraction={extraction} />
+                    ) : null}
+                  </div>
+                </div>
+              );
+
               return (
                 <Reorder.Item
                   drag={false}
@@ -41,15 +66,14 @@ export function MobileFiles({ files }: MobileFilesProps) {
                     )}
                   >
                     {file.contentType === 'application/pdf' ? (
-                      <ViewPdfDialog file={file}>
-                        <div className="flex items-center">
-                          <FileName file={file} />
-                        </div>
-                      </ViewPdfDialog>
+                      <PdfPreviewTrigger fileId={file.id}>
+                        {fileDetails}
+                      </PdfPreviewTrigger>
                     ) : (
-                      <FileName file={file} />
+                      fileDetails
                     )}
-                    <div className="ml-auto flex items-center gap-1.5">
+                    <div className="ml-auto flex shrink-0 items-center gap-1.5">
+                      <LabSummaryLink file={file} />
                       <FileDropdown file={file}>
                         <Button
                           variant="ghost"

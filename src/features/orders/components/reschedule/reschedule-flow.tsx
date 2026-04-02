@@ -1,8 +1,10 @@
 import { ChevronLeft } from 'lucide-react';
-import React, { useState, useMemo } from 'react';
+import { useState } from 'react';
 
 import { Link } from '@/components/ui/link';
 import { Body2 } from '@/components/ui/typography';
+import { RedrawRescheduleFlow } from '@/features/redraw/components/redraw-reschedule-flow';
+import { getScheduledRedrawOrder } from '@/features/redraw/utils/get-scheduled-redraw-order';
 import { RequestGroup } from '@/types/api';
 
 import { RescheduleConfirmation } from './reschedule-confirmation';
@@ -16,22 +18,27 @@ export const RescheduleFlow = ({
   requestGroup: RequestGroup;
 }) => {
   const [mode, setMode] = useState<RescheduleMode>('default');
+  const scheduledRedrawOrder = getScheduledRedrawOrder(requestGroup);
 
-  const content = useMemo(() => {
-    switch (mode) {
-      case 'default':
-        return (
-          <RescheduleDetails requestGroup={requestGroup} setMode={setMode} />
-        );
-      case 'cancel':
-      case 'reschedule':
-        return (
-          <RescheduleConfirmation requestGroup={requestGroup} mode={mode} />
-        );
-      default:
-        return null;
-    }
-  }, [mode, requestGroup]);
+  if (scheduledRedrawOrder) {
+    return <RedrawRescheduleFlow requestGroup={requestGroup} />;
+  }
+
+  let content = null;
+
+  switch (mode) {
+    case 'default':
+      content = (
+        <RescheduleDetails requestGroup={requestGroup} setMode={setMode} />
+      );
+      break;
+    case 'cancel':
+    case 'reschedule':
+      content = (
+        <RescheduleConfirmation requestGroup={requestGroup} mode={mode} />
+      );
+      break;
+  }
 
   return (
     <div className="mx-auto w-full max-w-3xl py-8">

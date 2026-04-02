@@ -101,6 +101,7 @@ export function ProtocolGoal({ goal, actions, allGoals }: ProtocolGoalProps) {
             <H4>Ask Superpower AI</H4>
             <AiSuggestions
               context={`I'm currently looking at my Protocol, particularly this goal: ${JSON.stringify(goal)}. Please give me some suggestions for questions I can ask regarding this.`}
+              showAskOwn
             />
           </div>
         )}

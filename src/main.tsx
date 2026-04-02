@@ -3,12 +3,15 @@ import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 
 import './index.css';
+import { initSentry, Sentry } from '@/lib/sentry';
 import { captureCampaignParameters } from '@/utils/campaign-tracking';
 
 import { App } from './app';
 
 const root = document.getElementById('root');
 if (!root) throw new Error('No root element found');
+
+initSentry();
 
 // Initialize campaign tracking immediately since this is a client-side app
 captureCampaignParameters();
@@ -28,7 +31,20 @@ const bootstrap = async () => {
     }
   }
 
-  createRoot(root).render(
+  createRoot(root, {
+    onCaughtError(error, errorInfo) {
+      console.error(error);
+      Sentry.captureException(error, {
+        extra: { componentStack: errorInfo.componentStack },
+      });
+    },
+    onUncaughtError(error, errorInfo) {
+      console.error(error);
+      Sentry.captureException(error, {
+        extra: { componentStack: errorInfo.componentStack },
+      });
+    },
+  }).render(
     <React.StrictMode>
       <MotionConfig reducedMotion="user">
         <LazyMotion features={domMax}>

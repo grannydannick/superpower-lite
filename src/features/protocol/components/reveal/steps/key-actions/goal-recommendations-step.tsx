@@ -1,4 +1,3 @@
-import { IconAnalytics } from '@central-icons-react/round-filled-radius-2-stroke-1.5/IconAnalytics';
 import { IconSparkle } from '@central-icons-react/round-filled-radius-2-stroke-1.5/IconSparkle';
 import { ChevronRight } from 'lucide-react';
 import { useCallback } from 'react';
@@ -7,10 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { H2, H4, Body1 } from '@/components/ui/typography';
 import { CommitActionButton } from '@/features/protocol/components/commit-action-button';
-import {
-  CitationsDialog,
-  AdditionalContentDialog,
-} from '@/features/protocol/components/dialogs';
+import { AdditionalContentDialog } from '@/features/protocol/components/dialogs';
 import { useProtocolStepperContext } from '@/features/protocol/components/reveal/protocol-stepper-context';
 import { getActionTypeImage } from '@/features/protocol/const/protocol-constants';
 import { useSupplementProductLookup } from '@/features/protocol/hooks/use-supplement-product-lookup';
@@ -47,7 +43,6 @@ export const GoalRecommendationsStep = ({
     goal.titleCopyVariations?.additionalActionTitle ??
     `More ways to support your ${goal.title.toLowerCase()}`;
 
-  // Skip this step if there are no additional actions
   if (additionalActions.length === 0) {
     return (
       <ProtocolStepLayout className="w-full items-start gap-4">
@@ -72,16 +67,6 @@ export const GoalRecommendationsStep = ({
           <span className="text-sm text-secondary">Additional Actions</span>
         </Badge>
         <H2 className="mb-4 text-2xl">{sectionTitle}</H2>
-        {/* <div className="mb-6 flex items-center gap-3">
-          <img
-            src={REVIEWING_CLINICIAN.avatarUrl}
-            alt={REVIEWING_CLINICIAN.name}
-            className="size-6 rounded-full border border-black/10"
-          />
-          <span className="text-sm text-secondary">
-            Approved by {REVIEWING_CLINICIAN.name}
-          </span>
-        </div> */}
       </div>
 
       <div className="w-full space-y-4">
@@ -91,77 +76,54 @@ export const GoalRecommendationsStep = ({
             action.content.type === 'supplement'
               ? getSupplementProduct(action.content.productId)
               : null;
+          const whyContent =
+            action.content.type === 'supplement'
+              ? action.content.why
+              : action.description;
+          const lookOutForContent =
+            action.content.type === 'supplement'
+              ? action.content.lookOutFor
+              : null;
+          const actionCitations = action.citations ?? [];
+
           return (
             <div
               key={action.id}
               className="w-full rounded-2xl border border-zinc-200 bg-white p-4"
             >
-              {action.additionalContent ? (
+              <div className="mb-4 flex items-center gap-3">
+                <img
+                  src={actionImage}
+                  alt={action.title}
+                  className="size-12 rounded-lg object-cover"
+                />
+                <H4 className="flex-1 text-lg">{action.title}</H4>
+              </div>
+
+              <ProtocolMarkdown
+                content={action.description}
+                className="mb-4 text-sm text-secondary [&>div]:mb-0"
+              />
+
+              <div className="flex items-center justify-between">
                 <AdditionalContentDialog
                   actionTitle={action.title}
+                  actionImage={actionImage}
+                  whyContent={whyContent}
+                  lookOutForContent={lookOutForContent}
                   additionalContent={action.additionalContent}
                   supplementProduct={supplementProduct}
+                  citations={actionCitations}
                 >
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    className="-m-2 mb-4 w-full cursor-pointer rounded-xl p-2 text-left transition-colors hover:bg-zinc-50 active:scale-[0.99]"
-                  >
-                    <div className="mb-4 flex w-full items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <img
-                          src={actionImage}
-                          alt={action.title}
-                          className="size-12 rounded-lg object-cover"
-                        />
-                        <H4 className="text-lg">{action.title}</H4>
-                      </div>
-                      <span className="flex shrink-0 items-center gap-1 rounded-full border border-zinc-200 px-2 py-1 text-xs text-secondary">
-                        Details
-                        <ChevronRight className="size-3" />
-                      </span>
-                    </div>
-
-                    <ProtocolMarkdown
-                      content={action.description}
-                      className="text-sm text-secondary [&>div]:mb-0"
-                    />
-                  </div>
-                </AdditionalContentDialog>
-              ) : (
-                <>
-                  <div className="mb-4 flex items-center gap-2">
-                    <img
-                      src={actionImage}
-                      alt={action.title}
-                      className="size-12 rounded-lg object-cover"
-                    />
-                    <H4 className="text-lg">{action.title}</H4>
-                  </div>
-
-                  <div className="mb-4">
-                    <ProtocolMarkdown
-                      content={action.description}
-                      className="text-sm text-secondary [&>div]:mb-0"
-                    />
-                  </div>
-                </>
-              )}
-
-              {(action.citations ?? []).length > 0 && (
-                <CitationsDialog citations={action.citations!}>
                   <button
                     type="button"
-                    className="flex items-center gap-1.5 rounded-full border border-zinc-200 px-2 py-1 text-sm text-secondary transition-colors hover:bg-zinc-50"
+                    className="flex items-center gap-1 text-sm text-secondary transition-colors hover:text-zinc-700"
                   >
-                    <IconAnalytics className="size-4" />
-                    <span>Clinical Evidence</span>
+                    Learn more
                     <ChevronRight className="size-4" />
                   </button>
-                </CitationsDialog>
-              )}
+                </AdditionalContentDialog>
 
-              <div className="flex w-full justify-end">
                 <CommitActionButton action={action} goalId={goal.id} />
               </div>
             </div>

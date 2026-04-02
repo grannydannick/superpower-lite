@@ -36,6 +36,7 @@ const CATEGORY_TO_API_SLUG: Record<string, string> = {
   sleep: 'sleep',
   'body composition': 'body_composition',
   'body health': 'body_composition',
+  wearables: 'wearables',
 };
 
 const normalizeCategoryToSlug = (category: string): string => {

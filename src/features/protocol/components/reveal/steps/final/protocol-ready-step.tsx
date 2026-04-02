@@ -40,7 +40,7 @@ export const ProtocolReadyStep = () => {
             WebkitMaskImage:
               'linear-gradient(to top, transparent 30%, black 70%)',
           }}
-          className="size-full bg-[url('/protocol/final/orange-circle.webp')] bg-cover bg-center"
+          className="size-full bg-[url('/protocol/final/orange-circle.webp')] bg-cover bg-top"
         />
       </div>
       <m.div

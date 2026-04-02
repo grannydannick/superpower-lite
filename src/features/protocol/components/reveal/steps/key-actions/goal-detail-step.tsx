@@ -10,9 +10,10 @@ import {
 import { ProtocolIndexNumber } from '@/features/protocol/components/protocol-index-number';
 import { ProtocolListingButton } from '@/features/protocol/components/protocol-listing-button';
 import { useProtocolStepperContext } from '@/features/protocol/components/reveal/protocol-stepper-context';
-import { getSymptomIcon } from '@/utils/symptom-to-icon-mapper';
+import { useGender } from '@/hooks/use-gender';
 
 import { ProtocolStepLayout } from '../../../layouts/protocol-step-layout';
+import { SymptomsCarousel } from '../../../symptoms-carousel';
 
 import { BiomarkerCausesDialog } from './biomarker-causes-dialog';
 
@@ -22,6 +23,7 @@ interface GoalDetailStepProps {
 
 export const GoalDetailStep = ({ goalIndex }: GoalDetailStepProps) => {
   const { next, getGoal, getGoalBiomarkers } = useProtocolStepperContext();
+  const { gender } = useGender();
   const goal = getGoal(goalIndex);
   const resolvedBiomarkers = getGoalBiomarkers(goalIndex);
 
@@ -79,21 +81,7 @@ export const GoalDetailStep = ({ goalIndex }: GoalDetailStepProps) => {
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           <H4 className="mb-0.5 text-lg">How you might be feeling</H4>
-          <div className="flex flex-wrap gap-2">
-            {goal.possibleSymptoms.map((symptom, index) => {
-              const IconComponent = getSymptomIcon(symptom);
-              return (
-                <Body1
-                  key={index}
-                  as="span"
-                  className="flex items-center gap-2 rounded-full bg-zinc-100 px-3 py-2 text-sm text-secondary"
-                >
-                  <IconComponent className="size-4" />
-                  {symptom}
-                </Body1>
-              );
-            })}
-          </div>
+          <SymptomsCarousel symptoms={goal.possibleSymptoms} />
         </m.div>
 
         <div className="space-y-2">
@@ -105,11 +93,11 @@ export const GoalDetailStep = ({ goalIndex }: GoalDetailStepProps) => {
             >
               <ProtocolListingButton delay={0.4}>
                 <div>
-                  <H4 className="text-base">What&apos;s causing this?</H4>
+                  <H4 className="text-base">Your biomarkers</H4>
                   <Body1 className="text-sm text-secondary">
                     {resolvedBiomarkers.length > 0
-                      ? `${resolvedBiomarkers.length} Key Biomarkers`
-                      : `${goal.biomarkers.length} Key Biomarkers`}
+                      ? `${resolvedBiomarkers.length} biomarkers linked to this`
+                      : `${goal.biomarkers.length} biomarkers linked to this`}
                   </Body1>
                 </div>
                 <img
@@ -127,13 +115,13 @@ export const GoalDetailStep = ({ goalIndex }: GoalDetailStepProps) => {
           >
             <ProtocolListingButton delay={0.6}>
               <div>
-                <H4 className="text-base">Impact on you</H4>
+                <H4 className="text-base">Why this matters</H4>
                 <Body1 className="text-sm text-secondary">
-                  Why addressing this matters for your health
+                  How this impacts your health
                 </Body1>
               </div>
               <img
-                src="/protocol/twins/twin-neutral.webp"
+                src={`/protocol/twins/${gender === 'female' ? 'female' : 'male'}-twin-neutral.png`}
                 alt="Impact visualization"
                 className="my-4 size-16 object-cover"
                 style={{
@@ -148,14 +136,14 @@ export const GoalDetailStep = ({ goalIndex }: GoalDetailStepProps) => {
 
           {citations.length > 0 && (
             <CitationsDialog citations={citations}>
-              <ProtocolListingButton delay={0.8}>
-                <div>
-                  <H4 className="text-base">{citations.length} Citations</H4>
-                </div>
+              <ProtocolListingButton delay={0.8} compact className="py-2">
+                <Body1 className="text-sm text-secondary">
+                  {citations.length} Citations
+                </Body1>
                 <img
                   src="/protocol/what-we-do/protocols.webp"
                   alt="Research protocols"
-                  className="-mr-4 h-24 w-28 object-contain px-4 pt-2 rounded-mask"
+                  className="h-10 w-14 object-contain"
                 />
               </ProtocolListingButton>
             </CitationsDialog>

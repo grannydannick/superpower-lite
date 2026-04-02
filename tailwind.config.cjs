@@ -160,6 +160,11 @@ module.exports = {
           '0%': { transform: 'translateZ(0) rotate(0deg)' },
           '100%': { transform: 'translateZ(0) rotate(360deg)' },
         },
+        'qr-shimmer': {
+          '0%': { transform: 'translate(-100%, -100%)' },
+          '50%': { transform: 'translate(0%, 0%)' },
+          '100%': { transform: 'translate(100%, 100%)' },
+        },
         'dot-wave': {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-2px)' },

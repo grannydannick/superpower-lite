@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { MiniScoreChart } from '@/components/ui/charts/mini-donut-chart/mini-donut-chart';
 import { Body1, H2 } from '@/components/ui/typography';
 import { useProtocolStepperContext } from '@/features/protocol/components/reveal/protocol-stepper-context';
+import { useGender } from '@/hooks/use-gender';
 import { useUser } from '@/lib/auth';
 
 import { ProtocolStepLayout } from '../../../layouts/protocol-step-layout';
@@ -14,6 +15,7 @@ export const HealthWinnersStep = () => {
   const { next, healthWinners, totalCategoryCount } =
     useProtocolStepperContext();
   const { data } = useUser();
+  const { gender } = useGender();
 
   const handleNext = useCallback(() => {
     next();
@@ -43,7 +45,7 @@ export const HealthWinnersStep = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          src="/protocol/twins/twin-positive.webp"
+          src={`/protocol/twins/${gender === 'female' ? 'female' : 'male'}-twin-green.png`}
           alt=""
           className="min-h-48 w-full"
           style={{

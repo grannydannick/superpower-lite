@@ -86,15 +86,15 @@ const WHY_TAKE_THE_TEST_BULLETS = {
 const ADVANCED_PANEL_COPY = {
   male: {
     whoIsThisFor:
-      'Anyone who wants the most comprehensive view of their health with additional markers for heart disease, cancer risk, and hormone optimization.',
+      'Ideal if you have a family history of heart disease, diabetes, or cancer, want to optimize hormones and energy, or simply want to catch what routine checkups miss before symptoms show up.',
     whatsMeasured:
-      'Advanced biomarkers that go beyond the baseline panel to uncover hidden risks and optimize your health strategy.',
+      'Two types of testing in one upgrade. Advanced blood biomarkers screen for cardiovascular risk, hormonal imbalances, and metabolic dysfunction. A complete urinalysis adds visibility into kidney function, hydration, and early signs of systemic disease.',
   },
   female: {
     whoIsThisFor:
-      'Anyone who wants the most comprehensive view of their health with additional markers for heart disease, cancer risk, fertility, and hormone balance.',
+      'Ideal if you have a family history of heart disease, thyroid conditions, or diabetes, want clarity on hormonal shifts and cycle health, or simply want to catch what routine checkups miss before symptoms show up.',
     whatsMeasured:
-      'Advanced biomarkers that go beyond the baseline panel to uncover hidden risks and optimize your health strategy for fertility, hormone balance, and metabolic health.',
+      'Two types of testing in one upgrade. Advanced blood biomarkers screen for cardiovascular risk, reproductive health, hormonal and thyroid imbalances, and metabolic dysfunction. A complete urinalysis adds visibility into kidney function, hydration, and early signs of systemic disease.',
   },
 };
 
@@ -263,8 +263,10 @@ export const AdvancedPanelUpgradeStep = () => {
               <div className="hidden space-y-1 px-0 md:block">
                 <Detail.Pricing {...pricing} />
                 <p className="text-sm text-zinc-500">
-                  Go deeper with additional biomarkers for a complete health
-                  picture.git
+                  Everything in the baseline panel, plus 30+ additional blood
+                  biomarkers and a complete urinalysis. Go deeper and broader
+                  across cardiovascular risk, hormones, metabolic health,
+                  inflammation, and kidney function.
                 </p>
               </div>
 

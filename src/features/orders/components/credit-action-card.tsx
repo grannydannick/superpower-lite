@@ -49,6 +49,18 @@ export const CreditActionCard = ({
     return linkOptions({ to: '/schedule', search: { mode: service.group } });
   };
 
+  const isMandatoryRxLabCredit = credit.serviceId.startsWith('rx-cbp-');
+  const rxTreatmentName = getRxTreatmentName(credit.serviceName);
+
+  const title = isMandatoryRxLabCredit
+    ? 'Time to check your progress'
+    : 'Schedule your test';
+
+  const description =
+    isMandatoryRxLabCredit && rxTreatmentName
+      ? `Part of your ${rxTreatmentName} treatment plan`
+      : credit.serviceName;
+
   return (
     <Link {...getUrl()} className={cn(cardVariants({ variant, className }))}>
       <div className="flex shrink-0 items-center">
@@ -63,11 +75,21 @@ export const CreditActionCard = ({
       </div>
       <div className="flex flex-1 items-center gap-3">
         <div className="flex-1">
-          <Body1 className="text-zinc-900">Schedule your test</Body1>
-          <Body2 className="text-zinc-600">{credit.serviceName}</Body2>
+          <Body1 className="text-zinc-900">{title}</Body1>
+          <Body2 className="text-zinc-600">{description}</Body2>
         </div>
         <ChevronRight className="size-5 text-zinc-400 transition-all group-hover:-mr-1" />
       </div>
     </Link>
   );
+};
+
+const getRxTreatmentName = (serviceName: string) => {
+  // HACK: mandatory RX lab credits currently surface with `rx-cbp-*` serviceIds and panel-ish service names.
+  // Keep the client-side parsing local until the backend exposes an explicit RX lab display field.
+  return serviceName
+    .replace(/^RX - /i, '')
+    .replace(/^Step Up /i, '')
+    .replace(/\s+Panel$/i, '')
+    .trim();
 };

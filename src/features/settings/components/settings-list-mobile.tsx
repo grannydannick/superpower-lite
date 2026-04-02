@@ -1,3 +1,4 @@
+import { useSearch } from '@tanstack/react-router';
 import {
   ChevronLeft,
   CreditCard,
@@ -17,6 +18,13 @@ import { WearablesTable } from '@/features/settings/components/wearables/wearabl
 import { MobileMenu } from '@/features/settings/types/mobile-menu';
 import { cn } from '@/lib/utils';
 import { capitalize } from '@/utils/format';
+
+const TAB_TO_MENU: Record<string, MobileMenu> = {
+  billing: 'billing',
+  membership: 'membership',
+  history: 'order history',
+  integrations: 'integrations',
+};
 
 const SETTINGS_MOBILE = [
   {
@@ -54,7 +62,13 @@ const SETTINGS_MOBILE = [
 // TODO: had not a lot of time to refactor this, need to come up with better global approach for mobile (NM 09/04/2024)
 
 export const SettingsListMobile = () => {
-  const [current, setCurrent] = useState<MobileMenu | undefined>(undefined);
+  const tab = useSearch({
+    from: '/_app/_maps/settings',
+    select: (s) => s.tab,
+  });
+  const [current, setCurrent] = useState<MobileMenu | undefined>(
+    tab ? TAB_TO_MENU[tab] : undefined,
+  );
   const menuItem = SETTINGS_MOBILE.find((sm) => sm.value === current);
 
   return (
@@ -72,10 +86,12 @@ export const SettingsListMobile = () => {
               <ChevronLeft width={16} height={16} color="black" />
             </div>
 
-            <Header
-              title={capitalize(menuItem?.value as string)}
-              description={menuItem?.description}
-            />
+            {current !== 'integrations' && (
+              <Header
+                title={capitalize(menuItem?.value as string)}
+                description={menuItem?.description}
+              />
+            )}
           </div>
         )}
         {current === 'profile' && <Profile />}

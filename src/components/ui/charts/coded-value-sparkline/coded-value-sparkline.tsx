@@ -8,10 +8,21 @@ import type { Biomarker } from '@/types/api';
 
 import { ChartTooltip } from '../chart-tooltip';
 import { CHART_CONFIG } from '../sparkline-chart/config';
+import { TooltipSource } from '../tooltip-source';
 
 import { useCodedValueSparkline } from './use-coded-value-sparkline';
 
 const RANGE_STACK_WIDTH = 3;
+
+interface CodedValueSparklineDisplayedPoint {
+  index: number;
+  codedValue: string;
+  timestamp: string;
+  position: { x: number; y: number };
+  status: string;
+  source: string;
+  file?: { id: string; name: string };
+}
 
 // Inner SVG chart for codedValue sparkline in the data table.
 // Renders circles for each discrete coded value positioned in horizontal bands.
@@ -33,6 +44,7 @@ const CodedValueSparklineChart = ({
     position: { x: number; y: number };
     status: string;
     source: string;
+    file?: { id: string; name: string };
   }) => void;
   onHoverEnd: () => void;
   hoveredPointIndex?: number | null;
@@ -84,6 +96,7 @@ const CodedValueSparklineChart = ({
             },
             status: nearestPoint.status,
             source: nearestPoint.source,
+            file: nearestPoint.file,
           });
         }
       });
@@ -254,14 +267,51 @@ export const CodedValueSparkline = ({
     svgWidth,
   });
 
-  const [displayedPoint, setDisplayedPoint] = useState<{
-    index: number;
-    codedValue: string;
-    timestamp: string;
-    position: { x: number; y: number };
-    status: string;
-    source: string;
-  } | null>(null);
+  const [displayedPoint, setDisplayedPoint] =
+    useState<CodedValueSparklineDisplayedPoint | null>(null);
+  const hideTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (hideTimeoutRef.current !== null) {
+        window.clearTimeout(hideTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handlePointHover = useCallback(
+    (point: CodedValueSparklineDisplayedPoint) => {
+      if (hideTimeoutRef.current !== null) {
+        window.clearTimeout(hideTimeoutRef.current);
+        hideTimeoutRef.current = null;
+      }
+
+      setDisplayedPoint(point);
+    },
+    [],
+  );
+
+  const hideDisplayedPoint = useCallback(() => {
+    if (hideTimeoutRef.current !== null) {
+      window.clearTimeout(hideTimeoutRef.current);
+    }
+
+    hideTimeoutRef.current = window.setTimeout(() => {
+      setDisplayedPoint(null);
+      hideTimeoutRef.current = null;
+    }, 100);
+  }, []);
+
+  const handleTooltipMouseEnter = useCallback(() => {
+    if (hideTimeoutRef.current !== null) {
+      window.clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
+  }, []);
+
+  const handleTooltipMouseLeave = useCallback(() => {
+    hideDisplayedPoint();
+  }, [hideDisplayedPoint]);
 
   return (
     <div
@@ -277,8 +327,8 @@ export const CodedValueSparkline = ({
           biomarker={biomarker}
           maxValuesToShow={maxValuesToShow}
           svgWidth={svgWidth}
-          onHover={setDisplayedPoint}
-          onHoverEnd={() => setDisplayedPoint(null)}
+          onHover={handlePointHover}
+          onHoverEnd={hideDisplayedPoint}
           hoveredPointIndex={displayedPoint?.index ?? null}
         />
       </div>
@@ -306,6 +356,9 @@ export const CodedValueSparkline = ({
             isOpen={true}
             position={displayedPoint.position}
             side="top"
+            interactive={true}
+            onMouseEnter={handleTooltipMouseEnter}
+            onMouseLeave={handleTooltipMouseLeave}
           >
             <div className="flex items-center gap-2">
               <div
@@ -323,7 +376,11 @@ export const CodedValueSparkline = ({
                 </div>
                 <div className="text-muted-foreground">
                   {format(new Date(displayedPoint.timestamp), 'MMM dd, yyyy')} (
-                  <span className="capitalize">{displayedPoint.source})</span>
+                  <TooltipSource
+                    source={displayedPoint.source}
+                    file={displayedPoint.file}
+                  />
+                  )
                 </div>
               </div>
             </div>

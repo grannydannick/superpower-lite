@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { CheckEmailScreen } from '@/features/auth/components/check-email-screen';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { useUser } from '@/lib/auth';
-import { setActiveLogin } from '@/lib/utils';
 import { User, VerifyEmailOTPResponse } from '@/types/api';
 
 export const Route = createFileRoute('/check-email')({
@@ -46,14 +45,6 @@ function CheckEmailComponent() {
       ['authenticated-user'],
       response.user,
     );
-
-    setActiveLogin({
-      accessToken: response.authTokens.accessToken,
-      refreshToken: response.authTokens.refreshToken || '',
-      profile: {
-        userId: response.user.id,
-      },
-    });
 
     track('logged_in', {
       method: 'otp',

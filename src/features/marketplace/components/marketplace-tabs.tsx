@@ -1,4 +1,4 @@
-import { useNavigate, useSearch } from '@tanstack/react-router';
+import { Navigate, useNavigate, useSearch } from '@tanstack/react-router';
 import type { ComponentType, ReactNode, SVGProps } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -27,6 +27,7 @@ import { PrescriptionsList } from '@/features/prescriptions/components/prescript
 import { ServicesList } from '@/features/services/components/services-list';
 import { SupplementsList } from '@/features/supplements/components/supplements-list';
 import { useAnalytics } from '@/hooks/use-analytics';
+import { useUser } from '@/lib/auth';
 
 type MarketplaceTab = {
   value: MarketplaceTabValue;
@@ -40,11 +41,15 @@ export const MarketplaceTabs = () => {
   const { data, isLoading } = useMarketplace();
   const navigate = useNavigate({ from: '/marketplace' });
   const { track } = useAnalytics();
+  const userQuery = useUser();
+  const hasRxAccess =
+    userQuery.isFetched && userQuery.data?.access?.rx !== false;
   const tab = useSearch({
     from: '/_app/marketplace',
     select: (s) => s.tab,
   });
-  const activeTab: MarketplaceTabValue = tab ?? 'all';
+  const activeTab: MarketplaceTabValue =
+    tab === 'prescriptions' && !hasRxAccess ? 'all' : (tab ?? 'all');
   const [filter, setFilter] = useState<MarketplaceFilter>('all');
   const {
     query,
@@ -123,7 +128,7 @@ export const MarketplaceTabs = () => {
       <MarketplaceList
         services={data?.services}
         supplements={data?.supplements}
-        prescriptions={data?.prescriptions}
+        prescriptions={hasRxAccess ? data?.prescriptions : undefined}
         isLoading={isLoading}
         filter={filter}
         query={query}
@@ -131,7 +136,7 @@ export const MarketplaceTabs = () => {
       />
     );
 
-    return [
+    const allTabs: MarketplaceTab[] = [
       {
         value: 'all',
         label: 'All Products',
@@ -185,7 +190,24 @@ export const MarketplaceTabs = () => {
         ),
       },
     ];
-  }, [data, filter, handleClearSearch, isLoading, query, searchTitle]);
+    const visibleTabs: MarketplaceTab[] = [];
+    for (const tab of allTabs) {
+      if (tab.value === 'prescriptions' && !hasRxAccess) {
+        continue;
+      }
+      visibleTabs.push(tab);
+    }
+
+    return visibleTabs;
+  }, [
+    data,
+    filter,
+    handleClearSearch,
+    hasRxAccess,
+    isLoading,
+    query,
+    searchTitle,
+  ]);
 
   const showFilters = activeTab !== 'orders';
   const tabClickEvents: Partial<Record<MarketplaceTabValue, string>> = {
@@ -193,6 +215,21 @@ export const MarketplaceTabs = () => {
     supplements: 'click_marketplace_supplements',
     prescriptions: 'click_marketplace_prescriptions',
   };
+
+  if (userQuery.isFetched && tab === 'prescriptions' && !hasRxAccess) {
+    return (
+      <Navigate
+        to="/marketplace"
+        search={(prev) => {
+          return {
+            ...prev,
+            tab: undefined,
+          };
+        }}
+        replace={true}
+      />
+    );
+  }
 
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange}>

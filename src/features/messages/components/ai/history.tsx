@@ -5,7 +5,7 @@ import { Link, useNavigate, useParams } from '@tanstack/react-router';
 import { isToday, isYesterday, subMonths, subWeeks } from 'date-fns';
 import { AnimatePresence, m } from 'framer-motion';
 import { MoreHorizontalIcon } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -21,6 +21,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Tooltip,
   TooltipContent,
@@ -29,6 +30,7 @@ import {
 } from '@/components/ui/tooltip';
 import { Body3, H3 } from '@/components/ui/typography';
 import { useDeleteChat } from '@/features/messages/api/delete-chat';
+import { useChat as useChatInfo } from '@/features/messages/api/get-chat';
 import { useHistory } from '@/features/messages/api/get-history';
 import { CareTeamDialog } from '@/features/messages/components/care-team-dialog';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
@@ -53,15 +55,17 @@ const sidebarItemVariants = {
 };
 
 const ChatItem = ({ chat, isActive }: { chat: Chat; isActive: boolean }) => {
-  const params = useParams({ strict: false });
-  const id = params.id;
   const navigate = useNavigate();
 
   const deleteChatMutation = useDeleteChat({
     mutationConfig: {
       onSuccess: () => {
-        if (chat.id === id) {
-          void navigate({ to: '/concierge' });
+        if (isActive) {
+          void navigate({
+            to: '/concierge',
+            search: () => ({ defaultMessage: undefined, preset: undefined }),
+            resetScroll: false,
+          });
         }
       },
     },
@@ -101,7 +105,11 @@ const ChatItem = ({ chat, isActive }: { chat: Chat; isActive: boolean }) => {
           <span className="sr-only">More</span>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent side="bottom" align="end" className="z-[50]">
+        <DropdownMenuContent
+          side="bottom"
+          align="end"
+          className="relative z-[52]"
+        >
           <DropdownMenuItem
             className="cursor-pointer text-pink-700 focus:bg-pink-50 focus:text-pink-700"
             onSelect={() => {
@@ -117,19 +125,73 @@ const ChatItem = ({ chat, isActive }: { chat: Chat; isActive: boolean }) => {
 };
 
 export function ChatHistoryContainer({ className }: { className?: string }) {
-  const params = useParams({ strict: false });
-  const id = params.id;
+  const id = useParams({
+    strict: false,
+    select: (params) => {
+      if (typeof params.id === 'string' && params.id.length > 0) {
+        return params.id;
+      }
+
+      return undefined;
+    },
+  });
   const navigate = useNavigate();
-  const { data: history, isLoading } = useHistory();
+  const historyQuery = useHistory();
+  const routeChatQuery = useChatInfo({
+    chatId: id ?? '',
+    queryConfig: {
+      enabled: id != null,
+      retry: false,
+    },
+  });
+  const history = historyQuery.data;
+  const fetchNextPage = historyQuery.fetchNextPage;
+  const hasNextPage = historyQuery.hasNextPage;
+  const isFetchingNextPage = historyQuery.isFetchingNextPage;
 
   const [isOpen, setIsOpen] = useState(true);
   const [searchOpen, setSearchOpen] = useState(false);
 
-  if (isLoading) {
+  let hasActiveChatLoaded = id == null;
+  if (!hasActiveChatLoaded && history) {
+    for (const chat of history) {
+      if (chat.id !== id) continue;
+      hasActiveChatLoaded = true;
+      break;
+    }
+  }
+
+  let visibleHistory = history ?? [];
+  const routeChat = routeChatQuery.data;
+
+  if (!hasActiveChatLoaded && routeChat != null) {
+    // Show the active route chat without walking every history page to find it.
+    visibleHistory = [];
+    let inserted = false;
+    const routeChatCreatedAt = new Date(routeChat.createdAt).getTime();
+
+    for (const chat of history ?? []) {
+      if (!inserted) {
+        const chatCreatedAt = new Date(chat.createdAt).getTime();
+        if (routeChatCreatedAt > chatCreatedAt) {
+          visibleHistory.push(routeChat);
+          inserted = true;
+        }
+      }
+
+      visibleHistory.push(chat);
+    }
+
+    if (!inserted) {
+      visibleHistory.push(routeChat);
+    }
+  }
+
+  if (historyQuery.isLoading) {
     return <LoadingChatItem />;
   }
 
-  if (!history || history?.length === 0) {
+  if (visibleHistory.length === 0) {
     return (
       <div className="flex w-full max-w-[259px] flex-col gap-4 text-sm text-zinc-500">
         Your conversations will appear here once you start chatting!
@@ -137,7 +199,7 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
     );
   }
 
-  const groupedChats = groupChatsByDate(history);
+  const groupedChats = groupChatsByDate(visibleHistory);
 
   return (
     <>
@@ -148,7 +210,16 @@ export function ChatHistoryContainer({ className }: { className?: string }) {
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         onNewChat={() => {
-          void navigate({ to: '/concierge' });
+          void navigate({
+            to: '/concierge',
+            search: () => ({ defaultMessage: undefined, preset: undefined }),
+            resetScroll: false,
+          });
+        }}
+        hasMore={hasNextPage === true}
+        isLoadingMore={isFetchingNextPage}
+        onLoadMore={() => {
+          void fetchNextPage();
         }}
         onOpenSearch={() => setSearchOpen(true)}
       />
@@ -206,6 +277,9 @@ interface ChatHistorySidebarProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   onNewChat: () => void;
+  hasMore: boolean;
+  isLoadingMore: boolean;
+  onLoadMore: () => void;
   onOpenSearch: () => void;
 }
 
@@ -216,6 +290,9 @@ function ChatHistorySidebar({
   isOpen,
   setIsOpen,
   onNewChat,
+  hasMore,
+  isLoadingMore,
+  onLoadMore,
   onOpenSearch,
 }: ChatHistorySidebarProps) {
   return (
@@ -240,6 +317,9 @@ function ChatHistorySidebar({
         isOpen={isOpen}
         onCloseSidebar={() => setIsOpen(false)}
         onNewChat={onNewChat}
+        hasMore={hasMore}
+        isLoadingMore={isLoadingMore}
+        onLoadMore={onLoadMore}
         onOpenSearch={onOpenSearch}
       />
     </div>
@@ -261,17 +341,17 @@ function ChatHistoryCollapsedBar({
 }) {
   return (
     <div className="absolute left-0 top-0 hidden w-10 flex-col items-center gap-3 pt-1 lg:flex">
-      <AnimatePresence>
-        {!isOpen && (
-          <>
-            <m.div
-              key="sidebar-toggle"
-              initial={{ opacity: 0, filter: 'blur(2px)' }}
-              animate={{ opacity: 1, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, transition: { duration: 0 } }}
-              transition={{ duration: 0.25, delay: 0.15 }}
-            >
-              <TooltipProvider delayDuration={0}>
+      <TooltipProvider delayDuration={300}>
+        <AnimatePresence>
+          {!isOpen && (
+            <>
+              <m.div
+                key="sidebar-toggle"
+                initial={{ opacity: 0, filter: 'blur(2px)' }}
+                animate={{ opacity: 1, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, transition: { duration: 0 } }}
+                transition={{ duration: 0.25, delay: 0.15 }}
+              >
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -288,16 +368,14 @@ function ChatHistoryCollapsedBar({
                   </TooltipTrigger>
                   <TooltipContent side="right">Show Sidebar</TooltipContent>
                 </Tooltip>
-              </TooltipProvider>
-            </m.div>
-            <m.div
-              key="new-chat"
-              initial={{ opacity: 0, filter: 'blur(2px)' }}
-              animate={{ opacity: 1, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, transition: { duration: 0 } }}
-              transition={{ duration: 0.25, delay: 0.2 }}
-            >
-              <TooltipProvider delayDuration={0}>
+              </m.div>
+              <m.div
+                key="new-chat"
+                initial={{ opacity: 0, filter: 'blur(2px)' }}
+                animate={{ opacity: 1, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, transition: { duration: 0 } }}
+                transition={{ duration: 0.25, delay: 0.2 }}
+              >
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -312,16 +390,14 @@ function ChatHistoryCollapsedBar({
                   </TooltipTrigger>
                   <TooltipContent side="right">New Chat</TooltipContent>
                 </Tooltip>
-              </TooltipProvider>
-            </m.div>
-            <m.div
-              key="care-team"
-              initial={{ opacity: 0, filter: 'blur(2px)' }}
-              animate={{ opacity: 1, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, transition: { duration: 0 } }}
-              transition={{ duration: 0.25, delay: 0.25 }}
-            >
-              <TooltipProvider delayDuration={0}>
+              </m.div>
+              <m.div
+                key="care-team"
+                initial={{ opacity: 0, filter: 'blur(2px)' }}
+                animate={{ opacity: 1, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, transition: { duration: 0 } }}
+                transition={{ duration: 0.25, delay: 0.25 }}
+              >
                 <Tooltip>
                   <CareTeamDialog
                     trigger={
@@ -338,16 +414,14 @@ function ChatHistoryCollapsedBar({
                   />
                   <TooltipContent side="right">Text Care Team</TooltipContent>
                 </Tooltip>
-              </TooltipProvider>
-            </m.div>
-            <m.div
-              key="search"
-              initial={{ opacity: 0, filter: 'blur(2px)' }}
-              animate={{ opacity: 1, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, transition: { duration: 0 } }}
-              transition={{ duration: 0.25, delay: 0.3 }}
-            >
-              <TooltipProvider delayDuration={0}>
+              </m.div>
+              <m.div
+                key="search"
+                initial={{ opacity: 0, filter: 'blur(2px)' }}
+                animate={{ opacity: 1, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, transition: { duration: 0 } }}
+                transition={{ duration: 0.25, delay: 0.3 }}
+              >
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -364,11 +438,11 @@ function ChatHistoryCollapsedBar({
                   </TooltipTrigger>
                   <TooltipContent side="right">Search (⌘K)</TooltipContent>
                 </Tooltip>
-              </TooltipProvider>
-            </m.div>
-          </>
-        )}
-      </AnimatePresence>
+              </m.div>
+            </>
+          )}
+        </AnimatePresence>
+      </TooltipProvider>
     </div>
   );
 }
@@ -380,6 +454,9 @@ function ChatHistoryExpandedSidebar({
   isOpen,
   onCloseSidebar,
   onNewChat,
+  hasMore,
+  isLoadingMore,
+  onLoadMore,
   onOpenSearch,
 }: {
   className: string | undefined;
@@ -388,8 +465,55 @@ function ChatHistoryExpandedSidebar({
   isOpen: boolean;
   onCloseSidebar: () => void;
   onNewChat: () => void;
+  hasMore: boolean;
+  isLoadingMore: boolean;
+  onLoadMore: () => void;
   onOpenSearch: () => void;
 }) {
+  const loadMoreInFlightRef = useRef(false);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (isLoadingMore) return;
+    loadMoreInFlightRef.current = false;
+  }, [isLoadingMore]);
+
+  let totalChats = 0;
+  totalChats += groupedChats.today.length;
+  totalChats += groupedChats.yesterday.length;
+  totalChats += groupedChats.lastWeek.length;
+  totalChats += groupedChats.lastMonth.length;
+  totalChats += groupedChats.older.length;
+
+  useEffect(() => {
+    if (!isOpen) return;
+    if (!hasMore || isLoadingMore) return;
+    if (loadMoreInFlightRef.current) return;
+    if (totalChats === 0) return;
+
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    if (el.clientHeight === 0) return;
+
+    const remaining = el.scrollHeight - el.scrollTop - el.clientHeight;
+    if (remaining >= 96) return;
+
+    loadMoreInFlightRef.current = true;
+    onLoadMore();
+  }, [hasMore, isLoadingMore, isOpen, onLoadMore, totalChats]);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    if (!hasMore || isLoadingMore) return;
+    if (loadMoreInFlightRef.current) return;
+
+    const el = e.currentTarget;
+    const remaining = el.scrollHeight - el.scrollTop - el.clientHeight;
+    if (remaining < 96) {
+      loadMoreInFlightRef.current = true;
+      onLoadMore();
+    }
+  };
+
   return (
     <div className="lg:-ml-3.5 lg:overflow-hidden">
       <m.div
@@ -472,7 +596,11 @@ function ChatHistoryExpandedSidebar({
         <m.div variants={sidebarItemVariants} className="relative">
           <div className="pointer-events-none absolute top-0 z-10 h-6 w-full bg-gradient-to-t from-transparent to-zinc-50" />
           <div className="pointer-events-none absolute bottom-0 z-10 h-6 w-full bg-gradient-to-b from-transparent to-zinc-50" />
-          <div className="scrollbar-w-1.5 flex max-h-[calc(100vh-16rem)] flex-col gap-4 overflow-y-scroll px-px py-6 scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300 hover:scrollbar-thumb-zinc-400">
+          <div
+            ref={scrollContainerRef}
+            onScroll={handleScroll}
+            className="scrollbar-w-1.5 flex max-h-[calc(100vh-16rem)] flex-col gap-4 overflow-y-scroll px-px py-6 scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300 hover:scrollbar-thumb-zinc-400"
+          >
             {groupedChats.today.length > 0 && (
               <ChatHistoryGroup
                 title="Today"
@@ -508,6 +636,8 @@ function ChatHistoryExpandedSidebar({
                 activeChatId={activeChatId}
               />
             )}
+
+            {isLoadingMore && <LoadingMoreChatItems />}
           </div>
         </m.div>
       </m.div>
@@ -561,6 +691,12 @@ const LOADING_CHAT_SKELETON_ROWS: LoadingChatSkeletonRow[] = [
   { key: 'w-86', widthPercent: 86 },
 ];
 
+const LOADING_MORE_CHAT_SKELETON_ROWS: LoadingChatSkeletonRow[] = [
+  { key: 'load-more-w-64', widthPercent: 64 },
+  { key: 'load-more-w-78', widthPercent: 78 },
+  { key: 'load-more-w-52', widthPercent: 52 },
+];
+
 const LoadingChatItem = () => {
   return (
     <div>
@@ -584,6 +720,23 @@ const LoadingChatItem = () => {
       </div>
     </div>
   );
+};
+
+const LoadingMoreChatItems = () => {
+  const items: React.ReactElement[] = [];
+  for (const row of LOADING_MORE_CHAT_SKELETON_ROWS) {
+    items.push(
+      <div key={row.key} className="flex h-9 items-center rounded-xl px-4">
+        <Skeleton
+          variant="shimmer"
+          className="h-4"
+          style={{ width: `${row.widthPercent}%` }}
+        />
+      </div>,
+    );
+  }
+
+  return <div className="flex flex-col gap-1 px-0.5 py-2">{items}</div>;
 };
 
 export const ChatHistory = () => {

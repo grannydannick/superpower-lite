@@ -116,6 +116,7 @@ export const AssistantModal = () => {
         tabIndex={!isExpanded ? 0 : -1}
         aria-expanded={isExpanded}
         onClick={!isExpanded ? () => open() : undefined}
+        onPointerDown={(e) => e.stopPropagation()}
         onKeyDown={
           !isExpanded
             ? (e) => {

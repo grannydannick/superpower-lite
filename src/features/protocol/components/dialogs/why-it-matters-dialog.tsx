@@ -12,6 +12,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Body2, H3, H4 } from '@/components/ui/typography';
 import { AiSuggestions } from '@/features/messages/components/ai-suggestions';
 import { useAnalytics } from '@/hooks/use-analytics';
+import { useGender } from '@/hooks/use-gender';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 
 import { ProtocolMarkdown } from '../protocol-markdown';
@@ -29,6 +30,7 @@ export function WhyItMattersDialog({
 }: WhyItMattersDialogProps) {
   const [open, setOpen] = useState(false);
   const { track } = useAnalytics();
+  const { gender } = useGender();
   const openedAtRef = useRef<string | null>(null);
   const { width } = useWindowDimensions();
 
@@ -67,7 +69,7 @@ export function WhyItMattersDialog({
       </div>
 
       <img
-        src="/protocol/twins/twin-negative.webp"
+        src={`/protocol/twins/${gender === 'female' ? 'female' : 'male'}-twin-purple.png`}
         alt="Impact visualization"
         className="mx-auto w-full max-w-xs object-contain"
         style={{
@@ -116,6 +118,7 @@ export function WhyItMattersDialog({
           context={`I'm reviewing why this goal matters${goalTitle ? ` for: ${goalTitle}` : ''}.${impactContent ? ` Key info: ${impactContent.slice(0, 200)}...` : ''} Suggest helpful questions.`}
           limit={3}
           eventName="clicked_why_it_matters_ai_suggestion"
+          showAskOwn
         />
       </div>
     </div>

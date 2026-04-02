@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { STATUS_TO_COLOR } from '@/const/status-to-color';
@@ -8,9 +8,22 @@ import { Biomarker, Lab } from '@/types/api';
 
 import { ChartTooltip } from '../chart-tooltip';
 import { RangeStack } from '../range-stack';
+import { TooltipSource } from '../tooltip-source';
 
 import { CHART_CONFIG } from './config';
 import { useSparklineChart } from './use-sparkline-chart';
+
+interface SparklineDisplayedPoint {
+  index: number;
+  value: number;
+  timestamp: string;
+  position: { x: number; y: number };
+  status: string;
+  source: Lab;
+  unit?: string;
+  comparatorLabel?: string;
+  file?: { id: string; name: string };
+}
 
 const SparklineLineChart = ({
   biomarker,
@@ -30,7 +43,9 @@ const SparklineLineChart = ({
     position: { x: number; y: number };
     status: string;
     source: Lab;
+    unit?: string;
     comparatorLabel?: string;
+    file?: { id: string; name: string };
   }) => void;
   onHoverEnd: () => void;
   hoveredPointIndex?: number | null;
@@ -44,7 +59,28 @@ const SparklineLineChart = ({
   const svgRef = useRef<SVGSVGElement>(null);
   const lastPointRef = useRef<number | null>(null);
   const debounceTimerRef = useRef<number | null>(null);
+  const touchResetTimeoutRef = useRef<number | null>(null);
   const isTouchDevice = useRef<boolean>(false);
+
+  const setSvgRef = useCallback((node: SVGSVGElement | null) => {
+    svgRef.current = node;
+
+    if (node !== null) {
+      return;
+    }
+
+    if (debounceTimerRef.current !== null) {
+      window.cancelAnimationFrame(debounceTimerRef.current);
+      debounceTimerRef.current = null;
+    }
+
+    if (touchResetTimeoutRef.current !== null) {
+      window.clearTimeout(touchResetTimeoutRef.current);
+      touchResetTimeoutRef.current = null;
+    }
+
+    lastPointRef.current = null;
+  }, []);
 
   const handleInteraction = useCallback(
     (clientX: number) => {
@@ -82,7 +118,9 @@ const SparklineLineChart = ({
             },
             status: nearestPoint.status as string,
             source: nearestPoint.source as Lab,
+            unit: nearestPoint.unit,
             comparatorLabel: nearestPoint.comparatorLabel,
+            file: nearestPoint.file,
           });
         }
       });
@@ -101,6 +139,11 @@ const SparklineLineChart = ({
 
   const handleTouchStart = useCallback(
     (e: React.TouchEvent<SVGSVGElement>) => {
+      if (touchResetTimeoutRef.current !== null) {
+        window.clearTimeout(touchResetTimeoutRef.current);
+        touchResetTimeoutRef.current = null;
+      }
+
       isTouchDevice.current = true;
       e.preventDefault();
       if (e.touches.length === 1) {
@@ -130,8 +173,13 @@ const SparklineLineChart = ({
       lastPointRef.current = null;
       onHoverEnd();
 
-      setTimeout(() => {
+      if (touchResetTimeoutRef.current !== null) {
+        window.clearTimeout(touchResetTimeoutRef.current);
+      }
+
+      touchResetTimeoutRef.current = window.setTimeout(() => {
         isTouchDevice.current = false;
+        touchResetTimeoutRef.current = null;
       }, 300);
     },
     [onHoverEnd],
@@ -147,15 +195,6 @@ const SparklineLineChart = ({
       onHoverEnd();
     }
   }, [onHoverEnd]);
-
-  useEffect(() => {
-    return () => {
-      if (debounceTimerRef.current !== null) {
-        window.cancelAnimationFrame(debounceTimerRef.current);
-        debounceTimerRef.current = null;
-      }
-    };
-  }, []);
 
   if (!meta.hasData) {
     return <div className="relative flex overflow-visible" />;
@@ -181,7 +220,7 @@ const SparklineLineChart = ({
   return (
     <div className="relative flex overflow-visible">
       <svg
-        ref={svgRef}
+        ref={setSvgRef}
         width={svgWidth}
         height={config.SVG_HEIGHT}
         className="touch-manipulation overflow-visible"
@@ -277,18 +316,54 @@ export const SparklineChart = ({
     maxValuesToShow,
     svgWidth,
   });
-  const [displayedPoint, setDisplayedPoint] = useState<{
-    index: number;
-    value: number;
-    timestamp: string;
-    position: { x: number; y: number };
-    status: string;
-    source: Lab;
-    comparatorLabel?: string;
-  } | null>(null);
+  const [displayedPoint, setDisplayedPoint] =
+    useState<SparklineDisplayedPoint | null>(null);
+  const hideTimeoutRef = useRef<number | null>(null);
+  const setContainerRef = useCallback((node: HTMLDivElement | null) => {
+    if (node !== null) {
+      return;
+    }
+
+    if (hideTimeoutRef.current !== null) {
+      window.clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
+  }, []);
+
+  const handlePointHover = useCallback((point: SparklineDisplayedPoint) => {
+    if (hideTimeoutRef.current !== null) {
+      window.clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
+
+    setDisplayedPoint(point);
+  }, []);
+
+  const hideDisplayedPoint = useCallback(() => {
+    if (hideTimeoutRef.current !== null) {
+      window.clearTimeout(hideTimeoutRef.current);
+    }
+
+    hideTimeoutRef.current = window.setTimeout(() => {
+      setDisplayedPoint(null);
+      hideTimeoutRef.current = null;
+    }, 100);
+  }, []);
+
+  const handleTooltipMouseEnter = useCallback(() => {
+    if (hideTimeoutRef.current !== null) {
+      window.clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
+  }, []);
+
+  const handleTooltipMouseLeave = useCallback(() => {
+    hideDisplayedPoint();
+  }, [hideDisplayedPoint]);
 
   return (
     <div
+      ref={setContainerRef}
       style={{
         maskImage: 'linear-gradient(to right, transparent 20%, black 35%)',
         WebkitMaskImage:
@@ -301,8 +376,8 @@ export const SparklineChart = ({
           biomarker={biomarker}
           maxValuesToShow={maxValuesToShow}
           svgWidth={svgWidth}
-          onHover={setDisplayedPoint}
-          onHoverEnd={() => setDisplayedPoint(null)}
+          onHover={handlePointHover}
+          onHoverEnd={hideDisplayedPoint}
           hoveredPointIndex={displayedPoint?.index ?? null}
         />
       </div>
@@ -318,6 +393,9 @@ export const SparklineChart = ({
             isOpen={true}
             position={displayedPoint.position}
             side="top"
+            interactive={true}
+            onMouseEnter={handleTooltipMouseEnter}
+            onMouseLeave={handleTooltipMouseLeave}
           >
             <div className="flex items-center gap-2">
               <div
@@ -333,11 +411,15 @@ export const SparklineChart = ({
                 <div className="font-semibold">
                   {displayedPoint.comparatorLabel ??
                     displayedPoint.value.toFixed(2)}{' '}
-                  {biomarker.unit}
+                  {displayedPoint.unit || biomarker.unit}
                 </div>
                 <div className="text-muted-foreground">
                   {format(new Date(displayedPoint.timestamp), 'MMM dd, yyyy')} (
-                  <span className="capitalize">{displayedPoint.source})</span>
+                  <TooltipSource
+                    source={displayedPoint.source}
+                    file={displayedPoint.file}
+                  />
+                  )
                 </div>
               </div>
             </div>

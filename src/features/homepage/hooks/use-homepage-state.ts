@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 
 import { useOrders } from '@/features/orders/api';
 import { useCredits } from '@/features/orders/api/credits';
+import { useWearables } from '@/features/settings/api/get-wearables';
 import { useSummary } from '@/features/summary/api/get-summary';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { OrderStatus } from '@/types/api';
@@ -28,6 +29,7 @@ export const useHomepageState = (): {
   // NOTE: but credits and orders are highly dynamic...
   const { data: creditsData, isLoading: isCreditsLoading } = useCredits();
   const { data: ordersData, isLoading: isOrdersLoading } = useOrders();
+  const { data: wearablesData } = useWearables();
 
   const isLoading = isSummaryDataLoading || isCreditsLoading || isOrdersLoading;
 
@@ -47,6 +49,9 @@ export const useHomepageState = (): {
         rg.status === OrderStatus.active && rg.appointmentType === undefined,
     );
 
+    const connectedWearables =
+      wearablesData?.wearables?.filter((w) => w.status === 'connected') ?? [];
+
     return {
       isMobile,
       hasActiveLabOrders,
@@ -54,8 +59,9 @@ export const useHomepageState = (): {
       hasCompletedActionPlan: summary ? summary.hasCompletedCarePlan : false,
       hasMultipleActionPlans: summary ? summary.completedCarePlans > 1 : false,
       hasActiveNonLabOrders,
+      hasNoWearables: connectedWearables.length === 0,
     };
-  }, [summaryData, creditsData, ordersData, isMobile]);
+  }, [summaryData, creditsData, ordersData, wearablesData, isMobile]);
 
   const visibleCards = useMemo(() => {
     if (isLoading) {

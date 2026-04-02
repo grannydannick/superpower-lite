@@ -11,10 +11,12 @@ import {
   parseMarketplaceCitation,
   resolveMarketplaceProduct,
 } from '../../../utils/parse-marketplace-citation';
+import { parseWearablesCitation } from '../../../utils/parse-wearables-citation';
 
 import { BiomarkerCitationCard } from './biomarker-citation-card';
 import { CitationCard } from './citation-card';
 import { ProductCitationCard } from './product-citation-card';
+import { WearablesCitationCard } from './wearables-citation-card';
 
 interface SmartCitationCardProps {
   messageId: string;
@@ -80,6 +82,18 @@ export const SmartCitationCard = memo(function SmartCitationCard({
     }
     // Product not found in marketplace - hide the citation card
     return null;
+  }
+
+  // Try to parse as Wearables citation
+  const wearablesParsed = parseWearablesCitation(citation);
+  if (wearablesParsed) {
+    return (
+      <WearablesCitationCard
+        messageId={messageId}
+        citation={citation}
+        parsed={wearablesParsed}
+      />
+    );
   }
 
   // Default - use accordion

@@ -12,6 +12,7 @@ export const BiomarkerAiSuggestions = ({ name }: { name: string }) => {
         limit={3}
         prefix={`${name}:`}
         eventName="clicked_biomarker_ai_suggestion"
+        showAskOwn
       />
     </div>
   );

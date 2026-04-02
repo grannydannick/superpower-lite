@@ -1,19 +1,29 @@
 import { useMutation } from '@tanstack/react-query';
-import isMobilePhone from 'validator/es/lib/isMobilePhone';
 import * as z from 'zod';
 
-import { api } from '@/lib/api-client';
+import { authClient } from '@/lib/auth-client';
 import { MutationConfig } from '@/lib/react-query';
 
 export const sendOtpInputSchema = z.object({
-  phone: z.string().refine(isMobilePhone),
+  email: z.string().email('Valid email address is required'),
   toc: z.literal<boolean>(true),
 });
 
 export type SendOtpInput = z.infer<typeof sendOtpInputSchema>;
 
-export const sendOtp = ({ data }: { data: SendOtpInput }): Promise<void> => {
-  return api.post('/send-otp', { phone: data.phone });
+export const sendOtp = async ({
+  data,
+}: {
+  data: SendOtpInput;
+}): Promise<void> => {
+  const { error } = await authClient.emailOtp.sendVerificationOtp({
+    email: data.email,
+    type: 'sign-in',
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
 };
 
 type UseSendOtpOptions = {

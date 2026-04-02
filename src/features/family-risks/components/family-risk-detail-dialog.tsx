@@ -136,6 +136,7 @@ export function FamilyRiskDetailDialog({
           context={`I'm looking at my Family Risk Plan, particularly this family risk: ${risk.title}. The description says: ${risk.description}. Please give me some suggestions for questions I can ask regarding this family health risk.`}
           limit={3}
           eventName="clicked_family_risk_ai_suggestion"
+          showAskOwn
         />
       </div>
     </div>

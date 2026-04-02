@@ -44,3 +44,7 @@ export function parseFhirObservationCitation(
     date: titleMatch?.[4],
   };
 }
+
+// Extract observation ID from FHIR reference (e.g., "Observation/uuid" -> "uuid")
+export const extractObservationId = (reference: string) =>
+  reference.replace(/^Observation\//, '');

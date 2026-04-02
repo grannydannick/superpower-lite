@@ -4,6 +4,7 @@ import { ProgressiveImage } from '@/components/ui/progressive-image';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from '@/components/ui/sonner';
 import { useMarketplace } from '@/features/marketplace/api/get-marketplace';
+import { CurrentPaymentMethodCard } from '@/features/users/components/payment';
 import { Rx, RxPrice } from '@/types/api';
 
 import { getPrescriptionImage } from '../../../utils/prescription';
@@ -84,6 +85,7 @@ export const ConsentPaymentSummary = () => {
           />
         )}
       </div>
+      <CurrentPaymentMethodCard />
       <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-4">
           <div className="flex items-start justify-between">

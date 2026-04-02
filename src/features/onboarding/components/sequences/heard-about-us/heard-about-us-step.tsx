@@ -18,12 +18,27 @@ import { cn } from '@/lib/utils';
 import { useSequence } from '../../../hooks/use-screen-sequence';
 import { Sequence } from '../../sequence';
 
-import { HEARD_ABOUT_US_CATEGORIES } from './heard-about-us-constants';
+import {
+  HEARD_ABOUT_US_CATEGORIES,
+  type HeardAboutUsCategory,
+} from './heard-about-us-constants';
 
 type SelectedOption = {
   category: string;
   option: string;
 };
+
+/**
+ * Shuffles an array using the Fisher-Yates algorithm
+ */
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
 
 export const HeardAboutUsStep = () => {
   const [selectedOption, setSelectedOption] = useState<SelectedOption | null>(
@@ -33,6 +48,12 @@ export const HeardAboutUsStep = () => {
 
   const { track } = useAnalytics();
   const { next } = useSequence();
+
+  // Shuffle once on mount (via useState initializer) to randomize option order,
+  // reducing position bias in survey responses (Fisher-Yates, see shuffleArray above)
+  const [shuffledCategories] = useState<HeardAboutUsCategory[]>(
+    shuffleArray(HEARD_ABOUT_US_CATEGORIES),
+  );
 
   const handleNext = () => {
     if (!selectedOption) return;
@@ -77,7 +98,7 @@ export const HeardAboutUsStep = () => {
             role="radiogroup"
             aria-label="Survey options"
           >
-            {HEARD_ABOUT_US_CATEGORIES.map((category) => (
+            {shuffledCategories.map((category) => (
               <CategoryCard
                 key={category.id}
                 category={category}
@@ -109,7 +130,7 @@ export const HeardAboutUsStep = () => {
 };
 
 type CategoryCardProps = {
-  category: (typeof HEARD_ABOUT_US_CATEGORIES)[number];
+  category: HeardAboutUsCategory;
   selectedOption: SelectedOption | null;
   isOpen: boolean;
   onOpenChange: () => void;

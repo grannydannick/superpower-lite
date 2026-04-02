@@ -1,29 +1,35 @@
-import React, { useMemo, useState } from 'react';
+import { useIsMutating } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 import { toast } from '@/components/ui/sonner';
 import {
   acceptedFileContentTypes,
+  MAX_FILE_COUNT,
   MAX_FILE_SIZE_BYTES,
   MAX_FILE_SIZE_MB,
 } from '@/const';
 import { FilesTable } from '@/features/files/components/views/files-table';
+import { useChatStore } from '@/features/messages/stores/chat-store';
+import { useAuthorization } from '@/lib/authorization';
 import { File } from '@/types/api';
 
 import { useFiles } from '../api/get-files';
-import { useUploadFiles } from '../api/upload-files';
+import {
+  useUploadFiles,
+  UploadFilesResult,
+  uploadFilesMutationKey,
+} from '../api/upload-files';
 import { MEDIA_TYPES, VIRTUAL_MEDIA_TYPE } from '../const/content-type';
 import { getFileTypeName } from '../utils/get-file-type';
 
 import { FileUploadButton } from './patterns/file-upload';
 import { FilesEmpty } from './patterns/files-empty';
-import { FilesFilter } from './patterns/files-filter';
+import { FilesFilter, type FilterType } from './patterns/files-filter';
 import { FilesSearch } from './patterns/files-search';
 import { ViewSwitch } from './view-switch';
 import { FilesGrid } from './views/files-grid';
-
-// Custom type to allow 'media' as a virtual content type for filtering
-type FilterType = File['contentType'] | 'media';
 
 /**
  * FilesHub is called on both settings and vault pages
@@ -31,7 +37,38 @@ type FilterType = File['contentType'] | 'media';
  * It displays filters, sorting options, and grid + table views to find files
  */
 export const FilesHub = ({ headerSlot }: { headerSlot?: React.ReactNode }) => {
-  const { mutate } = useUploadFiles();
+  const { checkAdminActorAccess } = useAuthorization();
+  const navigate = useNavigate();
+
+  const onUploadSuccess = useCallback(
+    (result: UploadFilesResult) => {
+      if (result.uploaded.length === 0) return;
+
+      if (checkAdminActorAccess()) return;
+
+      useChatStore.getState().setPendingFiles(
+        result.uploaded.map((f) => ({
+          type: 'file' as const,
+          url: `/files/${f.id}`,
+          filename: f.name,
+          mediaType: f.contentType,
+        })),
+      );
+      void navigate({
+        to: '/concierge',
+        search: { preset: 'upload-labs', autoSend: true },
+      });
+    },
+    [checkAdminActorAccess, navigate],
+  );
+
+  const { mutate } = useUploadFiles({
+    mutationConfig: { onSuccess: onUploadSuccess },
+  });
+  const activeUploadCount = useIsMutating({
+    exact: true,
+    mutationKey: uploadFilesMutationKey,
+  });
 
   const { data: filesData, isLoading: filesIsLoading } = useFiles();
 
@@ -44,6 +81,25 @@ export const FilesHub = ({ headerSlot }: { headerSlot?: React.ReactNode }) => {
   const [view, setView] = useState<'list' | 'grid'>('list');
 
   const { files } = filesData ?? { files: [] };
+  let hasFilesProcessing = false;
+  for (const file of files) {
+    const extractionStatus = file.ingestion?.extraction?.status;
+    if (
+      extractionStatus === 'processing' ||
+      extractionStatus === 'registered'
+    ) {
+      hasFilesProcessing = true;
+      break;
+    }
+  }
+
+  const isUploadDisabled = activeUploadCount > 0 || hasFilesProcessing;
+  const uploadButtonStatus =
+    activeUploadCount > 0
+      ? 'uploading'
+      : hasFilesProcessing
+        ? 'processing'
+        : 'idle';
 
   const { fileTypes, filteredFiles } = useMemo(() => {
     const allFiles: File[] = [...files];
@@ -61,17 +117,43 @@ export const FilesHub = ({ headerSlot }: { headerSlot?: React.ReactNode }) => {
 
     const fileTypes = Array.from(typesMap.values());
 
+    // Add extraction status filters if relevant files exist
+    const hasLabResults = allFiles.some(
+      (f) => f.ingestion?.extraction?.status === 'final',
+    );
+    const hasProcessing = allFiles.some(
+      (f) =>
+        f.ingestion?.extraction?.status === 'processing' ||
+        f.ingestion?.extraction?.status === 'registered',
+    );
+
+    if (hasLabResults) {
+      fileTypes.push({ name: 'Lab Results', type: 'extraction:final' });
+    }
+    if (hasProcessing) {
+      fileTypes.push({ name: 'Processing', type: 'extraction:processing' });
+    }
+
     // filter files based on search and filter inputs
     const filteredFiles = allFiles.filter((file) => {
       const matchesSearch = search
         ? file.name.toLowerCase().includes(search.toLowerCase())
         : true;
 
-      const matchesFilter = filter
-        ? filter.type === VIRTUAL_MEDIA_TYPE
-          ? MEDIA_TYPES.includes(file.contentType)
-          : file.contentType === filter.type
-        : true;
+      let matchesFilter = true;
+      if (filter) {
+        if (filter.type === VIRTUAL_MEDIA_TYPE) {
+          matchesFilter = MEDIA_TYPES.includes(file.contentType);
+        } else if (filter.type === 'extraction:final') {
+          matchesFilter = file.ingestion?.extraction?.status === 'final';
+        } else if (filter.type === 'extraction:processing') {
+          matchesFilter =
+            file.ingestion?.extraction?.status === 'processing' ||
+            file.ingestion?.extraction?.status === 'registered';
+        } else {
+          matchesFilter = file.contentType === filter.type;
+        }
+      }
 
       return matchesSearch && matchesFilter;
     });
@@ -81,12 +163,24 @@ export const FilesHub = ({ headerSlot }: { headerSlot?: React.ReactNode }) => {
 
   const { getRootProps, isDragActive } = useDropzone({
     accept: acceptedFileContentTypes,
+    disabled: isUploadDisabled,
+    maxFiles: MAX_FILE_COUNT,
     maxSize: MAX_FILE_SIZE_BYTES,
     onDrop: (acceptedFiles) => {
       if (acceptedFiles.length === 0) return;
       mutate({ data: { files: acceptedFiles } });
     },
     onDropRejected: (rejectedFiles) => {
+      const hasTooManyFilesError = rejectedFiles.some(({ errors }) =>
+        errors.some((error) => error.code === 'too-many-files'),
+      );
+      if (hasTooManyFilesError) {
+        toast.error(
+          `You can upload a maximum of ${MAX_FILE_COUNT} files at once.`,
+        );
+        return;
+      }
+
       rejectedFiles.forEach(({ file, errors }) => {
         const sizeError = errors.find((e) => e.code === 'file-too-large');
         if (sizeError) {
@@ -108,7 +202,11 @@ export const FilesHub = ({ headerSlot }: { headerSlot?: React.ReactNode }) => {
       <div className="mb-4 flex w-full items-center justify-between gap-8">
         {headerSlot ?? <div />}
         <div className="relative">
-          <FileUploadButton />
+          <FileUploadButton
+            onUploadSuccess={onUploadSuccess}
+            disabled={isUploadDisabled}
+            status={uploadButtonStatus}
+          />
         </div>
       </div>
       <div className="mx-auto mb-4 flex w-full flex-col justify-between gap-4 md:flex-row md:items-center">
@@ -156,7 +254,11 @@ export const FilesHub = ({ headerSlot }: { headerSlot?: React.ReactNode }) => {
           </svg>
         )}
         {files.length === 0 && !isLoading ? (
-          <FilesEmpty />
+          <FilesEmpty
+            disabled={isUploadDisabled}
+            uploadStatus={uploadButtonStatus}
+            onUploadSuccess={onUploadSuccess}
+          />
         ) : (
           <>
             {view === 'list' ? (

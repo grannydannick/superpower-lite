@@ -1,5 +1,6 @@
 import { UseChatHelpers } from '@ai-sdk/react';
 import { UIMessage } from 'ai';
+import { useEffect, useRef } from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -20,9 +21,33 @@ export function AssistantMessages({
   setMessages,
   disableLayoutAnimation = false,
 }: AssistantMessagesProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Bypass react-remove-scroll's wheel block when a Radix Dialog is open.
+  // react-remove-scroll attaches a capture-phase listener on `document` that
+  // calls preventDefault()+stopPropagation() for scroll events outside the
+  // dialog portal. Because `window` fires before `document` in the capture
+  // phase, we can intercept the event first and stop it from reaching the
+  // scroll-lock handler, letting the browser scroll this container normally.
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const onWheel = (e: WheelEvent) => {
+      if (el.contains(e.target as Node)) {
+        e.stopImmediatePropagation();
+      }
+    };
+
+    window.addEventListener('wheel', onWheel, { capture: true });
+    return () =>
+      window.removeEventListener('wheel', onWheel, { capture: true });
+  }, []);
+
   return (
     <div className={cn('relative flex min-h-0 flex-1')}>
       <div
+        ref={scrollRef}
         className={cn(
           'relative flex min-h-0 min-w-0 flex-1 flex-col gap-6 overflow-auto overflow-x-auto overscroll-contain py-4',
           'scrollbar scrollbar-thumb-zinc-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar]:w-2',

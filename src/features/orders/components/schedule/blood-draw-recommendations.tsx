@@ -23,19 +23,27 @@ import { getNextRecommendedDay } from '@/features/orders/utils/get-next-recommen
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { useUser } from '@/lib/auth';
 
-export const BloodDrawRecommendations = () => {
+interface BloodDrawRecommendationsProps {
+  onClose?: () => void;
+}
+
+export const BloodDrawRecommendations = ({
+  onClose,
+}: BloodDrawRecommendationsProps) => {
   const [open, setOpen] = useState(true);
   const recommendedDay = getNextRecommendedDay();
+
+  const handleOpenChange = (next: boolean) => {
+    setOpen(next);
+    if (!next) {
+      onClose?.();
+    }
+  };
 
   const { width } = useWindowDimensions();
   if (width <= 1024) {
     return (
-      <Sheet
-        open={open}
-        onOpenChange={(next) => {
-          setOpen(next);
-        }}
-      >
+      <Sheet open={open} onOpenChange={handleOpenChange}>
         <SheetContent className="flex max-h-full flex-col rounded-t-[10px] p-6">
           <SheetTitle className="sr-only">
             Recommendations for testing
@@ -51,12 +59,7 @@ export const BloodDrawRecommendations = () => {
   }
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(next) => {
-        setOpen(next);
-      }}
-    >
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="w-full max-w-[592px] gap-0 p-10">
         <DialogTitle className="sr-only">
           Recommendations for testing

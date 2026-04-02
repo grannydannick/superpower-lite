@@ -22,12 +22,14 @@ export const AiSuggestions = ({
   limit = 3,
   prefix,
   eventName,
+  showAskOwn = false,
 }: {
   context: string;
   onClick?: (suggestion: string) => void;
   limit?: number;
   prefix?: string;
   eventName?: string;
+  showAskOwn?: boolean;
 }) => {
   const { track } = useAnalytics();
 
@@ -126,11 +128,44 @@ export const AiSuggestions = ({
 
   const content = isLoading ? skeletons : suggestionButtons;
 
-  if (!content || (suggestions.length === 0 && !isLoading)) return null;
+  if (!content || (suggestions.length === 0 && !isLoading && !showAskOwn))
+    return null;
+
+  const handleAskOwn = () => {
+    if (isMobile) {
+      if (isRevealMode) {
+        setSheetMessage('');
+        setSheetOpen(true);
+      } else {
+        void navigate({ href: '/concierge' });
+      }
+    } else {
+      open('', { autoSend: false });
+    }
+
+    track(eventName ?? 'clicked_ai_suggestion_ask_own', {
+      context,
+    });
+  };
 
   return (
     <>
-      <div className="space-y-2">{content}</div>
+      <div className="space-y-2">
+        {content}
+        {showAskOwn && !isLoading && (
+          <Button
+            variant="outline"
+            onClick={handleAskOwn}
+            className="group w-full justify-start gap-5 rounded-2xl pl-3.5 text-left text-secondary transition-all duration-200"
+          >
+            <AnimatedIcon state="idle" className="size-5 shrink-0" />
+            <span className="w-full min-w-0 flex-1 self-start whitespace-normal break-words text-left text-sm lg:text-base">
+              Ask your own question...
+            </span>
+            <ArrowRight className="size-4 shrink-0 text-secondary transition-all duration-200 ease-out group-hover:translate-x-1" />
+          </Button>
+        )}
+      </div>
       <Suspense fallback={null}>
         <AssistantChatSheet
           open={sheetOpen}

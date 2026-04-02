@@ -7,6 +7,7 @@ export interface HomepageState {
   readonly hasCompletedActionPlan: boolean;
   readonly hasMultipleActionPlans: boolean;
   readonly hasActiveNonLabOrders: boolean;
+  readonly hasNoWearables: boolean;
 }
 
 export interface CardConfig {

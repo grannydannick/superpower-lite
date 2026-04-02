@@ -8,6 +8,7 @@ export const ChartTooltip = ({
   position,
   className,
   side = 'right',
+  interactive = false,
   onMouseEnter,
   onMouseLeave,
 }: {
@@ -16,6 +17,7 @@ export const ChartTooltip = ({
   position: { x: number; y: number };
   side?: 'top' | 'right' | 'bottom' | 'left';
   className?: string;
+  interactive?: boolean;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
 }) => {
@@ -85,7 +87,10 @@ export const ChartTooltip = ({
 
   return (
     <div
-      className="pointer-events-none absolute z-[53] transition-all duration-200 ease-in-out"
+      className={cn(
+        'absolute z-[53] transition-all duration-200 ease-in-out',
+        interactive ? 'pointer-events-auto' : 'pointer-events-none',
+      )}
       style={{
         ...adjustedStyle,
         opacity: isOpen ? 1 : 0,
@@ -97,7 +102,7 @@ export const ChartTooltip = ({
       <div
         className={cn(
           'w-auto rounded-lg border bg-popover px-2 py-1.5 text-sm text-popover-foreground shadow-md shadow-black/5',
-          'pointer-events-none transition-all duration-300 ease-in-out',
+          'transition-all duration-300 ease-in-out',
           isOpen
             ? 'animate-in fade-in zoom-in'
             : 'animate-out fade-out-0 zoom-out-95',

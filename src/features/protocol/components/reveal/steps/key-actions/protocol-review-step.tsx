@@ -201,7 +201,7 @@ export const ProtocolReviewStep = () => {
                         <img
                           src={actionImage}
                           alt={action.title}
-                          className="size-12 rounded-lg object-cover"
+                          className="size-12 rounded-lg object-cover rounded-mask"
                         />
 
                         <div className="flex-1">

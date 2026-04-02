@@ -1,7 +1,7 @@
 import { Description } from '@radix-ui/react-dialog';
 import { useNavigate } from '@tanstack/react-router';
 import { Lock, X } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import NumberFlow from '@/components/shared/number-flow';
 import { Button } from '@/components/ui/button';
@@ -204,7 +204,7 @@ const LatestResultCard = ({ biomarker }: { biomarker: Biomarker }) => {
             {getDisplayComparator(biomarker.value[0]?.quantity?.comparator)}
             <NumberFlow value={biomarker.value[0]?.quantity?.value || 0} />{' '}
             <Body1 className="inline-block text-zinc-500">
-              {biomarker.unit}
+              {biomarker.value[0]?.quantity?.unit || biomarker.unit}
             </Body1>
           </>
         )}
@@ -222,22 +222,20 @@ const OptimalRangeCard = ({ biomarker }: { biomarker: Biomarker }) => {
     ? getCodedBiomarkerRanges(biomarker)
     : getBiomarkerRanges(biomarker);
 
-  const optimalCodedValue = useMemo(() => {
-    if (!isCodedValue) return null;
+  let optimalCodedValue: string | null = null;
 
+  if (isCodedValue) {
     const codedRanges = biomarker.codedRanges?.[lastValueSource] || [];
     const optimal = codedRanges.find((range) => range.status === 'optimal');
 
-    return optimal?.code || null;
-  }, [isCodedValue, biomarker.codedRanges, lastValueSource]);
+    optimalCodedValue = optimal?.code || null;
+  }
 
-  const optimalRange = useMemo(() => {
-    if (isCodedValue) return undefined;
-
-    return biomarker.ranges[lastValueSource].find(
-      (range) => range.status === 'OPTIMAL',
-    );
-  }, [isCodedValue, biomarker.ranges, lastValueSource]);
+  const optimalRange = isCodedValue
+    ? undefined
+    : biomarker.ranges[lastValueSource].find(
+        (range) => range.status === 'OPTIMAL',
+      );
 
   const formattedRange = formatOptimalRange(optimalRange);
 

@@ -10,8 +10,11 @@ import {
 import { cn } from '@/lib/utils';
 import { File } from '@/types/api';
 
-// Extended type to allow 'media' as a filter type
-type FilterType = File['contentType'] | 'media';
+export type FilterType =
+  | File['contentType']
+  | 'media'
+  | 'extraction:final'
+  | 'extraction:processing';
 
 /**
  * FilesFilter is filtering different types of files

@@ -35,23 +35,23 @@ export const SplashStep = () => {
           />
         </Sequence.StepMedia>
         <Sequence.StepContent className="mx-auto max-w-md text-center">
-          <H2>A lot has changed since your last test</H2>
+          <H2>We've upgraded how we personalize your results</H2>
           <Body1 className="text-zinc-500">
-            Please take a few minutes to update your goals, health history,
-            nutrition, and lifestyle.
+            A few quick questions help us tailor your protocols and insights to
+            your current health.
           </Body1>
         </Sequence.StepContent>
         <Sequence.StepFooter className="mx-auto w-full max-w-md">
           <div className="flex w-full flex-col gap-3">
             <Button onClick={next} className="w-full">
-              Update now
+              Get started (~5 min)
             </Button>
             <button
               type="button"
               onClick={skip}
               className="text-sm text-zinc-500 underline underline-offset-2 transition-colors hover:text-zinc-700"
             >
-              Not now
+              Skip this for now
             </button>
           </div>
         </Sequence.StepFooter>

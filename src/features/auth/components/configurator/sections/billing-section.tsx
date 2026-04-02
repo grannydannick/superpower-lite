@@ -60,14 +60,23 @@ export const BillingSection = () => {
         {expressAvailable ? <H3 className="text-primary">Payment</H3> : null}
         <StripeExpressCheckoutElement
           onClick={async (event) => {
-            const isValid = await form.trigger(undefined, {
-              shouldFocus: true,
-            });
-            if (isValid) {
-              event.resolve();
-            } else {
+            try {
+              const isValid = await form.trigger(undefined, {
+                shouldFocus: true,
+              });
+              if (isValid) {
+                event.resolve();
+                return;
+              }
+
+              event.reject();
               toast.error(
                 'Cannot launch Apple/Google Pay before completing all fields',
+              );
+            } catch {
+              event.reject();
+              toast.error(
+                'Unable to launch Apple/Google Pay right now. Please try card checkout instead.',
               );
             }
           }}

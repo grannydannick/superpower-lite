@@ -54,9 +54,9 @@ const TabsList = forwardRef<
       return;
     }
 
-    const tabRect = activeTab.getBoundingClientRect();
-    const tabsRect = tabsRef.current.getBoundingClientRect();
-
+    // Use offset properties instead of getBoundingClientRect — they are
+    // immune to CSS transforms (e.g. dialog/sheet scale animations) so
+    // the indicator pill is positioned correctly even on first render.
     if (activeNodeRef.current !== activeTab) {
       activeNodeRef.current = activeTab;
       const value = activeTab.getAttribute('data-value');
@@ -72,10 +72,10 @@ const TabsList = forwardRef<
     }
 
     setIndicatorStyle({
-      width: tabRect.width,
-      height: tabRect.height,
-      x: tabRect.left - tabsRect.left,
-      y: tabRect.top - tabsRect.top,
+      width: activeTab.offsetWidth,
+      height: activeTab.offsetHeight,
+      x: activeTab.offsetLeft,
+      y: activeTab.offsetTop,
     });
   }, []);
 
@@ -86,20 +86,11 @@ const TabsList = forwardRef<
 
     const tabsElement = tabsRef.current;
 
-    let didCancel = false;
-    let timeoutId: ReturnType<typeof setTimeout> | null = null;
-
-    if (typeof queueMicrotask === 'function') {
-      queueMicrotask(() => {
-        if (didCancel) return;
-        updateIndicatorPosition();
-      });
-    } else {
-      timeoutId = setTimeout(() => {
-        if (didCancel) return;
-        updateIndicatorPosition();
-      }, 0);
-    }
+    // Measure synchronously in useLayoutEffect so React re-renders
+    // before the browser paints — the indicator appears at the correct
+    // position on the very first frame. This is safe because we use
+    // offset* properties which are immune to CSS transforms.
+    updateIndicatorPosition();
 
     const mutationObserver = new MutationObserver(() => {
       updateIndicatorPosition();
@@ -130,11 +121,6 @@ const TabsList = forwardRef<
     }
 
     return () => {
-      didCancel = true;
-      if (timeoutId !== null) {
-        clearTimeout(timeoutId);
-      }
-
       mutationObserver.disconnect();
       if (resizeObserver) {
         resizeObserver.disconnect();
@@ -154,7 +140,7 @@ const TabsList = forwardRef<
           tabsRef.current = node;
         }}
         className={cn(
-          'relative inline-flex items-center gap-2 rounded-full bg-[#f4f4f5] p-1',
+          'relative inline-flex items-center gap-2 rounded-full bg-[#f4f4f5] py-1 pl-1 pr-[5px]',
           className,
         )}
         {...props}

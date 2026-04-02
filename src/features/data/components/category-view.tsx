@@ -64,7 +64,7 @@ export const CategoryView = () => {
 
   return (
     <div className="w-full space-y-4">
-      <div className="relative mx-auto w-full flex-1 overflow-visible rounded-[24px] border-none bg-white p-6 pb-4 hover:bg-white/80">
+      <div className="relative mx-auto w-full flex-1 overflow-visible rounded-[24px] border-none bg-white p-6 pb-4 shadow-sm hover:bg-white/80">
         <H4>{activeCategoryData.category}</H4>
         <div className="mb-8 flex w-full items-center justify-center py-2">
           {isLoading ? (

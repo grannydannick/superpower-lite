@@ -78,6 +78,9 @@ export const SignatureStep = () => {
           <div className="relative h-28 w-full rounded-2xl border border-zinc-100 bg-white shadow-lg shadow-black/[.02]">
             <SignatureCanvas
               ref={signatureRef}
+              // Avoid delayed touch updates from the old signature_pad dependency after a clear/resize.
+              throttle={0}
+              clearOnResize={false}
               canvasProps={{
                 className: 'w-full h-full rounded-md',
                 style: { background: 'transparent' },

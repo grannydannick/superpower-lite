@@ -1,3 +1,4 @@
+import type { QueryClient } from '@tanstack/react-query';
 import {
   createFileRoute,
   Outlet,
@@ -18,6 +19,60 @@ import { getTaskQueryOptions } from '@/features/tasks/api/get-task';
 import { authenticatedUserQueryOptions } from '@/lib/auth';
 import { isIntakeDismissed } from '@/lib/intake-dismiss';
 import { LazyStripeProvider } from '@/lib/lazy-stripe-provider';
+import { aiChatApi } from '@/orpc/ai-chat-api';
+
+const revealMock = {
+  shouldShow: false as const,
+  lastCompletedPhase: 'completed' as const,
+};
+const DEV_REVEAL_ABORT_MS = 150;
+let skipRevealLookupInDev = false;
+
+async function getRevealData(queryClient: QueryClient) {
+  if (!import.meta.env.DEV) {
+    return queryClient
+      .ensureQueryData(revealLatestQueryOptions())
+      .catch(() => null);
+  }
+
+  if (skipRevealLookupInDev) {
+    return revealMock;
+  }
+
+  const revealQueryOptions = revealLatestQueryOptions();
+  const cachedRevealData = queryClient.getQueryData<
+    Awaited<ReturnType<NonNullable<typeof revealQueryOptions.queryFn>>>
+  >(revealQueryOptions.queryKey);
+
+  if (cachedRevealData) {
+    return cachedRevealData;
+  }
+
+  const abortController = new AbortController();
+  const timeoutId = window.setTimeout(() => {
+    abortController.abort();
+  }, DEV_REVEAL_ABORT_MS);
+
+  try {
+    const { data, error, response } = await aiChatApi.GET(
+      '/protocol-v2/reveal/latest',
+      { signal: abortController.signal },
+    );
+
+    if (!response.ok || error || data === undefined) {
+      skipRevealLookupInDev = true;
+      return revealMock;
+    }
+
+    queryClient.setQueryData(revealQueryOptions.queryKey, data);
+    return data;
+  } catch {
+    skipRevealLookupInDev = true;
+    return revealMock;
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
+}
 
 export const Route = createFileRoute('/_app')({
   beforeLoad: async ({ context, location }) => {
@@ -79,21 +134,7 @@ export const Route = createFileRoute('/_app')({
       return;
     }
 
-    const revealMock = {
-      shouldShow: false as const,
-      lastCompletedPhase: 'completed' as const,
-    };
-    const revealPromise = queryClient
-      .ensureQueryData(revealLatestQueryOptions())
-      .catch(() => (import.meta.env.DEV ? revealMock : null));
-    const revealData = import.meta.env.DEV
-      ? await Promise.race([
-          revealPromise,
-          new Promise<typeof revealMock>((resolve) =>
-            setTimeout(() => resolve(revealMock), 3000),
-          ),
-        ])
-      : await revealPromise;
+    const revealData = await getRevealData(queryClient);
 
     if (
       revealData?.shouldShow === true &&
@@ -182,7 +223,6 @@ function AppRootComponent() {
     '/schedule',
     '/orders',
     '/services',
-    '/onboarding',
     '/questionnaire',
     '/settings',
     '/protocol/reveal',

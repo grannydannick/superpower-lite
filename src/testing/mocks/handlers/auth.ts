@@ -36,6 +36,37 @@ type LoginBody = {
 };
 
 export const authHandlers = [
+  http.post(`${env.AUTH_URL}/api/auth/sign-in/email`, async ({ request }) => {
+    await networkDelay();
+
+    try {
+      const credentials = (await request.json()) as LoginBody;
+      const { user } = await authenticate(credentials);
+
+      return HttpResponse.json({
+        redirect: false,
+        token: `mock-session-token-${user.id}`,
+        url: null,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: `${user.firstName} ${user.lastName}`,
+          emailVerified: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      });
+    } catch (error: any) {
+      return HttpResponse.json(
+        {
+          code: 'INVALID_EMAIL_OR_PASSWORD',
+          message: error?.message || 'Invalid email or password',
+        },
+        { status: 401 },
+      );
+    }
+  }),
+
   http.post(`${env.API_URL}/auth/newuser`, async ({ request }) => {
     await networkDelay();
     try {

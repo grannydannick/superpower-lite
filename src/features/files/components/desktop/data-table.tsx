@@ -44,9 +44,10 @@ export function DataTable<TData, TValue>({
     state: {
       sorting,
       columnVisibility: {
-        contentType: width > 1280,
-        status: width > 1280,
-        updatedAt: width > 475,
+        type: width > 1280,
+        results: width > 1280,
+        uploadedAt: width > 475,
+        reportDate: width > 768,
       },
     },
   });

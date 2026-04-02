@@ -164,6 +164,8 @@ export const useSparklineChart = ({
           timestamp: v.timestamp,
           index,
           source: v.source || 'quest',
+          unit: v.quantity?.unit,
+          file: v.file,
           status: getValueStatus(srcDims, rawValue, newestValueInfo),
           comparatorLabel,
         };

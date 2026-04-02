@@ -17,13 +17,7 @@ import { useSetPassword } from '@/lib/auth';
 import { setPasswordInputSchema } from '@/lib/auth-schemas';
 import type { SetPasswordInput } from '@/lib/auth-schemas';
 
-export const SetPasswordForm = ({
-  id,
-  secret,
-}: {
-  id: string;
-  secret: string;
-}) => {
+export const SetPasswordForm = ({ token }: { token: string }) => {
   const setPasswordMutation = useSetPassword();
   const form = useForm<SetPasswordInput>({
     resolver: zodResolver(setPasswordInputSchema),
@@ -34,7 +28,7 @@ export const SetPasswordForm = ({
   });
 
   function onFormSubmit(values: SetPasswordInput) {
-    setPasswordMutation.mutate({ data: values, id, secret });
+    setPasswordMutation.mutate({ data: values, token });
   }
 
   if (setPasswordMutation.isSuccess) {

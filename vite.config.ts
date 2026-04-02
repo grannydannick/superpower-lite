@@ -1,6 +1,7 @@
 /// <reference types="vitest/config" />
 /// <reference types="vite/client" />
 
+import { sentryVitePlugin } from '@sentry/vite-plugin';
 import { devtools } from '@tanstack/devtools-vite';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
@@ -38,7 +39,7 @@ const enableReactCompiler = process.env.REACT_COMPILER !== 'false';
 
 const plugins = [
   // meticulousRecorderPlugin is added dynamically below via defineConfig callback
-  devtools(),
+  devtools({ injectSource: { enabled: false } }),
   tanstackRouter({
     target: 'react',
     autoCodeSplitting: true,
@@ -76,12 +77,31 @@ if (process.env.ANALYZE === 'true') {
   );
 }
 
+if (process.env.SENTRY_AUTH_TOKEN) {
+  plugins.push(
+    sentryVitePlugin({
+      org: 'superpowerdotcom',
+      project: 'react-app',
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      applicationKey: 'superpower-react-app',
+      release: { name: process.env.VERCEL_GIT_COMMIT_SHA },
+      sourcemaps: {
+        filesToDeleteAfterUpload: process.env.VERCEL
+          ? ['./.vercel/output/**/*.map']
+          : ['./dist/**/*.map'],
+      },
+      silent: !process.env.CI,
+    }),
+  );
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd());
 
   return {
     base: './',
     plugins: [meticulousRecorderPlugin(mode, env.VITE_METICULOUS_RECORDING_TOKEN), ...plugins],
+    build: { sourcemap: process.env.SENTRY_AUTH_TOKEN ? 'hidden' : false },
     server: {
       port: 3000,
       // proxy to local avatar api providing the images. As soon as the social go-img-kit service provides urls itself, we can safely remove this.

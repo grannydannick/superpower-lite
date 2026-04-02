@@ -32,11 +32,7 @@ export const StyledMarkdown = ({
               {children}
             </ol>
           ),
-          li: ({ children }) => (
-            <li>
-              <Paragraph className="text-zinc-500">{children}</Paragraph>
-            </li>
-          ),
+          li: ({ children }) => <li className="text-zinc-500">{children}</li>,
         }}
       >
         {children}

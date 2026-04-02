@@ -47,3 +47,4 @@ mocked-db.json
 # cursor
 .cursor/plans/
 .vercel
+.env*.local

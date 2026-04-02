@@ -1,24 +1,16 @@
-import { IconAnalytics } from '@central-icons-react/round-filled-radius-2-stroke-1.5/IconAnalytics';
 import * as TabsPrimitive from '@radix-ui/react-tabs';
 import { Link } from '@tanstack/react-router';
 import { m } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import {
-  useMemo,
-  useRef,
-  useState,
-  useLayoutEffect,
-  useCallback,
-  type SyntheticEvent,
-} from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
 import { Body1, Body2, H2, H4 } from '@/components/ui/typography';
 import { useBiomarkers } from '@/features/data/api';
 import { AiSuggestions } from '@/features/messages/components/ai-suggestions';
+import { extractObservationId } from '@/features/messages/utils/parse-fhir-citation';
 import { useSupplementProductLookup } from '@/features/protocol/hooks/use-supplement-product-lookup';
+import { useGender } from '@/hooks/use-gender';
 import { Biomarker } from '@/types/api';
-import { getSymptomIcon } from '@/utils/symptom-to-icon-mapper';
 
 import type { ProtocolAction, ProtocolGoal } from '../../api';
 import {
@@ -33,6 +25,7 @@ import {
 import { ProtocolIndexNumber } from '../protocol-index-number';
 import { ProtocolMarkdown } from '../protocol-markdown';
 import { BiomarkerCausesDialog } from '../reveal/steps/key-actions/biomarker-causes-dialog';
+import { SymptomsCarousel } from '../symptoms-carousel';
 
 interface GoalDetailPageProps {
   goal: ProtocolGoal;
@@ -47,6 +40,8 @@ export const GoalDetailPage = ({
   protocolId: _protocolId,
   backLink,
 }: GoalDetailPageProps) => {
+  const { gender } = useGender();
+
   // Fetch biomarkers data
   const { data: allBiomarkers } = useBiomarkers();
 
@@ -72,9 +67,9 @@ export const GoalDetailPage = ({
     const seenBiomarkerIds = new Set<string>();
 
     for (const reference of goal.biomarkers) {
-      // Extract observation ID from FHIR reference (e.g., "Observation/uuid" -> "uuid")
-      const observationId = reference.replace(/^Observation\//, '');
-      const biomarker = observationBiomarkerIndex.get(observationId);
+      const biomarker = observationBiomarkerIndex.get(
+        extractObservationId(reference),
+      );
 
       // Deduplicate - multiple observations may belong to the same biomarker
       if (biomarker && !seenBiomarkerIds.has(biomarker.id)) {
@@ -145,6 +140,7 @@ export const GoalDetailPage = ({
             goal={goal}
             resolvedBiomarkers={resolvedBiomarkers}
             citations={citations}
+            twinSrc={`/protocol/twins/${gender === 'female' ? 'female' : 'male'}-twin-neutral.png`}
           />
         </TabsPrimitive.Content>
 
@@ -162,6 +158,7 @@ export const GoalDetailPage = ({
         <H4>Ask Superpower AI</H4>
         <AiSuggestions
           context={`I'm looking at my protocol goal: "${goal.title}". ${goal.description || ''} Please give me relevant questions I can ask about this goal.`}
+          showAskOwn
         />
       </div>
     </div>
@@ -229,12 +226,14 @@ interface FindingsTabProps {
   goal: ProtocolGoal;
   resolvedBiomarkers: Biomarker[];
   citations: NonNullable<ProtocolAction['citations']>;
+  twinSrc: string;
 }
 
 const FindingsTab = ({
   goal,
   resolvedBiomarkers,
   citations,
+  twinSrc,
 }: FindingsTabProps) => {
   return (
     <div className="space-y-6">
@@ -246,20 +245,7 @@ const FindingsTab = ({
           transition={{ duration: 0.4 }}
         >
           <H4 className="mb-3 text-base">How you might be feeling</H4>
-          <div className="flex flex-wrap gap-2">
-            {goal.possibleSymptoms.map((symptom, index) => {
-              const IconComponent = getSymptomIcon(symptom);
-              return (
-                <span
-                  key={index}
-                  className="flex items-center gap-2 rounded-full bg-zinc-100 px-3 py-2 text-sm text-secondary"
-                >
-                  <IconComponent className="size-4" />
-                  {symptom}
-                </span>
-              );
-            })}
-          </div>
+          <SymptomsCarousel symptoms={goal.possibleSymptoms} />
         </m.div>
       )}
 
@@ -297,11 +283,11 @@ const FindingsTab = ({
             >
               <div className="mb-2 flex w-full items-start justify-between">
                 <div>
-                  <H4 className="text-base">What&apos;s causing this?</H4>
+                  <H4 className="text-base">Your biomarkers</H4>
                   <Body2 className="text-secondary">
                     {resolvedBiomarkers.length > 0
-                      ? `${resolvedBiomarkers.length} Key Biomarkers`
-                      : `${goal.biomarkers.length} Key Biomarkers`}
+                      ? `${resolvedBiomarkers.length} biomarkers linked to this`
+                      : `${goal.biomarkers.length} biomarkers linked to this`}
                   </Body2>
                 </div>
                 <ChevronRight className="size-5 shrink-0 text-zinc-400 transition-all group-hover:translate-x-0.5 group-hover:text-zinc-500" />
@@ -326,13 +312,15 @@ const FindingsTab = ({
             >
               <div className="mb-2 flex w-full items-start justify-between">
                 <div>
-                  <H4 className="text-base">Why this matters?</H4>
-                  <Body2 className="text-secondary">Impact on you</Body2>
+                  <H4 className="text-base">Why this matters</H4>
+                  <Body2 className="text-secondary">
+                    How this impacts your health
+                  </Body2>
                 </div>
                 <ChevronRight className="size-5 shrink-0 text-zinc-400 transition-all group-hover:translate-x-0.5 group-hover:text-zinc-500" />
               </div>
               <img
-                src="/protocol/twins/twin-neutral.webp"
+                src={twinSrc}
                 alt="Impact visualization"
                 className="mt-auto h-28 self-center object-cover"
                 style={{
@@ -345,33 +333,28 @@ const FindingsTab = ({
             </button>
           </WhyItMattersDialog>
         )}
-      </m.div>
 
-      {/* Citations */}
-      {citations.length > 0 && (
-        <m.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.3 }}
-        >
+        {citations.length > 0 && (
           <CitationsDialog citations={citations}>
             <button
               type="button"
-              className="group flex w-full items-center justify-between rounded-2xl border border-zinc-200 bg-white p-4 text-left shadow shadow-black/[.03] transition-colors hover:border-zinc-300"
+              className="group flex w-full items-center justify-between rounded-2xl border border-zinc-200 bg-white px-4 py-2 text-left shadow shadow-black/[.03] transition-colors hover:border-zinc-300"
             >
-              <H4 className="text-base">{citations.length} Citations</H4>
+              <Body2 className="text-secondary">
+                {citations.length} Citations
+              </Body2>
               <div className="flex items-center gap-3">
                 <img
                   src="/protocol/what-we-do/protocols.webp"
                   alt="Research protocols"
-                  className="h-12 w-32 object-contain rounded-mask"
+                  className="h-10 w-14 object-contain"
                 />
                 <ChevronRight className="size-5 shrink-0 text-zinc-400 transition-all group-hover:translate-x-0.5 group-hover:text-zinc-500" />
               </div>
             </button>
           </CitationsDialog>
-        </m.div>
-      )}
+        )}
+      </m.div>
     </div>
   );
 };
@@ -390,68 +373,6 @@ const ActionsTab = ({
 }: ActionsTabProps) => {
   const getSupplementProduct = useSupplementProductLookup();
 
-  const stopPropagation = useCallback((event: SyntheticEvent) => {
-    event.stopPropagation();
-  }, []);
-
-  const renderBuyNowButton = (
-    productPurchaseUrl: string | undefined,
-    contentType: ProtocolAction['content']['type'],
-  ) => {
-    const href =
-      contentType === 'testing' ? '/marketplace' : productPurchaseUrl;
-    if (href == null) return null;
-    return (
-      <Button
-        asChild
-        variant="outline"
-        size="small"
-        className="ml-auto h-8 px-3 text-xs"
-        onClick={stopPropagation}
-        onPointerDown={stopPropagation}
-      >
-        <a href={href} target="_blank" rel="noopener noreferrer">
-          Buy now
-        </a>
-      </Button>
-    );
-  };
-
-  const renderEvidenceButton = (
-    actionCitations: NonNullable<ProtocolAction['citations']>,
-  ) => {
-    if (actionCitations.length === 0) return null;
-    return (
-      <CitationsDialog citations={actionCitations}>
-        <button
-          type="button"
-          className="flex items-center gap-1.5 rounded-full border border-zinc-200 px-2 py-1 text-sm text-secondary transition-colors hover:bg-zinc-50"
-          onClick={stopPropagation}
-          onPointerDown={stopPropagation}
-        >
-          <IconAnalytics className="size-4" />
-          <span>Clinical Evidence</span>
-          <ChevronRight className="size-4" />
-        </button>
-      </CitationsDialog>
-    );
-  };
-
-  const renderCardFooter = (
-    actionCitations: NonNullable<ProtocolAction['citations']>,
-    productPurchaseUrl: string | undefined,
-    contentType: ProtocolAction['content']['type'],
-  ) => {
-    const showBuyNow = productPurchaseUrl != null || contentType === 'testing';
-    if (actionCitations.length === 0 && !showBuyNow) return null;
-    return (
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        {renderEvidenceButton(actionCitations)}
-        {renderBuyNowButton(productPurchaseUrl, contentType)}
-      </div>
-    );
-  };
-
   if (!primaryAction) {
     return (
       <div className="py-8 text-center">
@@ -463,8 +384,6 @@ const ActionsTab = ({
   }
 
   const actionImage = getActionTypeImage(primaryAction.content);
-
-  // Extract why and lookOutFor from supplement content type
   const whyContent =
     primaryAction.content.type === 'supplement'
       ? primaryAction.content.why
@@ -477,88 +396,55 @@ const ActionsTab = ({
     primaryAction.content.type === 'supplement'
       ? getSupplementProduct(primaryAction.content.productId)
       : null;
-  const primaryActionProductPurchaseUrl = primaryActionProduct?.url;
   const primaryActionCitations = primaryAction.citations ?? [];
-
-  const keyActionCard = (
-    <m.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className={`rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm ${
-        primaryAction.additionalContent ? 'cursor-pointer' : ''
-      }`}
-      role={primaryAction.additionalContent ? 'button' : undefined}
-      tabIndex={primaryAction.additionalContent ? 0 : undefined}
-    >
-      <div className="mb-3 flex items-center gap-3">
-        <img
-          src={actionImage}
-          alt={primaryAction.title}
-          className="size-10 rounded-lg object-cover"
-          onError={(e) => {
-            e.currentTarget.src = ACTION_TYPE_FALLBACK_IMAGE;
-          }}
-        />
-        <H4 className="flex-1 text-base">{primaryAction.title}</H4>
-        {primaryAction.additionalContent && (
-          <ChevronRight className="size-4 text-secondary" />
-        )}
-      </div>
-
-      {whyContent && (
-        <div className="space-y-1 pt-3">
-          <ProtocolMarkdown
-            content={whyContent}
-            className="text-sm text-secondary [&>div]:mb-0"
-          />
-        </div>
-      )}
-
-      {lookOutForContent && (
-        <div className="mt-3 space-y-1 pt-3">
-          <ProtocolMarkdown
-            content={lookOutForContent}
-            className="text-sm text-secondary [&>div]:mb-0"
-          />
-        </div>
-      )}
-
-      {primaryActionCitations.length > 0 ||
-      primaryActionProductPurchaseUrl != null ||
-      primaryAction.content.type === 'testing' ? (
-        <div
-          role="presentation"
-          onClick={(e) => e.stopPropagation()}
-          onKeyDown={(e) => e.stopPropagation()}
-        >
-          {renderCardFooter(
-            primaryActionCitations,
-            primaryActionProductPurchaseUrl ?? undefined,
-            primaryAction.content.type,
-          )}
-        </div>
-      ) : null}
-    </m.div>
-  );
 
   return (
     <div className="space-y-6">
       {/* Key Action */}
       <div>
         <H4 className="mb-3 text-base">Key Action</H4>
-
-        {primaryAction.additionalContent ? (
-          <AdditionalContentDialog
-            actionTitle={primaryAction.title}
-            additionalContent={primaryAction.additionalContent}
-            supplementProduct={primaryActionProduct}
+        <AdditionalContentDialog
+          actionTitle={primaryAction.title}
+          actionImage={actionImage}
+          whyContent={whyContent}
+          lookOutForContent={lookOutForContent}
+          additionalContent={primaryAction.additionalContent}
+          supplementProduct={primaryActionProduct}
+          citations={primaryActionCitations}
+        >
+          <m.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="cursor-pointer rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm transition-colors hover:border-zinc-300"
+            role="button"
+            tabIndex={0}
           >
-            {keyActionCard}
-          </AdditionalContentDialog>
-        ) : (
-          keyActionCard
-        )}
+            <div className="mb-3 flex items-center gap-3">
+              <img
+                src={actionImage}
+                alt={primaryAction.title}
+                className="size-10 rounded-lg object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = ACTION_TYPE_FALLBACK_IMAGE;
+                }}
+              />
+              <H4 className="flex-1 text-base">{primaryAction.title}</H4>
+            </div>
+
+            <ProtocolMarkdown
+              content={primaryAction.description}
+              className="text-sm text-secondary [&>div]:mb-0"
+            />
+
+            <div className="mt-3 flex items-center justify-between">
+              <span className="flex items-center gap-1 text-sm text-secondary">
+                Learn more
+                <ChevronRight className="size-4" />
+              </span>
+            </div>
+          </m.div>
+        </AdditionalContentDialog>
       </div>
 
       {/* Additional Actions */}
@@ -572,71 +458,64 @@ const ActionsTab = ({
                 action.content.type === 'supplement'
                   ? getSupplementProduct(action.content.productId)
                   : null;
-              const actionProductPurchaseUrl = actionProduct?.url;
+              const actionWhyContent =
+                action.content.type === 'supplement'
+                  ? action.content.why
+                  : action.description;
+              const actionLookOutFor =
+                action.content.type === 'supplement'
+                  ? action.content.lookOutFor
+                  : null;
               const actionCitations = action.citations ?? [];
 
-              const cardBody = (
-                <>
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={actionImg}
-                      alt={action.title}
-                      className="size-10 rounded-lg object-cover rounded-mask"
-                      onError={(e) => {
-                        e.currentTarget.src = ACTION_TYPE_FALLBACK_IMAGE;
-                      }}
-                    />
-                    <div className="flex-1">
-                      <H4 className="text-sm">{action.title}</H4>
-                    </div>
-                    {action.additionalContent && (
-                      <ChevronRight className="size-4 text-secondary" />
-                    )}
-                  </div>
-
-                  {action.description && (
-                    <ProtocolMarkdown
-                      content={action.description}
-                      className="mt-2 text-xs text-secondary [&>div]:mb-0"
-                    />
-                  )}
-
-                  {renderCardFooter(
-                    actionCitations,
-                    actionProductPurchaseUrl ?? undefined,
-                    action.content.type,
-                  )}
-                </>
-              );
-
-              const cardProps = {
-                initial: { opacity: 0, y: 20 },
-                animate: { opacity: 1, y: 0 },
-                transition: { duration: 0.4, delay: index * 0.1 },
-                className: `rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm ${
-                  action.additionalContent ? 'cursor-pointer' : ''
-                }`,
-                role: action.additionalContent ? 'button' : undefined,
-                tabIndex: action.additionalContent ? 0 : undefined,
-              };
-
-              if (action.additionalContent) {
-                return (
-                  <AdditionalContentDialog
-                    key={action.id || index}
-                    actionTitle={action.title}
-                    additionalContent={action.additionalContent}
-                    supplementProduct={actionProduct}
-                  >
-                    <m.div {...cardProps}>{cardBody}</m.div>
-                  </AdditionalContentDialog>
-                );
-              }
-
               return (
-                <m.div key={action.id || index} {...cardProps}>
-                  {cardBody}
-                </m.div>
+                <AdditionalContentDialog
+                  key={action.id || index}
+                  actionTitle={action.title}
+                  actionImage={actionImg}
+                  whyContent={actionWhyContent}
+                  lookOutForContent={actionLookOutFor}
+                  additionalContent={action.additionalContent}
+                  supplementProduct={actionProduct}
+                  citations={actionCitations}
+                >
+                  <m.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    className="cursor-pointer rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm transition-colors hover:border-zinc-300"
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={actionImg}
+                        alt={action.title}
+                        className="size-10 rounded-lg object-cover rounded-mask"
+                        onError={(e) => {
+                          e.currentTarget.src = ACTION_TYPE_FALLBACK_IMAGE;
+                        }}
+                      />
+                      <div className="flex-1">
+                        <H4 className="text-sm">{action.title}</H4>
+                      </div>
+                    </div>
+
+                    {action.description && (
+                      <ProtocolMarkdown
+                        content={action.description}
+                        className="mt-2 text-xs text-secondary [&>div]:mb-0"
+                      />
+                    )}
+
+                    <div className="mt-3 flex items-center">
+                      <span className="flex items-center gap-1 text-sm text-secondary">
+                        Learn more
+                        <ChevronRight className="size-4" />
+                      </span>
+                    </div>
+                  </m.div>
+                </AdditionalContentDialog>
               );
             })}
           </div>

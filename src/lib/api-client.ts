@@ -99,6 +99,30 @@ const refreshAccessToken = async (): Promise<string | undefined> => {
   return accessToken;
 };
 
+export const refreshAccessTokenSingleFlight = async (): Promise<
+  string | undefined
+> => {
+  if (!getActiveLogin()?.refreshToken) {
+    throw new Error('Missing refresh token');
+  }
+
+  if (!refreshPromise) {
+    refreshPromise = (async () => {
+      try {
+        return await refreshAccessToken();
+      } catch (err) {
+        console.warn('Failed to refresh access token', err);
+        clearActiveLogin();
+        throw err;
+      } finally {
+        refreshPromise = null;
+      }
+    })();
+  }
+
+  return await refreshPromise;
+};
+
 // Automatically ensure every request includes auth + the expected content type.
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   if (config.headers) {
@@ -171,22 +195,9 @@ api.interceptors.response.use(
 
       originalRequest._isRetry = true;
 
-      if (!refreshPromise) {
-        refreshPromise = (async () => {
-          try {
-            return await refreshAccessToken();
-          } catch (err) {
-            clearActiveLogin();
-            throw err;
-          } finally {
-            refreshPromise = null;
-          }
-        })();
-      }
-
       try {
         // Each 401 waits for the shared refresh to settle before retrying the original request.
-        const token = await refreshPromise;
+        const token = await refreshAccessTokenSingleFlight();
         if (token !== undefined) {
           const headers = originalRequest.headers ?? {};
           originalRequest.headers = headers;

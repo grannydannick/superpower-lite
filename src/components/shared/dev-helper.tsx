@@ -26,6 +26,7 @@ import {
   useQuestionnaireResponseList,
   useUpdateQuestionnaireResponse,
 } from '@/features/questionnaires/api/questionnaire-response';
+// TODO: re-enable once ready — import { WearableConnectedModal } from '@/features/settings/components/wearables/wearable-connected-modal';
 import { DEV_BYPASS_CARE_PLAN_KEY } from '@/features/summary/api/get-summary';
 
 import { toast } from '../ui/sonner';
@@ -76,15 +77,21 @@ export function DevHelper() {
   if (!isDev) return null;
 
   return (
-    <DevHelperMenu open={open} setOpen={setOpen}>
-      {open ? (
-        <DevHelperMenuContent
-          bypassCarePlan={bypassCarePlan}
-          setBypassCarePlan={setBypassCarePlan}
-          closeMenu={() => setOpen(false)}
-        />
-      ) : null}
-    </DevHelperMenu>
+    <>
+      <DevHelperMenu open={open} setOpen={setOpen}>
+        {open ? (
+          <DevHelperMenuContent
+            bypassCarePlan={bypassCarePlan}
+            setBypassCarePlan={setBypassCarePlan}
+            closeMenu={() => setOpen(false)}
+            onTriggerWearableModal={() => {
+              toast.success('Your Oura is connected!');
+              setOpen(false);
+            }}
+          />
+        ) : null}
+      </DevHelperMenu>
+    </>
   );
 }
 
@@ -92,12 +99,14 @@ interface DevHelperMenuContentProps {
   bypassCarePlan: boolean;
   setBypassCarePlan: React.Dispatch<React.SetStateAction<boolean>>;
   closeMenu: () => void;
+  onTriggerWearableModal: () => void;
 }
 
 function DevHelperMenuContent({
   bypassCarePlan,
   setBypassCarePlan,
   closeMenu,
+  onTriggerWearableModal,
 }: DevHelperMenuContentProps) {
   const matchRoute = useMatchRoute();
   const isOnboarding = matchRoute({ to: '/onboarding' }) !== false;
@@ -388,6 +397,12 @@ function DevHelperMenuContent({
           }}
         >
           <span>Complete reveal</span>
+        </CommandItem>
+      </CommandGroup>
+
+      <CommandGroup heading="Wearables">
+        <CommandItem onSelect={onTriggerWearableModal}>
+          <span>Trigger wearable success modal</span>
         </CommandItem>
       </CommandGroup>
 

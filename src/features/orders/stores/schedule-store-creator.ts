@@ -16,6 +16,7 @@ export interface ScheduleStoreProps {
   onDone?: () => void;
   // used for filtering
   mode: ServiceGroup;
+  initialCollectionMethod?: CollectionMethodType | null;
 }
 
 export interface ScheduleStore extends ScheduleStoreProps {
@@ -48,6 +49,10 @@ const initialState = {
 
 export const scheduleStoreCreator = (initProps: ScheduleStoreProps) => {
   const getInitialCollectionMethod = (): CollectionMethodType | null => {
+    if (initProps.initialCollectionMethod) {
+      return initProps.initialCollectionMethod;
+    }
+
     if (initProps.mode === 'phlebotomy-kit') {
       return 'PHLEBOTOMY_KIT';
     }

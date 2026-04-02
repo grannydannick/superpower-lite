@@ -18,6 +18,7 @@ import type { Biomarker } from '@/types/api';
 import { ChartTooltip } from '../chart-tooltip';
 import { CHART_CONFIG } from '../time-series-chart/config';
 import { Pagination } from '../time-series-chart/pagination';
+import { TooltipSource } from '../tooltip-source';
 import { getCodedBiomarkerRanges } from '../utils/get-biomarker-ranges';
 
 import { useCodedValueChart } from './use-coded-value-chart';
@@ -77,6 +78,7 @@ export const CodedValueChart = ({
     position: { x: number; y: number };
     pointIndex: number;
     isNextTest: boolean;
+    file?: { id: string; name: string };
   } | null>(null);
 
   const { meta, data, axes, optimal, config } = useCodedValueChart({
@@ -203,6 +205,7 @@ export const CodedValueChart = ({
               codedValue: nearestPoint.codedValue,
               timestamp: originalValue.timestamp,
               source: originalValue.source || 'quest',
+              file: originalValue.file,
               status: nearestPoint.status,
               isNextTest: false,
               position: {
@@ -563,6 +566,7 @@ export const CodedValueChart = ({
             isOpen={true}
             position={displayedPoint.position}
             side="top"
+            interactive={true}
             className={cn(
               displayedPoint.isNextTest && '-mt-20 rounded-xl p-1.5',
             )}
@@ -603,7 +607,11 @@ export const CodedValueChart = ({
                   </div>
                   <div className="text-muted-foreground">
                     {format(new Date(displayedPoint.timestamp), 'MMM dd, yyyy')}{' '}
-                    (<span className="capitalize">{displayedPoint.source}</span>
+                    (
+                    <TooltipSource
+                      source={displayedPoint.source ?? 'quest'}
+                      file={displayedPoint.file}
+                    />
                     )
                   </div>
                 </div>

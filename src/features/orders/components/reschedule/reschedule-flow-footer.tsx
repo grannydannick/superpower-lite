@@ -4,10 +4,9 @@ import React, { Dispatch, SetStateAction, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner';
+import { useUpdateOrder } from '@/features/orders/api';
 import { cn } from '@/lib/utils';
 import { RequestGroup } from '@/types/api';
-
-import { useUpdateOrder } from '../../api';
 
 import { RescheduleMode } from './reschedule-mode';
 

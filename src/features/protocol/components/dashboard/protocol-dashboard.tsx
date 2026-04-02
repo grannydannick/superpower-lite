@@ -157,7 +157,10 @@ export const ProtocolDashboard = ({
       <PastProtocols protocols={historicalProtocols} />
       <div className="space-y-4">
         <H4>Ask Superpower AI</H4>
-        <AiSuggestions context="I'm looking at my SP2 Protocol dashboard page with today's actions, goals, and recommendations. Please give me some suggestions for questions I can ask about my protocol and health journey." />
+        <AiSuggestions
+          context="I'm looking at my SP2 Protocol dashboard page with today's actions, goals, and recommendations. Please give me some suggestions for questions I can ask about my protocol and health journey."
+          showAskOwn
+        />
       </div>
     </div>
   );

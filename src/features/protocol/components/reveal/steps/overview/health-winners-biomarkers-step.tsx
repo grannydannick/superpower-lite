@@ -55,10 +55,7 @@ export const HealthWinnersBiomarkersStep = () => {
           {`${optimalBiomarkerCount} out of ${totalBiomarkerCount} biomarkers are optimal`}
         </Body1>
       </div>
-      <CategoriesTable
-        categories={categoryGroups}
-        maxVisibleBiomarkers={Infinity}
-      />
+      <CategoriesTable categories={categoryGroups} maxVisibleBiomarkers={3} />
       <Button className="w-full" onClick={handleNext}>
         Continue
       </Button>

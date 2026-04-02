@@ -1,12 +1,25 @@
+import { IconCheckCircle2 } from '@central-icons-react/round-filled-radius-2-stroke-1.5/IconCheckCircle2';
 import { m } from 'framer-motion';
-import { useCallback, useMemo, useState } from 'react';
+import { ChevronRight, Minus, Plus } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import NumberFlow from '@/components/shared/number-flow';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Body1, H2 } from '@/components/ui/typography';
-import type { Protocol, ProtocolAction } from '@/features/protocol/api';
+import type {
+  Protocol,
+  ProtocolAction,
+  ProtocolGoal,
+} from '@/features/protocol/api';
 import { useSupplementCatalog } from '@/features/protocol/api/supplement-catalog';
+import { ProtocolMarkdown } from '@/features/protocol/components/protocol-markdown';
 import { useProtocolStepperContext } from '@/features/protocol/components/reveal/protocol-stepper-context';
 import { useShippingFee } from '@/features/protocol/hooks/use-shipping-fee';
 import { useSupplementProductLookup } from '@/features/protocol/hooks/use-supplement-product-lookup';
@@ -16,24 +29,35 @@ import type { Product } from '@/types/api';
 
 import { ProtocolStepLayout } from '../../../layouts/protocol-step-layout';
 
+const MAX_SUPPLEMENT_QUANTITY = 10;
+
 type SupplementDisplayItem = {
   actionId: string;
   product: Product;
   amazonPrice: number | null;
   amazonUrl: string | null;
+  whyContent: string | null;
+};
+
+type GoalSupplementGroup = {
+  goalId: string;
+  goalTitle: string;
+  items: SupplementDisplayItem[];
 };
 
 type SupplementCardProps = {
   item: SupplementDisplayItem;
-  isAdded: boolean;
-  onToggle: (id: string) => void;
+  quantity: number;
+  onIncrement: (id: string) => void;
+  onDecrement: (id: string) => void;
   index: number;
 };
 
 const SupplementCard = ({
   item,
-  isAdded,
-  onToggle,
+  quantity,
+  onIncrement,
+  onDecrement,
   index,
 }: SupplementCardProps) => {
   const { track } = useAnalytics();
@@ -48,25 +72,6 @@ const SupplementCard = ({
       action_id: item.actionId,
     }),
     [item.product, item.actionId],
-  );
-
-  const handleToggle = useCallback(() => {
-    track(
-      isAdded
-        ? 'protocol_reveal_supplement_removed_from_cart'
-        : 'protocol_reveal_supplement_added_to_cart',
-      productMeta,
-    );
-    onToggle(item.actionId);
-  }, [onToggle, item.actionId, isAdded, track, productMeta]);
-
-  const handlePdpClick = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault();
-      track('protocol_reveal_supplement_pdp_clicked', productMeta);
-      window.open(item.product.url, '_blank', 'noopener');
-    },
-    [track, productMeta, item.product.url],
   );
 
   const handleAmazonClick = useCallback(() => {
@@ -90,117 +95,149 @@ const SupplementCard = ({
         delay: index * 0.1,
         ease: 'easeOut',
       }}
-      className="rounded-2xl border border-zinc-200 bg-white p-2 shadow shadow-black/[.03]"
+      className="rounded-2xl border border-zinc-200 bg-white shadow shadow-black/[.03]"
     >
-      <div className="flex items-center gap-4">
-        <img
-          src={product.image ?? '/protocol/decision/empty.webp'}
-          alt={product.name}
-          className="size-16 rounded-lg object-cover"
-        />
-        <div className="flex-1">
-          <a
-            href={product.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mb-3 block font-medium text-zinc-900 hover:underline"
-            onClick={handlePdpClick}
-          >
+      <div className="p-4">
+        {/* Header: product name + image */}
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <span className="text-base font-semibold text-zinc-900">
             {product.name}
-          </a>
+          </span>
+          <img
+            src={product.image ?? '/protocol/decision/empty.webp'}
+            alt={product.name}
+            className="size-12 shrink-0 rounded-lg object-cover"
+          />
+        </div>
 
-          <div className="space-y-1.5">
-            {item.amazonPrice != null && (
-              <>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-zinc-600">Amazon</span>
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium">
-                      ${item.amazonPrice.toFixed(0)}
-                    </span>
-                    {item.amazonUrl != null && (
-                      <Button
-                        variant="outline"
-                        size="small"
-                        className="h-8 w-[72px] text-xs"
-                        onClick={handleAmazonClick}
-                      >
-                        View
-                      </Button>
-                    )}
-                  </div>
-                </div>
-
-                <hr className="border-zinc-200" />
-              </>
-            )}
-
-            <div className="flex items-center justify-between">
-              <a
-                href={product.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm font-medium text-zinc-900 hover:underline"
-                onClick={handlePdpClick}
-              >
-                Superpower
-              </a>
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-vermillion-900">
-                    ${discountedPrice.toFixed(0)}
-                  </span>
-                  {product.discount > 0 && (
-                    <span className="text-sm text-zinc-400 line-through">
-                      ${product.price.toFixed(0)}
-                    </span>
-                  )}
-                </div>
-                <Button
-                  variant={isAdded ? 'outline' : 'default'}
-                  size="small"
-                  className="h-8 w-[72px] px-4 text-xs"
-                  onClick={handleToggle}
-                >
-                  {isAdded ? 'Remove' : 'Add'}
-                </Button>
-              </div>
+        {/* Superpower + Amazon pricing grid */}
+        <div className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-3">
+          {/* Superpower row */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-zinc-900">
+              Superpower
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-vermillion-900">
+                ${discountedPrice.toFixed(0)}
+              </span>
+              {product.discount > 0 && (
+                <span className="text-sm text-zinc-400 line-through">
+                  ${product.price.toFixed(0)}
+                </span>
+              )}
             </div>
           </div>
+
+          {/* Quantity selector */}
+          <div className="flex items-center rounded-lg border border-zinc-200">
+            <button
+              type="button"
+              className="flex size-8 items-center justify-center text-zinc-400 transition-colors hover:text-zinc-700 disabled:opacity-30"
+              onClick={() => onDecrement(item.actionId)}
+              disabled={quantity <= 0}
+            >
+              <Minus className="size-3.5" />
+            </button>
+            <span className="w-6 text-center text-sm font-medium tabular-nums">
+              {quantity}
+            </span>
+            <button
+              type="button"
+              className="flex size-8 items-center justify-center text-zinc-400 transition-colors hover:text-zinc-700 disabled:opacity-30"
+              onClick={() => onIncrement(item.actionId)}
+              disabled={quantity >= MAX_SUPPLEMENT_QUANTITY}
+            >
+              <Plus className="size-3.5" />
+            </button>
+          </div>
+
+          {/* Amazon row — price aligns under Superpower prices */}
+          {item.amazonPrice != null && item.amazonUrl != null && (
+            <>
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  className="flex items-center gap-1 text-sm text-secondary transition-colors hover:text-zinc-700"
+                  onClick={handleAmazonClick}
+                >
+                  View on Amazon
+                  <ChevronRight className="size-3.5" />
+                </button>
+                <span className="text-sm text-secondary">
+                  ${item.amazonPrice.toFixed(0)}
+                </span>
+              </div>
+              {/* Empty cell to keep grid alignment */}
+              <div />
+            </>
+          )}
         </div>
       </div>
+
+      {/* Why we recommend accordion */}
+      {item.whyContent && (
+        <Accordion type="single" collapsible>
+          <AccordionItem value="why" className="border-b-0 border-t">
+            <AccordionTrigger className="px-4 py-3 text-sm font-medium">
+              Why we recommend this for you?
+            </AccordionTrigger>
+            <AccordionContent className="px-4">
+              <ProtocolMarkdown
+                content={item.whyContent}
+                className="text-sm text-secondary [&>div]:mb-0"
+              />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      )}
     </m.div>
   );
 };
 
 /**
- * Extract all supplement-type actions from a protocol's goals.
+ * Extract supplement actions grouped by goal.
  */
-const extractSupplementActions = (
+const extractSupplementsByGoal = (
   protocol: Protocol,
-): { action: ProtocolAction; productId: string | undefined }[] => {
-  const results: { action: ProtocolAction; productId: string | undefined }[] =
-    [];
+): {
+  goal: ProtocolGoal;
+  actions: { action: ProtocolAction; productId: string | undefined }[];
+}[] => {
+  const groups: {
+    goal: ProtocolGoal;
+    actions: { action: ProtocolAction; productId: string | undefined }[];
+  }[] = [];
+
   for (const goal of protocol.goals) {
+    const actions: { action: ProtocolAction; productId: string | undefined }[] =
+      [];
+
     if (
       goal.primaryAction.content.type === 'supplement' &&
       goal.primaryAction.accepted === true
     ) {
-      results.push({
+      actions.push({
         action: goal.primaryAction,
         productId: goal.primaryAction.content.productId,
       });
     }
+
     for (const action of goal.additionalActions ?? []) {
       if (action.content.type === 'supplement' && action.accepted === true) {
-        results.push({
+        actions.push({
           action,
           productId: action.content.productId,
         });
       }
     }
+
+    if (actions.length > 0) {
+      groups.push({ goal, actions });
+    }
   }
-  return results;
+
+  return groups;
 };
 
 export const SupplementsStep = () => {
@@ -210,14 +247,10 @@ export const SupplementsStep = () => {
   const { data: catalog, isLoading: isCatalogLoading } = useSupplementCatalog();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
-  // Track which supplement action IDs are in the cart — pre-select all on load
-  const [addedIds, setAddedIds] = useState<Set<string> | null>(null);
-
-  // Extract supplement actions from the protocol
-  const protocolSupplements = useMemo(() => {
-    if (!protocol) return [];
-    return extractSupplementActions(protocol);
-  }, [protocol]);
+  // Track quantities per action ID — pre-select all with qty 1
+  const [quantities, setQuantities] = useState<Map<string, number> | null>(
+    null,
+  );
 
   // Build Amazon pricing lookup from catalog (by variant ID)
   const amazonLookup = useMemo(() => {
@@ -231,58 +264,146 @@ export const SupplementsStep = () => {
     return byId;
   }, [catalog]);
 
-  // Match protocol supplements → cheapest marketplace variant → Amazon pricing
-  const supplements: SupplementDisplayItem[] = useMemo(() => {
-    const items: SupplementDisplayItem[] = [];
+  // Extract supplements grouped by goal, tracking out-of-stock items
+  const { goalGroups, outOfStockSupplements } = useMemo(() => {
+    if (!protocol)
+      return {
+        goalGroups: [] as GoalSupplementGroup[],
+        outOfStockSupplements: [] as {
+          actionId: string;
+          productId: string;
+          productName: string;
+        }[],
+      };
 
-    for (const { action, productId } of protocolSupplements) {
-      const product = getSupplementProduct(productId);
-      if (product === null) continue;
+    const outOfStock: {
+      actionId: string;
+      productId: string;
+      productName: string;
+    }[] = [];
 
-      // Skip out-of-stock products
-      if (
-        product.inventoryQuantity !== undefined &&
-        product.inventoryQuantity <= 0
-      ) {
-        continue;
+    const rawGroups = extractSupplementsByGoal(protocol);
+    const result: GoalSupplementGroup[] = [];
+
+    for (const { goal, actions } of rawGroups) {
+      const items: SupplementDisplayItem[] = [];
+
+      for (const { action, productId } of actions) {
+        const product = getSupplementProduct(productId);
+        if (product === null) continue;
+
+        if (
+          product.inventoryQuantity !== undefined &&
+          product.inventoryQuantity <= 0
+        ) {
+          outOfStock.push({
+            actionId: action.id,
+            productId: product.id,
+            productName: product.name,
+          });
+          continue;
+        }
+
+        const amazon = amazonLookup.get(product.id);
+        const whyContent =
+          action.content.type === 'supplement' ? action.content.why : null;
+
+        items.push({
+          actionId: action.id,
+          product,
+          amazonPrice: amazon?.amazonPrice ?? null,
+          amazonUrl: amazon?.amazonUrl ?? null,
+          whyContent,
+        });
       }
 
-      const amazon = amazonLookup.get(product.id);
-
-      items.push({
-        actionId: action.id,
-        product,
-        amazonPrice: amazon?.amazonPrice ?? null,
-        amazonUrl: amazon?.amazonUrl ?? null,
-      });
+      if (items.length > 0) {
+        result.push({
+          goalId: goal.id,
+          goalTitle: goal.title,
+          items,
+        });
+      }
     }
 
-    return items;
-  }, [protocolSupplements, getSupplementProduct, amazonLookup]);
+    return { goalGroups: result, outOfStockSupplements: outOfStock };
+  }, [protocol, getSupplementProduct, amazonLookup]);
 
-  const allIds = useMemo(
-    () => new Set(supplements.map((s) => s.actionId)),
-    [supplements],
+  const hasTrackedOutOfStock = useRef(false);
+  useEffect(() => {
+    if (outOfStockSupplements.length === 0 || hasTrackedOutOfStock.current)
+      return;
+    hasTrackedOutOfStock.current = true;
+    for (const item of outOfStockSupplements) {
+      track('protocol_reveal_supplement_out_of_stock', {
+        action_id: item.actionId,
+        product_id: item.productId,
+        product_name: item.productName,
+      });
+    }
+  }, [outOfStockSupplements, track]);
+
+  // Flat list for totals
+  const allItems = useMemo(
+    () => goalGroups.flatMap((g) => g.items),
+    [goalGroups],
   );
 
-  const selectedIds = useMemo(() => {
-    if (addedIds !== null) return addedIds;
-    return allIds;
-  }, [addedIds, allIds]);
+  const allIds = useMemo(
+    () => new Set(allItems.map((s) => s.actionId)),
+    [allItems],
+  );
 
-  const toggleSupplement = useCallback(
+  // Default quantities: 1 for each item
+  const defaultQuantities = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const id of allIds) {
+      map.set(id, 1);
+    }
+    return map;
+  }, [allIds]);
+
+  const currentQuantities = useMemo(() => {
+    if (quantities === null) return defaultQuantities;
+    const merged = new Map(defaultQuantities);
+    for (const [id, qty] of quantities) {
+      merged.set(id, qty);
+    }
+    return merged;
+  }, [quantities, defaultQuantities]);
+
+  const getQuantity = useCallback(
+    (id: string) => currentQuantities.get(id) ?? 0,
+    [currentQuantities],
+  );
+
+  const handleIncrement = useCallback(
     (id: string) => {
-      setAddedIds((prev) => {
-        const current = new Set(prev ?? allIds);
-        if (current.has(id)) {
-          current.delete(id);
-        } else {
-          current.add(id);
+      track('protocol_reveal_supplement_added_to_cart', { action_id: id });
+      setQuantities((prev) => {
+        const current = new Map(prev ?? defaultQuantities);
+        const qty = current.get(id) ?? 0;
+        if (qty >= MAX_SUPPLEMENT_QUANTITY) return current;
+        current.set(id, qty + 1);
+        return current;
+      });
+    },
+    [defaultQuantities, track],
+  );
+
+  const handleDecrement = useCallback(
+    (id: string) => {
+      track('protocol_reveal_supplement_removed_from_cart', { action_id: id });
+      setQuantities((prev) => {
+        const current = new Map(prev ?? defaultQuantities);
+        const qty = current.get(id) ?? 0;
+        if (qty > 0) {
+          current.set(id, qty - 1);
         }
         return current;
       });
     },
-    [allIds],
+    [defaultQuantities, track],
   );
 
   const { totalOriginal, totalDiscounted, selectedCount } = useMemo(() => {
@@ -290,26 +411,28 @@ export const SupplementsStep = () => {
     let discounted = 0;
     let count = 0;
 
-    for (const item of supplements) {
-      if (selectedIds.has(item.actionId)) {
-        original += item.product.price;
-        discounted += item.product.price * (1 - item.product.discount / 100);
-        count++;
+    for (const item of allItems) {
+      const qty = getQuantity(item.actionId);
+      if (qty > 0) {
+        original += item.product.price * qty;
+        discounted +=
+          item.product.price * (1 - item.product.discount / 100) * qty;
+        count += qty;
       }
     }
 
     return {
-      totalOriginal: Math.round(original * 100), // cents for NumberFlow
+      totalOriginal: Math.round(original * 100),
       totalDiscounted: Math.round(discounted * 100),
       selectedCount: count,
     };
-  }, [selectedIds, supplements]);
+  }, [allItems, getQuantity]);
 
   const { shippingCents, totalWithShipping, isFree } =
     useShippingFee(totalDiscounted);
 
   const handlePurchase = useCallback(async () => {
-    const selected = supplements.filter((s) => selectedIds.has(s.actionId));
+    const selected = allItems.filter((s) => getQuantity(s.actionId) > 0);
     if (selected.length === 0) return;
 
     const productNames: string[] = [];
@@ -331,16 +454,31 @@ export const SupplementsStep = () => {
     setIsCheckingOut(true);
 
     try {
-      // Build products array matching POST /shop/checkout schema
-      const products = selected.map((item) => ({
-        id: item.product.id,
-        name: item.product.name,
-        price: item.product.price,
-        url: item.product.url,
-        discount: item.product.discount,
-        type: 'Supplements',
-        inventoryQuantity: item.product.inventoryQuantity ?? 100,
-      }));
+      // One entry per quantity unit (backend strictObject doesn't accept quantity field yet)
+      const products: {
+        id: string;
+        name: string;
+        price: number;
+        url: string;
+        discount: number;
+        type: string;
+        inventoryQuantity: number;
+      }[] = [];
+
+      for (const item of selected) {
+        const qty = getQuantity(item.actionId);
+        for (let i = 0; i < qty; i++) {
+          products.push({
+            id: item.product.id,
+            name: item.product.name,
+            price: item.product.price,
+            url: item.product.url,
+            discount: item.product.discount,
+            type: 'Supplements',
+            inventoryQuantity: item.product.inventoryQuantity ?? 100,
+          });
+        }
+      }
 
       const response = (await api.post('/shop/checkout', {
         products,
@@ -357,12 +495,11 @@ export const SupplementsStep = () => {
     } catch (error) {
       console.error('Failed to create checkout:', error);
       setIsCheckingOut(false);
-      // Still advance — don't block the reveal flow on checkout failure
       next();
     }
   }, [
-    supplements,
-    selectedIds,
+    allItems,
+    getQuantity,
     next,
     track,
     totalDiscounted,
@@ -371,13 +508,13 @@ export const SupplementsStep = () => {
     saveShopifyOrder,
   ]);
 
-  const handleNoThanks = useCallback(() => {
+  const handleSkip = useCallback(() => {
     track('protocol_reveal_supplement_no_thanks_clicked', {
-      total_supplements_available: supplements.length,
+      total_supplements_available: allItems.length,
       selected_count: selectedCount,
     });
     next();
-  }, [next, track, supplements.length, selectedCount]);
+  }, [next, track, allItems.length, selectedCount]);
 
   if (isCatalogLoading) {
     return (
@@ -390,6 +527,13 @@ export const SupplementsStep = () => {
   }
 
   const hasSelectedSupplements = selectedCount > 0;
+
+  const groupOffsets: number[] = [];
+  let offset = 0;
+  for (const group of goalGroups) {
+    groupOffsets.push(offset);
+    offset += group.items.length;
+  }
 
   return (
     <ProtocolStepLayout>
@@ -409,15 +553,29 @@ export const SupplementsStep = () => {
           </Body1>
         </div>
 
-        <div className="space-y-4">
-          {supplements.map((item, index) => (
-            <SupplementCard
-              key={item.actionId}
-              item={item}
-              isAdded={selectedIds.has(item.actionId)}
-              onToggle={toggleSupplement}
-              index={index}
-            />
+        <div className="space-y-8">
+          {goalGroups.map((group, groupIdx) => (
+            <div key={group.goalId} className="space-y-4">
+              {/* Goal section title */}
+              <div className="flex items-start gap-3">
+                <IconCheckCircle2 className="mt-0.5 size-5 shrink-0 text-vermillion-900" />
+                <span className="text-base font-semibold text-zinc-900">
+                  {group.goalTitle}
+                </span>
+              </div>
+
+              {/* Supplement cards for this goal */}
+              {group.items.map((item, itemIdx) => (
+                <SupplementCard
+                  key={item.actionId}
+                  item={item}
+                  quantity={getQuantity(item.actionId)}
+                  onIncrement={handleIncrement}
+                  onDecrement={handleDecrement}
+                  index={groupOffsets[groupIdx] + itemIdx}
+                />
+              ))}
+            </div>
           ))}
         </div>
 
@@ -436,7 +594,7 @@ export const SupplementsStep = () => {
           </div>
 
           <div className="flex items-center justify-between gap-4">
-            <div className="flex flex-1 flex-wrap justify-between gap-2">
+            <div className="flex flex-1 flex-wrap items-center gap-2">
               <span className="text-sm text-secondary">Total</span>
               {hasSelectedSupplements && (
                 <Badge
@@ -475,14 +633,14 @@ export const SupplementsStep = () => {
         </div>
       </m.div>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col items-center gap-3">
         <Button
           className="w-full gap-2"
           onClick={handlePurchase}
           disabled={!hasSelectedSupplements || isCheckingOut}
         >
           {isCheckingOut ? 'Creating checkout...' : 'Purchase now'}
-          {!isCheckingOut && (
+          {!isCheckingOut && hasSelectedSupplements && (
             <span className="text-zinc-500">
               <NumberFlow
                 value={totalWithShipping / 100}
@@ -495,14 +653,14 @@ export const SupplementsStep = () => {
             </span>
           )}
         </Button>
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={handleNoThanks}
+        <button
+          type="button"
+          className="text-sm text-secondary transition-colors hover:text-zinc-700 disabled:opacity-50"
+          onClick={handleSkip}
           disabled={isCheckingOut}
         >
-          No thank you
-        </Button>
+          Skip for now
+        </button>
       </div>
     </ProtocolStepLayout>
   );

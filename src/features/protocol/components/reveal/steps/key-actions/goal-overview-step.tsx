@@ -46,7 +46,7 @@ export const GoalOverviewStep = () => {
                   COLOR_GRADIENTS[colorKey],
                 )}
               />
-              <div className="relative z-10 flex gap-8">
+              <div className="relative z-10 flex items-center gap-8">
                 <div className="relative shrink-0">
                   <ProtocolIndexNumber index={index} />
                 </div>

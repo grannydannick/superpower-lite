@@ -52,6 +52,7 @@ export interface User extends BaseUser {
   admin: boolean;
   carePlan?: string;
   authMethod: 'admin' | 'password';
+  authRole?: 'admin' | 'user';
   address: Address[];
   primaryAddress?: Address;
   adminActor?: AdminActor;
@@ -60,6 +61,9 @@ export interface User extends BaseUser {
   rdn?: Rdn;
   identityUpdatedTime?: string;
   identityVerificationStatus?: IdentityVerificationStatus;
+  access?: {
+    rx: boolean;
+  };
 }
 
 export type AdminActor = Entity<{
@@ -84,7 +88,6 @@ export type TokenResponse = {
 };
 
 /**
- /**
  * OAuth 2.0 Grant Type Identifiers
  * Standard identifiers defined here: https://datatracker.ietf.org/doc/html/draft-ietf-oauth-v2-1-07#name-grant-types
  * Token exchange extension defined here: https://datatracker.ietf.org/doc/html/rfc8693
@@ -257,6 +260,7 @@ export type BiomarkerResult = Entity<{
   status?: BiomarkerStatus;
   source?: Lab;
   component: BiomarkerComponent[];
+  file?: { id: string; name: string };
 }>;
 
 export interface BiomarkerMetadata {
@@ -395,9 +399,28 @@ export type ServiceLabType = ServiceLabTypeEnum;
 
 export type CollectionMethodType = 'AT_HOME' | 'IN_LAB' | 'PHLEBOTOMY_KIT';
 
+export type RedrawDetails = {
+  address?: Address;
+  startTimestamp?: string;
+  endTimestamp?: string;
+  timezone?: string;
+  confirmationCode?: string;
+  appointmentType?: AppointmentType;
+  collectionMethod?: CollectionMethodType;
+};
+
 export type Order = Entity<{
   serviceName: string;
   serviceId: string;
+  hasRedraw?: boolean;
+  redrawStatus?:
+    | 'redraw_available'
+    | 'requisition_created'
+    | 'scheduled'
+    | 'skipped'
+    | 'cancelled'
+    | 'completed';
+  redrawDetails?: RedrawDetails;
   collectionMethod?: CollectionMethodType;
   status: OrderStatus;
   address?: Address;
@@ -459,6 +482,7 @@ export type PhlebotomyLocation = {
   slots: Slot[];
   lat?: number;
   lng?: number;
+  timezone?: string;
 };
 
 export type LabCapability = 'APPOINTMENT_SCHEDULING' | 'WALK_IN';
@@ -565,7 +589,7 @@ export type InvoiceLine = {
 export type Wearable = {
   provider: string;
   logo: string;
-  status: string;
+  status: 'connected' | 'error';
 };
 
 /* ACTION PLAN */
@@ -668,6 +692,46 @@ export type PaginatedResponse<T> = {
 };
 
 /* FILES */
+export type FileUploadClassification =
+  | 'lab_results_pathology'
+  | 'diagnostic_reports'
+  | 'clinical_notes'
+  | 'medical_images'
+  | 'medical_other'
+  | 'non_medical';
+
+export type ExtractionCounts = {
+  total: number;
+  written: number;
+  flagged: number;
+  skipped: number;
+  issues?: Partial<
+    Record<
+      | 'skippedNoLoincMatch'
+      | 'skippedValueTypeMismatch'
+      | 'skippedUnparseableQuantityValue'
+      | 'skippedAmbiguousValue',
+      number
+    >
+  >;
+};
+
+export type FileExtraction = {
+  status: 'registered' | 'processing' | 'final' | 'failed';
+  phase: 'classifying' | 'extracting' | 'validating' | 'writing' | null;
+  reportDate: string | null;
+  counts: ExtractionCounts | null;
+  chatId: string | null;
+  messageId: string | null;
+  summaryChatId: string | null;
+  summaryMessageId: string | null;
+};
+
+export type FileIngestion = {
+  classification: FileUploadClassification | null;
+  extraction?: FileExtraction;
+};
+
 export type File = {
   id: string;
   name: string;
@@ -675,6 +739,7 @@ export type File = {
   uploadedAt: string;
   presignedUrl?: string;
   image?: string;
+  ingestion?: FileIngestion;
 };
 
 /* RDNS */
@@ -743,10 +808,6 @@ export interface ChatMessage {
 export interface VerifyEmailOTPResponse {
   success: boolean;
   user: User;
-  authTokens: {
-    accessToken: string;
-    refreshToken: string;
-  };
   redirectTo?: string;
   origin?: string;
 }

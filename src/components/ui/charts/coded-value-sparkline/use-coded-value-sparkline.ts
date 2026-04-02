@@ -57,7 +57,7 @@ export const useCodedValueSparkline = ({
   const bandCount = orderedCodes.length || 2;
   const bandHeight = chartHeight / bandCount;
 
-  const codeToBandY = useMemo(() => {
+  const codeToBandPosition = useMemo(() => {
     const map = new Map<
       string,
       { y: number; status: 'optimal' | 'abnormal' }
@@ -82,7 +82,7 @@ export const useCodedValueSparkline = ({
     () =>
       sortedValues.map((v, index) => {
         const valueCoded = v.valueCoded || '';
-        const band = codeToBandY.get(valueCoded);
+        const band = codeToBandPosition.get(valueCoded);
         const y = band?.y ?? SVG_HEIGHT / 2;
         const status = band?.status ?? 'abnormal';
 
@@ -98,10 +98,11 @@ export const useCodedValueSparkline = ({
           timestamp: v.timestamp,
           index,
           source: v.source || 'quest',
+          file: v.file,
           status,
         };
       }),
-    [sortedValues, codeToBandY, svgWidth, PADDING, xStep, SVG_HEIGHT],
+    [sortedValues, codeToBandPosition, svgWidth, PADDING, xStep, SVG_HEIGHT],
   );
 
   const chartData = useMemo(() => {
@@ -214,7 +215,7 @@ export const useCodedValueSparkline = ({
     const lastPos = pointPositions[pointPositions.length - 1];
     let backgroundRect = null;
     if (lastPos) {
-      const bandInfo = codeToBandY.get(lastPos.codedValue);
+      const bandInfo = codeToBandPosition.get(lastPos.codedValue);
       if (bandInfo) {
         const isOptimal = bandInfo.status === 'optimal';
         const zoneCount = isOptimal
@@ -242,7 +243,7 @@ export const useCodedValueSparkline = ({
     STROKE_WIDTH,
     CIRCLE_RADIUS,
     PADDING,
-    orderedCodes,
+    codeToBandPosition,
     optimalCodes,
     abnormalCodes,
     bandCount,

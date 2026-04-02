@@ -23,7 +23,7 @@ export type GoalColor = (typeof GOAL_COLORS)[number];
  * Images for action types, keyed by type or type:category for lifestyle subtypes
  */
 export const ACTION_TYPE_IMAGES: Record<string, string> = {
-  supplement: '/protocol/types/testing-type.webp',
+  supplement: '/protocol/types/supplement-type.png',
   prescription: '/protocol/final/three-bottles.webp',
   testing: '/protocol/types/testing-type.webp',
   consultation: '/protocol/types/consultation-type.webp',

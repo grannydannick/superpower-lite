@@ -152,18 +152,18 @@ export const useCodedValueChart = ({
   });
 
   // Build a lookup from coded value to band center Y
-  const codeToBandY = new Map<string, number>();
+  const codeToBandCenterY = new Map<string, number>();
   for (const band of yAxisBands) {
-    codeToBandY.set(band.code, band.y);
+    codeToBandCenterY.set(band.code, band.y);
   }
 
   // Build data points
   const dataPoints: CodedDataPoint[] = pageValues.map((point, index) => {
     const valueCoded = point.valueCoded || '';
-    const bandY = codeToBandY.get(valueCoded);
+    const bandCenterY = codeToBandCenterY.get(valueCoded);
 
     // Fall back to center of chart if coded value doesn't match any band
-    const y = bandY ?? CHART_CONFIG.TOP_PADDING + chartHeight / 2;
+    const y = bandCenterY ?? CHART_CONFIG.TOP_PADDING + chartHeight / 2;
 
     let x: number;
     const totalPointsForSpacing = shouldShowNextTest

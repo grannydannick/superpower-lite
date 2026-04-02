@@ -1,9 +1,14 @@
-import { queryOptions, useMutation } from '@tanstack/react-query';
-import { Navigate, useRouterState } from '@tanstack/react-router';
+import {
+  queryOptions,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
+import { Navigate, useRouter, useRouterState } from '@tanstack/react-router';
 import * as React from 'react';
 import { configureAuth } from 'react-query-auth';
 
 import { SuperpowerLoadingLogo } from '@/components/icons/superpower-logo';
+import { toast } from '@/components/ui/sonner';
 import { env } from '@/config/env';
 import {
   buildQuestionnaireStatusMap,
@@ -11,6 +16,7 @@ import {
 } from '@/features/onboarding/utils/get-questionnaire-status';
 import { useQuestionnaireResponseList } from '@/features/questionnaires/api/questionnaire-response';
 import { useTask } from '@/features/tasks/api/get-task';
+import { useAnalytics } from '@/hooks/use-analytics';
 import { isIntakeDismissed } from '@/lib/intake-dismiss';
 import { MutationConfig } from '@/lib/react-query';
 import { clearActiveLogin, setActiveLogin } from '@/lib/utils';
@@ -23,6 +29,7 @@ import {
 import { parseJWTPayload } from '@/utils/jwt';
 
 import { api } from './api-client';
+import { authClient } from './auth-client';
 import type {
   BaseLoginInput,
   LoginInput,
@@ -59,22 +66,39 @@ export const authenticatedUserQueryOptions = () => {
 };
 
 const logout = async (): Promise<void> => {
-  await api.post('oauth2/logout');
+  await Promise.all([
+    authClient.signOut(),
+    // Also clear legacy OAuth2 sessions for users who haven't migrated yet.
+    api
+      .post('oauth2/logout', undefined, { headers: { 'x-hide-toast': 'true' } })
+      .catch(() => {}),
+  ]);
 
   return clearActiveLogin();
 };
 
-const loginWithEmailAndPassword = (
-  data: LoginInput,
-): Promise<LoginAuthenticationResponse> => {
+const loginWithEmailAndPassword = async (data: LoginInput): Promise<void> => {
   if (data.authMethod) {
-    return api.post('auth/admin/login', {
-      email: data.email,
-      authMethod: data.authMethod,
-    });
+    const response: LoginAuthenticationResponse = await api.post(
+      'auth/admin/login',
+      { email: data.email, authMethod: data.authMethod },
+    );
+    if (!response.code) {
+      throw new Error('No code found.');
+    }
+    await processCode(response.code);
+    return;
   }
 
-  return api.post('/auth/login', data);
+  const { error } = await authClient.signIn.email({
+    email: data.email,
+    password: data.password,
+  });
+
+  if (error) {
+    toast.error(error.message);
+    throw new Error(error.message);
+  }
 };
 
 const registerUser = (
@@ -99,14 +123,7 @@ const registerUser = (
 const authConfig = {
   userFn: getUser,
   loginFn: async (data: LoginInput): Promise<User> => {
-    const response = await loginWithEmailAndPassword(data);
-
-    if (!response.code) {
-      throw Error('No code found.');
-    }
-
-    await processCode(response.code);
-
+    await loginWithEmailAndPassword(data);
     return getUser();
   },
   registerFn: async (data: RegisterInput): Promise<User> => {
@@ -123,12 +140,20 @@ const authConfig = {
   logoutFn: logout,
 };
 
-export const resetPassword = ({
+export const resetPassword = async ({
   data,
 }: {
   data: ResetPasswordInput;
 }): Promise<void> => {
-  return api.post('/auth/resetpassword', data);
+  const { error } = await authClient.requestPasswordReset({
+    email: data.email,
+    redirectTo: `${env.APP_URL}/setpassword`,
+  });
+
+  if (error) {
+    toast.error(error.message);
+    throw new Error(error.message);
+  }
 };
 
 type UseResetPasswordOptions = {
@@ -149,20 +174,22 @@ export const useResetPassword = ({
   });
 };
 
-export const setPassword = ({
+export const setPassword = async ({
   data,
-  id,
-  secret,
+  token,
 }: {
   data: SetPasswordInput;
-  id: string;
-  secret: string;
+  token: string;
 }): Promise<void> => {
-  return api.post('auth/setpassword', {
-    id,
-    secret,
-    password: data.password,
+  const { error } = await authClient.resetPassword({
+    newPassword: data.password,
+    token,
   });
+
+  if (error) {
+    toast.error(error.message);
+    throw new Error(error.message);
+  }
 };
 
 type UseSetPasswordOptions = {
@@ -185,6 +212,58 @@ export const useSetPassword = ({
 
 export const { useUser, useLogin, useLogout, useRegister } =
   configureAuth(authConfig);
+
+const impersonateUser = async ({
+  userId,
+}: {
+  userId: string;
+}): Promise<void> => {
+  const { error } = await authClient.admin.impersonateUser({ userId });
+
+  if (error) {
+    toast.error(error.message);
+    throw new Error(error.message);
+  }
+};
+
+export const useImpersonateUser = () => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const { reset } = useAnalytics();
+
+  return useMutation({
+    mutationFn: impersonateUser,
+    onSuccess: () => {
+      reset();
+      queryClient.removeQueries();
+      void router.invalidate();
+    },
+  });
+};
+
+const stopImpersonating = async (): Promise<void> => {
+  const { error } = await authClient.admin.stopImpersonating();
+
+  if (error) {
+    toast.error(error.message);
+    throw new Error(error.message);
+  }
+};
+
+export const useStopImpersonating = () => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const { reset } = useAnalytics();
+
+  return useMutation({
+    mutationFn: stopImpersonating,
+    onSuccess: () => {
+      reset();
+      queryClient.removeQueries();
+      void router.invalidate();
+    },
+  });
+};
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const pathname = useRouterState({ select: (s) => s.location.pathname });

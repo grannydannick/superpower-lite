@@ -21,7 +21,7 @@ export const useDeleteChat = ({
 
   return useMutation({
     onSuccess: (...args) => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: getHistoryQueryOptions().queryKey,
       });
       onSuccess?.(...args);

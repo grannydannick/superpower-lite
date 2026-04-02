@@ -11,6 +11,7 @@ import type { Biomarker } from '@/types/api';
 
 import { ChartTooltip } from '../chart-tooltip';
 import { Pagination } from '../time-series-chart/pagination';
+import { TooltipSource } from '../tooltip-source';
 
 import { useTextValueChart } from './use-text-value-chart';
 
@@ -36,6 +37,7 @@ export const TextValueChart = ({ biomarker }: { biomarker: Biomarker }) => {
     timestamp: string;
     position: { x: number; y: number };
     isNextTest: boolean;
+    file?: { id: string; name: string };
   } | null>(null);
 
   const svgRef = useRef<SVGSVGElement>(null);
@@ -149,6 +151,7 @@ export const TextValueChart = ({ biomarker }: { biomarker: Biomarker }) => {
           if (point) {
             setHoveredPoint({
               source: point.source || 'quest',
+              file: point.file,
               timestamp: point.timestamp,
               isNextTest: false,
               position: {
@@ -447,6 +450,7 @@ export const TextValueChart = ({ biomarker }: { biomarker: Biomarker }) => {
             isOpen={true}
             position={hoveredPoint.position}
             side="top"
+            interactive={true}
             className={cn(hoveredPoint.isNextTest && '-mt-20 rounded-xl p-1.5')}
             onMouseEnter={handleTooltipMouseEnter}
             onMouseLeave={handleTooltipMouseLeave}
@@ -474,7 +478,11 @@ export const TextValueChart = ({ biomarker }: { biomarker: Biomarker }) => {
                   <div className="font-semibold">Comment</div>
                   <div className="text-muted-foreground">
                     {format(new Date(hoveredPoint.timestamp), 'MMM dd, yyyy')} (
-                    <span className="capitalize">{hoveredPoint.source}</span>)
+                    <TooltipSource
+                      source={hoveredPoint.source}
+                      file={hoveredPoint.file}
+                    />
+                    )
                   </div>
                 </div>
               </div>

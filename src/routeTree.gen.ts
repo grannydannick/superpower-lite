@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as SigninRouteImport } from './routes/signin'
+import { Route as SetpasswordRouteImport } from './routes/setpassword'
 import { Route as ResetpasswordRouteImport } from './routes/resetpassword'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LogoutRouteImport } from './routes/logout'
@@ -19,6 +20,7 @@ import { Route as CheckEmailRouteImport } from './routes/check-email'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
 import { Route as AppVaultRouteImport } from './routes/_app.vault'
+import { Route as AppShopifyRedirectRouteImport } from './routes/_app.shopify-redirect'
 import { Route as AppServicesRouteImport } from './routes/_app.services'
 import { Route as AppRxSubscriptionsRouteImport } from './routes/_app.rx-subscriptions'
 import { Route as AppProtocolRouteImport } from './routes/_app.protocol'
@@ -36,9 +38,9 @@ import { Route as AppProtocolIndexRouteImport } from './routes/_app.protocol.ind
 import { Route as AppOrdersIndexRouteImport } from './routes/_app.orders.index'
 import { Route as AppDataIndexRouteImport } from './routes/_app.data.index'
 import { Route as AppConciergeIndexRouteImport } from './routes/_app.concierge.index'
-import { Route as SetpasswordIdSecretRouteImport } from './routes/setpassword.$id.$secret'
 import { Route as AppServicesIdRouteImport } from './routes/_app.services.$id'
 import { Route as AppRxSubscriptionsIdRouteImport } from './routes/_app.rx-subscriptions.$id'
+import { Route as AppRecollectionServiceRequestIdRouteImport } from './routes/_app.recollection.$serviceRequestId'
 import { Route as AppQuestionnaireTypeRouteImport } from './routes/_app.questionnaire.$type'
 import { Route as AppProtocolRevealRouteImport } from './routes/_app.protocol.reveal'
 import { Route as AppProtocolPlansRouteImport } from './routes/_app.protocol.plans'
@@ -57,6 +59,7 @@ import { Route as AppProtocolRevealIndexRouteImport } from './routes/_app.protoc
 import { Route as AppProtocolRevealStepRouteImport } from './routes/_app.protocol.reveal.$step'
 import { Route as AppProtocolPlansIdRouteImport } from './routes/_app.protocol.plans.$id'
 import { Route as AppProtocolLegacyIdRouteImport } from './routes/_app.protocol.legacy.$id'
+import { Route as AppMapsRecollectionServiceRequestIdScheduleRouteImport } from './routes/_app._maps.recollection.$serviceRequestId.schedule'
 import { Route as AppProtocolPlansPlanIdGoalsGoalIdRouteImport } from './routes/_app.protocol.plans.$planId.goals.$goalId'
 import { Route as AppProtocolLegacyPlanIdGoalsGoalIdRouteImport } from './routes/_app.protocol.legacy.$planId.goals.$goalId'
 
@@ -68,6 +71,11 @@ const VerifyEmailRoute = VerifyEmailRouteImport.update({
 const SigninRoute = SigninRouteImport.update({
   id: '/signin',
   path: '/signin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SetpasswordRoute = SetpasswordRouteImport.update({
+  id: '/setpassword',
+  path: '/setpassword',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetpasswordRoute = ResetpasswordRouteImport.update({
@@ -107,6 +115,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
 const AppVaultRoute = AppVaultRouteImport.update({
   id: '/vault',
   path: '/vault',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppShopifyRedirectRoute = AppShopifyRedirectRouteImport.update({
+  id: '/shopify-redirect',
+  path: '/shopify-redirect',
   getParentRoute: () => AppRoute,
 } as any)
 const AppServicesRoute = AppServicesRouteImport.update({
@@ -193,11 +206,6 @@ const AppConciergeIndexRoute = AppConciergeIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppConciergeRoute,
 } as any)
-const SetpasswordIdSecretRoute = SetpasswordIdSecretRouteImport.update({
-  id: '/setpassword/$id/$secret',
-  path: '/setpassword/$id/$secret',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AppServicesIdRoute = AppServicesIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -208,6 +216,12 @@ const AppRxSubscriptionsIdRoute = AppRxSubscriptionsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AppRxSubscriptionsRoute,
 } as any)
+const AppRecollectionServiceRequestIdRoute =
+  AppRecollectionServiceRequestIdRouteImport.update({
+    id: '/recollection/$serviceRequestId',
+    path: '/recollection/$serviceRequestId',
+    getParentRoute: () => AppRoute,
+  } as any)
 const AppQuestionnaireTypeRoute = AppQuestionnaireTypeRouteImport.update({
   id: '/questionnaire/$type',
   path: '/questionnaire/$type',
@@ -298,6 +312,12 @@ const AppProtocolLegacyIdRoute = AppProtocolLegacyIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AppProtocolLegacyRoute,
 } as any)
+const AppMapsRecollectionServiceRequestIdScheduleRoute =
+  AppMapsRecollectionServiceRequestIdScheduleRouteImport.update({
+    id: '/recollection/$serviceRequestId/schedule',
+    path: '/recollection/$serviceRequestId/schedule',
+    getParentRoute: () => AppMapsRoute,
+  } as any)
 const AppProtocolPlansPlanIdGoalsGoalIdRoute =
   AppProtocolPlansPlanIdGoalsGoalIdRouteImport.update({
     id: '/$planId/goals/$goalId',
@@ -318,6 +338,7 @@ export interface FileRoutesByFullPath {
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
   '/resetpassword': typeof ResetpasswordRoute
+  '/setpassword': typeof SetpasswordRoute
   '/signin': typeof SigninRoute
   '/verify-email': typeof VerifyEmailRoute
   '/concierge': typeof AppConciergeRouteWithChildren
@@ -330,6 +351,7 @@ export interface FileRoutesByFullPath {
   '/protocol': typeof AppProtocolRouteWithChildren
   '/rx-subscriptions': typeof AppRxSubscriptionsRouteWithChildren
   '/services': typeof AppServicesRouteWithChildren
+  '/shopify-redirect': typeof AppShopifyRedirectRoute
   '/vault': typeof AppVaultRoute
   '/onboarding': typeof AppMapsOnboardingRoute
   '/schedule': typeof AppMapsScheduleRoute
@@ -345,9 +367,9 @@ export interface FileRoutesByFullPath {
   '/protocol/plans': typeof AppProtocolPlansRouteWithChildren
   '/protocol/reveal': typeof AppProtocolRevealRouteWithChildren
   '/questionnaire/$type': typeof AppQuestionnaireTypeRoute
+  '/recollection/$serviceRequestId': typeof AppRecollectionServiceRequestIdRoute
   '/rx-subscriptions/$id': typeof AppRxSubscriptionsIdRoute
   '/services/$id': typeof AppServicesIdRoute
-  '/setpassword/$id/$secret': typeof SetpasswordIdSecretRoute
   '/concierge/': typeof AppConciergeIndexRoute
   '/data/': typeof AppDataIndexRoute
   '/orders/': typeof AppOrdersIndexRoute
@@ -358,6 +380,7 @@ export interface FileRoutesByFullPath {
   '/protocol/plans/$id': typeof AppProtocolPlansIdRoute
   '/protocol/reveal/$step': typeof AppProtocolRevealStepRoute
   '/protocol/reveal/': typeof AppProtocolRevealIndexRoute
+  '/recollection/$serviceRequestId/schedule': typeof AppMapsRecollectionServiceRequestIdScheduleRoute
   '/protocol/legacy/$planId/goals/$goalId': typeof AppProtocolLegacyPlanIdGoalsGoalIdRoute
   '/protocol/plans/$planId/goals/$goalId': typeof AppProtocolPlansPlanIdGoalsGoalIdRoute
 }
@@ -367,6 +390,7 @@ export interface FileRoutesByTo {
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
   '/resetpassword': typeof ResetpasswordRoute
+  '/setpassword': typeof SetpasswordRoute
   '/signin': typeof SigninRoute
   '/verify-email': typeof VerifyEmailRoute
   '/': typeof AppIndexRoute
@@ -374,6 +398,7 @@ export interface FileRoutesByTo {
   '/intake': typeof AppIntakeRoute
   '/invite': typeof AppInviteRoute
   '/marketplace': typeof AppMarketplaceRoute
+  '/shopify-redirect': typeof AppShopifyRedirectRoute
   '/vault': typeof AppVaultRoute
   '/onboarding': typeof AppMapsOnboardingRoute
   '/schedule': typeof AppMapsScheduleRoute
@@ -388,9 +413,9 @@ export interface FileRoutesByTo {
   '/protocol/legacy': typeof AppProtocolLegacyRouteWithChildren
   '/protocol/plans': typeof AppProtocolPlansRouteWithChildren
   '/questionnaire/$type': typeof AppQuestionnaireTypeRoute
+  '/recollection/$serviceRequestId': typeof AppRecollectionServiceRequestIdRoute
   '/rx-subscriptions/$id': typeof AppRxSubscriptionsIdRoute
   '/services/$id': typeof AppServicesIdRoute
-  '/setpassword/$id/$secret': typeof SetpasswordIdSecretRoute
   '/concierge': typeof AppConciergeIndexRoute
   '/data': typeof AppDataIndexRoute
   '/orders': typeof AppOrdersIndexRoute
@@ -401,6 +426,7 @@ export interface FileRoutesByTo {
   '/protocol/plans/$id': typeof AppProtocolPlansIdRoute
   '/protocol/reveal/$step': typeof AppProtocolRevealStepRoute
   '/protocol/reveal': typeof AppProtocolRevealIndexRoute
+  '/recollection/$serviceRequestId/schedule': typeof AppMapsRecollectionServiceRequestIdScheduleRoute
   '/protocol/legacy/$planId/goals/$goalId': typeof AppProtocolLegacyPlanIdGoalsGoalIdRoute
   '/protocol/plans/$planId/goals/$goalId': typeof AppProtocolPlansPlanIdGoalsGoalIdRoute
 }
@@ -412,6 +438,7 @@ export interface FileRoutesById {
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
   '/resetpassword': typeof ResetpasswordRoute
+  '/setpassword': typeof SetpasswordRoute
   '/signin': typeof SigninRoute
   '/verify-email': typeof VerifyEmailRoute
   '/_app/_maps': typeof AppMapsRouteWithChildren
@@ -425,6 +452,7 @@ export interface FileRoutesById {
   '/_app/protocol': typeof AppProtocolRouteWithChildren
   '/_app/rx-subscriptions': typeof AppRxSubscriptionsRouteWithChildren
   '/_app/services': typeof AppServicesRouteWithChildren
+  '/_app/shopify-redirect': typeof AppShopifyRedirectRoute
   '/_app/vault': typeof AppVaultRoute
   '/_app/': typeof AppIndexRoute
   '/_app/_maps/onboarding': typeof AppMapsOnboardingRoute
@@ -441,9 +469,9 @@ export interface FileRoutesById {
   '/_app/protocol/plans': typeof AppProtocolPlansRouteWithChildren
   '/_app/protocol/reveal': typeof AppProtocolRevealRouteWithChildren
   '/_app/questionnaire/$type': typeof AppQuestionnaireTypeRoute
+  '/_app/recollection/$serviceRequestId': typeof AppRecollectionServiceRequestIdRoute
   '/_app/rx-subscriptions/$id': typeof AppRxSubscriptionsIdRoute
   '/_app/services/$id': typeof AppServicesIdRoute
-  '/setpassword/$id/$secret': typeof SetpasswordIdSecretRoute
   '/_app/concierge/': typeof AppConciergeIndexRoute
   '/_app/data/': typeof AppDataIndexRoute
   '/_app/orders/': typeof AppOrdersIndexRoute
@@ -454,6 +482,7 @@ export interface FileRoutesById {
   '/_app/protocol/plans/$id': typeof AppProtocolPlansIdRoute
   '/_app/protocol/reveal/$step': typeof AppProtocolRevealStepRoute
   '/_app/protocol/reveal/': typeof AppProtocolRevealIndexRoute
+  '/_app/_maps/recollection/$serviceRequestId/schedule': typeof AppMapsRecollectionServiceRequestIdScheduleRoute
   '/_app/protocol/legacy/$planId/goals/$goalId': typeof AppProtocolLegacyPlanIdGoalsGoalIdRoute
   '/_app/protocol/plans/$planId/goals/$goalId': typeof AppProtocolPlansPlanIdGoalsGoalIdRoute
 }
@@ -466,6 +495,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/register'
     | '/resetpassword'
+    | '/setpassword'
     | '/signin'
     | '/verify-email'
     | '/concierge'
@@ -478,6 +508,7 @@ export interface FileRouteTypes {
     | '/protocol'
     | '/rx-subscriptions'
     | '/services'
+    | '/shopify-redirect'
     | '/vault'
     | '/onboarding'
     | '/schedule'
@@ -493,9 +524,9 @@ export interface FileRouteTypes {
     | '/protocol/plans'
     | '/protocol/reveal'
     | '/questionnaire/$type'
+    | '/recollection/$serviceRequestId'
     | '/rx-subscriptions/$id'
     | '/services/$id'
-    | '/setpassword/$id/$secret'
     | '/concierge/'
     | '/data/'
     | '/orders/'
@@ -506,6 +537,7 @@ export interface FileRouteTypes {
     | '/protocol/plans/$id'
     | '/protocol/reveal/$step'
     | '/protocol/reveal/'
+    | '/recollection/$serviceRequestId/schedule'
     | '/protocol/legacy/$planId/goals/$goalId'
     | '/protocol/plans/$planId/goals/$goalId'
   fileRoutesByTo: FileRoutesByTo
@@ -515,6 +547,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/register'
     | '/resetpassword'
+    | '/setpassword'
     | '/signin'
     | '/verify-email'
     | '/'
@@ -522,6 +555,7 @@ export interface FileRouteTypes {
     | '/intake'
     | '/invite'
     | '/marketplace'
+    | '/shopify-redirect'
     | '/vault'
     | '/onboarding'
     | '/schedule'
@@ -536,9 +570,9 @@ export interface FileRouteTypes {
     | '/protocol/legacy'
     | '/protocol/plans'
     | '/questionnaire/$type'
+    | '/recollection/$serviceRequestId'
     | '/rx-subscriptions/$id'
     | '/services/$id'
-    | '/setpassword/$id/$secret'
     | '/concierge'
     | '/data'
     | '/orders'
@@ -549,6 +583,7 @@ export interface FileRouteTypes {
     | '/protocol/plans/$id'
     | '/protocol/reveal/$step'
     | '/protocol/reveal'
+    | '/recollection/$serviceRequestId/schedule'
     | '/protocol/legacy/$planId/goals/$goalId'
     | '/protocol/plans/$planId/goals/$goalId'
   id:
@@ -559,6 +594,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/register'
     | '/resetpassword'
+    | '/setpassword'
     | '/signin'
     | '/verify-email'
     | '/_app/_maps'
@@ -572,6 +608,7 @@ export interface FileRouteTypes {
     | '/_app/protocol'
     | '/_app/rx-subscriptions'
     | '/_app/services'
+    | '/_app/shopify-redirect'
     | '/_app/vault'
     | '/_app/'
     | '/_app/_maps/onboarding'
@@ -588,9 +625,9 @@ export interface FileRouteTypes {
     | '/_app/protocol/plans'
     | '/_app/protocol/reveal'
     | '/_app/questionnaire/$type'
+    | '/_app/recollection/$serviceRequestId'
     | '/_app/rx-subscriptions/$id'
     | '/_app/services/$id'
-    | '/setpassword/$id/$secret'
     | '/_app/concierge/'
     | '/_app/data/'
     | '/_app/orders/'
@@ -601,6 +638,7 @@ export interface FileRouteTypes {
     | '/_app/protocol/plans/$id'
     | '/_app/protocol/reveal/$step'
     | '/_app/protocol/reveal/'
+    | '/_app/_maps/recollection/$serviceRequestId/schedule'
     | '/_app/protocol/legacy/$planId/goals/$goalId'
     | '/_app/protocol/plans/$planId/goals/$goalId'
   fileRoutesById: FileRoutesById
@@ -612,9 +650,9 @@ export interface RootRouteChildren {
   LogoutRoute: typeof LogoutRoute
   RegisterRoute: typeof RegisterRoute
   ResetpasswordRoute: typeof ResetpasswordRoute
+  SetpasswordRoute: typeof SetpasswordRoute
   SigninRoute: typeof SigninRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
-  SetpasswordIdSecretRoute: typeof SetpasswordIdSecretRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -631,6 +669,13 @@ declare module '@tanstack/react-router' {
       path: '/signin'
       fullPath: '/signin'
       preLoaderRoute: typeof SigninRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/setpassword': {
+      id: '/setpassword'
+      path: '/setpassword'
+      fullPath: '/setpassword'
+      preLoaderRoute: typeof SetpasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/resetpassword': {
@@ -687,6 +732,13 @@ declare module '@tanstack/react-router' {
       path: '/vault'
       fullPath: '/vault'
       preLoaderRoute: typeof AppVaultRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/shopify-redirect': {
+      id: '/_app/shopify-redirect'
+      path: '/shopify-redirect'
+      fullPath: '/shopify-redirect'
+      preLoaderRoute: typeof AppShopifyRedirectRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/services': {
@@ -808,13 +860,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppConciergeIndexRouteImport
       parentRoute: typeof AppConciergeRoute
     }
-    '/setpassword/$id/$secret': {
-      id: '/setpassword/$id/$secret'
-      path: '/setpassword/$id/$secret'
-      fullPath: '/setpassword/$id/$secret'
-      preLoaderRoute: typeof SetpasswordIdSecretRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_app/services/$id': {
       id: '/_app/services/$id'
       path: '/$id'
@@ -828,6 +873,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/rx-subscriptions/$id'
       preLoaderRoute: typeof AppRxSubscriptionsIdRouteImport
       parentRoute: typeof AppRxSubscriptionsRoute
+    }
+    '/_app/recollection/$serviceRequestId': {
+      id: '/_app/recollection/$serviceRequestId'
+      path: '/recollection/$serviceRequestId'
+      fullPath: '/recollection/$serviceRequestId'
+      preLoaderRoute: typeof AppRecollectionServiceRequestIdRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_app/questionnaire/$type': {
       id: '/_app/questionnaire/$type'
@@ -955,6 +1007,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProtocolLegacyIdRouteImport
       parentRoute: typeof AppProtocolLegacyRoute
     }
+    '/_app/_maps/recollection/$serviceRequestId/schedule': {
+      id: '/_app/_maps/recollection/$serviceRequestId/schedule'
+      path: '/recollection/$serviceRequestId/schedule'
+      fullPath: '/recollection/$serviceRequestId/schedule'
+      preLoaderRoute: typeof AppMapsRecollectionServiceRequestIdScheduleRouteImport
+      parentRoute: typeof AppMapsRoute
+    }
     '/_app/protocol/plans/$planId/goals/$goalId': {
       id: '/_app/protocol/plans/$planId/goals/$goalId'
       path: '/$planId/goals/$goalId'
@@ -977,6 +1036,7 @@ interface AppMapsRouteChildren {
   AppMapsScheduleRoute: typeof AppMapsScheduleRoute
   AppMapsSettingsRoute: typeof AppMapsSettingsRoute
   AppMapsUsersRoute: typeof AppMapsUsersRoute
+  AppMapsRecollectionServiceRequestIdScheduleRoute: typeof AppMapsRecollectionServiceRequestIdScheduleRoute
 }
 
 const AppMapsRouteChildren: AppMapsRouteChildren = {
@@ -984,6 +1044,8 @@ const AppMapsRouteChildren: AppMapsRouteChildren = {
   AppMapsScheduleRoute: AppMapsScheduleRoute,
   AppMapsSettingsRoute: AppMapsSettingsRoute,
   AppMapsUsersRoute: AppMapsUsersRoute,
+  AppMapsRecollectionServiceRequestIdScheduleRoute:
+    AppMapsRecollectionServiceRequestIdScheduleRoute,
 }
 
 const AppMapsRouteWithChildren =
@@ -1140,11 +1202,13 @@ interface AppRouteChildren {
   AppProtocolRoute: typeof AppProtocolRouteWithChildren
   AppRxSubscriptionsRoute: typeof AppRxSubscriptionsRouteWithChildren
   AppServicesRoute: typeof AppServicesRouteWithChildren
+  AppShopifyRedirectRoute: typeof AppShopifyRedirectRoute
   AppVaultRoute: typeof AppVaultRoute
   AppIndexRoute: typeof AppIndexRoute
   AppPlansIdRoute: typeof AppPlansIdRoute
   AppPrescriptionsIdRoute: typeof AppPrescriptionsIdRoute
   AppQuestionnaireTypeRoute: typeof AppQuestionnaireTypeRoute
+  AppRecollectionServiceRequestIdRoute: typeof AppRecollectionServiceRequestIdRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -1159,11 +1223,13 @@ const AppRouteChildren: AppRouteChildren = {
   AppProtocolRoute: AppProtocolRouteWithChildren,
   AppRxSubscriptionsRoute: AppRxSubscriptionsRouteWithChildren,
   AppServicesRoute: AppServicesRouteWithChildren,
+  AppShopifyRedirectRoute: AppShopifyRedirectRoute,
   AppVaultRoute: AppVaultRoute,
   AppIndexRoute: AppIndexRoute,
   AppPlansIdRoute: AppPlansIdRoute,
   AppPrescriptionsIdRoute: AppPrescriptionsIdRoute,
   AppQuestionnaireTypeRoute: AppQuestionnaireTypeRoute,
+  AppRecollectionServiceRequestIdRoute: AppRecollectionServiceRequestIdRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
@@ -1175,9 +1241,9 @@ const rootRouteChildren: RootRouteChildren = {
   LogoutRoute: LogoutRoute,
   RegisterRoute: RegisterRoute,
   ResetpasswordRoute: ResetpasswordRoute,
+  SetpasswordRoute: SetpasswordRoute,
   SigninRoute: SigninRoute,
   VerifyEmailRoute: VerifyEmailRoute,
-  SetpasswordIdSecretRoute: SetpasswordIdSecretRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

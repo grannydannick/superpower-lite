@@ -21,7 +21,7 @@ import { downloadBlob } from '@/features/files/utils/download-blob';
 
 interface PdfViewerProps {
   id: string;
-  name: string;
+  name?: string;
 }
 /*
  * This approach doesn't work with deploys as it can't find fake worker in build files
@@ -45,6 +45,7 @@ export const PdfViewer = ({ id, name }: PdfViewerProps) => {
   const [numPages, setNumPages] = useState<number | undefined>(undefined);
   const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
   const [containerWidth, setContainerWidth] = useState<number>();
+  const resolvedName = data?.file.name ?? name ?? 'document.pdf';
 
   const onDocumentLoadSuccess = (pdf: DocumentLoadSuccessArg) => {
     setNumPages(pdf.numPages);
@@ -52,7 +53,7 @@ export const PdfViewer = ({ id, name }: PdfViewerProps) => {
 
   const onDownload = async (): Promise<void> => {
     const blob = await downloadFile({ fileId: id });
-    downloadBlob(blob, name);
+    downloadBlob(blob, resolvedName);
   };
 
   const onResize = useCallback<ResizeObserverCallback>((entries) => {

@@ -2,6 +2,7 @@ import { GoalIcon } from 'lucide-react';
 
 import { Body1, Body2 } from '@/components/ui/typography';
 import { BiomarkersDistributionBar } from '@/features/data/components/biomarkers-distribution-bar';
+import { extractObservationId } from '@/features/messages/utils/parse-fhir-citation';
 import { useLatestProtocol } from '@/features/protocol/api';
 import { ProtocolGoalObservation } from '@/features/protocol/components/goals/protocol-goal-observation';
 
@@ -34,15 +35,17 @@ export const KeyInsightsCard = () => {
           <div className="space-y-3">
             <Body1>Contributing Biomarkers</Body1>
             <div className="space-y-2">
-              <div className="space-y-2">
-                {goalObservations.map((id) => (
+              {goalObservations.map((obs) => {
+                const id = extractObservationId(obs);
+
+                return (
                   <ProtocolGoalObservation
                     id={id}
                     key={id}
                     className="overflow-x-auto"
                   />
-                ))}
-              </div>
+                );
+              })}
             </div>
           </div>
         )}

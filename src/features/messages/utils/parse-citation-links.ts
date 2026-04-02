@@ -15,6 +15,7 @@ const CITATION_SCHEMES = [
   'memory://',
   'chat://',
   'marketplace://',
+  'wearables://',
 ];
 
 /**

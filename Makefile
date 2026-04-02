@@ -28,7 +28,7 @@ help:
 
 .PHONY: run
 run: description = Run the app locally
-run:
+run: util/install
 	doppler run --project=superpower-app --config=dev -- bun run dev
 
 ### Build

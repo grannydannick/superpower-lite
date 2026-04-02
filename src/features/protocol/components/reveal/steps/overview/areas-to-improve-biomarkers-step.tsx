@@ -48,10 +48,7 @@ export const AreasToImproveBiomarkersStep = () => {
           {`${outOfRangeBiomarkerCount} out of ${totalBiomarkerCount} biomarkers are out of range`}
         </Body1>
       </div>
-      <CategoriesTable
-        categories={categoryGroups}
-        maxVisibleBiomarkers={Infinity}
-      />
+      <CategoriesTable categories={categoryGroups} maxVisibleBiomarkers={3} />
       <Button className="w-full" onClick={handleNext}>
         Continue
       </Button>

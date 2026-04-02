@@ -2,7 +2,7 @@ import { useNavigate, useRouterState } from '@tanstack/react-router';
 import { useWindowWidth } from '@wojtekmaj/react-hooks';
 import { m } from 'framer-motion';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { Suspense, lazy, useState } from 'react';
+import { Fragment, Suspense, lazy, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { getBiomarkerColor } from '@/components/ui/charts/utils/get-biomarker-color';
@@ -35,10 +35,9 @@ const MAX_VISIBLE_BIOMARKERS = 2;
 
 interface BiomarkerRowProps {
   biomarker: Biomarker;
-  showDivider: boolean;
 }
 
-const BiomarkerRow = ({ biomarker, showDivider }: BiomarkerRowProps) => {
+const BiomarkerRow = ({ biomarker }: BiomarkerRowProps) => {
   const latestResult = biomarker.value?.[0];
   const colors = getBiomarkerColor(biomarker.status);
   const isOutOfRange =
@@ -47,10 +46,10 @@ const BiomarkerRow = ({ biomarker, showDivider }: BiomarkerRowProps) => {
   return (
     <BiomarkerDialog biomarker={biomarker}>
       <button
-        className="w-full text-left transition-colors hover:bg-zinc-50"
+        className="w-full rounded-xl text-left transition-colors hover:bg-zinc-50"
         style={isOutOfRange ? { backgroundColor: colors.light } : undefined}
       >
-        <div className="flex items-center justify-between gap-3 px-3 py-5">
+        <div className="flex items-center justify-between gap-3 px-3 py-3.5">
           <p
             className="min-w-0 flex-1 text-sm font-medium"
             style={{ color: isOutOfRange ? colors.default : undefined }}
@@ -77,7 +76,6 @@ const BiomarkerRow = ({ biomarker, showDivider }: BiomarkerRowProps) => {
             {biomarker.ranges.quest?.[0]?.high?.value || 20}
           </div>
         </div>
-        {showDivider && <hr className="border-t border-zinc-100" />}
       </button>
     </BiomarkerDialog>
   );
@@ -111,12 +109,11 @@ const CollapsibleBiomarkers = ({
       }}
       className="overflow-hidden"
     >
-      {biomarkers.map((biomarker, index) => (
-        <BiomarkerRow
-          key={biomarker.id}
-          biomarker={biomarker}
-          showDivider={index < biomarkers.length - 1}
-        />
+      {biomarkers.map((biomarker) => (
+        <Fragment key={biomarker.id}>
+          <div className="mx-3 h-px bg-zinc-100" />
+          <BiomarkerRow biomarker={biomarker} />
+        </Fragment>
       ))}
     </m.div>
   );
@@ -235,13 +232,10 @@ export const CategoriesTable = ({
               <div>
                 {/* Always visible biomarkers */}
                 {visibleBiomarkers.map((biomarker, index) => (
-                  <BiomarkerRow
-                    key={biomarker.id}
-                    biomarker={biomarker}
-                    showDivider={
-                      index < visibleBiomarkers.length - 1 || hasMoreBiomarkers
-                    }
-                  />
+                  <Fragment key={biomarker.id}>
+                    {index > 0 && <div className="mx-3 h-px bg-zinc-100" />}
+                    <BiomarkerRow biomarker={biomarker} />
+                  </Fragment>
                 ))}
 
                 {/* Collapsible biomarkers */}

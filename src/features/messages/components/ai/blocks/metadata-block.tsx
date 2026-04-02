@@ -1,5 +1,7 @@
 import { memo } from 'react';
 
+import { useOpenFile } from '@/features/files/hooks/use-open-file';
+
 type MetadataBlockVariant =
   | { type: 'data'; dataType: string; dataText: string }
   | { type: 'file'; mediaType: string; url: string }
@@ -18,6 +20,7 @@ export const MetadataBlock = memo(function MetadataBlock({
   variant,
 }: MetadataBlockProps) {
   const key = `${messageId}:${variant.type}:${partIndex}`;
+  const openFile = useOpenFile();
 
   switch (variant.type) {
     case 'data':
@@ -36,6 +39,14 @@ export const MetadataBlock = memo(function MetadataBlock({
       );
 
     case 'file':
+      let fileId: string | null = null;
+      if (variant.url.startsWith('/files/')) {
+        const nextFileId = variant.url.slice('/files/'.length);
+        if (nextFileId.length > 0) {
+          fileId = nextFileId;
+        }
+      }
+
       return (
         <div
           key={key}
@@ -45,14 +56,26 @@ export const MetadataBlock = memo(function MetadataBlock({
           <div className="mt-1 break-all font-mono text-[11px] text-zinc-400">
             {variant.mediaType}
           </div>
-          <a
-            href={variant.url}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-1 block break-all text-xs text-blue-600 underline underline-offset-2 hover:text-blue-700"
-          >
-            open
-          </a>
+          {fileId === null ? (
+            <a
+              href={variant.url}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-1 block break-all text-xs text-blue-600 underline underline-offset-2 hover:text-blue-700"
+            >
+              open
+            </a>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                openFile(fileId, { contentType: variant.mediaType });
+              }}
+              className="mt-1 block break-all text-left text-xs text-blue-600 underline underline-offset-2 hover:text-blue-700"
+            >
+              open
+            </button>
+          )}
         </div>
       );
 

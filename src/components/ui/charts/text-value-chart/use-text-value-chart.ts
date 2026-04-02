@@ -25,6 +25,7 @@ export interface TextDataPoint {
   timestamp: string;
   source: string;
   id: string;
+  file?: { id: string; name: string };
 }
 
 export interface TextXAxisLabel {
@@ -107,6 +108,7 @@ export const useTextValueChart = ({
       text: point.valueText || '',
       timestamp: point.timestamp,
       source: point.source || 'quest',
+      file: point.file,
       id: point.id || `point-${startIndex + index}`,
     };
   });

@@ -32,7 +32,7 @@ export const BiologicalAgeStep = () => {
         <div className="absolute inset-0 z-10 overflow-visible p-6">
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-visible">
             {isLoading ? (
-              <Skeleton className="mx-auto size-80 rounded-full bg-white/10 lg:size-[400px]" />
+              <Skeleton className="mx-auto size-64 rounded-full bg-white/10 lg:size-[320px]" />
             ) : (
               <ProgressCircle
                 value={biologicalAge ?? 0}
@@ -40,17 +40,17 @@ export const BiologicalAgeStep = () => {
                 progressMax={100}
                 animationDuration={1000}
                 easing="cubic-bezier(0.16, 1, 0.3, 1)"
-                className="size-80 text-white lg:size-[400px]"
+                className="size-64 text-white lg:size-[320px]"
                 borderCircles={[
                   {
-                    strokeWidth: 8,
-                    lgStrokeWidth: 6,
+                    strokeWidth: 6,
+                    lgStrokeWidth: 4,
                     color: 'white',
                     blur: 'blur-[2px] lg:blur-sm',
                   },
                   {
-                    strokeWidth: 40,
-                    lgStrokeWidth: 96,
+                    strokeWidth: 28,
+                    lgStrokeWidth: 64,
                     color: '#facc15',
                     blur: 'blur-2xl',
                   },

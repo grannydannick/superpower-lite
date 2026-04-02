@@ -1,10 +1,8 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { useRouter } from '@tanstack/react-router';
 import { ColumnDef } from '@tanstack/react-table';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { useLogin } from '@/lib/auth';
+import { useImpersonateUser } from '@/lib/auth';
 import { AdminUser } from '@/types/api';
 
 import { DeleteUserModal } from './delete-user-modal';
@@ -144,26 +142,14 @@ export const columns: ColumnDef<AdminUser>[] = [
   {
     id: 'login',
     cell: function CellComponent({ row }) {
-      const loginMutation = useLogin({});
-      const queryClient = useQueryClient();
-      const router = useRouter();
+      const impersonateMutation = useImpersonateUser();
 
-      const userEmail = row.original.email;
       return (
         <Button
           disabled={row.original.isDeleted}
-          onClick={async () => {
-            await loginMutation.mutateAsync({
-              email: userEmail,
-              password: '',
-              authMethod: 'admin',
-            });
-
-            // needed to remove all previous user queries and refetch for the new one
-            queryClient.removeQueries();
-
-            void router.invalidate();
-          }}
+          onClick={() =>
+            impersonateMutation.mutate({ userId: row.original.id })
+          }
         >
           Sign in as User
         </Button>

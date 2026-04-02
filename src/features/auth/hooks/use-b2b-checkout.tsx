@@ -5,24 +5,34 @@ import { useCreateConsent } from '@/features/announcements/api/create-consent';
 import { useSendMagicLink } from '@/features/auth/api/send-magic-link';
 import { useCheckoutContext } from '@/features/auth/stores';
 import { useCreateBenefitClaim } from '@/features/b2b/api';
-import { RegisterInput, useRegister, useUser } from '@/lib/auth';
+import { RegisterInput, useRegister } from '@/lib/auth';
 import { getActiveLogin } from '@/lib/utils';
 import { ConsentType, User } from '@/types/api';
 import { getState } from '@/utils/verify-state-from-postal';
 
 type UseB2BCheckoutOptions = {
   organizationId: string;
-  benefitIds: string[];
-  onSuccess?: (email: string) => Promise<void> | void;
+  onSuccess?: (
+    loginEmail: string | undefined,
+    options?: {
+      shouldSendMagicLink?: boolean;
+      hasExistingAccount?: boolean;
+    },
+  ) => Promise<void> | void;
+};
+
+type ProcessB2BCheckoutOptions = {
+  claimGrantToken: string;
+  benefitEmail: string;
+  loginEmail: string;
+  hasExistingAccount: boolean;
 };
 
 export const useB2BCheckout = ({
   organizationId,
-  benefitIds,
   onSuccess,
 }: UseB2BCheckoutOptions) => {
   const queryClient = useQueryClient();
-  const { data: user } = useUser();
 
   // mutations
   const claimBenefitsMutation = useCreateBenefitClaim();
@@ -94,9 +104,12 @@ export const useB2BCheckout = ({
 
   /**
    * Handle claiming B2B benefits.
-   * Creates user, consents, claims benefits, sends magic link and navigates.
+   * Creates user (if needed), consents, claims benefits, sends magic link and navigates.
    */
-  const processB2BCheckout = async (data?: RegisterInput) => {
+  const submitBenefitClaim = async (
+    data: RegisterInput | undefined,
+    options: ProcessB2BCheckoutOptions,
+  ) => {
     if (processing) return;
 
     if (!organizationId) {
@@ -104,23 +117,19 @@ export const useB2BCheckout = ({
       return;
     }
 
-    if (benefitIds.length === 0) {
-      toast.error('No benefits to claim');
+    const claimGrantToken = options.claimGrantToken.trim();
+    if (!claimGrantToken) {
+      toast.error(
+        'Missing claim authorization. Please verify your benefit email again.',
+      );
       return;
     }
 
     setProcessing(true);
 
     let phiMarketingConsent: boolean | undefined = undefined;
-    if (data) {
+    if (data != null) {
       phiMarketingConsent = data.phiMarketingConsent;
-    }
-
-    let email: string | undefined = undefined;
-    if (user && user.email) {
-      email = user.email;
-    } else if (data && data.email) {
-      email = data.email;
     }
 
     try {
@@ -129,17 +138,20 @@ export const useB2BCheckout = ({
 
       // create consents (fire-and-forget, non-blocking)
       void createMembershipAgreementConsent();
-      void createPhiMarketingConsent(phiMarketingConsent);
+      if (!options.hasExistingAccount) {
+        void createPhiMarketingConsent(phiMarketingConsent);
+      }
 
       // claim benefits
       await claimBenefitsMutation.mutateAsync({
-        params: {
-          path: { organizationId },
-        },
-        body: {
-          benefitIds,
-        },
+        organizationId,
+        claimGrantToken,
       });
+      const benefitEmail = options.benefitEmail.trim().toLowerCase();
+      const loginEmail = options.loginEmail.trim();
+      const normalizedLoginEmail = loginEmail.toLowerCase();
+      const shouldSendMagicLink =
+        normalizedLoginEmail !== benefitEmail && !options.hasExistingAccount;
 
       /**
        * Optimistically mark the cached 'authenticated-user' as subscribed.
@@ -153,20 +165,30 @@ export const useB2BCheckout = ({
         },
       );
 
-      // Get the user's email for magic link
-      if (email) {
+      if (shouldSendMagicLink) {
         // Send magic link
         await sendMagicLinkMutation.mutateAsync({
           data: {
-            email,
+            email: loginEmail,
             origin: 'registration',
           },
         });
-
-        if (onSuccess) {
-          await onSuccess(email);
-        }
       }
+
+      if (onSuccess) {
+        await onSuccess(shouldSendMagicLink ? loginEmail : undefined, {
+          shouldSendMagicLink,
+          hasExistingAccount: options.hasExistingAccount,
+        });
+      }
+
+      /**
+       * Invalidate the authenticated-user query so access flags (e.g. access.rx)
+       * are refetched from the server after the benefit claim.
+       */
+      void queryClient.invalidateQueries({
+        queryKey: ['authenticated-user'],
+      });
 
       setProcessing(false);
     } catch (e) {
@@ -181,6 +203,6 @@ export const useB2BCheckout = ({
   };
 
   return {
-    processB2BCheckout,
+    submitBenefitClaim,
   };
 };

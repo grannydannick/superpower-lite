@@ -1,3 +1,4 @@
+import { useNavigate } from '@tanstack/react-router';
 import React, { ReactNode, useState } from 'react';
 
 import {
@@ -8,9 +9,12 @@ import {
 } from '@/components/ui/dropdown';
 import { useDeleteFile } from '@/features/files/api/delete-file';
 import { useDownloadFile } from '@/features/files/api/download-file';
-import { ViewPdfDialog } from '@/features/files/components/file-dialogs/view-pdf-dialog';
+import { PdfPreviewTrigger } from '@/features/files/components/file-dialogs/pdf-preview-trigger';
 import { downloadBlob } from '@/features/files/utils/download-blob';
+import { useChatStore } from '@/features/messages/stores/chat-store';
 import { File } from '@/types/api';
+
+import { getLabSummaryState } from './lab-summary-link';
 
 interface FileDropdownProps {
   children: ReactNode;
@@ -21,6 +25,9 @@ export function FileDropdown({ children, file }: FileDropdownProps) {
   // For now we don't have options for tests
   if (file.contentType === 'test') return null;
 
+  const { summaryChatId, summaryMessageId, hasSummary, canGenerateSummary } =
+    getLabSummaryState(file);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
@@ -29,21 +36,71 @@ export function FileDropdown({ children, file }: FileDropdownProps) {
         className="w-[160px] rounded-[16px] border-zinc-100"
         onClick={(e) => e.stopPropagation()}
       >
+        {hasSummary && summaryChatId != null && summaryMessageId != null && (
+          <ViewLabSummaryMenuItem
+            chatId={summaryChatId}
+            messageId={summaryMessageId}
+          />
+        )}
+        {canGenerateSummary && <GenerateLabSummaryMenuItem file={file} />}
         <DownloadMenuItem {...file} />
         {file.contentType === 'application/pdf' ? (
-          <ViewPdfDialog file={file}>
-            <DropdownMenuItem
-              onSelect={(event) => {
-                event.preventDefault();
-              }}
-            >
-              View
-            </DropdownMenuItem>
-          </ViewPdfDialog>
+          <PdfPreviewTrigger fileId={file.id}>
+            <DropdownMenuItem>View</DropdownMenuItem>
+          </PdfPreviewTrigger>
         ) : null}
         <DeleteMenuItem {...file} />
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+function ViewLabSummaryMenuItem({
+  chatId,
+  messageId,
+}: {
+  chatId: string;
+  messageId: string;
+}) {
+  const navigate = useNavigate();
+
+  return (
+    <DropdownMenuItem
+      onClick={() => {
+        navigate({
+          to: '/concierge/$id',
+          params: { id: chatId },
+          search: { ctxMessageId: messageId },
+        });
+      }}
+    >
+      View Lab Summary
+    </DropdownMenuItem>
+  );
+}
+
+function GenerateLabSummaryMenuItem({ file }: { file: File }) {
+  const navigate = useNavigate();
+
+  return (
+    <DropdownMenuItem
+      onClick={() => {
+        useChatStore.getState().setPendingFiles([
+          {
+            type: 'file',
+            url: `/files/${file.id}`,
+            filename: file.name,
+            mediaType: file.contentType,
+          },
+        ]);
+        void navigate({
+          to: '/concierge',
+          search: { autoSend: true },
+        });
+      }}
+    >
+      Generate Lab Summary
+    </DropdownMenuItem>
   );
 }
 

@@ -3,10 +3,11 @@ import { format } from 'date-fns';
 import { CornerUpRight } from 'lucide-react';
 import React, { useState } from 'react';
 
-import { Body2, Body1, Body3 } from '@/components/ui/typography';
+import { Body1, Body2, Body3 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 import { PhlebotomyLocation, Slot } from '@/types/api';
 import { formatDistanceText } from '@/utils/format-distance';
+import { isValidTimeZone, normalizeTimeZone } from '@/utils/timezone';
 
 import { useLocationsScheduler } from '../stores/locations-scheduler';
 
@@ -29,6 +30,9 @@ export const SchedulerLocation = ({
   const isLocationSelected =
     selectedLocation?.address.id === location.address.id;
   const isWalkIn = !location.capabilities.includes('APPOINTMENT_SCHEDULING');
+  const normalized = normalizeTimeZone(location.timezone);
+  const locationTz =
+    normalized && isValidTimeZone(normalized) ? normalized : tz;
 
   const streetAddress = location.address.line.join(', ');
   const city = location.address.city;
@@ -39,7 +43,7 @@ export const SchedulerLocation = ({
     if (onSelectionChange == null) return;
 
     if (isLocationSelected && selectedSlot?.start === slot.start) {
-      onSelectionChange(null, null, tz);
+      onSelectionChange(null, null, locationTz);
       return;
     }
 
@@ -48,12 +52,12 @@ export const SchedulerLocation = ({
       setShowWalkIn(true);
     }
 
-    onSelectionChange(location, slot, tz);
+    onSelectionChange(location, slot, locationTz);
   };
 
   const formatTimeSlot = (slot: Slot) => {
-    const start = new TZDateMini(slot.start, tz);
-    const end = new TZDateMini(slot.end, tz);
+    const start = new TZDateMini(slot.start, locationTz);
+    const end = new TZDateMini(slot.end, locationTz);
 
     return `${format(start, 'h:mmaaa')} — ${format(end, 'h:mmaaa')}`;
   };

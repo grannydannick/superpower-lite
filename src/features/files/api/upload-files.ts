@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { toast } from '@/components/ui/sonner';
 import {
+  MAX_FILE_COUNT,
   MAX_FILE_SIZE_BYTES,
   MAX_FILE_SIZE_MB,
 } from '@/const/accepted-file-types';
@@ -12,6 +13,8 @@ import { sha256Hex } from '../utils/file-hash';
 
 import { getFilesQueryOptions } from './get-files';
 import { completeUpload, presignUpload, putToS3 } from './upload';
+
+export const uploadFilesMutationKey = ['files', 'upload', 'general'];
 
 type UploadResult =
   | {
@@ -24,6 +27,17 @@ type UploadResult =
   | { success: false; fileName: string; error: string };
 
 async function uploadSingleFile(rawFile: File): Promise<UploadResult> {
+  const lowerFileName = rawFile.name.toLowerCase();
+  const isPdf =
+    rawFile.type === 'application/pdf' || lowerFileName.endsWith('.pdf');
+  if (!isPdf) {
+    return {
+      success: false,
+      fileName: rawFile.name,
+      error: 'Only PDF files are currently supported.',
+    };
+  }
+
   if (rawFile.size > MAX_FILE_SIZE_BYTES) {
     const sizeMB = Math.round(rawFile.size / (1024 * 1024));
     return {
@@ -35,7 +49,7 @@ async function uploadSingleFile(rawFile: File): Promise<UploadResult> {
 
   try {
     const hexHash = await sha256Hex(rawFile);
-    const contentType = rawFile.type || 'application/octet-stream';
+    const contentType = 'application/pdf';
 
     const metadata = {
       originalName: rawFile.name,
@@ -92,13 +106,28 @@ const uploadFiles = async ({
 }: {
   data: { files: File[] };
 }): Promise<UploadFilesResult> => {
-  const results = await Promise.all(
-    data.files.map((file) => uploadSingleFile(file)),
-  );
-
   const uploaded: UploadedFile[] = [];
   const duplicateNames: string[] = [];
   const failed: UploadFailure[] = [];
+  const filesToUpload: File[] = [];
+
+  for (const file of data.files) {
+    if (filesToUpload.length < MAX_FILE_COUNT) {
+      filesToUpload.push(file);
+      continue;
+    }
+
+    failed.push({
+      name: file.name,
+      error: `You can upload a maximum of ${MAX_FILE_COUNT} files at once.`,
+    });
+  }
+
+  const uploads: Array<Promise<UploadResult>> = [];
+  for (const file of filesToUpload) {
+    uploads.push(uploadSingleFile(file));
+  }
+  const results = await Promise.all(uploads);
 
   for (const result of results) {
     if (result.success) {
@@ -130,8 +159,13 @@ export const useUploadFiles = ({
   const queryClient = useQueryClient();
   const { track } = useAnalytics();
   const { onSuccess, ...restConfig } = mutationConfig || {};
+  const mutationKey =
+    context === 'general'
+      ? uploadFilesMutationKey
+      : ['files', 'upload', 'ai-chat'];
 
   return useMutation({
+    mutationKey,
     onSuccess: (response, variables, ...rest) => {
       const newCount =
         response.uploaded.length - response.duplicateNames.length;

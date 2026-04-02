@@ -9,8 +9,21 @@ import type { Biomarker } from '@/types/api';
 import { ChartTooltip } from '../chart-tooltip';
 import { RangeStack } from '../range-stack';
 import { CHART_CONFIG } from '../sparkline-chart/config';
+import { TooltipSource } from '../tooltip-source';
 
 import { useRangeSparkline } from './use-range-sparkline';
+
+interface RangeSparklineDisplayedPoint {
+  index: number;
+  low: number;
+  high: number;
+  unit: string;
+  timestamp: string;
+  position: { x: number; y: number };
+  status: string;
+  source: string;
+  file?: { id: string; name: string };
+}
 
 // Inner SVG chart for range-type sparkline in the data table.
 // Renders pills (rounded rects spanning low-to-high) for each range value,
@@ -35,6 +48,7 @@ const RangeSparklineChart = ({
     position: { x: number; y: number };
     status: string;
     source: string;
+    file?: { id: string; name: string };
   }) => void;
   onHoverEnd: () => void;
   hoveredPointIndex?: number | null;
@@ -88,6 +102,7 @@ const RangeSparklineChart = ({
             },
             status: nearestPoint.status,
             source: nearestPoint.source,
+            file: nearestPoint.file,
           });
         }
       });
@@ -256,16 +271,51 @@ export const RangeSparkline = ({
     svgWidth,
   });
 
-  const [displayedPoint, setDisplayedPoint] = useState<{
-    index: number;
-    low: number;
-    high: number;
-    unit: string;
-    timestamp: string;
-    position: { x: number; y: number };
-    status: string;
-    source: string;
-  } | null>(null);
+  const [displayedPoint, setDisplayedPoint] =
+    useState<RangeSparklineDisplayedPoint | null>(null);
+  const hideTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (hideTimeoutRef.current !== null) {
+        window.clearTimeout(hideTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handlePointHover = useCallback(
+    (point: RangeSparklineDisplayedPoint) => {
+      if (hideTimeoutRef.current !== null) {
+        window.clearTimeout(hideTimeoutRef.current);
+        hideTimeoutRef.current = null;
+      }
+
+      setDisplayedPoint(point);
+    },
+    [],
+  );
+
+  const hideDisplayedPoint = useCallback(() => {
+    if (hideTimeoutRef.current !== null) {
+      window.clearTimeout(hideTimeoutRef.current);
+    }
+
+    hideTimeoutRef.current = window.setTimeout(() => {
+      setDisplayedPoint(null);
+      hideTimeoutRef.current = null;
+    }, 100);
+  }, []);
+
+  const handleTooltipMouseEnter = useCallback(() => {
+    if (hideTimeoutRef.current !== null) {
+      window.clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
+  }, []);
+
+  const handleTooltipMouseLeave = useCallback(() => {
+    hideDisplayedPoint();
+  }, [hideDisplayedPoint]);
 
   return (
     <div
@@ -281,8 +331,8 @@ export const RangeSparkline = ({
           biomarker={biomarker}
           maxValuesToShow={maxValuesToShow}
           svgWidth={svgWidth}
-          onHover={setDisplayedPoint}
-          onHoverEnd={() => setDisplayedPoint(null)}
+          onHover={handlePointHover}
+          onHoverEnd={hideDisplayedPoint}
           hoveredPointIndex={displayedPoint?.index ?? null}
         />
       </div>
@@ -298,6 +348,9 @@ export const RangeSparkline = ({
             isOpen={true}
             position={displayedPoint.position}
             side="top"
+            interactive={true}
+            onMouseEnter={handleTooltipMouseEnter}
+            onMouseLeave={handleTooltipMouseLeave}
           >
             <div className="flex items-center gap-2">
               <div
@@ -316,7 +369,11 @@ export const RangeSparkline = ({
                 </div>
                 <div className="text-muted-foreground">
                   {format(new Date(displayedPoint.timestamp), 'MMM dd, yyyy')} (
-                  <span className="capitalize">{displayedPoint.source})</span>
+                  <TooltipSource
+                    source={displayedPoint.source}
+                    file={displayedPoint.file}
+                  />
+                  )
                 </div>
               </div>
             </div>

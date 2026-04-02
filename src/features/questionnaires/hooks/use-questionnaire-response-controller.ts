@@ -1,6 +1,6 @@
 import { QuestionnaireResponseItem } from '@medplum/fhirtypes';
 import { keepPreviousData } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { useQuestionnaire } from '@/features/questionnaires/api/questionnaire';
 import {
@@ -39,8 +39,19 @@ export const useQuestionnaireResponseController = ({
   const responseSettled = !responseQuery.isLoading;
   const response = responseQuery.data?.questionnaireResponse ?? undefined;
 
+  const questionnaireIdentifierRef = useRef<string | null>(null);
+  const prevNameRef = useRef(questionnaireName);
+  if (prevNameRef.current !== questionnaireName) {
+    prevNameRef.current = questionnaireName;
+    questionnaireIdentifierRef.current = null;
+  }
+  if (questionnaireIdentifierRef.current === null && responseSettled) {
+    questionnaireIdentifierRef.current =
+      response?.questionnaire ?? questionnaireName;
+  }
+
   const questionnaireQuery = useQuestionnaire({
-    identifier: response?.questionnaire ?? questionnaireName,
+    identifier: questionnaireIdentifierRef.current ?? questionnaireName,
     queryConfig: {
       placeholderData: keepPreviousData,
       enabled: responseSettled,

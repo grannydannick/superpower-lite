@@ -1,22 +1,20 @@
 import { type UseChatHelpers, useChat } from '@ai-sdk/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLocation } from '@tanstack/react-router';
-import {
-  type ChatRequestOptions,
-  type UIMessage,
-  DefaultChatTransport,
-  FileUIPart,
-} from 'ai';
+import { type ChatRequestOptions, type UIMessage, FileUIPart } from 'ai';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { env } from '@/config/env';
 import { useCreateFollowups } from '@/features/messages/api/create-followups';
-import { useHistory } from '@/features/messages/api/get-history';
+import { getHistoryQueryOptions } from '@/features/messages/api/get-history';
 import { MultimodalInput } from '@/features/messages/components/ai/multimodal-input';
+import { QueuedMessages } from '@/features/messages/components/ai/queued-messages';
 import { AssistantMessages } from '@/features/messages/components/assistant/assistant-messages';
+import { useMessageQueue } from '@/features/messages/hooks/use-message-queue';
 import { useAssistantStore } from '@/features/messages/stores/assistant-store';
+import { createChatV2Transport } from '@/features/messages/utils/chatv2-transport';
+import { extractTiming } from '@/features/messages/utils/extract-timing';
 import { useAnalytics } from '@/hooks/use-analytics';
-import { cn, getActiveLogin } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 
 import { ChatSuggestion } from '../chat-suggestion';
 
@@ -29,16 +27,12 @@ export function AssistantChat({
   isActive: boolean;
   isResizing?: boolean;
 }) {
-  const { refetch } = useHistory();
   const { track } = useAnalytics();
   const { pathname } = useLocation();
   const queryClient = useQueryClient();
 
   const id = chatId;
 
-  const [lastSentMessageTime, setLastSentMessageTime] = useState<number | null>(
-    null,
-  );
   // input is handled by custom store to avoid additional effects to sync preset inputs
   const input = useAssistantStore((s) => s.input);
   const setInput = useAssistantStore((s) => s.setInput);
@@ -55,70 +49,27 @@ export function AssistantChat({
 
   const [shouldGenerateFollowups, setShouldGenerateFollowups] = useState(false);
 
-  // Memoize transport to prevent unnecessary re-creation
-  const transport = useMemo(
-    () =>
-      new DefaultChatTransport({
-        api: `${env.API_URL}/chat/chatv2`,
-        credentials: 'include',
-        headers: () => {
-          const activeLogin = getActiveLogin();
-          const accessToken = activeLogin?.accessToken;
+  const transport = useMemo(() => createChatV2Transport<UIMessage>(), []);
 
-          return {
-            Accept: 'application/json',
-            ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-          };
-        },
-        prepareSendMessagesRequest({ messages, id }) {
-          const lastUserMessage = [...messages]
-            .reverse()
-            .find((m) => m.role === 'user');
+  const { messages, setMessages, sendMessage, resumeStream, stop, status } =
+    useChat({
+      id,
+      transport,
+      messages: [],
+      generateId: () => crypto.randomUUID(),
+      onFinish: ({ message, isAbort, isDisconnect, isError }) => {
+        if (isAbort) return;
 
-          if (!lastUserMessage) {
-            throw new Error('No user message to send.');
-          }
-
-          return {
-            api: `${env.API_URL}/chat/chatv2`,
-            body: { id, message: lastUserMessage },
-          };
-        },
-        prepareReconnectToStreamRequest: ({ id }) => ({
-          api: `${env.API_URL}/chat/chatv2/${id}/stream`,
-        }),
-      }),
-    [], // Intentionally empty - uses fresh data via getActiveLogin()
-  );
-
-  const { messages, setMessages, sendMessage, status } = useChat({
-    id,
-    transport,
-    messages: [],
-    resume: true, // Enable auto-resume for durable streams
-    generateId: () => crypto.randomUUID(),
-    onFinish: ({ message }) => {
-      refetch();
-
-      if (message.role === 'user') {
-        const currentTime = Date.now();
-        setLastSentMessageTime(currentTime);
-
-        const messageLength = message.parts?.reduce((acc, part) => {
-          if (part.type === 'text') acc += part.text.length;
-          return acc;
-        }, 0);
-
-        track('sent_message_ai', {
-          message_length: messageLength ?? 0,
+        void queryClient.invalidateQueries({
+          queryKey: getHistoryQueryOptions().queryKey,
         });
-      } else if (message.role === 'assistant') {
-        const responseTime = lastSentMessageTime
-          ? Date.now() - lastSentMessageTime
-          : null;
 
+        if (isDisconnect || isError) return;
+        if (message.role !== 'assistant') return;
+
+        const timing = extractTiming(message, false);
         track('received_message_ai', {
-          response_time: responseTime,
+          response_time: timing.totalMs,
         });
 
         const assistantText = (message.parts || [])
@@ -128,9 +79,30 @@ export function AssistantChat({
         if (assistantText.length > 0) {
           setShouldGenerateFollowups(true);
         }
-      }
-    },
-  });
+      },
+    });
+
+  useEffect(() => {
+    if (!isActive) return;
+
+    const timeoutId = window.setTimeout(() => {
+      void resumeStream().catch((err) => {
+        console.debug('resumeStream failed', err);
+      });
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [isActive, resumeStream]);
+
+  useEffect(() => {
+    return () => {
+      void stop().catch((err) => {
+        console.debug('chat stop failed', err);
+      });
+    };
+  }, [stop]);
 
   // Set initial messages when they're available and haven't been set yet
   useEffect(() => {
@@ -184,7 +156,26 @@ export function AssistantChat({
   const shouldShowSuggestions =
     showInitialSuggestions || showAssistantSuggestions;
 
-  const visibleSuggestions = shouldShowSuggestions ? followupsData : [];
+  const onQueueSend = useCallback(
+    (msg: { text: string; files: FileUIPart[] }) => {
+      track('sent_message_ai', { message_length: msg.text.length });
+      setShouldGenerateFollowups(false);
+      sendMessage({ text: msg.text, files: msg.files });
+    },
+    [sendMessage, track],
+  );
+
+  const {
+    queue,
+    enqueue,
+    remove: removeFromQueue,
+  } = useMessageQueue({
+    status,
+    onSend: onQueueSend,
+  });
+
+  const visibleSuggestions =
+    shouldShowSuggestions && queue.length === 0 ? followupsData : [];
 
   const handleSendMessage = useCallback(
     (
@@ -192,22 +183,47 @@ export function AssistantChat({
       options?: ChatRequestOptions,
     ) => {
       setInput('');
+      let messageLength = 0;
+      let messageText = '';
+      if (message !== undefined) {
+        if ('text' in message && typeof message.text === 'string') {
+          messageLength = message.text.length;
+          messageText = message.text;
+        } else if ('parts' in message && Array.isArray(message.parts)) {
+          for (const part of message.parts) {
+            if (part.type === 'text') {
+              messageLength += part.text.length;
+              messageText += part.text;
+            }
+          }
+        }
+      }
       if (hasSetInitialMessages) {
         clearInitialMessages();
         setHasSetInitialMessages(false);
       }
       if (assistantContext) {
-        queryClient.cancelQueries({
+        void queryClient.cancelQueries({
           queryKey: ['followups', assistantContext, 3],
         });
       }
       if (messages.length === 0) {
-        queryClient.cancelQueries({
+        void queryClient.cancelQueries({
           queryKey: ['followups', followupsContext, 3],
         });
       }
       setShouldGenerateFollowups(false);
-      return sendMessage(message, options);
+
+      if (status === 'ready' || status === 'error') {
+        track('sent_message_ai', {
+          message_length: messageLength,
+        });
+        return sendMessage(message, options);
+      }
+
+      const msg = message as { text?: string; files?: FileUIPart[] };
+      enqueue({ text: msg.text ?? messageText, files: msg.files ?? [] });
+      return Promise.resolve();
     },
     [
       setInput,
@@ -219,6 +235,9 @@ export function AssistantChat({
       messages.length,
       followupsContext,
       sendMessage,
+      enqueue,
+      status,
+      track,
     ],
   );
 
@@ -245,13 +264,16 @@ export function AssistantChat({
           {visibleSuggestions.map((suggestion) => (
             <ChatSuggestion
               key={suggestion}
-              onClick={() => handleSendMessage({ text: suggestion, files: [] })}
+              onClick={() =>
+                void handleSendMessage({ text: suggestion, files: [] })
+              }
               suggestion={suggestion}
             />
           ))}
         </div>
       )}
       <div className="pt-2">
+        <QueuedMessages queue={queue} onRemove={removeFromQueue} />
         <form
           className={cn(
             'mx-auto flex w-full flex-col gap-6 pb-2',

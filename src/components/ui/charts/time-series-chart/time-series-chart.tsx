@@ -1,7 +1,7 @@
 import NumberFlow from '@number-flow/react';
 import { useLocation, useNavigate } from '@tanstack/react-router';
 import { format } from 'date-fns';
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,7 @@ import { getDisplayComparator } from '@/utils/get-display-comparator';
 
 import { ChartTooltip } from '../chart-tooltip';
 import { RangeStack } from '../range-stack';
+import { TooltipSource } from '../tooltip-source';
 
 import { CHART_CONFIG } from './config';
 import { Pagination } from './pagination';
@@ -44,7 +45,9 @@ interface DisplayedPoint {
   position: { x: number; y: number };
   pointIndex: number;
   source?: string;
+  unit?: string;
   rangeLabel?: string;
+  file?: { id: string; name: string };
 }
 
 export const TimeSeriesChart = ({
@@ -54,8 +57,7 @@ export const TimeSeriesChart = ({
   biomarker: Biomarker;
   height?: number;
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const containerWidth = useContainerWidth(containerRef, 755);
+  const { containerRef, containerWidth } = useContainerWidth(755);
   const isMobile = useIsMobile();
 
   const svgHeight = height ?? CHART_CONFIG.SVG_HEIGHT;
@@ -174,25 +176,55 @@ export const TimeSeriesChart = ({
   );
 };
 
-function useContainerWidth(
-  containerRef: React.RefObject<HTMLElement | null>,
-  initialWidth: number,
-) {
+function useContainerWidth(initialWidth: number) {
   const [containerWidth, setContainerWidth] = useState(initialWidth);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  const resizeHandlerRef = useRef<(() => void) | null>(null);
 
-  useEffect(() => {
+  const containerRef = useCallback((node: HTMLDivElement | null) => {
+    if (resizeObserverRef.current !== null) {
+      resizeObserverRef.current.disconnect();
+      resizeObserverRef.current = null;
+    }
+
+    if (resizeHandlerRef.current !== null) {
+      window.removeEventListener('resize', resizeHandlerRef.current);
+      resizeHandlerRef.current = null;
+    }
+
+    if (node === null) {
+      return;
+    }
+
     const updateWidth = () => {
-      if (containerRef.current) {
-        setContainerWidth(containerRef.current.offsetWidth);
-      }
+      const nextWidth = node.offsetWidth;
+
+      setContainerWidth((currentWidth) => {
+        if (currentWidth === nextWidth) {
+          return currentWidth;
+        }
+
+        return nextWidth;
+      });
     };
 
     updateWidth();
-    window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
-  }, [containerRef]);
 
-  return containerWidth;
+    if (typeof ResizeObserver !== 'undefined') {
+      const resizeObserver = new ResizeObserver(() => {
+        updateWidth();
+      });
+
+      resizeObserver.observe(node);
+      resizeObserverRef.current = resizeObserver;
+      return;
+    }
+
+    resizeHandlerRef.current = updateWidth;
+    window.addEventListener('resize', updateWidth);
+  }, []);
+
+  return { containerRef, containerWidth };
 }
 
 function useTimeSeriesDisplayedPoint({
@@ -211,9 +243,10 @@ function useTimeSeriesDisplayedPoint({
   >;
   sortedValues: Array<{
     timestamp: string;
-    quantity?: { value: number; comparator?: string };
-    valueRange?: { low: number; high: number };
+    quantity?: { value: number; comparator?: string; unit?: string };
+    valueRange?: { low: number; high: number; unit?: string };
     source?: string;
+    file?: { id: string; name: string };
   }>;
   currentPage: number;
   itemsPerPage: number;
@@ -223,19 +256,29 @@ function useTimeSeriesDisplayedPoint({
   const lastPointRef = useRef<number | null>(null);
   const debounceTimerRef = useRef<number | null>(null);
   const hideTimeoutRef = useRef<number | null>(null);
+  const touchResetTimeoutRef = useRef<number | null>(null);
   const isTouchDevice = useRef<boolean>(false);
+  const setSvgRef = useCallback((node: SVGSVGElement | null) => {
+    svgRef.current = node;
 
-  useEffect(() => {
-    return () => {
-      if (hideTimeoutRef.current !== null) {
-        window.clearTimeout(hideTimeoutRef.current);
-        hideTimeoutRef.current = null;
-      }
-      if (debounceTimerRef.current !== null) {
-        window.cancelAnimationFrame(debounceTimerRef.current);
-        debounceTimerRef.current = null;
-      }
-    };
+    if (node !== null) {
+      return;
+    }
+
+    if (hideTimeoutRef.current !== null) {
+      window.clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
+
+    if (debounceTimerRef.current !== null) {
+      window.cancelAnimationFrame(debounceTimerRef.current);
+      debounceTimerRef.current = null;
+    }
+
+    if (touchResetTimeoutRef.current !== null) {
+      window.clearTimeout(touchResetTimeoutRef.current);
+      touchResetTimeoutRef.current = null;
+    }
   }, []);
 
   const clearDisplayedPoint = useCallback(() => {
@@ -310,6 +353,9 @@ function useTimeSeriesDisplayedPoint({
                   : undefined,
               timestamp: originalValue.timestamp,
               source: originalValue.source || 'quest',
+              unit:
+                originalValue.quantity?.unit || originalValue.valueRange?.unit,
+              file: originalValue.file,
               position: {
                 x: rect.left + nearestPoint.x + window.scrollX,
                 y: rect.top + nearestPoint.y - 40 + window.scrollY,
@@ -334,6 +380,11 @@ function useTimeSeriesDisplayedPoint({
 
   const handleTouchStart = useCallback(
     (e: React.TouchEvent<SVGSVGElement>) => {
+      if (touchResetTimeoutRef.current !== null) {
+        window.clearTimeout(touchResetTimeoutRef.current);
+        touchResetTimeoutRef.current = null;
+      }
+
       isTouchDevice.current = true;
       e.preventDefault();
       if (e.touches.length === 1) {
@@ -372,8 +423,13 @@ function useTimeSeriesDisplayedPoint({
         }, 100);
       }
 
-      setTimeout(() => {
+      if (touchResetTimeoutRef.current !== null) {
+        window.clearTimeout(touchResetTimeoutRef.current);
+      }
+
+      touchResetTimeoutRef.current = window.setTimeout(() => {
         isTouchDevice.current = false;
+        touchResetTimeoutRef.current = null;
       }, 300);
     },
     [displayedPoint, dataPoints, isMobile, clearDisplayedPoint],
@@ -406,7 +462,7 @@ function useTimeSeriesDisplayedPoint({
   }, [clearDisplayedPoint]);
 
   return {
-    svgRef,
+    svgRef: setSvgRef,
     clearDisplayedPoint,
     handleMouseMove,
     handleMouseLeave,
@@ -438,7 +494,7 @@ function TimeSeriesChartSvg({
   onPreviousPage,
   onNextPage,
 }: {
-  svgRef: React.RefObject<SVGSVGElement | null>;
+  svgRef: React.Ref<SVGSVGElement>;
   svgWidth: number;
   svgHeight: number;
   meta: ReturnType<typeof useTimeSeriesChart>['meta'];
@@ -706,6 +762,7 @@ function TimeSeriesChartTooltipPortal({
       isOpen={true}
       position={displayedPoint.position}
       side="top"
+      interactive={true}
       className={cn(status === 'next-test' && '-mt-20 rounded-xl p-1.5')}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -740,11 +797,15 @@ function TimeSeriesChartTooltipPortal({
           <div className="text-xs">
             <div className="font-semibold">
               {displayedPoint.rangeLabel ?? displayedPoint.value.toFixed(2)}{' '}
-              {biomarkerUnit}
+              {displayedPoint.unit || biomarkerUnit}
             </div>
             <div className="text-muted-foreground">
               {format(new Date(displayedPoint.timestamp), 'MMM dd, yyyy')} (
-              <span className="capitalize">{displayedPoint.source}</span>)
+              <TooltipSource
+                source={displayedPoint.source ?? 'quest'}
+                file={displayedPoint.file}
+              />
+              )
             </div>
           </div>
         </div>

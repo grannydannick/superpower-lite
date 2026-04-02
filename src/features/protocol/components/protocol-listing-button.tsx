@@ -15,6 +15,7 @@ interface ProtocolListingButtonProps extends Omit<
   delay?: number;
   className?: string;
   isAnimated?: boolean;
+  compact?: boolean;
 }
 
 export const ProtocolListingButton = ({
@@ -22,6 +23,7 @@ export const ProtocolListingButton = ({
   delay = 0,
   className = '',
   isAnimated = true,
+  compact = false,
   onClick,
   onKeyDown,
   ...props
@@ -43,7 +45,12 @@ export const ProtocolListingButton = ({
   );
 
   const content = (
-    <div className="flex min-h-24 items-center justify-between">
+    <div
+      className={cn(
+        'flex items-center justify-between',
+        !compact && 'min-h-24',
+      )}
+    >
       <div className="flex flex-1 items-center justify-between gap-4 pr-4">
         {children}
       </div>

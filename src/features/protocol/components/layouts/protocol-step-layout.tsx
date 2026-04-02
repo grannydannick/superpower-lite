@@ -13,8 +13,9 @@ export const ProtocolStepLayout = ({
     <div
       className={cn(
         'mx-auto flex min-h-[calc(100vh-96px)] w-full flex-col gap-8 overflow-hidden py-8',
-        // Push the last child (typically the button) to the bottom
-        '[&>*:last-child]:mt-auto',
+        // Mobile: push button to bottom; Desktop: vertically center all content
+        '[&>*:last-child]:mt-auto lg:[&>*:last-child]:mt-0',
+        'lg:justify-center',
         // Calculate the max width as in md + the padding we add to each side
         !fullWidth && 'max-w-[calc(448px+16px*2)] px-4',
         className,

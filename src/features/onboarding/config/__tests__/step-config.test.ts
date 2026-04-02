@@ -279,6 +279,16 @@ describe('getValidSteps', () => {
       const steps = getValidSteps(ctx);
       expect(steps).not.toContain(STEP_IDS.HEARD_ABOUT_US);
     });
+
+    it('excludes heard-about-us for B2B users who have claimed benefits', () => {
+      const ctx = {
+        ...baseContext,
+        userInfoCompleted: false,
+        hasClaimedBenefits: true,
+      };
+      const steps = getValidSteps(ctx);
+      expect(steps).not.toContain(STEP_IDS.HEARD_ABOUT_US);
+    });
   });
 
   describe('primer step', () => {

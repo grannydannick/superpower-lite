@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import * as z from 'zod';
 
-import { api } from '@/lib/api-client';
+import { authClient } from '@/lib/auth-client';
 import { MutationConfig } from '@/lib/react-query';
 
 export const sendMagicLinkInputSchema = z.object({
@@ -12,12 +12,21 @@ export const sendMagicLinkInputSchema = z.object({
 
 export type SendMagicLinkInput = z.infer<typeof sendMagicLinkInputSchema>;
 
-export const sendMagicLink = ({
+export const sendMagicLink = async ({
   data,
 }: {
   data: SendMagicLinkInput;
 }): Promise<{ success: boolean }> => {
-  return api.post('/auth/send-magic-link', data);
+  const { error } = await authClient.emailOtp.sendVerificationOtp({
+    email: data.email,
+    type: 'sign-in',
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return { success: true };
 };
 
 type UseSendMagicLinkOptions = {

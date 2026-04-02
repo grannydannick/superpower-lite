@@ -39,7 +39,7 @@ function DeleteMenuItem({ provider }: Wearable) {
           }}
           className="cursor-pointer rounded-[12px] p-4 text-base text-[#B90090] focus:bg-[#FFF6FD] focus:text-[#B90090]"
         >
-          Delete
+          Disconnect
         </DropdownMenuItem>
       </DialogTrigger>
       <ConfirmDelete provider={provider} />

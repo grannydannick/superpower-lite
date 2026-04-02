@@ -55,14 +55,14 @@ export const ADVANCED_PANEL_MALE_BIOMARKERS = [
       'Screens for prostate cancer and monitors prostate health in men.',
   },
   {
-    title: 'Lipoprotein Fractionation, NMR',
-    description:
-      'Advanced cholesterol testing that counts particle sizes to reveal true cardiovascular risk.',
-  },
-  {
     title: 'Free T3',
     description:
       'The active thyroid hormone that controls metabolism, energy, and body temperature.',
+  },
+  {
+    title: 'Complete Urinalysis',
+    description:
+      'Screens for kidney function, hydration status, and early signs of metabolic or systemic disease.',
   },
 ];
 
@@ -123,13 +123,13 @@ export const ADVANCED_PANEL_FEMALE_BIOMARKERS = [
       'Measures egg reserve to help you understand your fertility timeline.',
   },
   {
-    title: 'Lipoprotein Fractionation, NMR',
-    description:
-      'Advanced cholesterol testing that counts particle sizes to reveal true cardiovascular risk.',
-  },
-  {
     title: 'Free T3',
     description:
       'The active thyroid hormone that controls metabolism, energy, and body temperature.',
+  },
+  {
+    title: 'Complete Urinalysis',
+    description:
+      'Screens for kidney function, hydration status, and early signs of metabolic or systemic disease.',
   },
 ];

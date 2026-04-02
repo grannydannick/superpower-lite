@@ -1,8 +1,8 @@
-import type { UIMessage } from 'ai';
+import type { FileUIPart, UIMessage } from 'ai';
 import type { SetStateAction } from 'react';
 import { create } from 'zustand';
 
-type SendMessageFn = (message: { text: string; files: [] }) => void;
+type SendMessageFn = (message: { text: string; files: FileUIPart[] }) => void;
 
 interface AssistantState {
   isExpanded: boolean;
@@ -12,7 +12,10 @@ interface AssistantState {
   /** Registered by AssistantChat so callers can send messages directly */
   _sendMessage: SendMessageFn | null;
   registerSendMessage: (fn: SendMessageFn) => void;
-  open: (input?: string, options?: { autoSend?: boolean }) => void;
+  open: (
+    input?: string,
+    options?: { autoSend?: boolean; files?: FileUIPart[] },
+  ) => void;
   openWithMessages: (initialMessages: UIMessage[]) => void;
   close: () => void;
   toggle: (input?: string) => void;
@@ -31,6 +34,7 @@ export const useAssistantStore = create<AssistantState>()((set, get) => ({
   registerSendMessage: (fn) => set({ _sendMessage: fn }),
   open: (input, options) => {
     const autoSend = options?.autoSend ?? true;
+    const files = options?.files ?? [];
 
     set((s) => ({
       isExpanded: true,
@@ -42,7 +46,7 @@ export const useAssistantStore = create<AssistantState>()((set, get) => ({
       queueMicrotask(() => {
         const { _sendMessage } = get();
         if (_sendMessage) {
-          _sendMessage({ text: input, files: [] });
+          _sendMessage({ text: input, files });
           set({ input: '' });
         }
       });

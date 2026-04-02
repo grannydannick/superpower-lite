@@ -1,5 +1,6 @@
 interface AppEnv {
   API_URL: string;
+  AUTH_URL: string;
   SOCIAL_BASE_URL: string;
   STRIPE_PUBLISHABLE_KEY: string;
   ENABLE_API_MOCKING?: boolean;
@@ -18,6 +19,8 @@ interface AppEnv {
   POSTHOG_DEBUG?: string;
   MARKETING_SITE_URL: string;
   DEV_TOOLS_ENABLED?: boolean;
+  SENTRY_DSN?: string;
+  APP_ENV: string;
 }
 
 const raw = import.meta.env;
@@ -30,6 +33,15 @@ if (typeof apiUrlRaw === 'string') {
 } else {
   issues.push('API_URL');
   API_URL = '';
+}
+
+let AUTH_URL: string;
+const authUrlRaw = raw.VITE_APP_AUTH_URL;
+if (typeof authUrlRaw === 'string') {
+  AUTH_URL = authUrlRaw;
+} else {
+  issues.push('AUTH_URL');
+  AUTH_URL = '';
 }
 
 let SOCIAL_BASE_URL: string;
@@ -222,6 +234,22 @@ if (devToolsEnabledRaw === undefined) {
   DEV_TOOLS_ENABLED = import.meta.env.DEV;
 }
 
+const APP_ENV: string =
+  typeof raw.VITE_APP_ENV === 'string'
+    ? raw.VITE_APP_ENV
+    : import.meta.env.MODE;
+
+let SENTRY_DSN: string | undefined;
+const sentryDsnRaw = raw.VITE_APP_SENTRY_DSN;
+if (sentryDsnRaw === undefined) {
+  SENTRY_DSN = undefined;
+} else if (typeof sentryDsnRaw === 'string') {
+  SENTRY_DSN = sentryDsnRaw;
+} else {
+  issues.push('SENTRY_DSN');
+  SENTRY_DSN = undefined;
+}
+
 if (issues.length > 0) {
   let lines = '';
   for (const issue of issues) {
@@ -234,6 +262,7 @@ if (issues.length > 0) {
 
 export const env: AppEnv = {
   API_URL,
+  AUTH_URL,
   SOCIAL_BASE_URL,
   STRIPE_PUBLISHABLE_KEY,
   ENABLE_API_MOCKING,
@@ -252,4 +281,6 @@ export const env: AppEnv = {
   POSTHOG_DEBUG,
   MARKETING_SITE_URL,
   DEV_TOOLS_ENABLED,
+  SENTRY_DSN,
+  APP_ENV,
 };

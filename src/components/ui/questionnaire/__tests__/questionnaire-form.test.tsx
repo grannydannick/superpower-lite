@@ -22,6 +22,12 @@ vi.mock('@/hooks/use-identity-verification', () => ({
 vi.mock('../consent-payment-summary', () => ({
   ConsentPaymentSummary: () => null,
 }));
+vi.mock('@/features/settings/hooks', () => ({
+  usePaymentMethodSelection: () => ({
+    activePaymentMethod: { externalPaymentMethodId: 'pm_test_123' },
+    isSelectingPaymentMethod: false,
+  }),
+}));
 
 const mockUser: User = {
   id: 'test-user-id',

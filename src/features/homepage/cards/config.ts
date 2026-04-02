@@ -5,7 +5,8 @@ import { RecommendationsList } from '@/features/homepage/components/recommendati
 import { cardRegistry } from '../registry/card-registry';
 import { CardConfig, HomepageState } from '../types';
 
-import { ActionableCards } from './actionable-cards';
+import { ActionItemsCard } from './action-items-card';
+import { ActionableOrdersCard } from './actionable-orders-card';
 import { AiapSummaryCardWeb } from './aiap-summary-card-web';
 import { KeyInsightsCard } from './key-insights-card';
 import { LabOrderCard } from './lab-order/lab-order-card';
@@ -57,9 +58,19 @@ const navigationCardConfig: CardConfig = {
  */
 const actionableOrdersCardConfig: CardConfig = {
   id: 'actionableCards',
-  component: ActionableCards,
-  shouldShow: (state: HomepageState) => state.hasActionableOrders,
+  component: ActionableOrdersCard,
+  shouldShow: () => true,
   getPriority: () => 5,
+};
+
+/**
+ * Card configuration for Homepage Action Items card
+ */
+const actionItemsCardConfig: CardConfig = {
+  id: 'homepageActionItems',
+  component: ActionItemsCard,
+  shouldShow: () => true,
+  getPriority: () => 6,
 };
 
 /**
@@ -106,6 +117,7 @@ const referralCardConfig: CardConfig = {
 cardRegistry.register(aiapSummaryCardWebConfig);
 // cardRegistry.register(phlebotomyAppointmentCardConfig);
 cardRegistry.register(actionableOrdersCardConfig);
+cardRegistry.register(actionItemsCardConfig);
 cardRegistry.register(switchRxCardConfig);
 cardRegistry.register(navigationCardConfig);
 cardRegistry.register(labOrderCardConfig);

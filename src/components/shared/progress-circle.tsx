@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import NumberFlow from '@/components/shared/number-flow';
 import { H1 } from '@/components/ui/typography';
 
-const STROKE_LENGTH = 6;
+const STROKE_LENGTH = 4;
 
 type BorderCircle = {
   strokeWidth: number;
@@ -92,12 +92,12 @@ export const ProgressCircle = ({
   }, [totalSteps, currentStep, targetValue, progressMax]);
 
   const dashOffset = useMemo(() => {
-    const c = 2 * Math.PI * 139;
+    const c = 2 * Math.PI * 110;
     return c * (1 - targetProgress);
   }, [targetProgress]);
 
   const motionVariants = {
-    hidden: { strokeDashoffset: 2 * Math.PI * 139 },
+    hidden: { strokeDashoffset: 2 * Math.PI * 110 },
     visible: { strokeDashoffset: dashOffset },
   };
 
@@ -109,9 +109,9 @@ export const ProgressCircle = ({
         <Fragment key={`fragment-${index}-mobile`}>
           <m.svg
             key={`border-${index}-mobile`}
-            className={`absolute left-1/2 top-1/2 size-80 -translate-x-1/2 -translate-y-1/2 ${border.blur} lg:hidden`}
+            className={`absolute left-1/2 top-1/2 size-64 -translate-x-1/2 -translate-y-1/2 ${border.blur} lg:hidden`}
             style={{ mixBlendMode: 'plus-lighter' }}
-            viewBox="0 0 320 320"
+            viewBox="0 0 256 256"
             aria-hidden
             initial={animate ? 'hidden' : 'visible'}
             animate="visible"
@@ -122,13 +122,13 @@ export const ProgressCircle = ({
             }}
           >
             <m.circle
-              cx={160}
-              cy={160}
-              r={139}
+              cx={128}
+              cy={128}
+              r={110}
               fill="none"
               stroke={border.color}
               strokeWidth={border.strokeWidth}
-              strokeDasharray={2 * Math.PI * 139}
+              strokeDasharray={2 * Math.PI * 110}
               strokeLinecap="round"
               style={{
                 transform: 'rotate(-90deg)',
@@ -138,16 +138,16 @@ export const ProgressCircle = ({
           </m.svg>
           <m.svg
             key={`border-${index}-desktop`}
-            className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:size-[356px] ${border.blur} hidden lg:block`}
+            className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:size-[288px] ${border.blur} hidden lg:block`}
             style={{ mixBlendMode: 'plus-lighter' }}
-            viewBox="0 0 356 356"
+            viewBox="0 0 288 288"
             aria-hidden
             initial={animate ? 'hidden' : 'visible'}
             animate="visible"
             variants={{
-              hidden: { strokeDashoffset: 2 * Math.PI * 177 },
+              hidden: { strokeDashoffset: 2 * Math.PI * 140 },
               visible: {
-                strokeDashoffset: 2 * Math.PI * 177 * (1 - targetProgress),
+                strokeDashoffset: 2 * Math.PI * 140 * (1 - targetProgress),
               },
             }}
             transition={{
@@ -156,13 +156,13 @@ export const ProgressCircle = ({
             }}
           >
             <m.circle
-              cx={178}
-              cy={178}
-              r={177}
+              cx={144}
+              cy={144}
+              r={140}
               fill="none"
               stroke={border.color}
               strokeWidth={border.lgStrokeWidth || border.strokeWidth}
-              strokeDasharray={2 * Math.PI * 177}
+              strokeDasharray={2 * Math.PI * 140}
               strokeLinecap="round"
               style={{
                 transform: 'rotate(-90deg)',
@@ -219,7 +219,7 @@ export const ProgressCircle = ({
         })()}
       </svg>
       <div className="relative z-10 flex flex-col items-center">
-        <H1 className="text-5xl font-semibold text-white drop-shadow-sm md:text-[96px]">
+        <H1 className="text-3xl font-semibold text-white drop-shadow-sm md:text-[64px]">
           {animate ? (
             <NumberFlow
               value={displayValue}

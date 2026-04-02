@@ -64,10 +64,15 @@ export const DataSearch = ({
     const input = inputRef.current;
     if (!input) return;
 
-    input.value = '';
+    // Use the native setter to bypass React's internal value tracking,
+    // otherwise React won't fire onChange for controlled inputs.
+    const setter = Object.getOwnPropertyDescriptor(
+      HTMLInputElement.prototype,
+      'value',
+    )?.set;
+    setter?.call(input, '');
     input.dispatchEvent(new Event('input', { bubbles: true }));
 
-    // keep focus state
     input.focus();
   }, []);
 

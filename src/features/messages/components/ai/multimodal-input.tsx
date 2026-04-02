@@ -1,11 +1,9 @@
 import { UseChatHelpers } from '@ai-sdk/react';
 import { FileUIPart, UIMessage } from 'ai';
-import equal from 'fast-deep-equal';
 import { ArrowUpIcon } from 'lucide-react';
 import React, {
-  memo,
-  useCallback,
   useEffect,
+  useEffectEvent,
   useRef,
   useState,
   type ChangeEvent,
@@ -19,22 +17,23 @@ import { toast } from '@/components/ui/sonner';
 import { Textarea } from '@/components/ui/textarea';
 import {
   acceptedFileContentTypes,
+  MAX_FILE_COUNT,
   MAX_FILE_SIZE_BYTES,
   MAX_FILE_SIZE_MB,
 } from '@/const';
 import { useUploadFiles } from '@/features/files/api';
 import { AttachmentsButton } from '@/features/messages/components/ai/attachements-button';
-import { useAnalytics } from '@/hooks/use-analytics';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
 
 import { scrollToBottom } from '../../utils/scroll-to-bottom';
 
+import { LabUploadDropzone } from './lab-upload-dropzone';
 import { PreviewAttachment } from './preview-attachment';
 
 const MAX_HEIGHT = 256;
 
-function PureMultimodalInput({
+export function MultimodalInput({
   input,
   setInput,
   attachments,
@@ -44,6 +43,8 @@ function PureMultimodalInput({
   className,
   /** TODO: Temporarily disable file upload button for AI concierge */
   disableFileUpload = false,
+  allowSendWithAttachmentsOnly = false,
+  showLabUploadDropzone = false,
 }: {
   input: string;
   setInput: Dispatch<SetStateAction<string>>;
@@ -54,11 +55,12 @@ function PureMultimodalInput({
   className?: string;
   showSuggestions?: boolean;
   disableFileUpload?: boolean;
+  allowSendWithAttachmentsOnly?: boolean;
+  showLabUploadDropzone?: boolean;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const inputWrapperRef = useRef<HTMLDivElement>(null);
   const { width } = useWindowDimensions();
-  const { track } = useAnalytics();
   const { mutateAsync: uploadFilesAsync } = useUploadFiles({
     context: 'ai-chat',
   });
@@ -67,65 +69,61 @@ function PureMultimodalInput({
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
 
   const isAttachmentPresent = attachments.length > 0 || uploadQueue.length > 0;
+  const isTouchDevice =
+    typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0;
 
-  const adjustHeight = useCallback(() => {
-    if (textareaRef.current && inputWrapperRef.current) {
-      const textarea = textareaRef.current;
-      const inputWrapper = inputWrapperRef.current;
+  const adjustHeight = useEffectEvent(() => {
+    if (textareaRef.current == null || inputWrapperRef.current == null) return;
+    const textarea = textareaRef.current;
+    const inputWrapper = inputWrapperRef.current;
 
-      textarea.style.height = 'auto';
-      const scrollHeight = Math.min(textarea.scrollHeight, MAX_HEIGHT);
-      textarea.style.height = `${scrollHeight}px`;
-      const extra = isAttachmentPresent ? 128 : 24;
-      inputWrapper.style.height = `${scrollHeight + extra}px`;
+    textarea.style.height = 'auto';
+    const scrollHeight = Math.min(textarea.scrollHeight, MAX_HEIGHT);
+    textarea.style.height = `${scrollHeight}px`;
+    const extra = isAttachmentPresent ? 128 : 24;
+    inputWrapper.style.height = `${scrollHeight + extra}px`;
 
-      textarea.style.overflowY =
-        textarea.scrollHeight > MAX_HEIGHT ? 'auto' : 'hidden';
-    }
-  }, [isAttachmentPresent]);
+    textarea.style.overflowY =
+      textarea.scrollHeight > MAX_HEIGHT ? 'auto' : 'hidden';
+  });
 
-  const resetHeight = useCallback(() => {
-    if (textareaRef.current && inputWrapperRef.current) {
-      const textarea = textareaRef.current;
-      const inputWrapper = inputWrapperRef.current;
+  const resetHeight = () => {
+    if (textareaRef.current == null || inputWrapperRef.current == null) return;
+    const textarea = textareaRef.current;
+    const inputWrapper = inputWrapperRef.current;
 
-      textarea.style.height = 'auto';
-      textarea.style.overflowY = 'hidden';
-      // Keep reset height consistent with the desired base height
-      inputWrapper.style.height = '56px';
-    }
-  }, []);
+    textarea.style.height = 'auto';
+    textarea.style.overflowY = 'hidden';
+    inputWrapper.style.height = '56px';
+  };
 
-  // Adjust height on mount and whenever input changes
   useEffect(() => {
     requestAnimationFrame(() => adjustHeight());
-  }, [adjustHeight, input]);
+  }, [isAttachmentPresent, input]);
 
-  // Recalculate height when the wrapper resizes (e.g., when overlay becomes visible)
-  // This is important for the chat assistant
   useEffect(() => {
     const el = inputWrapperRef.current;
-    if (!el) return;
+    if (el == null) return;
     const ro = new ResizeObserver(() => {
       adjustHeight();
     });
     ro.observe(el);
     return () => ro.disconnect();
-  }, [adjustHeight]);
+  }, []);
 
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);
     adjustHeight();
   };
 
-  const submitForm = useCallback(() => {
-    // Track the AI message event
-    track('sent_message_ai', {
-      message_length: input.length,
-    });
+  const hasContent =
+    input.trim().length > 0 ||
+    (allowSendWithAttachmentsOnly && attachments.length > 0);
 
-    sendMessage({
-      text: input,
+  const submitForm = () => {
+    const trimmedText = input.trim();
+    void sendMessage({
+      ...(trimmedText ? { text: trimmedText } : {}),
       files: attachments,
     });
 
@@ -134,95 +132,94 @@ function PureMultimodalInput({
 
     scrollToBottom();
 
-    if (width && width > 768) {
+    if (width > 768) {
       textareaRef.current?.focus();
     }
-  }, [
-    sendMessage,
-    input,
-    attachments,
-    setAttachments,
-    resetHeight,
-    width,
-    track,
-  ]);
+  };
 
-  const uploadFiles = useCallback(
-    async (files: File[]) => {
-      try {
-        const { uploaded } = await uploadFilesAsync({
-          data: { files },
-        });
-
-        return uploaded.map((file) => ({
-          url: `/files/${file.id}`,
-          name: file.name,
-          contentType: file.contentType,
-        }));
-      } catch (error) {
-        toast.error('Failed to upload files, please try again!');
-        console.error('Error uploading files!', error);
-        return [];
-      }
-    },
-    [uploadFilesAsync],
-  );
-
-  const handleFileChange = useCallback(
-    async (event: ChangeEvent<HTMLInputElement>) => {
-      let files = Array.from(event.target.files || []);
-
-      files = files.filter((f) => {
-        const isDev = import.meta.env.DEV;
-        if (f.type.startsWith('image')) {
-          // we need this check because images are not supported locally
-          if (isDev) {
-            toast.error('Images are only supported in production');
-            return;
-          }
-        }
-
-        // only support pdfs for now (.CSV is not supported by o4)
-        const isSupported = f.type === 'application/pdf';
-        if (!isSupported) {
-          toast.error('Only PDF files are currently supported.');
-        }
-
-        return isSupported;
+  const uploadFiles = async (files: File[]) => {
+    try {
+      const { uploaded } = await uploadFilesAsync({
+        data: { files },
       });
 
-      setUploadQueue(files.map((file) => file.name));
+      return uploaded.map((file) => ({
+        url: `/files/${file.id}`,
+        name: file.name,
+        contentType: file.contentType,
+      }));
+    } catch (error) {
+      toast.error('Failed to upload files, please try again!');
+      console.error('Error uploading files!', error);
+      return [];
+    }
+  };
 
-      try {
-        const uploadedAttachments = await uploadFiles(files);
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    let files = Array.from(event.target.files || []);
 
-        setAttachments((currentAttachments) => {
-          const existingUrls = new Set(currentAttachments.map((a) => a.url));
-          const newAttachments = uploadedAttachments
-            .filter((a) => !existingUrls.has(a.url))
-            .map(
-              (attachment) =>
-                ({
-                  url: attachment.url,
-                  filename: attachment.name,
-                  type: 'file' as const,
-                  mediaType: attachment.contentType,
-                }) satisfies FileUIPart,
-            );
-          return [...currentAttachments, ...newAttachments];
-        });
-      } catch (error) {
-        console.error('Error uploading files!', error);
+    files = files.filter((f) => {
+      const isDev = import.meta.env.DEV;
+      if (f.type.startsWith('image')) {
+        if (isDev) {
+          toast.error('Images are only supported in production');
+          return;
+        }
       }
 
-      setUploadQueue([]);
-    },
-    [setAttachments, uploadFiles],
-  );
+      const isSupported = f.type === 'application/pdf';
+      if (!isSupported) {
+        toast.error('Only PDF files are currently supported.');
+      }
+
+      return isSupported;
+    });
+
+    const currentCount = attachments.length;
+    if (currentCount + files.length > MAX_FILE_COUNT) {
+      const allowed = MAX_FILE_COUNT - currentCount;
+      if (allowed <= 0) {
+        toast.error(
+          `You can upload a maximum of ${MAX_FILE_COUNT} files at once.`,
+        );
+        return;
+      }
+      toast.error(
+        `You can upload a maximum of ${MAX_FILE_COUNT} files at once. Only the first ${allowed} will be uploaded.`,
+      );
+      files = files.slice(0, allowed);
+    }
+
+    setUploadQueue(files.map((file) => file.name));
+
+    try {
+      const uploadedAttachments = await uploadFiles(files);
+
+      setAttachments((currentAttachments) => {
+        const existingUrls = new Set(currentAttachments.map((a) => a.url));
+        const newAttachments = uploadedAttachments
+          .filter((a) => !existingUrls.has(a.url))
+          .map(
+            (attachment) =>
+              ({
+                url: attachment.url,
+                filename: attachment.name,
+                type: 'file' as const,
+                mediaType: attachment.contentType,
+              }) satisfies FileUIPart,
+          );
+        return [...currentAttachments, ...newAttachments];
+      });
+    } catch (error) {
+      console.error('Error uploading files!', error);
+    }
+
+    setUploadQueue([]);
+  };
 
   const { getRootProps, isDragActive } = useDropzone({
-    // We only want to handle files that can actually be stored for now
     accept: acceptedFileContentTypes,
+    maxFiles: MAX_FILE_COUNT,
     maxSize: MAX_FILE_SIZE_BYTES,
     onDrop: (acceptedFiles) => {
       const fileList = {
@@ -238,6 +235,16 @@ function PureMultimodalInput({
       } as ChangeEvent<HTMLInputElement>);
     },
     onDropRejected: (rejectedFiles) => {
+      const hasTooManyFilesError = rejectedFiles.some(({ errors }) =>
+        errors.some((error) => error.code === 'too-many-files'),
+      );
+      if (hasTooManyFilesError) {
+        toast.error(
+          `You can upload a maximum of ${MAX_FILE_COUNT} files at once.`,
+        );
+        return;
+      }
+
       rejectedFiles.forEach(({ file, errors }) => {
         const sizeError = errors.find((e) => e.code === 'file-too-large');
         if (sizeError) {
@@ -255,19 +262,16 @@ function PureMultimodalInput({
     disabled: disableFileUpload,
   });
 
-  const handleRemoveAttachment = useCallback(
-    (url: string) => {
-      setAttachments((currentAttachments) => {
-        const nextAttachments: FileUIPart[] = [];
-        for (const attachment of currentAttachments) {
-          if (attachment.url === url) continue;
-          nextAttachments.push(attachment);
-        }
-        return nextAttachments;
-      });
-    },
-    [setAttachments],
-  );
+  const handleRemoveAttachment = (url: string) => {
+    setAttachments((currentAttachments) => {
+      const nextAttachments: FileUIPart[] = [];
+      for (const attachment of currentAttachments) {
+        if (attachment.url === url) continue;
+        nextAttachments.push(attachment);
+      }
+      return nextAttachments;
+    });
+  };
 
   return (
     <MultimodalInputView
@@ -286,7 +290,10 @@ function PureMultimodalInput({
       status={status}
       className={className}
       disableFileUpload={disableFileUpload}
+      hasContent={hasContent}
       submitForm={submitForm}
+      showLabUploadDropzone={showLabUploadDropzone}
+      isTouchDevice={isTouchDevice}
     />
   );
 }
@@ -309,7 +316,10 @@ interface MultimodalInputViewProps {
   status: UseChatHelpers<UIMessage>['status'];
   className: string | undefined;
   disableFileUpload: boolean;
+  hasContent: boolean;
   submitForm: () => void;
+  showLabUploadDropzone: boolean;
+  isTouchDevice: boolean;
 }
 
 function MultimodalInputView({
@@ -328,7 +338,10 @@ function MultimodalInputView({
   status,
   className,
   disableFileUpload,
+  hasContent,
   submitForm,
+  showLabUploadDropzone,
+  isTouchDevice,
 }: MultimodalInputViewProps) {
   const previews: React.ReactElement[] = [];
   for (const attachment of attachments) {
@@ -360,17 +373,28 @@ function MultimodalInputView({
 
   return (
     <div
-      className="relative flex w-full flex-col gap-8 outline-none"
+      className={cn(
+        'relative flex w-full flex-col outline-none',
+        showLabUploadDropzone ? 'gap-3' : 'gap-8',
+      )}
       {...getRootProps()}
     >
       <input
         type="file"
+        accept=".pdf,application/pdf"
         className="pointer-events-none fixed -left-4 -top-4 size-0.5 opacity-0"
         ref={fileInputRef}
         multiple
         onChange={handleFileChange}
         tabIndex={-1}
       />
+
+      {showLabUploadDropzone && (
+        <LabUploadDropzone
+          isDragActive={isDragActive}
+          onClick={() => fileInputRef.current?.click()}
+        />
+      )}
 
       <div className="flex w-full flex-1 flex-col gap-2 lg:flex-col lg:gap-4">
         <div
@@ -383,7 +407,7 @@ function MultimodalInputView({
             className,
           )}
         >
-          {isDragActive && (
+          {isDragActive && !showLabUploadDropzone && (
             <svg
               className="absolute inset-0 size-full text-vermillion-900 animate-in fade-in"
               fill="none"
@@ -434,18 +458,18 @@ function MultimodalInputView({
                 paddingRight: 96,
               }}
               rows={1}
-              disabled={status !== 'ready' && status !== 'error'}
+              disabled={false}
               className="size-full min-h-0 flex-1 scroll-p-4 overflow-hidden rounded-none border-none bg-transparent p-1 outline-none transition-all scrollbar scrollbar-track-transparent scrollbar-thumb-zinc-300 hover:scrollbar-thumb-zinc-400 focus-visible:bg-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               onKeyDown={(event) => {
                 if (
                   event.key === 'Enter' &&
                   !event.shiftKey &&
-                  !event.nativeEvent.isComposing
+                  !event.nativeEvent.isComposing &&
+                  !isTouchDevice
                 ) {
                   event.preventDefault();
 
-                  // same as send button disabled logic: block when input is empty/whitespace
-                  if (input.trim().length === 0 || uploadQueue.length > 0) {
+                  if (!hasContent || uploadQueue.length > 0) {
                     return;
                   }
 
@@ -460,65 +484,22 @@ function MultimodalInputView({
               <AttachmentsButton fileInputRef={fileInputRef} status={status} />
             )}
 
-            <SendButton
-              input={input}
-              submitForm={submitForm}
-              uploadQueue={uploadQueue}
-              status={status}
-            />
+            <Button
+              type="button"
+              className={cn(
+                'h-fit rounded-full border-transparent p-1.5 transition-all disabled:cursor-not-allowed disabled:bg-zinc-500 disabled:opacity-100',
+              )}
+              onClick={(event) => {
+                event.preventDefault();
+                submitForm();
+              }}
+              disabled={!hasContent || uploadQueue.length > 0}
+            >
+              <ArrowUpIcon size={14} />
+            </Button>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-export const MultimodalInput = memo(
-  PureMultimodalInput,
-  (prevProps, nextProps) => {
-    if (prevProps.input !== nextProps.input) return false;
-    if (prevProps.status !== nextProps.status) return false;
-    if (!equal(prevProps.attachments, nextProps.attachments)) return false;
-    if (prevProps.disableFileUpload !== nextProps.disableFileUpload)
-      return false;
-
-    return true;
-  },
-);
-
-function PureSendButton({
-  submitForm,
-  input,
-  uploadQueue,
-  status,
-}: {
-  submitForm: () => void;
-  input: string;
-  uploadQueue: Array<string>;
-  status: UseChatHelpers<UIMessage>['status'];
-}) {
-  const canSend = status === 'ready' || status === 'error';
-
-  return (
-    <Button
-      className={cn(
-        'h-fit rounded-full border-transparent p-1.5 transition-all disabled:cursor-not-allowed disabled:bg-zinc-500 disabled:opacity-100',
-      )}
-      onClick={(event) => {
-        event.preventDefault();
-        submitForm();
-      }}
-      disabled={!canSend || input.trim().length === 0 || uploadQueue.length > 0}
-    >
-      <ArrowUpIcon size={14} />
-    </Button>
-  );
-}
-
-const SendButton = memo(PureSendButton, (prevProps, nextProps) => {
-  if (prevProps.uploadQueue.length !== nextProps.uploadQueue.length)
-    return false;
-  if (prevProps.input !== nextProps.input) return false;
-  if (prevProps.status !== nextProps.status) return false;
-  return true;
-});

@@ -1,6 +1,8 @@
+import { Check, Copy } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import { Link } from '@/components/ui/link';
+import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 
 import type { CitationInfo } from '../../types/message-parts';
 import { getCitationTooltip } from '../../utils/citation-tooltip';
@@ -83,6 +85,18 @@ function MarkdownLink({ children, href, citationContext }: MarkdownLinkProps) {
     );
   }
 
+  // Copy protocol - render as a copy-to-clipboard button
+  if (href.startsWith('copy://')) {
+    let text: string;
+    try {
+      text = decodeURIComponent(href.slice(7));
+    } catch (e) {
+      console.error('Unable to decode URI for copy protocol:', e);
+      text = href.slice(7);
+    }
+    return <CopyButton text={text}>{children}</CopyButton>;
+  }
+
   // Unknown protocol (fhir://, product://, etc.) - render as plain text
   if (!href.startsWith('/')) {
     return <>{children}</>;
@@ -93,6 +107,36 @@ function MarkdownLink({ children, href, citationContext }: MarkdownLinkProps) {
     <Link className="text-blue-500 hover:underline" to={href}>
       {children}
     </Link>
+  );
+}
+
+// ============================================================================
+// Copy Button Component
+// ============================================================================
+
+interface CopyButtonProps {
+  text: string;
+  children?: ReactNode;
+}
+
+function CopyButton({ text, children }: CopyButtonProps) {
+  const { copied, copyToClipboard } = useCopyToClipboard(text, {
+    resetDelay: 1500,
+  });
+
+  return (
+    <span className="relative my-2 block rounded-xl border border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800">
+      <span className="block max-h-36 overflow-y-auto p-4 pb-10 text-sm text-zinc-600 dark:text-zinc-400">
+        <span className="whitespace-pre-wrap">{text}</span>
+      </span>
+      <button
+        onClick={copyToClipboard}
+        className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2.5 py-1 text-xs font-medium text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-600"
+      >
+        {copied ? <Check size={12} /> : <Copy size={12} />}
+        {copied ? 'Copied!' : children}
+      </button>
+    </span>
   );
 }
 

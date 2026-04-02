@@ -21,7 +21,7 @@ export const Greeting = () => {
         className="flex items-center gap-2 text-xl md:text-2xl"
       >
         <AnimatedIcon state="idle" />
-        Hi {user?.firstName ?? 'from Superpower'}, how can we help you?
+        Hi {user?.firstName ?? 'there'}, how can we help you?
       </m.div>
     </div>
   );
@@ -47,7 +47,7 @@ export const DuneGradient = ({ className }: { className?: string }) => {
         className,
       )}
     >
-      <div className="dune-fade-mask absolute inset-0 bg-[url('/concierge/dune.png')] bg-contain bg-center bg-no-repeat" />
+      <div className="dune-fade-mask absolute inset-0 bg-[url('/concierge/dune.webp')] bg-contain bg-center bg-no-repeat" />
       <m.div
         initial={{ x: '-100%' }}
         animate={{ x: '200%' }}

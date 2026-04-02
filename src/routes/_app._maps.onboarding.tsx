@@ -1,10 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useEffect, useRef } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import { preload } from 'react-dom';
 
 import { Spinner } from '@/components/ui/spinner';
 import { OnboardingFlow } from '@/features/onboarding/components/flow/onboarding-flow';
 import { useTask } from '@/features/tasks/api/get-task';
+import { LazyStripeProvider } from '@/lib/lazy-stripe-provider';
 
 export const Route = createFileRoute('/_app/_maps/onboarding')({
   loader: () => {
@@ -55,5 +56,17 @@ function OnboardingComponent() {
     return null;
   }
 
-  return <OnboardingFlow />;
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-dvh w-full items-center justify-center">
+          <Spinner variant="primary" size="lg" />
+        </div>
+      }
+    >
+      <LazyStripeProvider>
+        <OnboardingFlow />
+      </LazyStripeProvider>
+    </Suspense>
+  );
 }

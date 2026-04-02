@@ -35,12 +35,12 @@ export const SERVICE_DETAILS: Record<string, ServiceDetails> = {
       {
         question: 'Why is this test important?',
         answer:
-          "Proactive laboratory testing can provide targeted insight into you body's current health status, identifying areas of optimal and suboptimal physiologic function. Establish a baseline or track how your body is responding to your Superpower action plan.",
+          "Proactive laboratory testing can provide targeted insight into your body's current health status, identifying areas of optimal and suboptimal physiologic function. Establish a baseline or track how your body is responding to your Superpower action plan.",
       },
       {
         question: 'Test Process',
         answer:
-          '1. Order and schedule your blood panel.\n2. Fast and prepare for your appointment.\n3. Perform the phlebotomy visit and have your blood draw done.\n4. Receive your results within 10 days.\n5. The Superpower clinical team will review your results and create an action plan.',
+          '1. Order and schedule your blood panel.\n2. Fast and prepare for your appointment.\n3. Complete the phlebotomy visit and have your blood draw done.\n4. Receive your results and personalized protocol within 10 days.\n5. Text your Superpower care team or your Superpower AI with questions!',
       },
       {
         question: 'Pre-test considerations',
@@ -59,17 +59,17 @@ export const SERVICE_DETAILS: Record<string, ServiceDetails> = {
       {
         question: 'Why is this test important?',
         answer:
-          "Proactive laboratory testing can provide targeted insight into you body's current health status, identifying areas of optimal and suboptimal physiologic function. The advanced panel dives into further areas of health that are not covered in our baseline panel, including in-depth hormone testing, genetic heart risk and nutrient status. Furthermore, this test can serve to track how your body is responding to your Superpower action plan.",
+          "Proactive laboratory testing can provide targeted insight into your body's current health status, identifying areas of optimal and suboptimal physiologic function. The advanced panel dives into further areas of health that are not covered in our baseline panel, including in-depth hormone testing, genetic heart risk and nutrient status. Furthermore, this test can serve to track how your body is responding to your Superpower action plan.",
       },
       {
         question: 'Test Process',
         answer:
-          '1. Order and schedule your advanced blood panel.\n2. Fast and prepare for your at-home appointment.\n3. Receive your phlebotomist and have your blood draw done.\n4. Receive your results within 10 days.\n5. Schedule a consultation with your clinical team to review your results and create an action plan.',
+          '1. Order and schedule your advanced blood panel.\n2. Fast and prepare for your appointment.\n3. Collect your urine sample and have your blood draw done.\n4. Receive your results and personalized protocol within 10 days.\n5. Text your Superpower care team or your Superpower AI with questions!',
       },
       {
         question: 'Pre-test considerations',
         answer:
-          '- Hydrate for 24 hours prior to sample collection and after your blood draw is completed.\n- No eating 10 hours prior to the appointment. The sample should be collected in a fasted state.\n- No caffeine 10 hours prior to your appointment -- just water.\n- Stop taking supplements containing biotin such as multivitamins, B-complex, or hair skin and nail vitamins. Continue taking prescribed medications.',
+          '- Stay hydrated with water the day prior, but do not overhydrate. Drinking one glass of water 30-60 minutes before your appointment is sufficient.\n- No eating 10 hours prior to the appointment. The samples should be collected in a fasted state.\n- No caffeine 10 hours prior to your appointment -- just water.\n- Stop taking supplements containing Biotin (such as multivitamins, B-complex, or hair skin and nail vitamins) and a high dose of Vitamin C. Continue taking prescribed medications.\n- Do not complete testing while ill. We recommend rescheduling for accurate results.\n- Text the Superpower SMS Concierge if you have any questions or concerns ahead of testing.',
       },
     ],
   },

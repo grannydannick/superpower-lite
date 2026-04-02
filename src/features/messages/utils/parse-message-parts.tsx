@@ -1,5 +1,6 @@
 import { getToolName, isToolUIPart, type UIMessage } from 'ai';
 
+import { FileIngestionBlock } from '../components/ai/blocks/file-ingestion-block';
 import { MetadataBlock } from '../components/ai/blocks/metadata-block';
 import { ReasoningBlock } from '../components/ai/blocks/reasoning-block';
 import type {
@@ -8,6 +9,7 @@ import type {
   ParsedMessageResult,
 } from '../types/message-parts';
 
+import { isFileIngestionDataPart } from './data-parts';
 import { extractTiming, getCombinedTimingMs } from './extract-timing';
 import { safeJsonStringify } from './json';
 import {
@@ -143,6 +145,7 @@ export function parseMessageParts(
       ? 'streaming'
       : undefined;
   let reasoningBlockAdded = false;
+  let fileIngestionBlockAdded = false;
 
   const pushParagraph = (
     paragraphText: string,
@@ -337,21 +340,36 @@ export function parseMessageParts(
     if (isDataPart(part)) {
       flushByBlankLines();
       flushRemainingText();
-      blocks.push({
-        kind: 'node',
-        key: `${message.id}:data:${partIndex}`,
-        node: (
-          <MetadataBlock
-            messageId={message.id}
-            partIndex={partIndex}
-            variant={{
-              type: 'data',
-              dataType: part.type,
-              dataText: safeJsonStringify(part.data),
-            }}
-          />
-        ),
-      });
+      if (isFileIngestionDataPart(part)) {
+        // Collect all ingestion parts and render a single aggregated block
+        if (!fileIngestionBlockAdded) {
+          fileIngestionBlockAdded = true;
+          const allIngestionParts = message.parts.filter(
+            isFileIngestionDataPart,
+          );
+          blocks.push({
+            kind: 'node',
+            key: `${message.id}:file-ingestion`,
+            node: <FileIngestionBlock parts={allIngestionParts} />,
+          });
+        }
+      } else {
+        blocks.push({
+          kind: 'node',
+          key: `${message.id}:data:${partIndex}`,
+          node: (
+            <MetadataBlock
+              messageId={message.id}
+              partIndex={partIndex}
+              variant={{
+                type: 'data',
+                dataType: part.type,
+                dataText: safeJsonStringify(part.data),
+              }}
+            />
+          ),
+        });
+      }
       continue;
     }
   }

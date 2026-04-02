@@ -80,7 +80,7 @@ interface StepConfig {
 const STEP_CONFIGS: StepConfig[] = [
   {
     id: STEP_IDS.HEARD_ABOUT_US,
-    shouldShow: (ctx) => !ctx.userInfoCompleted,
+    shouldShow: (ctx) => !ctx.userInfoCompleted && !ctx.hasClaimedBenefits,
   },
   {
     id: STEP_IDS.UPDATE_INFO,

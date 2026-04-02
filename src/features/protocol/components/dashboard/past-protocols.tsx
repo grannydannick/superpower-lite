@@ -47,8 +47,8 @@ export const PastProtocols = ({ protocols }: PastProtocolsProps) => {
                 className="group block"
               >
                 <ProtocolBook
-                  className="w-full rotate-0 rounded-xl shadow-2xl lg:w-24"
-                  titleClassName="!text-xs lg:!text-base"
+                  className="w-full rotate-0 rounded-xl shadow-2xl lg:w-20"
+                  titleClassName="!text-[10px] lg:!text-xs"
                   title="Protocol"
                   coverImage={'/protocol/protocol-book-cover.webp'}
                 />

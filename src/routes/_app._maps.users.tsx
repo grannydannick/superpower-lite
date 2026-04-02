@@ -13,7 +13,12 @@ export const Route = createFileRoute('/_app/_maps/users')({
     if (user === null) {
       throw notFound();
     }
-    if (!user.role.includes(ROLES.SUPER_ADMIN)) {
+    // authRole is the new ts-auth field. Fall back to the legacy role array
+    // during the migration period while not all sessions have authRole set.
+    const isAdmin =
+      user.authRole === 'admin' ||
+      (!user.authRole && user.role.includes(ROLES.SUPER_ADMIN));
+    if (!isAdmin) {
       throw redirect({ to: '/', replace: true });
     }
   },

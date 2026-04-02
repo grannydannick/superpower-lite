@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { Body1 } from '@/components/ui/typography';
+import { usePaymentMethodSelection } from '@/features/settings/hooks';
 import { cn } from '@/lib/utils';
 
 import { RX_CONSENT_PAYMENT_LINKID } from './const/special-linkids';
@@ -171,49 +172,13 @@ export const QuestionnaireFormItem = ({
     consentPaymentSingleConfirmLabel.length > 0;
 
   if (isConsentPaymentSingleConfirm) {
-    const confirmLabel = consentPaymentSingleConfirmLabel;
     return (
-      <QuestionnaireErrorWrapper isError={isErrored}>
-        <Button
-          type="button"
-          className="w-full"
-          onClick={(e) => {
-            // 1) set the answer
-            onChangeAnswer({ valueString: confirmLabel });
-
-            const autoSubmit = onAutoSubmit;
-            if (autoSubmit != null) {
-              setTimeout(() => {
-                autoSubmit();
-              }, 0);
-              return;
-            }
-
-            // Fallback: submit the nearest form (if any) on next microtask.
-            const closestForm = e.currentTarget.closest('form');
-            const queryForm = document.querySelector('form');
-            const formEl =
-              closestForm instanceof HTMLFormElement
-                ? closestForm
-                : queryForm instanceof HTMLFormElement
-                  ? queryForm
-                  : null;
-
-            setTimeout(() => {
-              if (formEl == null) return;
-              if (typeof formEl.requestSubmit === 'function') {
-                formEl.requestSubmit();
-                return;
-              }
-              formEl.dispatchEvent(
-                new Event('submit', { bubbles: true, cancelable: true }),
-              );
-            }, 0);
-          }}
-        >
-          {confirmLabel}
-        </Button>
-      </QuestionnaireErrorWrapper>
+      <ConsentPaymentConfirmButton
+        label={consentPaymentSingleConfirmLabel}
+        isErrored={isErrored}
+        onChangeAnswer={onChangeAnswer}
+        onAutoSubmit={onAutoSubmit}
+      />
     );
   }
 
@@ -723,4 +688,65 @@ function renderQuestionnaireFormItemByType({
     default:
       return null;
   }
+}
+
+function ConsentPaymentConfirmButton({
+  label,
+  isErrored,
+  onChangeAnswer,
+  onAutoSubmit,
+}: {
+  label: string;
+  isErrored: boolean;
+  onChangeAnswer: (answer: QuestionnaireResponseItemAnswer) => void;
+  onAutoSubmit?: () => void;
+}) {
+  const { activePaymentMethod, isSelectingPaymentMethod } =
+    usePaymentMethodSelection();
+
+  const disabled =
+    isSelectingPaymentMethod ||
+    activePaymentMethod?.externalPaymentMethodId == null;
+
+  return (
+    <QuestionnaireErrorWrapper isError={isErrored}>
+      <Button
+        type="button"
+        className="w-full"
+        disabled={disabled}
+        onClick={(e) => {
+          onChangeAnswer({ valueString: label });
+
+          if (onAutoSubmit != null) {
+            setTimeout(() => {
+              onAutoSubmit();
+            }, 0);
+            return;
+          }
+
+          const closestForm = e.currentTarget.closest('form');
+          const queryForm = document.querySelector('form');
+          const formEl =
+            closestForm instanceof HTMLFormElement
+              ? closestForm
+              : queryForm instanceof HTMLFormElement
+                ? queryForm
+                : null;
+
+          setTimeout(() => {
+            if (formEl == null) return;
+            if (typeof formEl.requestSubmit === 'function') {
+              formEl.requestSubmit();
+              return;
+            }
+            formEl.dispatchEvent(
+              new Event('submit', { bubbles: true, cancelable: true }),
+            );
+          }, 0);
+        }}
+      >
+        {label}
+      </Button>
+    </QuestionnaireErrorWrapper>
+  );
 }

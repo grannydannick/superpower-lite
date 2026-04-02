@@ -95,7 +95,7 @@ export function ChatSearchCommand({
 
   const handleSelect = (chatId: string) => {
     onOpenChange(false);
-    navigate({ to: '/concierge/$id', params: { id: chatId } });
+    void navigate({ to: '/concierge/$id', params: { id: chatId } });
   };
 
   const groupedChats = groupChatsByDate(history ?? []);
@@ -124,7 +124,8 @@ export function ChatSearchCommand({
                 {group.chats.map((chat) => (
                   <CommandItem
                     key={chat.id}
-                    value={chat.title}
+                    value={chat.id}
+                    keywords={[chat.title]}
                     onSelect={() => handleSelect(chat.id)}
                     className="flex cursor-pointer items-center justify-between gap-4"
                   >

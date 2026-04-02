@@ -8,6 +8,7 @@ import { toast } from '@/components/ui/sonner';
 import { Body1 } from '@/components/ui/typography';
 import {
   acceptedFileContentTypes,
+  MAX_FILE_COUNT,
   MAX_FILE_SIZE_BYTES,
   MAX_FILE_SIZE_MB,
 } from '@/const/accepted-file-types';
@@ -75,19 +76,51 @@ export const FileUpload = ({
   multiple = false,
   onChange,
   children,
+  disabled = false,
 }: {
   multiple?: boolean;
   onChange: (files: File[]) => void;
   children?: ReactNode;
+  disabled?: boolean;
 }) => {
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const maxFiles = multiple ? MAX_FILE_COUNT : 1;
 
-  const handleFileChange = (newFiles: File[]) => {
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    if (onChange) {
-      onChange(newFiles);
+  const handleFileChange = (incomingFiles: File[]) => {
+    if (disabled) return;
+
+    let newFiles = incomingFiles;
+    if (newFiles.length > maxFiles) {
+      toast.error(
+        `You can upload a maximum of ${maxFiles} file${maxFiles > 1 ? 's' : ''} at once.`,
+      );
+      newFiles = newFiles.slice(0, maxFiles);
     }
+
+    const validFiles: File[] = [];
+    for (const file of newFiles) {
+      const lowerFileName = file.name.toLowerCase();
+      const isPdf =
+        file.type === 'application/pdf' || lowerFileName.endsWith('.pdf');
+      if (!isPdf) {
+        toast.error('Only PDF files are currently supported.');
+        continue;
+      }
+
+      const validationError = fileValidator(file, [...files, ...validFiles]);
+      if (validationError) {
+        toast.error(validationError.message);
+        continue;
+      }
+
+      validFiles.push(file);
+    }
+
+    if (validFiles.length === 0) return;
+
+    setFiles((prevFiles) => [...prevFiles, ...validFiles]);
+    onChange(validFiles);
 
     setTimeout(() => {
       setFiles([]);
@@ -95,22 +128,45 @@ export const FileUpload = ({
   };
 
   const handleClick = () => {
+    if (disabled) return;
     fileInputRef.current?.click();
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     multiple,
     accept: acceptedFileContentTypes,
+    maxFiles,
+    disabled,
     onDrop: handleFileChange,
-    onDropRejected: (error) => {
-      error.map((e) => e.errors.map((err) => toast.error(err.message)));
+    onDropRejected: (rejectedFiles) => {
+      const hasTooManyFilesError = rejectedFiles.some(({ errors }) =>
+        errors.some((error) => error.code === 'too-many-files'),
+      );
+      if (hasTooManyFilesError) {
+        toast.error(
+          `You can upload a maximum of ${maxFiles} file${maxFiles === 1 ? '' : 's'} at once.`,
+        );
+        return;
+      }
+
+      rejectedFiles.forEach(({ errors }) => {
+        errors.forEach((error) => {
+          toast.error(error.message);
+        });
+      });
     },
     validator: (file) => fileValidator(file, files),
   });
 
   if (children) {
     return (
-      <div className="relative w-full" {...getRootProps()}>
+      <div
+        className={cn(
+          'relative w-full',
+          disabled ? 'cursor-not-allowed opacity-60' : undefined,
+        )}
+        {...getRootProps()}
+      >
         {isDragActive && (
           <svg
             className="absolute inset-0 size-full text-vermillion-900 animate-in fade-in"
@@ -155,12 +211,17 @@ export const FileUpload = ({
       <m.div
         onClick={handleClick}
         whileHover="animate"
-        className="group/file relative block w-full cursor-pointer overflow-hidden rounded-lg p-10"
+        className={cn(
+          'group/file relative block w-full overflow-hidden rounded-lg p-10',
+          disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
+        )}
       >
         <input
           ref={fileInputRef}
           id="file-upload-handle"
           type="file"
+          accept=".pdf,application/pdf"
+          multiple={multiple}
           onChange={(e) => handleFileChange(Array.from(e.target.files || []))}
           className="hidden"
         />

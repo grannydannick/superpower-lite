@@ -4,6 +4,7 @@ import React from 'react';
 import { env } from '@/config/env';
 
 import { useUser } from './auth';
+import { Sentry } from './sentry';
 
 const shouldEnablePosthog =
   typeof env.POSTHOG_KEY === 'string' &&
@@ -109,6 +110,19 @@ export function PHProvider({ children }: { children: React.ReactNode }) {
             phone: userPhone,
           });
           identified.current = userId;
+
+          const distinctId = client.get_distinct_id();
+          const sessionId = client.get_session_id();
+          if (distinctId) Sentry.setTag('posthog_distinct_id', distinctId);
+          if (sessionId) Sentry.setTag('posthog_session_id', sessionId);
+          Sentry.setContext('posthog', {
+            distinct_id: distinctId,
+            session_id: sessionId,
+            session_replay_url: sessionId
+              ? `https://us.posthog.com/replay/${sessionId}`
+              : undefined,
+          });
+          Sentry.setUser({ id: userId, email: userEmail });
         } catch (error: unknown) {
           console.error('PostHog identify failed', error);
         }

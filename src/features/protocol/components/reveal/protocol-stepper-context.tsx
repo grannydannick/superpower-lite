@@ -7,6 +7,7 @@ import {
   useRef,
 } from 'react';
 
+import { extractObservationId } from '@/features/messages/utils/parse-fhir-citation';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { Biomarker, Category } from '@/types/api';
 
@@ -205,9 +206,9 @@ export const ProtocolStepperProvider = ({
       const seenBiomarkerIds = new Set<string>();
 
       for (const reference of goal.biomarkers) {
-        // Extract observation ID from FHIR reference (e.g., "Observation/uuid" -> "uuid")
-        const observationId = reference.replace(/^Observation\//, '');
-        const biomarker = observationBiomarkerIndex.get(observationId);
+        const biomarker = observationBiomarkerIndex.get(
+          extractObservationId(reference),
+        );
 
         // Deduplicate - multiple observations may belong to the same biomarker
         if (biomarker && !seenBiomarkerIds.has(biomarker.id)) {

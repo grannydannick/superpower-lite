@@ -7,6 +7,7 @@ import {
   ArrowRight,
   DollarSign,
   Calendar,
+  Hash,
 } from 'lucide-react';
 import React from 'react';
 
@@ -29,6 +30,7 @@ interface AppointmentDetailsProps {
   timezone?: string;
   location?: PhlebotomyLocation | null;
   collectionMethod?: CollectionMethodType;
+  confirmationCode?: string;
   isAdvisory?: boolean;
   isTestKit?: boolean;
   orderIds?: string[];
@@ -79,6 +81,7 @@ export function AppointmentDetails({
   timezone,
   location,
   collectionMethod,
+  confirmationCode,
   orderIds,
   isAdvisory,
   isTestKit,
@@ -178,6 +181,17 @@ export function AppointmentDetails({
             <div className="space-y-2">
               <Body1>Price</Body1>
               <Body1 className="text-secondary">{formatMoney(price)}</Body1>
+            </div>
+          </div>
+        ) : null}
+        {confirmationCode ? (
+          <div className="flex gap-2">
+            <div className="flex size-6 items-center justify-center rounded-full bg-vermillion-100">
+              <Hash className="size-4 text-vermillion-900" />
+            </div>
+            <div className="space-y-2">
+              <Body1>Confirmation code</Body1>
+              <Body1 className="text-secondary">{confirmationCode}</Body1>
             </div>
           </div>
         ) : null}

@@ -1,7 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 import * as z from 'zod';
 
-import { api } from '@/lib/api-client';
+import { toast } from '@/components/ui/sonner';
+import { getUser } from '@/lib/auth';
+import { authClient } from '@/lib/auth-client';
 import { MutationConfig } from '@/lib/react-query';
 import { VerifyEmailOTPResponse } from '@/types/api';
 
@@ -17,11 +19,18 @@ export const verifyEmailOTP = async ({
 }: {
   data: VerifyEmailOTPInput;
 }): Promise<VerifyEmailOTPResponse> => {
-  // We intentionally do not set x-hide-toast here; OTP errors are surfaced
-  // with targeted copy (invalid vs expired) and should show a toast upstream.
-  return api.post(`/auth/verify-otp`, data, {
-    headers: { 'Content-Type': 'application/json' },
-  }) as Promise<VerifyEmailOTPResponse>;
+  const { error } = await authClient.signIn.emailOtp({
+    email: data.email,
+    otp: data.code,
+  });
+
+  if (error) {
+    toast.error(error.message);
+    throw new Error(error.message);
+  }
+
+  const user = await getUser();
+  return { success: true, user };
 };
 
 type UseVerifyEmailOTPOptions = {

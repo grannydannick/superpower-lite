@@ -19,8 +19,6 @@ import { pluralizeIs } from '../../utils/pluralize';
 
 import { BiomarkerAiSuggestions } from './biomarker-ai-suggestions';
 import { BiomarkerFamilyRiskSuggestions } from './biomarker-family-risk-suggestions';
-import { BiomarkerRxSuggestion } from './biomarker-rx-suggestions';
-import { BiomarkerServiceSuggestions } from './biomarker-service-suggestions';
 
 export function BiomarkerContentTabs({ biomarker }: { biomarker: Biomarker }) {
   let tabs = [
@@ -28,18 +26,7 @@ export function BiomarkerContentTabs({ biomarker }: { biomarker: Biomarker }) {
       component: <ExplanationTab biomarker={biomarker} />,
       value: 'explanation',
     },
-    {
-      component: <RecommendationsTab biomarker={biomarker} />,
-      value: 'recommendations',
-    },
   ];
-
-  if (
-    !biomarker.recommendedTests ||
-    biomarker.recommendedTests.rx.length === 0
-  ) {
-    tabs = tabs.filter((t) => t.value !== 'recommendations');
-  }
 
   return (
     <Tabs defaultValue="explanation">
@@ -64,22 +51,6 @@ export function BiomarkerContentTabs({ biomarker }: { biomarker: Biomarker }) {
     </Tabs>
   );
 }
-
-// this tab is mainly used to display rx recommendations for now
-const RecommendationsTab = ({ biomarker }: { biomarker: Biomarker }) => {
-  return (
-    <div className="flex flex-col gap-6">
-      {biomarker.recommendedTests.rx.length > 0 ? (
-        <div className="flex flex-col gap-2">
-          <H3>Possible medications to consider</H3>
-          <BiomarkerRxSuggestion
-            recommendedTests={biomarker.recommendedTests}
-          />
-        </div>
-      ) : null}
-    </div>
-  );
-};
 
 const ExplanationTab = ({ biomarker }: { biomarker: Biomarker }) => {
   const [isSourcesOpen, setIsSourcesOpen] = useState(false);
@@ -123,12 +94,6 @@ const ExplanationTab = ({ biomarker }: { biomarker: Biomarker }) => {
       <BiomarkerFamilyRiskSuggestions biomarker={biomarker} />
       {biomarker.status !== 'RECOMMENDED' ? (
         <BiomarkerAiSuggestions name={name} />
-      ) : null}
-      {/* TODO: this should technically go into recommendations tab but for now its here (request from danny/manoj) */}
-      {biomarker.status === 'RECOMMENDED' ? (
-        <BiomarkerServiceSuggestions
-          recommendedTests={biomarker.recommendedTests}
-        />
       ) : null}
       {metadata.map((item) => (
         <div key={item.title} className="flex flex-col gap-2">

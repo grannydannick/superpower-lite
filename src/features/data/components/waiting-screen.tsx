@@ -26,7 +26,8 @@ export const WaitingScreen = () => {
         </Body2>
         <div className="flex flex-col gap-4 md:flex-row md:flex-wrap">
           <QuickLink
-            to="/data/records"
+            to="/concierge"
+            search={{ preset: 'upload-labs' }}
             title="Upload existing health records"
             className="flex-1 overflow-hidden pb-0 md:w-1/2"
           >

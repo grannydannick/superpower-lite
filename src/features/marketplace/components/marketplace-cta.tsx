@@ -9,6 +9,7 @@ import { Body1 } from '@/components/ui/typography/body1/body1';
 import { SUPPLEMENTS_MARKETPLACE_URL } from '@/const/marketplaces';
 import { useCredits } from '@/features/orders/api/credits';
 import { useGetMultipassUrl } from '@/features/supplements/api';
+import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 
 export const MarketplaceCta = () => {
@@ -17,6 +18,10 @@ export const MarketplaceCta = () => {
     select: (s) => s.tab,
   });
   const isOrdersTab = tab === 'orders';
+
+  const userQuery = useUser();
+  const hasRxAccess =
+    userQuery.isFetched && userQuery.data?.access?.rx !== false;
 
   const creditsQuery = useCredits();
 
@@ -66,15 +71,17 @@ export const MarketplaceCta = () => {
           Manage Supplements
         </Body1>
       </Button>
-      <Button asChild variant="ghost" className="p-0">
-        <Link
-          to="/rx-subscriptions"
-          className="group relative inline-flex items-center gap-2 text-primary"
-        >
-          <Prescriptions aria-hidden className="size-4" />
-          <Body1 as="span">Manage Prescriptions</Body1>
-        </Link>
-      </Button>
+      {hasRxAccess && (
+        <Button asChild variant="ghost" className="p-0">
+          <Link
+            to="/rx-subscriptions"
+            className="group relative inline-flex items-center gap-2 text-primary"
+          >
+            <Prescriptions aria-hidden className="size-4" />
+            <Body1 as="span">Manage Prescriptions</Body1>
+          </Link>
+        </Button>
+      )}
       <Button asChild variant="ghost" className="p-0">
         <Link
           to="/orders"

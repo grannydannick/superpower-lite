@@ -18,7 +18,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Body1 } from '@/components/ui/typography';
-import { H2 } from '@/components/ui/typography/h2/h2';
+import { AiSuggestions } from '@/features/messages/components/ai-suggestions';
 import { ProtocolMarkdown } from '@/features/protocol/components/protocol-markdown';
 import { useSupplementProductLookup } from '@/features/protocol/hooks/use-supplement-product-lookup';
 import { useAnalytics } from '@/hooks/use-analytics';
@@ -50,7 +50,7 @@ const getTypeLabel = (content: ProtocolAction['content']) => {
 
 const getTypeImage = (content: ProtocolAction['content']) => {
   const type = content.type;
-  if (type === 'supplement') return '/protocol/types/supplement-type.webp';
+  if (type === 'supplement') return '/protocol/types/supplement-type.png';
   if (type === 'testing') return '/protocol/types/testing-type.webp';
   if (type === 'consultation') return '/protocol/types/consultation-type.webp';
   // lifestyle, medication, and any other types
@@ -96,38 +96,63 @@ const isItemChecked = (action: ProtocolAction): boolean => {
 const DetailContent = ({
   title,
   typeLabel,
+  typeImage,
   description,
   additionalContent,
   supplementProduct,
 }: {
   title: string;
   typeLabel: string;
+  typeImage: string;
   description?: string | null;
   additionalContent?: string | null;
   supplementProduct?: Product | null;
 }) => (
-  <div className="p-6">
-    <div className="space-y-4">
-      <div>
-        <H2 className="font-medium">{title}</H2>
-        <Body1 className="mt-1 font-bold tracking-wide text-secondary">
-          {typeLabel}
-        </Body1>
+  <div className="space-y-5 p-5">
+    {/* Header with image + title */}
+    <div className="flex items-start gap-3">
+      <img
+        src={typeImage}
+        alt={typeLabel}
+        className="size-14 shrink-0 rounded-xl object-cover"
+      />
+      <div className="min-w-0 flex-1">
+        <h3 className="text-base font-semibold text-zinc-900">{title}</h3>
+        <span className="text-xs text-secondary">{typeLabel}</span>
       </div>
-      {supplementProduct && <SupplementPreview product={supplementProduct} />}
+    </div>
 
-      {description && (
-        <ProtocolMarkdown
-          content={description}
-          className="text-sm leading-relaxed text-secondary [&>div]:mb-0"
-        />
-      )}
-      {additionalContent && (
+    {supplementProduct && <SupplementPreview product={supplementProduct} />}
+
+    {description && (
+      <ProtocolMarkdown
+        content={description}
+        className="text-[13px] leading-relaxed text-secondary [&>div]:mb-0"
+      />
+    )}
+
+    {additionalContent && (
+      <>
+        <hr className="border-zinc-100" />
         <ProtocolMarkdown
           content={additionalContent}
-          className="text-sm leading-relaxed text-secondary [&>div]:mb-0"
+          className="text-[13px] leading-relaxed text-secondary [&>div]:mb-0 [&_h1]:mb-1.5 [&_h1]:mt-5 [&_h1]:text-lg [&_h1]:font-semibold [&_h1]:text-zinc-900 [&_h2]:mb-1.5 [&_h2]:mt-5 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-zinc-900 [&_h3]:mb-1.5 [&_h3]:mt-5 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-zinc-900"
         />
-      )}
+      </>
+    )}
+
+    {/* Superpower AI Suggestions */}
+    <hr className="border-zinc-100" />
+    <div className="space-y-3">
+      <h3 className="text-base font-semibold text-zinc-900">
+        Superpower AI Suggestions
+      </h3>
+      <AiSuggestions
+        context={`Protocol action: ${title} (${typeLabel}). ${description ?? ''}`}
+        limit={3}
+        eventName="protocol_todo_dialog_ai_suggestion_clicked"
+        showAskOwn
+      />
     </div>
   </div>
 );
@@ -283,6 +308,7 @@ export const TodoItem = ({
             <DetailContent
               title={todoTitle}
               typeLabel={typeLabel}
+              typeImage={getTypeImage(action.content)}
               description={action.description}
               additionalContent={action.additionalContent}
               supplementProduct={supplementProduct}
@@ -291,13 +317,21 @@ export const TodoItem = ({
         </Sheet>
       ) : (
         <Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto">
+            <button
+              type="button"
+              onClick={() => handleDialogOpenChange(false)}
+              className="absolute right-3 top-3 rounded-full p-1.5 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600"
+            >
+              <X className="size-4" />
+            </button>
             <DialogHeader className="sr-only">
               <DialogTitle>Action Details</DialogTitle>
             </DialogHeader>
             <DetailContent
               title={todoTitle}
               typeLabel={typeLabel}
+              typeImage={getTypeImage(action.content)}
               description={action.description}
               additionalContent={action.additionalContent}
               supplementProduct={supplementProduct}

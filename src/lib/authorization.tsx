@@ -28,6 +28,12 @@ export const useAuthorization = () => {
         return false;
       }
 
+      // authRole is the new ts-auth field. Fall back to the legacy role array
+      // during the migration period while not all sessions have authRole set.
+      const { authRole } = user.data;
+      if (authRole === 'admin') return allowedRoles.includes(ROLES.SUPER_ADMIN);
+      if (authRole === 'user') return allowedRoles.includes(ROLES.MEMBER);
+
       return user.data.role.some((role) => allowedRoles.includes(role));
     },
     [user.data],

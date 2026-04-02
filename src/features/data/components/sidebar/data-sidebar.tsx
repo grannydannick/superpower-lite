@@ -1,9 +1,11 @@
 import { useSearch } from '@tanstack/react-router';
+import { Watch } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { Link } from '@/components/ui/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { H3 } from '@/components/ui/typography';
+import { useWearables } from '@/features/settings/api/get-wearables';
 import { useSummary } from '@/features/summary/api/get-summary';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
@@ -24,6 +26,7 @@ export function DataSidebar() {
   const previousActiveCategoryRef = useRef<string | null>(null);
   const summaryQuery = useSummary();
   const categoriesQuery = useCategories();
+  const wearablesQuery = useWearables();
 
   const isLoading = categoriesQuery.isLoading || summaryQuery.isLoading;
 
@@ -115,7 +118,7 @@ export function DataSidebar() {
 
   useEffect(() => {
     repositionSelector();
-  }, [activeCategory, isLoading, repositionSelector]);
+  }, [activeCategory, isLoading, repositionSelector, wearablesQuery.data]);
 
   const categoriesContent = useMemo(() => {
     if (isLoading) {
@@ -156,6 +159,35 @@ export function DataSidebar() {
 
     if (categories.length === 0) return [];
 
+    const hasWearables = (wearablesQuery.data?.wearables?.length ?? 0) > 0;
+
+    if (hasWearables) {
+      const isWearablesActive = activeCategory === 'wearables';
+
+      items.push(
+        <Link
+          key="wearables"
+          to="/data"
+          search={{ category: 'wearables' }}
+          onClick={() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          id="selector-wearables"
+          className={cn(
+            'relative z-[1] flex shrink-0 gap-2 self-start truncate rounded-full border border-transparent p-0.5 pr-3 transition-colors md:w-full lg:w-auto',
+            isWearablesActive
+              ? 'text-black'
+              : 'group text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700',
+          )}
+        >
+          <div className="flex size-6 items-center justify-center rounded-full bg-zinc-200 p-1 text-zinc-400">
+            <Watch className="size-full" />
+          </div>
+          <span className="truncate">Wearables</span>
+        </Link>,
+      );
+    }
+
     categories.forEach((category) => {
       const isActive =
         encodeCategory(category.category) ===
@@ -171,10 +203,10 @@ export function DataSidebar() {
     });
 
     return items;
-  }, [isLoading, activeCategory, categories, gating]);
+  }, [isLoading, activeCategory, categories, gating, wearablesQuery.data]);
 
   return (
-    <aside className="relative left-1/2 z-10 col-span-1 flex w-screen -translate-x-1/2 flex-col md:left-0 md:w-40 md:translate-x-0 lg:w-auto">
+    <aside className="relative left-1/2 z-10 col-span-1 flex w-screen -translate-x-1/2 flex-col md:left-0 md:w-52 md:translate-x-0 lg:w-auto">
       <div className="relative z-30 mb-4 flex gap-4 bg-zinc-50/20 px-6 md:sticky md:top-16 md:mb-0 md:px-0 md:backdrop-blur-lg">
         <Link to="/data">
           <H3>Twin</H3>

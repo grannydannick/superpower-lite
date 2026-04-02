@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/dropdown';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { useScrollThreshold } from '@/hooks/use-scroll-threshold';
+import { useStopImpersonating, useUser } from '@/lib/auth';
 import { ROLES, useAuthorization } from '@/lib/authorization';
 import { cn } from '@/lib/utils';
 
@@ -100,6 +101,9 @@ export const DesktopNavbar = () => {
   const { checkAccess } = useAuthorization();
   const { pathname } = useLocation();
   const { track } = useAnalytics();
+  const user = useUser();
+  const stopImpersonating = useStopImpersonating();
+  const isImpersonating = !!user.data?.adminActor;
 
   const isLight = lightNavPaths.includes(pathname);
   const isBlurred = useScrollThreshold({
@@ -209,6 +213,15 @@ export const DesktopNavbar = () => {
                 align="end"
                 sideOffset={5}
               >
+                {isImpersonating && (
+                  <DropdownMenuItem
+                    className="w-full gap-3 rounded-[10px] p-4"
+                    onClick={() => stopImpersonating.mutate()}
+                  >
+                    <LogOut width={14} height={14} />
+                    <p className="text-sm">Stop Impersonating</p>
+                  </DropdownMenuItem>
+                )}
                 {profileDropdownItems.map((link) => (
                   <Link
                     key={link.name}
@@ -258,6 +271,9 @@ export const MobileNavbar = () => {
   const [open, setOpen] = useState(false);
   const { pathname, searchStr } = useLocation();
   const { track } = useAnalytics();
+  const user = useUser();
+  const stopImpersonating = useStopImpersonating();
+  const isImpersonating = !!user.data?.adminActor;
   const searchParams = useMemo(
     () => new URLSearchParams(searchStr),
     [searchStr],
@@ -339,6 +355,17 @@ export const MobileNavbar = () => {
           onItemClick={() => setOpen(false)}
           getIsActive={(link, isActive) =>
             link.to === '/marketplace' ? isMarketplaceOrdersActive : isActive
+          }
+          actions={
+            isImpersonating
+              ? [
+                  {
+                    name: 'Stop Impersonating',
+                    icon: LogOut,
+                    onClick: () => stopImpersonating.mutate(),
+                  },
+                ]
+              : undefined
           }
           links={[
             ...additionalMobileLinks,

@@ -4,7 +4,9 @@ import {
   QuestionnaireResponseItem,
 } from '@medplum/fhirtypes';
 import { createFileRoute, notFound } from '@tanstack/react-router';
+import { zodValidator } from '@tanstack/zod-adapter';
 import { preload } from 'react-dom';
+import { z } from 'zod';
 
 import { Head } from '@/components/seo';
 import { QuestionnaireForm } from '@/components/ui/questionnaire';
@@ -26,6 +28,11 @@ import { pruneResponseItems } from '@/features/questionnaires/utils/prune-respon
 import { useUser } from '@/lib/auth';
 
 export const Route = createFileRoute('/_app/questionnaire/$type')({
+  validateSearch: zodValidator(
+    z.object({
+      billingCode: z.string().trim().optional().catch(undefined),
+    }),
+  ),
   loader: () => {
     preload('/onboarding/questionnaire/rx.webp', { as: 'image' });
     preload('/rx/identity.webp', { as: 'image' });

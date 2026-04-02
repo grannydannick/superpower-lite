@@ -25,7 +25,7 @@ type CitationsDialogProps = {
   citations: ProtocolCitation[];
 };
 
-function CitationCard({
+export function CitationCard({
   citation,
   onLinkClick,
 }: {
@@ -69,7 +69,7 @@ function CitationCard({
       target="_blank"
       rel="noopener noreferrer"
       onClickCapture={onLinkClick}
-      className="group flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white p-1 pl-2 shadow-sm transition-colors hover:bg-zinc-50"
+      className="group flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white py-2 pl-2 pr-1 shadow-sm transition-colors hover:bg-zinc-50"
     >
       {content}
       <ExternalLink className="mr-4 size-4 shrink-0 text-zinc-400" />

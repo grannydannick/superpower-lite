@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { getChatQueryOptions } from '@/features/messages/api/get-chat';
 import { getHistoryQueryOptions } from '@/features/messages/api/get-history';
 import { api } from '@/lib/api-client';
 import { MutationConfig } from '@/lib/react-query';
@@ -28,8 +29,12 @@ export const useUpdateChat = ({
 
   return useMutation({
     onSuccess: (...args) => {
-      queryClient.invalidateQueries({
+      const variables = args[1];
+      void queryClient.invalidateQueries({
         queryKey: getHistoryQueryOptions().queryKey,
+      });
+      void queryClient.invalidateQueries({
+        queryKey: getChatQueryOptions(variables.chatId).queryKey,
       });
       onSuccess?.(...args);
     },

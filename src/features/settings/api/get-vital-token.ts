@@ -1,26 +1,15 @@
-import { useQuery, queryOptions } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
 import { api } from '@/lib/api-client';
-import { QueryConfig } from '@/lib/react-query';
 
-export const getVitalToken = (): Promise<{ linkToken: string }> => {
-  return api.get(`/wearables/vital/token`);
+type VitalTokenResponse = { linkToken: string; linkWebUrl: string };
+
+export const getVitalToken = (
+  provider: string,
+): Promise<VitalTokenResponse> => {
+  return api.get('/chat/wearables/vital/token', { params: { provider } });
 };
 
-export const getVitalTokenQueryOptions = () => {
-  return queryOptions({
-    queryKey: ['vitalToken'],
-    queryFn: () => getVitalToken(),
-  });
-};
-
-type UseVitalTokenOptions = {
-  queryConfig?: QueryConfig<typeof getVitalTokenQueryOptions>;
-};
-
-export const useVitalToken = ({ queryConfig }: UseVitalTokenOptions) => {
-  return useQuery({
-    ...getVitalTokenQueryOptions(),
-    ...queryConfig,
-  });
+export const useConnectWearable = () => {
+  return useMutation({ mutationFn: getVitalToken });
 };

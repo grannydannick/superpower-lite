@@ -15,17 +15,21 @@ import {
 } from '@/features/homepage/api/get-recommendations';
 import { useProtocols } from '@/features/protocol/api';
 import { useAnalytics } from '@/hooks/use-analytics';
+import { useUser } from '@/lib/auth';
 
 export const RecommendationsList: React.FC = () => {
   const { data: recommendations, isLoading } = useRecommendations();
   const { data: protocols } = useProtocols();
+  const userQuery = useUser();
+  const hasRxAccess =
+    userQuery.isFetched && userQuery.data?.access?.rx !== false;
 
   const hasCompletedPlans = useMemo(
     () => protocols?.some((p) => p.status === 'completed'),
     [protocols],
   );
 
-  if (isLoading || hasCompletedPlans) {
+  if (isLoading || !userQuery.isFetched || hasCompletedPlans || !hasRxAccess) {
     return null;
   }
 

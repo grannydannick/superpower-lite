@@ -76,7 +76,7 @@ const SuperpowerScore = ({
             )}
           </div>
           {!isLoading && (
-            <Body2 className="text-zinc-400">
+            <Body2 className="text-left text-zinc-400">
               {overviewCopy?.shortMessage}
             </Body2>
           )}
@@ -123,7 +123,7 @@ const BiologicalAge = ({
             )}
           </div>
           {!isLoading && (
-            <Body2 className="text-zinc-400">
+            <Body2 className="text-left text-zinc-400">
               {ageDifference &&
                 `${Math.abs(ageDifference).toFixed(1)} years ${
                   ageDifference >= 0 ? 'younger' : 'older'
