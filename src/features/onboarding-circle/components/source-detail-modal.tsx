@@ -1,16 +1,14 @@
-// src/features/onboarding-circle/components/source-detail-modal.tsx
-
 import { useNavigate } from '@tanstack/react-router';
 
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { toast } from '@/components/ui/sonner';
+import { Body2, Body3, H4 } from '@/components/ui/typography';
 
 import type { SourceConfig } from '../const/sources';
 import { useOnboardingCircleStore } from '../stores/onboarding-circle-store';
+
+import { getSourceIcon } from './source-row';
 
 interface SourceDetailModalProps {
   source: SourceConfig | null;
@@ -25,15 +23,13 @@ const TOAST_MESSAGES: Record<string, string> = {
   labs: 'Labs uploaded \u2014 historical trends generated',
 };
 
-export function SourceDetailModal({
-  source,
-  open,
-  onOpenChange,
-}: SourceDetailModalProps) {
+export function SourceDetailModal({ source, open, onOpenChange }: SourceDetailModalProps) {
   const navigate = useNavigate();
   const complete = useOnboardingCircleStore((s) => s.complete);
 
   if (source == null) return null;
+
+  const Icon = getSourceIcon(source.iconName);
 
   const handleCta = () => {
     complete(source.id);
@@ -51,85 +47,68 @@ export function SourceDetailModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[420px] p-0" preventCloseAutoFocus>
-        {/* Drag bar */}
         <div className="mx-auto mt-3.5 h-1 w-10 rounded-full bg-zinc-200" />
 
         <div className="px-6 pb-8 pt-4">
           {/* Header */}
           <div className="mb-4 flex items-center gap-3.5">
             <div
-              className="flex size-[52px] shrink-0 items-center justify-center rounded-[14px] text-[1.6rem]"
-              style={{ background: source.colorBg }}
+              className="flex size-[52px] shrink-0 items-center justify-center rounded-[14px]"
+              style={{ backgroundColor: `${source.color}12` }}
             >
-              {source.icon}
+              <Icon size={24} style={{ color: source.color }} />
             </div>
             <div>
-              <DialogTitle className="text-lg font-semibold tracking-tight text-zinc-900">
-                {source.id === 'wearables'
-                  ? 'Connect Wearables'
-                  : source.id === 'ai-context'
-                    ? 'Import AI Context'
-                    : source.id === 'labs'
-                      ? 'Upload Previous Labs'
-                      : 'Health Intake'}
+              <DialogTitle asChild>
+                <H4 className="text-zinc-900">{source.title}</H4>
               </DialogTitle>
-              <p className="mt-0.5 text-[13px] text-zinc-400">
+              <Body3 className="p-0 text-zinc-400">
                 {source.timeEstimate
                   ? `Takes about ${source.timeEstimate}`
                   : 'Pre-filled from checkout'}
-              </p>
+              </Body3>
             </div>
           </div>
 
           {/* Why this is valuable */}
-          <p className="mb-6 text-sm leading-relaxed text-zinc-500">
-            {source.modal.whyValuable}
-          </p>
+          <Body2 className="mb-6 p-0 text-zinc-500">{source.modal.whyValuable}</Body2>
 
           {/* What to do */}
           <div className="mb-6 rounded-xl bg-zinc-50 p-4">
-            <h5 className="mb-1 text-xs font-bold uppercase tracking-widest text-zinc-400">
+            <Body3 className="mb-1 p-0 font-bold uppercase tracking-widest text-zinc-400">
               What to do
-            </h5>
-            <p className="text-[13px] leading-relaxed text-zinc-600">
+            </Body3>
+            <Body3 className="p-0 leading-relaxed text-zinc-600">
               {source.modal.whatToDo}
-            </p>
+            </Body3>
           </div>
 
-          {/* What you'll get */}
+          {/* Benefits */}
           <div className="mb-7 flex flex-col gap-3.5">
-            <h5 className="text-xs font-bold uppercase tracking-widest text-zinc-400">
+            <Body3 className="p-0 font-bold uppercase tracking-widest text-zinc-400">
               What you'll unlock
-            </h5>
-            {source.modal.benefits.map((benefit) => (
-              <div key={benefit.title} className="flex items-start gap-3">
-                <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-sm">
-                  {benefit.icon}
+            </Body3>
+            {source.modal.benefits.map((benefit) => {
+              const BenefitIcon = getSourceIcon(benefit.iconName);
+              return (
+                <div key={benefit.title} className="flex items-start gap-3">
+                  <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-zinc-100">
+                    <BenefitIcon size={14} className="text-zinc-500" />
+                  </div>
+                  <div>
+                    <Body3 className="p-0 font-semibold text-zinc-900">{benefit.title}</Body3>
+                    <Body3 className="mt-0.5 p-0 text-zinc-500">{benefit.description}</Body3>
+                  </div>
                 </div>
-                <div>
-                  <h5 className="text-[13px] font-semibold text-zinc-900">
-                    {benefit.title}
-                  </h5>
-                  <p className="mt-0.5 text-xs leading-snug text-zinc-500">
-                    {benefit.description}
-                  </p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* CTA */}
           {source.ctaAction.type !== 'none' && (
-            <button
-              type="button"
-              onClick={handleCta}
-              className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-zinc-950 px-4 py-3.5 text-[15px] font-medium text-white transition-colors hover:bg-zinc-800"
-            >
-              {source.ctaLabel}
-              <span className="transition-transform group-hover:translate-x-0.5">
-                →
-              </span>
-            </button>
+            <Button onClick={handleCta} className="w-full">
+              {source.ctaLabel} <span className="ml-1">{'\u2192'}</span>
+            </Button>
           )}
         </div>
       </DialogContent>
