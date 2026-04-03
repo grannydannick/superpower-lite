@@ -1,84 +1,49 @@
 import NumberFlow from '@number-flow/react';
 
-import { BiologicalAgeLogo } from '@/components/shared/biological-age-logo';
-import { SuperpowerScoreLogo } from '@/components/shared/score-logo';
 import { QuickLinkButton } from '@/components/ui/quick-link';
 import { Spinner } from '@/components/ui/spinner';
-import { Body2, H2 } from '@/components/ui/typography';
 import { useLatestHealthScore } from '@/features/data/api';
 import { useLatestBioAge } from '@/features/data/api/get-latest-bio-age';
 import { ShareableCardsModal } from '@/features/shareables/components/shareable-cards-modal';
 import { useUser } from '@/lib/auth';
 import { yearsSinceDate } from '@/utils/format';
 
-const MESSAGES = [
-  {
-    scoreRange: [0, 49],
-    message:
-      "your health metrics suggest there's significant room for improvement. Your personalized plan will help you take the first steps toward better health.",
-    shortMessage: 'Significant room for improvement',
-  },
-  {
-    scoreRange: [50, 69],
-    message:
-      "you're on the right track, but there are still areas where you can make meaningful improvements to boost your overall health.",
-    shortMessage: 'Good foundation, room to grow',
-  },
-  {
-    scoreRange: [70, 89],
-    message:
-      "you're doing well! Your health metrics show you're making good choices. Let's fine-tune a few areas to get you to optimal.",
-    shortMessage: "You're doing well",
-  },
-  {
-    scoreRange: [90, 100],
-    message:
-      'congratulations! Your health metrics are in excellent shape. Keep up the great work and maintain these healthy habits.',
-    shortMessage: 'Excellent health metrics',
-  },
-];
-
 const SuperpowerScore = ({
   isLoading,
   superpowerScore,
+  lastTestDate,
 }: {
   isLoading: boolean;
   superpowerScore: number;
+  lastTestDate?: string;
 }) => {
-  const overviewCopy = MESSAGES.find(
-    (m) =>
-      m.scoreRange[0] <= superpowerScore! &&
-      m.scoreRange[1] >= superpowerScore!,
-  );
+  const lastTestLabel = lastTestDate
+    ? formatTimeSince(lastTestDate)
+    : undefined;
 
   return (
     <ShareableCardsModal disabled={isLoading} preselectedTab="score">
-      <QuickLinkButton className="flex h-full flex-1 flex-col justify-between overflow-hidden bg-white lg:gap-2">
-        <SuperpowerScoreLogo
-          logoColor="currentColor"
-          className="mb-2 w-11 sm:w-40"
-        />
-        <div>
-          <div className="mb-1 flex items-end justify-start gap-1">
+      <QuickLinkButton className="to-vermillion-600 flex h-full flex-1 flex-col justify-between overflow-hidden rounded-2xl bg-gradient-to-br from-orange-400 via-orange-500 p-5 text-white">
+        <p className="text-sm font-medium lowercase tracking-wide opacity-90">
+          superpower score
+        </p>
+        <div className="mt-4">
+          <div className="flex items-baseline gap-1.5">
             {isLoading ? (
-              <Body2 className="m-0 mt-[54px] leading-none text-zinc-400">
-                Waiting for results...
-              </Body2>
+              <p className="text-sm opacity-70">Waiting for results...</p>
             ) : (
               <>
-                <H2 className="m-0 leading-none">
+                <span className="text-5xl font-bold leading-none">
                   <NumberFlow value={superpowerScore ?? 0} />
-                </H2>
-                <Body2 className="m-0 mb-2 leading-none text-zinc-400 md:mb-3">
-                  / 100
-                </Body2>
+                </span>
+                <span className="text-lg opacity-60">/ 100</span>
               </>
             )}
           </div>
-          {!isLoading && (
-            <Body2 className="text-left text-zinc-400">
-              {overviewCopy?.shortMessage}
-            </Body2>
+          {!isLoading && lastTestLabel != null && (
+            <p className="mt-2 text-xs opacity-70">
+              Last test was {lastTestLabel}
+            </p>
           )}
         </div>
       </QuickLinkButton>
@@ -95,19 +60,21 @@ const BiologicalAge = ({
   biologicalAge: number;
   ageDifference: number;
 }) => {
+  const younger = ageDifference >= 0;
+
   return (
     <ShareableCardsModal disabled={isLoading} preselectedTab="age">
-      <QuickLinkButton className="flex h-full flex-1 flex-col justify-between gap-2 overflow-hidden bg-white">
-        <BiologicalAgeLogo className="mt-1" />
-        <div>
-          <div className="mb-1 flex items-end justify-start gap-1">
+      <QuickLinkButton className="flex h-full flex-1 flex-col justify-between overflow-hidden rounded-2xl bg-gradient-to-br from-teal-500 via-teal-600 to-emerald-700 p-5 text-white">
+        <p className="text-sm font-medium lowercase tracking-wide opacity-90">
+          biological age
+        </p>
+        <div className="mt-4">
+          <div className="flex items-baseline gap-1.5">
             {isLoading ? (
-              <Body2 className="m-0 mt-[54px] leading-none text-zinc-400">
-                Waiting for results...
-              </Body2>
+              <p className="text-sm opacity-70">Waiting for results...</p>
             ) : (
               <>
-                <H2 className="m-0 leading-none">
+                <span className="text-5xl font-bold leading-none">
                   <NumberFlow
                     value={biologicalAge ?? 0}
                     format={{
@@ -115,26 +82,36 @@ const BiologicalAge = ({
                       maximumFractionDigits: 1,
                     }}
                   />
-                </H2>
-                <Body2 className="m-0 mb-2 leading-none text-zinc-400 md:mb-3">
-                  years
-                </Body2>
+                </span>
+                <span className="text-lg opacity-60">years old</span>
               </>
             )}
           </div>
-          {!isLoading && (
-            <Body2 className="text-left text-zinc-400">
-              {ageDifference &&
-                `${Math.abs(ageDifference).toFixed(1)} years ${
-                  ageDifference >= 0 ? 'younger' : 'older'
-                } than your actual age`}
-            </Body2>
+          {!isLoading && ageDifference != null && (
+            <p className="mt-2 text-xs opacity-70">
+              {younger ? "You're" : 'Aging'}{' '}
+              {Math.abs(ageDifference).toFixed(1)} years{' '}
+              {younger ? 'younger' : 'older'}
+            </p>
           )}
         </div>
       </QuickLinkButton>
     </ShareableCardsModal>
   );
 };
+
+function formatTimeSince(dateString: string) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 1) return 'today';
+  if (diffDays < 7) return `${diffDays} days ago`;
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+  if (diffDays < 365) return `over ${Math.floor(diffDays / 30)} months ago`;
+  return `over ${Math.floor(diffDays / 365)} years ago`;
+}
 
 export function ScoreCards() {
   const { data: user } = useUser();
@@ -166,12 +143,13 @@ export function ScoreCards() {
     10.0;
 
   return (
-    <div className="grid w-full grid-cols-1 gap-2 xl:grid-cols-2">
+    <div className="grid w-full grid-cols-2 gap-3">
       <SuperpowerScore
         isLoading={latestHealthScoreQuery.isLoading}
         superpowerScore={
           latestHealthScoreQuery.data.healthScore.quantity?.value ?? 0
         }
+        lastTestDate={latestHealthScoreQuery.data.healthScore.timestamp}
       />
       <BiologicalAge
         isLoading={latestBiologicalAgeQuery.isLoading}
