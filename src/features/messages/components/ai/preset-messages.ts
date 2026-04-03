@@ -77,10 +77,13 @@ If your AI provider isn't listed or the link doesn't work, copy this prompt and 
 
 If you have any questions, I'm here to help!`;
 
+const DAILY_BRIEF_MESSAGE = `Tell me more about my daily brief.`;
+
 const CHAT_PRESETS = [
   'update-personalization',
   'upload-labs',
   'import-memory',
+  'daily-brief',
 ] as const;
 
 export const chatPresetSchema = z.enum(CHAT_PRESETS);
@@ -90,4 +93,5 @@ export const PRESET_MESSAGES = {
   'update-personalization': UPDATE_PERSONALIZATION_MESSAGE,
   'upload-labs': UPLOAD_LABS_MESSAGE,
   'import-memory': IMPORT_MEMORY_MESSAGE,
+  'daily-brief': DAILY_BRIEF_MESSAGE,
 } satisfies Record<Preset, string>;
