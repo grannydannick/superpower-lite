@@ -1,4 +1,3 @@
-import { DailyBriefTeaser } from '@/features/daily-brief/components/daily-brief-teaser';
 import { FamilyInsightsBanner } from '@/features/homepage/components/family-insights-banner';
 import { FamilyRiskBanner } from '@/features/homepage/components/family-risk-banner';
 import { RecommendationsList } from '@/features/homepage/components/recommendations-list';
@@ -115,16 +114,6 @@ const referralCardConfig: CardConfig = {
   getPriority: () => 90,
 };
 
-/**
- * Card configuration for Daily Brief Teaser card
- */
-const dailyBriefCardConfig: CardConfig = {
-  id: 'dailyBrief',
-  component: DailyBriefTeaser,
-  shouldShow: () => true,
-  getPriority: () => 3,
-};
-
 cardRegistry.register(aiapSummaryCardWebConfig);
 // cardRegistry.register(phlebotomyAppointmentCardConfig);
 cardRegistry.register(actionableOrdersCardConfig);
@@ -136,4 +125,3 @@ cardRegistry.register(keyInsightsCardConfig);
 cardRegistry.register(referralCardConfig);
 cardRegistry.register(familyInsightsBannerConfig);
 cardRegistry.register(familyRiskBannerConfig);
-cardRegistry.register(dailyBriefCardConfig);
