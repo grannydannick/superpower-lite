@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { AnimatedIcon } from '@/features/messages/components/ai/animated-icon';
 
 const INFO_ITEMS: {
   icon: ComponentType<SVGProps<SVGSVGElement> & { size?: number }>;
@@ -30,6 +31,8 @@ const INFO_ITEMS: {
   },
 ];
 
+type ModalPhase = 'default' | 'transitioning' | 'generating';
+
 export function WearableConnectedModal({
   providerName,
   open,
@@ -41,24 +44,36 @@ export function WearableConnectedModal({
   onOpenChange: (open: boolean) => void;
   onGenerateReport: () => void;
 }) {
-  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [phase, setPhase] = useState<ModalPhase>('default');
 
-  // Auto-dismiss 3 seconds after showing confirmation
+  // Transition phases: default → transitioning (pulse + icon spinning) → generating (icon slowing + text)
   useEffect(() => {
-    if (!showConfirmation) return;
+    if (phase !== 'transitioning') return;
+    const timer = setTimeout(() => setPhase('generating'), 800);
+    return () => clearTimeout(timer);
+  }, [phase]);
+
+  // Auto-dismiss after generating shows
+  useEffect(() => {
+    if (phase !== 'generating') return;
     const timer = setTimeout(() => {
       onOpenChange(false);
-      setShowConfirmation(false);
-    }, 3000);
+      setPhase('default');
+    }, 3500);
     return () => clearTimeout(timer);
-  }, [showConfirmation, onOpenChange]);
+  }, [phase, onOpenChange]);
 
-  // Reset confirmation state when modal opens
+  // Reset when modal opens
   useEffect(() => {
     if (open) {
-      setShowConfirmation(false);
+      setPhase('default');
     }
   }, [open]);
+
+  const handleGenerate = () => {
+    onGenerateReport();
+    setPhase('transitioning');
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -95,22 +110,39 @@ export function WearableConnectedModal({
             ))}
           </div>
 
-          {showConfirmation ? (
-            <p className="text-center text-sm text-zinc-500">
-              We're generating your insights and we'll let you know when your
-              report is ready.
-            </p>
-          ) : (
-            <Button
-              className="w-full rounded-xl"
-              onClick={() => {
-                onGenerateReport();
-                setShowConfirmation(true);
-              }}
-            >
-              Generate my report
-            </Button>
-          )}
+          {/* CTA area with celebration transition */}
+          <div className="relative flex min-h-[48px] items-center justify-center">
+            {phase === 'default' && (
+              <Button
+                className="w-full rounded-xl duration-300 animate-in fade-in"
+                onClick={handleGenerate}
+              >
+                Generate my report
+              </Button>
+            )}
+
+            {phase === 'transitioning' && (
+              <div className="flex flex-col items-center gap-3 duration-500 animate-in fade-in zoom-in-95">
+                {/* Pulse ring */}
+                <div className="relative">
+                  <div className="bg-vermillion-400/30 absolute inset-0 animate-ping rounded-full" />
+                  <div className="relative">
+                    <AnimatedIcon state="thinking" size={40} />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {phase === 'generating' && (
+              <div className="flex flex-col items-center gap-3 duration-500 animate-in fade-in slide-in-from-bottom-2">
+                <AnimatedIcon state="idle" size={32} />
+                <p className="text-center text-sm text-zinc-500">
+                  We're generating your insights and we'll let you know when
+                  your report is ready.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
