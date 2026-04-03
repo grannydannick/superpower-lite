@@ -21,7 +21,10 @@ import {
   WEARABLE_PROVIDERS,
   WearableProviderDefinition,
 } from '@/features/settings/const/wearable-providers';
-import { useWearableReport } from '@/features/wearables/hooks/use-wearable-report';
+import {
+  useWearableReport,
+  WearableReportRunner,
+} from '@/features/wearables/hooks/use-wearable-report';
 import { cn } from '@/lib/utils';
 import { Wearable } from '@/types/api';
 
@@ -36,7 +39,11 @@ export function WearablesTable() {
   const [connectedProviderName, setConnectedProviderName] = useState<
     string | null
   >(null);
-  const { generate: generateReport } = useWearableReport();
+  const {
+    generate: generateReport,
+    activeReport,
+    handleComplete: handleReportComplete,
+  } = useWearableReport();
   const popupTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -222,6 +229,13 @@ export function WearablesTable() {
         }}
         onGenerateReport={() => {}}
       />
+      {activeReport != null && (
+        <WearableReportRunner
+          providerName={activeReport.providerName}
+          threadId={activeReport.threadId}
+          onComplete={handleReportComplete}
+        />
+      )}
     </div>
   );
 }

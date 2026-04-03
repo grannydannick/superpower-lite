@@ -52,18 +52,24 @@ export function clearPendingReport() {
 
 export { getPendingReport };
 
-export function useWearableReport() {
+/**
+ * Inner component that actually runs the chat session.
+ * Only rendered when providerName is set — this ensures useChat
+ * initializes with a real thread ID.
+ */
+export function WearableReportRunner({
+  providerName,
+  threadId,
+  onComplete,
+}: {
+  providerName: string;
+  threadId: string;
+  onComplete: () => void;
+}) {
   const navigate = useNavigate();
   const transport = useMemo(() => createChatV2Transport<UIMessage>(), []);
-  const [providerName, setProviderName] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
   const autoSentRef = useRef(false);
   const toastFiredRef = useRef(false);
-
-  const threadId = useMemo(() => {
-    if (providerName == null) return undefined;
-    return `wearable-report-${providerName}-${Date.now()}`;
-  }, [providerName]);
 
   const { messages, sendMessage, status } = useChat({
     id: threadId,
@@ -71,8 +77,8 @@ export function useWearableReport() {
     generateId: () => crypto.randomUUID(),
   });
 
+  // Auto-send prompt once chat is ready
   useEffect(() => {
-    if (providerName == null) return;
     if (status !== 'ready') return;
     if (autoSentRef.current) return;
     if (messages.length > 0) return;
@@ -82,12 +88,10 @@ export function useWearableReport() {
       text: buildReportPrompt(providerName),
       files: [],
     });
-  }, [providerName, status, messages.length, sendMessage]);
+  }, [status, messages.length, sendMessage, providerName]);
 
+  // Detect completion and fire toast
   useEffect(() => {
-    if (providerName == null) return;
-    if (threadId == null) return;
-    if (!isGenerating) return;
     if (toastFiredRef.current) return;
 
     const hasAssistantMessage = messages.some((m) => m.role === 'assistant');
@@ -95,7 +99,6 @@ export function useWearableReport() {
     if (status !== 'ready') return;
 
     toastFiredRef.current = true;
-    setIsGenerating(false);
 
     setPendingReport({
       threadId,
@@ -113,14 +116,29 @@ export function useWearableReport() {
       },
       duration: 10000,
     });
-  }, [providerName, threadId, isGenerating, messages, status, navigate]);
+
+    onComplete();
+  }, [messages, status, threadId, providerName, navigate, onComplete]);
+
+  return null;
+}
+
+export function useWearableReport() {
+  const [activeReport, setActiveReport] = useState<{
+    providerName: string;
+    threadId: string;
+  } | null>(null);
 
   const generate = useCallback((provider: string) => {
-    autoSentRef.current = false;
-    toastFiredRef.current = false;
-    setProviderName(provider);
-    setIsGenerating(true);
+    setActiveReport({
+      providerName: provider,
+      threadId: `wearable-report-${provider}-${Date.now()}`,
+    });
   }, []);
 
-  return { generate, isGenerating };
+  const handleComplete = useCallback(() => {
+    setActiveReport(null);
+  }, []);
+
+  return { generate, activeReport, handleComplete };
 }
