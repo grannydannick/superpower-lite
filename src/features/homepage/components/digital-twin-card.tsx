@@ -1,10 +1,8 @@
 import { IconArrowUpRight } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconArrowUpRight';
-import { format } from 'date-fns';
 import { Suspense, lazy, useEffect, useState } from 'react';
 
 import { Link } from '@/components/ui/link';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useBiomarkers } from '@/features/data/api';
+import { DailyBriefChat } from '@/features/daily-brief/components/daily-brief-chat';
 import { useUser } from '@/lib/auth';
 
 const LG_BREAKPOINT = 1024;
@@ -33,41 +31,14 @@ export const DigitalTwinCard = () => {
   }, []);
 
   const { data: user } = useUser();
-  const { data: biomarkers, isLoading } = useBiomarkers({
-    queryConfig: { enabled: isLgUp },
-  });
-
-  // TODO: just add this field on backend...
-  const mostRecentBiomarkerTimestamp = biomarkers?.biomarkers
-    ? biomarkers.biomarkers
-        .flatMap((biomarker) => biomarker.value)
-        .reduce(
-          (latest, result) => {
-            const latestDate = new Date(latest?.timestamp ?? 0);
-            const resultDate = new Date(result.timestamp);
-            return resultDate > latestDate ? result : latest;
-          },
-          biomarkers.biomarkers.flatMap((biomarker) => biomarker.value)[0],
-        )?.timestamp
-    : null;
 
   return (
     <div className="relative top-0 hidden h-full lg:block">
       <div className="sticky top-[120px] flex max-h-[1000px] rounded-3xl bg-zinc-100 lg:items-center lg:justify-end">
         <div className="absolute left-6 top-6 z-10">
-          {user ? (
-            <h2 className="text-3xl font-medium text-zinc-400">
-              {user?.firstName}&apos;s
-              <br />
-              Digital Twin
-            </h2>
-          ) : (
-            <h2 className="text-3xl font-medium text-zinc-400">
-              Unlock after
-              <br />
-              your first baseline test
-            </h2>
-          )}
+          <h2 className="text-3xl font-medium text-zinc-800">
+            Welcome {user?.firstName ?? 'back'}!
+          </h2>
         </div>
 
         {/* Top right overlay: Expand icon */}
@@ -79,22 +50,16 @@ export const DigitalTwinCard = () => {
           <IconArrowUpRight className="size-6" strokeWidth={1.5} />
         </Link>
 
-        {/* Bottom left overlay: Last tested date */}
-        {!isLoading && mostRecentBiomarkerTimestamp ? (
-          <div className="absolute bottom-6 left-6 z-10 text-sm text-zinc-400">
-            Last updated {format(mostRecentBiomarkerTimestamp, 'MMM d, yyyy')}
-          </div>
-        ) : (
-          isLoading && (
-            <Skeleton className="absolute bottom-6 left-6 z-10 h-6 w-40" />
-          )
-        )}
-
         {isLgUp ? (
           <Suspense fallback={null}>
             <DigitalTwin />
           </Suspense>
         ) : null}
+
+        {/* Daily brief chat overlay at bottom */}
+        <div className="absolute inset-x-0 bottom-0 z-10 rounded-b-3xl bg-gradient-to-t from-zinc-100 via-zinc-100/95 to-transparent px-6 pb-6 pt-16">
+          <DailyBriefChat />
+        </div>
       </div>
     </div>
   );
