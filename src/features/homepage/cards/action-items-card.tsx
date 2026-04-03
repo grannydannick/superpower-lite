@@ -29,8 +29,9 @@ export const ActionItemsCard = () => {
   const actions: ActionItem[] = [
     {
       id: 'upload-labs',
-      title: 'Upload past test records',
-      description: 'See trends from your past labs.',
+      title: 'Unlock your health trends',
+      description:
+        "Upload past lab results and we'll show you how your biomarkers have changed over time.",
       imageSrc: '/data/file-stack.webp',
       onClick: () => {
         void navigate({
@@ -46,7 +47,7 @@ export const ActionItemsCard = () => {
       id: 'connect-wearables',
       title: 'Connect your wearables',
       description:
-        'Download our iOS App to connect & get personalised insights from your wearable data.',
+        'Link Oura, Whoop, or Apple Health to get daily insights that connect your sleep, HRV, and activity to your lab results.',
       imageSrc: '/data/wearables.webp',
       onClick: () => {
         void navigate({
@@ -60,8 +61,9 @@ export const ActionItemsCard = () => {
   if (showImportMemory) {
     actions.push({
       id: 'import-memory-superpower-ai',
-      title: 'Continue from another AI',
-      description: 'Import your conversations and deepen your health story.',
+      title: 'Bring your health context',
+      description:
+        'Already use ChatGPT or Claude for health? Import those conversations so your AI coach knows your full story.',
       imageSrc: '/concierge/other_llms.webp',
       onClick: () => {
         void navigate({
@@ -71,8 +73,6 @@ export const ActionItemsCard = () => {
       },
     });
   }
-
-  const shouldForceOpen = actions.length < 3;
 
   const items: ReactElement[] = [];
   for (const action of actions) {
@@ -89,9 +89,9 @@ export const ActionItemsCard = () => {
 
   return (
     <ActionableAccordion
-      title="Action Items"
-      defaultOpen={shouldForceOpen}
-      allowCollapse={!shouldForceOpen}
+      title="Get started"
+      defaultOpen
+      allowCollapse
       highlighted={false}
       showHeaderIndicator={false}
       showTopSeparator={false}
