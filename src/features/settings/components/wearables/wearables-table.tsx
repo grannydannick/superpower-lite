@@ -16,11 +16,12 @@ import {
 import { ConfirmDelete } from '@/features/settings/components/wearables/confirm-delete';
 import { ConnectingOverlay } from '@/features/settings/components/wearables/connecting-overlay';
 import { MobileAppBanner } from '@/features/settings/components/wearables/mobile-app-banner';
-// TODO: re-enable once ready — import { WearableConnectedModal } from '@/features/settings/components/wearables/wearable-connected-modal';
+import { WearableConnectedModal } from '@/features/settings/components/wearables/wearable-connected-modal';
 import {
   WEARABLE_PROVIDERS,
   WearableProviderDefinition,
 } from '@/features/settings/const/wearable-providers';
+import { useWearableReport } from '@/features/wearables/hooks/use-wearable-report';
 import { cn } from '@/lib/utils';
 import { Wearable } from '@/types/api';
 
@@ -32,6 +33,10 @@ export function WearablesTable() {
     null,
   );
   const [popupOpen, setPopupOpen] = useState(false);
+  const [connectedProviderName, setConnectedProviderName] = useState<
+    string | null
+  >(null);
+  const { generate: generateReport } = useWearableReport();
   const popupTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -99,7 +104,8 @@ export function WearablesTable() {
                     (w) => w.provider === provider && w.status === 'connected',
                   );
                   if (connected) {
-                    toast.success(`${name} is now connected!`);
+                    setConnectedProviderName(name);
+                    generateReport(name);
                   } else {
                     toast.error(`Connecting ${name} was aborted.`);
                   }
@@ -208,14 +214,14 @@ export function WearablesTable() {
           onDismiss={() => setPopupOpen(false)}
         />
       )}
-      {/* TODO: re-enable once ready
       <WearableConnectedModal
-        providerName={connectedProvider?.name ?? null}
-        open={connectedProvider !== null}
+        providerName={connectedProviderName}
+        open={connectedProviderName != null}
         onOpenChange={(open) => {
-          if (!open) setConnectedProvider(null);
+          if (!open) setConnectedProviderName(null);
         }}
-      /> */}
+        onGenerateReport={() => {}}
+      />
     </div>
   );
 }
