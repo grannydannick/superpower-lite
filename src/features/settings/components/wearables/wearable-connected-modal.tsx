@@ -1,9 +1,8 @@
 import { IconMagnifyingGlass } from '@central-icons-react/round-filled-radius-2-stroke-1.5/IconMagnifyingGlass';
 import { IconNotes } from '@central-icons-react/round-filled-radius-2-stroke-1.5/IconNotes';
 import { IconSparklesTwo } from '@central-icons-react/round-filled-radius-2-stroke-1.5/IconSparklesTwo';
-import { useNavigate } from '@tanstack/react-router';
 import { X } from 'lucide-react';
-import { type ComponentType, type SVGProps } from 'react';
+import { type ComponentType, type SVGProps, useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -35,12 +34,33 @@ export function WearableConnectedModal({
   providerName,
   open,
   onOpenChange,
+  onGenerateReport,
+  isGenerating: _isGenerating,
 }: {
   providerName: string | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onGenerateReport: () => void;
+  isGenerating: boolean;
 }) {
-  const navigate = useNavigate();
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
+  // Auto-dismiss 3 seconds after showing confirmation
+  useEffect(() => {
+    if (!showConfirmation) return;
+    const timer = setTimeout(() => {
+      onOpenChange(false);
+      setShowConfirmation(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [showConfirmation, onOpenChange]);
+
+  // Reset confirmation state when modal opens
+  useEffect(() => {
+    if (open) {
+      setShowConfirmation(false);
+    }
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -77,15 +97,22 @@ export function WearableConnectedModal({
             ))}
           </div>
 
-          <Button
-            className="w-full rounded-xl"
-            onClick={() => {
-              onOpenChange(false);
-              navigate({ to: '/data', search: { category: 'wearables' } });
-            }}
-          >
-            Get summary
-          </Button>
+          {showConfirmation ? (
+            <p className="text-center text-sm text-zinc-500">
+              We're generating your insights and we'll let you know when your
+              report is ready.
+            </p>
+          ) : (
+            <Button
+              className="w-full rounded-xl"
+              onClick={() => {
+                onGenerateReport();
+                setShowConfirmation(true);
+              }}
+            >
+              Generate my report
+            </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>
