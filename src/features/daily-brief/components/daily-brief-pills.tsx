@@ -5,7 +5,10 @@ interface DailyBriefPillsProps {
 }
 
 const LAYER_CONFIG: Record<string, { label: string; className: string }> = {
-  biomarkers: { label: 'Labs', className: 'bg-vermillion-50 text-vermillion-600' },
+  biomarkers: {
+    label: 'Labs',
+    className: 'bg-vermillion-50 text-vermillion-600',
+  },
   protocol: { label: 'Protocol', className: 'bg-green-50 text-green-600' },
   wearables: { label: 'Wearables', className: 'bg-blue-50 text-blue-600' },
   memory: { label: 'Chat History', className: 'bg-purple-50 text-purple-600' },
