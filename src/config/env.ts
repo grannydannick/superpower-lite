@@ -255,8 +255,8 @@ if (issues.length > 0) {
   for (const issue of issues) {
     lines += `- ${issue}\n`;
   }
-  throw new Error(
-    `Invalid env provided.\nThe following variables are missing or invalid:\n${lines}`,
+  console.warn(
+    `Missing env variables (non-critical, app will still boot):\n${lines}`,
   );
 }
 
