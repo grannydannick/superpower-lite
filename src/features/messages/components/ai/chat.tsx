@@ -15,7 +15,6 @@ import {
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
-import { DailyBriefCard } from '@/features/daily-brief/components/daily-brief-card';
 import { getHistoryQueryOptions } from '@/features/messages/api/get-history';
 import {
   DEFAULT_MESSAGES_PAGE_SIZE,
@@ -1065,7 +1064,6 @@ function ChatView({
         {messages.length === 0 && (
           <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
             <Greeting />
-            {preset === 'daily-brief' && <DailyBriefCard />}
             <div className="flex w-full">
               {onboardingComplete ? (
                 <SuggestedActions

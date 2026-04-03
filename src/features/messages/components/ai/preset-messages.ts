@@ -77,7 +77,7 @@ If your AI provider isn't listed or the link doesn't work, copy this prompt and 
 
 If you have any questions, I'm here to help!`;
 
-const DAILY_BRIEF_MESSAGE = `Tell me more about my daily brief.`;
+const DAILY_BRIEF_MESSAGE = `Here's your daily health brief — a quick check-in based on what I know about you. I'll pull from your latest labs, protocol, wearables, and our recent conversations to give you something actionable.`;
 
 const CHAT_PRESETS = [
   'update-personalization',
