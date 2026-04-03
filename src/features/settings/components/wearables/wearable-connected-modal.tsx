@@ -35,13 +35,11 @@ export function WearableConnectedModal({
   open,
   onOpenChange,
   onGenerateReport,
-  isGenerating: _isGenerating,
 }: {
   providerName: string | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onGenerateReport: () => void;
-  isGenerating: boolean;
 }) {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
