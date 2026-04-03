@@ -6,6 +6,7 @@ import { CardSkeleton } from '@/features/homepage/components/card-skeleton';
 import { DigitalTwinCard } from '@/features/homepage/components/digital-twin-card';
 import { Greeting } from '@/features/homepage/components/greeting';
 import { useHomepageState } from '@/features/homepage/hooks/use-homepage-state';
+import { WearableReportToast } from '@/features/wearables/components/wearable-report-toast';
 
 export const Route = createFileRoute('/_app/')({
   component: HomepageComponent,
@@ -29,6 +30,7 @@ function HomepageComponent() {
       variant="homepage"
       className="max-w-[1600px] pt-6 md:space-y-6 lg:py-0"
     >
+      <WearableReportToast />
       <div className="lg:hidden">
         <Greeting />
       </div>
