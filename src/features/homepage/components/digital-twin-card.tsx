@@ -2,7 +2,6 @@ import { IconArrowUpRight } from '@central-icons-react/round-outlined-radius-3-s
 import { Suspense, lazy, useEffect, useState } from 'react';
 
 import { Link } from '@/components/ui/link';
-import { DailyBriefChat } from '@/features/daily-brief/components/daily-brief-chat';
 import { useUser } from '@/lib/auth';
 
 const LG_BREAKPOINT = 1024;
@@ -55,11 +54,6 @@ export const DigitalTwinCard = () => {
             <DigitalTwin />
           </Suspense>
         ) : null}
-
-        {/* Daily brief chat overlay at bottom */}
-        <div className="absolute inset-x-0 bottom-0 z-10 rounded-b-3xl bg-gradient-to-t from-zinc-100 via-zinc-100/95 to-transparent px-6 pb-6 pt-16">
-          <DailyBriefChat />
-        </div>
       </div>
     </div>
   );

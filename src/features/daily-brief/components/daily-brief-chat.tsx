@@ -5,7 +5,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Body2 } from '@/components/ui/typography';
 import { createChatV2Transport } from '@/features/messages/utils/chatv2-transport';
-import { useUser } from '@/lib/auth';
 
 const DAILY_BRIEF_PROMPT =
   "Write a 2-3 sentence daily update for me based on the latest data you have access to, framed as a daily check-in. The message should provide context about my health data — reference specific numbers, biomarker names, wearable metrics, protocol actions, or conversation history. End with a question for me to reply to or pick up the discussion around. Leverage any and all data you have access to for the most contextual, real-time daily message possible. Don't include any headers or formatting — just the message.";
@@ -74,18 +73,12 @@ function BriefGenerator({
     },
   });
 
-  // Debug logging
-  useEffect(() => {
-    console.log('[DailyBrief] status:', status, 'messages:', messages.length);
-  }, [status, messages.length]);
-
   // Auto-send once ready
   useEffect(() => {
     if (status !== 'ready') return;
     if (autoSentRef.current) return;
     if (messages.length > 0) return;
 
-    console.log('[DailyBrief] Sending prompt...');
     autoSentRef.current = true;
     void sendMessage({ text: DAILY_BRIEF_PROMPT, files: [] });
   }, [status, messages.length, sendMessage]);
@@ -144,8 +137,6 @@ function setCachedBrief(text: string) {
 export function DailyBriefChat() {
   const navigate = useNavigate();
   const [inputValue, setInputValue] = useState('');
-  const { data: user } = useUser();
-  const firstName = user?.firstName ?? 'there';
 
   const [briefText, setBriefText] = useState<string | null>(() =>
     getCachedBrief(),
