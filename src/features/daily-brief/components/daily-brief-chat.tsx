@@ -1,17 +1,20 @@
-import { useChat } from '@ai-sdk/react';
 import { useNavigate } from '@tanstack/react-router';
-import type { UIMessage } from 'ai';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Body2 } from '@/components/ui/typography';
 import { useCreateFollowups } from '@/features/messages/api/create-followups';
-import { createChatV2Transport } from '@/features/messages/utils/chatv2-transport';
+
+const BRIEF_CONTEXT = `You are generating a single daily health brief for the member — a personalized 1-2 sentence check-in.
+Pull from their latest wearable data, lab results, active protocol, and recent conversations.
+Lead with the most actionable insight. Feel like a coach checking in.
+If they have no data yet, warmly encourage them to connect a data source.
+Return ONLY the brief text as a single item, nothing else.`;
 
 const DAILY_BRIEF_PROMPT =
-  'Give me my daily health brief in 2-3 sentences. Look at my latest wearable data, lab results, active protocol, and our recent conversations. Lead with the most actionable insight, connect my daily data to my biomarker trends, and suggest one thing I can do today. Be concise and feel like a coach checking in.';
+  'Give me my daily health brief. Look at my latest wearable data, lab results, active protocol, and our recent conversations. Lead with the most actionable insight, connect my daily data to my biomarker trends, and suggest one thing I can do today. Keep it to 2-3 sentences.';
 
 const SUGGESTION_CONTEXT =
-  'The user just saw their daily health brief on the homepage. Generate 4 short follow-up questions they might want to ask about their health data, protocol, or daily habits. Keep each under 8 words.';
+  'The user is on their health dashboard homepage. Generate 4 short actionable questions they might want to ask about their health data, protocol, or daily habits. Keep each under 8 words.';
 
 const CHAR_DELAY_MS = 18;
 
@@ -51,55 +54,24 @@ function useTypewriter(text: string | undefined) {
 
 export function DailyBriefChat() {
   const navigate = useNavigate();
-  const transport = useMemo(() => createChatV2Transport<UIMessage>(), []);
-  const autoSentRef = useRef(false);
   const [inputValue, setInputValue] = useState('');
 
-  const { messages, sendMessage, status } = useChat({
-    id: `daily-brief-${new Date().toISOString().slice(0, 10)}`,
-    transport,
-    generateId: () => crypto.randomUUID(),
+  // Use followups endpoint for the brief text — reliable, no chat session issues
+  const { data: briefData, isLoading } = useCreateFollowups({
+    context: BRIEF_CONTEXT,
+    count: 1,
+    enabled: true,
   });
+  const briefText = briefData?.[0];
 
-  // Auto-send the daily brief prompt once chat is ready
-  useEffect(() => {
-    if (status !== 'ready') return;
-    if (autoSentRef.current) return;
-    if (messages.length > 0) return;
-
-    autoSentRef.current = true;
-    void sendMessage({
-      text: DAILY_BRIEF_PROMPT,
-      files: [],
-    });
-  }, [status, messages.length, sendMessage]);
-
-  // Extract the assistant response
-  const assistantMessage = messages.find((m) => m.role === 'assistant');
-  let briefText: string | undefined;
-  if (assistantMessage != null) {
-    for (const part of assistantMessage.parts) {
-      if (part.type === 'text') {
-        briefText = part.text;
-        break;
-      }
-    }
-  }
-
-  const isStreaming = status === 'streaming' || status === 'submitted';
-  const { displayed, done } = useTypewriter(
-    isStreaming ? undefined : briefText,
-  );
-
-  // Show streaming text directly while streaming
-  const displayText = isStreaming ? briefText : displayed;
-
-  // Fetch suggestion chips once brief is done
+  // Suggestion chips
   const { data: suggestions = [] } = useCreateFollowups({
     context: SUGGESTION_CONTEXT,
     count: 4,
-    enabled: done && briefText != null,
+    enabled: briefText != null,
   });
+
+  const { displayed, done } = useTypewriter(briefText);
 
   const handleSuggestionClick = (suggestion: string) => {
     void navigate({
@@ -117,23 +89,36 @@ export function DailyBriefChat() {
     });
   };
 
+  const handleBriefClick = () => {
+    void navigate({
+      to: '/concierge',
+      search: { defaultMessage: DAILY_BRIEF_PROMPT },
+    });
+  };
+
   return (
     <div className="flex flex-col gap-4">
       {/* Brief text */}
-      <div className="min-h-[60px]">
-        {displayText != null ? (
-          <p className="font-proreg text-sm leading-relaxed text-neutral-700">
-            {displayText}
-            {!done && !isStreaming && (
-              <span className="ml-0.5 inline-block h-3.5 w-0.5 animate-pulse bg-neutral-400" />
-            )}
-          </p>
-        ) : (
+      <div className="min-h-[48px]">
+        {isLoading ? (
           <div className="space-y-2">
             <div className="h-3 w-3/4 animate-pulse rounded bg-neutral-200/60" />
             <div className="h-3 w-1/2 animate-pulse rounded bg-neutral-200/60" />
           </div>
-        )}
+        ) : displayed.length > 0 ? (
+          <button
+            type="button"
+            onClick={handleBriefClick}
+            className="text-left transition-opacity hover:opacity-80"
+          >
+            <p className="font-proreg text-sm leading-relaxed text-neutral-700">
+              {displayed}
+              {!done && (
+                <span className="ml-0.5 inline-block h-3.5 w-0.5 animate-pulse bg-neutral-400" />
+              )}
+            </p>
+          </button>
+        ) : null}
       </div>
 
       {/* Suggestion chips */}
