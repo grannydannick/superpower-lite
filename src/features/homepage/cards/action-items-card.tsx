@@ -4,6 +4,7 @@ import { type ReactElement } from 'react';
 
 import { ActionableAccordion } from '@/components/shared/actionable-accordion';
 import { Body1, Body2 } from '@/components/ui/typography';
+import { DailyBriefChat } from '@/features/daily-brief/components/daily-brief-chat';
 import type { SourceId } from '@/features/onboarding-circle/const/sources';
 import { useOnboardingCircleStore } from '@/features/onboarding-circle/stores/onboarding-circle-store';
 import { useReportStore } from '@/features/onboarding-circle/stores/report-store';
@@ -113,21 +114,21 @@ export const ActionItemsCard = () => {
 
   const primerViewed = doneIds['combined'] != null;
 
-  // Onboarding fully complete + primer viewed → show daily insights card
+  // Onboarding fully complete + primer viewed → show live daily brief
   if (allComplete && allDone && primerViewed) {
     return (
       <div className="space-y-3">
-        <DailyInsightsCard
-          onClick={() => {
-            void navigate({
-              to: '/concierge',
-              search: {
-                defaultMessage:
-                  'Give me my daily health brief. Look at my latest wearable data, lab results, active protocol, and our recent conversations. Lead with the most actionable insight, connect my daily data to my biomarker trends, and suggest one thing I can do today.',
-              },
-            });
-          }}
-        />
+        <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+          <div className="mb-4 flex items-center gap-2">
+            <div className="from-vermillion-400 flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br to-vermillion-500">
+              <span className="text-[10px] text-white">✦</span>
+            </div>
+            <Body1 className="font-semibold text-zinc-900">
+              Your daily brief
+            </Body1>
+          </div>
+          <DailyBriefChat />
+        </div>
         <ResetButton onClick={handleReset} />
       </div>
     );
@@ -313,27 +314,6 @@ function CombinedReportCard({ onClick }: { onClick: () => void }) {
       </Body1>
       <Body2 className="leading-relaxed text-zinc-500">
         {COMBINED_REPORT.preview}
-      </Body2>
-    </button>
-  );
-}
-
-function DailyInsightsCard({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="group w-full rounded-2xl border border-zinc-200 bg-white p-5 text-left shadow-sm transition-all hover:border-zinc-300 hover:shadow-md"
-    >
-      <div className="mb-2 flex items-center gap-2">
-        <div className="from-vermillion-400 flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br to-vermillion-500">
-          <span className="text-[10px] text-white">✦</span>
-        </div>
-        <Body1 className="font-semibold text-zinc-900">Daily Insights</Body1>
-      </div>
-      <Body2 className="leading-relaxed text-zinc-500">
-        Your onboarding is complete. Tap here to get a personalized daily
-        check-in connecting your wearables, labs, and health goals.
       </Body2>
     </button>
   );
