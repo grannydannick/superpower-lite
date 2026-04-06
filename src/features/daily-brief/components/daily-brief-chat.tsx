@@ -25,7 +25,7 @@ const FULL_BRIEF_PROMPT =
 const CHAR_DELAY_MS = 18;
 
 /** Cache in localStorage so we only generate once per day */
-const BRIEF_CACHE_KEY = 'daily-brief-cache';
+const BRIEF_CACHE_KEY = 'daily-brief-cache-v2';
 
 interface CachedBrief {
   date: string;
@@ -183,7 +183,7 @@ export function DailyBriefChat() {
             onClick={handleBriefClick}
             className="group text-left transition-opacity hover:opacity-80"
           >
-            <p className="font-proreg text-sm leading-relaxed text-neutral-700">
+            <p className="line-clamp-4 font-proreg text-sm leading-relaxed text-neutral-700">
               {displayed}
               {!done && (
                 <span className="ml-0.5 inline-block h-3.5 w-0.5 animate-pulse bg-neutral-400" />
