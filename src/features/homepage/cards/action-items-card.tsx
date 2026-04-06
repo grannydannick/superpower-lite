@@ -4,21 +4,8 @@ import { type ReactElement } from 'react';
 
 import { ActionableAccordion } from '@/components/shared/actionable-accordion';
 import { Body1, Body2 } from '@/components/ui/typography';
+import type { SourceId } from '@/features/onboarding-circle/const/sources';
 import { useOnboardingCircleStore } from '@/features/onboarding-circle/stores/onboarding-circle-store';
-import { useWearables } from '@/features/settings/api/get-wearables';
-import { useUser } from '@/lib/auth';
-import { shouldShowImportMemory } from '@/utils/show-action-conditions';
-
-interface ActionItem {
-  id: string;
-  sourceId: 'wearables' | 'labs' | 'ai-context';
-  title: string;
-  completedTitle: string;
-  description: string;
-  reportPreview: string;
-  imageSrc: string;
-  onClick: () => void;
-}
 
 const COMBINED_REPORT = {
   title: 'See your early health picture',
@@ -32,6 +19,143 @@ const MOCK_REPORTS: Record<string, string> = {
   labs: 'Your cortisol is elevated at 22.4 mcg/dL and fasting glucose trending up over 3 tests. Both connect to the sleep patterns from your wearables.',
   'ai-context':
     "You've mentioned stress and low energy repeatedly. Combined with your cortisol and HRV data, we see a clear stress-recovery pattern to address.",
+};
+
+interface ActionDef {
+  id: string;
+  sourceId: SourceId;
+  title: string;
+  completedTitle: string;
+  description: string;
+  reportPreview: string;
+  imageSrc: string;
+  pendingRoute: { to: string; search?: Record<string, string> };
+  reportPrompt: string;
+}
+
+const ACTION_DEFS: ActionDef[] = [
+  {
+    id: 'connect-wearables',
+    sourceId: 'wearables',
+    title: 'Connect your wearables',
+    completedTitle: 'Wearables connected, see report →',
+    description:
+      'Link Oura, Whoop, or Apple Health to get daily insights that connect your sleep, HRV, and activity to your lab results.',
+    reportPreview: MOCK_REPORTS['wearables'],
+    imageSrc: '/data/wearables.webp',
+    pendingRoute: { to: '/settings', search: { tab: 'integrations' } },
+    reportPrompt: 'Show me my wearables insight report',
+  },
+  {
+    id: 'upload-labs',
+    sourceId: 'labs',
+    title: 'Unlock your health trends',
+    completedTitle: 'Labs are synced, see report →',
+    description:
+      "Upload past lab results and we'll show you how your biomarkers have changed over time.",
+    reportPreview: MOCK_REPORTS['labs'],
+    imageSrc: '/data/file-stack.webp',
+    pendingRoute: { to: '/concierge', search: { preset: 'upload-labs' } },
+    reportPrompt: 'Show me my lab results insight report',
+  },
+  {
+    id: 'import-memory',
+    sourceId: 'ai-context',
+    title: 'Bring your health context',
+    completedTitle: 'Health context imported, see report →',
+    description:
+      'Already use ChatGPT or Claude for health? Import those conversations so your AI coach knows your full story.',
+    reportPreview: MOCK_REPORTS['ai-context'],
+    imageSrc: '/concierge/other_llms.webp',
+    pendingRoute: { to: '/concierge', search: { preset: 'import-memory' } },
+    reportPrompt: 'Show me my imported health context report',
+  },
+];
+
+export const ActionItemsCard = () => {
+  const navigate = useNavigate();
+  const completedSources = useOnboardingCircleStore((s) => s.completedSources);
+  const completeSource = useOnboardingCircleStore((s) => s.complete);
+  const resetOnboarding = useOnboardingCircleStore((s) => s.reset);
+
+  const allComplete = ACTION_DEFS.every((a) =>
+    completedSources.has(a.sourceId),
+  );
+
+  // All complete → combined report
+  if (allComplete) {
+    return (
+      <div className="space-y-3">
+        <CombinedReportCard
+          onClick={() => {
+            void navigate({
+              to: '/concierge',
+              search: {
+                defaultMessage:
+                  'Give me a comprehensive report connecting all my data — wearables, labs, and health context. What patterns do you see and what should I focus on?',
+              },
+            });
+          }}
+        />
+        <ResetButton onClick={resetOnboarding} />
+      </div>
+    );
+  }
+
+  // Build items with completion state
+  const items: ReactElement[] = [];
+  for (const def of ACTION_DEFS) {
+    const isComplete = completedSources.has(def.sourceId);
+
+    if (isComplete) {
+      items.push(
+        <CompletedActionItem
+          key={def.id}
+          title={def.completedTitle}
+          reportPreview={def.reportPreview}
+          onClick={() => {
+            void navigate({
+              to: '/concierge',
+              search: { defaultMessage: def.reportPrompt },
+            });
+          }}
+        />,
+      );
+    } else {
+      items.push(
+        <PendingActionItem
+          key={def.id}
+          title={def.title}
+          description={def.description}
+          imageSrc={def.imageSrc}
+          onClick={() => {
+            // Mark complete and navigate
+            completeSource(def.sourceId);
+            void navigate({
+              to: def.pendingRoute.to as any,
+              search: def.pendingRoute.search as any,
+            });
+          }}
+        />,
+      );
+    }
+  }
+
+  return (
+    <>
+      <ActionableAccordion
+        title="Get started"
+        defaultOpen
+        allowCollapse
+        highlighted={false}
+        showHeaderIndicator={false}
+        showTopSeparator={false}
+      >
+        {items}
+      </ActionableAccordion>
+      <ResetButton onClick={resetOnboarding} />
+    </>
+  );
 };
 
 function CompletedActionItem({
@@ -80,160 +204,6 @@ function CombinedReportCard({ onClick }: { onClick: () => void }) {
     </button>
   );
 }
-
-export const ActionItemsCard = () => {
-  const navigate = useNavigate();
-  const { data: wearablesData } = useWearables();
-  const hasNoWearables =
-    (wearablesData?.wearables?.filter((w) => w.status === 'connected') ?? [])
-      .length === 0;
-  const { data: user } = useUser();
-  const showImportMemory = shouldShowImportMemory(user?.createdAt);
-  const completedSources = useOnboardingCircleStore((s) => s.completedSources);
-  const resetOnboarding = useOnboardingCircleStore((s) => s.reset);
-
-  const actions: ActionItem[] = [];
-
-  // Wearables — show if not connected or if completed (to show report)
-  if (hasNoWearables || completedSources.has('wearables')) {
-    actions.push({
-      id: 'connect-wearables',
-      sourceId: 'wearables',
-      title: 'Connect your wearables',
-      completedTitle: 'Wearables connected, see report →',
-      description:
-        'Link Oura, Whoop, or Apple Health to get daily insights that connect your sleep, HRV, and activity to your lab results.',
-      reportPreview: MOCK_REPORTS['wearables'],
-      imageSrc: '/data/wearables.webp',
-      onClick: () => {
-        if (completedSources.has('wearables')) {
-          void navigate({
-            to: '/concierge',
-            search: { defaultMessage: 'Show me my wearables insight report' },
-          });
-        } else {
-          void navigate({ to: '/settings', search: { tab: 'integrations' } });
-        }
-      },
-    });
-  }
-
-  // Labs — always show
-  actions.push({
-    id: 'upload-labs',
-    sourceId: 'labs',
-    title: 'Unlock your health trends',
-    completedTitle: 'Labs are synced, see report →',
-    description:
-      "Upload past lab results and we'll show you how your biomarkers have changed over time.",
-    reportPreview: MOCK_REPORTS['labs'],
-    imageSrc: '/data/file-stack.webp',
-    onClick: () => {
-      if (completedSources.has('labs')) {
-        void navigate({
-          to: '/concierge',
-          search: { defaultMessage: 'Show me my lab results insight report' },
-        });
-      } else {
-        void navigate({ to: '/concierge', search: { preset: 'upload-labs' } });
-      }
-    },
-  });
-
-  // Import AI context
-  if (showImportMemory || completedSources.has('ai-context')) {
-    actions.push({
-      id: 'import-memory-superpower-ai',
-      sourceId: 'ai-context',
-      title: 'Bring your health context',
-      completedTitle: 'Health context imported, see report →',
-      description:
-        'Already use ChatGPT or Claude for health? Import those conversations so your AI coach knows your full story.',
-      reportPreview: MOCK_REPORTS['ai-context'],
-      imageSrc: '/concierge/other_llms.webp',
-      onClick: () => {
-        if (completedSources.has('ai-context')) {
-          void navigate({
-            to: '/concierge',
-            search: {
-              defaultMessage: 'Show me my imported health context report',
-            },
-          });
-        } else {
-          void navigate({
-            to: '/concierge',
-            search: { preset: 'import-memory' },
-          });
-        }
-      },
-    });
-  }
-
-  // Check if all action source IDs are completed
-  const allComplete = actions.every((a) => completedSources.has(a.sourceId));
-
-  // If all complete, show combined report instead
-  if (allComplete && actions.length > 0) {
-    return (
-      <div className="space-y-4">
-        <CombinedReportCard
-          onClick={() => {
-            void navigate({
-              to: '/concierge',
-              search: {
-                defaultMessage:
-                  'Give me a comprehensive report connecting all my data — wearables, labs, and health context. What patterns do you see and what should I focus on?',
-              },
-            });
-          }}
-        />
-        <ResetButton onClick={resetOnboarding} />
-      </div>
-    );
-  }
-
-  const items: ReactElement[] = [];
-  for (const action of actions) {
-    const isComplete = completedSources.has(action.sourceId);
-
-    if (isComplete) {
-      items.push(
-        <CompletedActionItem
-          key={action.id}
-          title={action.completedTitle}
-          reportPreview={action.reportPreview}
-          onClick={action.onClick}
-        />,
-      );
-    } else {
-      items.push(
-        <PendingActionItem
-          key={action.id}
-          title={action.title}
-          description={action.description}
-          imageSrc={action.imageSrc}
-          onClick={action.onClick}
-        />,
-      );
-    }
-  }
-
-  return (
-    <>
-      <ActionableAccordion
-        title="Get started"
-        defaultOpen
-        allowCollapse
-        highlighted={false}
-        showHeaderIndicator={false}
-        showTopSeparator={false}
-      >
-        {items}
-      </ActionableAccordion>
-      {completedSources.size > 1 && <ResetButton onClick={resetOnboarding} />}
-    </>
-  );
-};
 
 function ResetButton({ onClick }: { onClick: () => void }) {
   return (
