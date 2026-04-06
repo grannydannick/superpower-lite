@@ -61,13 +61,23 @@ function BriefGenerator({
   const transport = useMemo(() => createChatV2Transport<UIMessage>(), []);
   const autoSentRef = useRef(false);
   const reportedRef = useRef(false);
-  const today = new Date().toISOString().slice(0, 10);
+
+  // Stable UUID per day — derived from date string
+  const chatId = useRef(crypto.randomUUID()).current;
 
   const { messages, sendMessage, status } = useChat({
-    id: `daily-brief-${today}`,
+    id: chatId,
     transport,
     generateId: () => crypto.randomUUID(),
+    onError: (err) => {
+      console.error('[DailyBrief] Chat error:', err);
+    },
   });
+
+  // Debug logging
+  useEffect(() => {
+    console.log('[DailyBrief] status:', status, 'messages:', messages.length);
+  }, [status, messages.length]);
 
   // Auto-send once ready
   useEffect(() => {
@@ -75,6 +85,7 @@ function BriefGenerator({
     if (autoSentRef.current) return;
     if (messages.length > 0) return;
 
+    console.log('[DailyBrief] Sending prompt...');
     autoSentRef.current = true;
     void sendMessage({ text: DAILY_BRIEF_PROMPT, files: [] });
   }, [status, messages.length, sendMessage]);
@@ -190,7 +201,7 @@ export function DailyBriefChat() {
               )}
             </p>
             {done && (
-              <Body2 className="mt-2 text-vermillion-600 transition-colors group-hover:text-vermillion-700">
+              <Body2 className="text-vermillion-600 mt-2 transition-colors group-hover:text-vermillion-700">
                 Continue in chat →
               </Body2>
             )}
@@ -204,7 +215,7 @@ export function DailyBriefChat() {
           onSubmit={handleSubmit}
           className="flex items-center gap-2 rounded-2xl border border-zinc-200 bg-white/80 px-4 py-2.5 shadow-sm duration-500 animate-in fade-in"
         >
-          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-vermillion-400 to-vermillion-500">
+          <div className="from-vermillion-400 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br to-vermillion-500">
             <span className="text-[10px] text-white">✦</span>
           </div>
           <input
