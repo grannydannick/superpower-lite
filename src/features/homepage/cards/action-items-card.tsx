@@ -40,8 +40,6 @@ interface ActionDef {
   description: string;
   imageSrc: string;
   pendingRoute: { to: string; search?: Record<string, string> };
-  /** If true, completing this action navigates away from concierge (e.g. settings) */
-  navigatesAway: boolean;
 }
 
 const ACTION_DEFS: ActionDef[] = [
@@ -54,7 +52,6 @@ const ACTION_DEFS: ActionDef[] = [
       'Link Oura, Whoop, or Apple Health to get daily insights that connect your sleep, HRV, and activity to your lab results.',
     imageSrc: '/data/wearables.webp',
     pendingRoute: { to: '/settings', search: { tab: 'integrations' } },
-    navigatesAway: true,
   },
   {
     id: 'upload-labs',
@@ -65,7 +62,6 @@ const ACTION_DEFS: ActionDef[] = [
       "Upload past lab results and we'll show you how your biomarkers have changed over time.",
     imageSrc: '/data/file-stack.webp',
     pendingRoute: { to: '/concierge', search: { preset: 'upload-labs' } },
-    navigatesAway: false,
   },
   {
     id: 'import-memory',
@@ -76,23 +72,21 @@ const ACTION_DEFS: ActionDef[] = [
       'Already use ChatGPT or Claude for health? Import those conversations so your AI coach knows your full story.',
     imageSrc: '/concierge/other_llms.webp',
     pendingRoute: { to: '/concierge', search: { preset: 'import-memory' } },
-    navigatesAway: false,
   },
 ];
 
 /**
- * Check if any action is "in progress" — completed but report not yet viewed/generated.
- * For chat-based actions (labs/import): in progress until user marks done.
- * For navigate-away actions (wearables): in progress until user marks done.
+ * "done" means the user completed the action AND marked it done.
+ * We track this separately from completion because the user may still
+ * be in the middle of the flow (e.g., chatting in concierge).
  */
 function hasActiveAction(
   completedSources: Set<SourceId>,
-  threadIds: Record<string, string>,
+  doneIds: Record<string, string>,
 ): boolean {
   for (const def of ACTION_DEFS) {
     if (!completedSources.has(def.sourceId)) continue;
-    // Completed but no thread ID yet = still in progress
-    if (threadIds[def.sourceId] == null) return true;
+    if (doneIds[def.sourceId] == null) return true;
   }
   return false;
 }
@@ -102,63 +96,31 @@ export const ActionItemsCard = () => {
   const completedSources = useOnboardingCircleStore((s) => s.completedSources);
   const completeSource = useOnboardingCircleStore((s) => s.complete);
   const resetOnboarding = useOnboardingCircleStore((s) => s.reset);
-  const threadIds = useReportStore((s) => s.threadIds);
-  const setThreadId = useReportStore((s) => s.setThreadId);
+  const doneIds = useReportStore((s) => s.threadIds);
+  const markDone = useReportStore((s) => s.setThreadId);
   const resetReports = useReportStore((s) => s.reset);
 
   const allComplete = ACTION_DEFS.every((a) =>
     completedSources.has(a.sourceId),
   );
-  const allReportsReady = ACTION_DEFS.every(
-    (a) => threadIds[a.sourceId] != null,
-  );
-  const isBusy = hasActiveAction(completedSources, threadIds);
+  const allDone = ACTION_DEFS.every((a) => doneIds[a.sourceId] != null);
+  const isBusy = hasActiveAction(completedSources, doneIds);
 
   const handleReset = () => {
     resetOnboarding();
     resetReports();
   };
 
-  /** Navigate to report — first time generates via defaultMessage, subsequent visits open the thread */
-  const navigateToReport = (sourceId: string) => {
-    const existingThread = threadIds[sourceId];
-    if (existingThread != null) {
-      // Already generated — go to the thread
-      void navigate({ to: `/concierge/${existingThread}` as any });
-    } else {
-      // First time — generate via defaultMessage, store a marker
-      // The concierge will create a thread. We store 'pending' and update on return.
-      const prompt = REPORT_PROMPTS[sourceId];
-      if (prompt != null) {
-        // Use a deterministic ID so we can find it later
-        const markerId = `report-${sourceId}`;
-        setThreadId(sourceId, markerId);
-        void navigate({
-          to: '/concierge',
-          search: { defaultMessage: prompt },
-        });
-      }
-    }
-  };
-
-  // All complete + all reports ready → combined report
-  if (allComplete && allReportsReady) {
-    const combinedThread = threadIds['combined'];
-
+  // All steps completed and marked done → show combined report
+  if (allComplete && allDone) {
     return (
       <div className="space-y-3">
         <CombinedReportCard
           onClick={() => {
-            if (combinedThread != null) {
-              void navigate({ to: `/concierge/${combinedThread}` as any });
-            } else {
-              const markerId = 'report-combined';
-              setThreadId('combined', markerId);
-              void navigate({
-                to: '/concierge',
-                search: { defaultMessage: REPORT_PROMPTS['combined'] },
-              });
-            }
+            void navigate({
+              to: '/concierge',
+              search: { defaultMessage: REPORT_PROMPTS['combined'] },
+            });
           }}
         />
         <ResetButton onClick={handleReset} />
@@ -170,40 +132,41 @@ export const ActionItemsCard = () => {
   const items: ReactElement[] = [];
   for (const def of ACTION_DEFS) {
     const isComplete = completedSources.has(def.sourceId);
-    const hasThread = threadIds[def.sourceId] != null;
+    const isDone = doneIds[def.sourceId] != null;
 
-    if (isComplete && hasThread) {
-      // Done — report generated, link to it
+    if (isComplete && isDone) {
+      // Fully done — show report CTA
       items.push(
         <CompletedActionItem
           key={def.id}
           title={def.completedTitle}
           reportPreview={MOCK_PREVIEWS[def.sourceId]}
-          onClick={() => navigateToReport(def.sourceId)}
+          onClick={() => {
+            void navigate({
+              to: '/concierge',
+              search: { defaultMessage: REPORT_PROMPTS[def.sourceId] },
+            });
+          }}
         />,
       );
-    } else if (isComplete && !hasThread) {
-      // Completed the action but hasn't generated report yet
+    } else if (isComplete && !isDone) {
+      // Action done, waiting for user to come back and mark done
       items.push(
         <InProgressActionItem
           key={def.id}
           title={def.title}
-          onMarkDone={() => {
-            // Mark as done — next "see report" click will generate
-            setThreadId(def.sourceId, `awaiting-report-${def.sourceId}`);
-          }}
+          onMarkDone={() => markDone(def.sourceId, 'done')}
         />,
       );
     } else {
       // Pending
-      const isGated = isBusy;
       items.push(
         <PendingActionItem
           key={def.id}
           title={def.title}
           description={def.description}
           imageSrc={def.imageSrc}
-          disabled={isGated}
+          disabled={isBusy}
           onClick={() => {
             completeSource(def.sourceId);
             void navigate({
