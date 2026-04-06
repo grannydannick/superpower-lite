@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router';
-import { Check, ChevronRight, Loader2 } from 'lucide-react';
+import { Check, ChevronRight, Loader2, Lock } from 'lucide-react';
 import { type ReactElement } from 'react';
 
 import { ActionableAccordion } from '@/components/shared/actionable-accordion';
@@ -23,13 +23,9 @@ const MOCK_PREVIEWS: Record<string, string> = {
     "You've flagged stress, low energy, and focus issues across conversations. Mapped against your intake and wearable data, these cluster around a stress-recovery axis.",
 };
 
-const REPORT_PROMPTS: Record<string, string> = {
-  wearables:
-    'Generate a wearable data insight report. Analyze my sleep, HRV, heart rate, steps, and activity data from my connected wearable. Cross-reference with any other data you have about me — my intake, health goals, symptoms, and any prior labs. Highlight: 1) Key patterns in my wearable data, 2) What these patterns might mean for my upcoming bloodwork, 3) One specific thing I should focus on this week based on the data. Be specific with numbers.',
-  labs: 'Generate a lab results insight report. Analyze my uploaded lab results and identify trends across my biomarkers. Cross-reference with everything else you know about me — my wearable data, intake, health goals, and any imported health conversations. Highlight: 1) Biomarkers that are trending in a concerning direction, 2) Connections between my lab results and my daily data (sleep, HRV, activity), 3) What to watch for in my next test. Be specific with numbers and timeframes.',
-  'ai-context':
-    "Generate a health context insight report based on my imported AI conversations. Map the themes, symptoms, and health concerns I've discussed against all the other data you have — my intake, wearable metrics, and any lab results. Highlight: 1) Recurring health themes and how they connect to my actual data, 2) Concerns I've raised that are supported (or contradicted) by my numbers, 3) Blind spots — things my data suggests I should pay attention to that I haven't mentioned. Be specific.",
-};
+// Only wearables gets a background report — labs and import happen inline in the chat thread
+const WEARABLES_REPORT_PROMPT =
+  'Generate a wearable data insight report. Analyze my sleep, HRV, heart rate, steps, and activity data from my connected wearable. Cross-reference with any other data you have about me — my intake, health goals, symptoms, and any prior labs. Highlight: 1) Key patterns in my wearable data, 2) What these patterns might mean for my upcoming bloodwork, 3) One specific thing I should focus on this week based on the data. Be specific with numbers.';
 
 const COMBINED_PROMPT =
   'Generate my Pre-Protocol Primer — a comprehensive report synthesizing ALL my data before my protocol begins. Connect the dots across my wearable data (sleep, HRV, activity), my lab results and biomarker trends, my health intake (symptoms, goals, medical history), and my imported health conversations. Structure it as: 1) Your health snapshot — key findings across all data sources, 2) Patterns — connections between your daily data and your bloodwork, 3) What your protocol will likely target based on this picture, 4) Three things to focus on right now while you wait for your protocol. Be specific with numbers, timeframes, and data points. This is the most important report — it ties everything together.';
@@ -42,6 +38,8 @@ interface ActionDef {
   description: string;
   imageSrc: string;
   pendingRoute: { to: string; search?: Record<string, string> };
+  /** If true, report is generated via background chat. If false, report is inline in the concierge thread. */
+  backgroundReport: boolean;
 }
 
 const ACTION_DEFS: ActionDef[] = [
@@ -54,6 +52,7 @@ const ACTION_DEFS: ActionDef[] = [
       'Link Oura, Whoop, or Apple Health to get daily insights that connect your sleep, HRV, and activity to your lab results.',
     imageSrc: '/data/wearables.webp',
     pendingRoute: { to: '/settings', search: { tab: 'integrations' } },
+    backgroundReport: true,
   },
   {
     id: 'upload-labs',
@@ -64,6 +63,7 @@ const ACTION_DEFS: ActionDef[] = [
       "Upload past lab results and we'll show you how your biomarkers have changed over time.",
     imageSrc: '/data/file-stack.webp',
     pendingRoute: { to: '/concierge', search: { preset: 'upload-labs' } },
+    backgroundReport: false,
   },
   {
     id: 'import-memory',
@@ -74,8 +74,43 @@ const ACTION_DEFS: ActionDef[] = [
       'Already use ChatGPT or Claude for health? Import those conversations so your AI coach knows your full story.',
     imageSrc: '/concierge/other_llms.webp',
     pendingRoute: { to: '/concierge', search: { preset: 'import-memory' } },
+    backgroundReport: false,
   },
 ];
+
+/**
+ * Determine if any action is currently "busy" — either generating a background
+ * report or the user is in the middle of a chat-based action (marked complete
+ * but no report yet for non-background actions).
+ */
+function hasActiveAction(
+  completedSources: Set<SourceId>,
+  reports: Record<string, { threadId: string; status: string }>,
+): boolean {
+  for (const def of ACTION_DEFS) {
+    const isComplete = completedSources.has(def.sourceId);
+    const report = reports[def.sourceId];
+
+    if (!isComplete) continue;
+
+    // Background report still generating
+    if (
+      def.backgroundReport &&
+      (report == null || report.status === 'generating')
+    ) {
+      return true;
+    }
+
+    // Chat-based action: completed but report not marked ready yet
+    if (
+      !def.backgroundReport &&
+      (report == null || report.status !== 'ready')
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
 
 export const ActionItemsCard = () => {
   const navigate = useNavigate();
@@ -84,34 +119,34 @@ export const ActionItemsCard = () => {
   const resetOnboarding = useOnboardingCircleStore((s) => s.reset);
   const reports = useReportStore((s) => s.reports);
   const startReport = useReportStore((s) => s.startReport);
+  const completeReport = useReportStore((s) => s.completeReport);
   const resetReports = useReportStore((s) => s.reset);
 
   const allComplete = ACTION_DEFS.every((a) =>
     completedSources.has(a.sourceId),
   );
+  const isBusy = hasActiveAction(completedSources, reports);
 
   const handleReset = () => {
     resetOnboarding();
     resetReports();
   };
 
-  // Collect active report runners (generating state)
+  // Background report runner for wearables
   const runners: ReactElement[] = [];
-  for (const def of ACTION_DEFS) {
-    const report = reports[def.sourceId];
-    if (report != null && report.status === 'generating') {
-      runners.push(
-        <ReportRunner
-          key={`runner-${def.sourceId}`}
-          sourceId={def.sourceId}
-          threadId={report.threadId}
-          prompt={REPORT_PROMPTS[def.sourceId]}
-        />,
-      );
-    }
+  const wearablesReport = reports['wearables'];
+  if (wearablesReport != null && wearablesReport.status === 'generating') {
+    runners.push(
+      <ReportRunner
+        key="runner-wearables"
+        sourceId="wearables"
+        threadId={wearablesReport.threadId}
+        prompt={WEARABLES_REPORT_PROMPT}
+      />,
+    );
   }
 
-  // Check if combined report needs generating
+  // Combined report runner
   const combinedReport = reports['combined' as SourceId];
   if (combinedReport != null && combinedReport.status === 'generating') {
     runners.push(
@@ -126,10 +161,8 @@ export const ActionItemsCard = () => {
 
   // All complete → combined report
   if (allComplete) {
-    // Auto-start combined report if not started yet
     if (combinedReport == null) {
       const threadId = `pre-protocol-primer-${Date.now()}`;
-      // Defer to avoid setState during render
       setTimeout(() => startReport('combined' as SourceId, threadId), 0);
     }
 
@@ -160,9 +193,10 @@ export const ActionItemsCard = () => {
   for (const def of ACTION_DEFS) {
     const isComplete = completedSources.has(def.sourceId);
     const report = reports[def.sourceId];
+    const isReportReady = report != null && report.status === 'ready';
 
-    if (isComplete && report != null && report.status === 'ready') {
-      // Report ready — show completed with link to thread
+    if (isComplete && isReportReady) {
+      // Done — report ready, link to thread
       items.push(
         <CompletedActionItem
           key={def.id}
@@ -173,21 +207,41 @@ export const ActionItemsCard = () => {
           }}
         />,
       );
-    } else if (isComplete) {
-      // Completed but report still generating
+    } else if (isComplete && def.backgroundReport) {
+      // Wearables: completed, background report generating
       items.push(<GeneratingActionItem key={def.id} title={def.title} />);
+    } else if (isComplete && !def.backgroundReport) {
+      // Labs/Import: completed via chat, user needs to mark done when back
+      // Show as "in progress in concierge" with a "mark complete" button
+      items.push(
+        <InProgressActionItem
+          key={def.id}
+          title={def.title}
+          onMarkComplete={() => {
+            // For chat-based actions, we use the concierge thread as the report
+            // The thread ID is the preset chat — mark as ready with a placeholder
+            const threadId = `chat-${def.sourceId}-${Date.now()}`;
+            startReport(def.sourceId, threadId);
+            completeReport(def.sourceId);
+          }}
+        />,
+      );
     } else {
-      // Pending
+      // Pending — check if gated
+      const isGated = isBusy;
       items.push(
         <PendingActionItem
           key={def.id}
           title={def.title}
           description={def.description}
           imageSrc={def.imageSrc}
+          disabled={isGated}
           onClick={() => {
             completeSource(def.sourceId);
-            const threadId = `report-${def.sourceId}-${Date.now()}`;
-            startReport(def.sourceId, threadId);
+            if (def.backgroundReport) {
+              const threadId = `report-${def.sourceId}-${Date.now()}`;
+              startReport(def.sourceId, threadId);
+            }
             void navigate({
               to: def.pendingRoute.to as any,
               search: def.pendingRoute.search as any,
@@ -224,6 +278,31 @@ function GeneratingActionItem({ title }: { title: string }) {
         <Body1 className="text-zinc-600">{title}</Body1>
         <Body2 className="text-zinc-400">Generating your report...</Body2>
       </div>
+    </div>
+  );
+}
+
+function InProgressActionItem({
+  title,
+  onMarkComplete,
+}: {
+  title: string;
+  onMarkComplete: () => void;
+}) {
+  return (
+    <div className="flex items-center gap-3 px-4 py-4">
+      <Loader2 className="size-5 shrink-0 animate-spin text-vermillion-500" />
+      <div className="flex-1">
+        <Body1 className="text-zinc-600">{title}</Body1>
+        <Body2 className="text-zinc-400">Complete this in the concierge</Body2>
+      </div>
+      <button
+        type="button"
+        onClick={onMarkComplete}
+        className="shrink-0 rounded-lg bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-200"
+      >
+        Done
+      </button>
     </div>
   );
 }
@@ -306,22 +385,29 @@ function PendingActionItem({
   description,
   imageSrc,
   onClick,
+  disabled,
 }: {
   title: string;
   description: string;
   imageSrc: string;
   onClick: () => void;
+  disabled: boolean;
 }) {
   return (
     <button
       type="button"
-      onClick={onClick}
-      className="group relative flex w-full items-center gap-3 px-4 py-4 text-left outline-none transition-colors hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-ring"
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
+      className="group relative flex w-full items-center gap-3 px-4 py-4 text-left outline-none transition-colors hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
     >
       <div className="flex shrink-0 items-center">
-        <div className="relative flex size-4 items-center justify-center rounded-full bg-vermillion-100">
-          <div className="size-1.5 rounded-full bg-vermillion-900" />
-        </div>
+        {disabled ? (
+          <Lock className="size-4 text-zinc-300" />
+        ) : (
+          <div className="relative flex size-4 items-center justify-center rounded-full bg-vermillion-100">
+            <div className="size-1.5 rounded-full bg-vermillion-900" />
+          </div>
+        )}
         <img
           src={imageSrc}
           alt=""
