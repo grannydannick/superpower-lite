@@ -9,21 +9,16 @@ import { createChatV2Transport } from '@/features/messages/utils/chatv2-transpor
 const STORAGE_KEY = 'wearable-report-pending';
 
 function buildReportPrompt(providerName: string) {
-  return `Generate a comprehensive wearables insight report for me. I just connected ${providerName}.
+  return `I just connected ${providerName}. Generate an insight report analyzing my wearable data and cross-referencing it with EVERYTHING else you know about me — my health intake, symptoms, goals, any prior labs, and any imported health conversations.
 
-Analyze my wearable data and connect the dots between:
-- My wearable metrics (sleep, HRV, heart rate, steps, activity)
-- My lab results and biomarker trends
-- My health history and intake goals
-- My active protocol recommendations
+This report should be compounding — don't just analyze the wearable data in isolation. Connect the dots:
 
-Structure the report as:
-1. Key findings from the wearable data
-2. Connections between my wearable data and my labs/biomarkers
-3. Actionable insights — what should I focus on based on the combined picture
-4. One specific recommendation for this week
+1. **Key wearable findings** — What does my sleep, HRV, heart rate, steps, and activity data show? Be specific with numbers and trends.
+2. **Cross-references** — How do these patterns connect to my intake data (symptoms, conditions, goals), my lab results (if any), and my health conversations (if imported)? What corroborates what?
+3. **What to watch for** — Based on the combined picture, what should my upcoming bloodwork or protocol likely target?
+4. **One thing to do this week** — A specific, actionable recommendation grounded in the data.
 
-Be specific with numbers and data points. This is a detailed report, not a brief.`;
+Be specific with numbers, timeframes, and data points. Don't be generic — reference MY actual data.`;
 }
 
 interface PendingReport {

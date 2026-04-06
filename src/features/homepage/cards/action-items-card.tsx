@@ -8,17 +8,17 @@ import type { SourceId } from '@/features/onboarding-circle/const/sources';
 import { useOnboardingCircleStore } from '@/features/onboarding-circle/stores/onboarding-circle-store';
 
 const COMBINED_REPORT = {
-  title: 'See your early health picture',
+  title: 'Your Pre-Protocol Primer is ready',
   preview:
-    'Your data shows a declining HRV over the last 30 days, lining up with your fatigue. Your cortisol is elevated and sleep efficiency is below average — a post-dinner walk routine could help on multiple fronts.',
+    "We've connected the dots across your wearables, labs, health history, and goals. Here's what we see before your protocol begins — and what to watch for.",
 };
 
 const MOCK_REPORTS: Record<string, string> = {
   wearables:
-    'Your data shows a declining HRV over the last 30 days, lining up with your fatigue. Sleep efficiency averaged 78% — below optimal.',
-  labs: 'Your cortisol is elevated at 22.4 mcg/dL and fasting glucose trending up over 3 tests. Both connect to the sleep patterns from your wearables.',
+    "Sleep efficiency averaged 78% with a declining HRV trend. We'll cross-reference this with your upcoming bloodwork to check for cortisol or thyroid links.",
+  labs: 'Fasting glucose trending up across 3 draws. Combined with your wearable sleep data, this points to a recovery pattern worth addressing in your protocol.',
   'ai-context':
-    "You've mentioned stress and low energy repeatedly. Combined with your cortisol and HRV data, we see a clear stress-recovery pattern to address.",
+    "You've flagged stress, low energy, and focus issues across conversations. Mapped against your intake and wearable data, these cluster around a stress-recovery axis.",
 };
 
 interface ActionDef {
@@ -44,7 +44,8 @@ const ACTION_DEFS: ActionDef[] = [
     reportPreview: MOCK_REPORTS['wearables'],
     imageSrc: '/data/wearables.webp',
     pendingRoute: { to: '/settings', search: { tab: 'integrations' } },
-    reportPrompt: 'Show me my wearables insight report',
+    reportPrompt:
+      'Generate a wearable data insight report. Analyze my sleep, HRV, heart rate, steps, and activity data from my connected wearable. Cross-reference with any other data you have about me — my intake, health goals, symptoms, and any prior labs. Highlight: 1) Key patterns in my wearable data, 2) What these patterns might mean for my upcoming bloodwork, 3) One specific thing I should focus on this week based on the data. Be specific with numbers.',
   },
   {
     id: 'upload-labs',
@@ -56,7 +57,8 @@ const ACTION_DEFS: ActionDef[] = [
     reportPreview: MOCK_REPORTS['labs'],
     imageSrc: '/data/file-stack.webp',
     pendingRoute: { to: '/concierge', search: { preset: 'upload-labs' } },
-    reportPrompt: 'Show me my lab results insight report',
+    reportPrompt:
+      'Generate a lab results insight report. Analyze my uploaded lab results and identify trends across my biomarkers. Cross-reference with everything else you know about me — my wearable data, intake, health goals, and any imported health conversations. Highlight: 1) Biomarkers that are trending in a concerning direction, 2) Connections between my lab results and my daily data (sleep, HRV, activity), 3) What to watch for in my next test. Be specific with numbers and timeframes.',
   },
   {
     id: 'import-memory',
@@ -68,7 +70,8 @@ const ACTION_DEFS: ActionDef[] = [
     reportPreview: MOCK_REPORTS['ai-context'],
     imageSrc: '/concierge/other_llms.webp',
     pendingRoute: { to: '/concierge', search: { preset: 'import-memory' } },
-    reportPrompt: 'Show me my imported health context report',
+    reportPrompt:
+      "Generate a health context insight report based on my imported AI conversations. Map the themes, symptoms, and health concerns I've discussed against all the other data you have — my intake, wearable metrics, and any lab results. Highlight: 1) Recurring health themes and how they connect to my actual data, 2) Concerns I've raised that are supported (or contradicted) by my numbers, 3) Blind spots — things my data suggests I should pay attention to that I haven't mentioned. Be specific.",
   },
 ];
 
@@ -92,7 +95,7 @@ export const ActionItemsCard = () => {
               to: '/concierge',
               search: {
                 defaultMessage:
-                  'Give me a comprehensive report connecting all my data — wearables, labs, and health context. What patterns do you see and what should I focus on?',
+                  'Generate my Pre-Protocol Primer — a comprehensive report synthesizing ALL my data before my protocol begins. Connect the dots across my wearable data (sleep, HRV, activity), my lab results and biomarker trends, my health intake (symptoms, goals, medical history), and my imported health conversations. Structure it as: 1) Your health snapshot — key findings across all data sources, 2) Patterns — connections between your daily data and your bloodwork, 3) What your protocol will likely target based on this picture, 4) Three things to focus on right now while you wait for your protocol. Be specific with numbers, timeframes, and data points. This is the most important report — it ties everything together.',
               },
             });
           }}
