@@ -4,21 +4,20 @@ import { useEffect, useRef, useState } from 'react';
 import { Body2 } from '@/components/ui/typography';
 import { useCreateFollowups } from '@/features/messages/api/create-followups';
 
-const BRIEF_CONTEXT = `You are generating a personalized daily health check-in for this Superpower member. This will be displayed on their homepage dashboard.
+const BRIEF_CONTEXT = `Generate a short daily check-in for the member's homepage. Use their real data. THREE lines max, structured exactly like this:
 
-CRITICAL: You MUST reference the member's ACTUAL health data. Use recall to look up their biomarker results, wearable metrics, protocol goals, intake responses, and recent conversations. Do NOT give generic advice.
+Line 1: Their current focus area (from protocol or goals). Keep to ~10 words.
+Line 2: One specific data point or trend you're seeing. Use a real number. No URLs or links. ~15 words max.
+Line 3: A short, engaging question for them to reply to. ~10 words.
 
-Write exactly ONE item that follows this structure:
-- Start with a specific data observation (e.g. "Your fasting glucose came in at 103 on your last draw" or "Your HRV averaged 42ms this week, down from 56ms last month")
-- Connect it to something actionable or ask a follow-up question
-- Keep it to 2-3 sentences total
-- End with a question the member can reply to
+Example:
+"Focus: improving sleep quality for metabolic health. Your HRV rebounded to 76ms last night — up from 22ms two days ago. What time did you get to bed?"
 
-If you cannot find specific data, reference their intake goals or recent conversation topics instead of being generic.
-
-Good example: "Your cortisol came back elevated at 22.4 mcg/dL, which lines up with the stress and sleep issues you mentioned. Your protocol includes a post-dinner walk to help — have you been fitting those in?"
-
-Bad example: "How are you feeling today? Let me know if you need anything." (too generic, no data)`;
+RULES:
+- NO URLs, links, FHIR references, or markdown
+- NO long paragraphs — three short lines only
+- Use plain numbers (e.g. "cortisol 23 mcg/dL") not citation formats
+- Be warm and conversational, not clinical`;
 
 const DAILY_BRIEF_PROMPT =
   'Give me my full daily health brief. Recall all my data — wearables, labs, protocol, and our recent conversations. Lead with the most actionable insight, reference specific numbers, connect my daily data to my biomarker trends, and suggest one thing I can do today. End with a question.';
