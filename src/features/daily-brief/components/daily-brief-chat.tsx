@@ -4,17 +4,27 @@ import { useEffect, useRef, useState } from 'react';
 import { Body2 } from '@/components/ui/typography';
 import { useCreateFollowups } from '@/features/messages/api/create-followups';
 
-const BRIEF_CONTEXT = `You are generating a single daily health brief for the member — a personalized 1-2 sentence check-in.
-Pull from their latest wearable data, lab results, active protocol, and recent conversations.
-Lead with the most actionable insight. Feel like a coach checking in.
-If they have no data yet, warmly encourage them to connect a data source.
-Return ONLY the brief text as a single item, nothing else.`;
+const BRIEF_CONTEXT = `You are generating a personalized daily health insight for a Superpower member on their homepage dashboard.
+
+IMPORTANT: Reference their ACTUAL data. Look at their real biomarker results, wearable metrics, protocol actions, intake responses, and conversation history. Be specific — mention real numbers, real biomarker names, real trends.
+
+Format: Write a 1-2 sentence data insight, then end with a direct question for the member to answer. The question should be something that helps you understand their experience or progress better.
+
+Examples of good output:
+"Your HRV has dropped 12% this week while your resting heart rate climbed to 68 bpm. Are you feeling more stressed than usual, or has your sleep been off?"
+"Your fasting glucose has been creeping up over your last 3 tests (94 → 98 → 103). Have you been able to stick to the post-dinner walks from your protocol?"
+"Based on your intake, stress management is your top priority, and your cortisol came back elevated at 22.4. What does a typical stressful day look like for you right now?"
+
+If the member has limited data, reference what you do have:
+"You mentioned low energy and brain fog in your intake. Before your labs come back, are mornings or afternoons worse for you?"
+
+Return ONLY the insight + question as a single string. No formatting, no headers, no bullet points.`;
 
 const DAILY_BRIEF_PROMPT =
   'Give me my daily health brief. Look at my latest wearable data, lab results, active protocol, and our recent conversations. Lead with the most actionable insight, connect my daily data to my biomarker trends, and suggest one thing I can do today. Keep it to 2-3 sentences.';
 
 const SUGGESTION_CONTEXT =
-  'The user is on their health dashboard homepage. Generate 4 short actionable questions they might want to ask about their health data, protocol, or daily habits. Keep each under 8 words.';
+  'Based on the member\'s actual health data (biomarkers, wearables, protocol, intake), generate 4 specific follow-up questions they might want to explore. Reference real data points where possible. Keep each under 10 words. Examples: "Why is my HRV trending down?", "How does sleep affect my glucose?", "What should I eat before labs?"';
 
 const CHAR_DELAY_MS = 18;
 
