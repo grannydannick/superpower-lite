@@ -117,10 +117,20 @@ export const ActionItemsCard = () => {
       <div className="space-y-3">
         <CombinedReportCard
           onClick={() => {
-            void navigate({
-              to: '/concierge',
-              search: { defaultMessage: REPORT_PROMPTS['combined'] },
-            });
+            const combinedThread = doneIds['combined'];
+            if (combinedThread != null && combinedThread !== 'done') {
+              void navigate({
+                to: `/concierge/${combinedThread}` as any,
+              });
+            } else {
+              void navigate({
+                to: '/concierge',
+                search: {
+                  defaultMessage: REPORT_PROMPTS['combined'],
+                  reportSource: 'combined',
+                },
+              });
+            }
           }}
         />
         <ResetButton onClick={handleReset} />
@@ -136,16 +146,30 @@ export const ActionItemsCard = () => {
 
     if (isComplete && isDone) {
       // Fully done — show report CTA
+      const existingThreadId = doneIds[def.sourceId];
+      const hasRealThread =
+        existingThreadId != null && existingThreadId !== 'done';
       items.push(
         <CompletedActionItem
           key={def.id}
           title={def.completedTitle}
           reportPreview={MOCK_PREVIEWS[def.sourceId]}
           onClick={() => {
-            void navigate({
-              to: '/concierge',
-              search: { defaultMessage: REPORT_PROMPTS[def.sourceId] },
-            });
+            if (hasRealThread) {
+              // Thread already exists — navigate directly
+              void navigate({
+                to: `/concierge/${existingThreadId}` as any,
+              });
+            } else {
+              // First time — generate report, pass reportSource so thread ID gets captured
+              void navigate({
+                to: '/concierge',
+                search: {
+                  defaultMessage: REPORT_PROMPTS[def.sourceId],
+                  reportSource: def.sourceId,
+                },
+              });
+            }
           }}
         />,
       );

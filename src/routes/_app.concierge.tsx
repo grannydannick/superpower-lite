@@ -13,6 +13,7 @@ const conciergeSearchSchema = z.object({
   ctxMessageId: z.string().optional(),
   previewFileId: z.string().optional().catch(undefined),
   autoSend: z.boolean().optional(),
+  reportSource: z.string().optional(),
 });
 
 export const Route = createFileRoute('/_app/concierge')({

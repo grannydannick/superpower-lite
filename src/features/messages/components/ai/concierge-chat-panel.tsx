@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { useMessages } from '@/features/messages/api/get-messages';
+import { useReportStore } from '@/features/onboarding-circle/stores/report-store';
 import { useUser } from '@/lib/auth';
 
 import { Chat } from './chat';
@@ -94,11 +95,33 @@ export function ConciergeChatPanel() {
     from: '/_app/concierge',
     select: (search) => search.preset,
   });
+  const reportSource = useSearch({
+    from: '/_app/concierge',
+    select: (search) => search.reportSource,
+  });
   const { data: user } = useUser();
 
   const previousRouteIdRef = useRef<string | undefined>(routeId);
   const previousPresetRef = useRef<string | undefined>(preset);
+  const reportSourceRef = useRef<string | undefined>(reportSource);
+  const reportSavedRef = useRef(false);
   const draftSessionRef = useRef<ConciergeChatSession | null>(null);
+
+  // Track reportSource from initial navigation
+  if (reportSource != null && reportSourceRef.current == null) {
+    reportSourceRef.current = reportSource;
+  }
+
+  // When the URL changes from /concierge?reportSource=X to /concierge/{id},
+  // capture the thread ID in the report store
+  useEffect(() => {
+    if (routeId == null) return;
+    if (reportSourceRef.current == null) return;
+    if (reportSavedRef.current) return;
+
+    reportSavedRef.current = true;
+    useReportStore.getState().setThreadId(reportSourceRef.current, routeId);
+  }, [routeId]);
 
   if (routeId == null) {
     const enteredDraftFromPersistedRoute = previousRouteIdRef.current != null;
