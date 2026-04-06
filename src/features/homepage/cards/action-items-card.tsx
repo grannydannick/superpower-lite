@@ -1,11 +1,13 @@
 import { useNavigate } from '@tanstack/react-router';
-import { Check, ChevronRight } from 'lucide-react';
+import { Check, ChevronRight, Loader2 } from 'lucide-react';
 import { type ReactElement } from 'react';
 
 import { ActionableAccordion } from '@/components/shared/actionable-accordion';
 import { Body1, Body2 } from '@/components/ui/typography';
+import { ReportRunner } from '@/features/onboarding-circle/components/report-runner';
 import type { SourceId } from '@/features/onboarding-circle/const/sources';
 import { useOnboardingCircleStore } from '@/features/onboarding-circle/stores/onboarding-circle-store';
+import { useReportStore } from '@/features/onboarding-circle/stores/report-store';
 
 const COMBINED_REPORT = {
   title: 'Your Pre-Protocol Primer is ready',
@@ -13,7 +15,7 @@ const COMBINED_REPORT = {
     "We've connected the dots across your wearables, labs, health history, and goals. Here's what we see before your protocol begins — and what to watch for.",
 };
 
-const MOCK_REPORTS: Record<string, string> = {
+const MOCK_PREVIEWS: Record<string, string> = {
   wearables:
     "Sleep efficiency averaged 78% with a declining HRV trend. We'll cross-reference this with your upcoming bloodwork to check for cortisol or thyroid links.",
   labs: 'Fasting glucose trending up across 3 draws. Combined with your wearable sleep data, this points to a recovery pattern worth addressing in your protocol.',
@@ -21,16 +23,25 @@ const MOCK_REPORTS: Record<string, string> = {
     "You've flagged stress, low energy, and focus issues across conversations. Mapped against your intake and wearable data, these cluster around a stress-recovery axis.",
 };
 
+const REPORT_PROMPTS: Record<string, string> = {
+  wearables:
+    'Generate a wearable data insight report. Analyze my sleep, HRV, heart rate, steps, and activity data from my connected wearable. Cross-reference with any other data you have about me — my intake, health goals, symptoms, and any prior labs. Highlight: 1) Key patterns in my wearable data, 2) What these patterns might mean for my upcoming bloodwork, 3) One specific thing I should focus on this week based on the data. Be specific with numbers.',
+  labs: 'Generate a lab results insight report. Analyze my uploaded lab results and identify trends across my biomarkers. Cross-reference with everything else you know about me — my wearable data, intake, health goals, and any imported health conversations. Highlight: 1) Biomarkers that are trending in a concerning direction, 2) Connections between my lab results and my daily data (sleep, HRV, activity), 3) What to watch for in my next test. Be specific with numbers and timeframes.',
+  'ai-context':
+    "Generate a health context insight report based on my imported AI conversations. Map the themes, symptoms, and health concerns I've discussed against all the other data you have — my intake, wearable metrics, and any lab results. Highlight: 1) Recurring health themes and how they connect to my actual data, 2) Concerns I've raised that are supported (or contradicted) by my numbers, 3) Blind spots — things my data suggests I should pay attention to that I haven't mentioned. Be specific.",
+};
+
+const COMBINED_PROMPT =
+  'Generate my Pre-Protocol Primer — a comprehensive report synthesizing ALL my data before my protocol begins. Connect the dots across my wearable data (sleep, HRV, activity), my lab results and biomarker trends, my health intake (symptoms, goals, medical history), and my imported health conversations. Structure it as: 1) Your health snapshot — key findings across all data sources, 2) Patterns — connections between your daily data and your bloodwork, 3) What your protocol will likely target based on this picture, 4) Three things to focus on right now while you wait for your protocol. Be specific with numbers, timeframes, and data points. This is the most important report — it ties everything together.';
+
 interface ActionDef {
   id: string;
   sourceId: SourceId;
   title: string;
   completedTitle: string;
   description: string;
-  reportPreview: string;
   imageSrc: string;
   pendingRoute: { to: string; search?: Record<string, string> };
-  reportPrompt: string;
 }
 
 const ACTION_DEFS: ActionDef[] = [
@@ -41,11 +52,8 @@ const ACTION_DEFS: ActionDef[] = [
     completedTitle: 'Wearables connected, see report →',
     description:
       'Link Oura, Whoop, or Apple Health to get daily insights that connect your sleep, HRV, and activity to your lab results.',
-    reportPreview: MOCK_REPORTS['wearables'],
     imageSrc: '/data/wearables.webp',
     pendingRoute: { to: '/settings', search: { tab: 'integrations' } },
-    reportPrompt:
-      'Generate a wearable data insight report. Analyze my sleep, HRV, heart rate, steps, and activity data from my connected wearable. Cross-reference with any other data you have about me — my intake, health goals, symptoms, and any prior labs. Highlight: 1) Key patterns in my wearable data, 2) What these patterns might mean for my upcoming bloodwork, 3) One specific thing I should focus on this week based on the data. Be specific with numbers.',
   },
   {
     id: 'upload-labs',
@@ -54,11 +62,8 @@ const ACTION_DEFS: ActionDef[] = [
     completedTitle: 'Labs are synced, see report →',
     description:
       "Upload past lab results and we'll show you how your biomarkers have changed over time.",
-    reportPreview: MOCK_REPORTS['labs'],
     imageSrc: '/data/file-stack.webp',
     pendingRoute: { to: '/concierge', search: { preset: 'upload-labs' } },
-    reportPrompt:
-      'Generate a lab results insight report. Analyze my uploaded lab results and identify trends across my biomarkers. Cross-reference with everything else you know about me — my wearable data, intake, health goals, and any imported health conversations. Highlight: 1) Biomarkers that are trending in a concerning direction, 2) Connections between my lab results and my daily data (sleep, HRV, activity), 3) What to watch for in my next test. Be specific with numbers and timeframes.',
   },
   {
     id: 'import-memory',
@@ -67,11 +72,8 @@ const ACTION_DEFS: ActionDef[] = [
     completedTitle: 'Health context imported, see report →',
     description:
       'Already use ChatGPT or Claude for health? Import those conversations so your AI coach knows your full story.',
-    reportPreview: MOCK_REPORTS['ai-context'],
     imageSrc: '/concierge/other_llms.webp',
     pendingRoute: { to: '/concierge', search: { preset: 'import-memory' } },
-    reportPrompt:
-      "Generate a health context insight report based on my imported AI conversations. Map the themes, symptoms, and health concerns I've discussed against all the other data you have — my intake, wearable metrics, and any lab results. Highlight: 1) Recurring health themes and how they connect to my actual data, 2) Concerns I've raised that are supported (or contradicted) by my numbers, 3) Blind spots — things my data suggests I should pay attention to that I haven't mentioned. Be specific.",
   },
 ];
 
@@ -80,51 +82,102 @@ export const ActionItemsCard = () => {
   const completedSources = useOnboardingCircleStore((s) => s.completedSources);
   const completeSource = useOnboardingCircleStore((s) => s.complete);
   const resetOnboarding = useOnboardingCircleStore((s) => s.reset);
+  const reports = useReportStore((s) => s.reports);
+  const startReport = useReportStore((s) => s.startReport);
+  const resetReports = useReportStore((s) => s.reset);
 
   const allComplete = ACTION_DEFS.every((a) =>
     completedSources.has(a.sourceId),
   );
 
+  const handleReset = () => {
+    resetOnboarding();
+    resetReports();
+  };
+
+  // Collect active report runners (generating state)
+  const runners: ReactElement[] = [];
+  for (const def of ACTION_DEFS) {
+    const report = reports[def.sourceId];
+    if (report != null && report.status === 'generating') {
+      runners.push(
+        <ReportRunner
+          key={`runner-${def.sourceId}`}
+          sourceId={def.sourceId}
+          threadId={report.threadId}
+          prompt={REPORT_PROMPTS[def.sourceId]}
+        />,
+      );
+    }
+  }
+
+  // Check if combined report needs generating
+  const combinedReport = reports['combined' as SourceId];
+  if (combinedReport != null && combinedReport.status === 'generating') {
+    runners.push(
+      <ReportRunner
+        key="runner-combined"
+        sourceId={'combined' as SourceId}
+        threadId={combinedReport.threadId}
+        prompt={COMBINED_PROMPT}
+      />,
+    );
+  }
+
   // All complete → combined report
   if (allComplete) {
+    // Auto-start combined report if not started yet
+    if (combinedReport == null) {
+      const threadId = `pre-protocol-primer-${Date.now()}`;
+      // Defer to avoid setState during render
+      setTimeout(() => startReport('combined' as SourceId, threadId), 0);
+    }
+
+    const isGenerating =
+      combinedReport == null || combinedReport.status === 'generating';
+
     return (
       <div className="space-y-3">
-        <CombinedReportCard
-          onClick={() => {
-            void navigate({
-              to: '/concierge',
-              search: {
-                defaultMessage:
-                  'Generate my Pre-Protocol Primer — a comprehensive report synthesizing ALL my data before my protocol begins. Connect the dots across my wearable data (sleep, HRV, activity), my lab results and biomarker trends, my health intake (symptoms, goals, medical history), and my imported health conversations. Structure it as: 1) Your health snapshot — key findings across all data sources, 2) Patterns — connections between your daily data and your bloodwork, 3) What your protocol will likely target based on this picture, 4) Three things to focus on right now while you wait for your protocol. Be specific with numbers, timeframes, and data points. This is the most important report — it ties everything together.',
-              },
-            });
-          }}
-        />
-        <ResetButton onClick={resetOnboarding} />
+        {runners}
+        {isGenerating ? (
+          <GeneratingReportCard title="Generating your Pre-Protocol Primer..." />
+        ) : (
+          <CombinedReportCard
+            onClick={() => {
+              void navigate({
+                to: `/concierge/${combinedReport.threadId}`,
+              });
+            }}
+          />
+        )}
+        <ResetButton onClick={handleReset} />
       </div>
     );
   }
 
-  // Build items with completion state
+  // Build items
   const items: ReactElement[] = [];
   for (const def of ACTION_DEFS) {
     const isComplete = completedSources.has(def.sourceId);
+    const report = reports[def.sourceId];
 
-    if (isComplete) {
+    if (isComplete && report != null && report.status === 'ready') {
+      // Report ready — show completed with link to thread
       items.push(
         <CompletedActionItem
           key={def.id}
           title={def.completedTitle}
-          reportPreview={def.reportPreview}
+          reportPreview={MOCK_PREVIEWS[def.sourceId]}
           onClick={() => {
-            void navigate({
-              to: '/concierge',
-              search: { defaultMessage: def.reportPrompt },
-            });
+            void navigate({ to: `/concierge/${report.threadId}` });
           }}
         />,
       );
+    } else if (isComplete) {
+      // Completed but report still generating
+      items.push(<GeneratingActionItem key={def.id} title={def.title} />);
     } else {
+      // Pending
       items.push(
         <PendingActionItem
           key={def.id}
@@ -132,8 +185,9 @@ export const ActionItemsCard = () => {
           description={def.description}
           imageSrc={def.imageSrc}
           onClick={() => {
-            // Mark complete and navigate
             completeSource(def.sourceId);
+            const threadId = `report-${def.sourceId}-${Date.now()}`;
+            startReport(def.sourceId, threadId);
             void navigate({
               to: def.pendingRoute.to as any,
               search: def.pendingRoute.search as any,
@@ -146,6 +200,7 @@ export const ActionItemsCard = () => {
 
   return (
     <>
+      {runners}
       <ActionableAccordion
         title="Get started"
         defaultOpen
@@ -156,10 +211,36 @@ export const ActionItemsCard = () => {
       >
         {items}
       </ActionableAccordion>
-      <ResetButton onClick={resetOnboarding} />
+      <ResetButton onClick={handleReset} />
     </>
   );
 };
+
+function GeneratingActionItem({ title }: { title: string }) {
+  return (
+    <div className="flex items-center gap-3 px-4 py-4">
+      <Loader2 className="size-5 shrink-0 animate-spin text-vermillion-500" />
+      <div className="flex-1">
+        <Body1 className="text-zinc-600">{title}</Body1>
+        <Body2 className="text-zinc-400">Generating your report...</Body2>
+      </div>
+    </div>
+  );
+}
+
+function GeneratingReportCard({ title }: { title: string }) {
+  return (
+    <div className="flex items-center gap-4 rounded-2xl border border-zinc-200 bg-white p-5">
+      <Loader2 className="size-6 shrink-0 animate-spin text-vermillion-500" />
+      <div>
+        <Body1 className="text-zinc-700">{title}</Body1>
+        <Body2 className="text-zinc-400">
+          We're connecting the dots across all your data...
+        </Body2>
+      </div>
+    </div>
+  );
+}
 
 function CompletedActionItem({
   title,
