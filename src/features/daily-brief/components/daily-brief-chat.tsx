@@ -1,16 +1,27 @@
-import { useChat } from '@ai-sdk/react';
 import { useNavigate } from '@tanstack/react-router';
-import type { UIMessage } from 'ai';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Body2 } from '@/components/ui/typography';
-import { createChatV2Transport } from '@/features/messages/utils/chatv2-transport';
+import { useCreateFollowups } from '@/features/messages/api/create-followups';
+
+const BRIEF_CONTEXT = `You are generating a personalized daily health check-in for this Superpower member. This will be displayed on their homepage dashboard.
+
+CRITICAL: You MUST reference the member's ACTUAL health data. Use recall to look up their biomarker results, wearable metrics, protocol goals, intake responses, and recent conversations. Do NOT give generic advice.
+
+Write exactly ONE item that follows this structure:
+- Start with a specific data observation (e.g. "Your fasting glucose came in at 103 on your last draw" or "Your HRV averaged 42ms this week, down from 56ms last month")
+- Connect it to something actionable or ask a follow-up question
+- Keep it to 2-3 sentences total
+- End with a question the member can reply to
+
+If you cannot find specific data, reference their intake goals or recent conversation topics instead of being generic.
+
+Good example: "Your cortisol came back elevated at 22.4 mcg/dL, which lines up with the stress and sleep issues you mentioned. Your protocol includes a post-dinner walk to help — have you been fitting those in?"
+
+Bad example: "How are you feeling today? Let me know if you need anything." (too generic, no data)`;
 
 const DAILY_BRIEF_PROMPT =
-  "Write a 2-3 sentence daily update for me based on the latest data you have access to, framed as a daily check-in. The message should provide context about my health data — reference specific numbers, biomarker names, wearable metrics, protocol actions, or conversation history. End with a question for me to reply to or pick up the discussion around. Leverage any and all data you have access to for the most contextual, real-time daily message possible. Don't include any headers or formatting — just the message.";
-
-const FULL_BRIEF_PROMPT =
-  'Give me my full daily health brief. Look at my latest wearable data, lab results, active protocol, and our recent conversations. Lead with the most actionable insight, connect my daily data to my biomarker trends, and suggest one thing I can do today. Reference specific numbers. End with a question.';
+  'Give me my full daily health brief. Recall all my data — wearables, labs, protocol, and our recent conversations. Lead with the most actionable insight, reference specific numbers, connect my daily data to my biomarker trends, and suggest one thing I can do today. End with a question.';
 
 const CHAR_DELAY_MS = 18;
 
@@ -48,112 +59,23 @@ function useTypewriter(text: string | undefined) {
   return { displayed, done };
 }
 
-/**
- * Invisible component that generates the daily brief via a real chat session.
- * Only mounted once per day — uses a stable daily ID.
- */
-function BriefGenerator({
-  onBriefReady,
-}: {
-  onBriefReady: (text: string) => void;
-}) {
-  const transport = useMemo(() => createChatV2Transport<UIMessage>(), []);
-  const autoSentRef = useRef(false);
-  const reportedRef = useRef(false);
-
-  // Stable UUID per day — derived from date string
-  const chatId = useRef(crypto.randomUUID()).current;
-
-  const { messages, sendMessage, status } = useChat({
-    id: chatId,
-    transport,
-    generateId: () => crypto.randomUUID(),
-    onError: (err) => {
-      console.error('[DailyBrief] Chat error:', err);
-    },
-  });
-
-  // Auto-send once ready
-  useEffect(() => {
-    if (status !== 'ready') return;
-    if (autoSentRef.current) return;
-    if (messages.length > 0) return;
-
-    autoSentRef.current = true;
-    void sendMessage({ text: DAILY_BRIEF_PROMPT, files: [] });
-  }, [status, messages.length, sendMessage]);
-
-  // Extract assistant text and report when done
-  useEffect(() => {
-    if (reportedRef.current) return;
-
-    const assistantMsg = messages.find((m) => m.role === 'assistant');
-    if (assistantMsg == null) return;
-
-    let text = '';
-    for (const part of assistantMsg.parts) {
-      if (part.type === 'text') {
-        text = part.text;
-        break;
-      }
-    }
-
-    if (text.length === 0) return;
-    if (status !== 'ready') return;
-
-    reportedRef.current = true;
-    onBriefReady(text);
-  }, [messages, status, onBriefReady]);
-
-  return null;
-}
-
-/** Cache key for today's brief in localStorage */
-const BRIEF_CACHE_KEY = 'daily-brief-cache';
-
-interface CachedBrief {
-  date: string;
-  text: string;
-}
-
-function getCachedBrief(): string | null {
-  try {
-    const raw = localStorage.getItem(BRIEF_CACHE_KEY);
-    if (raw == null) return null;
-    const cached = JSON.parse(raw) as CachedBrief;
-    const today = new Date().toISOString().slice(0, 10);
-    if (cached.date !== today) return null;
-    return cached.text;
-  } catch {
-    return null;
-  }
-}
-
-function setCachedBrief(text: string) {
-  const today = new Date().toISOString().slice(0, 10);
-  localStorage.setItem(BRIEF_CACHE_KEY, JSON.stringify({ date: today, text }));
-}
-
 export function DailyBriefChat() {
   const navigate = useNavigate();
   const [inputValue, setInputValue] = useState('');
 
-  const [briefText, setBriefText] = useState<string | null>(() =>
-    getCachedBrief(),
-  );
-  const needsGeneration = briefText == null;
+  const { data: briefData, isLoading } = useCreateFollowups({
+    context: BRIEF_CONTEXT,
+    count: 1,
+    enabled: true,
+  });
+  const briefText = briefData?.[0];
 
-  const handleBriefReady = (text: string) => {
-    setBriefText(text);
-    setCachedBrief(text);
-  };
-
-  const { displayed, done } = useTypewriter(briefText ?? undefined);
+  const { displayed, done } = useTypewriter(briefText);
 
   const handleBriefClick = () => {
     void navigate({
       to: '/concierge',
-      search: { defaultMessage: FULL_BRIEF_PROMPT },
+      search: { defaultMessage: DAILY_BRIEF_PROMPT },
     });
   };
 
@@ -168,18 +90,15 @@ export function DailyBriefChat() {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Hidden generator — only mounts when no cached brief */}
-      {needsGeneration && <BriefGenerator onBriefReady={handleBriefReady} />}
-
       {/* Brief text */}
       <div className="min-h-[60px]">
-        {briefText == null ? (
+        {isLoading ? (
           <div className="space-y-2">
             <div className="h-3 w-3/4 animate-pulse rounded bg-neutral-200/60" />
             <div className="h-3 w-full animate-pulse rounded bg-neutral-200/60" />
             <div className="h-3 w-1/2 animate-pulse rounded bg-neutral-200/60" />
           </div>
-        ) : (
+        ) : briefText != null ? (
           <button
             type="button"
             onClick={handleBriefClick}
@@ -197,7 +116,7 @@ export function DailyBriefChat() {
               </Body2>
             )}
           </button>
-        )}
+        ) : null}
       </div>
 
       {/* Input */}
