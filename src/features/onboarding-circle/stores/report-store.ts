@@ -1,55 +1,34 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import type { SourceId } from '../const/sources';
-
-interface ReportEntry {
-  threadId: string;
-  status: 'generating' | 'ready';
-}
+/**
+ * Tracks report thread IDs for completed onboarding actions.
+ * On first "see report" click, user is sent to concierge with a prompt.
+ * Once the thread is created, we store its ID so subsequent clicks
+ * go directly to that thread.
+ */
 
 interface ReportStoreState {
-  reports: Record<string, ReportEntry>;
-  startReport: (sourceId: SourceId, threadId: string) => void;
-  completeReport: (sourceId: SourceId) => void;
-  getReport: (sourceId: SourceId) => ReportEntry | undefined;
+  /** Map of sourceId → concierge thread ID */
+  threadIds: Record<string, string>;
+  setThreadId: (sourceId: string, threadId: string) => void;
+  getThreadId: (sourceId: string) => string | undefined;
   reset: () => void;
-}
-
-interface ReportStorePersistedState {
-  reports: Record<string, ReportEntry>;
 }
 
 export const useReportStore = create<ReportStoreState>()(
   persist(
     (set, get) => ({
-      reports: {},
-      startReport: (sourceId, threadId) =>
+      threadIds: {},
+      setThreadId: (sourceId, threadId) =>
         set((state) => ({
-          reports: {
-            ...state.reports,
-            [sourceId]: { threadId, status: 'generating' },
-          },
+          threadIds: { ...state.threadIds, [sourceId]: threadId },
         })),
-      completeReport: (sourceId) =>
-        set((state) => {
-          const existing = state.reports[sourceId];
-          if (existing == null) return state;
-          return {
-            reports: {
-              ...state.reports,
-              [sourceId]: { ...existing, status: 'ready' },
-            },
-          };
-        }),
-      getReport: (sourceId) => get().reports[sourceId],
-      reset: () => set({ reports: {} }),
+      getThreadId: (sourceId) => get().threadIds[sourceId],
+      reset: () => set({ threadIds: {} }),
     }),
     {
       name: 'onboarding-reports',
-      partialize: (state): ReportStorePersistedState => ({
-        reports: state.reports,
-      }),
     },
   ),
 );

@@ -1,10 +1,9 @@
 import { useNavigate } from '@tanstack/react-router';
-import { Check, ChevronRight, Loader2, Lock } from 'lucide-react';
+import { Check, ChevronRight, Lock } from 'lucide-react';
 import { type ReactElement } from 'react';
 
 import { ActionableAccordion } from '@/components/shared/actionable-accordion';
 import { Body1, Body2 } from '@/components/ui/typography';
-import { ReportRunner } from '@/features/onboarding-circle/components/report-runner';
 import type { SourceId } from '@/features/onboarding-circle/const/sources';
 import { useOnboardingCircleStore } from '@/features/onboarding-circle/stores/onboarding-circle-store';
 import { useReportStore } from '@/features/onboarding-circle/stores/report-store';
@@ -23,12 +22,15 @@ const MOCK_PREVIEWS: Record<string, string> = {
     "You've flagged stress, low energy, and focus issues across conversations. Mapped against your intake and wearable data, these cluster around a stress-recovery axis.",
 };
 
-// Only wearables gets a background report — labs and import happen inline in the chat thread
-const WEARABLES_REPORT_PROMPT =
-  'Generate a wearable data insight report. Analyze my sleep, HRV, heart rate, steps, and activity data from my connected wearable. Cross-reference with any other data you have about me — my intake, health goals, symptoms, and any prior labs. Highlight: 1) Key patterns in my wearable data, 2) What these patterns might mean for my upcoming bloodwork, 3) One specific thing I should focus on this week based on the data. Be specific with numbers.';
-
-const COMBINED_PROMPT =
-  'Generate my Pre-Protocol Primer — a comprehensive report synthesizing ALL my data before my protocol begins. Connect the dots across my wearable data (sleep, HRV, activity), my lab results and biomarker trends, my health intake (symptoms, goals, medical history), and my imported health conversations. Structure it as: 1) Your health snapshot — key findings across all data sources, 2) Patterns — connections between your daily data and your bloodwork, 3) What your protocol will likely target based on this picture, 4) Three things to focus on right now while you wait for your protocol. Be specific with numbers, timeframes, and data points. This is the most important report — it ties everything together.';
+const REPORT_PROMPTS: Record<string, string> = {
+  wearables:
+    'Generate a wearable data insight report. Analyze my sleep, HRV, heart rate, steps, and activity data from my connected wearable. Cross-reference with any other data you have about me — my intake, health goals, symptoms, and any prior labs. Highlight: 1) Key patterns in my wearable data, 2) What these patterns might mean for my upcoming bloodwork, 3) One specific thing I should focus on this week based on the data. Be specific with numbers.',
+  labs: 'Generate a lab results insight report. Analyze my uploaded lab results and identify trends across my biomarkers. Cross-reference with everything else you know about me — my wearable data, intake, health goals, and any imported health conversations. Highlight: 1) Biomarkers that are trending in a concerning direction, 2) Connections between my lab results and my daily data (sleep, HRV, activity), 3) What to watch for in my next test. Be specific with numbers and timeframes.',
+  'ai-context':
+    "Generate a health context insight report based on my imported AI conversations. Map the themes, symptoms, and health concerns I've discussed against all the other data you have — my intake, wearable metrics, and any lab results. Highlight: 1) Recurring health themes and how they connect to my actual data, 2) Concerns I've raised that are supported (or contradicted) by my numbers, 3) Blind spots — things my data suggests I should pay attention to that I haven't mentioned. Be specific.",
+  combined:
+    'Generate my Pre-Protocol Primer — a comprehensive report synthesizing ALL my data before my protocol begins. Connect the dots across my wearable data (sleep, HRV, activity), my lab results and biomarker trends, my health intake (symptoms, goals, medical history), and my imported health conversations. Structure it as: 1) Your health snapshot — key findings across all data sources, 2) Patterns — connections between your daily data and your bloodwork, 3) What your protocol will likely target based on this picture, 4) Three things to focus on right now while you wait for your protocol. Be specific with numbers, timeframes, and data points.',
+};
 
 interface ActionDef {
   id: string;
@@ -38,8 +40,8 @@ interface ActionDef {
   description: string;
   imageSrc: string;
   pendingRoute: { to: string; search?: Record<string, string> };
-  /** If true, report is generated via background chat. If false, report is inline in the concierge thread. */
-  backgroundReport: boolean;
+  /** If true, completing this action navigates away from concierge (e.g. settings) */
+  navigatesAway: boolean;
 }
 
 const ACTION_DEFS: ActionDef[] = [
@@ -52,7 +54,7 @@ const ACTION_DEFS: ActionDef[] = [
       'Link Oura, Whoop, or Apple Health to get daily insights that connect your sleep, HRV, and activity to your lab results.',
     imageSrc: '/data/wearables.webp',
     pendingRoute: { to: '/settings', search: { tab: 'integrations' } },
-    backgroundReport: true,
+    navigatesAway: true,
   },
   {
     id: 'upload-labs',
@@ -63,7 +65,7 @@ const ACTION_DEFS: ActionDef[] = [
       "Upload past lab results and we'll show you how your biomarkers have changed over time.",
     imageSrc: '/data/file-stack.webp',
     pendingRoute: { to: '/concierge', search: { preset: 'upload-labs' } },
-    backgroundReport: false,
+    navigatesAway: false,
   },
   {
     id: 'import-memory',
@@ -74,40 +76,23 @@ const ACTION_DEFS: ActionDef[] = [
       'Already use ChatGPT or Claude for health? Import those conversations so your AI coach knows your full story.',
     imageSrc: '/concierge/other_llms.webp',
     pendingRoute: { to: '/concierge', search: { preset: 'import-memory' } },
-    backgroundReport: false,
+    navigatesAway: false,
   },
 ];
 
 /**
- * Determine if any action is currently "busy" — either generating a background
- * report or the user is in the middle of a chat-based action (marked complete
- * but no report yet for non-background actions).
+ * Check if any action is "in progress" — completed but report not yet viewed/generated.
+ * For chat-based actions (labs/import): in progress until user marks done.
+ * For navigate-away actions (wearables): in progress until user marks done.
  */
 function hasActiveAction(
   completedSources: Set<SourceId>,
-  reports: Record<string, { threadId: string; status: string }>,
+  threadIds: Record<string, string>,
 ): boolean {
   for (const def of ACTION_DEFS) {
-    const isComplete = completedSources.has(def.sourceId);
-    const report = reports[def.sourceId];
-
-    if (!isComplete) continue;
-
-    // Background report still generating
-    if (
-      def.backgroundReport &&
-      (report == null || report.status === 'generating')
-    ) {
-      return true;
-    }
-
-    // Chat-based action: completed but report not marked ready yet
-    if (
-      !def.backgroundReport &&
-      (report == null || report.status !== 'ready')
-    ) {
-      return true;
-    }
+    if (!completedSources.has(def.sourceId)) continue;
+    // Completed but no thread ID yet = still in progress
+    if (threadIds[def.sourceId] == null) return true;
   }
   return false;
 }
@@ -117,72 +102,65 @@ export const ActionItemsCard = () => {
   const completedSources = useOnboardingCircleStore((s) => s.completedSources);
   const completeSource = useOnboardingCircleStore((s) => s.complete);
   const resetOnboarding = useOnboardingCircleStore((s) => s.reset);
-  const reports = useReportStore((s) => s.reports);
-  const startReport = useReportStore((s) => s.startReport);
-  const completeReport = useReportStore((s) => s.completeReport);
+  const threadIds = useReportStore((s) => s.threadIds);
+  const setThreadId = useReportStore((s) => s.setThreadId);
   const resetReports = useReportStore((s) => s.reset);
 
   const allComplete = ACTION_DEFS.every((a) =>
     completedSources.has(a.sourceId),
   );
-  const isBusy = hasActiveAction(completedSources, reports);
+  const allReportsReady = ACTION_DEFS.every(
+    (a) => threadIds[a.sourceId] != null,
+  );
+  const isBusy = hasActiveAction(completedSources, threadIds);
 
   const handleReset = () => {
     resetOnboarding();
     resetReports();
   };
 
-  // Background report runner for wearables
-  const runners: ReactElement[] = [];
-  const wearablesReport = reports['wearables'];
-  if (wearablesReport != null && wearablesReport.status === 'generating') {
-    runners.push(
-      <ReportRunner
-        key="runner-wearables"
-        sourceId="wearables"
-        threadId={wearablesReport.threadId}
-        prompt={WEARABLES_REPORT_PROMPT}
-      />,
-    );
-  }
-
-  // Combined report runner
-  const combinedReport = reports['combined' as SourceId];
-  if (combinedReport != null && combinedReport.status === 'generating') {
-    runners.push(
-      <ReportRunner
-        key="runner-combined"
-        sourceId={'combined' as SourceId}
-        threadId={combinedReport.threadId}
-        prompt={COMBINED_PROMPT}
-      />,
-    );
-  }
-
-  // All complete → combined report
-  if (allComplete) {
-    if (combinedReport == null) {
-      const threadId = `pre-protocol-primer-${Date.now()}`;
-      setTimeout(() => startReport('combined' as SourceId, threadId), 0);
+  /** Navigate to report — first time generates via defaultMessage, subsequent visits open the thread */
+  const navigateToReport = (sourceId: string) => {
+    const existingThread = threadIds[sourceId];
+    if (existingThread != null) {
+      // Already generated — go to the thread
+      void navigate({ to: `/concierge/${existingThread}` as any });
+    } else {
+      // First time — generate via defaultMessage, store a marker
+      // The concierge will create a thread. We store 'pending' and update on return.
+      const prompt = REPORT_PROMPTS[sourceId];
+      if (prompt != null) {
+        // Use a deterministic ID so we can find it later
+        const markerId = `report-${sourceId}`;
+        setThreadId(sourceId, markerId);
+        void navigate({
+          to: '/concierge',
+          search: { defaultMessage: prompt },
+        });
+      }
     }
+  };
 
-    const isGenerating =
-      combinedReport == null || combinedReport.status === 'generating';
+  // All complete + all reports ready → combined report
+  if (allComplete && allReportsReady) {
+    const combinedThread = threadIds['combined'];
 
     return (
       <div className="space-y-3">
-        {runners}
-        {isGenerating ? (
-          <GeneratingReportCard title="Generating your Pre-Protocol Primer..." />
-        ) : (
-          <CombinedReportCard
-            onClick={() => {
+        <CombinedReportCard
+          onClick={() => {
+            if (combinedThread != null) {
+              void navigate({ to: `/concierge/${combinedThread}` as any });
+            } else {
+              const markerId = 'report-combined';
+              setThreadId('combined', markerId);
               void navigate({
-                to: `/concierge/${combinedReport.threadId}`,
+                to: '/concierge',
+                search: { defaultMessage: REPORT_PROMPTS['combined'] },
               });
-            }}
-          />
-        )}
+            }
+          }}
+        />
         <ResetButton onClick={handleReset} />
       </div>
     );
@@ -192,42 +170,32 @@ export const ActionItemsCard = () => {
   const items: ReactElement[] = [];
   for (const def of ACTION_DEFS) {
     const isComplete = completedSources.has(def.sourceId);
-    const report = reports[def.sourceId];
-    const isReportReady = report != null && report.status === 'ready';
+    const hasThread = threadIds[def.sourceId] != null;
 
-    if (isComplete && isReportReady) {
-      // Done — report ready, link to thread
+    if (isComplete && hasThread) {
+      // Done — report generated, link to it
       items.push(
         <CompletedActionItem
           key={def.id}
           title={def.completedTitle}
           reportPreview={MOCK_PREVIEWS[def.sourceId]}
-          onClick={() => {
-            void navigate({ to: `/concierge/${report.threadId}` });
-          }}
+          onClick={() => navigateToReport(def.sourceId)}
         />,
       );
-    } else if (isComplete && def.backgroundReport) {
-      // Wearables: completed, background report generating
-      items.push(<GeneratingActionItem key={def.id} title={def.title} />);
-    } else if (isComplete && !def.backgroundReport) {
-      // Labs/Import: completed via chat, user needs to mark done when back
-      // Show as "in progress in concierge" with a "mark complete" button
+    } else if (isComplete && !hasThread) {
+      // Completed the action but hasn't generated report yet
       items.push(
         <InProgressActionItem
           key={def.id}
           title={def.title}
-          onMarkComplete={() => {
-            // For chat-based actions, we use the concierge thread as the report
-            // The thread ID is the preset chat — mark as ready with a placeholder
-            const threadId = `chat-${def.sourceId}-${Date.now()}`;
-            startReport(def.sourceId, threadId);
-            completeReport(def.sourceId);
+          onMarkDone={() => {
+            // Mark as done — next "see report" click will generate
+            setThreadId(def.sourceId, `awaiting-report-${def.sourceId}`);
           }}
         />,
       );
     } else {
-      // Pending — check if gated
+      // Pending
       const isGated = isBusy;
       items.push(
         <PendingActionItem
@@ -238,10 +206,6 @@ export const ActionItemsCard = () => {
           disabled={isGated}
           onClick={() => {
             completeSource(def.sourceId);
-            if (def.backgroundReport) {
-              const threadId = `report-${def.sourceId}-${Date.now()}`;
-              startReport(def.sourceId, threadId);
-            }
             void navigate({
               to: def.pendingRoute.to as any,
               search: def.pendingRoute.search as any,
@@ -254,7 +218,6 @@ export const ActionItemsCard = () => {
 
   return (
     <>
-      {runners}
       <ActionableAccordion
         title="Get started"
         defaultOpen
@@ -270,53 +233,31 @@ export const ActionItemsCard = () => {
   );
 };
 
-function GeneratingActionItem({ title }: { title: string }) {
-  return (
-    <div className="flex items-center gap-3 px-4 py-4">
-      <Loader2 className="size-5 shrink-0 animate-spin text-vermillion-500" />
-      <div className="flex-1">
-        <Body1 className="text-zinc-600">{title}</Body1>
-        <Body2 className="text-zinc-400">Generating your report...</Body2>
-      </div>
-    </div>
-  );
-}
-
 function InProgressActionItem({
   title,
-  onMarkComplete,
+  onMarkDone,
 }: {
   title: string;
-  onMarkComplete: () => void;
+  onMarkDone: () => void;
 }) {
   return (
     <div className="flex items-center gap-3 px-4 py-4">
-      <Loader2 className="size-5 shrink-0 animate-spin text-vermillion-500" />
+      <div className="relative flex size-4 items-center justify-center rounded-full bg-vermillion-100">
+        <div className="size-1.5 animate-pulse rounded-full bg-vermillion-900" />
+      </div>
       <div className="flex-1">
         <Body1 className="text-zinc-600">{title}</Body1>
-        <Body2 className="text-zinc-400">Complete this in the concierge</Body2>
+        <Body2 className="text-zinc-400">
+          Complete this step, then come back
+        </Body2>
       </div>
       <button
         type="button"
-        onClick={onMarkComplete}
+        onClick={onMarkDone}
         className="shrink-0 rounded-lg bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-200"
       >
         Done
       </button>
-    </div>
-  );
-}
-
-function GeneratingReportCard({ title }: { title: string }) {
-  return (
-    <div className="flex items-center gap-4 rounded-2xl border border-zinc-200 bg-white p-5">
-      <Loader2 className="size-6 shrink-0 animate-spin text-vermillion-500" />
-      <div>
-        <Body1 className="text-zinc-700">{title}</Body1>
-        <Body2 className="text-zinc-400">
-          We're connecting the dots across all your data...
-        </Body2>
-      </div>
     </div>
   );
 }
