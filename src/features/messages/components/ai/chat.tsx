@@ -26,9 +26,7 @@ import { useChatStore } from '@/features/messages/stores/chat-store';
 import { createChatV2Transport } from '@/features/messages/utils/chatv2-transport';
 import { extractTiming } from '@/features/messages/utils/extract-timing';
 import { useAnalytics } from '@/hooks/use-analytics';
-import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
-import { shouldShowImportMemory } from '@/utils/show-action-conditions';
 
 import {
   useMessageQueue,
@@ -901,9 +899,6 @@ function ChatView({
   const showDropzone =
     isUploadLabsPreset && !hasUserMessages && attachments.length === 0;
 
-  const { data: user } = useUser();
-  const showImportMemory = shouldShowImportMemory(user?.createdAt);
-
   const setupActions = useMemo(() => {
     const actions = [
       {
@@ -917,10 +912,7 @@ function ChatView({
           });
         },
       },
-    ];
-
-    if (showImportMemory) {
-      actions.push({
+      {
         title: 'Continue from another AI',
         subtitle: 'Import your conversations and deepen your health story.',
         imageSrc: '/concierge/other_llms.webp',
@@ -930,11 +922,11 @@ function ChatView({
             search: { preset: 'import-memory' },
           });
         },
-      });
-    }
+      },
+    ];
 
     return actions;
-  }, [navigate, showImportMemory]);
+  }, [navigate]);
 
   const showErrorUi =
     status === 'error' ||
