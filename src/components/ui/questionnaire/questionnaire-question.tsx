@@ -149,7 +149,9 @@ export const QuestionnaireQuestion = ({
     nextStep();
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     if (e.key !== 'Enter') {
       return;
     }
@@ -312,7 +314,9 @@ interface QuestionnaireGroupQuestionProps {
   description: string | undefined;
   response: QuestionnaireResponseItem;
   onChange: (response: QuestionnaireResponseItem[]) => void;
-  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onKeyDown: (
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => void;
   onValidationChange: (linkId: string, hasError: boolean) => void;
   checkForQuestionEnabled: (item: QuestionnaireItem) => boolean;
 }

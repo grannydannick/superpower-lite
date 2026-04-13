@@ -24,7 +24,9 @@ interface QuestionnaireFormRepeatableItemProps {
   onAutoSubmit?: () => void;
   nested?: boolean;
   isError?: boolean;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onKeyDown?: (
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => void;
   onValidationChange?: (linkId: string, hasError: boolean) => void;
 }
 

@@ -18,7 +18,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Textarea } from '@/components/ui/textarea';
 import { Body1 } from '@/components/ui/typography';
 import { usePaymentMethodSelection } from '@/features/settings/hooks';
 import { cn } from '@/lib/utils';
@@ -30,6 +29,7 @@ import {
 } from './const/system-urls';
 import { QuestionnaireErrorWrapper } from './questionnaire-error-wrapper';
 import { getCurrentAnswer } from './questionnaire-types/common';
+import { InputWithSuggestions } from './questionnaire-types/input-suggestions';
 import {
   QuestionnaireChoiceDropDownInput,
   QuestionnaireChoiceSetInput,
@@ -50,7 +50,9 @@ export interface QuestionnaireFormItemProps {
   onChange: (newResponseItem: QuestionnaireResponseItem) => void;
   onAutoSubmit?: () => void;
   isError?: boolean;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onKeyDown?: (
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => void;
   nested?: boolean;
   onValidationChange?: (linkId: string, hasError: boolean) => void;
 }
@@ -253,7 +255,9 @@ interface RenderQuestionnaireFormItemByTypeArgs {
       | QuestionnaireResponseItemAnswer
       | QuestionnaireResponseItemAnswer[],
   ) => void;
-  onKeyDown: ((e: React.KeyboardEvent<HTMLInputElement>) => void) | undefined;
+  onKeyDown:
+    | ((e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => void)
+    | undefined;
   entryFormatPlaceholder: string | undefined;
   isRatingScale: boolean;
   initial: QuestionnaireItemInitial | undefined;
@@ -557,17 +561,14 @@ function renderQuestionnaireFormItemByType({
     case QuestionnaireItemType.string:
       return (
         <QuestionnaireErrorWrapper isError={isErrored}>
-          <Input
-            placeholder={entryFormatPlaceholder ?? ''}
-            id={name}
+          <InputWithSuggestions
+            item={item}
             name={name}
-            required={item.required}
             defaultValue={defaultValue?.value}
-            onChange={(e) => {
-              const newValue = e.currentTarget.value;
-              onChangeAnswer({ valueString: newValue });
-            }}
+            placeholder={entryFormatPlaceholder}
+            onChangeAnswer={onChangeAnswer}
             onKeyDown={onKeyDown}
+            variant="input"
           />
         </QuestionnaireErrorWrapper>
       );
@@ -592,18 +593,13 @@ function renderQuestionnaireFormItemByType({
     case QuestionnaireItemType.text:
       return (
         <QuestionnaireErrorWrapper isError={isErrored}>
-          <Textarea
-            id={name}
+          <InputWithSuggestions
+            item={item}
             name={name}
-            required={item.required}
             defaultValue={defaultValue?.value}
             placeholder={entryFormatPlaceholder}
-            onChange={(e) => {
-              const newValue = e.currentTarget.value;
-              onChangeAnswer({ valueString: newValue });
-            }}
-            rows={4}
-            className="scroll-py-4"
+            onChangeAnswer={onChangeAnswer}
+            variant="textarea"
           />
         </QuestionnaireErrorWrapper>
       );
