@@ -20,7 +20,7 @@ function Calendar({
       className={cn('p-3', className)}
       classNames={{
         months: 'relative flex flex-col sm:flex-row gap-4 sm:gap-0',
-        month: 'relative space-y-4',
+        month: 'relative space-y-4 w-full',
         month_caption: 'flex justify-center items-center h-7 relative',
         caption_label:
           'text-sm font-medium relative z-[1] inline-flex items-center whitespace-nowrap',
@@ -29,28 +29,29 @@ function Calendar({
           'absolute z-[2] opacity-0 appearance-none inset-0 cursor-pointer',
         nav: 'absolute top-0 flex items-center w-full justify-between z-[1] pointer-events-none',
         button_previous: cn(
-          buttonVariants({ variant: 'outline' }),
-          'pointer-events-auto h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100',
+          buttonVariants({ variant: 'ghost' }),
+          'pointer-events-auto h-7 w-7 bg-transparent p-1 hover:opacity-100',
         ),
         button_next: cn(
-          buttonVariants({ variant: 'outline' }),
-          'pointer-events-auto h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100',
+          buttonVariants({ variant: 'ghost' }),
+          'pointer-events-auto h-7 w-7 bg-transparent p-1 hover:opacity-100',
         ),
         month_grid: 'w-full border-collapse space-y-1',
-        weekdays: 'flex',
+        weekdays: 'flex justify-between',
         weekday:
-          'text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]',
+          'text-muted-foreground rounded-md w-full font-normal text-[0.8rem]',
         week: 'flex w-full mt-2',
-        day: 'h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].range_end)]:rounded-r-md first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20',
+        day: 'h-9 w-full aspect-square text-center text-sm p-0 relative justify-center items-center flex after:transition-all after:opacity-0 after:duration-50 after:z-10 after:pointer-events-none after:absolute after:w-9 after:h-9 after:rounded-full after:hover:ring-2 after:ring-1 after:hover:ring-vermillion-300 after:hover:opacity-100 active:after:ring-1 active:after:ring-offset-0 after:active:duration-0 after:active:ring-vermillion-900',
         day_button: cn(
           buttonVariants({ variant: 'ghost' }),
-          'h-9 w-9 p-0 font-normal aria-selected:opacity-100',
+          'duration-50 z-10 h-12 w-full p-0 font-normal transition-transform active:duration-0',
         ),
         range_end: 'range_end',
-        selected: 'border border-vermillion-900',
-        today: 'bg-accent text-accent-foreground',
-        outside:
-          'text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30',
+        selected:
+          'after:!ring-vermillion-900 after:rounded-full after:z-20  after:opacity-100 after:active:!duration-50 [&_button]:!text-black ',
+        today:
+          'text-accent-foreground before:bg-accent before:absolute before:inset-y-0 before:w-9 before:rounded-full',
+        outside: 'text-muted-foreground opacity-50',
         disabled: 'text-muted-foreground opacity-50',
         range_middle:
           'aria-selected:bg-accent aria-selected:text-accent-foreground',

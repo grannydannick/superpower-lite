@@ -24,7 +24,10 @@ import { usePaymentMethodSelection } from '@/features/settings/hooks';
 import { cn } from '@/lib/utils';
 
 import { RX_CONSENT_PAYMENT_LINKID } from './const/special-linkids';
-import { ENTRY_FORMAT_EXTENSION_URL } from './const/system-urls';
+import {
+  DATE_INLINE_DISPLAY_EXTENSION_URL,
+  ENTRY_FORMAT_EXTENSION_URL,
+} from './const/system-urls';
 import { QuestionnaireErrorWrapper } from './questionnaire-error-wrapper';
 import { getCurrentAnswer } from './questionnaire-types/common';
 import {
@@ -466,9 +469,35 @@ function renderQuestionnaireFormItemByType({
     }
     // Date item type, used for date questions
     case QuestionnaireItemType.date: {
+      const isDateInline = item.extension?.some(
+        (e) =>
+          e.url === DATE_INLINE_DISPLAY_EXTENSION_URL &&
+          e.valueBoolean === true,
+      );
       const dateValue = defaultValue?.value
         ? parse(defaultValue.value, 'yyyy-MM-dd', new Date())
         : undefined;
+
+      if (isDateInline) {
+        return (
+          <QuestionnaireErrorWrapper isError={isErrored}>
+            <div className="rounded-xl border border-input bg-white p-2 shadow-sm">
+              <Calendar
+                mode="single"
+                selected={dateValue}
+                onSelect={(date) => {
+                  if (date) {
+                    onChangeAnswer({ valueDate: format(date, 'yyyy-MM-dd') });
+                  }
+                }}
+                defaultMonth={dateValue ?? new Date()}
+                className="w-full"
+              />
+            </div>
+          </QuestionnaireErrorWrapper>
+        );
+      }
+
       return (
         <QuestionnaireErrorWrapper isError={isErrored}>
           <Popover>

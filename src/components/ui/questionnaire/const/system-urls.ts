@@ -18,3 +18,7 @@ export const QUESTIONNAIRE_ITEM_CONTROL_EXTENSION_URL =
 // Used to supply placeholder text for text inputs.
 export const ENTRY_FORMAT_EXTENSION_URL =
   'http://hl7.org/fhir/StructureDefinition/entryFormat';
+
+// Used to render a date input as an inline calendar instead of a popover.
+export const DATE_INLINE_DISPLAY_EXTENSION_URL =
+  'https://superpower.com/fhir/StructureDefinition/questionnaire-dateInlineDisplay';
