@@ -52,7 +52,9 @@ export function useQuestionnaireByName(
       params: { query: { name, status: options?.status } },
     }),
     enabled: options?.enabled ?? !!name,
-    select: (data) => data?.[0], // Return first matching questionnaire
+    // FHIR name search is a prefix match, so 'rx-assessment-wyndly' can return
+    // 'rx-assessment-wyndly-symptom-tracker' too. Filter for exact match first.
+    select: (data) => data?.find((q) => q.name === name) ?? data?.[0],
   });
 }
 

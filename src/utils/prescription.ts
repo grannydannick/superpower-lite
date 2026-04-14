@@ -13,6 +13,7 @@ import {
   SERMORELIN_TROCHES,
   TADALAFIL,
   TIRZEPATIDE,
+  TIRZEPATIDE_MICRODOSE,
   TRETINOIN,
   VIP_NASAL_SPRAY,
   VITAMIN_B12_INJECTION,
@@ -37,6 +38,7 @@ const prescriptionImages: Record<string, string> = {
   Enclomiphene: '/rx/transparent/enclomiphene.webp',
   SermorelinTroches: '/rx/transparent/sermorelin-oral.webp',
   Tirzepatide: '/rx/transparent/tirzepatide.webp',
+  TirzepatideMicrodose: '/rx/transparent/tirzepatide-microdose.webp',
   FallbackImage: '/rx/prescription-empty.webp',
 };
 
@@ -93,6 +95,9 @@ export const getPrescriptionImage = (name: string): string => {
     case TIRZEPATIDE:
       return prescriptionImages.Tirzepatide;
 
+    case TIRZEPATIDE_MICRODOSE:
+      return prescriptionImages.TirzepatideMicrodose;
+
     default:
       return prescriptionImages.FallbackImage;
   }
@@ -120,11 +125,13 @@ const prescriptionInfoMap: Record<string, PrescriptionInfo> = {
   [ENCLOMIPHENE]: PrescriptionInfoData.ENCLOMIPHENE,
   [SERMORELIN_TROCHES]: PrescriptionInfoData.SERMORELIN_TROCHES,
   [TIRZEPATIDE]: PrescriptionInfoData.TIRZEPATIDE,
+  [TIRZEPATIDE_MICRODOSE]: PrescriptionInfoData.TIRZEPATIDE_MICRODOSE,
 };
 
 const rxCodeDisplayNames: Record<string, string> = {
   'rx-semaglutide': SEMAGLUTIDE,
   'rx-tirzepatide': TIRZEPATIDE,
+  'rx-tirzepatide-microdose': TIRZEPATIDE_MICRODOSE,
   'rx-enclomiphene': ENCLOMIPHENE,
   'rx-tadalafil': TADALAFIL,
   'rx-metformin': METFORMIN,

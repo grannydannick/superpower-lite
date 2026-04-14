@@ -16,6 +16,7 @@ export const NAD_INJECTION = 'NAD+ Injection';
 export const ENCLOMIPHENE = 'Enclomiphene';
 export const SERMORELIN_TROCHES = 'Sermorelin Troches';
 export const TIRZEPATIDE = 'Tirzepatide';
+export const TIRZEPATIDE_MICRODOSE = 'Tirzepatide Microdose';
 
 export const PRESCRIPTION_SLUGS: Record<string, string> = {
   [SERMORELIN_INJECTION]: 'sermorelin-injection',
@@ -36,6 +37,7 @@ export const PRESCRIPTION_SLUGS: Record<string, string> = {
   [ENCLOMIPHENE]: 'enclomiphene',
   [SERMORELIN_TROCHES]: 'sermorelin-troches',
   [TIRZEPATIDE]: 'tirzepatide',
+  [TIRZEPATIDE_MICRODOSE]: 'tirzepatide-microdose',
 };
 
 export const RECOMMENDED_PRESCRIPTIONS = [

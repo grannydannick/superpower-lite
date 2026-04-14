@@ -1616,6 +1616,131 @@ Gatifloxacin can affect blood glucose levels and should not be used in patients 
   ],
 };
 
+export const TIRZEPATIDE_MICRODOSE = {
+  benefits: [
+    'Dual GIP/GLP-1 Receptor Activation',
+    'Improved Insulin Sensitivity',
+    'Enhanced Lipid Metabolism',
+    'Adipose Tissue Remodeling',
+    'Body Composition Improvement',
+    'Cardiometabolic Protection',
+    'Stable Energy Levels',
+    'Appetite Regulation Without Suppression',
+    'Bone Density Support (GIP-mediated)',
+    'Reduced Systemic Inflammation',
+  ],
+  includes: {
+    monthly: [
+      '30-day medication supply',
+      'Free shipping',
+      'Medical evaluation',
+      'Regular symptom tracking and progress monitoring',
+      'Labs as needed',
+      'Unlimited messaging with your provider',
+    ],
+    quarterly: [
+      '90-day medication supply',
+      'Free shipping',
+      'Medical evaluation',
+      'Regular symptom tracking and progress monitoring',
+      'Labs as needed',
+      'Unlimited messaging with your provider',
+    ],
+    biannual: [
+      '6 months of medication',
+      'Free shipping',
+      'Medical evaluation',
+      'Regular symptom tracking and progress monitoring',
+      'Labs as needed',
+      'Unlimited messaging with your provider',
+    ],
+    annual: [
+      '12 months of medication delivered in two shipments',
+      'Free shipping',
+      'Medical evaluation',
+      'Regular symptom tracking and progress monitoring',
+      'Labs as needed',
+      'Unlimited messaging with your provider',
+    ],
+  },
+  science: {
+    activeIngredients:
+      'Compounded tirzepatide (dual GIP/GLP-1 receptor agonist) with pyridoxine (vitamin B6) in a 10mg/10mg/1mL solution. Tirzepatide is a synthetic peptide engineered for once-weekly dosing. B6 supports amino acid metabolism and neurotransmitter synthesis during metabolic recalibration.',
+    mechanism:
+      'Administered via subcutaneous injection once weekly, on the same day each week. Injection sites include the abdomen (at least 2 inches from the navel), front of thigh, or upper outer buttock. Your clinician sets your dose based on your response and goals. Rotate injection sites to prevent tissue irritation. Your action plan includes detailed injection instructions and a syringe guide.',
+    history:
+      'Tirzepatide was developed by Eli Lilly and first approved by the FDA in 2022 for type 2 diabetes (Mounjaro) and in 2023 for chronic weight management (Zepbound) at doses up to 15mg weekly. The compound is a novel dual GIP/GLP-1 receptor agonist — the first in its class. Unlike semaglutide, which targets GLP-1 alone, tirzepatide simultaneously activates GIP receptors, producing superior improvements in glycemic control, body composition, and lipid metabolism in clinical trials (SURPASS and SURMOUNT programs). Microdosing applies the same molecule at sub-therapeutic weight-loss levels, leveraging the dual metabolic benefits without the aggressive appetite suppression of higher doses. This approach reflects growing clinical interest in incretin-based therapies as metabolic health and longevity tools.',
+  },
+  headerFaq: [
+    {
+      question: 'What is Tirzepatide Microdose?',
+      answer:
+        'Tirzepatide activates both GIP and GLP-1 receptors at low intensity. This dual mechanism supports insulin sensitivity, lipid metabolism, adipose tissue remodeling, and cardiometabolic health as part of a longevity-focused protocol. The GIP component is the key differentiator — it drives body composition improvement and metabolic flexibility that single-target GLP-1 agonists do not achieve.',
+    },
+    {
+      question: 'How does it work?',
+      answer:
+        'Tirzepatide activates two distinct incretin receptors: GIP and GLP-1. The GIP receptor drives lipid metabolism, adipose tissue remodeling, and bone mineral density support. GIP signaling changes how your body handles fuel — burning fat for energy rather than storing it. The GLP-1 receptor handles insulin sensitivity, gastric emptying rate, and central appetite signaling. At low doses, both receptor systems activate gently for metabolic optimization rather than pharmacological override. The formulation includes pyridoxine (B6), which supports over 100 processes in the body, including serotonin and GABA production — both tied to mood stability as your metabolism adjusts.',
+    },
+  ],
+  faq: [
+    {
+      question: 'Am I a good candidate for Tirzepatide Microdose?',
+      answer:
+        'Strong fit: Members pursuing metabolic health optimization, longevity protocols, or body composition improvement who want dual GIP/GLP-1 pathway activation without aggressive dose escalation. Particularly relevant for members interested in fat loss with lean mass preservation — the GIP pathway drives adipose tissue remodeling and lipid partitioning that GLP-1-only protocols do not activate. Also a strong option for members transitioning off a full-dose weight loss protocol who want to maintain metabolic gains at a lower intensity. Consider full-dose tirzepatide or semaglutide instead if the primary goal is significant weight loss.',
+    },
+    {
+      question:
+        'What is the difference between tirzepatide and semaglutide microdose?',
+      answer:
+        'Semaglutide activates one receptor (GLP-1). Tirzepatide activates two (GIP and GLP-1). The GIP component drives lipid metabolism, adipose tissue remodeling, and bone density support that GLP-1 alone does not provide. Tirzepatide may produce earlier body composition changes and stronger metabolic flexibility gains due to this dual mechanism.',
+    },
+    {
+      question: 'Will I lose weight on this protocol?',
+      answer:
+        'Some gradual body composition changes are expected — particularly fat redistribution driven by GIP receptor activation. Scale weight may or may not change significantly. This protocol targets metabolic optimization and body recomposition, not rapid weight loss. If significant weight loss is your primary goal, talk to your clinician about whether a full-dose protocol is more appropriate.',
+    },
+    {
+      question: 'How long should I stay on microdose tirzepatide?',
+      answer:
+        'This is a long-term protocol. The metabolic and cardiometabolic benefits accumulate over months and are maintained with consistent use. Your clinician will evaluate your progress at each 3-month check-in and adjust the protocol as needed. There is no predetermined end date — duration depends on your goals and clinical response.',
+    },
+    {
+      question: 'What are the potential side effects?',
+      answer: `At low doses, side effects are less common and less severe than full-dose protocols. The dual GIP/GLP-1 mechanism can produce slightly more GI signaling than single-target GLP-1 agonists during adaptation.
+
+What you may notice in the first 1-2 weeks:
+- Mild nausea — GLP-1 slows gastric emptying while GIP shifts lipid handling. The gut adapts to both signals simultaneously.
+- Reduced appetite — GLP-1-mediated satiety recalibration. At low doses, this presents as earlier fullness rather than appetite elimination.
+- Mild headache — blood glucose and insulin dynamics shift as receptor sensitivity improves. Hydration and consistent meals reduce this.
+- Acid reflux or burping — altered gastric motility from GLP-1 slowing stomach emptying. Smaller meals help.
+
+These effects reflect receptor adaptation and generally resolve within the first 2 weeks. Serious side effects are rare at this dose but include pancreatitis (severe abdominal pain radiating to the back) and allergic reaction.`,
+    },
+    {
+      question: 'What are potential contraindications?',
+      answer: `- Personal or family history of medullary thyroid carcinoma (MTC) or MEN 2 syndrome
+- Known hypersensitivity to tirzepatide or any GIP/GLP-1 receptor agonist
+- History of pancreatitis
+- Pregnancy or breastfeeding — not recommended; safety not established
+- Diabetic retinopathy — discuss with clinician before starting
+- Severe gastrointestinal disease — gastroparesis or inflammatory bowel disease require clinical evaluation
+- Renal impairment — monitor closely, especially in moderate to severe cases
+- History of gallbladder disease — GLP-1 agonists may increase gallstone risk`,
+    },
+    {
+      question: 'What does off-label usage mean?',
+      answer:
+        'Off-label usage refers to prescribing a medication for a purpose not specifically approved by the FDA. Tirzepatide is FDA-approved for type 2 diabetes (Mounjaro) and chronic weight management (Zepbound) at higher doses. Using it at microdose levels for metabolic health and longevity is considered off-label. Off-label prescribing is legal and common in medicine when a clinician determines, based on clinical evidence and judgment, that a medication may benefit a patient for a condition beyond its original approval.',
+    },
+    {
+      question: 'Potential drug interactions?',
+      answer:
+        'Tirzepatide may interact with insulin and other diabetes medications by enhancing glucose-lowering effects, increasing hypoglycemia risk. It slows gastric emptying, which can affect absorption of oral medications — particularly those requiring rapid absorption. The dual GIP/GLP-1 mechanism may have additive effects with other incretin-based therapies. Share all current medications and supplements with your clinician before starting. Pay close attention to interactions with insulin, sulfonylureas, oral contraceptives, and medications with narrow therapeutic windows. Berberine and metformin may potentiate glucose-lowering effects — discuss with your clinician.',
+    },
+  ],
+};
+
 export const SERMORELIN_TROCHES = {
   benefits: [
     'Increased Growth Hormone Production',

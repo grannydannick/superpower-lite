@@ -4,13 +4,12 @@ import {
   QuestionnaireResponse,
   QuestionnaireResponseItem,
 } from '@medplum/fhirtypes';
-import { notFound, useSearch } from '@tanstack/react-router';
+import { notFound, useNavigate, useSearch } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 
 // TODO: move data fetching upstream, or make this a global component
 import { QuestionnaireForm } from '@/components/ui/questionnaire';
 import { RX_BILLING_PERIOD_LINKID } from '@/components/ui/questionnaire/const/special-linkids';
-import { RxScreenOut } from '@/components/ui/questionnaire/rx-screen-out';
 import { Spinner } from '@/components/ui/spinner';
 import { useQuestionnaireResponseController } from '@/features/questionnaires/hooks/use-questionnaire-response-controller';
 import { isMemberIneligible } from '@/features/questionnaires/utils/is-member-ineligible';
@@ -70,8 +69,8 @@ export const RxQuestionnaire = ({
     strict: false,
     select: (s: Record<string, unknown>) => s.billingCode as string | undefined,
   });
-  const [showIneligibleScreen, setShowIneligibleScreen] =
-    useState<boolean>(false);
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const userQuery = useUser();
   const {
     questionnaire,
@@ -115,16 +114,14 @@ export const RxQuestionnaire = ({
     throw notFound();
   }
 
-  if (showIneligibleScreen && questionnaireResponse != null) {
-    return <RxScreenOut />;
-  }
-
   const handleSave = (item: QuestionnaireResponseItem[]) => {
     save(item);
   };
 
   const handleSubmit = (item: QuestionnaireResponseItem[]) => {
     if (questionnaire == null) return;
+    setIsSubmitting(true);
+
     const isIneligible = isMemberIneligible(
       item,
       (questionnaire as Questionnaire).item ?? [],
@@ -133,8 +130,12 @@ export const RxQuestionnaire = ({
     // NOTE(audric): server-side also handles screenout logic.
     submit(item, {
       onSuccess: () => {
-        if (isIneligible == true) {
-          setShowIneligibleScreen(true);
+        if (isIneligible === true) {
+          void navigate({
+            to: '/rx-screen-out',
+            search: { from: 'questionnaire' },
+            replace: true,
+          });
         } else {
           // NOTE(audric): includes case for inEligible === undefined;
           // on failure default to NP approval downstream flow
@@ -143,8 +144,19 @@ export const RxQuestionnaire = ({
           }
         }
       },
+      onError: () => {
+        setIsSubmitting(false);
+      },
     });
   };
+
+  if (isSubmitting) {
+    return (
+      <div className="flex h-dvh w-full flex-col items-center justify-center gap-4">
+        <Spinner variant="primary" size="md" />
+      </div>
+    );
+  }
 
   return (
     <QuestionnaireForm

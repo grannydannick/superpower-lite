@@ -35,6 +35,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     !data ||
     pathname.includes('onboarding') ||
     pathname.includes('questionnaire') ||
+    pathname.includes('rx-screen-out') ||
     pathname.includes('family-risk/plan') ||
     pathname.includes('schedule') ||
     pathname.includes('intake');

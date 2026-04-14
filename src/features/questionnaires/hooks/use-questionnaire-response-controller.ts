@@ -13,6 +13,7 @@ import type { CreateQuestionnaireResponseBody } from '@/features/questionnaires/
 
 type SubmitOptions = {
   onSuccess?: () => void;
+  onError?: () => void;
 };
 
 type NormalizeItems = (
@@ -130,9 +131,13 @@ export const useQuestionnaireResponseController = ({
       return;
     }
 
-    const createdId = await createResponse(normalizedItems, status);
-    if (status === 'completed' && createdId) {
-      options?.onSuccess?.();
+    try {
+      const createdId = await createResponse(normalizedItems, status);
+      if (status === 'completed' && createdId) {
+        options?.onSuccess?.();
+      }
+    } catch {
+      options?.onError?.();
     }
   };
 
