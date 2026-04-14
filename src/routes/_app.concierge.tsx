@@ -14,6 +14,7 @@ const conciergeSearchSchema = z.object({
   previewFileId: z.string().optional().catch(undefined),
   autoSend: z.boolean().optional(),
   reportSource: z.string().optional().catch(undefined),
+  sourceId: z.string().optional().catch(undefined),
 });
 
 export const Route = createFileRoute('/_app/concierge')({

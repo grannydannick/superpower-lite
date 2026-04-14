@@ -6,6 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { useMessages } from '@/features/messages/api/get-messages';
 import type { SourceId } from '@/features/onboarding-circle/const/sources';
+import { useOnboardingCircleStore } from '@/features/onboarding-circle/stores/onboarding-circle-store';
 import { useReportStore } from '@/features/onboarding-circle/stores/report-store';
 import { useUser } from '@/lib/auth';
 
@@ -100,17 +101,27 @@ export function ConciergeChatPanel() {
     from: '/_app/concierge',
     select: (search) => search.reportSource,
   });
+  const sourceId = useSearch({
+    from: '/_app/concierge',
+    select: (search) => search.sourceId,
+  });
   const { data: user } = useUser();
 
   const previousRouteIdRef = useRef<string | undefined>(routeId);
   const previousPresetRef = useRef<string | undefined>(preset);
   const reportSourceRef = useRef<string | undefined>(reportSource);
   const reportSavedRef = useRef(false);
+  const sourceIdRef = useRef<string | undefined>(sourceId);
+  const sourceIdSavedRef = useRef(false);
   const draftSessionRef = useRef<ConciergeChatSession | null>(null);
 
   // Track reportSource from initial navigation
   if (reportSource != null && reportSourceRef.current == null) {
     reportSourceRef.current = reportSource;
+  }
+
+  if (sourceId != null && sourceIdRef.current == null) {
+    sourceIdRef.current = sourceId;
   }
 
   // When the URL changes from /concierge?reportSource=X to /concierge/{id},
@@ -124,6 +135,19 @@ export function ConciergeChatPanel() {
     useReportStore
       .getState()
       .startReport(reportSourceRef.current as SourceId, routeId);
+  }, [routeId]);
+
+  // When the URL changes from /concierge?sourceId=X to /concierge/{id},
+  // capture the preset thread ID in onboarding-circle-store
+  useEffect(() => {
+    if (routeId == null) return;
+    if (sourceIdRef.current == null) return;
+    if (sourceIdSavedRef.current) return;
+
+    sourceIdSavedRef.current = true;
+    useOnboardingCircleStore
+      .getState()
+      .setPresetThread(sourceIdRef.current as SourceId, routeId);
   }, [routeId]);
 
   if (routeId == null) {
