@@ -41,6 +41,7 @@ import { Route as AppDataIndexRouteImport } from './routes/_app.data.index'
 import { Route as AppConciergeIndexRouteImport } from './routes/_app.concierge.index'
 import { Route as AppServicesIdRouteImport } from './routes/_app.services.$id'
 import { Route as AppRxSubscriptionsIdRouteImport } from './routes/_app.rx-subscriptions.$id'
+import { Route as AppReportsSourceIdRouteImport } from './routes/_app.reports.$sourceId'
 import { Route as AppRecollectionServiceRequestIdRouteImport } from './routes/_app.recollection.$serviceRequestId'
 import { Route as AppQuestionnaireTypeRouteImport } from './routes/_app.questionnaire.$type'
 import { Route as AppProtocolRevealRouteImport } from './routes/_app.protocol.reveal'
@@ -63,7 +64,6 @@ import { Route as AppProtocolLegacyIdRouteImport } from './routes/_app.protocol.
 import { Route as AppMapsRecollectionServiceRequestIdScheduleRouteImport } from './routes/_app._maps.recollection.$serviceRequestId.schedule'
 import { Route as AppProtocolPlansPlanIdGoalsGoalIdRouteImport } from './routes/_app.protocol.plans.$planId.goals.$goalId'
 import { Route as AppProtocolLegacyPlanIdGoalsGoalIdRouteImport } from './routes/_app.protocol.legacy.$planId.goals.$goalId'
-import { Route as AppReportsSourceIdRouteImport } from './routes/_app.reports.$sourceId'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -223,6 +223,11 @@ const AppRxSubscriptionsIdRoute = AppRxSubscriptionsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AppRxSubscriptionsRoute,
 } as any)
+const AppReportsSourceIdRoute = AppReportsSourceIdRouteImport.update({
+  id: '/reports/$sourceId',
+  path: '/reports/$sourceId',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppRecollectionServiceRequestIdRoute =
   AppRecollectionServiceRequestIdRouteImport.update({
     id: '/recollection/$serviceRequestId',
@@ -337,11 +342,6 @@ const AppProtocolLegacyPlanIdGoalsGoalIdRoute =
     path: '/$planId/goals/$goalId',
     getParentRoute: () => AppProtocolLegacyRoute,
   } as any)
-const AppReportsSourceIdRoute = AppReportsSourceIdRouteImport.update({
-  id: '/reports/$sourceId',
-  path: '/reports/$sourceId',
-  getParentRoute: () => AppRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
@@ -381,6 +381,7 @@ export interface FileRoutesByFullPath {
   '/protocol/reveal': typeof AppProtocolRevealRouteWithChildren
   '/questionnaire/$type': typeof AppQuestionnaireTypeRoute
   '/recollection/$serviceRequestId': typeof AppRecollectionServiceRequestIdRoute
+  '/reports/$sourceId': typeof AppReportsSourceIdRoute
   '/rx-subscriptions/$id': typeof AppRxSubscriptionsIdRoute
   '/services/$id': typeof AppServicesIdRoute
   '/concierge/': typeof AppConciergeIndexRoute
@@ -396,7 +397,6 @@ export interface FileRoutesByFullPath {
   '/recollection/$serviceRequestId/schedule': typeof AppMapsRecollectionServiceRequestIdScheduleRoute
   '/protocol/legacy/$planId/goals/$goalId': typeof AppProtocolLegacyPlanIdGoalsGoalIdRoute
   '/protocol/plans/$planId/goals/$goalId': typeof AppProtocolPlansPlanIdGoalsGoalIdRoute
-  '/reports/$sourceId': typeof AppReportsSourceIdRoute
 }
 export interface FileRoutesByTo {
   '/check-email': typeof CheckEmailRoute
@@ -429,6 +429,7 @@ export interface FileRoutesByTo {
   '/protocol/plans': typeof AppProtocolPlansRouteWithChildren
   '/questionnaire/$type': typeof AppQuestionnaireTypeRoute
   '/recollection/$serviceRequestId': typeof AppRecollectionServiceRequestIdRoute
+  '/reports/$sourceId': typeof AppReportsSourceIdRoute
   '/rx-subscriptions/$id': typeof AppRxSubscriptionsIdRoute
   '/services/$id': typeof AppServicesIdRoute
   '/concierge': typeof AppConciergeIndexRoute
@@ -444,7 +445,6 @@ export interface FileRoutesByTo {
   '/recollection/$serviceRequestId/schedule': typeof AppMapsRecollectionServiceRequestIdScheduleRoute
   '/protocol/legacy/$planId/goals/$goalId': typeof AppProtocolLegacyPlanIdGoalsGoalIdRoute
   '/protocol/plans/$planId/goals/$goalId': typeof AppProtocolPlansPlanIdGoalsGoalIdRoute
-  '/reports/$sourceId': typeof AppReportsSourceIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -487,6 +487,7 @@ export interface FileRoutesById {
   '/_app/protocol/reveal': typeof AppProtocolRevealRouteWithChildren
   '/_app/questionnaire/$type': typeof AppQuestionnaireTypeRoute
   '/_app/recollection/$serviceRequestId': typeof AppRecollectionServiceRequestIdRoute
+  '/_app/reports/$sourceId': typeof AppReportsSourceIdRoute
   '/_app/rx-subscriptions/$id': typeof AppRxSubscriptionsIdRoute
   '/_app/services/$id': typeof AppServicesIdRoute
   '/_app/concierge/': typeof AppConciergeIndexRoute
@@ -502,7 +503,6 @@ export interface FileRoutesById {
   '/_app/_maps/recollection/$serviceRequestId/schedule': typeof AppMapsRecollectionServiceRequestIdScheduleRoute
   '/_app/protocol/legacy/$planId/goals/$goalId': typeof AppProtocolLegacyPlanIdGoalsGoalIdRoute
   '/_app/protocol/plans/$planId/goals/$goalId': typeof AppProtocolPlansPlanIdGoalsGoalIdRoute
-  '/_app/reports/$sourceId': typeof AppReportsSourceIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -544,6 +544,7 @@ export interface FileRouteTypes {
     | '/protocol/reveal'
     | '/questionnaire/$type'
     | '/recollection/$serviceRequestId'
+    | '/reports/$sourceId'
     | '/rx-subscriptions/$id'
     | '/services/$id'
     | '/concierge/'
@@ -559,7 +560,6 @@ export interface FileRouteTypes {
     | '/recollection/$serviceRequestId/schedule'
     | '/protocol/legacy/$planId/goals/$goalId'
     | '/protocol/plans/$planId/goals/$goalId'
-    | '/reports/$sourceId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/check-email'
@@ -592,6 +592,7 @@ export interface FileRouteTypes {
     | '/protocol/plans'
     | '/questionnaire/$type'
     | '/recollection/$serviceRequestId'
+    | '/reports/$sourceId'
     | '/rx-subscriptions/$id'
     | '/services/$id'
     | '/concierge'
@@ -607,7 +608,6 @@ export interface FileRouteTypes {
     | '/recollection/$serviceRequestId/schedule'
     | '/protocol/legacy/$planId/goals/$goalId'
     | '/protocol/plans/$planId/goals/$goalId'
-    | '/reports/$sourceId'
   id:
     | '__root__'
     | '/_app'
@@ -649,6 +649,7 @@ export interface FileRouteTypes {
     | '/_app/protocol/reveal'
     | '/_app/questionnaire/$type'
     | '/_app/recollection/$serviceRequestId'
+    | '/_app/reports/$sourceId'
     | '/_app/rx-subscriptions/$id'
     | '/_app/services/$id'
     | '/_app/concierge/'
@@ -664,7 +665,6 @@ export interface FileRouteTypes {
     | '/_app/_maps/recollection/$serviceRequestId/schedule'
     | '/_app/protocol/legacy/$planId/goals/$goalId'
     | '/_app/protocol/plans/$planId/goals/$goalId'
-    | '/_app/reports/$sourceId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -906,6 +906,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRxSubscriptionsIdRouteImport
       parentRoute: typeof AppRxSubscriptionsRoute
     }
+    '/_app/reports/$sourceId': {
+      id: '/_app/reports/$sourceId'
+      path: '/reports/$sourceId'
+      fullPath: '/reports/$sourceId'
+      preLoaderRoute: typeof AppReportsSourceIdRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/recollection/$serviceRequestId': {
       id: '/_app/recollection/$serviceRequestId'
       path: '/recollection/$serviceRequestId'
@@ -1059,13 +1066,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/protocol/legacy/$planId/goals/$goalId'
       preLoaderRoute: typeof AppProtocolLegacyPlanIdGoalsGoalIdRouteImport
       parentRoute: typeof AppProtocolLegacyRoute
-    }
-    '/_app/reports/$sourceId': {
-      id: '/_app/reports/$sourceId'
-      path: '/reports/$sourceId'
-      fullPath: '/reports/$sourceId'
-      preLoaderRoute: typeof AppReportsSourceIdRouteImport
-      parentRoute: typeof AppRoute
     }
   }
 }
