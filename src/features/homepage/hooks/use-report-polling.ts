@@ -4,14 +4,58 @@ import { env } from '@/config/env';
 import { getMessages } from '@/features/messages/api/get-messages';
 import type { SourceId } from '@/features/onboarding-circle/const/sources';
 import { useReportStore } from '@/features/onboarding-circle/stores/report-store';
+import type { ParsedReport } from '@/features/reports/types';
 import { getActiveLogin } from '@/lib/utils';
 
+const JSON_INSTRUCTION = `
+
+IMPORTANT: Respond ONLY with a valid JSON object (no markdown, no code fences, no extra text). Use this exact structure:
+{
+  "title": "short report title",
+  "source": "wearables|labs|ai-context",
+  "metrics": [
+    {
+      "value": <number>,
+      "unit": "<string>",
+      "label": "<what this measures>",
+      "identity": "<identity-framed headline, e.g. 'You're a fast recoverer'>",
+      "status": "healthy|good|alert|neutral",
+      "tag": "<one word: Strong, Healthy, Declining, etc.>",
+      "direction": "up|down" // optional, only for change metrics
+    }
+  ],
+  "connections": [
+    {
+      "metricIndex": <index into metrics array>,
+      "sources": ["wearables", "intake"],
+      "headline": "<emotionally resonant one-liner connecting data points>",
+      "body": "<2-3 sentences explaining the connection with specific numbers>",
+      "callout": { "label": "<short label>", "text": "<actionable detail>" }
+    }
+  ],
+  "correlation": {
+    "from": { "emoji": "<emoji>", "label": "<short label>" },
+    "to": { "emoji": "<emoji>", "label": "<short label>" },
+    "identity": "<identity-framed headline>",
+    "body": "<one sentence with specific numbers>",
+    "connection": {
+      "sources": ["wearables", "intake"],
+      "headline": "<connecting to member goals>",
+      "body": "<2-3 sentences>",
+      "callout": { "label": "<label>", "text": "<detail>" }
+    }
+  },
+  "nextSteps": [
+    { "emoji": "<emoji>", "title": "<short title>", "detail": "<one sentence>" }
+  ],
+  "ctaQuestions": ["<question 1>", "<question 2>", "<question 3>"],
+  "summary": "<2 sentences summarizing the report>"
+}`;
+
 const REPORT_PROMPTS: Record<string, string> = {
-  wearables:
-    'Generate a wearable data insight report. Analyze my sleep, HRV, heart rate, steps, and activity data from my connected wearable. Cross-reference with any other data you have about me — my intake, health goals, symptoms, and any prior labs. Highlight: 1) Key patterns in my wearable data, 2) What these patterns might mean for my upcoming bloodwork, 3) One specific thing I should focus on this week based on the data. Be specific with numbers.',
-  labs: 'Generate a lab results insight report. Analyze my uploaded lab results and identify trends across my biomarkers. Cross-reference with everything else you know about me — my wearable data, intake, health goals, and any imported health conversations. Highlight: 1) Biomarkers that are trending in a concerning direction, 2) Connections between my lab results and my daily data (sleep, HRV, activity), 3) What to watch for in my next test. Be specific with numbers and timeframes.',
-  'ai-context':
-    "Generate a health context insight report based on my imported AI conversations. Map the themes, symptoms, and health concerns I've discussed against all the other data you have — my intake, wearable metrics, and any lab results. Highlight: 1) Recurring health themes and how they connect to my actual data, 2) Concerns I've raised that are supported (or contradicted) by my numbers, 3) Blind spots — things my data suggests I should pay attention to that I haven't mentioned. Be specific.",
+  wearables: `You are a health data analyst for Superpower. Analyze the member's wearable data (sleep, HRV, heart rate, steps, activity) from their connected wearable. Cross-reference with ALL other data you have — intake (symptoms, goals, history), any imported AI conversations, and any uploaded labs. Generate 3-4 key metrics with identity-framed insights, find cross-source connections that tell a story, and identify one correlation pattern. Frame findings as identity statements (e.g., "You're a fast recoverer" not "Your recovery is good"). Be specific with numbers.${JSON_INSTRUCTION}`,
+  labs: `You are a health data analyst for Superpower. Analyze the member's uploaded lab results and identify biomarker trends. Cross-reference with ALL other data — wearable metrics, intake (symptoms, goals), and imported AI conversations. Generate 3-4 key metrics with identity-framed insights, find cross-source connections, and identify one correlation pattern. Frame findings as identity statements. Be specific with numbers and timeframes.${JSON_INSTRUCTION}`,
+  'ai-context': `You are a health data analyst for Superpower. Analyze the member's imported AI health conversations. Map themes, symptoms, and concerns against ALL other data — intake, wearable metrics, and lab results. Generate 3-4 key metrics/themes with identity-framed insights, find cross-source connections, and identify one correlation pattern. Frame findings as identity statements. Be specific.${JSON_INSTRUCTION}`,
 };
 
 const FALLBACK_TITLES: Record<string, string> = {
@@ -87,8 +131,8 @@ async function pollForTitle(
   threadId: string,
   markReady: (sourceId: SourceId, title: string) => void,
 ) {
-  const maxAttempts = 8;
-  const interval = 4000;
+  const maxAttempts = 10;
+  const interval = 5000;
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     await new Promise((resolve) => setTimeout(resolve, interval));
@@ -103,6 +147,12 @@ async function pollForTitle(
 
       const assistantMessage = messages.find((m) => m.role === 'assistant');
       if (assistantMessage != null && hasSubstantialContent(assistantMessage)) {
+        const parsed = tryParseReport(assistantMessage);
+        if (parsed != null) {
+          useReportStore.getState().setReport(sourceId, parsed.title, parsed);
+          return;
+        }
+        // Fallback: not valid JSON, use first line as title
         const title = extractTitle(assistantMessage, sourceId);
         markReady(sourceId, title);
         return;
@@ -112,8 +162,44 @@ async function pollForTitle(
     }
   }
 
-  // Timeout — use fallback title
   markReady(sourceId, FALLBACK_TITLES[sourceId] ?? 'Your health insights');
+}
+
+function tryParseReport(message: {
+  parts?: Array<{ type: string; text?: string }>;
+}): ParsedReport | null {
+  if (message.parts == null) return null;
+
+  for (const part of message.parts) {
+    if (part.type !== 'text' || part.text == null) continue;
+
+    let text = part.text.trim();
+
+    // Strip markdown code fences if present
+    if (text.startsWith('```')) {
+      const firstNewline = text.indexOf('\n');
+      const lastFence = text.lastIndexOf('```');
+      if (firstNewline !== -1 && lastFence > firstNewline) {
+        text = text.slice(firstNewline + 1, lastFence).trim();
+      }
+    }
+
+    try {
+      const parsed = JSON.parse(text);
+      if (
+        typeof parsed === 'object' &&
+        parsed !== null &&
+        typeof parsed.title === 'string' &&
+        Array.isArray(parsed.metrics)
+      ) {
+        return parsed as ParsedReport;
+      }
+    } catch {
+      // Not valid JSON, continue
+    }
+  }
+
+  return null;
 }
 
 function extractTitle(
