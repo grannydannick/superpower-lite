@@ -56,7 +56,11 @@ function ReportCard({
 
   const handleClick = () => {
     if (!isReady) return;
-    void navigate({ to: `/concierge/${report.threadId}` as any });
+    if (report.parsedReport != null) {
+      void navigate({ to: `/reports/${sourceId}` as any });
+    } else {
+      void navigate({ to: `/concierge/${report.threadId}` as any });
+    }
   };
 
   return (

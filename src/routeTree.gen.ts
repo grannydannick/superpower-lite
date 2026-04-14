@@ -19,6 +19,7 @@ import { Route as ClaimBenefitRouteImport } from './routes/claim-benefit'
 import { Route as CheckEmailRouteImport } from './routes/check-email'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
+import { Route as DevOnboardingRouteImport } from './routes/dev.onboarding'
 import { Route as AppVaultRouteImport } from './routes/_app.vault'
 import { Route as AppShopifyRedirectRouteImport } from './routes/_app.shopify-redirect'
 import { Route as AppServicesRouteImport } from './routes/_app.services'
@@ -62,6 +63,7 @@ import { Route as AppProtocolLegacyIdRouteImport } from './routes/_app.protocol.
 import { Route as AppMapsRecollectionServiceRequestIdScheduleRouteImport } from './routes/_app._maps.recollection.$serviceRequestId.schedule'
 import { Route as AppProtocolPlansPlanIdGoalsGoalIdRouteImport } from './routes/_app.protocol.plans.$planId.goals.$goalId'
 import { Route as AppProtocolLegacyPlanIdGoalsGoalIdRouteImport } from './routes/_app.protocol.legacy.$planId.goals.$goalId'
+import { Route as AppReportsSourceIdRouteImport } from './routes/_app.reports.$sourceId'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -111,6 +113,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppRoute,
+} as any)
+const DevOnboardingRoute = DevOnboardingRouteImport.update({
+  id: '/dev/onboarding',
+  path: '/dev/onboarding',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppVaultRoute = AppVaultRouteImport.update({
   id: '/vault',
@@ -330,6 +337,11 @@ const AppProtocolLegacyPlanIdGoalsGoalIdRoute =
     path: '/$planId/goals/$goalId',
     getParentRoute: () => AppProtocolLegacyRoute,
   } as any)
+const AppReportsSourceIdRoute = AppReportsSourceIdRouteImport.update({
+  id: '/reports/$sourceId',
+  path: '/reports/$sourceId',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
@@ -353,6 +365,7 @@ export interface FileRoutesByFullPath {
   '/services': typeof AppServicesRouteWithChildren
   '/shopify-redirect': typeof AppShopifyRedirectRoute
   '/vault': typeof AppVaultRoute
+  '/dev/onboarding': typeof DevOnboardingRoute
   '/onboarding': typeof AppMapsOnboardingRoute
   '/schedule': typeof AppMapsScheduleRoute
   '/settings': typeof AppMapsSettingsRoute
@@ -383,6 +396,7 @@ export interface FileRoutesByFullPath {
   '/recollection/$serviceRequestId/schedule': typeof AppMapsRecollectionServiceRequestIdScheduleRoute
   '/protocol/legacy/$planId/goals/$goalId': typeof AppProtocolLegacyPlanIdGoalsGoalIdRoute
   '/protocol/plans/$planId/goals/$goalId': typeof AppProtocolPlansPlanIdGoalsGoalIdRoute
+  '/reports/$sourceId': typeof AppReportsSourceIdRoute
 }
 export interface FileRoutesByTo {
   '/check-email': typeof CheckEmailRoute
@@ -400,6 +414,7 @@ export interface FileRoutesByTo {
   '/marketplace': typeof AppMarketplaceRoute
   '/shopify-redirect': typeof AppShopifyRedirectRoute
   '/vault': typeof AppVaultRoute
+  '/dev/onboarding': typeof DevOnboardingRoute
   '/onboarding': typeof AppMapsOnboardingRoute
   '/schedule': typeof AppMapsScheduleRoute
   '/settings': typeof AppMapsSettingsRoute
@@ -429,6 +444,7 @@ export interface FileRoutesByTo {
   '/recollection/$serviceRequestId/schedule': typeof AppMapsRecollectionServiceRequestIdScheduleRoute
   '/protocol/legacy/$planId/goals/$goalId': typeof AppProtocolLegacyPlanIdGoalsGoalIdRoute
   '/protocol/plans/$planId/goals/$goalId': typeof AppProtocolPlansPlanIdGoalsGoalIdRoute
+  '/reports/$sourceId': typeof AppReportsSourceIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -454,6 +470,7 @@ export interface FileRoutesById {
   '/_app/services': typeof AppServicesRouteWithChildren
   '/_app/shopify-redirect': typeof AppShopifyRedirectRoute
   '/_app/vault': typeof AppVaultRoute
+  '/dev/onboarding': typeof DevOnboardingRoute
   '/_app/': typeof AppIndexRoute
   '/_app/_maps/onboarding': typeof AppMapsOnboardingRoute
   '/_app/_maps/schedule': typeof AppMapsScheduleRoute
@@ -485,6 +502,7 @@ export interface FileRoutesById {
   '/_app/_maps/recollection/$serviceRequestId/schedule': typeof AppMapsRecollectionServiceRequestIdScheduleRoute
   '/_app/protocol/legacy/$planId/goals/$goalId': typeof AppProtocolLegacyPlanIdGoalsGoalIdRoute
   '/_app/protocol/plans/$planId/goals/$goalId': typeof AppProtocolPlansPlanIdGoalsGoalIdRoute
+  '/_app/reports/$sourceId': typeof AppReportsSourceIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -510,6 +528,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/shopify-redirect'
     | '/vault'
+    | '/dev/onboarding'
     | '/onboarding'
     | '/schedule'
     | '/settings'
@@ -540,6 +559,7 @@ export interface FileRouteTypes {
     | '/recollection/$serviceRequestId/schedule'
     | '/protocol/legacy/$planId/goals/$goalId'
     | '/protocol/plans/$planId/goals/$goalId'
+    | '/reports/$sourceId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/check-email'
@@ -557,6 +577,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/shopify-redirect'
     | '/vault'
+    | '/dev/onboarding'
     | '/onboarding'
     | '/schedule'
     | '/settings'
@@ -586,6 +607,7 @@ export interface FileRouteTypes {
     | '/recollection/$serviceRequestId/schedule'
     | '/protocol/legacy/$planId/goals/$goalId'
     | '/protocol/plans/$planId/goals/$goalId'
+    | '/reports/$sourceId'
   id:
     | '__root__'
     | '/_app'
@@ -610,6 +632,7 @@ export interface FileRouteTypes {
     | '/_app/services'
     | '/_app/shopify-redirect'
     | '/_app/vault'
+    | '/dev/onboarding'
     | '/_app/'
     | '/_app/_maps/onboarding'
     | '/_app/_maps/schedule'
@@ -641,6 +664,7 @@ export interface FileRouteTypes {
     | '/_app/_maps/recollection/$serviceRequestId/schedule'
     | '/_app/protocol/legacy/$planId/goals/$goalId'
     | '/_app/protocol/plans/$planId/goals/$goalId'
+    | '/_app/reports/$sourceId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -653,6 +677,7 @@ export interface RootRouteChildren {
   SetpasswordRoute: typeof SetpasswordRoute
   SigninRoute: typeof SigninRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
+  DevOnboardingRoute: typeof DevOnboardingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -726,6 +751,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/dev/onboarding': {
+      id: '/dev/onboarding'
+      path: '/dev/onboarding'
+      fullPath: '/dev/onboarding'
+      preLoaderRoute: typeof DevOnboardingRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_app/vault': {
       id: '/_app/vault'
@@ -1028,6 +1060,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProtocolLegacyPlanIdGoalsGoalIdRouteImport
       parentRoute: typeof AppProtocolLegacyRoute
     }
+    '/_app/reports/$sourceId': {
+      id: '/_app/reports/$sourceId'
+      path: '/reports/$sourceId'
+      fullPath: '/reports/$sourceId'
+      preLoaderRoute: typeof AppReportsSourceIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -1209,6 +1248,7 @@ interface AppRouteChildren {
   AppPrescriptionsIdRoute: typeof AppPrescriptionsIdRoute
   AppQuestionnaireTypeRoute: typeof AppQuestionnaireTypeRoute
   AppRecollectionServiceRequestIdRoute: typeof AppRecollectionServiceRequestIdRoute
+  AppReportsSourceIdRoute: typeof AppReportsSourceIdRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -1230,6 +1270,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppPrescriptionsIdRoute: AppPrescriptionsIdRoute,
   AppQuestionnaireTypeRoute: AppQuestionnaireTypeRoute,
   AppRecollectionServiceRequestIdRoute: AppRecollectionServiceRequestIdRoute,
+  AppReportsSourceIdRoute: AppReportsSourceIdRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
@@ -1244,6 +1285,7 @@ const rootRouteChildren: RootRouteChildren = {
   SetpasswordRoute: SetpasswordRoute,
   SigninRoute: SigninRoute,
   VerifyEmailRoute: VerifyEmailRoute,
+  DevOnboardingRoute: DevOnboardingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
