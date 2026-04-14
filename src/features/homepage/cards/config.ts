@@ -8,6 +8,7 @@ import { CardConfig, HomepageState } from '../types';
 import { ActionItemsCard } from './action-items-card';
 import { ActionableOrdersCard } from './actionable-orders-card';
 import { AiapSummaryCardWeb } from './aiap-summary-card-web';
+import { InsightCarouselCard } from './insight-carousel-card';
 import { KeyInsightsCard } from './key-insights-card';
 import { LabOrderCard } from './lab-order/lab-order-card';
 import { NavigationCard } from './navigation-card';
@@ -74,6 +75,16 @@ const actionItemsCardConfig: CardConfig = {
 };
 
 /**
+ * Card configuration for Insight Carousel card
+ */
+const insightCarouselCardConfig: CardConfig = {
+  id: 'insightCarousel',
+  component: InsightCarouselCard,
+  shouldShow: () => true,
+  getPriority: () => 7,
+};
+
+/**
  * Card configuration for Key Insights card
  */
 const keyInsightsCardConfig: CardConfig = {
@@ -118,6 +129,7 @@ cardRegistry.register(aiapSummaryCardWebConfig);
 // cardRegistry.register(phlebotomyAppointmentCardConfig);
 cardRegistry.register(actionableOrdersCardConfig);
 cardRegistry.register(actionItemsCardConfig);
+cardRegistry.register(insightCarouselCardConfig);
 cardRegistry.register(switchRxCardConfig);
 cardRegistry.register(navigationCardConfig);
 cardRegistry.register(labOrderCardConfig);
