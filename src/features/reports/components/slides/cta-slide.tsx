@@ -9,8 +9,8 @@ export function CtaSlide() {
 
   const handleQuestion = (question: string) => {
     void navigate({
-      to: '/concierge',
-      search: { defaultMessage: question },
+      to: '/concierge' as any,
+      search: { defaultMessage: question } as any,
     });
   };
 
