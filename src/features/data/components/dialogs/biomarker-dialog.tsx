@@ -270,7 +270,7 @@ const OptimalRangeCard = ({ biomarker }: { biomarker: Biomarker }) => {
               <>
                 {' '}
                 <Body1 className="inline-block text-zinc-500">
-                  {biomarker.unit}
+                  {biomarker.value[0]?.quantity?.unit || biomarker.unit}
                 </Body1>
               </>
             )}

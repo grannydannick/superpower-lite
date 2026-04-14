@@ -361,8 +361,10 @@ export const useTimeSeriesChart = ({
 
         const numericValue = getNumericValue(point);
 
-        // For comparator quantities, use midpoint of the range so the line
-        // connects to the center of the pill (same approach as range values).
+        // For comparator quantities, the pill spans mapped(low)..mapped(high) in
+        // chart space. Take the midpoint after mapping so the connecting line
+        // hits the pill's visual center — a numeric-space midpoint gets clamped
+        // by mapValueAcrossDimensions when an endpoint sits outside chart bounds.
         const compRange =
           point.quantity?.comparator && point.quantity.comparator !== 'EQUALS'
             ? getComparatorRange(
@@ -371,15 +373,20 @@ export const useTimeSeriesChart = ({
                 dimensions.chartMaxValue,
               )
             : undefined;
-        const valueForY = compRange
-          ? (compRange.low + compRange.high) / 2
-          : numericValue;
 
-        const mappedValue = mapValueAcrossDimensions(
-          valueForY,
-          pointDimensions,
-          dimensions,
-        );
+        const mappedValue = compRange
+          ? (mapValueAcrossDimensions(
+              compRange.low,
+              pointDimensions,
+              dimensions,
+            ) +
+              mapValueAcrossDimensions(
+                compRange.high,
+                pointDimensions,
+                dimensions,
+              )) /
+            2
+          : mapValueAcrossDimensions(numericValue, pointDimensions, dimensions);
         const yPercent = convertValueToY(dimensions, mappedValue);
         y = CHART_CONFIG.TOP_PADDING + (yPercent / 100) * chartHeight;
 

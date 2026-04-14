@@ -628,8 +628,12 @@ function TimeSeriesChartSvg({
             const yLow = point.yLow!;
             const yHigh = point.yHigh!;
             const pillWidth = 8;
-            const pillTop = Math.min(yHigh, yLow);
             const pillHeight = Math.max(pillWidth, Math.abs(yLow - yHigh));
+            // Center the pill around the connecting-line Y so the line hits the
+            // pill's visual center. For natural-height pills this matches
+            // min(yHigh, yLow); only matters when pillHeight is clamped up to
+            // pillWidth (collapsed dots).
+            const pillTop = (yLow + yHigh) / 2 - pillHeight / 2;
             const rx = pillWidth / 2;
 
             return (

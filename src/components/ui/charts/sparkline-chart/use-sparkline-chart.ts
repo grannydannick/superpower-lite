@@ -144,12 +144,17 @@ export const useSparklineChart = ({
             ? getComparatorRange(comparator, rawValue, dimensions.chartMaxValue)
             : undefined;
 
-        // For comparator quantities, use midpoint of the range so the line
-        // connects to the center of the pill (same approach as range-sparkline).
-        const valueForY = compRange
-          ? (compRange.low + compRange.high) / 2
-          : rawValue;
-        const mapped = mapValueAcrossDimensions(valueForY, srcDims, dimensions);
+        // For comparator quantities, the pill spans mapped(low)..mapped(high) in
+        // chart space. Take the midpoint after mapping so the connecting line
+        // hits the pill's visual center — a numeric-space midpoint gets clamped
+        // by mapValueAcrossDimensions when an endpoint sits outside chart bounds
+        // (e.g. getComparatorRange returns low=0 for LESS_THAN, which clamps to
+        // chartMinValue and drags the connection point to the chart bottom).
+        const mapped = compRange
+          ? (mapValueAcrossDimensions(compRange.low, srcDims, dimensions) +
+              mapValueAcrossDimensions(compRange.high, srcDims, dimensions)) /
+            2
+          : mapValueAcrossDimensions(rawValue, srcDims, dimensions);
         const y =
           (valueToY(mapped) / 100) * (SVG_HEIGHT - 2 * PADDING) + PADDING;
 
@@ -346,26 +351,32 @@ export const useSparklineChart = ({
           (valueToY(mappedLow) / 100) * (SVG_HEIGHT - 2 * PADDING) + PADDING;
         const yHigh =
           (valueToY(mappedHigh) / 100) * (SVG_HEIGHT - 2 * PADDING) + PADDING;
-        const pillHeight = Math.max(4, Math.abs(yLow - yHigh));
+        // When yLow ≈ yHigh (tiny pill), clamp height to PILL_WIDTH so the rect
+        // with rx=width/2 renders as a circle — otherwise you get a compressed
+        // horizontal lozenge instead of a dot.
+        const pillHeight = Math.max(PILL_WIDTH, Math.abs(yLow - yHigh));
+
+        // Center the pill around the connecting-line Y so the line hits the
+        // pill's visual center. For natural-height pills this is identical to
+        // min(yHigh, yLow); only matters when pillHeight is clamped up to
+        // PILL_WIDTH (collapsed dots).
+        const yCenter = (yLow + yHigh) / 2;
 
         pills.push({
           key: `pill-${v.timestamp}-${index}`,
           x: x - PILL_WIDTH / 2,
-          yTop: Math.min(yHigh, yLow),
+          yTop: yCenter - pillHeight / 2,
           height: pillHeight,
           width: PILL_WIDTH,
           color,
           pointIndex: index,
         });
       } else {
-        const circleRadius =
-          sortedValues.length === 1 ? CIRCLE_RADIUS + 1 : CIRCLE_RADIUS;
-
         circles.push({
           key: `${v.timestamp}-${index}`,
           cx: x,
           cy: y,
-          r: circleRadius,
+          r: CIRCLE_RADIUS,
           fill: color,
           stroke: 'white',
           strokeWidth: STROKE_WIDTH,
