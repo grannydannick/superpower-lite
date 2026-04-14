@@ -102,7 +102,7 @@ async function pollForTitle(
       });
 
       const assistantMessage = messages.find((m) => m.role === 'assistant');
-      if (assistantMessage != null) {
+      if (assistantMessage != null && hasSubstantialContent(assistantMessage)) {
         const title = extractTitle(assistantMessage, sourceId);
         markReady(sourceId, title);
         return;
@@ -138,4 +138,16 @@ function extractTitle(
   }
 
   return FALLBACK_TITLES[sourceId] ?? 'Your health insights';
+}
+
+function hasSubstantialContent(message: {
+  parts?: Array<{ type: string; text?: string }>;
+}): boolean {
+  if (message.parts == null) return false;
+  for (const part of message.parts) {
+    if (part.type === 'text' && part.text != null && part.text.length > 100) {
+      return true;
+    }
+  }
+  return false;
 }
