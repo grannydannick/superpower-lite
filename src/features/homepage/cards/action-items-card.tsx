@@ -1,381 +1,164 @@
 import { useNavigate } from '@tanstack/react-router';
-import { Check, ChevronRight, Lock } from 'lucide-react';
-import { type ReactElement } from 'react';
+import { Check, ChevronRight } from 'lucide-react';
 
-import { ActionableAccordion } from '@/components/shared/actionable-accordion';
 import { Body1, Body2 } from '@/components/ui/typography';
-import { DailyBriefChat } from '@/features/daily-brief/components/daily-brief-chat';
 import type { SourceId } from '@/features/onboarding-circle/const/sources';
 import { useOnboardingCircleStore } from '@/features/onboarding-circle/stores/onboarding-circle-store';
 import { useReportStore } from '@/features/onboarding-circle/stores/report-store';
+import { cn } from '@/lib/utils';
 
-const COMBINED_REPORT = {
-  title: 'Your Pre-Protocol Primer is ready',
-  preview:
-    "We've connected the dots across your wearables, labs, health history, and goals. Here's what we see before your protocol begins — and what to watch for.",
-};
-
-const MOCK_PREVIEWS: Record<string, string> = {
-  wearables:
-    "Sleep efficiency averaged 78% with a declining HRV trend. We'll cross-reference this with your upcoming bloodwork to check for cortisol or thyroid links.",
-  labs: 'Fasting glucose trending up across 3 draws. Combined with your wearable sleep data, this points to a recovery pattern worth addressing in your protocol.',
-  'ai-context':
-    "You've flagged stress, low energy, and focus issues across conversations. Mapped against your intake and wearable data, these cluster around a stress-recovery axis.",
-};
-
-const REPORT_PROMPTS: Record<string, string> = {
-  wearables:
-    'Generate a wearable data insight report. Analyze my sleep, HRV, heart rate, steps, and activity data from my connected wearable. Cross-reference with any other data you have about me — my intake, health goals, symptoms, and any prior labs. Highlight: 1) Key patterns in my wearable data, 2) What these patterns might mean for my upcoming bloodwork, 3) One specific thing I should focus on this week based on the data. Be specific with numbers.',
-  labs: 'Generate a lab results insight report. Analyze my uploaded lab results and identify trends across my biomarkers. Cross-reference with everything else you know about me — my wearable data, intake, health goals, and any imported health conversations. Highlight: 1) Biomarkers that are trending in a concerning direction, 2) Connections between my lab results and my daily data (sleep, HRV, activity), 3) What to watch for in my next test. Be specific with numbers and timeframes.',
-  'ai-context':
-    "Generate a health context insight report based on my imported AI conversations. Map the themes, symptoms, and health concerns I've discussed against all the other data you have — my intake, wearable metrics, and any lab results. Highlight: 1) Recurring health themes and how they connect to my actual data, 2) Concerns I've raised that are supported (or contradicted) by my numbers, 3) Blind spots — things my data suggests I should pay attention to that I haven't mentioned. Be specific.",
-  combined:
-    'Generate my Pre-Protocol Primer — a comprehensive report synthesizing ALL my data before my protocol begins. Connect the dots across my wearable data (sleep, HRV, activity), my lab results and biomarker trends, my health intake (symptoms, goals, medical history), and my imported health conversations. Structure it as: 1) Your health snapshot — key findings across all data sources, 2) Patterns — connections between your daily data and your bloodwork, 3) What your protocol will likely target based on this picture, 4) Three things to focus on right now while you wait for your protocol. Be specific with numbers, timeframes, and data points.',
-};
-
-interface ActionDef {
-  id: string;
-  sourceId: SourceId;
+interface ChecklistItem {
+  id: SourceId;
   title: string;
-  completedTitle: string;
-  description: string;
-  imageSrc: string;
-  pendingRoute: { to: string; search?: Record<string, string> };
+  subtitle: string;
+  route: { to: string; search?: Record<string, string> };
 }
 
-const ACTION_DEFS: ActionDef[] = [
+const CHECKLIST_ITEMS: ChecklistItem[] = [
   {
-    id: 'connect-wearables',
-    sourceId: 'wearables',
-    title: 'Connect your wearables',
-    completedTitle: 'Wearables connected, see report →',
-    description:
-      'Link Oura, Whoop, or Apple Health to get daily insights that connect your sleep, HRV, and activity to your lab results.',
-    imageSrc: '/data/wearables.webp',
-    pendingRoute: { to: '/settings', search: { tab: 'integrations' } },
+    id: 'intake',
+    title: 'Health intake',
+    subtitle: 'Completed during onboarding',
+    route: { to: '/' },
   },
   {
-    id: 'upload-labs',
-    sourceId: 'labs',
-    title: 'Unlock your health trends',
-    completedTitle: 'Labs are synced, see report →',
-    description:
-      "Upload past lab results and we'll show you how your biomarkers have changed over time.",
-    imageSrc: '/data/file-stack.webp',
-    pendingRoute: { to: '/concierge', search: { preset: 'upload-labs' } },
+    id: 'wearables',
+    title: 'Connect wearables',
+    subtitle: 'Oura, Whoop, Apple Health',
+    route: { to: '/settings', search: { tab: 'integrations' } },
   },
   {
-    id: 'import-memory',
-    sourceId: 'ai-context',
-    title: 'Bring your health context',
-    completedTitle: 'Health context imported, see report →',
-    description:
-      'Already use ChatGPT or Claude for health? Import those conversations so your AI coach knows your full story.',
-    imageSrc: '/concierge/other_llms.webp',
-    pendingRoute: { to: '/concierge', search: { preset: 'import-memory' } },
+    id: 'ai-context',
+    title: 'Sync LLM',
+    subtitle: 'Import health conversations',
+    route: {
+      to: '/concierge',
+      search: { preset: 'import-memory', sourceId: 'ai-context' },
+    },
+  },
+  {
+    id: 'labs',
+    title: 'Upload labs',
+    subtitle: 'Past blood work from any provider',
+    route: {
+      to: '/concierge',
+      search: { preset: 'upload-labs', sourceId: 'labs' },
+    },
   },
 ];
-
-/**
- * "done" means the user completed the action AND marked it done.
- * We track this separately from completion because the user may still
- * be in the middle of the flow (e.g., chatting in concierge).
- */
-function hasActiveAction(
-  completedSources: Set<SourceId>,
-  doneIds: Record<string, string>,
-): boolean {
-  for (const def of ACTION_DEFS) {
-    if (!completedSources.has(def.sourceId)) continue;
-    if (doneIds[def.sourceId] == null) return true;
-  }
-  return false;
-}
 
 export const ActionItemsCard = () => {
   const navigate = useNavigate();
   const completedSources = useOnboardingCircleStore((s) => s.completedSources);
-  const completeSource = useOnboardingCircleStore((s) => s.complete);
-  const resetOnboarding = useOnboardingCircleStore((s) => s.reset);
-  const doneIds = useReportStore((s) => s.threadIds);
-  const markDone = useReportStore((s) => s.setThreadId);
-  const resetReports = useReportStore((s) => s.reset);
-
-  const allComplete = ACTION_DEFS.every((a) =>
-    completedSources.has(a.sourceId),
+  const inProgressSources = useOnboardingCircleStore(
+    (s) => s.inProgressSources,
   );
-  const allDone = ACTION_DEFS.every((a) => doneIds[a.sourceId] != null);
-  const isBusy = hasActiveAction(completedSources, doneIds);
+  const startSource = useOnboardingCircleStore((s) => s.startSource);
+  const reports = useReportStore((s) => s.reports);
 
-  const handleReset = () => {
-    resetOnboarding();
-    resetReports();
+  const completedCount = completedSources.size;
+  const totalCount = CHECKLIST_ITEMS.length;
+
+  // Hide when all steps complete AND all reports ready
+  const allComplete = completedCount >= totalCount;
+  const allReportsReady =
+    allComplete &&
+    reports['wearables']?.status === 'ready' &&
+    reports['ai-context']?.status === 'ready' &&
+    reports['labs']?.status === 'ready';
+
+  if (allComplete && allReportsReady) {
+    return null;
+  }
+
+  const handleClick = (item: ChecklistItem) => {
+    if (completedSources.has(item.id)) return;
+    if (item.id === 'intake') return;
+    startSource(item.id);
+    void navigate({
+      to: item.route.to as any,
+      search: item.route.search as any,
+    });
   };
 
-  const primerViewed = doneIds['combined'] != null;
-
-  // Onboarding fully complete + primer viewed → show live daily brief
-  if (allComplete && allDone && primerViewed) {
-    return (
-      <div className="space-y-3">
-        <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-          <div className="mb-4 flex items-center gap-2">
-            <div className="from-vermillion-400 flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br to-vermillion-500">
-              <span className="text-[10px] text-white">✦</span>
-            </div>
-            <Body1 className="font-semibold text-zinc-900">
-              Your daily brief
-            </Body1>
-          </div>
-          <DailyBriefChat />
+  return (
+    <div className="rounded-2xl border border-zinc-200 bg-white shadow-sm">
+      {/* Header */}
+      <div className="px-4 pb-2 pt-4">
+        <div className="flex items-center justify-between">
+          <Body1 className="font-semibold text-zinc-900">Get started</Body1>
+          <Body2 className="text-zinc-400">
+            {completedCount}/{totalCount}
+          </Body2>
         </div>
-        <ResetButton onClick={handleReset} />
+        <div className="mt-2 h-1 overflow-hidden rounded-full bg-zinc-100">
+          <div
+            className="h-full rounded-full bg-vermillion-900 transition-all duration-500"
+            style={{ width: `${(completedCount / totalCount) * 100}%` }}
+          />
+        </div>
       </div>
-    );
-  }
 
-  // All steps completed and marked done → show combined report
-  if (allComplete && allDone) {
-    return (
-      <div className="space-y-3">
-        <CombinedReportCard
-          onClick={() => {
-            const combinedThread = doneIds['combined'];
-            if (combinedThread != null && combinedThread !== 'done') {
-              void navigate({
-                to: `/concierge/${combinedThread}` as any,
-              });
-            } else {
-              void navigate({
-                to: '/concierge',
-                search: {
-                  defaultMessage: REPORT_PROMPTS['combined'],
-                  reportSource: 'combined',
-                },
-              });
-            }
-          }}
-        />
-        <ResetButton onClick={handleReset} />
+      {/* Checklist rows */}
+      <div className="px-2 pb-2 pt-1">
+        {CHECKLIST_ITEMS.map((item) => {
+          const isComplete = completedSources.has(item.id);
+          const isInProgress = inProgressSources.has(item.id);
+          const isClickable = !isComplete && item.id !== 'intake';
+
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => handleClick(item)}
+              disabled={!isClickable}
+              className={cn(
+                'flex w-full items-center gap-3 rounded-xl px-2 py-2.5 text-left transition-colors',
+                isClickable && 'hover:bg-zinc-50',
+                !isComplete &&
+                  !isInProgress &&
+                  item.id !== 'intake' &&
+                  'opacity-50',
+              )}
+            >
+              {/* Circle indicator */}
+              <div className="flex size-6 shrink-0 items-center justify-center">
+                {isComplete ? (
+                  <div className="flex size-6 items-center justify-center rounded-full bg-emerald-500">
+                    <Check className="size-3.5 text-white" strokeWidth={3} />
+                  </div>
+                ) : isInProgress ? (
+                  <div className="flex size-6 items-center justify-center rounded-full border-2 border-vermillion-900">
+                    <div className="size-2 animate-pulse rounded-full bg-vermillion-900" />
+                  </div>
+                ) : (
+                  <div className="size-6 rounded-full border-2 border-zinc-200" />
+                )}
+              </div>
+
+              {/* Text */}
+              <div className="min-w-0 flex-1">
+                <Body1
+                  className={cn(
+                    'text-zinc-900',
+                    isComplete && 'text-zinc-400 line-through',
+                  )}
+                >
+                  {item.title}
+                </Body1>
+                {!isComplete && (
+                  <Body2 className="text-zinc-400">{item.subtitle}</Body2>
+                )}
+              </div>
+
+              {/* Chevron for clickable items */}
+              {isClickable && (
+                <ChevronRight className="size-4 shrink-0 text-zinc-400" />
+              )}
+            </button>
+          );
+        })}
       </div>
-    );
-  }
-
-  // Build items
-  const items: ReactElement[] = [];
-  for (const def of ACTION_DEFS) {
-    const isComplete = completedSources.has(def.sourceId);
-    const isDone = doneIds[def.sourceId] != null;
-
-    if (isComplete && isDone) {
-      // Fully done — show report CTA
-      const existingThreadId = doneIds[def.sourceId];
-      const hasRealThread =
-        existingThreadId != null && existingThreadId !== 'done';
-      items.push(
-        <CompletedActionItem
-          key={def.id}
-          title={def.completedTitle}
-          reportPreview={MOCK_PREVIEWS[def.sourceId]}
-          onClick={() => {
-            if (hasRealThread) {
-              // Thread already exists — navigate directly
-              void navigate({
-                to: `/concierge/${existingThreadId}` as any,
-              });
-            } else {
-              // First time — generate report, pass reportSource so thread ID gets captured
-              void navigate({
-                to: '/concierge',
-                search: {
-                  defaultMessage: REPORT_PROMPTS[def.sourceId],
-                  reportSource: def.sourceId,
-                },
-              });
-            }
-          }}
-        />,
-      );
-    } else if (isComplete && !isDone) {
-      // Action done, waiting for user to come back and mark done
-      items.push(
-        <InProgressActionItem
-          key={def.id}
-          title={def.title}
-          onMarkDone={() => markDone(def.sourceId, 'done')}
-        />,
-      );
-    } else {
-      // Pending
-      items.push(
-        <PendingActionItem
-          key={def.id}
-          title={def.title}
-          description={def.description}
-          imageSrc={def.imageSrc}
-          disabled={isBusy}
-          onClick={() => {
-            completeSource(def.sourceId);
-            void navigate({
-              to: def.pendingRoute.to as any,
-              search: def.pendingRoute.search as any,
-            });
-          }}
-        />,
-      );
-    }
-  }
-
-  return (
-    <>
-      <ActionableAccordion
-        title="Get started"
-        defaultOpen
-        allowCollapse
-        highlighted={false}
-        showHeaderIndicator={false}
-        showTopSeparator={false}
-      >
-        {items}
-      </ActionableAccordion>
-      <ResetButton onClick={handleReset} />
-    </>
-  );
-};
-
-function InProgressActionItem({
-  title,
-  onMarkDone,
-}: {
-  title: string;
-  onMarkDone: () => void;
-}) {
-  return (
-    <div className="flex items-center gap-3 px-4 py-4">
-      <div className="relative flex size-4 items-center justify-center rounded-full bg-vermillion-100">
-        <div className="size-1.5 animate-pulse rounded-full bg-vermillion-900" />
-      </div>
-      <div className="flex-1">
-        <Body1 className="text-zinc-600">{title}</Body1>
-        <Body2 className="text-zinc-400">
-          Complete this step, then come back
-        </Body2>
-      </div>
-      <button
-        type="button"
-        onClick={onMarkDone}
-        className="shrink-0 rounded-lg bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-200"
-      >
-        Done
-      </button>
     </div>
   );
-}
-
-function CompletedActionItem({
-  title,
-  reportPreview,
-  onClick,
-}: {
-  title: string;
-  reportPreview: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="group relative flex w-full flex-col gap-1.5 px-4 py-4 text-left outline-none transition-colors hover:bg-emerald-50/50 focus-visible:ring-2 focus-visible:ring-ring"
-    >
-      <div className="flex items-center gap-2">
-        <div className="flex size-5 items-center justify-center rounded-full bg-emerald-500">
-          <Check className="size-3 text-white" strokeWidth={3} />
-        </div>
-        <Body1 className="text-emerald-700">{title}</Body1>
-        <ChevronRight
-          aria-hidden="true"
-          className="ml-auto size-4 text-emerald-400 transition-transform group-hover:translate-x-0.5"
-        />
-      </div>
-      <Body2 className="pl-7 text-zinc-500">{reportPreview}</Body2>
-    </button>
-  );
-}
-
-function CombinedReportCard({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="group w-full rounded-2xl border border-zinc-200 bg-white p-5 text-left shadow-sm transition-all hover:border-zinc-300 hover:shadow-md"
-    >
-      <Body1 className="mb-2 font-semibold text-zinc-900">
-        {COMBINED_REPORT.title}
-      </Body1>
-      <Body2 className="leading-relaxed text-zinc-500">
-        {COMBINED_REPORT.preview}
-      </Body2>
-    </button>
-  );
-}
-
-function ResetButton({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="mt-2 w-full text-center text-xs text-zinc-400 underline transition-colors hover:text-zinc-600"
-    >
-      Reset onboarding (prototype only)
-    </button>
-  );
-}
-
-function PendingActionItem({
-  title,
-  description,
-  imageSrc,
-  onClick,
-  disabled,
-}: {
-  title: string;
-  description: string;
-  imageSrc: string;
-  onClick: () => void;
-  disabled: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={disabled ? undefined : onClick}
-      disabled={disabled}
-      className="group relative flex w-full items-center gap-3 px-4 py-4 text-left outline-none transition-colors hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-    >
-      <div className="flex shrink-0 items-center">
-        {disabled ? (
-          <Lock className="size-4 text-zinc-300" />
-        ) : (
-          <div className="relative flex size-4 items-center justify-center rounded-full bg-vermillion-100">
-            <div className="size-1.5 rounded-full bg-vermillion-900" />
-          </div>
-        )}
-        <img
-          src={imageSrc}
-          alt=""
-          className="ml-1.5 size-12 shrink-0 object-contain pt-1 rounded-mask"
-        />
-      </div>
-
-      <div className="flex flex-1 items-center gap-3">
-        <div className="flex-1">
-          <Body1 className="text-zinc-900">{title}</Body1>
-          <Body2 className="text-zinc-600">{description}</Body2>
-        </div>
-        <ChevronRight
-          aria-hidden="true"
-          className="size-5 text-zinc-400 transition-transform group-hover:translate-x-0.5"
-        />
-      </div>
-    </button>
-  );
-}
+};
