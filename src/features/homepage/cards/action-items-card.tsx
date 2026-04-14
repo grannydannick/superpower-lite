@@ -7,6 +7,9 @@ import { useOnboardingCircleStore } from '@/features/onboarding-circle/stores/on
 import { useReportStore } from '@/features/onboarding-circle/stores/report-store';
 import { cn } from '@/lib/utils';
 
+import { useReportPolling } from '../hooks/use-report-polling';
+import { useSourceCompletion } from '../hooks/use-source-completion';
+
 interface ChecklistItem {
   id: SourceId;
   title: string;
@@ -55,6 +58,9 @@ export const ActionItemsCard = () => {
   );
   const startSource = useOnboardingCircleStore((s) => s.startSource);
   const reports = useReportStore((s) => s.reports);
+
+  useSourceCompletion();
+  useReportPolling();
 
   const completedCount = completedSources.size;
   const totalCount = CHECKLIST_ITEMS.length;
