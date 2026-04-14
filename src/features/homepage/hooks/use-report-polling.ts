@@ -201,32 +201,53 @@ function tryParseReport(message: {
   for (const part of message.parts) {
     if (part.type !== 'text' || part.text == null) continue;
 
-    let text = part.text.trim();
-
-    // Strip markdown code fences if present
-    if (text.startsWith('```')) {
-      const firstNewline = text.indexOf('\n');
-      const lastFence = text.lastIndexOf('```');
-      if (firstNewline !== -1 && lastFence > firstNewline) {
-        text = text.slice(firstNewline + 1, lastFence).trim();
-      }
-    }
-
-    try {
-      const parsed = JSON.parse(text);
-      if (
-        typeof parsed === 'object' &&
-        parsed !== null &&
-        typeof parsed.title === 'string' &&
-        Array.isArray(parsed.metrics)
-      ) {
-        return parsed as ParsedReport;
-      }
-    } catch {
-      // Not valid JSON, continue
-    }
+    const result = extractJson(part.text);
+    if (result != null) return result;
   }
 
+  return null;
+}
+
+function extractJson(raw: string): ParsedReport | null {
+  const text = raw.trim();
+
+  // Strategy 1: Try parsing the whole text directly
+  const direct = tryParse(text);
+  if (direct != null) return direct;
+
+  // Strategy 2: Strip markdown code fences (```json ... ```)
+  const fenceMatch = /```(?:json)?\s*\n?([\s\S]*?)```/.exec(text);
+  if (fenceMatch != null) {
+    const inner = tryParse(fenceMatch[1]!.trim());
+    if (inner != null) return inner;
+  }
+
+  // Strategy 3: Find first { and last } — extract the JSON object
+  const firstBrace = text.indexOf('{');
+  const lastBrace = text.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    const slice = text.slice(firstBrace, lastBrace + 1);
+    const sliced = tryParse(slice);
+    if (sliced != null) return sliced;
+  }
+
+  return null;
+}
+
+function tryParse(text: string): ParsedReport | null {
+  try {
+    const parsed = JSON.parse(text);
+    if (
+      typeof parsed === 'object' &&
+      parsed !== null &&
+      typeof parsed.title === 'string' &&
+      Array.isArray(parsed.metrics)
+    ) {
+      return parsed as ParsedReport;
+    }
+  } catch {
+    // Not valid JSON
+  }
   return null;
 }
 
