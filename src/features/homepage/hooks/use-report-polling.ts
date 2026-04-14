@@ -167,14 +167,16 @@ async function pollForTitle(
       consecutive404s = 0;
 
       const assistantMessage = messages.find((m) => m.role === 'assistant');
-      if (assistantMessage != null && hasSubstantialContent(assistantMessage)) {
-        const parsed = tryParseReport(assistantMessage);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- message shape varies between API and SDK
+      const msg = assistantMessage as any;
+      if (msg != null && hasSubstantialContent(msg)) {
+        const parsed = tryParseReport(msg);
         if (parsed != null) {
           useReportStore.getState().setReport(sourceId, parsed.title, parsed);
           return;
         }
         // Fallback: not valid JSON, use first line as title
-        const title = extractTitle(assistantMessage, sourceId);
+        const title = extractTitle(msg, sourceId);
         markReady(sourceId, title);
         return;
       }
@@ -193,19 +195,39 @@ async function pollForTitle(
   markReady(sourceId, FALLBACK_TITLES[sourceId] ?? 'Your health insights');
 }
 
-function tryParseReport(message: {
-  parts?: Array<{ type: string; text?: string }>;
-}): ParsedReport | null {
-  if (message.parts == null) return null;
+/**
+ * Extract all text content from a message.
+ * Handles both formats:
+ * - New: { parts: [{ type: 'text', text: '...' }] }
+ * - Legacy/API: { content: '...' }
+ */
+function getMessageText(message: Record<string, unknown>): string | null {
+  // Try parts array first
+  if (Array.isArray(message.parts)) {
+    for (const part of message.parts) {
+      if (
+        typeof part === 'object' &&
+        part != null &&
+        (part as Record<string, unknown>).type === 'text' &&
+        typeof (part as Record<string, unknown>).text === 'string'
+      ) {
+        return (part as Record<string, unknown>).text as string;
+      }
+    }
+  }
 
-  for (const part of message.parts) {
-    if (part.type !== 'text' || part.text == null) continue;
-
-    const result = extractJson(part.text);
-    if (result != null) return result;
+  // Fallback: content string (legacy API format)
+  if (typeof message.content === 'string' && message.content.length > 0) {
+    return message.content;
   }
 
   return null;
+}
+
+function tryParseReport(message: Record<string, unknown>): ParsedReport | null {
+  const text = getMessageText(message);
+  if (text == null) return null;
+  return extractJson(text);
 }
 
 function extractJson(raw: string): ParsedReport | null {
@@ -252,37 +274,27 @@ function tryParse(text: string): ParsedReport | null {
 }
 
 function extractTitle(
-  message: { parts?: Array<{ type: string; text?: string }> },
+  message: Record<string, unknown>,
   sourceId: string,
 ): string {
-  if (message.parts == null) {
+  const text = getMessageText(message);
+  if (text == null) {
     return FALLBACK_TITLES[sourceId] ?? 'Your health insights';
   }
 
-  for (const part of message.parts) {
-    if (part.type === 'text' && part.text != null) {
-      const firstLine = part.text.split('\n')[0] ?? '';
-      const cleaned = firstLine.replace(/^#+\s*/, '').trim();
-      if (cleaned.length > 0 && cleaned.length <= 80) {
-        return cleaned;
-      }
-      if (cleaned.length > 80) {
-        return `${cleaned.slice(0, 77)}...`;
-      }
-    }
+  const firstLine = text.split('\n')[0] ?? '';
+  const cleaned = firstLine.replace(/^#+\s*/, '').trim();
+  if (cleaned.length > 0 && cleaned.length <= 80) {
+    return cleaned;
+  }
+  if (cleaned.length > 80) {
+    return `${cleaned.slice(0, 77)}...`;
   }
 
   return FALLBACK_TITLES[sourceId] ?? 'Your health insights';
 }
 
-function hasSubstantialContent(message: {
-  parts?: Array<{ type: string; text?: string }>;
-}): boolean {
-  if (message.parts == null) return false;
-  for (const part of message.parts) {
-    if (part.type === 'text' && part.text != null && part.text.length > 100) {
-      return true;
-    }
-  }
-  return false;
+function hasSubstantialContent(message: Record<string, unknown>): boolean {
+  const text = getMessageText(message);
+  return text != null && text.length > 100;
 }
