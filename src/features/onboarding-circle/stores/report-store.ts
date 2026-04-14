@@ -1,31 +1,48 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-/**
- * Tracks report thread IDs for completed onboarding actions.
- * On first "see report" click, user is sent to concierge with a prompt.
- * Once the thread is created, we store its ID so subsequent clicks
- * go directly to that thread.
- */
+import type { SourceId } from '../const/sources';
+
+interface ReportEntry {
+  threadId: string;
+  status: 'generating' | 'ready';
+  title: string | null;
+}
 
 interface ReportStoreState {
-  /** Map of sourceId → concierge thread ID */
-  threadIds: Record<string, string>;
-  setThreadId: (sourceId: string, threadId: string) => void;
-  getThreadId: (sourceId: string) => string | undefined;
+  reports: Record<string, ReportEntry>;
+  startReport: (sourceId: SourceId, threadId: string) => void;
+  markReady: (sourceId: SourceId, title: string) => void;
+  getReport: (sourceId: SourceId) => ReportEntry | undefined;
   reset: () => void;
 }
+
+export type { ReportEntry };
 
 export const useReportStore = create<ReportStoreState>()(
   persist(
     (set, get) => ({
-      threadIds: {},
-      setThreadId: (sourceId, threadId) =>
+      reports: {},
+      startReport: (sourceId, threadId) =>
         set((state) => ({
-          threadIds: { ...state.threadIds, [sourceId]: threadId },
+          reports: {
+            ...state.reports,
+            [sourceId]: { threadId, status: 'generating', title: null },
+          },
         })),
-      getThreadId: (sourceId) => get().threadIds[sourceId],
-      reset: () => set({ threadIds: {} }),
+      markReady: (sourceId, title) =>
+        set((state) => {
+          const existing = state.reports[sourceId];
+          if (existing == null) return state;
+          return {
+            reports: {
+              ...state.reports,
+              [sourceId]: { ...existing, status: 'ready', title },
+            },
+          };
+        }),
+      getReport: (sourceId) => get().reports[sourceId],
+      reset: () => set({ reports: {} }),
     }),
     {
       name: 'onboarding-reports',

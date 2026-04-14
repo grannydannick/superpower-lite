@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { useMessages } from '@/features/messages/api/get-messages';
+import type { SourceId } from '@/features/onboarding-circle/const/sources';
 import { useReportStore } from '@/features/onboarding-circle/stores/report-store';
 import { useUser } from '@/lib/auth';
 
@@ -120,7 +121,9 @@ export function ConciergeChatPanel() {
     if (reportSavedRef.current) return;
 
     reportSavedRef.current = true;
-    useReportStore.getState().setThreadId(reportSourceRef.current, routeId);
+    useReportStore
+      .getState()
+      .startReport(reportSourceRef.current as SourceId, routeId);
   }, [routeId]);
 
   if (routeId == null) {
