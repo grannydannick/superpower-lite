@@ -95,9 +95,26 @@ export function fireReportGeneration(
         parts: [{ type: 'text', text: prompt }],
       },
     }),
-  }).catch((err) => {
-    console.warn('Report generation request failed:', err);
-  });
+  })
+    .then((res) => {
+      if (!res.ok) {
+        console.warn(
+          `Report generation failed: ${res.status} ${res.statusText}`,
+        );
+        useReportStore
+          .getState()
+          .markReady(
+            sourceId,
+            FALLBACK_TITLES[sourceId] ?? 'Report unavailable',
+          );
+      }
+    })
+    .catch((err) => {
+      console.warn('Report generation request failed:', err);
+      useReportStore
+        .getState()
+        .markReady(sourceId, FALLBACK_TITLES[sourceId] ?? 'Report unavailable');
+    });
 }
 
 /**
@@ -134,6 +151,8 @@ async function pollForTitle(
   const maxAttempts = 10;
   const interval = 5000;
 
+  let consecutive404s = 0;
+
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     await new Promise((resolve) => setTimeout(resolve, interval));
 
@@ -144,6 +163,8 @@ async function pollForTitle(
         sort: 'asc',
         hideToast: true,
       });
+
+      consecutive404s = 0;
 
       const assistantMessage = messages.find((m) => m.role === 'assistant');
       if (assistantMessage != null && hasSubstantialContent(assistantMessage)) {
@@ -158,7 +179,14 @@ async function pollForTitle(
         return;
       }
     } catch {
-      // Thread might not exist yet, keep polling
+      consecutive404s++;
+      // If thread doesn't exist after 3 attempts, stop polling
+      if (consecutive404s >= 3) {
+        console.warn(
+          `Report polling stopped: thread ${threadId} not found after ${consecutive404s} attempts`,
+        );
+        break;
+      }
     }
   }
 
