@@ -15,6 +15,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
+import { ActionItemsCard } from '@/features/homepage/cards/action-items-card';
 import { getHistoryQueryOptions } from '@/features/messages/api/get-history';
 import {
   DEFAULT_MESSAGES_PAGE_SIZE,
@@ -24,7 +25,6 @@ import {
 import { useChatStore } from '@/features/messages/stores/chat-store';
 import { createChatV2Transport } from '@/features/messages/utils/chatv2-transport';
 import { extractTiming } from '@/features/messages/utils/extract-timing';
-import { OnboardingCircle } from '@/features/onboarding-circle/components/onboarding-circle';
 import { useOnboardingCircleStore } from '@/features/onboarding-circle/stores/onboarding-circle-store';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { useUser } from '@/lib/auth';
@@ -1073,7 +1073,7 @@ function ChatView({
                   setupActions={setupActions}
                 />
               ) : (
-                <OnboardingCircle />
+                <ActionItemsCard />
               )}
             </div>
           </div>
