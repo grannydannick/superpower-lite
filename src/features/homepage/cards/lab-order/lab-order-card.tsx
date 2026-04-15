@@ -118,7 +118,7 @@ export const LabOrderCard = () => {
 
   const secondaryMessage =
     appointmentStatus === 'processing'
-      ? 'Your results and health protocol will be ready in 5-7 days'
+      ? 'Your results and health protocol will be ready within 10 days'
       : 'Your results will be uploaded to your dashboard once complete.';
 
   const locationText =
