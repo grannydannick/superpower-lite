@@ -10,3 +10,10 @@ export function shouldShowImportMemory(userCreatedAt?: string | Date) {
     isWithinDays(IMPORT_MEMORY_ROLLOUT_DATE, 14)
   );
 }
+
+// April 13 2026 00:00 PDT
+const SINGLE_THREAD_RELEASE_DATE = new Date('2026-04-13T07:00:00Z');
+
+export function shouldShowSingleThreadIntro() {
+  return isWithinDays(SINGLE_THREAD_RELEASE_DATE, 7);
+}

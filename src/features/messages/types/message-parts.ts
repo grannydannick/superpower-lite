@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
 
+import type { BashToolAction } from '../utils/parse-bash-tool-actions';
+
 // ============================================================================
 // Citation Types
 // ============================================================================
@@ -28,4 +30,6 @@ export interface ParsedBlock {
 export interface ParsedMessageResult {
   blocks: ParsedBlock[];
   citations: Map<string, CitationInfo>;
+  /** Actions extracted from bash tool calls (FHIR queries, marketplace lookups, etc.) */
+  toolActions: BashToolAction[];
 }

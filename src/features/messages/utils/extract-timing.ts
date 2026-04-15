@@ -36,7 +36,6 @@ export interface TimingInfo {
  */
 export function formatDurationMs(ms: number): string {
   if (!Number.isFinite(ms) || ms < 0) return '—';
-  if (ms < 1000) return `${Math.round(ms)}ms`;
 
   const s = ms / 1000;
   if (s < 10) return `${s.toFixed(1)}s`;
@@ -171,9 +170,41 @@ export function extractTiming(
 }
 
 /**
- * Get combined timing (thinking + tools) for display in the thinking block.
+ * Get timing for the Nth reasoning block by matching reasoning-start/end
+ * event pairs in metadata event order.
  */
-export function getCombinedTimingMs(timing: TimingInfo): number | null {
-  const thinking = timing.thinkingMs ?? 0;
-  return thinking > 0 ? thinking : null;
+export function getReasoningTimingMs(
+  message: UIMessage,
+  fromIndex: number,
+  toIndex: number,
+  isStreaming: boolean,
+  nowMs: number = Date.now(),
+): number | null {
+  const meta = message.metadata as Record<string, unknown> | undefined;
+  const events = meta?.events as Record<string, unknown> | undefined;
+  if (!events || typeof events !== 'object') return null;
+
+  const starts: number[] = [];
+  const ends: number[] = [];
+
+  for (const key of Object.keys(events).sort((a, b) => Number(a) - Number(b))) {
+    const ev = events[key];
+    if (!ev || typeof ev !== 'object' || Array.isArray(ev)) continue;
+    const { type, at } = ev as { type?: string; at?: string };
+    if (!type || !at) continue;
+    const ms = Date.parse(at);
+    if (!Number.isFinite(ms)) continue;
+
+    if (type === 'reasoning-start') starts.push(ms);
+    else if (type === 'reasoning-end') ends.push(ms);
+  }
+
+  const startMs = starts[fromIndex];
+  if (startMs === undefined) return null;
+
+  const endMs = ends[toIndex];
+  if (endMs !== undefined) return endMs - startMs;
+
+  if (isStreaming) return nowMs - startMs;
+  return null;
 }

@@ -6,7 +6,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { toast } from '@/components/ui/sonner';
 import { useCreateFollowups } from '@/features/messages/api/create-followups';
-import { getHistoryQueryOptions } from '@/features/messages/api/get-history';
+import {
+  getTimelineQueryOptions,
+  useTimeline,
+} from '@/features/messages/api/get-messages';
 import { MultimodalInput } from '@/features/messages/components/ai/multimodal-input';
 import { QueuedMessages } from '@/features/messages/components/ai/queued-messages';
 import { AssistantMessages } from '@/features/messages/components/assistant/assistant-messages';
@@ -49,20 +52,30 @@ export function AssistantChat({
   const setHasMessages = useAssistantStore((s) => s.setHasMessages);
   const [attachments, setAttachments] = useState<Array<FileUIPart>>([]);
 
+  // Load the user's timeline so the assistant continues the existing thread
+  const { data: timelineMessages } = useTimeline({ hideToast: true });
+
+  // Freeze timeline messages after first successful load so React Query
+  // refetches don't reset useChat's internal state or interrupt streaming.
+  const frozenTimelineMessages = useMemo(
+    () => timelineMessages ?? [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only recompute on null→loaded transition
+    [timelineMessages == null ? null : 'loaded'],
+  );
+
   const transport = useMemo(() => createChatV2Transport<UIMessage>(), []);
   const hasResumedRef = useRef(false);
 
   const { messages, setMessages, sendMessage, status, resumeStream } = useChat({
     id,
     transport,
-    resume: true,
-    messages: [],
+    messages: frozenTimelineMessages,
     generateId: () => crypto.randomUUID(),
     onFinish: ({ message, isAbort, isDisconnect, isError }) => {
       if (isAbort) return;
 
       void queryClient.invalidateQueries({
-        queryKey: getHistoryQueryOptions().queryKey,
+        queryKey: getTimelineQueryOptions().queryKey,
       });
 
       if (isDisconnect || isError) return;

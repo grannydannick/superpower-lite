@@ -11,12 +11,90 @@ import type {
 } from '../types/message-parts';
 
 import { isCompactionDataPart, isFileIngestionDataPart } from './data-parts';
-import { extractTiming, getCombinedTimingMs } from './extract-timing';
+import { getReasoningTimingMs } from './extract-timing';
 import { safeJsonStringify } from './json';
+import type {
+  BashToolAction,
+  BiomarkerBadge,
+  ReasoningEntry,
+} from './parse-bash-tool-actions';
+import { parseBashToolActions } from './parse-bash-tool-actions';
 import {
   extractCitationsFromMarkdown,
   transformCitationLinksToMarkers,
 } from './parse-citation-links';
+
+// ============================================================================
+// FHIR Observation Extraction
+// ============================================================================
+
+function mapFhirInterpretation(interpretation: unknown): string {
+  if (!Array.isArray(interpretation) || interpretation.length === 0)
+    return 'PENDING';
+  const first = interpretation[0];
+  if (first == null || typeof first !== 'object') return 'PENDING';
+  const rec = first as Record<string, unknown>;
+  const text =
+    typeof rec.text === 'string'
+      ? rec.text
+      : Array.isArray(rec.coding) && rec.coding.length > 0
+        ? (((rec.coding[0] as Record<string, unknown>)?.code as string) ?? '')
+        : '';
+  const lower = text.toLowerCase();
+  if (lower.includes('optimal')) return 'OPTIMAL';
+  if (lower.includes('normal') || lower === 'n') return 'NORMAL';
+  if (lower.includes('high') || lower === 'h' || lower === 'hh') return 'HIGH';
+  if (lower.includes('low') || lower === 'l' || lower === 'll') return 'LOW';
+  if (lower.includes('abnormal') || lower === 'a') return 'HIGH';
+  return 'PENDING';
+}
+
+function extractBiomarkersFromFhirJson(json: unknown): BiomarkerBadge[] {
+  if (json == null || typeof json !== 'object') return [];
+
+  const observations: unknown[] = [];
+  const obj = json as Record<string, unknown>;
+
+  if (obj.resourceType === 'Observation') {
+    observations.push(obj);
+  } else if (obj.resourceType === 'Bundle' && Array.isArray(obj.entry)) {
+    for (const entry of obj.entry) {
+      const resource = (entry as Record<string, unknown>)?.resource;
+      if (
+        resource != null &&
+        typeof resource === 'object' &&
+        (resource as Record<string, unknown>).resourceType === 'Observation'
+      ) {
+        observations.push(resource);
+      }
+    }
+  } else if (Array.isArray(json)) {
+    for (const item of json) {
+      if (
+        item != null &&
+        typeof item === 'object' &&
+        (item as Record<string, unknown>).resourceType === 'Observation'
+      ) {
+        observations.push(item);
+      }
+    }
+  }
+
+  const badges: BiomarkerBadge[] = [];
+  for (const obs of observations) {
+    const rec = obs as Record<string, unknown>;
+    const code = rec.code as Record<string, unknown> | undefined;
+    if (code == null) continue;
+    const name =
+      typeof code.text === 'string' && code.text.trim().length > 0
+        ? code.text.trim()
+        : null;
+    if (name == null) continue;
+    const status = mapFhirInterpretation(rec.interpretation);
+    badges.push({ name, status, showDot: true });
+  }
+  return badges;
+}
 
 // ============================================================================
 // Type Guards
@@ -119,33 +197,18 @@ export function parseMessageParts(
   // Check if memory is being updated (retain command in progress or just completed while streaming)
   const isMemoryUpdating = isMemoryUpdateInProgress(message.parts, isStreaming);
 
-  // Extract timing info from message metadata
-  const timing = extractTiming(message, isStreaming);
-  const combinedTimingMs = getCombinedTimingMs(timing);
-
   const blocks: ParsedBlock[] = [];
+  let reasoningIndex = 0;
+  let pendingReasoning: {
+    entries: ReasoningEntry[];
+    reasoningCount: number;
+    startIndex: number;
+    hasStreaming: boolean;
+  } | null = null;
 
-  // Collect all reasoning parts to combine into a single block
-  const reasoningParts: Array<{ text: string; state?: string }> = [];
-  for (const part of message.parts) {
-    if (isReasoningPart(part)) {
-      reasoningParts.push({ text: part.text, state: part.state });
-    }
-  }
+  // Collect all tool actions for the top-level result
+  const allToolActions: BashToolAction[] = [];
 
-  // Combine reasoning text and determine overall state
-  const combinedReasoningText = reasoningParts.map((p) => p.text).join('\n\n');
-
-  // Show "Thinking..." while message is streaming and there's no text content yet
-  // This avoids flickering when reasoning parts finish one by one
-  const hasTextContent = message.parts.some(
-    (p) => isTextPart(p) && p.text.trim().length > 0,
-  );
-  const reasoningState =
-    isStreaming && reasoningParts.length > 0 && !hasTextContent
-      ? 'streaming'
-      : undefined;
-  let reasoningBlockAdded = false;
   let fileIngestionBlockAdded = false;
   let compactionBlockAdded = false;
 
@@ -206,38 +269,132 @@ export function parseMessageParts(
     }
   };
 
+  const flushReasoning = (currentPartIndex: number): void => {
+    if (!pendingReasoning) return;
+    const hasContent =
+      pendingReasoning.entries.length > 0 || pendingReasoning.hasStreaming;
+    const hasText = pendingReasoning.entries.some(
+      (e) => e.kind === 'text' && e.text.trim().length > 0,
+    );
+    if (!hasContent && !hasText) {
+      pendingReasoning = null;
+      return;
+    }
+
+    flushByBlankLines();
+    flushRemainingText();
+
+    const remainingParts = message.parts.slice(currentPartIndex);
+    const hasLaterText = remainingParts.some(
+      (p) => isTextPart(p) && p.text.trim().length > 0,
+    );
+    const isLastReasoning = !remainingParts.some(isReasoningPart);
+    const endIndex =
+      pendingReasoning.startIndex + pendingReasoning.reasoningCount - 1;
+
+    blocks.push({
+      kind: 'node',
+      key: `${message.id}:reasoning:${pendingReasoning.startIndex}`,
+      node: (
+        <ReasoningBlock
+          messageId={message.id}
+          partIndex={pendingReasoning.startIndex}
+          entries={pendingReasoning.entries}
+          state={pendingReasoning.hasStreaming ? 'streaming' : undefined}
+          isActive={isStreaming && isLastReasoning && !hasLaterText}
+          isMemoryUpdating={isLastReasoning && isMemoryUpdating}
+          timingMs={getReasoningTimingMs(
+            message,
+            pendingReasoning.startIndex,
+            endIndex,
+            isStreaming,
+          )}
+        />
+      ),
+    });
+    pendingReasoning = null;
+  };
+
   for (let partIndex = 0; partIndex < message.parts.length; partIndex++) {
     const part = message.parts[partIndex];
 
-    if (isStepStartPart(part)) {
+    if (isReasoningPart(part)) {
+      if (part.text.trim().length > 0 || part.state === 'streaming') {
+        if (!pendingReasoning) {
+          pendingReasoning = {
+            entries: [],
+            reasoningCount: 0,
+            startIndex: reasoningIndex,
+            hasStreaming: false,
+          };
+        }
+        pendingReasoning.entries.push({ kind: 'text', text: part.text });
+        pendingReasoning.reasoningCount++;
+        if (part.state === 'streaming') pendingReasoning.hasStreaming = true;
+        reasoningIndex++;
+      }
+      continue;
+    }
+
+    // Extract tool actions from bash tool-call parts and interleave with reasoning
+    if (isToolUIPart(part) && getToolName(part) === 'bash') {
+      const partAny = part as unknown as {
+        input?: { command?: string };
+        output?: unknown;
+        state?: string;
+      };
+
+      // tool-call: extract actions from command
+      const command = partAny.input?.command ?? '';
+      if (command) {
+        const actions = parseBashToolActions(command);
+        allToolActions.push(...actions);
+        if (pendingReasoning) {
+          for (const action of actions) {
+            pendingReasoning.entries.push({ kind: 'action', action });
+          }
+        }
+      }
+
+      // tool output: extract biomarker badges from FHIR Observation results
+      if (partAny.output != null && pendingReasoning) {
+        const outputStr =
+          typeof partAny.output === 'string'
+            ? partAny.output
+            : typeof (partAny.output as Record<string, unknown>)?.stdout ===
+                'string'
+              ? ((partAny.output as Record<string, unknown>).stdout as string)
+              : null;
+        if (outputStr != null) {
+          try {
+            const json: unknown = JSON.parse(outputStr);
+            const badges = extractBiomarkersFromFhirJson(json);
+            if (badges.length > 0) {
+              pendingReasoning.entries.push({
+                kind: 'biomarkers',
+                items: badges,
+              });
+            }
+          } catch {
+            // Not JSON — skip
+          }
+        }
+      }
+
+      continue;
+    }
+
+    // step-start and non-bash tool parts don't flush reasoning,
+    // allowing consecutive reasoning blocks to merge into one.
+    if (isStepStartPart(part) || isToolUIPart(part)) {
       flushByBlankLines();
       flushRemainingText();
       continue;
     }
 
-    if (isReasoningPart(part)) {
-      // Add combined reasoning block only once (on first reasoning part)
-      if (!reasoningBlockAdded && combinedReasoningText.trim().length > 0) {
-        flushByBlankLines();
-        flushRemainingText();
-        blocks.push({
-          kind: 'node',
-          key: `${message.id}:reasoning:combined`,
-          node: (
-            <ReasoningBlock
-              messageId={message.id}
-              partIndex={0}
-              text={combinedReasoningText}
-              state={reasoningState}
-              isMemoryUpdating={isMemoryUpdating}
-              timingMs={combinedTimingMs}
-            />
-          ),
-        });
-        reasoningBlockAdded = true;
-      }
-      continue;
-    }
+    // Visible content (text, sources, files, data) flushes reasoning
+    // so each reasoning block appears before its corresponding response.
+    flushReasoning(partIndex);
 
     if (isTextPart(part)) {
       // Extract citations from markdown links in real-time (not just when done)
@@ -340,6 +497,9 @@ export function parseMessageParts(
     }
 
     if (isDataPart(part)) {
+      // Internal-only data parts that should not be rendered.
+      if (part.type === 'data-recalled-memories') continue;
+
       flushByBlankLines();
       flushRemainingText();
       if (isFileIngestionDataPart(part)) {
@@ -387,6 +547,7 @@ export function parseMessageParts(
     }
   }
 
+  flushReasoning(message.parts.length);
   flushByBlankLines();
   if (pendingText.trim().length > 0) {
     const lastParagraphDone = !isStreaming;
@@ -394,5 +555,5 @@ export function parseMessageParts(
     pushParagraph(pendingText, lastParagraphDone, keysInParagraph);
   }
 
-  return { blocks, citations };
+  return { blocks, citations, toolActions: allToolActions };
 }

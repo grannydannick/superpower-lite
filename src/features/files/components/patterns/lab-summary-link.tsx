@@ -90,8 +90,7 @@ export function LabSummaryLink({
         <Tooltip>
           <TooltipTrigger asChild>
             <Link
-              to="/concierge/$id"
-              params={{ id: summaryChatId }}
+              to="/concierge"
               search={{ ctxMessageId: summaryMessageId }}
               onClick={(event) => event.stopPropagation()}
             >

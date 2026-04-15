@@ -25,7 +25,6 @@ export const AssistantModal = () => {
   const open = useAssistantStore((s) => s.open);
   const close = useAssistantStore((s) => s.close);
   const input = useAssistantStore((s) => s.input);
-  const hasMessages = useAssistantStore((s) => s.hasMessages);
   const { width, height, setSize, minConstraints, maxConstraints } =
     useResizeAssistant();
   const navigate = useNavigate();
@@ -42,7 +41,7 @@ export const AssistantModal = () => {
     if (trimmedMessage.length > 0) {
       q = `?defaultMessage=${encodeURIComponent(trimmedMessage)}`;
     }
-    const url = `${window.location.origin}/concierge/${chatId}${q}`;
+    const url = `${window.location.origin}/concierge${q}`;
 
     try {
       await navigator.clipboard.writeText(url);
@@ -51,14 +50,12 @@ export const AssistantModal = () => {
       console.error('Failed to copy link:', err);
       toast.error('Failed to copy link');
     }
-  }, [chatId, input]);
+  }, [input]);
 
   const handleExpand = useCallback(() => {
     const trimmedInput = input?.trim() ?? '';
 
-    if (hasMessages) {
-      void navigate({ to: '/concierge/$id', params: { id: chatId } });
-    } else if (trimmedInput.length > 0) {
+    if (trimmedInput.length > 0) {
       void navigate({
         to: '/concierge',
         search: { defaultMessage: trimmedInput },
@@ -68,7 +65,7 @@ export const AssistantModal = () => {
     }
 
     close();
-  }, [hasMessages, chatId, input, navigate, close]);
+  }, [input, navigate, close]);
 
   return (
     <Resizable

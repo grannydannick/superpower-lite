@@ -37,10 +37,7 @@ export function FileDropdown({ children, file }: FileDropdownProps) {
         onClick={(e) => e.stopPropagation()}
       >
         {hasSummary && summaryChatId != null && summaryMessageId != null && (
-          <ViewLabSummaryMenuItem
-            chatId={summaryChatId}
-            messageId={summaryMessageId}
-          />
+          <ViewLabSummaryMenuItem messageId={summaryMessageId} />
         )}
         {canGenerateSummary && <GenerateLabSummaryMenuItem file={file} />}
         <DownloadMenuItem {...file} />
@@ -55,21 +52,14 @@ export function FileDropdown({ children, file }: FileDropdownProps) {
   );
 }
 
-function ViewLabSummaryMenuItem({
-  chatId,
-  messageId,
-}: {
-  chatId: string;
-  messageId: string;
-}) {
+function ViewLabSummaryMenuItem({ messageId }: { messageId: string }) {
   const navigate = useNavigate();
 
   return (
     <DropdownMenuItem
       onClick={() => {
         navigate({
-          to: '/concierge/$id',
-          params: { id: chatId },
+          to: '/concierge',
           search: { ctxMessageId: messageId },
         });
       }}

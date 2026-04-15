@@ -151,4 +151,5 @@ export function PHProvider({ children }: { children: React.ReactNode }) {
 
 export const FeatureFlags = {
   ProtocolAutopilot: 'protocol-autopilot-nov-2025',
+  ConciergeSingleThread: 'concierge-single-thread',
 };

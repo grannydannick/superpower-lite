@@ -1,234 +1,75 @@
-import { useParams, useSearch } from '@tanstack/react-router';
-import { type UIMessage } from 'ai';
-import { useEffect, useRef, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { type MutableRefObject, useMemo } from 'react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { useMessages } from '@/features/messages/api/get-messages';
-import { useUser } from '@/lib/auth';
+import { Skeleton } from '@/components/ui/skeleton';
+import { getHistoryPage } from '@/features/messages/api/get-history';
+import { useTimeline } from '@/features/messages/api/get-messages';
 
 import { Chat } from './chat';
-import { type Preset, PRESET_MESSAGES } from './preset-messages';
 
-interface ConciergeChatSession {
-  chatId: string;
-  initialMessages: UIMessage[];
+interface ConciergeChatPanelProps {
+  jumpToMessageRef?: MutableRefObject<
+    ((messageId: string) => Promise<void>) | null
+  >;
+  onJumpReady?: (fn: (messageId: string) => Promise<void>) => void;
+  isSearchOpen?: boolean;
 }
 
-interface DraftSessionOptions {
-  chatId: string;
-  preset: Preset | undefined;
-  presetMessageId: string;
-  userFirstName: string | undefined;
-}
+export function ConciergeChatPanel({
+  jumpToMessageRef,
+  onJumpReady,
+  isSearchOpen,
+}: ConciergeChatPanelProps) {
+  const timelineQuery = useTimeline({ hideToast: true });
 
-function getErrorStatus(error: unknown): number | null {
-  if (error == null || typeof error !== 'object' || Array.isArray(error)) {
-    return null;
-  }
-
-  if (!('response' in error)) {
-    return null;
-  }
-
-  const response = error.response;
-  if (
-    response == null ||
-    typeof response !== 'object' ||
-    Array.isArray(response)
-  ) {
-    return null;
-  }
-
-  if (!('status' in response)) {
-    return null;
-  }
-
-  const status = response.status;
-  return typeof status === 'number' ? status : null;
-}
-
-function createDraftSession({
-  chatId,
-  preset,
-  presetMessageId,
-  userFirstName,
-}: DraftSessionOptions): ConciergeChatSession {
-  if (preset === undefined) {
-    return { chatId, initialMessages: [] };
-  }
-
-  return {
-    chatId,
-    initialMessages: [
-      {
-        id: presetMessageId,
-        role: 'assistant',
-        parts: [
-          {
-            type: 'text',
-            text: `Hi ${userFirstName ?? 'there'}!\n\n${PRESET_MESSAGES[preset]}`,
-          },
-        ],
-      },
-    ],
-  };
-}
-
-export function ConciergeChatPanel() {
-  const routeId = useParams({
-    strict: false,
-    select: (params) => {
-      if (typeof params.id === 'string' && params.id.length > 0) {
-        return params.id;
-      }
-
-      return undefined;
-    },
-  });
-  const defaultMessage = useSearch({
-    from: '/_app/concierge',
-    select: (search) => search.defaultMessage,
-  });
-  const preset = useSearch({
-    from: '/_app/concierge',
-    select: (search) => search.preset,
-  });
-  const { data: user } = useUser();
-
-  const previousRouteIdRef = useRef<string | undefined>(routeId);
-  const previousPresetRef = useRef<string | undefined>(preset);
-  const draftSessionRef = useRef<ConciergeChatSession | null>(null);
-
-  if (routeId == null) {
-    const enteredDraftFromPersistedRoute = previousRouteIdRef.current != null;
-    const presetChanged = preset !== previousPresetRef.current;
-    if (
-      draftSessionRef.current == null ||
-      enteredDraftFromPersistedRoute ||
-      presetChanged
-    ) {
-      draftSessionRef.current = createDraftSession({
-        chatId: crypto.randomUUID(),
-        preset,
-        presetMessageId: crypto.randomUUID(),
-        userFirstName: user?.firstName,
-      });
-    }
-  } else if (
-    draftSessionRef.current != null &&
-    draftSessionRef.current.chatId !== routeId
-  ) {
-    draftSessionRef.current = null;
-  }
-
-  previousRouteIdRef.current = routeId;
-  previousPresetRef.current = preset;
-
-  const draftSession = draftSessionRef.current;
-  const [persistedSession, setPersistedSession] =
-    useState<ConciergeChatSession | null>(null);
-
-  const isPromotedDraftRoute =
-    routeId != null && draftSession != null && draftSession.chatId === routeId;
-  const shouldLoadPersistedSession =
-    routeId != null &&
-    !isPromotedDraftRoute &&
-    persistedSession?.chatId !== routeId;
-
-  const messagesQuery = useMessages({
-    chatId: routeId ?? '',
-    hideToast: true,
-    queryConfig: {
-      enabled: shouldLoadPersistedSession,
-      retry: false,
-    },
+  // Fetch the latest chat so we can reuse its ID for stream resumption.
+  // If the user reloads mid-stream, useChat can resume using this ID.
+  const latestChatQuery = useQuery({
+    queryKey: ['history', 'latest'],
+    queryFn: () => getHistoryPage({ limit: 1 }),
+    staleTime: 0,
   });
 
-  const errorStatus = getErrorStatus(messagesQuery.error);
-  const canFallbackToEmptyChat =
-    routeId != null &&
-    errorStatus === 404 &&
-    defaultMessage != null &&
-    defaultMessage.length > 0;
+  const chatId = useMemo(() => {
+    const latestChat = latestChatQuery.data?.[0];
+    return latestChat?.id ?? crypto.randomUUID();
+  }, [latestChatQuery.data]);
 
-  useEffect(() => {
-    if (routeId == null) return;
-    if (isPromotedDraftRoute) return;
-    if (persistedSession?.chatId === routeId) return;
-
-    if (messagesQuery.data != null) {
-      setPersistedSession({
-        chatId: routeId,
-        initialMessages: messagesQuery.data,
-      });
-      return;
-    }
-
-    if (!canFallbackToEmptyChat) return;
-
-    setPersistedSession({
-      chatId: routeId,
-      initialMessages: [],
-    });
-  }, [
-    canFallbackToEmptyChat,
-    isPromotedDraftRoute,
-    messagesQuery.data,
-    persistedSession?.chatId,
-    routeId,
-  ]);
-
-  if (routeId == null) {
-    if (draftSession == null) {
-      return <div className="flex-1" />;
-    }
-
+  if (timelineQuery.isLoading || latestChatQuery.isLoading) {
     return (
-      <Chat
-        key={draftSession.chatId}
-        id={draftSession.chatId}
-        initialMessages={draftSession.initialMessages}
-      />
+      <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 pt-8">
+        <div className="ml-auto max-w-2xl">
+          <Skeleton variant="shimmer" className="ml-auto h-8 w-48" />
+        </div>
+        <div className="flex w-full gap-2">
+          <Skeleton
+            variant="shimmer"
+            className="mt-1 size-6 shrink-0 rounded-full"
+          />
+          <div className="flex flex-col gap-1.5">
+            <Skeleton variant="shimmer" className="h-6 w-64" />
+            <Skeleton variant="shimmer" className="h-6 w-80" />
+            <Skeleton variant="shimmer" className="h-6 w-52" />
+          </div>
+        </div>
+      </div>
     );
   }
 
-  if (isPromotedDraftRoute) {
-    return (
-      <Chat
-        key={draftSession.chatId}
-        id={draftSession.chatId}
-        initialMessages={draftSession.initialMessages}
-      />
-    );
-  }
-
-  if (persistedSession != null && persistedSession.chatId === routeId) {
-    return (
-      <Chat
-        key={persistedSession.chatId}
-        id={persistedSession.chatId}
-        initialMessages={persistedSession.initialMessages}
-      />
-    );
-  }
-
-  if (
-    messagesQuery.isError &&
-    messagesQuery.data == null &&
-    !canFallbackToEmptyChat
-  ) {
+  if (timelineQuery.isError && timelineQuery.data == null) {
     return (
       <div className="flex flex-1 items-center justify-center">
         <Alert className="max-w-lg">
-          <AlertTitle>Unable to load this conversation</AlertTitle>
+          <AlertTitle>Unable to load your conversation</AlertTitle>
           <AlertDescription className="flex items-center justify-between gap-3">
             <span>Please try again.</span>
             <Button
               type="button"
               variant="outline"
               onClick={() => {
-                void messagesQuery.refetch();
+                void timelineQuery.refetch();
               }}
             >
               Retry
@@ -239,5 +80,14 @@ export function ConciergeChatPanel() {
     );
   }
 
-  return <div className="flex-1" />;
+  return (
+    <Chat
+      key={chatId}
+      id={chatId}
+      initialMessages={timelineQuery.data ?? []}
+      jumpToMessageRef={jumpToMessageRef}
+      onJumpReady={onJumpReady}
+      isSearchOpen={isSearchOpen}
+    />
+  );
 }

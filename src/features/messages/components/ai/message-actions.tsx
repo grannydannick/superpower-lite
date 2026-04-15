@@ -1,5 +1,5 @@
 import { isToolUIPart, type UIMessage } from 'ai';
-import { BarChart, CopyIcon, Share, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { BarChart, CopyIcon, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { useState } from 'react';
 import removeMarkdown from 'remove-markdown';
 
@@ -8,13 +8,13 @@ import { toast } from '@/components/ui/sonner';
 import {
   Tooltip,
   TooltipContent,
+  TooltipPortal,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useAnalytics } from '@/hooks/use-analytics';
 
 import { parseMessageParts } from '../../utils/parse-message-parts';
-import { ChatShareDialog } from '../chat-share-dialog';
 import { CitationsDialog } from '../citations-dialog';
 
 type Feedback = 'positive' | 'negative';
@@ -103,23 +103,9 @@ export function MessageActions({
               <CopyIcon size={16} />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Copy</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <ChatShareDialog
-            chatId={chatId}
-            trigger={
-              <TooltipTrigger asChild>
-                <Button
-                  className="flex size-8 items-center justify-center rounded-lg p-0 text-muted-foreground hover:bg-zinc-100"
-                  variant="ghost"
-                >
-                  <Share size={16} />
-                </Button>
-              </TooltipTrigger>
-            }
-          />
-          <TooltipContent>Share</TooltipContent>
+          <TooltipPortal>
+            <TooltipContent>Copy</TooltipContent>
+          </TooltipPortal>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -133,7 +119,9 @@ export function MessageActions({
               <ThumbsUp size={16} />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Good response</TooltipContent>
+          <TooltipPortal>
+            <TooltipContent>Good response</TooltipContent>
+          </TooltipPortal>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -147,7 +135,9 @@ export function MessageActions({
               <ThumbsDown size={16} />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Poor response</TooltipContent>
+          <TooltipPortal>
+            <TooltipContent>Poor response</TooltipContent>
+          </TooltipPortal>
         </Tooltip>
         {citationsList.length > 0 && (
           <Tooltip>
@@ -168,7 +158,9 @@ export function MessageActions({
                 </TooltipTrigger>
               }
             />
-            <TooltipContent>See all sources</TooltipContent>
+            <TooltipPortal>
+              <TooltipContent>See all sources</TooltipContent>
+            </TooltipPortal>
           </Tooltip>
         )}
       </div>

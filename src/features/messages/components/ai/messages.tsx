@@ -1,5 +1,6 @@
 import { UseChatHelpers } from '@ai-sdk/react';
 import { UIMessage } from 'ai';
+import { AnimatePresence, m } from 'framer-motion';
 import { ArrowDown } from 'lucide-react';
 import {
   useCallback,
@@ -25,7 +26,15 @@ interface MessagesProps {
   hasMoreOlder?: boolean;
   isLoadingOlder?: boolean;
   onLoadOlder?: () => void | Promise<void>;
+  hasMoreNewer?: boolean;
+  isLoadingNewer?: boolean;
+  onLoadNewer?: () => void | Promise<void>;
+  onJumpToLatest?: () => Promise<void>;
   ctxMessageId?: string;
+  welcomeContent?: React.ReactNode;
+  hasInteracted?: boolean;
+  didJump?: boolean;
+  isSearchOpen?: boolean;
 }
 
 function PureMessages({
@@ -36,10 +45,19 @@ function PureMessages({
   hasMoreOlder = false,
   isLoadingOlder = false,
   onLoadOlder,
+  hasMoreNewer = false,
+  isLoadingNewer = false,
+  onLoadNewer,
+  onJumpToLatest,
   ctxMessageId,
+  welcomeContent,
+  hasInteracted = false,
+  didJump = false,
+  isSearchOpen = false,
 }: MessagesProps) {
   // Smart scroll state
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const autoScrollEnabledRef = useRef(true);
   const lastTouchYRef = useRef<number | null>(null);
   const prependAnchorRef = useRef<{
@@ -47,6 +65,7 @@ function PureMessages({
     scrollTop: number;
   } | null>(null);
   const loadOlderInFlightRef = useRef(false);
+  const loadNewerInFlightRef = useRef(false);
 
   const requestOlderMessages = useCallback(
     (options?: { disableAutoScroll?: boolean }) => {
@@ -75,6 +94,24 @@ function PureMessages({
     },
     [hasMoreOlder, isLoadingOlder, onLoadOlder],
   );
+
+  const requestNewerMessages = useCallback(() => {
+    if (!hasMoreNewer || isLoadingNewer) return;
+    if (loadNewerInFlightRef.current) return;
+    if (!onLoadNewer) return;
+
+    loadNewerInFlightRef.current = true;
+    // Disable auto-scroll so appended messages don't jump past the viewport
+    autoScrollEnabledRef.current = false;
+
+    void Promise.resolve(onLoadNewer())
+      .catch((err) => {
+        console.warn('Failed to load newer messages', err);
+      })
+      .finally(() => {
+        loadNewerInFlightRef.current = false;
+      });
+  }, [hasMoreNewer, isLoadingNewer, onLoadNewer]);
 
   // Wheel event: detect desktop scroll-up gesture
   const handleWheel = useCallback((e: React.WheelEvent) => {
@@ -112,7 +149,12 @@ function PureMessages({
     const distanceFromBottom =
       container.scrollHeight - container.scrollTop - container.clientHeight;
     const isAtBottom = distanceFromBottom <= BOTTOM_AUTO_SCROLL_THRESHOLD_PX;
-    autoScrollEnabledRef.current = isAtBottom;
+
+    // Only allow auto-scroll to re-enable when we're not in a suppressed state
+    // (jumped to historical message or search modal open).
+    if (!didJump && !isSearchOpen) {
+      autoScrollEnabledRef.current = isAtBottom;
+    }
 
     const isNearTop = container.scrollTop <= 32;
     if (
@@ -124,7 +166,29 @@ function PureMessages({
     ) {
       requestOlderMessages({ disableAutoScroll: true });
     }
-  }, [hasMoreOlder, isLoadingOlder, onLoadOlder, requestOlderMessages]);
+
+    const isNearBottom = distanceFromBottom <= 32;
+    if (
+      isNearBottom &&
+      hasMoreNewer &&
+      !isLoadingNewer &&
+      !loadNewerInFlightRef.current &&
+      onLoadNewer
+    ) {
+      requestNewerMessages();
+    }
+  }, [
+    didJump,
+    isSearchOpen,
+    hasMoreOlder,
+    isLoadingOlder,
+    onLoadOlder,
+    requestOlderMessages,
+    hasMoreNewer,
+    isLoadingNewer,
+    onLoadNewer,
+    requestNewerMessages,
+  ]);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -153,6 +217,13 @@ function PureMessages({
       prependAnchorRef.current = null;
     }
   }, [isLoadingOlder]);
+
+  // Suppress auto-scroll when the user has jumped to a historical message
+  // or the search modal is open. Set during render (before layout effects)
+  // so the auto-scroll useLayoutEffect below already sees false.
+  if (didJump || isSearchOpen) {
+    autoScrollEnabledRef.current = false;
+  }
 
   // Auto-scroll when content changes
   useLayoutEffect(() => {
@@ -188,7 +259,7 @@ function PureMessages({
 
     // Defer to ensure layout is settled after framer-motion animations
     requestAnimationFrame(() => {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      el.scrollIntoView({ behavior: 'instant', block: 'start' });
     });
   }, [
     chatId,
@@ -203,14 +274,14 @@ function PureMessages({
   return (
     <div
       className={cn(
-        'relative max-h-full overflow-hidden',
-        messages.length === 0 && 'block h-0',
+        'relative flex min-h-0 flex-1 flex-col',
+        messages.length === 0 && !welcomeContent && 'hidden',
       )}
     >
       <div
         ref={scrollContainerRef}
         id="ai-chat-scroll-container"
-        className="relative flex max-h-[calc(100vh-20.5rem)] min-h-32 min-w-0 flex-col gap-6 overflow-y-scroll py-4 md:max-h-full lg:pb-0"
+        className="relative flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto py-4 lg:pb-0"
         style={{
           maskImage:
             'linear-gradient(to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,1) 32px, rgba(0,0,0,1) calc(100% - 32px), rgba(0,0,0,0) 100%)',
@@ -288,12 +359,61 @@ function PureMessages({
             </div>
           )}
 
-        <div className="min-h-[24px] min-w-[24px] shrink-0" />
+        {isLoadingNewer && (
+          <div className="mx-auto w-full max-w-3xl px-0.5">
+            <div className="flex w-full gap-2">
+              <Skeleton
+                variant="shimmer"
+                className="mt-1 size-6 shrink-0 rounded-full"
+              />
+              <div className="flex flex-col gap-1.5">
+                <Skeleton variant="shimmer" className="h-6 w-64" />
+                <Skeleton variant="shimmer" className="h-6 w-80" />
+                <Skeleton variant="shimmer" className="h-6 w-52" />
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div
+          ref={messagesEndRef}
+          className="min-h-[24px] min-w-[24px] shrink-0"
+        />
+
+        {/* When jumping, unmount entirely so scrollHeight settles
+            immediately (AnimatePresence exit would keep the min-h-full
+            element in the DOM and shift the scroll target). */}
+        {!didJump && (
+          <AnimatePresence>
+            {welcomeContent && !hasInteracted && (
+              <m.div
+                key="welcome"
+                initial={false}
+                exit={{
+                  opacity: 0,
+                  y: 24,
+                  scale: 0.97,
+                  filter: 'blur(4px)',
+                  minHeight: 0,
+                }}
+                transition={{
+                  duration: 0.5,
+                  ease: [0.25, 0.1, 0.25, 1],
+                }}
+                className="flex min-h-full flex-col items-center justify-center gap-6 overflow-hidden"
+              >
+                {welcomeContent}
+              </m.div>
+            )}
+          </AnimatePresence>
+        )}
       </div>
 
       <ScrollDownButton
         messagesLength={messages.length}
         scrollContainerRef={scrollContainerRef}
+        messagesEndRef={messagesEndRef}
+        onJumpToLatest={hasMoreNewer ? onJumpToLatest : undefined}
         onScrollToBottom={() => {
           autoScrollEnabledRef.current = true;
         }}
@@ -307,24 +427,38 @@ export const Messages = PureMessages;
 function ScrollDownButton({
   messagesLength,
   scrollContainerRef,
+  messagesEndRef,
+  onJumpToLatest,
   onScrollToBottom,
 }: {
   messagesLength: number;
   scrollContainerRef: React.RefObject<HTMLDivElement | null>;
+  messagesEndRef: React.RefObject<HTMLDivElement | null>;
+  onJumpToLatest?: () => Promise<void>;
   onScrollToBottom: () => void;
 }) {
   const [show, setShow] = useState(false);
 
-  // Effect checking if the user scrolled to bottom or not
   useEffect(() => {
     const el = scrollContainerRef.current;
     if (!el) return;
 
     const update = () => {
-      const atBottom =
-        el.scrollHeight - el.scrollTop - el.clientHeight <=
-        BOTTOM_AUTO_SCROLL_THRESHOLD_PX;
-      setShow(!atBottom);
+      const endEl = messagesEndRef.current;
+      if (endEl) {
+        const containerRect = el.getBoundingClientRect();
+        const endRect = endEl.getBoundingClientRect();
+        // Show only when scrolled up above messages end, hide when at or below it
+        setShow(
+          endRect.bottom >
+            containerRect.bottom + BOTTOM_AUTO_SCROLL_THRESHOLD_PX,
+        );
+      } else {
+        const atBottom =
+          el.scrollHeight - el.scrollTop - el.clientHeight <=
+          BOTTOM_AUTO_SCROLL_THRESHOLD_PX;
+        setShow(!atBottom);
+      }
     };
 
     update();
@@ -332,14 +466,21 @@ function ScrollDownButton({
     return () => {
       el.removeEventListener('scroll', update);
     };
-  }, [messagesLength, scrollContainerRef]);
+  }, [messagesLength, scrollContainerRef, messagesEndRef]);
 
   const handleClick = () => {
-    const el = scrollContainerRef.current;
-    if (el) {
-      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+    // If viewing a historical window (hasMoreNewer), fetch the latest
+    // messages instead of just scrolling within the current window.
+    if (onJumpToLatest) {
+      void onJumpToLatest();
       onScrollToBottom();
+      return;
     }
+    const endEl = messagesEndRef.current;
+    if (endEl) {
+      endEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+    onScrollToBottom();
   };
 
   return (

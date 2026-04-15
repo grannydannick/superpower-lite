@@ -1,15 +1,16 @@
 import { ChevronRight } from 'lucide-react';
-import { memo } from 'react';
+import { memo, type ReactNode } from 'react';
 
 import { Body2 } from '@/components/ui/typography';
 import { useCreateFollowups } from '@/features/messages/api/create-followups';
 import { ChatSuggestion } from '@/features/messages/components/chat-suggestion';
 import { cn } from '@/lib/utils';
 
-interface SetupAction {
+export interface SetupAction {
   title: string;
   subtitle: string;
-  imageSrc: string;
+  imageSrc?: string;
+  icon?: ReactNode;
   onClick: () => void;
 }
 
@@ -69,11 +70,17 @@ function PureSuggestedActions({
             <Body2 className="p-0 text-zinc-400">{action.subtitle}</Body2>
           </div>
           <div className="mb-2 -translate-y-1.5 p-1.5 pb-0 rounded-mask">
-            <img
-              src={action.imageSrc}
-              alt=""
-              className="size-16 w-auto shrink-0 translate-y-2.5 object-contain transition-all ease-out group-hover:rotate-3"
-            />
+            {action.icon ? (
+              <div className="flex size-16 shrink-0 translate-y-1.5 items-center justify-center">
+                {action.icon}
+              </div>
+            ) : (
+              <img
+                src={action.imageSrc}
+                alt=""
+                className="size-16 w-auto shrink-0 translate-y-2.5 object-contain transition-all ease-out group-hover:rotate-3"
+              />
+            )}
           </div>
         </button>
       ))}

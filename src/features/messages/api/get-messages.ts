@@ -7,10 +7,10 @@ import { QueryConfig } from '@/lib/react-query';
 export const DEFAULT_MESSAGES_PAGE_SIZE = 10;
 
 export type MessagesSort = 'asc' | 'desc';
-export type MessagesCursor = { id: string };
+export type MessagesCursor = { id: string; skip?: number };
 
 interface GetMessagesOptions {
-  chatId: string;
+  chatId?: string;
   cursor?: MessagesCursor;
   sort?: MessagesSort;
   limit?: number;
@@ -24,7 +24,8 @@ export const getMessages = async ({
   limit = DEFAULT_MESSAGES_PAGE_SIZE,
   hideToast,
 }: GetMessagesOptions): Promise<UIMessage[]> => {
-  return api.get(`/chat/${chatId}/messages`, {
+  const path = chatId ? `/chat/${chatId}/messages` : '/chat/messages';
+  return api.get(path, {
     headers: hideToast === true ? { 'x-hide-toast': 'true' } : undefined,
     params: {
       sort,
@@ -51,6 +52,19 @@ export const getMessagesQueryOptions = (
   });
 };
 
+export const getTimelineQueryOptions = (options?: { hideToast?: boolean }) => {
+  return queryOptions({
+    queryKey: ['timeline'],
+    queryFn: async () => {
+      const page = await getMessages({
+        sort: 'desc',
+        hideToast: options?.hideToast,
+      });
+      return page.slice().reverse();
+    },
+  });
+};
+
 type UseMessagesOptions = {
   queryConfig?: QueryConfig<typeof getMessagesQueryOptions>;
   chatId: string;
@@ -64,6 +78,21 @@ export const useMessages = ({
 }: UseMessagesOptions) => {
   return useQuery({
     ...getMessagesQueryOptions(chatId, { hideToast }),
+    ...queryConfig,
+  });
+};
+
+type UseTimelineOptions = {
+  queryConfig?: QueryConfig<typeof getTimelineQueryOptions>;
+  hideToast?: boolean;
+};
+
+export const useTimeline = ({
+  queryConfig,
+  hideToast,
+}: UseTimelineOptions = {}) => {
+  return useQuery({
+    ...getTimelineQueryOptions({ hideToast }),
     ...queryConfig,
   });
 };

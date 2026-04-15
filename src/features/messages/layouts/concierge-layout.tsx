@@ -1,16 +1,22 @@
-import { Outlet } from '@tanstack/react-router';
+import { usePosthogFeatureFlagEnabled } from '@/hooks/use-posthog-feature-flag-enabled';
+import { FeatureFlags } from '@/lib/posthog';
 
-import { ConciergeChatPanel } from '@/features/messages/components/ai/concierge-chat-panel';
-import { ChatHistory } from '@/features/messages/components/ai/history';
+import { LegacyConciergeLayout } from './concierge-layout-legacy';
+import { SingleThreadConciergeLayout } from './concierge-layout-single-thread';
 
 export const ConciergeLayout = () => {
-  return (
-    <div className="mx-auto flex min-h-[calc(100dvh-72px)] w-full max-w-[1600px] flex-col gap-4 px-4 lg:h-[calc(100dvh-68px)] lg:flex-row lg:px-16 lg:pt-10">
-      <ChatHistory />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <ConciergeChatPanel />
-        <Outlet />
-      </div>
-    </div>
+  const singleThread = usePosthogFeatureFlagEnabled(
+    FeatureFlags.ConciergeSingleThread,
   );
+
+  // While loading the flag, default to legacy to avoid flickering
+  if (singleThread === undefined) {
+    return <LegacyConciergeLayout />;
+  }
+
+  if (singleThread) {
+    return <SingleThreadConciergeLayout />;
+  }
+
+  return <LegacyConciergeLayout />;
 };

@@ -2,11 +2,10 @@ import { UseChatHelpers } from '@ai-sdk/react';
 import { UIMessage } from 'ai';
 import { AnimatePresence, m } from 'framer-motion';
 import { InfoIcon } from 'lucide-react';
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useMemo, useRef, useState } from 'react';
 import rehypeSanitize from 'rehype-sanitize';
 import { defaultRehypePlugins, Streamdown } from 'streamdown';
 
-import { AIIcon } from '@/components/icons/ai-icon';
 import { TextShimmer } from '@/components/ui/text-shimmer';
 import { AnimatedIcon } from '@/features/messages/components/ai/animated-icon';
 import { useUser } from '@/lib/auth';
@@ -32,6 +31,12 @@ const rehypePlugins = [
   // (fhir://, product://, etc.) - sanitization above handles security
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ] as any;
+
+// Allow all URLs through the urlTransform. The default react-markdown transform
+// strips non-standard protocols (fhir://, product://, copy://, etc.) which
+// causes MarkdownLink to receive an empty href and drop the entire link element.
+// Security is handled by rehype-sanitize above and MarkdownLink's own routing.
+const urlTransform = (url: string) => url;
 
 // ============================================================================
 // User Message Component
@@ -159,6 +164,7 @@ const AssistantMessageContent = memo(function AssistantMessageContent({
           <Streamdown
             components={markdownComponents}
             rehypePlugins={rehypePlugins}
+            urlTransform={urlTransform}
           >
             {textToRender}
           </Streamdown>
@@ -243,13 +249,7 @@ const PurePreviewMessage = ({
   disableLayoutAnimation?: boolean;
 }) => {
   const [mode] = useState<'view' | 'edit'>('view');
-
-  const icon =
-    message.role !== 'assistant' ? null : isLoading ? (
-      <AnimatedIcon state="thinking" className="mt-1" />
-    ) : (
-      <AIIcon fill="#A1A1AA" className="mt-1" />
-    );
+  const messageRef = useRef<HTMLDivElement>(null);
 
   const isEmptyMessage =
     !message.parts?.length ||
@@ -258,6 +258,7 @@ const PurePreviewMessage = ({
   return (
     <AnimatePresence>
       <m.div
+        ref={messageRef}
         id={`message-${message.id}`}
         className="group/message mx-auto w-full max-w-3xl px-0.5"
         initial={{ opacity: 0 }}
@@ -279,8 +280,6 @@ const PurePreviewMessage = ({
             },
           )}
         >
-          {icon}
-
           <div className="flex w-full flex-col gap-2">
             {mode === 'view' && (
               <>

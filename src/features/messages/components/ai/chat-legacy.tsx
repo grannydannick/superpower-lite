@@ -1,6 +1,6 @@
 import { useChat, type UseChatHelpers } from '@ai-sdk/react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useNavigate, useSearch } from '@tanstack/react-router';
+import { useNavigate, useParams, useSearch } from '@tanstack/react-router';
 import { FileUIPart, type UIMessage } from 'ai';
 import {
   useCallback,
@@ -9,46 +9,37 @@ import {
   useRef,
   useState,
   type Dispatch,
-  type MutableRefObject,
   type SetStateAction,
 } from 'react';
-import { flushSync } from 'react-dom';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
-import { env } from '@/config/env';
-import { useCreateFollowups } from '@/features/messages/api/create-followups';
+import { getHistoryQueryOptions } from '@/features/messages/api/get-history';
 import {
   DEFAULT_MESSAGES_PAGE_SIZE,
   getMessages,
-  getTimelineQueryOptions,
+  getMessagesQueryOptions,
 } from '@/features/messages/api/get-messages';
-import { ChatSuggestion } from '@/features/messages/components/chat-suggestion';
 import { useChatStore } from '@/features/messages/stores/chat-store';
 import { createChatV2Transport } from '@/features/messages/utils/chatv2-transport';
 import { extractTiming } from '@/features/messages/utils/extract-timing';
-import { scrollToBottom } from '@/features/messages/utils/scroll-to-bottom';
 import { useAnalytics } from '@/hooks/use-analytics';
-import { usePosthogFeatureFlagEnabled } from '@/hooks/use-posthog-feature-flag-enabled';
 import { useUser } from '@/lib/auth';
-import { FeatureFlags } from '@/lib/posthog';
-import { shouldShowSingleThreadIntro } from '@/utils/show-action-conditions';
+import { cn } from '@/lib/utils';
+import { shouldShowImportMemory } from '@/utils/show-action-conditions';
 
 import {
   useMessageQueue,
   type QueuedMessage,
 } from '../../hooks/use-message-queue';
 
-import { AnimatedIcon } from './animated-icon';
 import { classifyChatError } from './chat-error-utils';
 import { Greeting } from './greeting';
 import { Messages } from './messages';
 import { MultimodalInput } from './multimodal-input';
-import { type Preset, PRESET_MESSAGES } from './preset-messages';
 import { QueuedMessages } from './queued-messages';
-import { SingleThreadIntroDialog } from './single-thread-intro-dialog';
-import { type SetupAction, SuggestedActions } from './suggested-actions';
+import { SuggestedActions } from './suggested-actions';
 
 const publicErrors = [
   'Too many requests, please try again later.',
@@ -147,6 +138,14 @@ function parseJsonErrorCode(text: string): string | null {
   }
 }
 
+function hasUserMessages(messages: UIMessage[]): boolean {
+  for (const message of messages) {
+    if (message.role === 'user') return true;
+  }
+
+  return false;
+}
+
 function isNetworkError(err: unknown): boolean {
   const message = getErrorMessage(err).toLowerCase();
   return (
@@ -156,32 +155,14 @@ function isNetworkError(err: unknown): boolean {
   );
 }
 
-export function Chat({
+export function LegacyChat({
   id,
   initialMessages,
-  jumpToMessageRef,
-  onJumpReady,
-  isSearchOpen,
 }: {
   id: string;
   initialMessages: Array<UIMessage>;
-  jumpToMessageRef?: MutableRefObject<
-    ((messageId: string) => Promise<void>) | null
-  >;
-  onJumpReady?: (fn: (messageId: string) => Promise<void>) => void;
-  isSearchOpen?: boolean;
 }) {
   const controller = useConciergeChatController({ id, initialMessages });
-
-  // Expose jumpToMessage to parent via ref (no effects needed).
-  if (jumpToMessageRef) {
-    jumpToMessageRef.current = controller.jumpToMessage;
-  }
-
-  // Notify parent that jumpToMessage is available (for reactive deep-linking).
-  useEffect(() => {
-    onJumpReady?.(controller.jumpToMessage);
-  }, [onJumpReady, controller.jumpToMessage]);
 
   return (
     <ChatView
@@ -201,12 +182,7 @@ export function Chat({
       hasMoreOlder={controller.hasMoreOlder}
       isLoadingOlder={controller.isLoadingOlder}
       onLoadOlder={controller.onLoadOlder}
-      hasMoreNewer={controller.hasMoreNewer}
-      isLoadingNewer={controller.isLoadingNewer}
-      onLoadNewer={controller.onLoadNewer}
-      didJump={controller.didJump}
-      onJumpToLatest={controller.resetToLatest}
-      isSearchOpen={isSearchOpen}
+      ctxMessageId={controller.ctxMessageId}
       preset={controller.preset}
       queue={controller.queue}
       removeFromQueue={controller.removeFromQueue}
@@ -229,9 +205,17 @@ function useConciergeChatController({
     from: '/_app/concierge',
     select: (s) => s.preset,
   });
+  const ctxMessageId = useSearch({
+    from: '/_app/concierge',
+    select: (s) => s.ctxMessageId,
+  });
   const autoSend = useSearch({
     from: '/_app/concierge',
     select: (s) => s.autoSend,
+  });
+  const hasIdParam = useParams({
+    strict: false,
+    select: (params) => typeof params.id === 'string' && params.id.length > 0,
   });
   const queryClient = useQueryClient();
   const { track } = useAnalytics();
@@ -258,36 +242,6 @@ function useConciergeChatController({
   const [hasMoreOlder, setHasMoreOlder] = useState(
     initialMessages.length >= DEFAULT_MESSAGES_PAGE_SIZE,
   );
-  const [didJump, setDidJump] = useState(false);
-  const [hasMoreNewer, setHasMoreNewer] = useState(false);
-  const [isLoadingNewer, setIsLoadingNewer] = useState(false);
-
-  const { data: user } = useUser();
-
-  // Capture mount-time values in refs so the memo below doesn't go stale
-  // when navigation clears `preset` before `user?.firstName` loads.
-  const initialMessagesRef = useRef(initialMessages);
-  const initialPresetRef = useRef(preset);
-
-  // Build initial messages with preset message appended synchronously so it
-  // renders on the very first paint (no flash from a useEffect).
-  const initialMessagesWithPreset = useMemo(() => {
-    const p = initialPresetRef.current;
-    if (p == null) return initialMessagesRef.current;
-    return [
-      ...initialMessagesRef.current,
-      {
-        id: `preset-${p}`,
-        role: 'assistant' as const,
-        parts: [
-          {
-            type: 'text' as const,
-            text: `Hi ${user?.firstName ?? 'there'}!\n\n${PRESET_MESSAGES[p as Preset]}`,
-          },
-        ],
-      },
-    ];
-  }, [user?.firstName]);
 
   const sessionStartTime = useChatStore((s) => s.sessionStartTime);
   const setSessionStartTime = useChatStore((s) => s.setSessionStartTime);
@@ -320,13 +274,16 @@ function useConciergeChatController({
   } = useChat({
     id,
     transport,
-    messages: initialMessagesWithPreset,
+    messages: initialMessages,
     generateId: () => crypto.randomUUID(),
     onFinish: ({ message, isAbort, isDisconnect, isError }) => {
       if (isAbort) return;
 
       void queryClient.invalidateQueries({
-        queryKey: getTimelineQueryOptions().queryKey,
+        queryKey: getHistoryQueryOptions().queryKey,
+      });
+      void queryClient.invalidateQueries({
+        queryKey: getMessagesQueryOptions(id).queryKey,
       });
 
       if (isDisconnect) {
@@ -404,7 +361,7 @@ function useConciergeChatController({
         setShowLoadErrorBanner(false);
         setShowReconnectBanner(false);
         setAssistantBusyMessage(
-          'I\u2019m still finishing a reply. I can only generate one response at a time, but I\u2019ll be ready for your next message in a moment.',
+          'I’m still finishing a reply. I can only generate one response at a time, but I’ll be ready for your next message in a moment.',
         );
         return;
       }
@@ -441,15 +398,56 @@ function useConciergeChatController({
     },
   });
 
+  const navigateToPersistedChat = useCallback(() => {
+    return navigate({
+      to: '/concierge/$id',
+      params: { id },
+      search: (prev) => ({ ...prev, defaultMessage: undefined }),
+      replace: true,
+      resetScroll: false,
+    });
+  }, [id, navigate]);
+
+  const hasPersistedChatMessages = useCallback(async () => {
+    try {
+      const persistedMessages = await getMessages({
+        chatId: id,
+        sort: 'desc',
+        limit: DEFAULT_MESSAGES_PAGE_SIZE,
+        hideToast: true,
+      });
+      return persistedMessages.length > 0;
+    } catch {
+      return false;
+    }
+  }, [id]);
+
+  const routeSyncStartedRef = useRef(false);
+  const requestPersistedChatRouteSync = useCallback(async () => {
+    if (hasIdParam) return false;
+    if (routeSyncStartedRef.current) return false;
+    routeSyncStartedRef.current = true;
+
+    try {
+      const ready = await hasPersistedChatMessages();
+      if (!ready) {
+        routeSyncStartedRef.current = false;
+        return false;
+      }
+
+      await navigateToPersistedChat();
+      return true;
+    } catch {
+      routeSyncStartedRef.current = false;
+      return false;
+    }
+  }, [hasIdParam, hasPersistedChatMessages, navigateToPersistedChat]);
+
   const messagesRef = useRef(messages);
   const oldestMessageRef = useRef<UIMessage | undefined>(messages[0]);
-  const newestMessageRef = useRef<UIMessage | undefined>(
-    messages[messages.length - 1],
-  );
   useEffect(() => {
     messagesRef.current = messages;
     oldestMessageRef.current = messages[0];
-    newestMessageRef.current = messages[messages.length - 1];
   }, [messages]);
 
   const handleReconnect = useCallback(() => {
@@ -478,6 +476,55 @@ function useConciergeChatController({
     void resumeStream();
   }, [messages, status, resumeStream, resumeKey, setMessages]);
 
+  useEffect(() => {
+    if (hasIdParam) return;
+    if (!hasUserMessages(messages)) return;
+    if (status !== 'streaming' && status !== 'ready') return;
+
+    void requestPersistedChatRouteSync();
+  }, [hasIdParam, messages, requestPersistedChatRouteSync, status]);
+
+  useEffect(() => {
+    if (hasIdParam) return;
+    if (!hasUserMessages(messages)) return;
+    if (status !== 'error') return;
+    if (assistantBusyMessage != null) return;
+
+    let cancelled = false;
+    let timeoutId: number | null = null;
+    let attempts = 0;
+
+    const pollForPersistedChat = async () => {
+      attempts += 1;
+
+      const didSync = await requestPersistedChatRouteSync();
+      if (cancelled) return;
+      if (didSync) return;
+      if (attempts >= 10) return;
+
+      timeoutId = window.setTimeout(() => {
+        void pollForPersistedChat();
+      }, 500);
+    };
+
+    void pollForPersistedChat();
+
+    return () => {
+      cancelled = true;
+
+      if (timeoutId != null) {
+        window.clearTimeout(timeoutId);
+      }
+    };
+  }, [
+    assistantBusyMessage,
+    hasIdParam,
+    id,
+    messages,
+    requestPersistedChatRouteSync,
+    status,
+  ]);
+
   const onLoadOlder = useCallback(async () => {
     if (!hasMoreOlder || isLoadingOlder) return;
 
@@ -490,6 +537,7 @@ function useConciergeChatController({
     setIsLoadingOlder(true);
     try {
       const page = await getMessages({
+        chatId: id,
         cursor: { id: oldest.id },
         sort: 'desc',
         limit: DEFAULT_MESSAGES_PAGE_SIZE,
@@ -516,43 +564,7 @@ function useConciergeChatController({
     } finally {
       setIsLoadingOlder(false);
     }
-  }, [hasMoreOlder, isLoadingOlder, setMessages]);
-
-  const onLoadNewer = useCallback(async () => {
-    if (!hasMoreNewer || isLoadingNewer) return;
-
-    const newest = newestMessageRef.current;
-    if (!newest) {
-      setHasMoreNewer(false);
-      return;
-    }
-
-    setIsLoadingNewer(true);
-    try {
-      const page = await getMessages({
-        cursor: { id: newest.id },
-        sort: 'asc',
-        limit: DEFAULT_MESSAGES_PAGE_SIZE,
-        hideToast: true,
-      });
-
-      if (page.length === 0 || page.length < DEFAULT_MESSAGES_PAGE_SIZE) {
-        setHasMoreNewer(false);
-      }
-
-      if (page.length > 0) {
-        setMessages((prev) => {
-          const existingIds = new Set(prev.map((m) => m.id));
-          const unique = page.filter((m) => !existingIds.has(m.id));
-          return unique.length > 0 ? [...prev, ...unique] : prev;
-        });
-      }
-    } catch (err) {
-      console.warn('Failed to load newer messages', err);
-    } finally {
-      setIsLoadingNewer(false);
-    }
-  }, [hasMoreNewer, isLoadingNewer, setMessages]);
+  }, [hasMoreOlder, id, isLoadingOlder, setMessages]);
 
   const onQueueSend = useCallback(
     (msg: { text: string; files: FileUIPart[] }) => {
@@ -596,45 +608,13 @@ function useConciergeChatController({
     onSend: onQueueSend,
   });
 
-  // Reset from a jumped (historical) view back to the latest messages.
-  // Shared by handleSendMessage and the scroll-to-bottom button.
-  const resetToLatest = useCallback(async () => {
-    try {
-      const timeline = await queryClient.fetchQuery(
-        getTimelineQueryOptions({ hideToast: true }),
-      );
-      setMessages(timeline);
-      setHasMoreOlder(timeline.length >= DEFAULT_MESSAGES_PAGE_SIZE);
-      setHasMoreNewer(false);
-      setDidJump(false);
-      // Instant scroll to bottom — the handleScroll listener will
-      // detect we're at the bottom and re-enable auto-scroll.
-      scrollToBottom({ behavior: 'instant' });
-    } catch (err) {
-      console.warn('Failed to reset messages after jump', err);
-    }
-  }, [queryClient, setMessages]);
-
   const handleSendMessage: typeof sendMessage = useCallback(
-    async (message, options) => {
-      if (
-        (defaultMessage != null && defaultMessage.length > 0) ||
-        preset != null
-      ) {
+    (message, options) => {
+      if (defaultMessage != null && defaultMessage.length > 0) {
         void navigate({
-          search: (prev) => ({
-            ...prev,
-            defaultMessage: undefined,
-            preset: undefined,
-          }),
+          search: (prev) => ({ ...prev, defaultMessage: undefined }),
           replace: true,
         });
-      }
-
-      // If we jumped to an old message via search, reset to the latest
-      // messages before sending so there are no gaps in the timeline.
-      if (didJump) {
-        await resetToLatest();
       }
 
       pendingSendSnapshotRef.current = messagesRef.current;
@@ -677,16 +657,15 @@ function useConciergeChatController({
 
       const msg = message as { text?: string; files?: FileUIPart[] };
       enqueue({ text: msg.text ?? '', files: msg.files ?? [] });
+      return Promise.resolve();
     },
     [
       defaultMessage,
-      didJump,
       enqueue,
       id,
       incrementMessageCount,
       navigate,
       preset,
-      resetToLatest,
       sendMessage,
       status,
       track,
@@ -714,6 +693,9 @@ function useConciergeChatController({
       defaultMessageAutoSendTimeoutIdRef.current = null;
 
       if (defaultMessageAutoSentRef.current) return;
+
+      const currentMessages = messagesRef.current;
+      if (hasUserMessages(currentMessages)) return;
 
       defaultMessageAutoSentRef.current = true;
       void handleSendMessageRef.current({ text: defaultMessage, files: [] });
@@ -757,157 +739,6 @@ function useConciergeChatController({
     setSessionStartTime(Date.now());
   }, [sessionStartTime, setSessionStartTime]);
 
-  // DEV: Simulate data-compaction by injecting fake parts into the last assistant message
-  useEffect(() => {
-    if (!env.DEV_TOOLS_ENABLED) return;
-
-    const handler = () => {
-      setMessages((prev) => {
-        // Find the last assistant message
-        let lastAssistantIdx = -1;
-        for (let i = prev.length - 1; i >= 0; i--) {
-          if (prev[i].role === 'assistant') {
-            lastAssistantIdx = i;
-            break;
-          }
-        }
-        if (lastAssistantIdx === -1) {
-          toast.error('No assistant message to inject compaction into');
-          return prev;
-        }
-
-        const msg = prev[lastAssistantIdx];
-        const now = new Date().toISOString();
-
-        // First inject in-progress, then schedule complete after 3s
-        const inProgressPart = {
-          type: 'data-compaction' as const,
-          data: {
-            state: 'in-progress' as const,
-            reason: 'threshold' as const,
-            startedAt: now,
-            tokensBefore: 185_000,
-          },
-        };
-
-        const updated = [...prev];
-        updated[lastAssistantIdx] = {
-          ...msg,
-          parts: [...msg.parts, inProgressPart],
-        };
-
-        // After 3s, replace with complete state
-        setTimeout(() => {
-          setMessages((current) => {
-            const idx = current.findIndex((m) => m.id === msg.id);
-            if (idx === -1) return current;
-
-            const completePart = {
-              type: 'data-compaction' as const,
-              data: {
-                state: 'complete' as const,
-                reason: 'threshold' as const,
-                startedAt: now,
-                completedAt: new Date().toISOString(),
-                chatSummaryId: crypto.randomUUID(),
-                summary: 'Simulated compaction summary for dev testing.',
-                tokensBefore: 185_000,
-                tokensAfter: 42_000,
-              },
-            };
-
-            const next = [...current];
-            const currentMsg = current[idx];
-            // Replace in-progress part with complete part
-            const partsWithoutInProgress = currentMsg.parts.filter(
-              (p) =>
-                !(
-                  (p as { type?: string }).type === 'data-compaction' &&
-                  (p as { data?: { state?: string } }).data?.state ===
-                    'in-progress'
-                ),
-            );
-            next[idx] = {
-              ...currentMsg,
-              parts: [...partsWithoutInProgress, completePart],
-            };
-            return next;
-          });
-        }, 3000);
-
-        return updated;
-      });
-    };
-
-    window.addEventListener('dev:simulate-compaction', handler);
-    return () => window.removeEventListener('dev:simulate-compaction', handler);
-  }, [setMessages]);
-
-  // Jump to a specific message: fetch a window of messages centred on the
-  // target, replace the current list, and scroll to it. Normal pagination
-  // (onLoadOlder) resumes from there.
-  const jumpToMessage = useCallback(
-    async (messageId: string) => {
-      // Already in the DOM? Flush state synchronously so the layout
-      // settles (greeting removal, etc.) before we scroll.
-      const existing = document.getElementById(`message-${messageId}`);
-      if (existing) {
-        flushSync(() => setDidJump(true));
-        existing.scrollIntoView({ behavior: 'instant', block: 'center' });
-        return;
-      }
-
-      // 1. Fetch the target + older context.
-      //    skip=0 includes the cursor message itself in the page.
-      const descPage = await getMessages({
-        cursor: { id: messageId, skip: 0 },
-        sort: 'desc',
-        limit: DEFAULT_MESSAGES_PAGE_SIZE,
-        hideToast: true,
-      });
-
-      if (descPage.length === 0) throw new Error('Message not found');
-
-      // 2. Fetch newer context. If skip=0 worked the target is in descPage
-      //    and we fetch forward from it. Otherwise page[0] (desc = newest
-      //    first) is the message right before the target — fetching forward
-      //    from there picks the target up as the first result.
-      const hasTarget = descPage.some((m) => m.id === messageId);
-      const ascCursor = hasTarget ? messageId : descPage[0].id;
-      const ascPage = await getMessages({
-        cursor: { id: ascCursor },
-        sort: 'asc',
-        limit: DEFAULT_MESSAGES_PAGE_SIZE,
-        hideToast: true,
-      });
-
-      // 3. Combine into a single chronological page and deduplicate.
-      const olderAsc = descPage.slice().reverse();
-      const seen = new Set<string>();
-      const combined = [...olderAsc, ...ascPage].filter((m) => {
-        if (seen.has(m.id)) return false;
-        seen.add(m.id);
-        return true;
-      });
-
-      // 4. Replace the entire message list and flush synchronously so
-      //    the DOM is fully updated (greeting removed, messages rendered)
-      //    before we try to scroll.
-      flushSync(() => {
-        setDidJump(true);
-        setMessages(combined);
-        setHasMoreOlder(descPage.length >= DEFAULT_MESSAGES_PAGE_SIZE);
-        setHasMoreNewer(ascPage.length >= DEFAULT_MESSAGES_PAGE_SIZE);
-      });
-
-      // 5. Element should now be in the DOM. Scroll to it.
-      const el = document.getElementById(`message-${messageId}`);
-      if (!el) throw new Error('Message not found');
-      el.scrollIntoView({ behavior: 'instant', block: 'center' });
-    },
-    [setMessages, setHasMoreOlder, setHasMoreNewer, setDidJump],
-  );
-
   return {
     messages,
     setMessages,
@@ -924,12 +755,7 @@ function useConciergeChatController({
     hasMoreOlder,
     isLoadingOlder,
     onLoadOlder,
-    hasMoreNewer,
-    isLoadingNewer,
-    onLoadNewer,
-    jumpToMessage,
-    didJump,
-    resetToLatest,
+    ctxMessageId,
     preset,
     queue,
     removeFromQueue,
@@ -953,35 +779,10 @@ interface ChatViewProps {
   hasMoreOlder: boolean;
   isLoadingOlder: boolean;
   onLoadOlder: () => void | Promise<void>;
-  hasMoreNewer: boolean;
-  isLoadingNewer: boolean;
-  onLoadNewer: () => void | Promise<void>;
-  didJump: boolean;
-  onJumpToLatest: () => Promise<void>;
-  isSearchOpen?: boolean;
+  ctxMessageId?: string;
   preset?: string;
   queue: QueuedMessage[];
   removeFromQueue: (id: string) => void;
-}
-
-function WelcomeContent({
-  onSend,
-  setupActions,
-}: {
-  onSend: (text: string) => void;
-  setupActions: SetupAction[];
-}) {
-  return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
-      <Greeting />
-      <div className="flex w-full">
-        <SuggestedActions
-          onSendSuggestion={onSend}
-          setupActions={setupActions}
-        />
-      </div>
-    </div>
-  );
 }
 
 function ChatView({
@@ -1001,80 +802,23 @@ function ChatView({
   hasMoreOlder,
   isLoadingOlder,
   onLoadOlder,
-  hasMoreNewer,
-  isLoadingNewer,
-  onLoadNewer,
-  didJump,
-  onJumpToLatest,
-  isSearchOpen,
+  ctxMessageId,
   preset,
   queue,
   removeFromQueue,
 }: ChatViewProps) {
   const navigate = useNavigate({ from: '/concierge' });
-  const hasInteractedRef = useRef(
-    messages.length > 0 && messages.at(-1)?.role === 'user',
-  );
-  const isActiveStream = status === 'streaming' || status === 'submitted';
-
-  // Latch to true once any real interaction is detected. A ref is
-  // sufficient because every trigger is always accompanied by a
-  // state/prop change that causes a re-render.
-  if (isActiveStream || didJump) {
-    hasInteractedRef.current = true;
-  }
-
-  const effectiveHasInteracted = hasInteractedRef.current;
-
-  const [introDialogOpen, setIntroDialogOpen] = useState(false);
-  const isSingleThread = usePosthogFeatureFlagEnabled(
-    FeatureFlags.ConciergeSingleThread,
-  );
-
-  // Wrap sendMessage to track user interaction for scroll behavior
-  const handleSend: typeof sendMessage = useCallback(
-    (...args) => {
-      hasInteractedRef.current = true;
-      return sendMessage(...args);
-    },
-    [sendMessage],
-  );
-
-  // When a preset is selected from the welcome screen, hide greeting and show the preset message
-  const { data: user } = useUser();
-  useEffect(() => {
-    if (preset == null || hasInteractedRef.current) return;
-    hasInteractedRef.current = true;
-
-    const presetText = PRESET_MESSAGES[preset as Preset];
-    if (!presetText) return;
-
-    setMessages((prev) => {
-      if (prev.some((m) => m.id === `preset-${preset}`)) return prev;
-      return [
-        ...prev,
-        {
-          id: `preset-${preset}`,
-          role: 'assistant' as const,
-          parts: [
-            {
-              type: 'text' as const,
-              text: `Hi ${user?.firstName ?? 'there'}!\n\n${presetText}`,
-            },
-          ],
-        },
-      ];
-    });
-  }, [preset, setMessages, user?.firstName]);
 
   const isUploadLabsPreset = preset === 'upload-labs';
-  const presetIsLastMessage =
-    preset != null && messages.at(-1)?.id === `preset-${preset}`;
+  const hasUserMessages = messages.some((m) => m.role === 'user');
   const showDropzone =
-    isUploadLabsPreset && presetIsLastMessage && attachments.length === 0;
+    isUploadLabsPreset && !hasUserMessages && attachments.length === 0;
+
+  const { data: user } = useUser();
+  const showImportMemory = shouldShowImportMemory(user?.createdAt);
 
   const setupActions = useMemo(() => {
-    const actions: SetupAction[] = [
+    const actions = [
       {
         title: 'Upload past labs',
         subtitle: 'See trends from your past labs.',
@@ -1086,7 +830,10 @@ function ChatView({
           });
         },
       },
-      {
+    ];
+
+    if (showImportMemory) {
+      actions.push({
         title: 'Continue from another AI',
         subtitle: 'Import your conversations and deepen your health story.',
         imageSrc: '/concierge/other_llms.webp',
@@ -1096,20 +843,11 @@ function ChatView({
             search: { preset: 'import-memory' },
           });
         },
-      },
-    ];
-
-    if (isSingleThread && shouldShowSingleThreadIntro()) {
-      actions.push({
-        title: 'Meet your new AI',
-        subtitle: 'All conversations, one thread.',
-        icon: <AnimatedIcon state="idle" size={32} />,
-        onClick: () => setIntroDialogOpen(true),
       });
     }
 
     return actions;
-  }, [navigate, isSingleThread]);
+  }, [navigate, showImportMemory]);
 
   const showErrorUi =
     status === 'error' ||
@@ -1117,58 +855,14 @@ function ChatView({
     showReconnectBanner ||
     assistantBusyMessage != null;
 
-  // Suggestions: show after the latest assistant response when idle
-  const lastAssistantMessage =
-    status === 'ready'
-      ? [...messages].reverse().find((m) => m.role === 'assistant')
-      : undefined;
-  const followupContext = useMemo(() => {
-    if (!lastAssistantMessage) return '';
-    const textParts = lastAssistantMessage.parts
-      .filter(
-        (p): p is Extract<typeof p, { type: 'text' }> => p.type === 'text',
-      )
-      .map((p) => p.text)
-      .join(' ');
-    return textParts.slice(0, 2000);
-  }, [lastAssistantMessage]);
-
-  const presetAwaitingResponse = presetIsLastMessage;
-  const showSuggestions =
-    effectiveHasInteracted &&
-    messages.length > 0 &&
-    status === 'ready' &&
-    queue.length === 0 &&
-    !presetAwaitingResponse;
-  // Keep a ref of the last successfully fetched followups so they
-  // survive a jump (query key changes when messages are replaced,
-  // which would clear cached data and cause a layout shift).
-  const stableFollowupsRef = useRef<string[]>([]);
-  const { data: rawFollowups = [] } = useCreateFollowups({
-    context: followupContext,
-    count: 3,
-    // Disable fetching during a jump so we don't request suggestions
-    // for historical context. New ones are fetched after the user
-    // sends a message and the stream completes.
-    enabled: showSuggestions && !didJump && followupContext.length > 0,
-  });
-
-  if (rawFollowups.length > 0 && !didJump) {
-    stableFollowupsRef.current = rawFollowups;
-  }
-
-  const followups = didJump ? stableFollowupsRef.current : rawFollowups;
-
-  const welcomeContent = (
-    <WelcomeContent
-      onSend={(text) => void handleSend({ text, files: [] }, undefined)}
-      setupActions={setupActions}
-    />
-  );
-
   return (
-    <div className="mx-auto flex min-h-0 w-full min-w-0 max-w-3xl flex-1 flex-col">
-      <div className="flex min-h-0 flex-1 flex-col">
+    <div className="mx-auto flex size-full min-w-0 max-w-3xl flex-1 flex-col">
+      <div
+        className={cn(
+          'flex flex-1 flex-col overflow-y-auto',
+          messages.length > 0 ? 'justify-start' : 'justify-center',
+        )}
+      >
         <Messages
           chatId={chatId}
           messages={messages}
@@ -1177,18 +871,25 @@ function ChatView({
           hasMoreOlder={hasMoreOlder}
           isLoadingOlder={isLoadingOlder}
           onLoadOlder={onLoadOlder}
-          hasMoreNewer={hasMoreNewer}
-          isLoadingNewer={isLoadingNewer}
-          onLoadNewer={onLoadNewer}
-          onJumpToLatest={onJumpToLatest}
-          didJump={didJump}
-          isSearchOpen={isSearchOpen}
-          welcomeContent={welcomeContent}
-          hasInteracted={effectiveHasInteracted}
+          ctxMessageId={ctxMessageId}
         />
+
+        {messages.length === 0 && (
+          <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+            <Greeting />
+            <div className="flex w-full">
+              <SuggestedActions
+                onSendSuggestion={(text) => {
+                  void sendMessage({ text, files: [] }, undefined);
+                }}
+                setupActions={setupActions}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
-      <div className="shrink-0">
+      <div className="sticky bottom-0 shrink-0">
         {showErrorUi && showReconnectBanner && (
           <div className="mx-auto mb-3 w-full max-w-3xl px-1">
             <Alert variant="destructive">
@@ -1222,24 +923,11 @@ function ChatView({
 
         <QueuedMessages queue={queue} onRemove={removeFromQueue} />
 
-        {showSuggestions && followups.length > 0 && (
-          <div className="mx-auto flex w-full gap-2 overflow-x-auto px-3 pb-3 pt-1 scrollbar-none [-webkit-mask-image:linear-gradient(to_right,transparent_0px,black_16px,black_calc(100%-16px),transparent_100%)] [mask-image:linear-gradient(to_right,transparent_0px,black_16px,black_calc(100%-16px),transparent_100%)] lg:flex-wrap lg:justify-start lg:overflow-x-visible lg:px-0 lg:[-webkit-mask-image:none] lg:[mask-image:none]">
-            {followups.map((suggestion) => (
-              <ChatSuggestion
-                key={suggestion}
-                className="min-w-[200px] flex-1 shrink-0 lg:max-w-44"
-                onClick={() => void handleSend({ text: suggestion, files: [] })}
-                suggestion={suggestion}
-              />
-            ))}
-          </div>
-        )}
-
         <form className="mx-auto w-full pb-2">
           <MultimodalInput
             input={input}
             setInput={setInput}
-            sendMessage={handleSend}
+            sendMessage={sendMessage}
             status={status}
             attachments={attachments}
             setAttachments={setAttachments}
@@ -1257,11 +945,6 @@ function ChatView({
           experiencing an emergent medical issue.
         </p>
       </div>
-
-      <SingleThreadIntroDialog
-        open={introDialogOpen}
-        onOpenChange={setIntroDialogOpen}
-      />
     </div>
   );
 }

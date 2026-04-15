@@ -46,6 +46,9 @@ const DialogContent = React.forwardRef<
 
           className,
         )}
+        onOpenAutoFocus={(event) => {
+          event.preventDefault();
+        }}
         onCloseAutoFocus={
           preventCloseAutoFocus
             ? (event) => {

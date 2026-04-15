@@ -10,7 +10,7 @@ export const Greeting = () => {
   return (
     <div
       key="overview"
-      className="relative mx-auto flex size-full flex-col items-center"
+      className="relative mx-auto flex w-full flex-col items-center"
     >
       <DuneGradient />
       <m.div
