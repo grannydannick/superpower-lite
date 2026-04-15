@@ -78,8 +78,8 @@ export const useRangeSparkline = ({
     [dimensions],
   );
 
-  const { SVG_HEIGHT, PADDING, STROKE_WIDTH, CIRCLE_RADIUS } = CHART_CONFIG;
-  const PILL_WIDTH = 8;
+  const { SVG_HEIGHT, PADDING, STROKE_WIDTH } = CHART_CONFIG;
+  const PILL_WIDTH = 10;
 
   const xStep =
     sortedValues.length > 1
@@ -182,24 +182,19 @@ export const useRangeSparkline = ({
 
     pointPositions.forEach((pos, index) => {
       const color = STATUS_TO_COLOR[pos.status as keyof typeof STATUS_TO_COLOR];
-      const naturalHeight = Math.abs(pos.yLow - pos.yHigh);
 
-      // When the pixel span is too small to look like a proper pill,
-      // render as a circle (dot) centered on the midpoint instead.
-      const dotSize = CIRCLE_RADIUS * 2;
-      const isSmallRange = naturalHeight < PILL_WIDTH * 2;
-      const pillHeight = isSmallRange ? dotSize : naturalHeight;
-      const pillWidth = isSmallRange ? dotSize : PILL_WIDTH;
-      const yTop = isSmallRange
-        ? pos.y - dotSize / 2
-        : Math.min(pos.yHigh, pos.yLow);
+      // Always render at least PILL_WIDTH tall so a collapsed pill (yLow ≈ yHigh)
+      // becomes a round dot when combined with rx=width/2. Center the pill around
+      // yCenter so the connecting line hits the visual center.
+      const pillHeight = Math.max(PILL_WIDTH, Math.abs(pos.yLow - pos.yHigh));
+      const yCenter = (pos.yLow + pos.yHigh) / 2;
 
       pills.push({
         key: `pill-${pos.timestamp}-${index}`,
-        x: pos.x - pillWidth / 2,
-        yTop,
+        x: pos.x - PILL_WIDTH / 2,
+        yTop: yCenter - pillHeight / 2,
         height: pillHeight,
-        width: pillWidth,
+        width: PILL_WIDTH,
         color,
       });
 
@@ -267,7 +262,6 @@ export const useRangeSparkline = ({
   }, [
     sortedValues,
     pointPositions,
-    CIRCLE_RADIUS,
     PADDING,
     PILL_WIDTH,
     STROKE_WIDTH,

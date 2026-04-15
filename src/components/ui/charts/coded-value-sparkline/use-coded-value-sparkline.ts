@@ -149,14 +149,11 @@ export const useCodedValueSparkline = ({
     }
 
     pointPositions.forEach((pos, index) => {
-      const circleRadius =
-        sortedValues.length === 1 ? CIRCLE_RADIUS + 1 : CIRCLE_RADIUS;
-
       circles.push({
         key: `${pos.timestamp}-${index}`,
         cx: pos.x,
         cy: pos.y,
-        r: circleRadius,
+        r: CIRCLE_RADIUS,
         fill: getStatusColor(pos.status),
         stroke: 'white',
         strokeWidth: STROKE_WIDTH,

@@ -23,6 +23,7 @@ import { Route as AppVaultRouteImport } from './routes/_app.vault'
 import { Route as AppShopifyRedirectRouteImport } from './routes/_app.shopify-redirect'
 import { Route as AppServicesRouteImport } from './routes/_app.services'
 import { Route as AppRxSubscriptionsRouteImport } from './routes/_app.rx-subscriptions'
+import { Route as AppRxScreenOutRouteImport } from './routes/_app.rx-screen-out'
 import { Route as AppProtocolRouteImport } from './routes/_app.protocol'
 import { Route as AppOrdersRouteImport } from './routes/_app.orders'
 import { Route as AppMarketplaceRouteImport } from './routes/_app.marketplace'
@@ -130,6 +131,11 @@ const AppServicesRoute = AppServicesRouteImport.update({
 const AppRxSubscriptionsRoute = AppRxSubscriptionsRouteImport.update({
   id: '/rx-subscriptions',
   path: '/rx-subscriptions',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRxScreenOutRoute = AppRxScreenOutRouteImport.update({
+  id: '/rx-screen-out',
+  path: '/rx-screen-out',
   getParentRoute: () => AppRoute,
 } as any)
 const AppProtocolRoute = AppProtocolRouteImport.update({
@@ -349,6 +355,7 @@ export interface FileRoutesByFullPath {
   '/marketplace': typeof AppMarketplaceRoute
   '/orders': typeof AppOrdersRouteWithChildren
   '/protocol': typeof AppProtocolRouteWithChildren
+  '/rx-screen-out': typeof AppRxScreenOutRoute
   '/rx-subscriptions': typeof AppRxSubscriptionsRouteWithChildren
   '/services': typeof AppServicesRouteWithChildren
   '/shopify-redirect': typeof AppShopifyRedirectRoute
@@ -398,6 +405,7 @@ export interface FileRoutesByTo {
   '/intake': typeof AppIntakeRoute
   '/invite': typeof AppInviteRoute
   '/marketplace': typeof AppMarketplaceRoute
+  '/rx-screen-out': typeof AppRxScreenOutRoute
   '/shopify-redirect': typeof AppShopifyRedirectRoute
   '/vault': typeof AppVaultRoute
   '/onboarding': typeof AppMapsOnboardingRoute
@@ -450,6 +458,7 @@ export interface FileRoutesById {
   '/_app/marketplace': typeof AppMarketplaceRoute
   '/_app/orders': typeof AppOrdersRouteWithChildren
   '/_app/protocol': typeof AppProtocolRouteWithChildren
+  '/_app/rx-screen-out': typeof AppRxScreenOutRoute
   '/_app/rx-subscriptions': typeof AppRxSubscriptionsRouteWithChildren
   '/_app/services': typeof AppServicesRouteWithChildren
   '/_app/shopify-redirect': typeof AppShopifyRedirectRoute
@@ -506,6 +515,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/orders'
     | '/protocol'
+    | '/rx-screen-out'
     | '/rx-subscriptions'
     | '/services'
     | '/shopify-redirect'
@@ -555,6 +565,7 @@ export interface FileRouteTypes {
     | '/intake'
     | '/invite'
     | '/marketplace'
+    | '/rx-screen-out'
     | '/shopify-redirect'
     | '/vault'
     | '/onboarding'
@@ -606,6 +617,7 @@ export interface FileRouteTypes {
     | '/_app/marketplace'
     | '/_app/orders'
     | '/_app/protocol'
+    | '/_app/rx-screen-out'
     | '/_app/rx-subscriptions'
     | '/_app/services'
     | '/_app/shopify-redirect'
@@ -753,6 +765,13 @@ declare module '@tanstack/react-router' {
       path: '/rx-subscriptions'
       fullPath: '/rx-subscriptions'
       preLoaderRoute: typeof AppRxSubscriptionsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/rx-screen-out': {
+      id: '/_app/rx-screen-out'
+      path: '/rx-screen-out'
+      fullPath: '/rx-screen-out'
+      preLoaderRoute: typeof AppRxScreenOutRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/protocol': {
@@ -1200,6 +1219,7 @@ interface AppRouteChildren {
   AppMarketplaceRoute: typeof AppMarketplaceRoute
   AppOrdersRoute: typeof AppOrdersRouteWithChildren
   AppProtocolRoute: typeof AppProtocolRouteWithChildren
+  AppRxScreenOutRoute: typeof AppRxScreenOutRoute
   AppRxSubscriptionsRoute: typeof AppRxSubscriptionsRouteWithChildren
   AppServicesRoute: typeof AppServicesRouteWithChildren
   AppShopifyRedirectRoute: typeof AppShopifyRedirectRoute
@@ -1221,6 +1241,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppMarketplaceRoute: AppMarketplaceRoute,
   AppOrdersRoute: AppOrdersRouteWithChildren,
   AppProtocolRoute: AppProtocolRouteWithChildren,
+  AppRxScreenOutRoute: AppRxScreenOutRoute,
   AppRxSubscriptionsRoute: AppRxSubscriptionsRouteWithChildren,
   AppServicesRoute: AppServicesRouteWithChildren,
   AppShopifyRedirectRoute: AppShopifyRedirectRoute,
