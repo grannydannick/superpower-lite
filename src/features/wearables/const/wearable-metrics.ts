@@ -211,8 +211,11 @@ export const WEARABLE_METRICS: WearableMetric[] = [
     key: 'body_weight',
     label: 'Weight',
     resource: 'body',
-    accessor: (row) => row.weightKilogram ?? row.weight ?? null,
-    unit: 'kg',
+    accessor: (row) => {
+      const kg = row.weightKilogram ?? row.weight ?? null;
+      return kg != null ? kg * 2.20462 : null;
+    },
+    unit: 'lb',
     format: formatDecimal,
     timestampAccessor: (row) => getTimestamp(row, 'measuredAt', 'date'),
     group: 'Body',
