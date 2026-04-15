@@ -1,7 +1,7 @@
 import { IconCheckCircle2 } from '@central-icons-react/round-filled-radius-2-stroke-1.5/IconCheckCircle2';
 import { m } from 'framer-motion';
 import { ChevronRight, Minus, Plus } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import NumberFlow from '@/components/shared/number-flow';
 import {
@@ -13,37 +13,19 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Body1, H2 } from '@/components/ui/typography';
-import type {
-  Protocol,
-  ProtocolAction,
-  ProtocolGoal,
-} from '@/features/protocol/api';
-import { useSupplementCatalog } from '@/features/protocol/api/supplement-catalog';
 import { ProtocolMarkdown } from '@/features/protocol/components/protocol-markdown';
 import { useProtocolStepperContext } from '@/features/protocol/components/reveal/protocol-stepper-context';
-import { useShippingFee } from '@/features/protocol/hooks/use-shipping-fee';
-import { useSupplementProductLookup } from '@/features/protocol/hooks/use-supplement-product-lookup';
+import {
+  useSupplementCart,
+  MAX_SUPPLEMENT_QUANTITY,
+} from '@/features/protocol/hooks/use-supplement-cart';
+import {
+  useSupplementGroups,
+  type SupplementDisplayItem,
+} from '@/features/protocol/hooks/use-supplement-groups';
 import { useAnalytics } from '@/hooks/use-analytics';
-import { api } from '@/lib/api-client';
-import type { Product } from '@/types/api';
 
 import { ProtocolStepLayout } from '../../../layouts/protocol-step-layout';
-
-const MAX_SUPPLEMENT_QUANTITY = 10;
-
-type SupplementDisplayItem = {
-  actionId: string;
-  product: Product;
-  amazonPrice: number | null;
-  amazonUrl: string | null;
-  whyContent: string | null;
-};
-
-type GoalSupplementGroup = {
-  goalId: string;
-  goalTitle: string;
-  items: SupplementDisplayItem[];
-};
 
 type SupplementCardProps = {
   item: SupplementDisplayItem;
@@ -195,318 +177,27 @@ const SupplementCard = ({
   );
 };
 
-/**
- * Extract supplement actions grouped by goal.
- */
-const extractSupplementsByGoal = (
-  protocol: Protocol,
-): {
-  goal: ProtocolGoal;
-  actions: { action: ProtocolAction; productId: string | undefined }[];
-}[] => {
-  const groups: {
-    goal: ProtocolGoal;
-    actions: { action: ProtocolAction; productId: string | undefined }[];
-  }[] = [];
-
-  for (const goal of protocol.goals) {
-    const actions: { action: ProtocolAction; productId: string | undefined }[] =
-      [];
-
-    if (
-      goal.primaryAction.content.type === 'supplement' &&
-      goal.primaryAction.accepted === true
-    ) {
-      actions.push({
-        action: goal.primaryAction,
-        productId: goal.primaryAction.content.productId,
-      });
-    }
-
-    for (const action of goal.additionalActions ?? []) {
-      if (action.content.type === 'supplement' && action.accepted === true) {
-        actions.push({
-          action,
-          productId: action.content.productId,
-        });
-      }
-    }
-
-    if (actions.length > 0) {
-      groups.push({ goal, actions });
-    }
-  }
-
-  return groups;
-};
-
 export const SupplementsStep = () => {
   const { next, protocol, saveShopifyOrder } = useProtocolStepperContext();
   const { track } = useAnalytics();
-  const getSupplementProduct = useSupplementProductLookup();
-  const { data: catalog, isLoading: isCatalogLoading } = useSupplementCatalog();
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
-
-  // Track quantities per action ID — pre-select all with qty 1
-  const [quantities, setQuantities] = useState<Map<string, number> | null>(
-    null,
+  const { goalGroups, allItems, isLoading } = useSupplementGroups(
+    protocol ?? undefined,
   );
-
-  // Build Amazon pricing lookup from catalog (by variant ID)
-  const amazonLookup = useMemo(() => {
-    const byId = new Map<string, { amazonPrice: number; amazonUrl: string }>();
-    for (const item of catalog ?? []) {
-      byId.set(item.shopifyVariantId, {
-        amazonPrice: item.amazonPrice,
-        amazonUrl: item.amazonUrl,
-      });
-    }
-    return byId;
-  }, [catalog]);
-
-  // Extract supplements grouped by goal, tracking out-of-stock items
-  const { goalGroups, outOfStockSupplements } = useMemo(() => {
-    if (!protocol)
-      return {
-        goalGroups: [] as GoalSupplementGroup[],
-        outOfStockSupplements: [] as {
-          actionId: string;
-          productId: string;
-          productName: string;
-        }[],
-      };
-
-    const outOfStock: {
-      actionId: string;
-      productId: string;
-      productName: string;
-    }[] = [];
-
-    const rawGroups = extractSupplementsByGoal(protocol);
-    const result: GoalSupplementGroup[] = [];
-
-    for (const { goal, actions } of rawGroups) {
-      const items: SupplementDisplayItem[] = [];
-
-      for (const { action, productId } of actions) {
-        const product = getSupplementProduct(productId);
-        if (product === null) continue;
-
-        if (
-          product.inventoryQuantity !== undefined &&
-          product.inventoryQuantity <= 0
-        ) {
-          outOfStock.push({
-            actionId: action.id,
-            productId: product.id,
-            productName: product.name,
-          });
-          continue;
-        }
-
-        const amazon = amazonLookup.get(product.id);
-        const whyContent =
-          action.content.type === 'supplement' ? action.content.why : null;
-
-        items.push({
-          actionId: action.id,
-          product,
-          amazonPrice: amazon?.amazonPrice ?? null,
-          amazonUrl: amazon?.amazonUrl ?? null,
-          whyContent,
-        });
-      }
-
-      if (items.length > 0) {
-        result.push({
-          goalId: goal.id,
-          goalTitle: goal.title,
-          items,
-        });
-      }
-    }
-
-    return { goalGroups: result, outOfStockSupplements: outOfStock };
-  }, [protocol, getSupplementProduct, amazonLookup]);
-
-  const hasTrackedOutOfStock = useRef(false);
-  useEffect(() => {
-    if (outOfStockSupplements.length === 0 || hasTrackedOutOfStock.current)
-      return;
-    hasTrackedOutOfStock.current = true;
-    for (const item of outOfStockSupplements) {
-      track('protocol_reveal_supplement_out_of_stock', {
-        action_id: item.actionId,
-        product_id: item.productId,
-        product_name: item.productName,
-      });
-    }
-  }, [outOfStockSupplements, track]);
-
-  // Flat list for totals
-  const allItems = useMemo(
-    () => goalGroups.flatMap((g) => g.items),
-    [goalGroups],
-  );
-
-  const allIds = useMemo(
-    () => new Set(allItems.map((s) => s.actionId)),
-    [allItems],
-  );
-
-  // Default quantities: 1 for each item
-  const defaultQuantities = useMemo(() => {
-    const map = new Map<string, number>();
-    for (const id of allIds) {
-      map.set(id, 1);
-    }
-    return map;
-  }, [allIds]);
-
-  const currentQuantities = useMemo(() => {
-    if (quantities === null) return defaultQuantities;
-    const merged = new Map(defaultQuantities);
-    for (const [id, qty] of quantities) {
-      merged.set(id, qty);
-    }
-    return merged;
-  }, [quantities, defaultQuantities]);
-
-  const getQuantity = useCallback(
-    (id: string) => currentQuantities.get(id) ?? 0,
-    [currentQuantities],
-  );
-
-  const handleIncrement = useCallback(
-    (id: string) => {
-      track('protocol_reveal_supplement_added_to_cart', { action_id: id });
-      setQuantities((prev) => {
-        const current = new Map(prev ?? defaultQuantities);
-        const qty = current.get(id) ?? 0;
-        if (qty >= MAX_SUPPLEMENT_QUANTITY) return current;
-        current.set(id, qty + 1);
-        return current;
-      });
-    },
-    [defaultQuantities, track],
-  );
-
-  const handleDecrement = useCallback(
-    (id: string) => {
-      track('protocol_reveal_supplement_removed_from_cart', { action_id: id });
-      setQuantities((prev) => {
-        const current = new Map(prev ?? defaultQuantities);
-        const qty = current.get(id) ?? 0;
-        if (qty > 0) {
-          current.set(id, qty - 1);
-        }
-        return current;
-      });
-    },
-    [defaultQuantities, track],
-  );
-
-  const { totalOriginal, totalDiscounted, selectedCount } = useMemo(() => {
-    let original = 0;
-    let discounted = 0;
-    let count = 0;
-
-    for (const item of allItems) {
-      const qty = getQuantity(item.actionId);
-      if (qty > 0) {
-        original += item.product.price * qty;
-        discounted +=
-          item.product.price * (1 - item.product.discount / 100) * qty;
-        count += qty;
-      }
-    }
-
-    return {
-      totalOriginal: Math.round(original * 100),
-      totalDiscounted: Math.round(discounted * 100),
-      selectedCount: count,
-    };
-  }, [allItems, getQuantity]);
-
-  const { shippingCents, totalWithShipping, isFree } =
-    useShippingFee(totalDiscounted);
-
-  const handlePurchase = useCallback(async () => {
-    const selected = allItems.filter((s) => getQuantity(s.actionId) > 0);
-    if (selected.length === 0) return;
-
-    const productNames: string[] = [];
-    const productIds: string[] = [];
-    for (const s of selected) {
-      productNames.push(s.product.name);
-      productIds.push(s.product.id);
-    }
-
-    track('protocol_reveal_supplement_checkout_started', {
-      selected_count: selected.length,
-      product_ids: productIds,
-      product_names: productNames,
-      total_discounted_cents: totalDiscounted,
-      total_original_cents: totalOriginal,
-      total_with_shipping_cents: totalWithShipping,
-    });
-
-    setIsCheckingOut(true);
-
-    try {
-      // One entry per quantity unit (backend strictObject doesn't accept quantity field yet)
-      const products: {
-        id: string;
-        name: string;
-        price: number;
-        url: string;
-        discount: number;
-        type: string;
-        inventoryQuantity: number;
-      }[] = [];
-
-      for (const item of selected) {
-        const qty = getQuantity(item.actionId);
-        for (let i = 0; i < qty; i++) {
-          products.push({
-            id: item.product.id,
-            name: item.product.name,
-            price: item.product.price,
-            url: item.product.url,
-            discount: item.product.discount,
-            type: 'Supplements',
-            inventoryQuantity: item.product.inventoryQuantity ?? 100,
-          });
-        }
-      }
-
-      const response = (await api.post('/shop/checkout', {
-        products,
-      })) as { checkoutUrl: string; orderId: string };
-
-      const checkoutUrl = response.checkoutUrl;
-      if (checkoutUrl) {
-        window.open(checkoutUrl, '_blank', 'noopener');
-        saveShopifyOrder(response.orderId, checkoutUrl).catch(() => {});
-      }
-
-      setIsCheckingOut(false);
-      next();
-    } catch (error) {
-      console.error('Failed to create checkout:', error);
-      setIsCheckingOut(false);
-      next();
-    }
-  }, [
-    allItems,
+  const {
     getQuantity,
-    next,
-    track,
-    totalDiscounted,
+    increment,
+    decrement,
     totalOriginal,
-    totalWithShipping,
-    saveShopifyOrder,
-  ]);
+    totalDiscounted,
+    selectedCount,
+    shipping,
+    isCheckingOut,
+    checkout,
+  } = useSupplementCart(allItems);
+
+  const handlePurchase = useCallback(() => {
+    checkout({ saveShopifyOrder, onComplete: next });
+  }, [checkout, saveShopifyOrder, next]);
 
   const handleSkip = useCallback(() => {
     track('protocol_reveal_supplement_no_thanks_clicked', {
@@ -516,7 +207,7 @@ export const SupplementsStep = () => {
     next();
   }, [next, track, allItems.length, selectedCount]);
 
-  if (isCatalogLoading) {
+  if (isLoading) {
     return (
       <ProtocolStepLayout>
         <div className="flex items-center justify-center py-20">
@@ -570,8 +261,8 @@ export const SupplementsStep = () => {
                   key={item.actionId}
                   item={item}
                   quantity={getQuantity(item.actionId)}
-                  onIncrement={handleIncrement}
-                  onDecrement={handleDecrement}
+                  onIncrement={increment}
+                  onDecrement={decrement}
                   index={groupOffsets[groupIdx] + itemIdx}
                 />
               ))}
@@ -585,10 +276,10 @@ export const SupplementsStep = () => {
           <div className="flex items-center justify-between text-sm">
             <span className="text-secondary">Shipping</span>
             <span className="font-medium text-vermillion-900">
-              {isFree ? (
+              {shipping.isFree ? (
                 'FREE'
               ) : (
-                <NumberFlow prefix="$" value={shippingCents / 100} />
+                <NumberFlow prefix="$" value={shipping.shippingCents / 100} />
               )}
             </span>
           </div>
@@ -620,7 +311,7 @@ export const SupplementsStep = () => {
               )}
               <span className="text-base font-bold text-vermillion-900">
                 <NumberFlow
-                  value={totalWithShipping / 100}
+                  value={shipping.totalWithShipping / 100}
                   prefix="$"
                   format={{
                     minimumFractionDigits: 0,
@@ -643,7 +334,7 @@ export const SupplementsStep = () => {
           {!isCheckingOut && hasSelectedSupplements && (
             <span className="text-zinc-500">
               <NumberFlow
-                value={totalWithShipping / 100}
+                value={shipping.totalWithShipping / 100}
                 prefix="$"
                 format={{
                   minimumFractionDigits: 0,

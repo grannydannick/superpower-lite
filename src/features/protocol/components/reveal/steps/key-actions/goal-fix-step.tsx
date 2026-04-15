@@ -26,7 +26,7 @@ interface GoalFixStepProps {
 
 export const GoalFixStep = ({ goalIndex }: GoalFixStepProps) => {
   const { next, getGoal } = useProtocolStepperContext();
-  const getSupplementProduct = useSupplementProductLookup();
+  const { lookup: getSupplementProduct } = useSupplementProductLookup();
   const { committedActions } = useRevealBuilderStore();
   const goal = getGoal(goalIndex);
   const isPrimaryActionAdded = goal

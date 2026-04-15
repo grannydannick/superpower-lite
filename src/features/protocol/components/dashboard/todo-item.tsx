@@ -195,7 +195,7 @@ export const TodoItem = ({
   const isMobile = useIsMobile();
   const { track } = useAnalytics();
   const dialogOpenedAtRef = useRef<string | null>(null);
-  const getSupplementProduct = useSupplementProductLookup();
+  const { lookup: getSupplementProduct } = useSupplementProductLookup();
 
   const supplementProduct =
     action.content.type === 'supplement'

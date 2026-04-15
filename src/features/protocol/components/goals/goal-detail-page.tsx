@@ -371,7 +371,7 @@ const ActionsTab = ({
   primaryAction,
   additionalActions,
 }: ActionsTabProps) => {
-  const getSupplementProduct = useSupplementProductLookup();
+  const { lookup: getSupplementProduct } = useSupplementProductLookup();
 
   if (!primaryAction) {
     return (

@@ -24,7 +24,7 @@ export const GoalRecommendationsStep = ({
   goalIndex,
 }: GoalRecommendationsStepProps) => {
   const { next, getGoal } = useProtocolStepperContext();
-  const getSupplementProduct = useSupplementProductLookup();
+  const { lookup: getSupplementProduct } = useSupplementProductLookup();
   const { committedActions } = useRevealBuilderStore();
   const goal = getGoal(goalIndex);
   const hasAnyActionAdded = goal
