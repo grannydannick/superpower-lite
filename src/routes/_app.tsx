@@ -237,6 +237,7 @@ function AppRootComponent() {
     '/questionnaire',
     '/settings',
     '/protocol/reveal',
+    '/rx-subscriptions',
   ];
 
   let needsStripe = false;
