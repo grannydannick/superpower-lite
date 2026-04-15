@@ -539,19 +539,6 @@ function TimeSeriesChartSvg({
         </pattern>
       </defs>
 
-      {rangeStack.props && (
-        <g transform={rangeStack.props.transform}>
-          <RangeStack
-            range={rangeStack.props.range}
-            values={rangeStack.props.values}
-            height={rangeStack.props.height}
-            padding={rangeStack.props.padding}
-            dimensions={rangeStack.props.dimensions}
-            rangeExtensionFactor={rangeStack.props.rangeExtensionFactor}
-          />
-        </g>
-      )}
-
       {optimal.area && (
         <rect
           x={optimal.area.x}
@@ -575,6 +562,22 @@ function TimeSeriesChartSvg({
           strokeDasharray={line.strokeDasharray}
         />
       ))}
+
+      {/* Render RangeStack after the optimal dashed lines so the vertical
+          color bar sits on top — otherwise a thin low/high segment at a
+          range boundary gets painted over by the dashed line crossing it. */}
+      {rangeStack.props && (
+        <g transform={rangeStack.props.transform}>
+          <RangeStack
+            range={rangeStack.props.range}
+            values={rangeStack.props.values}
+            height={rangeStack.props.height}
+            padding={rangeStack.props.padding}
+            dimensions={rangeStack.props.dimensions}
+            rangeExtensionFactor={rangeStack.props.rangeExtensionFactor}
+          />
+        </g>
+      )}
 
       {optimal.label && (
         <text

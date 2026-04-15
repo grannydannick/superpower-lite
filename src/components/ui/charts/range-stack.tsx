@@ -13,6 +13,11 @@ const CHART_CONFIG = {
   RANGE_EXTENSION_FACTOR: 0.2,
   SEGMENT_GAP: 0.5,
   VERTICAL_WIDTH: 3,
+  // Smallest visible segment. When a status zone's natural height falls below
+  // this (e.g. a value just barely out-of-range producing a sliver of "low"),
+  // bump it up to the minimum so the zone remains legible. Overflow pixels
+  // are taken from the largest surviving segment.
+  MIN_SEGMENT_HEIGHT: 4,
 } as const;
 
 interface RangeSegment {
@@ -20,6 +25,33 @@ interface RangeSegment {
   height: number;
   color: string;
 }
+
+// Bumps any non-zero entry below minHeight up to minHeight, subtracting the
+// stolen pixels proportionally from the largest entries so total height is
+// preserved. Zero entries stay zero (that zone does not apply).
+const enforceMinHeight = (heights: number[], minHeight: number): number[] => {
+  const active = heights.map((h) => h > 0);
+  const needBump = heights.map((h, i) => active[i] && h < minHeight);
+  const bumpCount = needBump.filter(Boolean).length;
+  if (bumpCount === 0) return heights;
+
+  const deficit = needBump.reduce(
+    (sum, bump, i) => (bump ? sum + (minHeight - heights[i]) : sum),
+    0,
+  );
+
+  const donors = heights
+    .map((h, i) => ({ h, i }))
+    .filter(({ h, i }) => active[i] && !needBump[i] && h > minHeight);
+  const donorExcess = donors.reduce((sum, { h }) => sum + (h - minHeight), 0);
+
+  return heights.map((h, i) => {
+    if (needBump[i]) return minHeight;
+    if (!active[i] || donorExcess === 0) return h;
+    const excess = Math.max(0, h - minHeight);
+    return h - (deficit * excess) / donorExcess;
+  });
+};
 
 // Builds colored vertical segments for the range stack indicator bar.
 // Walks the chart dimension zones from top to bottom (high -> normal -> optimal -> normal -> low).
@@ -31,6 +63,7 @@ const getVerticalSegments = (
   svgHeight: number,
   padding: number,
   segmentGap: number,
+  minSegmentHeight: number,
 ): RangeSegment[] => {
   const segments: RangeSegment[] = [];
   const {
@@ -91,20 +124,24 @@ const getVerticalSegments = (
       });
     }
 
-    let currentY = padding;
-    ranges.forEach((range) => {
-      const fromY = getY(range.from);
-      const toY = getY(range.to);
-      const startY = Math.max(currentY, fromY) + segmentGap / 2;
-      const height = Math.max(0, toY - startY - segmentGap);
+    // Compute natural pixel heights, then enforce a minimum so status zones
+    // that exist (e.g. "low" for a value just below optimal) stay legible.
+    const rawHeights = ranges.map((range) =>
+      Math.max(0, getY(range.to) - getY(range.from) - segmentGap),
+    );
 
+    const adjustedHeights = enforceMinHeight(rawHeights, minSegmentHeight);
+
+    let currentY = padding + segmentGap / 2;
+    ranges.forEach((range, index) => {
+      const height = adjustedHeights[index];
       if (height > 0) {
         segments.push({
-          y: startY,
+          y: currentY,
           height,
           color: range.color,
         });
-        currentY = toY + segmentGap;
+        currentY += height + segmentGap;
       }
     });
   } else {
@@ -206,6 +243,7 @@ export const RangeStack = ({
     svgHeight,
     svgPadding,
     CHART_CONFIG.SEGMENT_GAP,
+    CHART_CONFIG.MIN_SEGMENT_HEIGHT,
   );
 
   if (!segments.length) return null;
