@@ -5,7 +5,6 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Body2, H2 } from '@/components/ui/typography';
-import { RxClinicianCallCta } from '@/features/protocol/components/rx-clinician-call-cta';
 import { cn } from '@/lib/utils';
 import type { Rx } from '@/types/api';
 import { getPrescriptionInfo } from '@/utils/prescription';
@@ -32,9 +31,6 @@ export const Faq = ({ prescription, className }: PrescriptionsFaqProps) => {
     >
       <div className="flex flex-col gap-6">
         <H2 className="tracking-tight">Frequently asked questions</H2>
-        <div className="hidden md:block">
-          <RxClinicianCallCta source="rx_pdp" />
-        </div>
       </div>
       <Accordion type="single" collapsible className="w-full">
         {faq.map(({ question, answer }) => (

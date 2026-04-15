@@ -26,6 +26,7 @@ import { Button } from '@/components/ui/button';
 import { ProgressiveImage } from '@/components/ui/progressive-image';
 import { Body1, Body2, Body3, H3, H4 } from '@/components/ui/typography';
 import { GHK_CU_CREAM, HCG, TRETINOIN } from '@/const';
+import { RxClinicianCallCta } from '@/features/protocol/components/rx-clinician-call-cta';
 import { cn } from '@/lib/utils';
 import type { Rx } from '@/types/api';
 import {
@@ -165,6 +166,8 @@ export const Header = ({
             onSelectedCodeChange={onBillingCodeChange}
             getStartedUrl={getStartedUrl}
           />
+
+          <RxClinicianCallCta source="rx_pdp" />
 
           <div className="mt-5 hidden flex-col lg:flex">
             <H4>FAQs</H4>
