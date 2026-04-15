@@ -107,7 +107,7 @@ export const Route = createFileRoute('/_app')({
       });
     }
 
-    if (user.subscribed !== true) {
+    if (user.subscribed !== true && onboarding?.task.status !== 'completed') {
       throw redirect({
         href: `${env.MARKETING_SITE_URL}/checkout`,
       });
