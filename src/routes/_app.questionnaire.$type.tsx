@@ -3,7 +3,7 @@ import {
   QuestionnaireResponse,
   QuestionnaireResponseItem,
 } from '@medplum/fhirtypes';
-import { createFileRoute, notFound } from '@tanstack/react-router';
+import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 import { zodValidator } from '@tanstack/zod-adapter';
 import { preload } from 'react-dom';
 import { z } from 'zod';
@@ -17,6 +17,7 @@ import {
   RxQuestionnaireName,
   isSymptomTracker,
 } from '@/const/questionnaire';
+import { getMarketplaceQueryOptions } from '@/features/marketplace/api/get-marketplace';
 import {
   ONBOARDING_QUESTIONNAIRE_NAMES,
   type OnboardingQuestionnaireName,
@@ -27,12 +28,39 @@ import { useQuestionnaireResponseController } from '@/features/questionnaires/ho
 import { pruneResponseItems } from '@/features/questionnaires/utils/prune-response-items';
 import { useUser } from '@/lib/auth';
 
+function isInitialRxQuestionnaire(type: string): boolean {
+  if (isSymptomTracker(type)) return false;
+  return RX_ASSESSMENTS.includes(type as any);
+}
+
 export const Route = createFileRoute('/_app/questionnaire/$type')({
   validateSearch: zodValidator(
     z.object({
       billingCode: z.string().trim().optional().catch(undefined),
     }),
   ),
+  beforeLoad: async ({ params, search, context }) => {
+    if (isInitialRxQuestionnaire(params.type) && !search.billingCode) {
+      const marketplace = await context.queryClient
+        .ensureQueryData(getMarketplaceQueryOptions())
+        .catch(() => null);
+
+      const rxItem = marketplace?.prescriptions.find((rx) =>
+        rx.url?.includes(params.type),
+      );
+
+      if (rxItem) {
+        toast('Please select a billing plan before continuing.');
+        throw redirect({
+          to: '/prescriptions/$id',
+          params: { id: rxItem.id },
+          replace: true,
+        });
+      }
+
+      throw notFound();
+    }
+  },
   loader: () => {
     preload('/onboarding/questionnaire/rx.webp', { as: 'image' });
     preload('/rx/identity.webp', { as: 'image' });
