@@ -201,6 +201,7 @@ const InLabSlotPicker = ({
             onSelectionChange={handleSelectionChange}
             selectedSlot={selectedSlot}
             selectedLocation={selectedLocation}
+            scheduledOnly
           />
         </div>
       </div>

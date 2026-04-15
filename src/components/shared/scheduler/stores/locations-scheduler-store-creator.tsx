@@ -16,6 +16,7 @@ export interface LocationsSchedulerProps {
   ) => void;
   selectedLocation?: PhlebotomyLocation | null;
   selectedSlot?: Slot | null;
+  scheduledOnly?: boolean;
 }
 
 export interface LocationsSchedulerStore extends LocationsSchedulerProps {
@@ -24,6 +25,7 @@ export interface LocationsSchedulerStore extends LocationsSchedulerProps {
   error: string | null;
   tz: string;
   postalCode: string | undefined;
+  scheduledOnly: boolean;
   fetchLocations: (postalCode: string) => Promise<void>;
   selectedDay: TZDate | undefined;
   updateSelectedDay: (day: TZDate | undefined) => void;
@@ -45,6 +47,7 @@ export const locationsSchedulerStoreCreator = (
     onSelectionChange: initProps.onSelectionChange,
     selectedLocation: initProps.selectedLocation ?? null,
     selectedSlot: initProps.selectedSlot ?? null,
+    scheduledOnly: initProps.scheduledOnly ?? false,
     locations: [],
     loading: false,
     error: null,
@@ -62,11 +65,15 @@ export const locationsSchedulerStoreCreator = (
 
       state.onSelectionChange?.(null, null, state.tz);
 
-      set({ loading: true, error: null, postalCode });
+      set({ loading: true, error: null, postalCode, locations: [] });
 
       try {
+        const scheduledOnly = get().scheduledOnly;
+        const scheduledOnlyParam = scheduledOnly ? '&scheduledOnly=true' : '';
         const response: { locations: PhlebotomyLocation[]; timezone?: string } =
-          await api.get(`${URL}?postalCode=${postalCode}&start=${start}`);
+          await api.get(
+            `${URL}?postalCode=${postalCode}&start=${start}${scheduledOnlyParam}`,
+          );
 
         const tz = resolveTimeZone(response.timezone ?? get().tz);
 

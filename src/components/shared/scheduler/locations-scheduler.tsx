@@ -85,6 +85,7 @@ interface Props {
   selectedLocation?: PhlebotomyLocation | null;
   selectedSlot?: Slot | null;
   className?: string;
+  scheduledOnly?: boolean;
 }
 
 export function LocationsScheduler(props: Props) {
@@ -94,6 +95,7 @@ export function LocationsScheduler(props: Props) {
     selectedLocation,
     selectedSlot,
     className,
+    scheduledOnly,
   } = props;
 
   if (postalCode.length !== 5) return null;
@@ -103,6 +105,7 @@ export function LocationsScheduler(props: Props) {
       onSelectionChange={onSelectionChange}
       selectedLocation={selectedLocation}
       selectedSlot={selectedSlot}
+      scheduledOnly={scheduledOnly}
     >
       <LocationsSchedulerConsumer
         postalCode={postalCode}
