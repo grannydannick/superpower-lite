@@ -329,7 +329,7 @@ function SearchContent({
             value={inputValue}
             onChange={(e) => handleInputChange(e.target.value)}
             placeholder="Search..."
-            className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-zinc-400"
+            className="min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-zinc-400"
             ref={(el) => el?.focus()}
           />
           {inputValue.length > 0 && (

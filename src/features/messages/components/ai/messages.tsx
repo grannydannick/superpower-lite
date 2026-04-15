@@ -400,7 +400,7 @@ function PureMessages({
                   duration: 0.5,
                   ease: [0.25, 0.1, 0.25, 1],
                 }}
-                className="flex min-h-full flex-col items-center justify-center gap-6 overflow-hidden"
+                className="flex min-h-full flex-col items-center justify-center gap-6"
               >
                 {welcomeContent}
               </m.div>
