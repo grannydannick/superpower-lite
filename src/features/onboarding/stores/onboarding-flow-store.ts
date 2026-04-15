@@ -10,6 +10,7 @@ import { type StepId } from '../config/step-config';
  * - `validSteps` is recomputed from fresh query-derived context.
  * - `currentStep` is persisted so users can resume after hard reload.
  * - `syncFlow` reconciles those two worlds.
+ * - `hasSeenGiftUpsell` is a one-time dismissal flag.
  *
  * Reconciliation rules:
  * - Same user + still-valid step -> resume previous step.
@@ -23,6 +24,9 @@ interface OnboardingFlowStore {
   isInitialized: boolean;
   isLastStep: boolean;
   isFirstStep: boolean;
+  hasSeenGiftUpsell: boolean;
+  /** True while waiting for an external redirect (e.g. gift checkout) to complete. */
+  isExternalRedirectPending: boolean;
 
   // Actions
   /** Canonical reconciliation entrypoint used by flow hooks. */
@@ -30,6 +34,9 @@ interface OnboardingFlowStore {
   next: () => void;
   prev: () => void;
   goTo: (stepId: StepId) => void;
+  dismissGiftUpsell: () => void;
+  /** Call before window.location.assign() to prevent StepRenderer from flashing the next step. */
+  beginExternalRedirect: () => void;
   /** Full reset used when flow is completed or session is cleared. */
   reset: () => void;
 }
@@ -54,6 +61,8 @@ export const useOnboardingFlowStore = create<OnboardingFlowStore>()(
       isInitialized: false,
       isLastStep: false,
       isFirstStep: false,
+      hasSeenGiftUpsell: false,
+      isExternalRedirectPending: false,
 
       // Single reconciliation path used by both onboarding/intake hooks.
       syncFlow: (steps, userId) => {
@@ -83,11 +92,17 @@ export const useOnboardingFlowStore = create<OnboardingFlowStore>()(
           !userChanged && currentStep !== null && steps.includes(currentStep)
             ? currentStep
             : (steps[0] ?? null);
+
+        // Reset the gift upsell flag when switching between two distinct users on
+        // the same device, so each user gets their own chance to see it.
+        const switchingUsers = userChanged && !!userId && !!currentUserId;
+
         set({
           validSteps: steps,
           currentStep: resumeStep,
           userId,
           isInitialized: true,
+          ...(switchingUsers ? { hasSeenGiftUpsell: false } : {}),
           ...computeStepFlags(resumeStep, steps),
         });
       },
@@ -131,6 +146,12 @@ export const useOnboardingFlowStore = create<OnboardingFlowStore>()(
         }
       },
 
+      dismissGiftUpsell: () => set({ hasSeenGiftUpsell: true }),
+
+      beginExternalRedirect: () => {
+        set({ isExternalRedirectPending: true });
+      },
+
       reset: () =>
         set({
           currentStep: null,
@@ -139,6 +160,8 @@ export const useOnboardingFlowStore = create<OnboardingFlowStore>()(
           isInitialized: false,
           isLastStep: false,
           isFirstStep: false,
+          hasSeenGiftUpsell: false,
+          isExternalRedirectPending: false,
         }),
     }),
     {
@@ -148,6 +171,7 @@ export const useOnboardingFlowStore = create<OnboardingFlowStore>()(
       partialize: (state) => ({
         currentStep: state.currentStep,
         userId: state.userId,
+        hasSeenGiftUpsell: state.hasSeenGiftUpsell,
       }),
     },
   ),

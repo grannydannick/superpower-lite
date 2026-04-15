@@ -135,6 +135,122 @@ describe('useOnboardingFlowStore', () => {
       expect(result.current.currentStep).toBe(STEP_IDS.PHLEBOTOMY_BOOKING);
       expect(result.current.validSteps).toEqual([STEP_IDS.PHLEBOTOMY_BOOKING]);
     });
+
+    it('keeps a persisted later step when gift-upsell is prepended', () => {
+      const { result } = renderHook(() => useOnboardingFlowStore());
+
+      act(() => {
+        result.current.syncFlow(
+          [STEP_IDS.UPDATE_INFO, STEP_IDS.PHLEBOTOMY_BOOKING],
+          TEST_USER_ID,
+        );
+      });
+      act(() => {
+        result.current.goTo(STEP_IDS.PHLEBOTOMY_BOOKING);
+      });
+
+      act(() => {
+        result.current.syncFlow(
+          [
+            STEP_IDS.GIFT_UPSELL,
+            STEP_IDS.UPDATE_INFO,
+            STEP_IDS.PHLEBOTOMY_BOOKING,
+          ],
+          TEST_USER_ID,
+        );
+      });
+
+      expect(result.current.currentStep).toBe(STEP_IDS.PHLEBOTOMY_BOOKING);
+    });
+  });
+
+  describe('dismissGiftUpsell()', () => {
+    it('marks gift-upsell as seen for the current user', () => {
+      const { result } = renderHook(() => useOnboardingFlowStore());
+
+      act(() => {
+        result.current.syncFlow([STEP_IDS.GIFT_UPSELL], TEST_USER_ID);
+      });
+      act(() => {
+        result.current.dismissGiftUpsell();
+      });
+
+      expect(result.current.hasSeenGiftUpsell).toBe(true);
+    });
+
+    it('clears the seen flag on reset so the next user starts fresh', () => {
+      const { result } = renderHook(() => useOnboardingFlowStore());
+
+      act(() => {
+        result.current.syncFlow([STEP_IDS.GIFT_UPSELL], TEST_USER_ID);
+      });
+      act(() => {
+        result.current.dismissGiftUpsell();
+      });
+      act(() => {
+        result.current.reset();
+      });
+
+      expect(result.current.hasSeenGiftUpsell).toBe(false);
+    });
+
+    it('clears the seen flag when a new user logs in after reset', () => {
+      const { result } = renderHook(() => useOnboardingFlowStore());
+
+      // User A dismisses the upsell then logs out
+      act(() => {
+        result.current.syncFlow([STEP_IDS.GIFT_UPSELL], 'user-a');
+      });
+      act(() => {
+        result.current.dismissGiftUpsell();
+      });
+      act(() => {
+        result.current.reset();
+      });
+
+      // User B logs in — userId transitions from null, so switchingUsers would
+      // be false without the reset() fix; the flag must still be cleared.
+      act(() => {
+        result.current.syncFlow([STEP_IDS.GIFT_UPSELL], 'user-b');
+      });
+
+      expect(result.current.hasSeenGiftUpsell).toBe(false);
+    });
+
+    it('resets the seen flag when a different user logs in on the same device', () => {
+      const { result } = renderHook(() => useOnboardingFlowStore());
+
+      act(() => {
+        result.current.syncFlow([STEP_IDS.GIFT_UPSELL], TEST_USER_ID);
+      });
+      act(() => {
+        result.current.dismissGiftUpsell();
+      });
+
+      expect(result.current.hasSeenGiftUpsell).toBe(true);
+
+      act(() => {
+        result.current.syncFlow([STEP_IDS.GIFT_UPSELL], 'different-user-id');
+      });
+
+      expect(result.current.hasSeenGiftUpsell).toBe(false);
+    });
+
+    it('preserves the seen flag when the same user re-syncs', () => {
+      const { result } = renderHook(() => useOnboardingFlowStore());
+
+      act(() => {
+        result.current.syncFlow([STEP_IDS.GIFT_UPSELL], TEST_USER_ID);
+      });
+      act(() => {
+        result.current.dismissGiftUpsell();
+      });
+      act(() => {
+        result.current.syncFlow([STEP_IDS.PHLEBOTOMY_BOOKING], TEST_USER_ID);
+      });
+
+      expect(result.current.hasSeenGiftUpsell).toBe(true);
+    });
   });
 
   describe('next()', () => {

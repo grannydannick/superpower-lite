@@ -19,9 +19,65 @@ const baseContext: FlowContext = {
   hasFatigueService: true,
   hasHormoneService: true,
   hasClaimedBenefits: false,
+  hasSeenGiftUpsell: false,
 };
 
 describe('getValidSteps', () => {
+  describe('welcome step', () => {
+    it('includes welcome when intake has not started', () => {
+      const ctx = { ...baseContext, hasStartedIntake: false };
+      const steps = getValidSteps(ctx);
+      expect(steps).toContain(STEP_IDS.WELCOME);
+    });
+
+    it('excludes welcome when intake has started', () => {
+      const ctx = { ...baseContext, hasStartedIntake: true };
+      const steps = getValidSteps(ctx);
+      expect(steps).not.toContain(STEP_IDS.WELCOME);
+    });
+
+    it('is always the first step when shown', () => {
+      const ctx = { ...baseContext, hasStartedIntake: false };
+      const steps = getValidSteps(ctx);
+      expect(steps[0]).toBe(STEP_IDS.WELCOME);
+    });
+  });
+
+  describe('gift-upsell step', () => {
+    it('includes gift-upsell when hasSeenGiftUpsell is false and intake not started', () => {
+      const ctx = {
+        ...baseContext,
+        hasSeenGiftUpsell: false,
+        hasStartedIntake: false,
+      };
+      const steps = getValidSteps(ctx);
+      expect(steps).toContain(STEP_IDS.GIFT_UPSELL);
+    });
+
+    it('excludes gift-upsell when hasSeenGiftUpsell is true', () => {
+      const ctx = { ...baseContext, hasSeenGiftUpsell: true };
+      const steps = getValidSteps(ctx);
+      expect(steps).not.toContain(STEP_IDS.GIFT_UPSELL);
+    });
+
+    it('excludes gift-upsell when intake has started', () => {
+      const ctx = { ...baseContext, hasStartedIntake: true };
+      const steps = getValidSteps(ctx);
+      expect(steps).not.toContain(STEP_IDS.GIFT_UPSELL);
+    });
+
+    it('comes after welcome when shown', () => {
+      const ctx = {
+        ...baseContext,
+        hasSeenGiftUpsell: false,
+        hasStartedIntake: false,
+      };
+      const steps = getValidSteps(ctx);
+      expect(steps[0]).toBe(STEP_IDS.WELCOME);
+      expect(steps[1]).toBe(STEP_IDS.GIFT_UPSELL);
+    });
+  });
+
   describe('introduction step', () => {
     it('includes introduction for fresh user with no intake started', () => {
       const ctx = {
@@ -82,10 +138,12 @@ describe('getValidSteps', () => {
         ...baseContext,
         userInfoCompleted: true,
         hasStartedIntake: false,
+        hasSeenGiftUpsell: true,
       };
       const steps = getValidSteps(ctx);
-      expect(steps[0]).toBe(STEP_IDS.HEARD_ABOUT_US);
-      expect(steps[1]).toBe(STEP_IDS.ADVANCED_UPGRADE);
+      expect(steps[0]).toBe(STEP_IDS.WELCOME);
+      expect(steps[1]).toBe(STEP_IDS.HEARD_ABOUT_US);
+      expect(steps[2]).toBe(STEP_IDS.ADVANCED_UPGRADE);
     });
 
     it('excludes advanced-upgrade when intake is started', () => {
@@ -136,6 +194,7 @@ describe('getValidSteps', () => {
       const ctx = {
         ...baseContext,
         hasStartedIntake: false,
+        hasSeenGiftUpsell: true,
         rxQuestionnaireContext: {
           status: 'required' as const,
           questionnaireName: 'rx-assessment-metabolic',
@@ -143,8 +202,9 @@ describe('getValidSteps', () => {
       };
       const steps = getValidSteps(ctx);
 
-      expect(steps[0]).toBe(STEP_IDS.UPDATE_INFO);
-      expect(steps[1]).toBe(STEP_IDS.HEARD_ABOUT_US);
+      expect(steps[0]).toBe(STEP_IDS.WELCOME);
+      expect(steps[1]).toBe(STEP_IDS.UPDATE_INFO);
+      expect(steps[2]).toBe(STEP_IDS.HEARD_ABOUT_US);
       expect(steps).toContain(STEP_IDS.INTRODUCTION);
       expect(steps).toContain(STEP_IDS.DIGITAL_TWIN);
 
@@ -202,11 +262,13 @@ describe('getValidSteps', () => {
       const ctx = {
         ...baseContext,
         userInfoCompleted: false,
+        hasSeenGiftUpsell: true,
       };
       const steps = getValidSteps(ctx);
-      expect(steps[0]).toBe(STEP_IDS.UPDATE_INFO);
-      expect(steps[1]).toBe(STEP_IDS.HEARD_ABOUT_US);
-      expect(steps[2]).toBe(STEP_IDS.ADVANCED_UPGRADE);
+      expect(steps[0]).toBe(STEP_IDS.WELCOME);
+      expect(steps[1]).toBe(STEP_IDS.UPDATE_INFO);
+      expect(steps[2]).toBe(STEP_IDS.HEARD_ABOUT_US);
+      expect(steps[3]).toBe(STEP_IDS.ADVANCED_UPGRADE);
     });
 
     it('keeps heard-about-us when user info is completed', () => {
@@ -404,6 +466,8 @@ describe('getValidSteps', () => {
         userGender: 'female',
       });
 
+      const welcomeIdx = steps.indexOf(STEP_IDS.WELCOME);
+      const giftUpsellIdx = steps.indexOf(STEP_IDS.GIFT_UPSELL);
       const updateInfoIdx = steps.indexOf(STEP_IDS.UPDATE_INFO);
       const introductionIdx = steps.indexOf(STEP_IDS.INTRODUCTION);
       const digitalTwinIdx = steps.indexOf(STEP_IDS.DIGITAL_TWIN);
@@ -422,6 +486,9 @@ describe('getValidSteps', () => {
       const addOnIdx = steps.indexOf(STEP_IDS.ADD_ON_PANELS);
       const phlebIdx = steps.indexOf(STEP_IDS.PHLEBOTOMY_BOOKING);
 
+      expect(welcomeIdx).toBe(0);
+      expect(welcomeIdx).toBeLessThan(giftUpsellIdx);
+      expect(giftUpsellIdx).toBeLessThan(updateInfoIdx);
       expect(updateInfoIdx).toBeLessThan(heardAboutIdx);
       expect(heardAboutIdx).toBeLessThan(advancedIdx);
       expect(advancedIdx).toBeLessThan(introductionIdx);
@@ -460,6 +527,7 @@ describe('getValidSteps', () => {
         hasFatigueService: false,
         hasHormoneService: false,
         hasClaimedBenefits: true,
+        hasSeenGiftUpsell: true,
       };
       const steps = getValidSteps(ctx);
 

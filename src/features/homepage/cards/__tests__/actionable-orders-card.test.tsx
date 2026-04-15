@@ -22,11 +22,19 @@ vi.mock('@tanstack/react-query', async () => {
   const actual = await vi.importActual<typeof import('@tanstack/react-query')>(
     '@tanstack/react-query',
   );
+  return {
+    ...actual,
+    useSuspenseQuery: vi.fn(),
+  };
   return { ...actual, useSuspenseQuery: vi.fn() };
 });
 
 vi.mock('@/features/orders/api/credits', () => ({
   getCreditsQueryOptions: vi.fn(() => ({ queryKey: ['credits', 'default'] })),
+}));
+
+vi.mock('@/features/orders/api/get-gifts', () => ({
+  getGiftsQueryOptions: vi.fn(() => ({ queryKey: ['gifts'] })),
 }));
 
 vi.mock('@/features/redraw/api/get-redraws', () => ({
@@ -46,6 +54,8 @@ describe('ActionableOrdersCard', () => {
           return { data: { credits: [] } } as ReturnType<
             typeof useSuspenseQuery
           >;
+        else if (queryKey[0] == 'gifts')
+          return { data: { gifts: [] } } as ReturnType<typeof useSuspenseQuery>;
         return { data: { redraws: [] } } as ReturnType<typeof useSuspenseQuery>;
       },
     );
@@ -100,5 +110,42 @@ describe('ActionableOrdersCard', () => {
       to: '/recollection/$serviceRequestId',
       params: { serviceRequestId: 'sr-redraw-1' },
     });
+  });
+
+  it('renders a gift action card when there are unsent gifts', async () => {
+    useSuspenseQueryMock.mockReturnValue({
+      data: {
+        gifts: [
+          { id: 'gift-1', sentGiftAt: null },
+          { id: 'gift-2', sentGiftAt: '2026-01-01T00:00:00Z' },
+        ],
+      },
+    } as any);
+
+    render(<ActionableOrdersCard />);
+
+    await userEvent.click(
+      screen.getByRole('button', { name: /you have 1 task/i }),
+    );
+
+    expect(screen.getByText('Send your gift')).toBeInTheDocument();
+  });
+
+  it('does not render a gift action card when all gifts are sent', async () => {
+    useSuspenseQueryMock.mockReturnValue({
+      data: {
+        gifts: [{ id: 'gift-1', sentGiftAt: '2026-01-01T00:00:00Z' }],
+      },
+    } as any);
+
+    render(<ActionableOrdersCard />);
+
+    expect(screen.queryByText('Send your gift')).not.toBeInTheDocument();
+  });
+
+  it('does not render a gift action card when there are no gifts', () => {
+    render(<ActionableOrdersCard />);
+
+    expect(screen.queryByText('Send your gift')).not.toBeInTheDocument();
   });
 });

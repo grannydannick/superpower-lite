@@ -4,9 +4,11 @@ import React from 'react';
 import {
   DigitalTwinSequence,
   FinishTwinSequence,
+  GiftUpsellSequence,
   HeardAboutUsSequence,
   IntroductionSequence,
   UpsellSequence,
+  WelcomeSequence,
 } from '@/features/onboarding/components/sequences';
 import * as QuestionnaireSequence from '@/features/onboarding/components/sequences/questionnaire';
 import * as Steps from '@/features/onboarding/components/steps';
@@ -15,9 +17,20 @@ import { useOnboardingFlowStore } from '@/features/onboarding/stores/onboarding-
 
 export const StepRenderer = () => {
   const currentStep = useOnboardingFlowStore((state) => state.currentStep);
+  const isExternalRedirectPending = useOnboardingFlowStore(
+    (state) => state.isExternalRedirectPending,
+  );
+
+  if (isExternalRedirectPending) return null;
 
   let content: React.ReactElement;
   switch (currentStep) {
+    case STEP_IDS.WELCOME:
+      content = <WelcomeSequence />;
+      break;
+    case STEP_IDS.GIFT_UPSELL:
+      content = <GiftUpsellSequence />;
+      break;
     case STEP_IDS.UPDATE_INFO:
       content = <Steps.UpdateInfoStep />;
       break;

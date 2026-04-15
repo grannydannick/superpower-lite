@@ -2,6 +2,8 @@ import { type RxQuestionnaireContext } from '../utils/get-rx-questionnaire-conte
 
 // Step IDs - single source of truth for all step identifiers
 export const STEP_IDS = {
+  WELCOME: 'welcome',
+  GIFT_UPSELL: 'gift-upsell',
   UPDATE_INFO: 'update-info',
   INTRODUCTION: 'introduction',
   DIGITAL_TWIN: 'digital-twin',
@@ -48,6 +50,7 @@ export interface FlowContext {
 
   // Resume state
   hasStartedIntake: boolean; // any questionnaire in-progress/stopped/completed
+  hasSeenGiftUpsell: boolean;
 
   /**
    * Rx intake status derived from QuestionnaireResponses.
@@ -75,6 +78,14 @@ interface StepConfig {
 // Step definitions with visibility predicates
 // Order matters - this is the default step order
 const STEP_CONFIGS: StepConfig[] = [
+  {
+    id: STEP_IDS.WELCOME,
+    shouldShow: (ctx) => !ctx.hasStartedIntake,
+  },
+  {
+    id: STEP_IDS.GIFT_UPSELL,
+    shouldShow: (ctx) => !ctx.hasSeenGiftUpsell && !ctx.hasStartedIntake,
+  },
   {
     id: STEP_IDS.UPDATE_INFO,
     shouldShow: (ctx) => !ctx.userInfoCompleted,

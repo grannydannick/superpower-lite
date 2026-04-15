@@ -105,7 +105,7 @@ const familyRiskBannerConfig: CardConfig = {
 };
 
 /**
- * Card configuration for Referral card
+ * Card configuration for Referral + Gifting card
  */
 const referralCardConfig: CardConfig = {
   id: 'referral',

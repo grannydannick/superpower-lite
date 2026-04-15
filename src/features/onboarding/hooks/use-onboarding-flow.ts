@@ -59,6 +59,9 @@ const hasService = (services: { name: string }[] | undefined, name: string) => {
  */
 export const useOnboardingFlow = () => {
   const isInitialized = useOnboardingFlowStore((state) => state.isInitialized);
+  const hasSeenGiftUpsell = useOnboardingFlowStore(
+    (state) => state.hasSeenGiftUpsell,
+  );
 
   // Fetch user profile data
   const { data: user, isLoading: isUserLoading } = useUser();
@@ -206,6 +209,7 @@ export const useOnboardingFlow = () => {
       userHasOrganAge,
       baselineCreditsCount,
       hasStartedIntake,
+      hasSeenGiftUpsell,
       rxQuestionnaireContext,
       hasOrganAgeService,
       hasFatigueService,
@@ -219,6 +223,7 @@ export const useOnboardingFlow = () => {
     creditsData,
     addOnServices,
     claimedBenefitsData,
+    hasSeenGiftUpsell,
   ]);
 
   const userId = user?.id ?? '';
