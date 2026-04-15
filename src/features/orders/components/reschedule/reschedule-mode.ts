@@ -1,1 +1,6 @@
-export type RescheduleMode = 'default' | 'cancel' | 'reschedule';
+export type RescheduleMode =
+  | 'default'
+  | 'cancel'
+  | 'reschedule'
+  | 'reschedule-confirm'
+  | 'reschedule-success';

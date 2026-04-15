@@ -21,7 +21,7 @@ export function RescheduleDetails({
   requestGroup: RequestGroup;
   setMode: Dispatch<SetStateAction<RescheduleMode>>;
 }) {
-  const { canManageAppointment } = useAppointmentManagement({
+  const { canReschedule, canCancel } = useAppointmentManagement({
     requestGroup,
   });
 
@@ -53,48 +53,54 @@ export function RescheduleDetails({
               </H3>
               <StatusDisplay requestGroup={requestGroup} />
             </div>
-            {canManageAppointment ? (
+            {canReschedule || canCancel ? (
               <div className="flex flex-col gap-2 md:flex-row md:items-center">
-                <button
-                  className="flex w-full items-center justify-between rounded-xl border px-3 py-2"
-                  type="button"
-                  onClick={() => setMode('reschedule')}
-                >
-                  <div className="flex flex-col items-start gap-1.5">
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="size-4 text-secondary" />
-                      <Body2 className="text-secondary">Reschedule test</Body2>
+                {canReschedule ? (
+                  <button
+                    className="flex w-full items-center justify-between rounded-xl border px-3 py-2"
+                    type="button"
+                    onClick={() => setMode('reschedule')}
+                  >
+                    <div className="flex flex-col items-start gap-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <Calendar className="size-4 text-secondary" />
+                        <Body2 className="text-secondary">
+                          Reschedule test
+                        </Body2>
+                      </div>
+                      {requestGroup.startTimestamp ? (
+                        <Body1>
+                          {format(
+                            new Date(requestGroup.startTimestamp),
+                            'MMM do, yyyy',
+                          )}
+                        </Body1>
+                      ) : (
+                        <Body1>Walk-In</Body1>
+                      )}
                     </div>
-                    {requestGroup.startTimestamp ? (
-                      <Body1>
-                        {format(
-                          new Date(requestGroup.startTimestamp),
-                          'MMM do, yyyy',
-                        )}
-                      </Body1>
-                    ) : (
-                      <Body1>Walk-In</Body1>
-                    )}
-                  </div>
-                  <ChevronRight className="size-4 text-secondary" />
-                </button>
+                    <ChevronRight className="size-4 text-secondary" />
+                  </button>
+                ) : null}
 
-                <button
-                  className="flex w-full items-center justify-between rounded-xl border px-3 py-2"
-                  type="button"
-                  onClick={() => setMode('cancel')}
-                >
-                  <div className="flex flex-col items-start gap-1.5">
-                    <div className="flex items-center gap-1.5">
-                      <CalendarX className="size-4 text-secondary" />
-                      <Body2 className="text-secondary">
-                        Cancel appointment
-                      </Body2>
+                {canCancel ? (
+                  <button
+                    className="flex w-full items-center justify-between rounded-xl border px-3 py-2"
+                    type="button"
+                    onClick={() => setMode('cancel')}
+                  >
+                    <div className="flex flex-col items-start gap-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <CalendarX className="size-4 text-secondary" />
+                        <Body2 className="text-secondary">
+                          Cancel appointment
+                        </Body2>
+                      </div>
+                      <Body1>Cancel</Body1>
                     </div>
-                    <Body1>Cancel</Body1>
-                  </div>
-                  <ChevronRight className="size-4 text-secondary" />
-                </button>
+                    <ChevronRight className="size-4 text-secondary" />
+                  </button>
+                ) : null}
               </div>
             ) : null}
           </div>

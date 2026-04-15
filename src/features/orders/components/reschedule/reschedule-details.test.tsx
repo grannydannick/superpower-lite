@@ -10,7 +10,8 @@ import { RescheduleDetails } from './reschedule-details';
 
 vi.mock('../../hooks/use-appointment-management', () => ({
   useAppointmentManagement: vi.fn(() => ({
-    canManageAppointment: false,
+    canReschedule: false,
+    canCancel: false,
   })),
 }));
 
@@ -48,7 +49,8 @@ describe('RescheduleDetails', () => {
   it('uses the normal order view when redraw is not scheduled', async () => {
     const setMode = vi.fn();
     useAppointmentManagementMock.mockReturnValue({
-      canManageAppointment: true,
+      canReschedule: true,
+      canCancel: true,
     });
 
     render(

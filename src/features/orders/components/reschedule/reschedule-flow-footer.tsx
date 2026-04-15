@@ -1,12 +1,12 @@
-import { sleep } from '@medplum/core';
 import { useNavigate } from '@tanstack/react-router';
 import React, { Dispatch, SetStateAction, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { toast } from '@/components/ui/sonner';
 import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner';
-import { useUpdateOrder } from '@/features/orders/api';
+import { useAdjustOrder, useUpdateOrder } from '@/features/orders/api';
 import { cn } from '@/lib/utils';
-import { RequestGroup } from '@/types/api';
+import { PhlebotomyLocation, RequestGroup, Slot } from '@/types/api';
 
 import { RescheduleMode } from './reschedule-mode';
 
@@ -14,37 +14,55 @@ export const HealthcareServiceRescheduleFooter = ({
   mode,
   setMode,
   requestGroup,
+  selectedSlot,
+  selectedLocation,
 }: {
   mode: RescheduleMode;
   setMode: Dispatch<SetStateAction<RescheduleMode>>;
   requestGroup: RequestGroup;
+  selectedSlot: Slot | null;
+  selectedLocation: PhlebotomyLocation | null;
 }) => {
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
 
   const updateOrderMutation = useUpdateOrder({});
+  const adjustOrderMutation = useAdjustOrder({});
 
-  const handleConfirm = async () => {
+  const handleCancelConfirm = async () => {
     await updateOrderMutation.mutateAsync({
       orderId: requestGroup.id,
       data: { status: 'revoked' },
     });
 
-    if (mode === 'cancel') {
-      // NOTE: do not add ?tab=orders here because we might hit a case where we would immidiately redirect
-      // user but credit wouldnt be restored yet
-      // I tried to approach this with waitUntil (draft order exists) but what if it was regular cancellation without credit?
-      // if u find anything smarter - open PR
-      void navigate({ to: '/marketplace' });
+    void navigate({ to: '/marketplace' });
+  };
+
+  const handleRescheduleConfirm = async () => {
+    if (!selectedSlot) return;
+
+    if (!selectedLocation?.address) {
+      toast.error('No address available for appointment');
+      return;
     }
 
-    if (mode === 'reschedule') {
-      // hack to make sure all credits are stored before moving to scheduling again
-      setIsProcessing(true);
-      await sleep(3000);
+    const address = selectedLocation.address;
+
+    setIsProcessing(true);
+
+    try {
+      await adjustOrderMutation.mutateAsync({
+        data: {
+          orderIds: requestGroup.orders.map((order) => order.id),
+          startTime: selectedSlot.start,
+          endTime: selectedSlot.end,
+          address,
+        },
+      });
+
+      setMode('reschedule-success');
+    } finally {
       setIsProcessing(false);
-      void navigate({ to: '/schedule' });
-      return;
     }
   };
 
@@ -65,10 +83,10 @@ export const HealthcareServiceRescheduleFooter = ({
           </Button>
           <Button
             className="w-full md:w-auto"
-            onClick={handleConfirm}
-            disabled={updateOrderMutation.isPending || isProcessing}
+            onClick={handleCancelConfirm}
+            disabled={updateOrderMutation.isPending}
           >
-            {updateOrderMutation.isPending || isProcessing ? (
+            {updateOrderMutation.isPending ? (
               <TransactionSpinner size="sm" />
             ) : (
               'Confirm cancellation'
@@ -84,20 +102,48 @@ export const HealthcareServiceRescheduleFooter = ({
             className="w-full md:w-auto"
             onClick={() => setMode('default')}
           >
-            Cancel
+            Back
           </Button>
           <Button
             className="w-full md:w-auto"
-            onClick={handleConfirm}
-            disabled={updateOrderMutation.isPending || isProcessing}
+            onClick={() => setMode('reschedule-confirm')}
+            disabled={!selectedSlot}
           >
-            {updateOrderMutation.isPending || isProcessing ? (
+            Continue
+          </Button>
+        </>
+      ) : null}
+
+      {mode === 'reschedule-confirm' ? (
+        <>
+          <Button
+            variant="outline"
+            className="w-full md:w-auto"
+            onClick={() => setMode('reschedule')}
+          >
+            Back
+          </Button>
+          <Button
+            className="w-full md:w-auto"
+            onClick={handleRescheduleConfirm}
+            disabled={adjustOrderMutation.isPending || isProcessing}
+          >
+            {adjustOrderMutation.isPending || isProcessing ? (
               <TransactionSpinner size="sm" />
             ) : (
               'Confirm reschedule'
             )}
           </Button>
         </>
+      ) : null}
+
+      {mode === 'reschedule-success' ? (
+        <Button
+          className="w-full md:w-auto"
+          onClick={() => void navigate({ to: '/orders' })}
+        >
+          Back to orders
+        </Button>
       ) : null}
     </div>
   );

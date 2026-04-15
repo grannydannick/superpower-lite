@@ -1,3 +1,4 @@
+import { GRAIL_GALLERI_MULTI_CANCER_TEST } from '@/const';
 import { useAuthorization } from '@/lib/authorization';
 import { OrderStatus, RequestGroup } from '@/types/api';
 
@@ -20,11 +21,20 @@ export const useAppointmentManagement = ({
   const { checkAdminActorAccess } = useAuthorization();
   const isAdminActor = checkAdminActorAccess();
 
-  const canManageAppointment =
-    (!isPastAppointment && !isRevokedOrCompleted && hasAppointmentType) ||
-    isAdminActor;
+  const canManage =
+    !isPastAppointment && !isRevokedOrCompleted && hasAppointmentType;
+
+  const isCancerAtHome =
+    requestGroup.collectionMethod === 'AT_HOME' &&
+    requestGroup.orders.some(
+      (order) => order.serviceName === GRAIL_GALLERI_MULTI_CANCER_TEST,
+    );
+
+  const canReschedule = canManage && !isCancerAtHome;
+  const canCancel = canManage || isAdminActor;
 
   return {
-    canManageAppointment,
+    canReschedule,
+    canCancel,
   };
 };
