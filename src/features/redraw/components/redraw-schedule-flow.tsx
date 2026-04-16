@@ -124,7 +124,9 @@ const RedrawScheduleFlowContent = ({
                 <H2>Select a time & location for your visit</H2>
                 <Body1 className="text-zinc-500">{instructions}</Body1>
               </div>
-              {collectionMethod === 'IN_LAB' ? <InLabScheduler /> : null}
+              {collectionMethod === 'IN_LAB' ? (
+                <InLabScheduler scheduledOnly />
+              ) : null}
               {collectionMethod === 'AT_HOME' ? <AtHomeScheduler /> : null}
             </div>
 

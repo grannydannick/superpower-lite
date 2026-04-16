@@ -8,7 +8,11 @@ import { PhlebotomyLocation, Slot } from '@/types/api';
 
 import { useScheduleStore } from '../../stores/schedule-store';
 
-export const InLabScheduler = () => {
+type InLabSchedulerProps = {
+  scheduledOnly?: boolean;
+};
+
+export const InLabScheduler = ({ scheduledOnly }: InLabSchedulerProps = {}) => {
   const { data: user } = useUser();
 
   const { slot, location, updateSlot, updateLocation, updateTz } =
@@ -56,6 +60,7 @@ export const InLabScheduler = () => {
           onSelectionChange={handleSelectionChange}
           selectedSlot={slot}
           selectedLocation={location}
+          scheduledOnly={scheduledOnly}
         />
       </div>
     </div>
