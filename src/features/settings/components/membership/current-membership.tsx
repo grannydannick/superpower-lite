@@ -15,6 +15,9 @@ export const CurrentMembership = () => {
   const superpowerMembership = subscriptionsData?.subscriptions.find(
     (subscription) => subscription.name === 'membership',
   );
+  const canManageMembership =
+    superpowerMembership?.status === 'active' ||
+    superpowerMembership?.status === 'trialing';
 
   return (
     <div className="rounded-2xl lg:flex lg:flex-row lg:items-center lg:justify-between lg:bg-white lg:p-4">
@@ -51,8 +54,7 @@ export const CurrentMembership = () => {
               <Card
                 className={cn(
                   `pointer-events-none w-full rounded-2xl px-5 py-4 shadow-none lg:bg-transparent`,
-                  superpowerMembership?.status === 'active' &&
-                    'pointer-events-auto cursor-pointer',
+                  canManageMembership && 'pointer-events-auto cursor-pointer',
                 )}
               >
                 <div className="flex flex-col">
@@ -75,7 +77,7 @@ export const CurrentMembership = () => {
                       <ChevronDown className="size-4 shrink-0 text-zinc-400" />
                     </div>
                   )}
-                  {superpowerMembership?.status === 'active' ? (
+                  {canManageMembership ? (
                     <span className="hidden whitespace-nowrap text-xs text-zinc-400 md:block">
                       Update, cancel, and more
                     </span>

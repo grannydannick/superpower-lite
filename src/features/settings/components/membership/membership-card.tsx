@@ -43,6 +43,7 @@ export const MembershipCard = () => {
   // if user has CANCELED subscription AND current_date < end_date
   const isActive = superpowerMembership
     ? superpowerMembership.status === 'active' ||
+      superpowerMembership.status === 'trialing' ||
       (superpowerMembership?.status === 'canceled' &&
         new Date() < new Date(superpowerMembership?.current_period_end * 1000))
     : false;
