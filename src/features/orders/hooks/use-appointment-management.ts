@@ -30,7 +30,9 @@ export const useAppointmentManagement = ({
       (order) => order.serviceName === GRAIL_GALLERI_MULTI_CANCER_TEST,
     );
 
-  const canReschedule = canManage && !isCancerAtHome;
+  const isWalkIn = requestGroup.appointmentType === 'UNSCHEDULED';
+
+  const canReschedule = canManage && !isCancerAtHome && !isWalkIn;
   const canCancel = canManage || isAdminActor;
 
   return {
