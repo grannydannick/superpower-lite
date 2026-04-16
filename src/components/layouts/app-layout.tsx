@@ -23,6 +23,7 @@ const LazyDevHelper = import.meta.env.DEV
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { data } = useUser();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isOnboarding = pathname.includes('onboarding');
 
   // matches theme colors
   useThemeColor();
@@ -33,7 +34,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
    * */
   const hideNavBar =
     !data ||
-    pathname.includes('onboarding') ||
+    isOnboarding ||
     pathname.includes('questionnaire') ||
     pathname.includes('rx-screen-out') ||
     pathname.includes('family-risk/plan') ||
@@ -68,7 +69,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         {children}
       </div>
       <FloatingWrapper />
-      <Announcements />
+      {!isOnboarding && <Announcements />}
     </main>
   );
 }

@@ -160,7 +160,7 @@ describe('usePanelPurchase', () => {
     });
     expect(trackOnboardingCreditAddedToCartMock).not.toHaveBeenCalled();
     expect(toast.success).toHaveBeenCalledWith('Purchase successful!');
-    expect(useOnboardingCartStore.getState().selectedPanelIds.size).toBe(0);
+    expect(useOnboardingCartStore.getState().selectedServiceIds.size).toBe(0);
     expect(onSuccess).toHaveBeenCalledTimes(1);
   });
 
@@ -179,9 +179,10 @@ describe('usePanelPurchase', () => {
       await result.current.purchase();
     });
 
-    const selectedPanelIds = useOnboardingCartStore.getState().selectedPanelIds;
-    expect(selectedPanelIds.has(TEST_SERVICE.id)).toBe(true);
-    expect(selectedPanelIds.size).toBe(1);
+    const selectedServiceIds =
+      useOnboardingCartStore.getState().selectedServiceIds;
+    expect(selectedServiceIds.has(TEST_SERVICE.id)).toBe(true);
+    expect(selectedServiceIds.size).toBe(1);
     expect(mutateAsyncMock).not.toHaveBeenCalled();
     expect(trackOnboardingCreditPurchaseMock).not.toHaveBeenCalled();
     expect(trackOnboardingCreditAddedToCartMock).toHaveBeenCalledWith({

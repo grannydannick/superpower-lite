@@ -1,6 +1,10 @@
 import { AnimatePresence, m } from 'framer-motion';
 
 import { Head } from '@/components/seo';
+import {
+  getOnboardingStepTitle,
+  ONBOARDING_STEP_IDS,
+} from '@/features/onboarding/components/flow/onboarding-step-manifest';
 
 import { useOnboardingNavigation } from '../../../hooks/use-onboarding-navigation';
 import {
@@ -25,7 +29,9 @@ export const HeardAboutUsSequence = () => {
 
   return (
     <SequenceProvider value={sequenceValue}>
-      <Head title="How Did You Hear About Us?" />
+      <Head
+        title={getOnboardingStepTitle(ONBOARDING_STEP_IDS.HEARD_ABOUT_US)}
+      />
       <Sequence.Layout>
         <AnimatePresence mode="wait">
           <m.div

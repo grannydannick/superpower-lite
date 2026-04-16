@@ -1,6 +1,6 @@
 'use client';
 
-import { useMatchRoute } from '@tanstack/react-router';
+import { useMatchRoute, useNavigate } from '@tanstack/react-router';
 import * as React from 'react';
 
 import {
@@ -12,9 +12,10 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { env } from '@/config/env';
-import type { StepId } from '@/features/onboarding/config/step-config';
-import { STEP_IDS } from '@/features/onboarding/config/step-config';
-import { useOnboardingFlowStore } from '@/features/onboarding/stores/onboarding-flow-store';
+import {
+  ONBOARDING_STEP_IDS,
+  type OnboardingStepId,
+} from '@/features/onboarding/components/flow/onboarding-step-manifest';
 import {
   useCompleteReveal,
   useResetReveal,
@@ -37,15 +38,45 @@ const ONBOARDING_QUESTIONNAIRES = [
   'onboarding-lifestyle',
 ] as const;
 
-const SEQUENCE_STEPS: Array<{ id: StepId; label: string }> = [
-  { id: STEP_IDS.INTRODUCTION, label: 'Introduction Sequence' },
-  { id: STEP_IDS.DIGITAL_TWIN, label: 'Digital Twin Sequence' },
-  { id: STEP_IDS.FINISH_TWIN, label: 'Finish Twin Sequence' },
-  { id: STEP_IDS.PRIMER, label: 'Primer Questionnaire' },
-  { id: STEP_IDS.MEDICAL_HISTORY, label: 'Medical History Questionnaire' },
-  { id: STEP_IDS.FEMALE_HEALTH, label: 'Female Health Questionnaire' },
-  { id: STEP_IDS.LIFESTYLE, label: 'Lifestyle Questionnaire' },
-  { id: STEP_IDS.UPSELL_PANELS, label: 'Upsell Sequence' },
+const SEQUENCE_STEPS: Array<{ id: OnboardingStepId; label: string }> = [
+  { id: ONBOARDING_STEP_IDS.WELCOME, label: 'Welcome' },
+  { id: ONBOARDING_STEP_IDS.GIFT_UPSELL, label: 'Gift Upsell' },
+  { id: ONBOARDING_STEP_IDS.UPDATE_INFO, label: 'Account Setup' },
+  { id: ONBOARDING_STEP_IDS.HEARD_ABOUT_US, label: 'Heard About Us' },
+  { id: ONBOARDING_STEP_IDS.ADVANCED_UPGRADE, label: 'Advanced Upgrade' },
+  { id: ONBOARDING_STEP_IDS.INTRODUCTION, label: 'Introduction Sequence' },
+  { id: ONBOARDING_STEP_IDS.HEALTH_PROFILE, label: 'Health Profile Sequence' },
+  {
+    id: ONBOARDING_STEP_IDS.WHAT_HAPPENS_NEXT,
+    label: 'What Happens Next Sequence',
+  },
+  { id: ONBOARDING_STEP_IDS.RX_ASSESSMENT, label: 'Care Assessment' },
+  { id: ONBOARDING_STEP_IDS.PRIMER_INTRO, label: 'Primer Intro' },
+  { id: ONBOARDING_STEP_IDS.PRIMER, label: 'Primer Questionnaire' },
+  {
+    id: ONBOARDING_STEP_IDS.MEDICAL_HISTORY_INTRO,
+    label: 'Medical History Intro',
+  },
+  {
+    id: ONBOARDING_STEP_IDS.MEDICAL_HISTORY,
+    label: 'Medical History Questionnaire',
+  },
+  { id: ONBOARDING_STEP_IDS.FEMALE_HEALTH_INTRO, label: 'Female Health Intro' },
+  {
+    id: ONBOARDING_STEP_IDS.FEMALE_HEALTH,
+    label: 'Female Health Questionnaire',
+  },
+  { id: ONBOARDING_STEP_IDS.LIFESTYLE_INTRO, label: 'Lifestyle Intro' },
+  { id: ONBOARDING_STEP_IDS.LIFESTYLE, label: 'Lifestyle Questionnaire' },
+  {
+    id: ONBOARDING_STEP_IDS.BUILDING_RECOMMENDATIONS,
+    label: 'Building Recommendations',
+  },
+  { id: ONBOARDING_STEP_IDS.ADD_ON_PANELS, label: 'Add-on Panels' },
+  {
+    id: ONBOARDING_STEP_IDS.PHLEBOTOMY_BOOKING,
+    label: 'Schedule Blood Draw',
+  },
 ];
 
 export function DevHelper() {
@@ -96,10 +127,10 @@ function DevHelperMenuContent({
   onTriggerWearableModal,
 }: DevHelperMenuContentProps) {
   const matchRoute = useMatchRoute();
-  const isOnboarding = matchRoute({ to: '/onboarding' }) !== false;
+  const navigate = useNavigate();
+  const isOnboarding = matchRoute({ to: '/onboarding', fuzzy: true }) !== false;
   const isConcierge = matchRoute({ to: '/concierge', fuzzy: true }) !== false;
 
-  const goToStep = useOnboardingFlowStore((state) => state.goTo);
   const updateQuestionnaireResponseMutation = useUpdateQuestionnaireResponse();
   const createQuestionnaireResponseMutation = useCreateQuestionnaireResponse();
   const revealLatestQuery = useRevealLatest({ enabled: true });
@@ -279,9 +310,20 @@ function DevHelperMenuContent({
     }
   };
 
-  const onJumpToStep = (stepId: string) => {
-    goToStep(stepId as any);
-    toast.success(`Jumped to ${stepId}`);
+  const onJumpToStep = async (stepId: OnboardingStepId) => {
+    if (!isOnboarding) {
+      return;
+    }
+
+    try {
+      await navigate({
+        to: '/onboarding/$step',
+        params: { step: stepId },
+      });
+      toast.success(`Jumped to ${stepId}`);
+    } catch {
+      toast.error(`Failed to jump to ${stepId}`);
+    }
   };
 
   const questionnaireItems: React.ReactElement[] = [];

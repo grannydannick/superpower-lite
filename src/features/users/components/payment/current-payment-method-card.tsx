@@ -1,4 +1,5 @@
-import { CircleCheckBig, Pencil } from 'lucide-react';
+import { IconCheckmark1Small } from '@central-icons-react/round-filled-radius-2-stroke-1.5/IconCheckmark1Small';
+import { IconPencil } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconPencil';
 
 import { Button } from '@/components/ui/button';
 import { Body1, Body2, Body3 } from '@/components/ui/typography';
@@ -28,75 +29,75 @@ export const CurrentPaymentMethodCard = ({
   }
 
   const showFlexError = disableFlexOptions && isFlexSelected;
-
   return (
     <div className="space-y-2">
       <div
         className={cn(
-          'w-full space-y-3 rounded-2xl border bg-white px-8 py-6',
+          'w-full rounded-2xl border bg-white px-5 py-4',
           error || showFlexError
             ? 'border-pink-700 bg-pink-50'
             : 'border-zinc-200',
           className,
         )}
       >
-        <div className="flex items-center justify-between">
-          <Body2
-            className={cn(
-              error || showFlexError ? 'text-pink-700' : 'text-zinc-500',
-            )}
-          >
-            Payment method
-          </Body2>
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <Body2
+              className={cn(
+                error || showFlexError ? 'text-pink-700' : 'text-zinc-500',
+                'mb-1',
+              )}
+            >
+              Payment method
+            </Body2>
+
+            <div className="flex min-w-0 items-center gap-2">
+              {activePaymentMethod?.type === 'card' &&
+              activePaymentMethod.card != null ? (
+                <Body1 className="truncate text-zinc-900">
+                  {capitalize(activePaymentMethod.card.brand)} ****
+                  {activePaymentMethod.card.last4}
+                </Body1>
+              ) : activePaymentMethod?.type === 'klarna' ? (
+                <>
+                  <img
+                    src="/settings/membership/klarna.webp"
+                    alt="Klarna"
+                    className="h-6 w-auto rounded-md object-contain"
+                  />
+                  <Body1 className="truncate text-primary">
+                    Pay with Klarna
+                  </Body1>
+                </>
+              ) : activePaymentMethod?.type === 'link' ? (
+                <>
+                  <img
+                    src="/settings/membership/link.png"
+                    alt="Link"
+                    className="h-4 w-auto"
+                  />
+                  <Body1 className="truncate leading-none text-primary">
+                    Pay with Link
+                  </Body1>
+                </>
+              ) : null}
+              {isFlexSelected && (
+                <div className="flex shrink-0 items-center gap-1 rounded-full border px-1.5 py-1">
+                  <IconCheckmark1Small className="size-3 text-secondary" />
+                  <Body3 className="leading-none text-secondary">HSA/FSA</Body3>
+                </div>
+              )}
+            </div>
+          </div>
 
           <Button
             variant="ghost"
             size="icon"
+            className="size-8"
             onClick={startSelectingPaymentMethod}
           >
-            <Pencil className="size-4 cursor-pointer text-zinc-500" />
+            <IconPencil className="size-4 cursor-pointer text-zinc-500" />
           </Button>
-        </div>
-
-        <div>
-          <div className="flex items-center gap-2">
-            {activePaymentMethod?.type === 'card' &&
-            activePaymentMethod.card ? (
-              <>
-                <Body1>{capitalize(activePaymentMethod.card.brand)}</Body1>
-                <Body1>****{activePaymentMethod.card.last4}</Body1>
-              </>
-            ) : activePaymentMethod?.type === 'klarna' ? (
-              <>
-                <img
-                  src="/settings/membership/klarna.webp"
-                  alt="Klarna"
-                  className="h-6 w-auto rounded-md object-contain"
-                />
-                <Body1 className="text-primary">Pay with Klarna</Body1>
-              </>
-            ) : activePaymentMethod?.type === 'link' ? (
-              <>
-                <img
-                  src="/settings/membership/link.png"
-                  alt="Link"
-                  className="h-4 w-auto"
-                />
-                <Body1 className="leading-none text-primary">
-                  Pay with Link
-                </Body1>
-              </>
-            ) : null}
-            {isFlexSelected && (
-              <div className="flex items-center gap-1 rounded-full border px-1.5 py-1">
-                <CircleCheckBig
-                  className="size-3 text-secondary"
-                  strokeWidth={2.5}
-                />
-                <Body3 className="leading-none text-secondary">HSA/FSA</Body3>
-              </div>
-            )}
-          </div>
         </div>
       </div>
 

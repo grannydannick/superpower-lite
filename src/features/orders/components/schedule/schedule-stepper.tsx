@@ -47,7 +47,8 @@ interface UseScheduleFlowStepperType extends ScheduleFlowStepperUseStepperType {
 export const useScheduleFlowStepper = (): UseScheduleFlowStepperType => {
   const mode = useScheduleStore((s) => s.mode);
   const matchRoute = useMatchRoute();
-  const isOnOnboarding = matchRoute({ to: '/onboarding' });
+  const isOnOnboarding =
+    matchRoute({ to: '/onboarding', fuzzy: true }) !== false;
 
   const methods = ScheduleFlowStepper.useStepper();
 

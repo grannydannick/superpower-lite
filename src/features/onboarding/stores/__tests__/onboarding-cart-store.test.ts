@@ -9,24 +9,12 @@ describe('useOnboardingCartStore', () => {
     useOnboardingCartStore.getState().clear();
   });
 
-  it('adds panel ids idempotently', () => {
+  it('persists selected service ids as a string array', () => {
     const { result } = renderHook(() => useOnboardingCartStore());
 
     act(() => {
-      result.current.addPanel('panel-a');
-      result.current.addPanel('panel-a');
-    });
-
-    expect(result.current.selectedPanelIds.size).toBe(1);
-    expect(result.current.selectedPanelIds.has('panel-a')).toBe(true);
-  });
-
-  it('persists selected panel ids as a string array', () => {
-    const { result } = renderHook(() => useOnboardingCartStore());
-
-    act(() => {
-      result.current.addPanel('panel-a');
-      result.current.addPanel('panel-b');
+      result.current.addService('panel-a');
+      result.current.addService('panel-b');
     });
 
     const stored = localStorage.getItem('onboarding-cart-store');
@@ -41,16 +29,17 @@ describe('useOnboardingCartStore', () => {
     }
 
     expect(parsedState).toEqual({
-      selectedPanelIds: ['panel-a', 'panel-b'],
+      hasInitializedRecommendedSelections: false,
+      selectedServiceIds: ['panel-a', 'panel-b'],
     });
   });
 
-  it('rehydrates persisted panel ids into a Set', async () => {
+  it('rehydrates persisted service ids into a Set', async () => {
     localStorage.setItem(
       'onboarding-cart-store',
       JSON.stringify({
         state: {
-          selectedPanelIds: ['panel-a', 'panel-b'],
+          selectedServiceIds: ['panel-a', 'panel-b'],
         },
         version: 0,
       }),
@@ -61,20 +50,9 @@ describe('useOnboardingCartStore', () => {
     });
 
     const { result } = renderHook(() => useOnboardingCartStore());
-    expect(result.current.selectedPanelIds instanceof Set).toBe(true);
-    expect(result.current.selectedPanelIds.size).toBe(2);
-    expect(result.current.selectedPanelIds.has('panel-a')).toBe(true);
-    expect(result.current.selectedPanelIds.has('panel-b')).toBe(true);
-  });
-
-  it('clears selected panel ids', () => {
-    const { result } = renderHook(() => useOnboardingCartStore());
-
-    act(() => {
-      result.current.addPanel('panel-a');
-      result.current.clear();
-    });
-
-    expect(result.current.selectedPanelIds.size).toBe(0);
+    expect(result.current.selectedServiceIds instanceof Set).toBe(true);
+    expect(result.current.selectedServiceIds.size).toBe(2);
+    expect(result.current.selectedServiceIds.has('panel-a')).toBe(true);
+    expect(result.current.selectedServiceIds.has('panel-b')).toBe(true);
   });
 });

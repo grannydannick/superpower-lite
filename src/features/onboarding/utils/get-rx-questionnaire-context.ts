@@ -1,40 +1,46 @@
 import { NON_SYMPTOM_RX_VALUE_RE } from '@/const/questionnaire';
-import { type ListQuestionnaireResponsesResponse } from '@/features/questionnaires/api/questionnaire-response';
+import { type OnboardingQuestionnaire } from '@/features/onboarding/api/onboarding';
+
+interface RxQuestionnaireSummary {
+  identifier:
+    | OnboardingQuestionnaire['identifier']
+    | `${OnboardingQuestionnaire['identifier']}-symptom-tracker`;
+  status: OnboardingQuestionnaire['status'];
+}
 
 /**
  * Derives whether the member has an Rx intake questionnaire to complete.
  *
- * We treat any QuestionnaireResponse whose `identifier.value` matches
- * `NON_SYMPTOM_RX_VALUE_RE` as an Rx intake questionnaire response (excluding
- * symptom trackers).
- *
- * Note: Callers should pass responses sorted by `-_lastUpdated` so the most
- * recently updated matching response wins.
+ * We treat any onboarding questionnaire summary whose `identifier` matches
+ * `NON_SYMPTOM_RX_VALUE_RE` as an Rx intake questionnaire (excluding symptom
+ * trackers).
  */
 export const getRxQuestionnaireContext = (
-  questionnaireResponses: ListQuestionnaireResponsesResponse | undefined,
+  questionnaires: ReadonlyArray<RxQuestionnaireSummary> | undefined,
 ) => {
-  for (const response of questionnaireResponses ?? []) {
-    const questionnaireName = response.identifier?.value;
-    if (questionnaireName == null) {
-      continue;
-    }
-    if (!NON_SYMPTOM_RX_VALUE_RE.test(questionnaireName)) {
+  let hasCompletedQuestionnaire = false;
+
+  for (const questionnaire of questionnaires ?? []) {
+    if (!NON_SYMPTOM_RX_VALUE_RE.test(questionnaire.identifier)) {
       continue;
     }
 
-    if (response.status === 'in-progress' || response.status === 'stopped') {
+    if (questionnaire.status === 'in_progress') {
       return {
         status: 'required',
-        questionnaireName,
+        questionnaireIdentifier: questionnaire.identifier,
       } as const;
     }
 
-    if (response.status === 'completed') {
-      return {
-        status: 'completed',
-      } as const;
+    if (questionnaire.status === 'completed') {
+      hasCompletedQuestionnaire = true;
     }
+  }
+
+  if (hasCompletedQuestionnaire) {
+    return {
+      status: 'completed',
+    } as const;
   }
 
   return {
@@ -45,9 +51,9 @@ export const getRxQuestionnaireContext = (
 /**
  * Discriminated union describing whether an Rx intake questionnaire is required.
  *
- * - `none`: no matching Rx intake QuestionnaireResponse exists
- * - `required`: an in-progress/stopped Rx intake response exists and should be resumed
- * - `completed`: the most recent matching Rx intake response is completed
+ * - `none`: no matching Rx intake questionnaire summary exists
+ * - `required`: an in-progress Rx intake questionnaire exists and should be resumed
+ * - `completed`: at least one matching Rx intake questionnaire is completed
  */
 export type RxQuestionnaireContext = ReturnType<
   typeof getRxQuestionnaireContext

@@ -1,6 +1,10 @@
 import { useNavigate } from '@tanstack/react-router';
 
 import { Head } from '@/components/seo';
+import {
+  getOnboardingStepTitle,
+  ONBOARDING_STEP_IDS,
+} from '@/features/onboarding/components/flow/onboarding-step-manifest';
 import { ScheduleFlow } from '@/features/orders/components/schedule/schedule-flow';
 import { useUpdateTask } from '@/features/tasks/api/update-task';
 
@@ -40,7 +44,9 @@ const BookingContent = () => {
 export const PhlebotomyBookingStep = () => {
   return (
     <>
-      <Head title="Schedule Your Blood Draw" />
+      <Head
+        title={getOnboardingStepTitle(ONBOARDING_STEP_IDS.PHLEBOTOMY_BOOKING)}
+      />
       <div className="flex min-h-dvh w-full flex-col">
         <BookingContent />
       </div>

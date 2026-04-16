@@ -1,9 +1,9 @@
 import { beforeEach, expect, test, vi } from 'vitest';
 
-import { STEP_IDS } from '@/features/onboarding/config/step-config';
-import { useOnboardingFlowStore } from '@/features/onboarding/stores/onboarding-flow-store';
 import { rtlRender, screen, userEvent } from '@/testing/test-utils';
 
+import { INTAKE_STEP_IDS } from '../../intake-step-ids';
+import { useIntakeFlowStore } from '../../stores/intake-flow-store';
 import { CompletionStep } from '../completion-step';
 
 const navigateMock = vi.fn();
@@ -21,24 +21,27 @@ vi.mock('@tanstack/react-router', async () => {
 
 beforeEach(() => {
   navigateMock.mockReset();
-  useOnboardingFlowStore.getState().reset();
+  useIntakeFlowStore.getState().reset();
 });
 
 test('navigates home and resets flow state', async () => {
-  useOnboardingFlowStore
+  useIntakeFlowStore
     .getState()
-    .syncFlow([STEP_IDS.INTAKE_SPLASH, STEP_IDS.INTAKE_COMPLETION], 'user-123');
-  useOnboardingFlowStore.getState().goTo(STEP_IDS.INTAKE_COMPLETION);
+    .syncFlow(
+      [INTAKE_STEP_IDS.INTAKE_SPLASH, INTAKE_STEP_IDS.INTAKE_COMPLETION],
+      'user-123',
+    );
+  useIntakeFlowStore.getState().next();
 
-  expect(useOnboardingFlowStore.getState().currentStep).toBe(
-    STEP_IDS.INTAKE_COMPLETION,
+  expect(useIntakeFlowStore.getState().currentStep).toBe(
+    INTAKE_STEP_IDS.INTAKE_COMPLETION,
   );
 
   rtlRender(<CompletionStep />);
 
   await userEvent.click(screen.getByRole('button', { name: /continue/i }));
 
-  expect(useOnboardingFlowStore.getState().currentStep).toBeNull();
-  expect(useOnboardingFlowStore.getState().isInitialized).toBe(false);
+  expect(useIntakeFlowStore.getState().currentStep).toBeNull();
+  expect(useIntakeFlowStore.getState().isInitialized).toBe(false);
   expect(navigateMock).toHaveBeenCalledWith({ to: '/', replace: true });
 });

@@ -57,9 +57,11 @@ import { Route as AppMapsSettingsRouteImport } from './routes/_app._maps.setting
 import { Route as AppMapsScheduleRouteImport } from './routes/_app._maps.schedule'
 import { Route as AppMapsOnboardingRouteImport } from './routes/_app._maps.onboarding'
 import { Route as AppProtocolRevealIndexRouteImport } from './routes/_app.protocol.reveal.index'
+import { Route as AppMapsOnboardingIndexRouteImport } from './routes/_app._maps.onboarding.index'
 import { Route as AppProtocolRevealStepRouteImport } from './routes/_app.protocol.reveal.$step'
 import { Route as AppProtocolPlansIdRouteImport } from './routes/_app.protocol.plans.$id'
 import { Route as AppProtocolLegacyIdRouteImport } from './routes/_app.protocol.legacy.$id'
+import { Route as AppMapsOnboardingStepRouteImport } from './routes/_app._maps.onboarding.$step'
 import { Route as AppMapsRecollectionServiceRequestIdScheduleRouteImport } from './routes/_app._maps.recollection.$serviceRequestId.schedule'
 import { Route as AppProtocolPlansPlanIdGoalsGoalIdRouteImport } from './routes/_app.protocol.plans.$planId.goals.$goalId'
 import { Route as AppProtocolLegacyPlanIdGoalsGoalIdRouteImport } from './routes/_app.protocol.legacy.$planId.goals.$goalId'
@@ -303,6 +305,11 @@ const AppProtocolRevealIndexRoute = AppProtocolRevealIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppProtocolRevealRoute,
 } as any)
+const AppMapsOnboardingIndexRoute = AppMapsOnboardingIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppMapsOnboardingRoute,
+} as any)
 const AppProtocolRevealStepRoute = AppProtocolRevealStepRouteImport.update({
   id: '/$step',
   path: '/$step',
@@ -317,6 +324,11 @@ const AppProtocolLegacyIdRoute = AppProtocolLegacyIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => AppProtocolLegacyRoute,
+} as any)
+const AppMapsOnboardingStepRoute = AppMapsOnboardingStepRouteImport.update({
+  id: '/$step',
+  path: '/$step',
+  getParentRoute: () => AppMapsOnboardingRoute,
 } as any)
 const AppMapsRecollectionServiceRequestIdScheduleRoute =
   AppMapsRecollectionServiceRequestIdScheduleRouteImport.update({
@@ -360,7 +372,7 @@ export interface FileRoutesByFullPath {
   '/services': typeof AppServicesRouteWithChildren
   '/shopify-redirect': typeof AppShopifyRedirectRoute
   '/vault': typeof AppVaultRoute
-  '/onboarding': typeof AppMapsOnboardingRoute
+  '/onboarding': typeof AppMapsOnboardingRouteWithChildren
   '/schedule': typeof AppMapsScheduleRoute
   '/settings': typeof AppMapsSettingsRoute
   '/users': typeof AppMapsUsersRoute
@@ -383,9 +395,11 @@ export interface FileRoutesByFullPath {
   '/protocol/': typeof AppProtocolIndexRoute
   '/rx-subscriptions/': typeof AppRxSubscriptionsIndexRoute
   '/services/': typeof AppServicesIndexRoute
+  '/onboarding/$step': typeof AppMapsOnboardingStepRoute
   '/protocol/legacy/$id': typeof AppProtocolLegacyIdRoute
   '/protocol/plans/$id': typeof AppProtocolPlansIdRoute
   '/protocol/reveal/$step': typeof AppProtocolRevealStepRoute
+  '/onboarding/': typeof AppMapsOnboardingIndexRoute
   '/protocol/reveal/': typeof AppProtocolRevealIndexRoute
   '/recollection/$serviceRequestId/schedule': typeof AppMapsRecollectionServiceRequestIdScheduleRoute
   '/protocol/legacy/$planId/goals/$goalId': typeof AppProtocolLegacyPlanIdGoalsGoalIdRoute
@@ -408,7 +422,6 @@ export interface FileRoutesByTo {
   '/rx-screen-out': typeof AppRxScreenOutRoute
   '/shopify-redirect': typeof AppShopifyRedirectRoute
   '/vault': typeof AppVaultRoute
-  '/onboarding': typeof AppMapsOnboardingRoute
   '/schedule': typeof AppMapsScheduleRoute
   '/settings': typeof AppMapsSettingsRoute
   '/users': typeof AppMapsUsersRoute
@@ -430,9 +443,11 @@ export interface FileRoutesByTo {
   '/protocol': typeof AppProtocolIndexRoute
   '/rx-subscriptions': typeof AppRxSubscriptionsIndexRoute
   '/services': typeof AppServicesIndexRoute
+  '/onboarding/$step': typeof AppMapsOnboardingStepRoute
   '/protocol/legacy/$id': typeof AppProtocolLegacyIdRoute
   '/protocol/plans/$id': typeof AppProtocolPlansIdRoute
   '/protocol/reveal/$step': typeof AppProtocolRevealStepRoute
+  '/onboarding': typeof AppMapsOnboardingIndexRoute
   '/protocol/reveal': typeof AppProtocolRevealIndexRoute
   '/recollection/$serviceRequestId/schedule': typeof AppMapsRecollectionServiceRequestIdScheduleRoute
   '/protocol/legacy/$planId/goals/$goalId': typeof AppProtocolLegacyPlanIdGoalsGoalIdRoute
@@ -464,7 +479,7 @@ export interface FileRoutesById {
   '/_app/shopify-redirect': typeof AppShopifyRedirectRoute
   '/_app/vault': typeof AppVaultRoute
   '/_app/': typeof AppIndexRoute
-  '/_app/_maps/onboarding': typeof AppMapsOnboardingRoute
+  '/_app/_maps/onboarding': typeof AppMapsOnboardingRouteWithChildren
   '/_app/_maps/schedule': typeof AppMapsScheduleRoute
   '/_app/_maps/settings': typeof AppMapsSettingsRoute
   '/_app/_maps/users': typeof AppMapsUsersRoute
@@ -487,9 +502,11 @@ export interface FileRoutesById {
   '/_app/protocol/': typeof AppProtocolIndexRoute
   '/_app/rx-subscriptions/': typeof AppRxSubscriptionsIndexRoute
   '/_app/services/': typeof AppServicesIndexRoute
+  '/_app/_maps/onboarding/$step': typeof AppMapsOnboardingStepRoute
   '/_app/protocol/legacy/$id': typeof AppProtocolLegacyIdRoute
   '/_app/protocol/plans/$id': typeof AppProtocolPlansIdRoute
   '/_app/protocol/reveal/$step': typeof AppProtocolRevealStepRoute
+  '/_app/_maps/onboarding/': typeof AppMapsOnboardingIndexRoute
   '/_app/protocol/reveal/': typeof AppProtocolRevealIndexRoute
   '/_app/_maps/recollection/$serviceRequestId/schedule': typeof AppMapsRecollectionServiceRequestIdScheduleRoute
   '/_app/protocol/legacy/$planId/goals/$goalId': typeof AppProtocolLegacyPlanIdGoalsGoalIdRoute
@@ -543,9 +560,11 @@ export interface FileRouteTypes {
     | '/protocol/'
     | '/rx-subscriptions/'
     | '/services/'
+    | '/onboarding/$step'
     | '/protocol/legacy/$id'
     | '/protocol/plans/$id'
     | '/protocol/reveal/$step'
+    | '/onboarding/'
     | '/protocol/reveal/'
     | '/recollection/$serviceRequestId/schedule'
     | '/protocol/legacy/$planId/goals/$goalId'
@@ -568,7 +587,6 @@ export interface FileRouteTypes {
     | '/rx-screen-out'
     | '/shopify-redirect'
     | '/vault'
-    | '/onboarding'
     | '/schedule'
     | '/settings'
     | '/users'
@@ -590,9 +608,11 @@ export interface FileRouteTypes {
     | '/protocol'
     | '/rx-subscriptions'
     | '/services'
+    | '/onboarding/$step'
     | '/protocol/legacy/$id'
     | '/protocol/plans/$id'
     | '/protocol/reveal/$step'
+    | '/onboarding'
     | '/protocol/reveal'
     | '/recollection/$serviceRequestId/schedule'
     | '/protocol/legacy/$planId/goals/$goalId'
@@ -646,9 +666,11 @@ export interface FileRouteTypes {
     | '/_app/protocol/'
     | '/_app/rx-subscriptions/'
     | '/_app/services/'
+    | '/_app/_maps/onboarding/$step'
     | '/_app/protocol/legacy/$id'
     | '/_app/protocol/plans/$id'
     | '/_app/protocol/reveal/$step'
+    | '/_app/_maps/onboarding/'
     | '/_app/protocol/reveal/'
     | '/_app/_maps/recollection/$serviceRequestId/schedule'
     | '/_app/protocol/legacy/$planId/goals/$goalId'
@@ -1005,6 +1027,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProtocolRevealIndexRouteImport
       parentRoute: typeof AppProtocolRevealRoute
     }
+    '/_app/_maps/onboarding/': {
+      id: '/_app/_maps/onboarding/'
+      path: '/'
+      fullPath: '/onboarding/'
+      preLoaderRoute: typeof AppMapsOnboardingIndexRouteImport
+      parentRoute: typeof AppMapsOnboardingRoute
+    }
     '/_app/protocol/reveal/$step': {
       id: '/_app/protocol/reveal/$step'
       path: '/$step'
@@ -1025,6 +1054,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/protocol/legacy/$id'
       preLoaderRoute: typeof AppProtocolLegacyIdRouteImport
       parentRoute: typeof AppProtocolLegacyRoute
+    }
+    '/_app/_maps/onboarding/$step': {
+      id: '/_app/_maps/onboarding/$step'
+      path: '/$step'
+      fullPath: '/onboarding/$step'
+      preLoaderRoute: typeof AppMapsOnboardingStepRouteImport
+      parentRoute: typeof AppMapsOnboardingRoute
     }
     '/_app/_maps/recollection/$serviceRequestId/schedule': {
       id: '/_app/_maps/recollection/$serviceRequestId/schedule'
@@ -1050,8 +1086,21 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AppMapsOnboardingRouteChildren {
+  AppMapsOnboardingStepRoute: typeof AppMapsOnboardingStepRoute
+  AppMapsOnboardingIndexRoute: typeof AppMapsOnboardingIndexRoute
+}
+
+const AppMapsOnboardingRouteChildren: AppMapsOnboardingRouteChildren = {
+  AppMapsOnboardingStepRoute: AppMapsOnboardingStepRoute,
+  AppMapsOnboardingIndexRoute: AppMapsOnboardingIndexRoute,
+}
+
+const AppMapsOnboardingRouteWithChildren =
+  AppMapsOnboardingRoute._addFileChildren(AppMapsOnboardingRouteChildren)
+
 interface AppMapsRouteChildren {
-  AppMapsOnboardingRoute: typeof AppMapsOnboardingRoute
+  AppMapsOnboardingRoute: typeof AppMapsOnboardingRouteWithChildren
   AppMapsScheduleRoute: typeof AppMapsScheduleRoute
   AppMapsSettingsRoute: typeof AppMapsSettingsRoute
   AppMapsUsersRoute: typeof AppMapsUsersRoute
@@ -1059,7 +1108,7 @@ interface AppMapsRouteChildren {
 }
 
 const AppMapsRouteChildren: AppMapsRouteChildren = {
-  AppMapsOnboardingRoute: AppMapsOnboardingRoute,
+  AppMapsOnboardingRoute: AppMapsOnboardingRouteWithChildren,
   AppMapsScheduleRoute: AppMapsScheduleRoute,
   AppMapsSettingsRoute: AppMapsSettingsRoute,
   AppMapsUsersRoute: AppMapsUsersRoute,

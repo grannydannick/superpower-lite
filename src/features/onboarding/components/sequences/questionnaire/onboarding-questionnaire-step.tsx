@@ -3,11 +3,14 @@ import {
   QuestionnaireResponse,
   QuestionnaireResponseItem,
 } from '@medplum/fhirtypes';
-import { useMemo } from 'react';
 
 import { Head } from '@/components/seo';
 import { QuestionnaireForm } from '@/components/ui/questionnaire';
 import { Spinner } from '@/components/ui/spinner';
+import {
+  getOnboardingStepTitle,
+  ONBOARDING_STEP_IDS,
+} from '@/features/onboarding/components/flow/onboarding-step-manifest';
 import { useQuestionnaireResponseController } from '@/features/questionnaires/hooks/use-questionnaire-response-controller';
 import { pruneResponseItems } from '@/features/questionnaires/utils/prune-response-items';
 import { useUser } from '@/lib/auth';
@@ -17,6 +20,11 @@ import { useOnboardingNavigation } from '../../../hooks/use-onboarding-navigatio
 type Props = {
   questionnaireName: string;
 };
+
+interface QuestionnaireStepContentProps {
+  questionnaireName: string;
+  onSubmitSuccess: () => void;
+}
 
 /**
  * Generic onboarding questionnaire step component.
@@ -36,20 +44,22 @@ export type OnboardingQuestionnaireName =
 
 const QUESTIONNAIRE_TITLES: Partial<Record<string, string>> = {
   'onboarding-intake': 'Intake',
-  'onboarding-primer': 'About You',
-  'onboarding-medical-history': 'Medical History',
-  'onboarding-female-health': 'Female Health',
-  'onboarding-lifestyle': 'Lifestyle',
+  'onboarding-primer': getOnboardingStepTitle(ONBOARDING_STEP_IDS.PRIMER),
+  'onboarding-medical-history': getOnboardingStepTitle(
+    ONBOARDING_STEP_IDS.MEDICAL_HISTORY,
+  ),
+  'onboarding-female-health': getOnboardingStepTitle(
+    ONBOARDING_STEP_IDS.FEMALE_HEALTH,
+  ),
+  'onboarding-lifestyle': getOnboardingStepTitle(ONBOARDING_STEP_IDS.LIFESTYLE),
 };
 
-export const OnboardingQuestionnaireStep = ({ questionnaireName }: Props) => {
-  const { next } = useOnboardingNavigation();
+export const QuestionnaireStepContent = ({
+  questionnaireName,
+  onSubmitSuccess,
+}: QuestionnaireStepContentProps) => {
   const userQuery = useUser();
-
-  const pageTitle = useMemo(
-    () => QUESTIONNAIRE_TITLES[questionnaireName] || 'Questionnaire',
-    [questionnaireName],
-  );
+  const pageTitle = QUESTIONNAIRE_TITLES[questionnaireName] ?? 'Questionnaire';
   const {
     questionnaire,
     response: questionnaireResponse,
@@ -80,7 +90,7 @@ export const OnboardingQuestionnaireStep = ({ questionnaireName }: Props) => {
   };
 
   const handleSubmit = async (item: QuestionnaireResponseItem[]) => {
-    await submit(item, { onSuccess: next });
+    await submit(item, { onSuccess: onSubmitSuccess });
   };
 
   return (
@@ -99,5 +109,16 @@ export const OnboardingQuestionnaireStep = ({ questionnaireName }: Props) => {
         className="space-y-6"
       />
     </>
+  );
+};
+
+export const OnboardingQuestionnaireStep = ({ questionnaireName }: Props) => {
+  const { next } = useOnboardingNavigation();
+
+  return (
+    <QuestionnaireStepContent
+      questionnaireName={questionnaireName}
+      onSubmitSuccess={next}
+    />
   );
 };

@@ -31,7 +31,8 @@ export const ScheduleSuccessStep = () => {
   const servicesQuery = useServices({ includeUnorderable: true });
   const navigate = useNavigate();
   const matchRoute = useMatchRoute();
-  const isOnOnboarding = matchRoute({ to: '/onboarding' });
+  const isOnOnboarding =
+    matchRoute({ to: '/onboarding', fuzzy: true }) !== false;
 
   const resetEverything = () => {
     resetStore();

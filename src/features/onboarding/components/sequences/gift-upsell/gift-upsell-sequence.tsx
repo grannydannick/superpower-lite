@@ -1,5 +1,4 @@
 import { CheckIcon } from 'lucide-react';
-import { useShallow } from 'zustand/react/shallow';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { Head } from '@/components/seo';
@@ -7,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Body1, H2 } from '@/components/ui/typography';
 import { useOnboardingNavigation } from '@/features/onboarding/hooks/use-onboarding-navigation';
-import { useOnboardingFlowStore } from '@/features/onboarding/stores/onboarding-flow-store';
+import { useGiftUpsellStore } from '@/features/onboarding/stores/gift-upsell-store';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { useUser } from '@/lib/auth';
 import { buildGiftCheckoutUrl } from '@/utils/gifting-routing';
@@ -22,11 +21,8 @@ const BENEFITS = [
 
 export const GiftUpsellSequence = () => {
   const { next } = useOnboardingNavigation();
-  const { dismissGiftUpsell, beginExternalRedirect } = useOnboardingFlowStore(
-    useShallow((state) => ({
-      dismissGiftUpsell: state.dismissGiftUpsell,
-      beginExternalRedirect: state.beginExternalRedirect,
-    })),
+  const dismissGiftUpsell = useGiftUpsellStore(
+    (state) => state.dismissGiftUpsell,
   );
   const { data: user } = useUser();
   const { track } = useAnalytics();
@@ -39,11 +35,10 @@ export const GiftUpsellSequence = () => {
 
   const handleGiftSuperpower = () => {
     track('gifting_upsell_clicked', { source: 'onboarding' });
-    // beginExternalRedirect causes StepRenderer to render null, preventing any
-    // flash of the next onboarding step while the browser navigates away.
-    beginExternalRedirect();
     dismissGiftUpsell();
-    next();
+    // Navigate away — when the user returns, getValidOnboardingSteps will skip
+    // the gift-upsell step (hasSeenGiftUpsell is now true) and land them on the
+    // correct next step.
     window.location.assign(buildGiftCheckoutUrl('onboarding', user?.email));
   };
 

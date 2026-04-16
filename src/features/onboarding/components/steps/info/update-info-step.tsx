@@ -7,6 +7,7 @@ import * as z from 'zod';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { SplitScreenLayout } from '@/components/layouts';
+import { Head } from '@/components/seo';
 import { AvailableBiomarkersDialog } from '@/components/shared/available-biomarkers';
 import {
   BackupPaymentMethod,
@@ -36,7 +37,11 @@ import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner'
 import { Body2, H3, H4 } from '@/components/ui/typography';
 import { US_STATES } from '@/const';
 import { useCheckout } from '@/features/auth/hooks/use-checkout';
-import { useGetBenefitClaims } from '@/features/b2b/api';
+import { useSuspenseOnboarding } from '@/features/onboarding/api/onboarding';
+import {
+  getOnboardingStepTitle,
+  ONBOARDING_STEP_IDS,
+} from '@/features/onboarding/components/flow/onboarding-step-manifest';
 import { useCreateAddress, useEditAddress } from '@/features/users/api';
 import { useUpdateUser } from '@/features/users/api/update-user';
 import { useUser } from '@/lib/auth';
@@ -98,9 +103,9 @@ export type UpdateUserInput = z.infer<typeof updateUserInputSchema>;
 
 const UpdateInfoContent = () => {
   const { data: user } = useUser();
+  const { data: onboardingData } = useSuspenseOnboarding();
   const { next } = useOnboardingNavigation();
-  const { data: claimedBenefitsData } = useGetBenefitClaims();
-  const hasClaimedBenefits = (claimedBenefitsData?.length ?? 0) > 0;
+  const showUpsells = onboardingData.onboardingPolicy.showUpsells;
 
   let defaultGender: 'MALE' | 'FEMALE' | undefined = undefined;
   if (user?.gender === 'MALE' || user?.gender === 'FEMALE') {
@@ -145,8 +150,8 @@ const UpdateInfoContent = () => {
   const onSubmit = async (data: UpdateUserInput) => {
     if (!data.address) return;
 
-    // If user needs backup payment method (and hasn't claimed a B2B benefit), add it first
-    if (needsBackup && !hasClaimedBenefits) {
+    // When onboarding upsells are enabled, collect the backup payment method first.
+    if (needsBackup && showUpsells) {
       const paymentMethodAdded = await handleAddPaymentMethod();
       if (!paymentMethodAdded) {
         return;
@@ -196,6 +201,7 @@ const UpdateInfoContent = () => {
 
   return (
     <>
+      <Head title={getOnboardingStepTitle(ONBOARDING_STEP_IDS.UPDATE_INFO)} />
       <div className="mx-auto w-full space-y-8 px-4 md:px-8 lg:max-w-2xl">
         <SuperpowerLogo />
         <H3>Let’s set up your Superpower account</H3>
@@ -286,7 +292,7 @@ const UpdateInfoContent = () => {
                 />
               )}
               <PrimaryAddressForm />
-              {!hasClaimedBenefits && (
+              {showUpsells && (
                 <BackupPaymentMethod
                   isLoading={isLoading}
                   stripeError={stripeError}
@@ -532,7 +538,7 @@ const FullPrimaryAddressForm = () => {
 };
 
 export const UpdateInfoStep = () => (
-  <SplitScreenLayout title="Update Info" className="bg-zinc-50">
+  <SplitScreenLayout title="Set up your account" className="bg-zinc-50">
     <UpdateInfoContent />
   </SplitScreenLayout>
 );

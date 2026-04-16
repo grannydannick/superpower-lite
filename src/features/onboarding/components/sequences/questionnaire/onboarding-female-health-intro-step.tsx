@@ -1,6 +1,10 @@
 import { Head } from '@/components/seo';
 import { Button } from '@/components/ui/button';
 import { Body1, H2 } from '@/components/ui/typography';
+import {
+  getOnboardingStepTitle,
+  ONBOARDING_STEP_IDS,
+} from '@/features/onboarding/components/flow/onboarding-step-manifest';
 
 import { useOnboardingNavigation } from '../../../hooks/use-onboarding-navigation';
 import { Sequence } from '../../sequence';
@@ -10,7 +14,9 @@ export const OnboardingFemaleHealthIntroStep = () => {
 
   return (
     <>
-      <Head title="Onboarding: Female Health" />
+      <Head
+        title={getOnboardingStepTitle(ONBOARDING_STEP_IDS.FEMALE_HEALTH_INTRO)}
+      />
       <Sequence.StepLayout centered className="bg-zinc-50">
         <Sequence.StepMedia className="flex items-center justify-center">
           <img

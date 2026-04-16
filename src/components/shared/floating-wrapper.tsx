@@ -8,7 +8,6 @@ import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 import { AssistantModal } from '@/features/messages/components/assistant/assistant-modal';
-import { cn } from '@/lib/utils';
 
 const HIDE_WRAPPER_PATHNAMES = [
   '/concierge',
@@ -60,13 +59,14 @@ export const FloatingWrapper = () => {
     }
   }
 
+  if (shouldHide) {
+    return null;
+  }
+
   return createPortal(
     <div
       ref={containerRef}
-      className={cn(
-        'pointer-events-none fixed bottom-24 right-4 z-[51] flex w-52 flex-col items-end gap-3 lg:bottom-4',
-        shouldHide ? 'pointer-events-none opacity-0' : null,
-      )}
+      className="pointer-events-none fixed bottom-24 right-4 z-[51] flex w-52 flex-col items-end gap-3 lg:bottom-4"
     >
       <AssistantModal />
     </div>,

@@ -1,59 +1,102 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+import type { AddOnItemId } from '../api/onboarding-add-ons';
+
 interface OnboardingCartStoreState {
-  selectedPanelIds: Set<string>;
-  togglePanel: (panelId: string) => void;
-  addPanel: (panelId: string) => void;
+  selectedServiceIds: Set<AddOnItemId>;
+  hasInitializedRecommendedSelections: boolean;
+  toggleService: (serviceId: AddOnItemId) => void;
+  applyToggle: (select: AddOnItemId[], deselect: AddOnItemId[]) => void;
+  addService: (serviceId: AddOnItemId) => void;
+  markRecommendedSelectionsInitialized: () => void;
   clear: () => void;
 }
 
 interface OnboardingCartPersistedState {
-  selectedPanelIds: string[];
+  selectedPanelIds?: AddOnItemId[];
+  selectedServiceIds?: AddOnItemId[];
+  hasInitializedRecommendedSelections?: boolean;
 }
 
 export const useOnboardingCartStore = create<OnboardingCartStoreState>()(
   persist(
     (set) => ({
-      selectedPanelIds: new Set<string>(),
-      togglePanel: (panelId) =>
+      selectedServiceIds: new Set<AddOnItemId>(),
+      hasInitializedRecommendedSelections: false,
+      toggleService: (serviceId) =>
         set((state) => {
-          const nextIds = new Set(state.selectedPanelIds);
-          if (nextIds.has(panelId)) {
-            nextIds.delete(panelId);
+          const nextIds = new Set(state.selectedServiceIds);
+          if (nextIds.has(serviceId)) {
+            nextIds.delete(serviceId);
           } else {
-            nextIds.add(panelId);
+            nextIds.add(serviceId);
           }
-          return { selectedPanelIds: nextIds };
+          return { selectedServiceIds: nextIds };
         }),
-      addPanel: (panelId) =>
+      applyToggle: (select, deselect) =>
         set((state) => {
-          if (state.selectedPanelIds.has(panelId)) {
+          const nextIds = new Set(state.selectedServiceIds);
+          for (const id of deselect) nextIds.delete(id);
+          for (const id of select) nextIds.add(id);
+          return { selectedServiceIds: nextIds };
+        }),
+      addService: (serviceId) =>
+        set((state) => {
+          if (state.selectedServiceIds.has(serviceId)) {
             return state;
           }
-          const nextIds = new Set(state.selectedPanelIds);
-          nextIds.add(panelId);
-          return { selectedPanelIds: nextIds };
+          const nextIds = new Set(state.selectedServiceIds);
+          nextIds.add(serviceId);
+          return { selectedServiceIds: nextIds };
         }),
-      clear: () => set(() => ({ selectedPanelIds: new Set<string>() })),
+      markRecommendedSelectionsInitialized: () =>
+        set((state) => {
+          if (state.hasInitializedRecommendedSelections) {
+            return state;
+          }
+
+          return { hasInitializedRecommendedSelections: true };
+        }),
+      clear: () => set(() => ({ selectedServiceIds: new Set<AddOnItemId>() })),
     }),
     {
       name: 'onboarding-cart-store',
       partialize: (state): OnboardingCartPersistedState => ({
-        selectedPanelIds: Array.from(state.selectedPanelIds),
+        hasInitializedRecommendedSelections:
+          state.hasInitializedRecommendedSelections,
+        selectedServiceIds: Array.from(state.selectedServiceIds),
       }),
       merge: (persistedState, currentState) => {
-        const selectedPanelIds: string[] = [];
-        if (
-          typeof persistedState === 'object' &&
-          persistedState !== null &&
-          'selectedPanelIds' in persistedState
-        ) {
-          const maybeSelectedPanelIds = persistedState.selectedPanelIds;
-          if (Array.isArray(maybeSelectedPanelIds)) {
-            for (const panelId of maybeSelectedPanelIds) {
-              if (typeof panelId === 'string') {
-                selectedPanelIds.push(panelId);
+        const selectedServiceIds: AddOnItemId[] = [];
+        let hasInitializedRecommendedSelections = false;
+
+        if (typeof persistedState === 'object' && persistedState !== null) {
+          if (
+            'hasInitializedRecommendedSelections' in persistedState &&
+            persistedState.hasInitializedRecommendedSelections === true
+          ) {
+            hasInitializedRecommendedSelections = true;
+          }
+
+          if ('selectedServiceIds' in persistedState) {
+            const maybeSelectedServiceIds = persistedState.selectedServiceIds;
+
+            if (Array.isArray(maybeSelectedServiceIds)) {
+              for (const serviceId of maybeSelectedServiceIds) {
+                if (typeof serviceId === 'string') {
+                  selectedServiceIds.push(serviceId);
+                }
+              }
+            }
+          } else if ('selectedPanelIds' in persistedState) {
+            const maybeSelectedPanelIds = persistedState.selectedPanelIds;
+
+            if (Array.isArray(maybeSelectedPanelIds)) {
+              for (const panelId of maybeSelectedPanelIds) {
+                if (typeof panelId === 'string') {
+                  selectedServiceIds.push(panelId);
+                }
               }
             }
           }
@@ -61,7 +104,8 @@ export const useOnboardingCartStore = create<OnboardingCartStoreState>()(
 
         return {
           ...currentState,
-          selectedPanelIds: new Set(selectedPanelIds),
+          hasInitializedRecommendedSelections,
+          selectedServiceIds: new Set<AddOnItemId>(selectedServiceIds),
         };
       },
     },

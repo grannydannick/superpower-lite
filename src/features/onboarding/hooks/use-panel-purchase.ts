@@ -1,21 +1,19 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 
 import { toast } from '@/components/ui/sonner';
 import { KIT_SERVICES } from '@/const/services';
 import { useCreateCredit } from '@/features/orders/api/credits';
 import { useServices } from '@/features/services/api';
-import { usePaymentMethods } from '@/features/settings/api';
+import { usePaymentMethodSelection } from '@/features/settings/hooks';
 import { HealthcareService } from '@/types/api';
 
 import { useOnboardingCartStore } from '../stores/onboarding-cart-store';
 
 import { useOnboardingAnalytics } from './use-onboarding-analytics';
 
-type PanelPurchaseMode = 'direct-purchase' | 'add-to-cart';
-
 type UsePanelPurchaseOptions = {
   serviceName: string;
-  mode?: PanelPurchaseMode;
+  mode?: 'direct-purchase' | 'add-to-cart';
   onSuccess?: () => void;
   onError?: () => void;
   /** Called when service is unavailable after loading completes */
@@ -47,49 +45,30 @@ export const usePanelPurchase = ({
 }: UsePanelPurchaseOptions): UsePanelPurchaseReturn => {
   const group = KIT_SERVICES.has(serviceName) ? 'test-kit' : 'phlebotomy';
   const servicesQuery = useServices({ group });
-  const paymentMethodsQuery = usePaymentMethods();
+  const isDirectPurchase = mode === 'direct-purchase';
+  const { activePaymentMethod, isLoading: isPaymentMethodsLoading } =
+    usePaymentMethodSelection();
   const createCreditMutation = useCreateCredit();
-  const addPanel = useOnboardingCartStore((state) => state.addPanel);
+  const addService = useOnboardingCartStore((s) => s.addService);
   const { trackOnboardingCreditPurchase, trackOnboardingCreditAddedToCart } =
     useOnboardingAnalytics();
 
-  const isDirectPurchase = mode === 'direct-purchase';
   const isLoading =
-    servicesQuery.isLoading ||
-    (isDirectPurchase && paymentMethodsQuery.isLoading);
-
-  const service = useMemo(() => {
-    const services = servicesQuery.data?.services ?? [];
-    return services.find((s) => s.name === serviceName);
-  }, [servicesQuery.data?.services, serviceName]);
-
+    servicesQuery.isLoading || (isDirectPurchase && isPaymentMethodsLoading);
+  const services = servicesQuery.data?.services ?? [];
+  const service = services.find((s) => s.name === serviceName);
   const isAvailable = !isLoading && !!service?.price;
+  const priceInCents = service?.price ?? 0;
 
-  const pricing = useMemo(() => {
-    const priceInCents = service?.price ?? 0;
-    return {
-      originalPrice: Math.round(priceInCents * 1.1),
-      salePrice: priceInCents,
-      discountPercent: 10,
-      totalPrice: priceInCents,
-    };
-  }, [service?.price]);
-
-  const firstPaymentMethod = useMemo(() => {
-    const methods = paymentMethodsQuery.data?.paymentMethods ?? [];
-    return methods[0];
-  }, [paymentMethodsQuery.data?.paymentMethods]);
-
-  const paymentMethodId = firstPaymentMethod?.externalPaymentMethodId;
-
-  // Auto-skip when service is unavailable after loading completes
+  // Auto-skip when service is unavailable after loading completes.
+  // Used by 10+ upsell detail panels that pass onUnavailable: next.
   useEffect(() => {
     if (!isLoading && !service?.price && onUnavailable) {
       onUnavailable();
     }
   }, [isLoading, service?.price, onUnavailable]);
 
-  const purchase = useCallback(async () => {
+  const purchase = async () => {
     if (!service?.id) {
       toast.error('Service not available');
       onError?.();
@@ -97,7 +76,7 @@ export const usePanelPurchase = ({
     }
 
     if (mode === 'add-to-cart') {
-      addPanel(service.id);
+      addService(service.id);
       trackOnboardingCreditAddedToCart({
         id: service.id,
         price: service.price ?? 0,
@@ -107,6 +86,7 @@ export const usePanelPurchase = ({
       return;
     }
 
+    const paymentMethodId = activePaymentMethod?.externalPaymentMethodId;
     if (!paymentMethodId) {
       toast.error('No payment method available');
       onError?.();
@@ -115,12 +95,9 @@ export const usePanelPurchase = ({
 
     try {
       await createCreditMutation.mutateAsync({
-        data: {
-          serviceIds: [service.id],
-          paymentMethodId,
-        },
+        data: { serviceIds: [service.id], paymentMethodId },
       });
-    } catch (_error) {
+    } catch {
       toast.error('Purchase failed. Please try again later.');
       onError?.();
       return;
@@ -129,23 +106,11 @@ export const usePanelPurchase = ({
     trackOnboardingCreditPurchase({
       credits: [{ id: service.id, price: service.price ?? 0 }],
       totalValue: service.price ?? 0,
-      paymentProvider: firstPaymentMethod?.paymentProvider ?? 'unknown',
+      paymentProvider: activePaymentMethod?.paymentProvider ?? 'unknown',
     });
     toast.success('Purchase successful!');
     onSuccess?.();
-  }, [
-    mode,
-    addPanel,
-    service?.id,
-    service?.price,
-    paymentMethodId,
-    firstPaymentMethod?.paymentProvider,
-    createCreditMutation,
-    trackOnboardingCreditPurchase,
-    trackOnboardingCreditAddedToCart,
-    onSuccess,
-    onError,
-  ]);
+  };
 
   return {
     purchase,
@@ -153,6 +118,11 @@ export const usePanelPurchase = ({
     service,
     isLoading,
     isAvailable,
-    pricing,
+    pricing: {
+      originalPrice: Math.round(priceInCents * 1.1),
+      salePrice: priceInCents,
+      discountPercent: 10,
+      totalPrice: priceInCents,
+    },
   };
 };

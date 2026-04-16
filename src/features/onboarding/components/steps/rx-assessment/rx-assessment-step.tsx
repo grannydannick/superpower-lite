@@ -1,5 +1,10 @@
+import { Head } from '@/components/seo';
 import { Spinner } from '@/components/ui/spinner';
-import { useQuestionnaireResponseList } from '@/features/questionnaires/api/questionnaire-response';
+import { useSuspenseOnboarding } from '@/features/onboarding/api/onboarding';
+import {
+  getOnboardingStepTitle,
+  ONBOARDING_STEP_IDS,
+} from '@/features/onboarding/components/flow/onboarding-step-manifest';
 import { RxQuestionnaire } from '@/features/questionnaires/components/rx-questionnaire';
 
 import { useOnboardingNavigation } from '../../../hooks/use-onboarding-navigation';
@@ -20,29 +25,30 @@ const LoadingState = ({ label }: { label?: string }) => {
 
 export const RxAssessmentStep = () => {
   const { next } = useOnboardingNavigation();
-
-  const { data: questionnaireResponses, isLoading } =
-    useQuestionnaireResponseList({
-      status: 'in-progress,completed,stopped',
-      _sort: '-_lastUpdated',
-    });
-
-  if (isLoading) {
-    return <LoadingState />;
-  }
+  const { data: onboardingData } = useSuspenseOnboarding();
 
   const rxQuestionnaireContext = getRxQuestionnaireContext(
-    questionnaireResponses,
+    onboardingData.questionnaires,
   );
 
   if (rxQuestionnaireContext.status !== 'required') {
-    return <LoadingState label="Preparing your next step..." />;
+    return (
+      <>
+        <Head
+          title={getOnboardingStepTitle(ONBOARDING_STEP_IDS.RX_ASSESSMENT)}
+        />
+        <LoadingState label="Preparing your next step..." />
+      </>
+    );
   }
 
   return (
-    <RxQuestionnaire
-      name={rxQuestionnaireContext.questionnaireName}
-      onSubmit={next}
-    />
+    <>
+      <Head title={getOnboardingStepTitle(ONBOARDING_STEP_IDS.RX_ASSESSMENT)} />
+      <RxQuestionnaire
+        name={rxQuestionnaireContext.questionnaireIdentifier}
+        onSubmit={next}
+      />
+    </>
   );
 };

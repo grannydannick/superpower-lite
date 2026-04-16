@@ -89,14 +89,19 @@ export const Route = createFileRoute('/_app')({
   beforeLoad: async ({ context, location }) => {
     const { queryClient } = context;
     const redirectTo = location.href;
+    const isOnboardingRoute = location.pathname.startsWith('/onboarding');
 
+    const userPromise = queryClient
+      .ensureQueryData(authenticatedUserQueryOptions())
+      .catch(() => null);
+    const onboardingPromise = isOnboardingRoute
+      ? Promise.resolve(null)
+      : queryClient
+          .ensureQueryData(getTaskQueryOptions('onboarding'))
+          .catch(() => null);
     const [user, onboarding] = await Promise.all([
-      queryClient
-        .ensureQueryData(authenticatedUserQueryOptions())
-        .catch(() => null),
-      queryClient
-        .ensureQueryData(getTaskQueryOptions('onboarding'))
-        .catch(() => null),
+      userPromise,
+      onboardingPromise,
     ]);
 
     if (user === null) {
@@ -113,14 +118,14 @@ export const Route = createFileRoute('/_app')({
       });
     }
 
-    if (onboarding?.task.status !== 'completed') {
-      if (!location.pathname.startsWith('/onboarding')) {
-        throw redirect({
-          to: '/onboarding',
-          replace: true,
-        });
-      }
+    if (!isOnboardingRoute && onboarding?.task.status !== 'completed') {
+      throw redirect({
+        to: '/onboarding',
+        replace: true,
+      });
+    }
 
+    if (isOnboardingRoute) {
       return;
     }
 

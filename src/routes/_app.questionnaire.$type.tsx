@@ -45,20 +45,20 @@ export const Route = createFileRoute('/_app/questionnaire/$type')({
         .ensureQueryData(getMarketplaceQueryOptions())
         .catch(() => null);
 
+      if (marketplace == null) return;
+
       const rxItem = marketplace?.prescriptions.find((rx) =>
         rx.url?.includes(params.type),
       );
 
-      if (rxItem) {
-        toast('Please select a billing plan before continuing.');
-        throw redirect({
-          to: '/prescriptions/$id',
-          params: { id: rxItem.id },
-          replace: true,
-        });
-      }
+      if (rxItem == null) return;
 
-      throw notFound();
+      toast('Please select a billing plan before continuing.');
+      throw redirect({
+        to: '/prescriptions/$id',
+        params: { id: rxItem.id },
+        replace: true,
+      });
     }
   },
   loader: () => {

@@ -21,7 +21,8 @@ export const ScheduleFlow: React.FC<ScheduleStoreProps> = ({
   mode,
 }) => {
   const matchRoute = useMatchRoute();
-  const isOnOnboarding = matchRoute({ to: '/onboarding' }) !== false;
+  const isOnOnboarding =
+    matchRoute({ to: '/onboarding', fuzzy: true }) !== false;
 
   return (
     <ScheduleStoreProvider onSuccess={onSuccess} onDone={onDone} mode={mode}>

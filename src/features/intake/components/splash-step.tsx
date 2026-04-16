@@ -4,9 +4,10 @@ import { Head } from '@/components/seo';
 import { Button } from '@/components/ui/button';
 import { Body1, H2 } from '@/components/ui/typography';
 import { Sequence } from '@/features/onboarding/components/sequence';
-import { useOnboardingNavigation } from '@/features/onboarding/hooks/use-onboarding-navigation';
 import { useGender } from '@/hooks/use-gender';
 import { dismissIntake } from '@/lib/intake-dismiss';
+
+import { useIntakeNavigation } from '../hooks/use-intake-navigation';
 
 const SPLASH_IMAGES = {
   female: '/onboarding/shared/backgrounds/bg-female-face.webp',
@@ -14,7 +15,7 @@ const SPLASH_IMAGES = {
 } as const;
 
 export const SplashStep = () => {
-  const { next } = useOnboardingNavigation();
+  const { next } = useIntakeNavigation();
   const navigate = useNavigate();
   const { gender } = useGender();
 

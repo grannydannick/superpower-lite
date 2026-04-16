@@ -35,6 +35,7 @@ export const AiSuggestions = ({
 
   const width = useWindowWidth();
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   const { data: items = [], isFetching } = useCreateFollowups({
     context,
@@ -43,8 +44,6 @@ export const AiSuggestions = ({
   });
 
   const open = useAssistantStore((s) => s.open);
-
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isRevealMode = pathname.startsWith('/protocol/reveal/');
   const isConcierge = pathname.includes('/concierge');
 

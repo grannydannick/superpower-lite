@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { getOnboardingQueryOptions } from '@/features/onboarding/api/onboarding';
 import { $api } from '@/orpc/client';
 import type { operations } from '@/orpc/types.generated';
 
@@ -131,6 +132,9 @@ export function useCreateQuestionnaireResponse() {
       queryClient.invalidateQueries({
         queryKey: ['get', '/questionnaire-responses'],
       });
+      await queryClient.invalidateQueries({
+        queryKey: getOnboardingQueryOptions().queryKey,
+      });
 
       return result;
     },
@@ -179,6 +183,9 @@ export function useUpdateQuestionnaireResponse(
     // Invalidate list queries
     queryClient.invalidateQueries({
       queryKey: ['get', '/questionnaire-responses'],
+    });
+    await queryClient.invalidateQueries({
+      queryKey: getOnboardingQueryOptions().queryKey,
     });
 
     // Invalidate additional identifiers if provided

@@ -7,6 +7,10 @@ import { Head } from '@/components/seo';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner';
+import {
+  getOnboardingStepTitle,
+  ONBOARDING_STEP_IDS,
+} from '@/features/onboarding/components/flow/onboarding-step-manifest';
 import { useUpgradeCredit } from '@/features/orders/api';
 import { usePaymentMethodSelection } from '@/features/settings/hooks';
 import { CurrentPaymentMethodCard } from '@/features/users/components/payment';
@@ -18,12 +22,12 @@ import { getUpgradePrice } from '@/utils/get-upgrade-price';
 import { useOnboardingAnalytics } from '../../../hooks/use-onboarding-analytics';
 import { useOnboardingNavigation } from '../../../hooks/use-onboarding-navigation';
 import { Sequence } from '../../sequence';
-import { Detail } from '../../sequences/upsell/shared/detail';
 
 import {
   ADVANCED_PANEL_FEMALE_BIOMARKERS,
   ADVANCED_PANEL_MALE_BIOMARKERS,
 } from './advanced-panel-biomarkers';
+import { Detail } from './advanced-panel-detail';
 
 const TESTIMONIALS = [
   {
@@ -211,7 +215,9 @@ export const AdvancedPanelUpgradeStep = () => {
 
   return (
     <>
-      <Head title="Advanced Panel Upgrade" />
+      <Head
+        title={getOnboardingStepTitle(ONBOARDING_STEP_IDS.ADVANCED_UPGRADE)}
+      />
       <Sequence.StepLayout className="bg-zinc-50 md:bg-white">
         <Sequence.StepHeader className="flex items-center justify-between md:hidden">
           <div className="size-9" />
