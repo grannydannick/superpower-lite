@@ -6,6 +6,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { useOnboarding } from '@/features/onboarding/api/onboarding';
 import { OnboardingNavigationProvider } from '@/features/onboarding/hooks/use-onboarding-navigation';
 import { useGiftUpsellStore } from '@/features/onboarding/stores/gift-upsell-store';
+import { useWelcomeSequenceStore } from '@/features/onboarding/stores/welcome-sequence-store';
 
 import {
   buildOnboardingFacts,
@@ -24,6 +25,9 @@ const OnboardingLoadingState = () => {
 
 export const OnboardingIndexRedirect = () => {
   const { data: onboardingData, isLoading } = useOnboarding();
+  const hasSeenWelcome = useWelcomeSequenceStore(
+    (state) => state.hasSeenWelcome,
+  );
   const hasSeenGiftUpsell = useGiftUpsellStore(
     (state) => state.hasSeenGiftUpsell,
   );
@@ -34,6 +38,7 @@ export const OnboardingIndexRedirect = () => {
 
   const validSteps = getValidOnboardingSteps({
     ...buildOnboardingFacts(onboardingData),
+    hasSeenWelcome,
     hasSeenGiftUpsell,
   });
   const firstStep = validSteps[0] ?? null;
@@ -52,6 +57,9 @@ interface OnboardingFlowProps {
 
 export const OnboardingFlow = ({ stepPath }: OnboardingFlowProps) => {
   const { data: onboardingData, isLoading } = useOnboarding();
+  const hasSeenWelcome = useWelcomeSequenceStore(
+    (state) => state.hasSeenWelcome,
+  );
   const hasSeenGiftUpsell = useGiftUpsellStore(
     (state) => state.hasSeenGiftUpsell,
   );
@@ -64,6 +72,7 @@ export const OnboardingFlow = ({ stepPath }: OnboardingFlowProps) => {
 
   const validSteps = getValidOnboardingSteps({
     ...buildOnboardingFacts(onboardingData),
+    hasSeenWelcome,
     hasSeenGiftUpsell,
   });
   const fallbackStep = validSteps[0] ?? null;

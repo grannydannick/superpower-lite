@@ -20,6 +20,7 @@ export interface OnboardingFacts {
   completedQuestionnaires: ReadonlySet<OnboardingQuestionnaireIdentifier>;
   creditedServiceIds: ReadonlySet<string>;
   hasStartedIntake: boolean;
+  hasSeenWelcome: boolean;
   hasSeenGiftUpsell: boolean;
   rxQuestionnaireContext: RxQuestionnaireContext;
   showUpsells: boolean;
@@ -67,7 +68,7 @@ const ONBOARDING_STEPS = {
     id: 'get-started',
     analyticsId: 'welcome',
     title: 'Welcome to Superpower',
-    shouldShow: (facts) => !facts.hasStartedIntake,
+    shouldShow: (facts) => !facts.hasSeenWelcome && !facts.hasStartedIntake,
   },
   GIFT_UPSELL: {
     id: 'gift-upsell',
@@ -277,6 +278,7 @@ export function buildOnboardingFacts(
     completedQuestionnaires,
     creditedServiceIds,
     hasStartedIntake,
+    hasSeenWelcome: false,
     hasSeenGiftUpsell: false,
     rxQuestionnaireContext: getRxQuestionnaireContext(
       onboardingData.questionnaires,

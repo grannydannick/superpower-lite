@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Body1, H2 } from '@/components/ui/typography';
 import { useOnboardingNavigation } from '@/features/onboarding/hooks/use-onboarding-navigation';
+import { useWelcomeSequenceStore } from '@/features/onboarding/stores/welcome-sequence-store';
 
 import { DomeImage } from './dome-image';
 
@@ -30,6 +31,14 @@ const NEXT_STEPS = [
 
 export const WelcomeSequence = () => {
   const { next } = useOnboardingNavigation();
+  const dismissWelcome = useWelcomeSequenceStore(
+    (state) => state.dismissWelcome,
+  );
+
+  const handleNext = () => {
+    dismissWelcome();
+    next();
+  };
 
   return (
     <>
@@ -75,7 +84,7 @@ export const WelcomeSequence = () => {
               </Card>
             </div>
             <Button
-              onClick={next}
+              onClick={handleNext}
               variant="default"
               className="h-14 w-full rounded-xl text-base"
             >
