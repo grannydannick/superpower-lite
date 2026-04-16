@@ -639,6 +639,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/knock/apr-renewals/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["knockFetch.aprRenewals"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/ops/notifications/preferences/{userId}": {
         parameters: {
             query?: never;
@@ -703,12 +719,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/rpc/onboarding": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["onboarding.getOnboarding"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/rpc/onboarding/add-ons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["onboarding.getOnboardingAddOns"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /** @enum {unknown} */
-        CheckoutProductId: "v2-baseline-membership-20250801" | "baseline-membership-experiment-299-20260107" | "v2-membership-advanced-upgrade-20250801" | "at-home-sample-collection-20251016" | "membership-gift-20251125" | "membership-gift-nynj-20251128" | "free-membership-gift-20251207" | "free-membership-gift-nynj-20251207" | "v2-autoimmunity-bundle-20250929" | "v2-cardiovascular-bundle-20250929" | "v2-metabolic-bundle-20250929" | "v2-fertility-bundle-20250929" | "v2-methylation-bundle-20250929" | "v2-nutrients-bundle-20250929" | "v2-baseline-blood-panel-20250801" | "v2-advanced-blood-panel-20250801" | "v2-custom-blood-panel-20251002" | "gut-microbiome-analysis-20240513" | "grail-galleri-multi-cancer-test-20240513" | "mosaic-toxic-metals-20260107" | "mosaic-mycotox-20260107" | "mosaic-envirotox-20260107" | "mosaic-toxdetect-20260107" | "autopilot-subscription-20260209" | "rx-enclomiphene-monthly-20250930" | "rx-enclomiphene-90day-20251022" | "rx-enclomiphene-180day-20251022" | "rx-enclomiphene-365day-20260227" | "rx-semaglutide-90day-20251022" | "rx-semaglutide-180day-20251022" | "rx-semaglutide-60day-20251124" | "rx-tirzepatide-monthly-20251224" | "rx-tirzepatide-90d-20251224" | "rx-tirzepatide-180d-20251224" | "rx-tirzepatide-365day-20260318" | "rx-cbp-stepup-enclomiphene-all-quest" | "rx-cbp-stepup-enclomiphene-all-bioref" | "membership-onetime-baseline-20260226";
+        CheckoutProductId: "v2-baseline-membership-20250801" | "baseline-membership-experiment-299-20260107" | "v2-membership-advanced-upgrade-20250801" | "at-home-sample-collection-20251016" | "membership-gift-20251125" | "membership-gift-nynj-20251128" | "free-membership-gift-20251207" | "free-membership-gift-nynj-20251207" | "supermom-bundle-gift-20260414" | "supermom-bundle-gift-nynj-20260414" | "v2-supermom-panel-march-2026-20260320" | "v2-autoimmunity-bundle-20250929" | "v2-cardiovascular-bundle-20250929" | "v2-metabolic-bundle-20250929" | "v2-fertility-bundle-20250929" | "v2-methylation-bundle-20250929" | "v2-nutrients-bundle-20250929" | "v2-baseline-blood-panel-20250801" | "v2-advanced-blood-panel-20250801" | "v2-custom-blood-panel-20251002" | "v2-performance-initial-blood-panel-20260415" | "v2-performance-retest-blood-panel-20260415" | "gut-microbiome-analysis-20240513" | "grail-galleri-multi-cancer-test-20240513" | "mosaic-toxic-metals-20260107" | "mosaic-mycotox-20260107" | "mosaic-envirotox-20260107" | "mosaic-toxdetect-20260107" | "autopilot-subscription-20260209" | "rx-enclomiphene-monthly-20250930" | "rx-enclomiphene-90day-20251022" | "rx-enclomiphene-180day-20251022" | "rx-enclomiphene-365day-20260227" | "rx-semaglutide-90day-20251022" | "rx-semaglutide-180day-20251022" | "rx-semaglutide-60day-20251124" | "rx-tirzepatide-monthly-20251224" | "rx-tirzepatide-90d-20251224" | "rx-tirzepatide-180d-20251224" | "rx-tirzepatide-365day-20260318" | "rx-cbp-stepup-enclomiphene-all-quest" | "rx-cbp-stepup-enclomiphene-all-bioref" | "membership-onetime-baseline-20260226";
+        /** @enum {unknown} */
+        GiftPromo: "two_for_one" | "four_for_three";
         CheckoutSessionLineItem: {
             id: string;
             slug: components["schemas"]["CheckoutProductId"];
@@ -735,7 +785,7 @@ export interface components {
             discount: number;
             status?: string;
             paymentStatus?: string;
-            stubIntakeBillingCodes?: ("rx-enclomiphene-monthly" | "rx-enclomiphene-90day" | "rx-enclomiphene-180day" | "rx-enclomiphene-365day" | "rx-semaglutide-monthly" | "rx-semaglutide-90day" | "rx-semaglutide-180day" | "rx-semaglutide-60day" | "rx-tirzepatide-monthly" | "rx-tirzepatide-90day" | "rx-tirzepatide-180day" | "rx-tirzepatide-365day")[];
+            stubIntakeBillingCodes?: ("rx-enclomiphene-monthly" | "rx-enclomiphene-90day" | "rx-enclomiphene-180day" | "rx-enclomiphene-365day" | "rx-semaglutide-monthly" | "rx-semaglutide-90day" | "rx-semaglutide-180day" | "rx-semaglutide-60day" | "rx-tirzepatide-monthly" | "rx-tirzepatide-90day" | "rx-tirzepatide-180day" | "rx-tirzepatide-365day" | "rx-tirzepatide-microdose-monthly" | "rx-tirzepatide-microdose-90day" | "rx-tirzepatide-microdose-180day" | "rx-tirzepatide-microdose-365day")[];
         };
         CreateCheckoutSession: {
             /** Format: uri */
@@ -748,7 +798,8 @@ export interface components {
             }[];
             referralId?: string;
             tags?: string[];
-            stubIntakeBillingCodes?: ("rx-enclomiphene-monthly" | "rx-enclomiphene-90day" | "rx-enclomiphene-180day" | "rx-enclomiphene-365day" | "rx-semaglutide-monthly" | "rx-semaglutide-90day" | "rx-semaglutide-180day" | "rx-semaglutide-60day" | "rx-tirzepatide-monthly" | "rx-tirzepatide-90day" | "rx-tirzepatide-180day" | "rx-tirzepatide-365day")[];
+            promo?: components["schemas"]["GiftPromo"];
+            stubIntakeBillingCodes?: ("rx-enclomiphene-monthly" | "rx-enclomiphene-90day" | "rx-enclomiphene-180day" | "rx-enclomiphene-365day" | "rx-semaglutide-monthly" | "rx-semaglutide-90day" | "rx-semaglutide-180day" | "rx-semaglutide-60day" | "rx-tirzepatide-monthly" | "rx-tirzepatide-90day" | "rx-tirzepatide-180day" | "rx-tirzepatide-365day" | "rx-tirzepatide-microdose-monthly" | "rx-tirzepatide-microdose-90day" | "rx-tirzepatide-microdose-180day" | "rx-tirzepatide-microdose-365day")[];
         };
         UpdateCheckoutSession: {
             id: string;
@@ -759,7 +810,8 @@ export interface components {
                 priceId?: string;
             }[];
             tags?: string[];
-            stubIntakeBillingCodes?: ("rx-enclomiphene-monthly" | "rx-enclomiphene-90day" | "rx-enclomiphene-180day" | "rx-enclomiphene-365day" | "rx-semaglutide-monthly" | "rx-semaglutide-90day" | "rx-semaglutide-180day" | "rx-semaglutide-60day" | "rx-tirzepatide-monthly" | "rx-tirzepatide-90day" | "rx-tirzepatide-180day" | "rx-tirzepatide-365day")[];
+            promo?: components["schemas"]["GiftPromo"];
+            stubIntakeBillingCodes?: ("rx-enclomiphene-monthly" | "rx-enclomiphene-90day" | "rx-enclomiphene-180day" | "rx-enclomiphene-365day" | "rx-semaglutide-monthly" | "rx-semaglutide-90day" | "rx-semaglutide-180day" | "rx-semaglutide-60day" | "rx-tirzepatide-monthly" | "rx-tirzepatide-90day" | "rx-tirzepatide-180day" | "rx-tirzepatide-365day" | "rx-tirzepatide-microdose-monthly" | "rx-tirzepatide-microdose-90day" | "rx-tirzepatide-microdose-180day" | "rx-tirzepatide-microdose-365day")[];
         };
     };
     responses: never;
@@ -5677,10 +5729,12 @@ export interface operations {
                             /** Format: date-time */
                             updatedAt: string;
                             purchaserUserId: string;
-                            giftDeliveryType: ("digital" | "gift_box") | null;
                             couponId: string;
                             promotionCode: string;
                             isNyNj: boolean;
+                            /** @enum {unknown} */
+                            type: "BASELINE" | "SUPERMOM_2026" | "OTHER";
+                            giftDeliveryType: ("digital" | "gift_box") | null;
                             recipientFirstName: string | null;
                             recipientLastName: string | null;
                             recipientEmail: string | null;
@@ -5693,6 +5747,8 @@ export interface operations {
                             shippingState: string | null;
                             shippingZipCode: string | null;
                             sentGiftAt: string | null;
+                            addedRecipientAt: string | null;
+                            deliverAt: string | null;
                             redeemedAt: string | null;
                         }[];
                     };
@@ -5908,6 +5964,8 @@ export interface operations {
                     shippingCity?: string;
                     shippingState?: string;
                     shippingZipCode?: string;
+                    /** Format: date-time */
+                    deliverAt?: string;
                 };
             };
         };
@@ -5929,10 +5987,12 @@ export interface operations {
                             /** Format: date-time */
                             updatedAt: string;
                             purchaserUserId: string;
-                            giftDeliveryType: ("digital" | "gift_box") | null;
                             couponId: string;
                             promotionCode: string;
                             isNyNj: boolean;
+                            /** @enum {unknown} */
+                            type: "BASELINE" | "SUPERMOM_2026" | "OTHER";
+                            giftDeliveryType: ("digital" | "gift_box") | null;
                             recipientFirstName: string | null;
                             recipientLastName: string | null;
                             recipientEmail: string | null;
@@ -5945,6 +6005,8 @@ export interface operations {
                             shippingState: string | null;
                             shippingZipCode: string | null;
                             sentGiftAt: string | null;
+                            addedRecipientAt: string | null;
+                            deliverAt: string | null;
                             redeemedAt: string | null;
                         };
                     };
@@ -7421,7 +7483,7 @@ export interface operations {
     "questionnaire.getByName": {
         parameters: {
             query?: {
-                name?: "onboarding-intake" | "onboarding-screening" | "onboarding-primer" | "onboarding-medical-history" | "onboarding-female-health" | "onboarding-lifestyle" | "rx-assessment-ghk-cu" | "rx-assessment-ghk-cu-symptom-tracker" | "rx-assessment-semaglutide" | "rx-assessment-semaglutide-symptom-tracker" | "rx-assessment-sermorelin-injectable" | "rx-assessment-sermorelin-injectable-symptom-tracker" | "rx-assessment-sermorelin-troche" | "rx-assessment-sermorelin-troche-symptom-tracker" | "rx-assessment-vip-nasal-spray" | "rx-assessment-vip-nasal-spray-symptom-tracker" | "rx-assessment-metformin" | "rx-assessment-metformin-symptom-tracker" | "rx-assessment-olympus-male-max" | "rx-assessment-olympus-male-max-symptom-tracker" | "rx-assessment-hcg-pregnyl" | "rx-assessment-hcg-pregnyl-symptom-tracker" | "rx-assessment-gonadorelin" | "rx-assessment-gonadorelin-symptom-tracker" | "rx-assessment-nad-injectable" | "rx-assessment-nad-injectable-symptom-tracker" | "rx-assessment-nad-nasal-spray" | "rx-assessment-nad-nasal-spray-symptom-tracker" | "rx-assessment-aloe-vera-tretinoin" | "rx-assessment-aloe-vera-tretinoin-symptom-tracker" | "rx-assessment-elamipretide" | "rx-assessment-elamipretide-symptom-tracker" | "rx-assessment-enclomiphene" | "rx-assessment-enclomiphene-symptom-tracker" | "rx-assessment-tadalafil" | "rx-assessment-tadalafil-symptom-tracker" | "rx-assessment-low-dose-naltrexone" | "rx-assessment-low-dose-naltrexone-symptom-tracker" | "rx-assessment-methylcobalamin-b12" | "rx-assessment-methylcobalamin-b12-symptom-tracker" | "rx-assessment-trt-injectable" | "rx-assessment-trt-injectable-symptom-tracker" | "rx-assessment-tirzepatide" | "rx-assessment-tirzepatide-symptom-tracker" | "glp-frontdoor-experiment";
+                name?: "onboarding-intake" | "onboarding-screening" | "onboarding-primer" | "onboarding-medical-history" | "onboarding-female-health" | "onboarding-lifestyle" | "rx-assessment-ghk-cu" | "rx-assessment-ghk-cu-symptom-tracker" | "rx-assessment-semaglutide" | "rx-assessment-semaglutide-symptom-tracker" | "rx-assessment-sermorelin-injectable" | "rx-assessment-sermorelin-injectable-symptom-tracker" | "rx-assessment-sermorelin-troche" | "rx-assessment-sermorelin-troche-symptom-tracker" | "rx-assessment-vip-nasal-spray" | "rx-assessment-vip-nasal-spray-symptom-tracker" | "rx-assessment-metformin" | "rx-assessment-metformin-symptom-tracker" | "rx-assessment-olympus-male-max" | "rx-assessment-olympus-male-max-symptom-tracker" | "rx-assessment-hcg-pregnyl" | "rx-assessment-hcg-pregnyl-symptom-tracker" | "rx-assessment-gonadorelin" | "rx-assessment-gonadorelin-symptom-tracker" | "rx-assessment-nad-injectable" | "rx-assessment-nad-injectable-symptom-tracker" | "rx-assessment-nad-nasal-spray" | "rx-assessment-nad-nasal-spray-symptom-tracker" | "rx-assessment-aloe-vera-tretinoin" | "rx-assessment-aloe-vera-tretinoin-symptom-tracker" | "rx-assessment-elamipretide" | "rx-assessment-elamipretide-symptom-tracker" | "rx-assessment-enclomiphene" | "rx-assessment-enclomiphene-symptom-tracker" | "rx-assessment-tadalafil" | "rx-assessment-tadalafil-symptom-tracker" | "rx-assessment-low-dose-naltrexone" | "rx-assessment-low-dose-naltrexone-symptom-tracker" | "rx-assessment-methylcobalamin-b12" | "rx-assessment-methylcobalamin-b12-symptom-tracker" | "rx-assessment-trt-injectable" | "rx-assessment-trt-injectable-symptom-tracker" | "rx-assessment-tirzepatide" | "rx-assessment-tirzepatide-symptom-tracker" | "rx-assessment-tirzepatide-microdose" | "rx-assessment-tirzepatide-microdose-symptom-tracker" | "rx-assessment-wyndly" | "rx-assessment-wyndly-symptom-tracker" | "glp-frontdoor-experiment";
                 status?: "draft" | "active" | "retired";
             };
             header?: never;
@@ -20151,6 +20213,213 @@ export interface operations {
             };
         };
     };
+    "knockFetch.aprRenewals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        context: string;
+                        accountCreatedAt: string;
+                    };
+                };
+            };
+            /** @description 400 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "BAD_REQUEST";
+                        /** @constant */
+                        status: 400;
+                        /** @default Bad Request */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 401 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "UNAUTHORIZED";
+                        /** @constant */
+                        status: 401;
+                        /** @default Unauthorized */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 403 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "FORBIDDEN";
+                        /** @constant */
+                        status: 403;
+                        /** @default Forbidden */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 404 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "NOT_FOUND";
+                        /** @constant */
+                        status: 404;
+                        /** @default Not found */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 409 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "CONFLICT";
+                        /** @constant */
+                        status: 409;
+                        /** @default Conflict */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 429 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "RATE_LIMIT_EXCEEDED";
+                        /** @constant */
+                        status: 429;
+                        /** @default Rate limit exceeded */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 500 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "INTERNAL_SERVER_ERROR";
+                        /** @constant */
+                        status: 500;
+                        /** @default Internal server error */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+        };
+    };
     "notificationsOps.getPreferences": {
         parameters: {
             query?: never;
@@ -21022,8 +21291,516 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": unknown | unknown;
+                };
+            };
+            /** @description 400 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": {
-                        kustomerId: string;
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "BAD_REQUEST";
+                        /** @constant */
+                        status: 400;
+                        /** @default Bad Request */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 401 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "UNAUTHORIZED";
+                        /** @constant */
+                        status: 401;
+                        /** @default Unauthorized */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 403 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "FORBIDDEN";
+                        /** @constant */
+                        status: 403;
+                        /** @default Forbidden */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 404 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "NOT_FOUND";
+                        /** @constant */
+                        status: 404;
+                        /** @default Not found */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 409 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "CONFLICT";
+                        /** @constant */
+                        status: 409;
+                        /** @default Conflict */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 429 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "RATE_LIMIT_EXCEEDED";
+                        /** @constant */
+                        status: 429;
+                        /** @default Rate limit exceeded */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 500 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "INTERNAL_SERVER_ERROR";
+                        /** @constant */
+                        status: 500;
+                        /** @default Internal server error */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    "onboarding.getOnboarding": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status: {
+                            /** @enum {unknown} */
+                            state: "not_started" | "in_progress" | "completed";
+                        };
+                        onboardingPolicy: {
+                            showUpsells: boolean;
+                        };
+                        userInfo: {
+                            userInfoCompleted: boolean;
+                            userGender: ("male" | "female") | null;
+                            userAge: number | null;
+                        };
+                        questionnaires: {
+                            /** @enum {unknown} */
+                            identifier: "onboarding-primer" | "onboarding-medical-history" | "onboarding-lifestyle" | "onboarding-female-health" | "rx-assessment-ghk-cu" | "rx-assessment-semaglutide" | "rx-assessment-sermorelin-injectable" | "rx-assessment-sermorelin-troche" | "rx-assessment-vip-nasal-spray" | "rx-assessment-metformin" | "rx-assessment-olympus-male-max" | "rx-assessment-hcg-pregnyl" | "rx-assessment-gonadorelin" | "rx-assessment-nad-injectable" | "rx-assessment-nad-nasal-spray" | "rx-assessment-aloe-vera-tretinoin" | "rx-assessment-elamipretide" | "rx-assessment-enclomiphene" | "rx-assessment-tadalafil" | "rx-assessment-low-dose-naltrexone" | "rx-assessment-methylcobalamin-b12" | "rx-assessment-trt-injectable" | "rx-assessment-tirzepatide" | "rx-assessment-tirzepatide-microdose" | "rx-assessment-wyndly";
+                            /** @enum {unknown} */
+                            status: "in_progress" | "completed";
+                        }[];
+                        credits: {
+                            serviceId: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description 400 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "BAD_REQUEST";
+                        /** @constant */
+                        status: 400;
+                        /** @default Bad Request */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 401 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "UNAUTHORIZED";
+                        /** @constant */
+                        status: 401;
+                        /** @default Unauthorized */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 403 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "FORBIDDEN";
+                        /** @constant */
+                        status: 403;
+                        /** @default Forbidden */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 404 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "NOT_FOUND";
+                        /** @constant */
+                        status: 404;
+                        /** @default Not found */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 409 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "CONFLICT";
+                        /** @constant */
+                        status: 409;
+                        /** @default Conflict */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 429 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "RATE_LIMIT_EXCEEDED";
+                        /** @constant */
+                        status: 429;
+                        /** @default Rate limit exceeded */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 500 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "INTERNAL_SERVER_ERROR";
+                        /** @constant */
+                        status: 500;
+                        /** @default Internal server error */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    "onboarding.getOnboardingAddOns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        recommendedGroupIds: string[];
+                        filters: {
+                            id: string;
+                            label: string;
+                        }[];
+                        meta: {
+                            coveredTubeCount: number;
+                            multipleAppointmentThreshold: number;
+                        };
+                        groups: {
+                            id: string;
+                            label: string;
+                            rank: number;
+                            filterId: string;
+                            recommendationReason: string | null;
+                            selection: {
+                                /** @constant */
+                                type: "bundle-or-components";
+                                bundle: {
+                                    id: string;
+                                    /** @enum {unknown} */
+                                    kind: "complete-panel" | "sub-panel" | "standalone";
+                                    name: string;
+                                    description: string | null;
+                                    price: number;
+                                    bloodTubeCount: number;
+                                    /** @enum {unknown} */
+                                    status: "available" | "purchased" | "included";
+                                    isRecommended: boolean;
+                                    recommendation?: {
+                                        reason: string | null;
+                                        rationale: {
+                                            /** @enum {unknown} */
+                                            source: "condition" | "symptom" | "goal" | "family_history" | "diet" | "fertility" | "demographic" | "lifestyle";
+                                            label: string;
+                                        }[];
+                                    };
+                                } | null;
+                                components: {
+                                    id: string;
+                                    /** @enum {unknown} */
+                                    kind: "complete-panel" | "sub-panel" | "standalone";
+                                    name: string;
+                                    description: string | null;
+                                    price: number;
+                                    bloodTubeCount: number;
+                                    /** @enum {unknown} */
+                                    status: "available" | "purchased" | "included";
+                                    isRecommended: boolean;
+                                    recommendation?: {
+                                        reason: string | null;
+                                        rationale: {
+                                            /** @enum {unknown} */
+                                            source: "condition" | "symptom" | "goal" | "family_history" | "diet" | "fertility" | "demographic" | "lifestyle";
+                                            label: string;
+                                        }[];
+                                    };
+                                }[];
+                            } | {
+                                /** @constant */
+                                type: "independent";
+                                items: {
+                                    id: string;
+                                    /** @enum {unknown} */
+                                    kind: "complete-panel" | "sub-panel" | "standalone";
+                                    name: string;
+                                    description: string | null;
+                                    price: number;
+                                    bloodTubeCount: number;
+                                    /** @enum {unknown} */
+                                    status: "available" | "purchased" | "included";
+                                    isRecommended: boolean;
+                                    recommendation?: {
+                                        reason: string | null;
+                                        rationale: {
+                                            /** @enum {unknown} */
+                                            source: "condition" | "symptom" | "goal" | "family_history" | "diet" | "fertility" | "demographic" | "lifestyle";
+                                            label: string;
+                                        }[];
+                                    };
+                                }[];
+                            };
+                        }[];
                     };
                 };
             };
