@@ -1,4 +1,7 @@
-import { ADVANCED_BLOOD_PANEL_SERVICE_PREFIX } from '@/const/services';
+import {
+  ADVANCED_BLOOD_PANEL_SERVICE_PREFIX,
+  PERFORMANCE_BLOOD_PANEL_SERVICE_PREFIX,
+} from '@/const/services';
 import {
   type GetOnboardingResponse,
   type OnboardingQuestionnaireIdentifier,
@@ -97,6 +100,10 @@ const ONBOARDING_STEPS = {
       !hasCreditForService(
         facts.creditedServiceIds,
         ADVANCED_BLOOD_PANEL_SERVICE_PREFIX,
+      ) &&
+      !hasCreditForService(
+        facts.creditedServiceIds,
+        PERFORMANCE_BLOOD_PANEL_SERVICE_PREFIX,
       ) &&
       facts.rxQuestionnaireContext.status !== 'required' &&
       facts.showUpsells,

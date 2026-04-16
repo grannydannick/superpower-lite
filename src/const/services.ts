@@ -38,6 +38,8 @@ export const HEAVY_METALS_TEST_ID = 'mosaic-toxic-metals';
 
 export const ADVANCED_BLOOD_PANEL = 'Advanced Blood Panel';
 export const ADVANCED_BLOOD_PANEL_SERVICE_PREFIX = 'v2-advanced-blood-panel';
+export const PERFORMANCE_BLOOD_PANEL = 'Performance Initial Blood Panel';
+export const PERFORMANCE_BLOOD_PANEL_SERVICE_PREFIX = 'v3-performance-initial';
 export const IV_DRIP = 'IV Drip';
 
 export const CARDIOVASCULAR_PANEL = 'Cardiovascular Panel';
