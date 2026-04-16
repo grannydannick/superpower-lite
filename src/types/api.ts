@@ -23,6 +23,12 @@ export type UserIdentity = {
 
 export type UserRole = 'MEMBER' | 'SUPER_ADMIN';
 
+export interface ResultsGate {
+  hasFinalDiagnosticReport: boolean;
+  hasPartialResults: boolean;
+  hasUserUploadedResults: boolean;
+}
+
 interface BaseUser {
   id: string;
   username: string;
@@ -64,6 +70,7 @@ export interface User extends BaseUser {
   access?: {
     rx: boolean;
   };
+  resultsGate?: ResultsGate;
 }
 
 export type AdminActor = Entity<{
@@ -896,11 +903,4 @@ export interface RxServiceRequest {
   id: string;
   status: string;
   rxCode: string;
-}
-
-export interface SummaryResult {
-  hasCompletedCarePlan: boolean;
-  hasPartialResults: boolean;
-  completedCarePlans: number;
-  partialDiagnosticReports: number;
 }

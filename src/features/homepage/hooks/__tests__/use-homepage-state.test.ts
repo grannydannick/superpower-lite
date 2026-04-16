@@ -6,8 +6,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useOrders } from '@/features/orders/api';
 import { useCredits } from '@/features/orders/api/credits';
 import { useWearables } from '@/features/settings/api/get-wearables';
-import { useSummarySuspense } from '@/features/summary/api/get-summary';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useUser } from '@/lib/auth';
+import type { User } from '@/types/api';
 
 import { useHomepageState } from '../use-homepage-state';
 
@@ -19,8 +20,8 @@ vi.mock('@/features/orders/api/credits', () => ({
   useCredits: vi.fn(),
 }));
 
-vi.mock('@/features/summary/api/get-summary', () => ({
-  useSummarySuspense: vi.fn(),
+vi.mock('@/lib/auth', () => ({
+  useUser: vi.fn(),
 }));
 
 vi.mock('@/features/settings/api/get-wearables', () => ({
@@ -31,24 +32,18 @@ vi.mock('@/hooks/use-mobile', () => ({
   useIsMobile: vi.fn(),
 }));
 
-const useSummarySuspenseMock = vi.mocked(useSummarySuspense, { partial: true });
 const useOrdersMock = vi.mocked(useOrders, { partial: true });
 const useCreditsMock = vi.mocked(useCredits, { partial: true });
+const useUserMock = vi.mocked(useUser, { partial: true });
 const useWearablesMock = vi.mocked(useWearables, { partial: true });
 const useIsMobileMock = vi.mocked(useIsMobile, { partial: true });
+
+const mockUserWithResultsGate = (resultsGate: User['resultsGate']): User =>
+  ({ resultsGate }) as User;
 
 describe('useHomepageState', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-
-    useSummarySuspenseMock.mockReturnValue({
-      data: {
-        hasCompletedCarePlan: false,
-        completedCarePlans: 0,
-        hasPartialResults: false,
-        partialDiagnosticReports: 0,
-      },
-    });
 
     useOrdersMock.mockReturnValue({
       data: { requestGroups: [] },
@@ -57,6 +52,11 @@ describe('useHomepageState', () => {
 
     useCreditsMock.mockReturnValue({
       data: { credits: [] },
+      isLoading: false,
+    });
+
+    useUserMock.mockReturnValue({
+      data: undefined,
       isLoading: false,
     });
 
@@ -100,6 +100,70 @@ describe('useHomepageState', () => {
     expect(
       result.current.visibleCards.some((card) => card.id === 'actionableCards'),
     ).toBe(true);
+  });
+
+  it('sets hasFinalResults to true when summary has a final diagnostic report', () => {
+    useUserMock.mockReturnValue({
+      data: mockUserWithResultsGate({
+        hasFinalDiagnosticReport: true,
+        hasPartialResults: false,
+        hasUserUploadedResults: false,
+      }),
+      isLoading: false,
+    });
+
+    const { result } = renderHook(() => useHomepageState(), {
+      wrapper: createWrapper(),
+    });
+
+    expect(result.current.state.hasFinalResults).toBe(true);
+  });
+
+  it('sets hasFinalResults to true when summary only has uploaded results', () => {
+    useUserMock.mockReturnValue({
+      data: mockUserWithResultsGate({
+        hasFinalDiagnosticReport: false,
+        hasPartialResults: false,
+        hasUserUploadedResults: true,
+      }),
+      isLoading: false,
+    });
+
+    const { result } = renderHook(() => useHomepageState(), {
+      wrapper: createWrapper(),
+    });
+
+    expect(result.current.state.hasFinalResults).toBe(true);
+  });
+
+  it('sets hasFinalResults to false when summary has no final diagnostic report', () => {
+    useUserMock.mockReturnValue({
+      data: mockUserWithResultsGate({
+        hasFinalDiagnosticReport: false,
+        hasPartialResults: true,
+        hasUserUploadedResults: false,
+      }),
+      isLoading: false,
+    });
+
+    const { result } = renderHook(() => useHomepageState(), {
+      wrapper: createWrapper(),
+    });
+
+    expect(result.current.state.hasFinalResults).toBe(false);
+  });
+
+  it('sets hasFinalResults to false when summary data is undefined', () => {
+    useUserMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+    });
+
+    const { result } = renderHook(() => useHomepageState(), {
+      wrapper: createWrapper(),
+    });
+
+    expect(result.current.state.hasFinalResults).toBe(false);
   });
 });
 

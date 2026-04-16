@@ -128,7 +128,7 @@ export const FileIngestionBlock = memo(function FileIngestionBlock({
         invalidatedCompletionKeysRef.current.add(completionKey);
         queryClient.invalidateQueries({ queryKey: ['biomarkers'] });
         queryClient.invalidateQueries({ queryKey: ['files'] });
-        queryClient.invalidateQueries({ queryKey: ['summary'] });
+        queryClient.invalidateQueries({ queryKey: ['authenticated-user'] });
       }
       if (
         dismissedCompletionKeysRef.current.has(completionKey) ||

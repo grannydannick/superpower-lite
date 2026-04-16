@@ -27,7 +27,6 @@ import {
   useUpdateQuestionnaireResponse,
 } from '@/features/questionnaires/api/questionnaire-response';
 // TODO: re-enable once ready — import { WearableConnectedModal } from '@/features/settings/components/wearables/wearable-connected-modal';
-import { DEV_BYPASS_CARE_PLAN_KEY } from '@/features/summary/api/get-summary';
 
 import { toast } from '../ui/sonner';
 
@@ -53,11 +52,6 @@ export function DevHelper() {
   const isDev = env.DEV_TOOLS_ENABLED;
 
   const [open, setOpen] = React.useState(false);
-  const [bypassCarePlan, setBypassCarePlan] = React.useState(() =>
-    typeof window !== 'undefined'
-      ? localStorage.getItem(DEV_BYPASS_CARE_PLAN_KEY) === 'true'
-      : false,
-  );
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -80,8 +74,6 @@ export function DevHelper() {
       <DevHelperMenu open={open} setOpen={setOpen}>
         {open ? (
           <DevHelperMenuContent
-            bypassCarePlan={bypassCarePlan}
-            setBypassCarePlan={setBypassCarePlan}
             closeMenu={() => setOpen(false)}
             onTriggerWearableModal={() => {
               toast.success('Your Oura is connected!');
@@ -95,15 +87,11 @@ export function DevHelper() {
 }
 
 interface DevHelperMenuContentProps {
-  bypassCarePlan: boolean;
-  setBypassCarePlan: React.Dispatch<React.SetStateAction<boolean>>;
   closeMenu: () => void;
   onTriggerWearableModal: () => void;
 }
 
 function DevHelperMenuContent({
-  bypassCarePlan,
-  setBypassCarePlan,
   closeMenu,
   onTriggerWearableModal,
 }: DevHelperMenuContentProps) {
@@ -296,16 +284,6 @@ function DevHelperMenuContent({
     toast.success(`Jumped to ${stepId}`);
   };
 
-  const onToggleBypassCarePlan = () => {
-    const newValue = !bypassCarePlan;
-    localStorage.setItem(DEV_BYPASS_CARE_PLAN_KEY, newValue.toString());
-    setBypassCarePlan(newValue);
-    toast.success(
-      `Bypass care plan: ${newValue ? 'ON' : 'OFF'}. Refreshing...`,
-    );
-    window.location.reload();
-  };
-
   const questionnaireItems: React.ReactElement[] = [];
   for (const name of ONBOARDING_QUESTIONNAIRES) {
     questionnaireItems.push(
@@ -338,17 +316,6 @@ function DevHelperMenuContent({
 
   return (
     <>
-      <CommandGroup heading="Intake Actions">
-        <CommandItem
-          onSelect={() => {
-            onToggleBypassCarePlan();
-            closeMenu();
-          }}
-        >
-          <span>Bypass care plan check [{bypassCarePlan ? 'ON' : 'OFF'}]</span>
-        </CommandItem>
-      </CommandGroup>
-
       <CommandGroup heading="Questionnaire Actions">
         <CommandItem
           onSelect={() => {

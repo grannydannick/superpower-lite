@@ -15,7 +15,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/{chatId}/messages': {
+  '/messages': {
     parameters: {
       query?: never;
       header?: never;
@@ -23,6 +23,22 @@ export interface paths {
       cookie?: never;
     };
     get: operations['v1.chat.getMessages'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/{chatId}/messages': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['v1.chat.getChatMessages'];
     put?: never;
     post?: never;
     delete?: never;
@@ -119,6 +135,22 @@ export interface paths {
       cookie?: never;
     };
     get: operations['v1.chatV2.resumeStream'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  'v2/stream': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations['v1.chatV2.resumeStreamForUser'];
     put?: never;
     post?: never;
     delete?: never;
@@ -421,10 +453,67 @@ export interface operations {
         cursor?: {
           /** Format: uuid */
           id: string;
-          /** Format: date-time */
-          createdAt?: string;
         };
         sort?: 'asc' | 'desc';
+        limit?: number;
+      };
+      header?: {
+        authorization?: string;
+        'x-user-id'?: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': unknown[];
+        };
+      };
+      /** @description 401 */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json':
+            | {
+                /** @constant */
+                defined: true;
+                /** @constant */
+                code: 'UNAUTHORIZED';
+                /** @constant */
+                status: 401;
+                /** @default Authentication required. */
+                message: string;
+                data?: unknown;
+              }
+            | {
+                /** @constant */
+                defined: false;
+                code: string;
+                status: number;
+                message: string;
+                data?: unknown;
+              };
+        };
+      };
+    };
+  };
+  'v1.chat.getChatMessages': {
+    parameters: {
+      query?: {
+        cursor?: {
+          /** Format: uuid */
+          id: string;
+        };
+        sort?: 'asc' | 'desc';
+        limit?: number;
       };
       header?: {
         authorization?: string;
@@ -505,7 +594,7 @@ export interface operations {
             userId: string;
             /**
              * @default private
-             * @enum {unknown}
+             * @enum {string}
              */
             visibility: 'public' | 'private';
           };
@@ -557,7 +646,7 @@ export interface operations {
       content: {
         'application/json': {
           title?: string;
-          /** @enum {unknown} */
+          /** @enum {string} */
           visibility?: 'public' | 'private';
         };
       };
@@ -578,7 +667,7 @@ export interface operations {
             userId: string;
             /**
              * @default private
-             * @enum {unknown}
+             * @enum {string}
              */
             visibility: 'public' | 'private';
           };
@@ -671,7 +760,7 @@ export interface operations {
             userId: string;
             /**
              * @default private
-             * @enum {unknown}
+             * @enum {string}
              */
             visibility: 'public' | 'private';
           };
@@ -803,34 +892,6 @@ export interface operations {
           'application/json': unknown;
         };
       };
-      /** @description 400 */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json':
-            | {
-                /** @constant */
-                defined: true;
-                /** @constant */
-                code: 'ASSISTANT_RESPONSE_IN_PROGRESS';
-                /** @constant */
-                status: 400;
-                /** @default An assistant response is already being generated for this user. */
-                message: string;
-                data?: unknown;
-              }
-            | {
-                /** @constant */
-                defined: false;
-                code: string;
-                status: number;
-                message: string;
-                data?: unknown;
-              };
-        };
-      };
       /** @description 401 */
       401: {
         headers: {
@@ -846,45 +907,6 @@ export interface operations {
                 /** @constant */
                 status: 401;
                 /** @default Unauthorized. */
-                message: string;
-                data?: unknown;
-              }
-            | {
-                /** @constant */
-                defined: false;
-                code: string;
-                status: number;
-                message: string;
-                data?: unknown;
-              };
-        };
-      };
-      /** @description 409 */
-      409: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json':
-            | {
-                /** @constant */
-                defined: true;
-                /** @constant */
-                code: 'CHAT_ID_CONFLICT';
-                /** @constant */
-                status: 409;
-                /** @default A chat with the same ID already exists. */
-                message: string;
-                data?: unknown;
-              }
-            | {
-                /** @constant */
-                defined: true;
-                /** @constant */
-                code: 'MESSAGE_ID_CONFLICT';
-                /** @constant */
-                status: 409;
-                /** @default A message with the same ID already exists. */
                 message: string;
                 data?: unknown;
               }
@@ -1044,6 +1066,17 @@ export interface operations {
               }
             | {
                 /** @constant */
+                defined: true;
+                /** @constant */
+                code: 'CHATLESS_NOT_AVAILABLE';
+                /** @constant */
+                status: 400;
+                /** @default Chatless mode is not available in this environment. */
+                message: string;
+                data?: unknown;
+              }
+            | {
+                /** @constant */
                 defined: false;
                 code: string;
                 status: number;
@@ -1153,15 +1186,46 @@ export interface operations {
       };
     };
   };
+  'v1.chatV2.resumeStreamForUser': {
+    parameters: {
+      query?: {
+        chatId?: string | null;
+      };
+      header?: {
+        authorization?: string;
+        'x-user-id'?: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Active stream available */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': unknown;
+        };
+      };
+      /** @description No active stream */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
   'v1.history.getHistory': {
     parameters: {
       query?: {
         cursor?: {
           /** Format: uuid */
           id: string;
-          /** Format: date-time */
-          createdAt?: string;
         };
+        limit?: number;
       };
       header?: {
         authorization?: string;
@@ -1238,7 +1302,7 @@ export interface operations {
               updatedAt: string;
               /**
                * @default active
-               * @enum {unknown}
+               * @enum {string}
                */
               status:
                 | 'draft'
@@ -1255,7 +1319,7 @@ export interface operations {
               shouldReveal: boolean;
               metadata: {
                 generatedAt: string;
-                /** @enum {unknown} */
+                /** @enum {string} */
                 generationReason: 'new-results' | 'regeneration' | 'manual';
                 /** @default v1.0 */
                 promptVersion: string;
@@ -1264,7 +1328,7 @@ export interface operations {
                   technicalLevelNumber: number;
                   /**
                    * @default moderate
-                   * @enum {unknown}
+                   * @enum {string}
                    */
                   technicalLevel: 'layman' | 'moderate' | 'very-technical';
                 };
@@ -1328,7 +1392,7 @@ export interface operations {
                     | {
                         /** @constant */
                         type: 'lifestyle';
-                        /** @enum {unknown} */
+                        /** @enum {string} */
                         category: 'exercise' | 'nutrition' | 'general';
                         todoTitle?: string;
                       }
@@ -1374,7 +1438,7 @@ export interface operations {
                     | {
                         /** @constant */
                         type: 'lifestyle';
-                        /** @enum {unknown} */
+                        /** @enum {string} */
                         category: 'exercise' | 'nutrition' | 'general';
                         todoTitle?: string;
                       }
@@ -1443,7 +1507,7 @@ export interface operations {
               updatedAt: string;
               /**
                * @default active
-               * @enum {unknown}
+               * @enum {string}
                */
               status:
                 | 'draft'
@@ -1460,7 +1524,7 @@ export interface operations {
               shouldReveal: boolean;
               metadata: {
                 generatedAt: string;
-                /** @enum {unknown} */
+                /** @enum {string} */
                 generationReason: 'new-results' | 'regeneration' | 'manual';
                 /** @default v1.0 */
                 promptVersion: string;
@@ -1469,7 +1533,7 @@ export interface operations {
                   technicalLevelNumber: number;
                   /**
                    * @default moderate
-                   * @enum {unknown}
+                   * @enum {string}
                    */
                   technicalLevel: 'layman' | 'moderate' | 'very-technical';
                 };
@@ -1533,7 +1597,7 @@ export interface operations {
                     | {
                         /** @constant */
                         type: 'lifestyle';
-                        /** @enum {unknown} */
+                        /** @enum {string} */
                         category: 'exercise' | 'nutrition' | 'general';
                         todoTitle?: string;
                       }
@@ -1579,7 +1643,7 @@ export interface operations {
                     | {
                         /** @constant */
                         type: 'lifestyle';
-                        /** @enum {unknown} */
+                        /** @enum {string} */
                         category: 'exercise' | 'nutrition' | 'general';
                         todoTitle?: string;
                       }
@@ -1650,7 +1714,7 @@ export interface operations {
               updatedAt: string;
               /**
                * @default active
-               * @enum {unknown}
+               * @enum {string}
                */
               status:
                 | 'draft'
@@ -1667,7 +1731,7 @@ export interface operations {
               shouldReveal: boolean;
               metadata: {
                 generatedAt: string;
-                /** @enum {unknown} */
+                /** @enum {string} */
                 generationReason: 'new-results' | 'regeneration' | 'manual';
                 /** @default v1.0 */
                 promptVersion: string;
@@ -1676,7 +1740,7 @@ export interface operations {
                   technicalLevelNumber: number;
                   /**
                    * @default moderate
-                   * @enum {unknown}
+                   * @enum {string}
                    */
                   technicalLevel: 'layman' | 'moderate' | 'very-technical';
                 };
@@ -1740,7 +1804,7 @@ export interface operations {
                     | {
                         /** @constant */
                         type: 'lifestyle';
-                        /** @enum {unknown} */
+                        /** @enum {string} */
                         category: 'exercise' | 'nutrition' | 'general';
                         todoTitle?: string;
                       }
@@ -1786,7 +1850,7 @@ export interface operations {
                     | {
                         /** @constant */
                         type: 'lifestyle';
-                        /** @enum {unknown} */
+                        /** @enum {string} */
                         category: 'exercise' | 'nutrition' | 'general';
                         todoTitle?: string;
                       }

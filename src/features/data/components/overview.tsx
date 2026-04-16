@@ -7,7 +7,6 @@ import { SuperpowerScoreLogo } from '@/components/shared/score-logo';
 import { QuickLinkButton } from '@/components/ui/quick-link';
 import { Body2, H2, H4 } from '@/components/ui/typography';
 import { useOrders } from '@/features/orders/api';
-import { useSummary } from '@/features/summary/api/get-summary';
 import { useUser } from '@/lib/auth';
 import { yearsSinceDate } from '@/utils/format';
 
@@ -126,7 +125,6 @@ export function Overview() {
   const { data: user, isLoading: isUserLoading } = useUser();
   const biomarkersQuery = useBiomarkers();
   const ordersQuery = useOrders();
-  const summaryQuery = useSummary();
 
   const biomarkers = biomarkersQuery.data?.biomarkers ?? [];
 
@@ -143,12 +141,9 @@ export function Overview() {
   }, [clearRange, clearCategories, clearSelectedOrder, clearSearchQuery]);
 
   const isLoading =
-    isUserLoading ||
-    summaryQuery.isLoading ||
-    ordersQuery.isLoading ||
-    biomarkersQuery.isLoading;
+    isUserLoading || ordersQuery.isLoading || biomarkersQuery.isLoading;
 
-  const gating = summaryQuery.data;
+  const gating = user?.resultsGate;
 
   const latestScoreMarker = mostRecent(
     biomarkers.find((b) => b.name === 'Health Score')?.value ?? [],
@@ -182,16 +177,19 @@ export function Overview() {
       biomarkers.flatMap((biomarker) => biomarker.value)[0],
     )?.timestamp;
 
-  if (!isUserLoading && gating && !gating.hasCompletedCarePlan) {
+  const isResultsLocked =
+    !isUserLoading &&
+    !!gating &&
+    !gating.hasFinalDiagnosticReport &&
+    !gating.hasUserUploadedResults;
+
+  if (isResultsLocked) {
     return <WaitingScreen />;
   }
 
-  // Hide SP score & BioAge until AIAP is complete even if partial markers exist
+  // SP Score & BioAge require a Vital-sourced final DR with enough biomarkers
   const markersAvailable =
-    gating &&
-    gating.hasCompletedCarePlan &&
-    !!superpowerScore &&
-    !!biologicalAge;
+    gating?.hasFinalDiagnosticReport && !!superpowerScore && !!biologicalAge;
 
   return (
     <div className="w-full space-y-4">

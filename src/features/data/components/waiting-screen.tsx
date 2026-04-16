@@ -1,13 +1,11 @@
 import { QuickLink } from '@/components/ui/quick-link';
 import { Body2, H4 } from '@/components/ui/typography';
-import { useSummary } from '@/features/summary/api/get-summary';
 import { useUser } from '@/lib/auth';
 
 export const WaitingScreen = () => {
   const { data: user } = useUser();
-  const summaryQuery = useSummary();
 
-  const gating = summaryQuery.data;
+  const gating = user?.resultsGate;
   const ETA = gating?.hasPartialResults ? '4-7' : '7-10';
 
   return (

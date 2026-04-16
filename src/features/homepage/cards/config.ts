@@ -19,7 +19,7 @@ import { ReferralCard } from './referral-card';
 const aiapSummaryCardWebConfig: CardConfig = {
   id: 'aiapSummaryWeb',
   component: AiapSummaryCardWeb,
-  shouldShow: (state: HomepageState) => state.hasCompletedActionPlan,
+  shouldShow: (state: HomepageState) => state.hasFinalResults,
   getPriority: () => 30,
 };
 
@@ -39,7 +39,7 @@ const labOrderCardConfig: CardConfig = {
 const switchRxCardConfig: CardConfig = {
   id: 'switchRx',
   component: RecommendationsList,
-  shouldShow: (state: HomepageState) => !state.hasCompletedActionPlan,
+  shouldShow: (state: HomepageState) => !state.hasFinalResults,
   getPriority: () => 60,
 };
 
@@ -79,7 +79,7 @@ const actionItemsCardConfig: CardConfig = {
 const keyInsightsCardConfig: CardConfig = {
   id: 'keyInsights',
   component: KeyInsightsCard,
-  shouldShow: (state: HomepageState) => state.hasCompletedActionPlan,
+  shouldShow: (state: HomepageState) => state.hasFinalResults,
   getPriority: () => 50,
 };
 

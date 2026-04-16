@@ -3,8 +3,8 @@ import { useMemo } from 'react';
 import { useOrders } from '@/features/orders/api';
 import { useCredits } from '@/features/orders/api/credits';
 import { useWearables } from '@/features/settings/api/get-wearables';
-import { useSummarySuspense } from '@/features/summary/api/get-summary';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useUser } from '@/lib/auth';
 import { OrderStatus } from '@/types/api';
 
 import { useHomepageStore } from '../stores/homepage-store';
@@ -22,7 +22,7 @@ export const useHomepageState = (): {
 
   const isMobile = useIsMobile();
 
-  const { data: summaryData } = useSummarySuspense();
+  const { data: userData } = useUser();
 
   // NOTE(Nikita): these should be coming from the summary endpoint most likely as well
   // NOTE: but credits and orders are highly dynamic...
@@ -31,7 +31,7 @@ export const useHomepageState = (): {
   const { data: wearablesData } = useWearables();
 
   const state = useMemo<HomepageState>(() => {
-    const summary = summaryData;
+    const summary = userData?.resultsGate;
     const credits = creditsData?.credits ?? [];
     const requestGroups = ordersData?.requestGroups ?? [];
 
@@ -53,12 +53,13 @@ export const useHomepageState = (): {
       isMobile,
       hasActiveLabOrders,
       hasActionableOrders: credits.length > 0,
-      hasCompletedActionPlan: summary.hasCompletedCarePlan,
-      hasMultipleActionPlans: summary.completedCarePlans > 1,
+      hasFinalResults: !!(
+        summary?.hasFinalDiagnosticReport || summary?.hasUserUploadedResults
+      ),
       hasActiveNonLabOrders,
       hasNoWearables: connectedWearables.length === 0,
     };
-  }, [summaryData, creditsData, ordersData, wearablesData, isMobile]);
+  }, [userData, creditsData, ordersData, wearablesData, isMobile]);
 
   const visibleCards = useMemo(() => {
     return getVisibleCards(state);

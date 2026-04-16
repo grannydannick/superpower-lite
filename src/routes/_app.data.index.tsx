@@ -12,29 +12,33 @@ import { Overview } from '@/features/data/components/overview';
 import { DataSidebar } from '@/features/data/components/sidebar/data-sidebar';
 import { encodeCategory } from '@/features/data/utils/category/encode-category';
 import { DigitalTwin } from '@/features/digital-twin/components/digital-twin';
-import { useSummary } from '@/features/summary/api/get-summary';
 import { WearablesDataView } from '@/features/wearables/components/wearables-data-view';
 import { useWearablesData } from '@/features/wearables/hooks/use-wearables-data';
+import { useUser } from '@/lib/auth';
 
 export const Route = createFileRoute('/_app/data/')({
   component: DataComponent,
 });
 
 function DataComponent() {
-  const summaryQuery = useSummary();
+  const userQuery = useUser();
   const categoriesQuery = useCategories();
   const navigate = Route.useNavigate();
   const category = Route.useSearch({ select: (s) => s.category });
 
-  const isLoading = categoriesQuery.isLoading || summaryQuery.isLoading;
+  const isLoading = categoriesQuery.isLoading || userQuery.isLoading;
 
   const categories = categoriesQuery.data?.categories ?? [];
-  const gating = summaryQuery.data;
+  const gating = userQuery.data?.resultsGate;
 
   const isWearables = category === 'wearables';
   const { showEmptyState: showWearablesLock } = useWearablesData({
     enabled: isWearables,
   });
+  const showResultsLockBadge =
+    !!gating &&
+    !gating.hasFinalDiagnosticReport &&
+    !gating.hasUserUploadedResults;
 
   const activeCategory = categories.find(
     (c) => encodeCategory(c.category) === encodeCategory(category ?? ''),
@@ -73,7 +77,7 @@ function DataComponent() {
       <div className="mt-[5px] flex size-full min-h-[calc(100vh-256px)] flex-1 flex-col overflow-visible md:grid md:grid-cols-10 xl:grid-cols-9">
         <DataSidebar />
         <div className="relative top-0 z-0 col-span-3 mb-[-40px] h-[512px] max-h-[50vh] md:invisible md:sticky md:-mt-16 md:h-full md:max-h-[60vh] xl:visible">
-          {(isWearables ? showWearablesLock : gating?.hasPartialResults) && (
+          {(isWearables ? showWearablesLock : showResultsLockBadge) && (
             <Badge
               variant="secondary"
               className="absolute left-1/2 top-1/2 z-10 -mt-28 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 text-balance bg-zinc-100/50 px-3 py-2 text-sm text-secondary backdrop-blur-sm max-lg:truncate md:hidden lg:mt-0 lg:flex lg:max-w-40 xl:max-w-full xl:truncate"

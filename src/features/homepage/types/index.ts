@@ -4,8 +4,7 @@ export interface HomepageState {
   readonly isMobile: boolean;
   readonly hasActiveLabOrders: boolean;
   readonly hasActionableOrders: boolean;
-  readonly hasCompletedActionPlan: boolean;
-  readonly hasMultipleActionPlans: boolean;
+  readonly hasFinalResults: boolean;
   readonly hasActiveNonLabOrders: boolean;
   readonly hasNoWearables: boolean;
 }

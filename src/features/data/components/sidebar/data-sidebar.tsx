@@ -6,8 +6,8 @@ import { Link } from '@/components/ui/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { H3 } from '@/components/ui/typography';
 import { useWearables } from '@/features/settings/api/get-wearables';
-import { useSummary } from '@/features/summary/api/get-summary';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
+import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 import { Category } from '@/types/api';
 
@@ -24,14 +24,14 @@ export function DataSidebar() {
   const containerRef = useRef<HTMLDivElement>(null);
   const rafIdRef = useRef<number | null>(null);
   const previousActiveCategoryRef = useRef<string | null>(null);
-  const summaryQuery = useSummary();
+  const userQuery = useUser();
   const categoriesQuery = useCategories();
   const wearablesQuery = useWearables();
 
-  const isLoading = categoriesQuery.isLoading || summaryQuery.isLoading;
+  const isLoading = categoriesQuery.isLoading || userQuery.isLoading;
 
   const categories = categoriesQuery.data?.categories ?? EMPTY_CATEGORIES;
-  const gating = summaryQuery.data;
+  const gating = userQuery.data?.resultsGate;
 
   const activeCategory = useSearch({
     from: '/_app/data',
@@ -153,8 +153,13 @@ export function DataSidebar() {
       />,
     );
 
-    if (gating && !gating.hasCompletedCarePlan) {
-      return items; // only show Summary until AIAP is completed
+    const isResultsLocked =
+      !!gating &&
+      !gating.hasFinalDiagnosticReport &&
+      !gating.hasUserUploadedResults;
+
+    if (isResultsLocked) {
+      return items; // only show Summary until results are finalized
     }
 
     if (categories.length === 0) return [];
