@@ -50,6 +50,13 @@ export function getMarketplaceGroups(groups: AddOnGroup[]) {
   const visibleGroups: AddOnGroup[] = [];
 
   for (const group of groups) {
+    // The baseline and advanced blood panels are core products and should
+    // never appear in the marketplace list; they only surface in the
+    // purchased section above when owned.
+    if (group.id === 'blood-panels') {
+      continue;
+    }
+
     if (group.selection.type === 'bundle-or-components') {
       const bundle =
         group.selection.bundle != null &&
