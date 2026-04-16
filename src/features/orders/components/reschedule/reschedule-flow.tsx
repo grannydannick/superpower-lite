@@ -1,3 +1,4 @@
+import { TZDateMini } from '@date-fns/tz';
 import { format } from 'date-fns';
 import { CalendarCheck, ChevronLeft } from 'lucide-react';
 import { useState } from 'react';
@@ -118,16 +119,19 @@ const RescheduleConfirmSummary = ({
       <div className="max-w-[320px] space-y-4 md:max-w-none">
         <H2 className="text-zinc-900">Confirm your new appointment</H2>
       </div>
-      {selectedSlot ? (
+      {selectedSlot && selectedTz ? (
         <div className="border-vermillion-400 space-y-3 rounded-2xl border-2 bg-vermillion-50 p-6">
           <Body2 className="text-vermillion-900">New appointment time</Body2>
           <Body1 className="font-medium">
-            {format(new Date(selectedSlot.start), 'EEEE, MMMM do, yyyy')}
+            {format(
+              new TZDateMini(selectedSlot.start, selectedTz),
+              'EEEE, MMMM do, yyyy',
+            )}
           </Body1>
           <Body1 className="text-secondary">
-            {format(new Date(selectedSlot.start), 'h:mm a')} -{' '}
-            {format(new Date(selectedSlot.end), 'h:mm a')}
-            {selectedTz ? ` (${selectedTz})` : ''}
+            {format(new TZDateMini(selectedSlot.start, selectedTz), 'h:mm a')} -{' '}
+            {format(new TZDateMini(selectedSlot.end, selectedTz), 'h:mm a')}
+            {` (${selectedTz})`}
           </Body1>
           {selectedLocation?.address ? (
             <div className="border-vermillion-200 mt-2 border-t pt-3">
@@ -145,21 +149,30 @@ const RescheduleConfirmSummary = ({
           ) : null}
         </div>
       ) : null}
-      {requestGroup.startTimestamp ? (
+      {requestGroup.startTimestamp && requestGroup.timezone ? (
         <div className="space-y-3 rounded-2xl border p-6">
           <Body2 className="text-secondary">Current appointment</Body2>
           <Body1 className="text-zinc-500 line-through">
             {format(
-              new Date(requestGroup.startTimestamp),
+              new TZDateMini(
+                requestGroup.startTimestamp,
+                requestGroup.timezone,
+              ),
               'EEEE, MMMM do, yyyy',
             )}
           </Body1>
           <Body1 className="text-zinc-400 line-through">
-            {format(new Date(requestGroup.startTimestamp), 'h:mm a')}
+            {format(
+              new TZDateMini(
+                requestGroup.startTimestamp,
+                requestGroup.timezone,
+              ),
+              'h:mm a',
+            )}
             {requestGroup.endTimestamp
-              ? ` - ${format(new Date(requestGroup.endTimestamp), 'h:mm a')}`
+              ? ` - ${format(new TZDateMini(requestGroup.endTimestamp, requestGroup.timezone), 'h:mm a')}`
               : ''}
-            {requestGroup.timezone ? ` (${requestGroup.timezone})` : ''}
+            {` (${requestGroup.timezone})`}
           </Body1>
         </div>
       ) : null}
@@ -187,14 +200,19 @@ const RescheduleSuccess = ({
           Your appointment has been successfully rescheduled.
         </Body1>
       </div>
-      {selectedSlot ? (
+      {selectedSlot && selectedTz ? (
         <div className="w-full max-w-md space-y-3 rounded-2xl border p-6 text-left">
           <Body2 className="text-secondary">Your new appointment</Body2>
-          <H3>{format(new Date(selectedSlot.start), 'EEEE, MMMM do, yyyy')}</H3>
+          <H3>
+            {format(
+              new TZDateMini(selectedSlot.start, selectedTz),
+              'EEEE, MMMM do, yyyy',
+            )}
+          </H3>
           <Body1 className="text-secondary">
-            {format(new Date(selectedSlot.start), 'h:mm a')} -{' '}
-            {format(new Date(selectedSlot.end), 'h:mm a')}
-            {selectedTz ? ` (${selectedTz})` : ''}
+            {format(new TZDateMini(selectedSlot.start, selectedTz), 'h:mm a')} -{' '}
+            {format(new TZDateMini(selectedSlot.end, selectedTz), 'h:mm a')}
+            {` (${selectedTz})`}
           </Body1>
           {selectedLocation?.address ? (
             <div className="mt-2 border-t pt-3">
