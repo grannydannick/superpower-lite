@@ -357,6 +357,16 @@ export type Subscription = {
   current_period_start: number;
   status: SubscriptionStatus;
   canceled_at: number | null;
+  /**
+   * True when the subscription is scheduled to cancel at `current_period_end` but is still
+   * active during the grace period. Distinguishes "pending cancellation" from "actively
+   * renewing" for rendering purposes.
+   */
+  cancel_at_period_end: boolean;
+  /**
+   * Unix timestamp of the scheduled cancellation. Non-null when `cancel_at_period_end` is true.
+   */
+  cancel_at: number | null;
   name: 'membership' | null;
   latest_invoice?: string;
   payment_intent?: string | null;
