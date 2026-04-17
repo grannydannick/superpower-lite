@@ -799,6 +799,43 @@ Which metals are in your body, how much, and where they're most likely coming fr
       'Uranium',
     ],
   },
+
+  // -----------------------------------------------------------------------
+  // OrganAge (standalone)
+  // -----------------------------------------------------------------------
+  'v2-organ-age-bundle-quest': {
+    details: `**What does this test for?**
+
+OrganAge measures how your body is functioning, not only how many years you've lived. It looks at nine organ-level age scores built from dozens of clinically validated biomarkers across key systems like metabolism, inflammation, liver, and kidney health to create a precise map of your biological aging.
+
+Research shows that organ aging is uneven. A 40-year-old can have the heart of a 35-year-old and the liver of a 55-year-old. That pattern is invisible on a standard physical, but it can reveal where your biology is diverging from your age — information that's useful for prioritizing what to focus on.
+
+**Who should get tested?**
+
+- You want to know where your body is aging fastest, not only whether your labs are "normal"
+- You're focused on longevity and want a biological baseline that goes beyond a single epigenetic age number
+- You feel "off" in a way that standard bloodwork hasn't explained, and you want to see which system is actually under strain
+- You want to establish a baseline you can track over time to measure whether your interventions are working
+
+**What will you learn?**
+
+Which of your organ systems are aging on pace, slower than expected, and faster than your chronological age. The fast-aging systems are the ones most likely to drive how you feel and function over the next decade, and they're often the ones that respond to targeted intervention.
+
+If your metabolic age is elevated, the priority shifts to insulin sensitivity and body composition. If your liver is aging ahead of schedule, the focus shifts to detox strain, alcohol, or metabolic dysfunction. If your cognitive age is elevated, sleep, cardiovascular fitness, and inflammation become the focus. This turns "how do I age well" from a general question into a specific, prioritized plan.
+
+Tracking OrganAge over time also shows whether what you're doing is working. A biological age that trends down year over year is a meaningful signal that your interventions are moving in the right direction.`,
+    biomarkers: [
+      'Cognitive Age',
+      'Circulatory Age',
+      'Liver Age',
+      'Respiratory Age',
+      'Metabolic Age',
+      'Immune Age',
+      'Kidney Age',
+      'Hormonal Age',
+      'Musculoskeletal Age',
+    ],
+  },
 };
 
 function normalizePanelDetailKey(itemId: string) {

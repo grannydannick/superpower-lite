@@ -28,6 +28,7 @@ const PANEL_DETAIL_ITEM_IDS = new Set([
   'gut-microbiome-analysis',
   'mosaic-mycotox',
   'mosaic-toxic-metals',
+  'v2-organ-age-bundle-quest',
 ]);
 
 function normalizePanelDetailKey(itemId: string) {
