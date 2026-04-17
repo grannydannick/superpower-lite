@@ -92,6 +92,7 @@ const AddOnPanelsStepScreen = () => {
 
           {viewMode === 'recommendations' ? (
             <div
+              key={recommendationIndex}
               className={cn('flex-1 overflow-y-auto px-4', bottomPaddingClass)}
             >
               <RecommendationView />

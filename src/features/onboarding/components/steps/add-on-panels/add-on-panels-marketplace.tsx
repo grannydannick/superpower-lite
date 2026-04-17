@@ -610,8 +610,8 @@ interface MarketplaceHeaderProps {
 }
 
 const MarketplaceHeader = ({ areFiltersHidden }: MarketplaceHeaderProps) => (
-  <div className="-mx-4 shrink-0 bg-white px-4 pb-4">
-    <div className="mx-auto max-w-lg pt-6">
+  <div className="shrink-0 bg-white pb-4">
+    <div className="mx-auto max-w-lg px-4 pt-6">
       <div className="space-y-6">
         <H2>Explore Tests</H2>
         <div className="relative z-10 bg-white">
