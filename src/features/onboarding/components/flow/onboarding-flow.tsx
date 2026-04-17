@@ -5,8 +5,8 @@ import { Suspense } from 'react';
 import { Spinner } from '@/components/ui/spinner';
 import { useOnboarding } from '@/features/onboarding/api/onboarding';
 import { OnboardingNavigationProvider } from '@/features/onboarding/hooks/use-onboarding-navigation';
-import { useGiftUpsellStore } from '@/features/onboarding/stores/gift-upsell-store';
-import { useWelcomeSequenceStore } from '@/features/onboarding/stores/welcome-sequence-store';
+import { useOnboardingProgress } from '@/features/onboarding/stores/onboarding-progress-store';
+import { useUser } from '@/lib/auth';
 
 import {
   buildOnboardingFacts,
@@ -25,11 +25,15 @@ const OnboardingLoadingState = () => {
 
 export const OnboardingIndexRedirect = () => {
   const { data: onboardingData, isLoading } = useOnboarding();
-  const hasSeenWelcome = useWelcomeSequenceStore(
-    (state) => state.hasSeenWelcome,
+  const { data: user } = useUser();
+  const hasSeenWelcome = useOnboardingProgress(user?.id, 'hasSeenWelcome');
+  const hasSeenGiftUpsell = useOnboardingProgress(
+    user?.id,
+    'hasSeenGiftUpsell',
   );
-  const hasSeenGiftUpsell = useGiftUpsellStore(
-    (state) => state.hasSeenGiftUpsell,
+  const hasAnsweredHeardAboutUs = useOnboardingProgress(
+    user?.id,
+    'hasAnsweredHeardAboutUs',
   );
 
   if (isLoading || onboardingData == null) {
@@ -40,6 +44,7 @@ export const OnboardingIndexRedirect = () => {
     ...buildOnboardingFacts(onboardingData),
     hasSeenWelcome,
     hasSeenGiftUpsell,
+    hasAnsweredHeardAboutUs,
   });
   const firstStep = validSteps[0] ?? null;
   if (firstStep == null) {
@@ -57,11 +62,15 @@ interface OnboardingFlowProps {
 
 export const OnboardingFlow = ({ stepPath }: OnboardingFlowProps) => {
   const { data: onboardingData, isLoading } = useOnboarding();
-  const hasSeenWelcome = useWelcomeSequenceStore(
-    (state) => state.hasSeenWelcome,
+  const { data: user } = useUser();
+  const hasSeenWelcome = useOnboardingProgress(user?.id, 'hasSeenWelcome');
+  const hasSeenGiftUpsell = useOnboardingProgress(
+    user?.id,
+    'hasSeenGiftUpsell',
   );
-  const hasSeenGiftUpsell = useGiftUpsellStore(
-    (state) => state.hasSeenGiftUpsell,
+  const hasAnsweredHeardAboutUs = useOnboardingProgress(
+    user?.id,
+    'hasAnsweredHeardAboutUs',
   );
 
   const requestedStep = isOnboardingStepId(stepPath) ? stepPath : undefined;
@@ -74,6 +83,7 @@ export const OnboardingFlow = ({ stepPath }: OnboardingFlowProps) => {
     ...buildOnboardingFacts(onboardingData),
     hasSeenWelcome,
     hasSeenGiftUpsell,
+    hasAnsweredHeardAboutUs,
   });
   const fallbackStep = validSteps[0] ?? null;
   if (fallbackStep == null) {

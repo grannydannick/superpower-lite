@@ -10,7 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Body1, H2 } from '@/components/ui/typography';
 import { useOnboardingNavigation } from '@/features/onboarding/hooks/use-onboarding-navigation';
-import { useWelcomeSequenceStore } from '@/features/onboarding/stores/welcome-sequence-store';
+import { setOnboardingProgress } from '@/features/onboarding/stores/onboarding-progress-store';
+import { useUser } from '@/lib/auth';
 
 import { DomeImage } from './dome-image';
 
@@ -31,12 +32,10 @@ const NEXT_STEPS = [
 
 export const WelcomeSequence = () => {
   const { next } = useOnboardingNavigation();
-  const dismissWelcome = useWelcomeSequenceStore(
-    (state) => state.dismissWelcome,
-  );
+  const { data: user } = useUser();
 
   const handleNext = () => {
-    dismissWelcome();
+    if (user != null) setOnboardingProgress(user.id, 'hasSeenWelcome', true);
     next();
   };
 

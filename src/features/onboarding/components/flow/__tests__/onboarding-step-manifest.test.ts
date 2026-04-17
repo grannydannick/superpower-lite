@@ -21,6 +21,7 @@ const baseContext: OnboardingFacts = {
   hasStartedIntake: false,
   hasSeenWelcome: false,
   hasSeenGiftUpsell: false,
+  hasAnsweredHeardAboutUs: false,
   rxQuestionnaireContext: { status: 'none' },
   showUpsells: true,
 };
@@ -116,6 +117,7 @@ describe('onboarding step manifest', () => {
       hasStartedIntake: true,
       hasSeenWelcome: true,
       hasSeenGiftUpsell: true,
+      hasAnsweredHeardAboutUs: true,
       rxQuestionnaireContext: { status: 'none' },
       showUpsells: false,
     });

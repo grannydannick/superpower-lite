@@ -25,6 +25,7 @@ export interface OnboardingFacts {
   hasStartedIntake: boolean;
   hasSeenWelcome: boolean;
   hasSeenGiftUpsell: boolean;
+  hasAnsweredHeardAboutUs: boolean;
   rxQuestionnaireContext: RxQuestionnaireContext;
   showUpsells: boolean;
 }
@@ -89,7 +90,7 @@ const ONBOARDING_STEPS = {
     id: 'how-you-heard-about-us',
     analyticsId: 'heard-about-us',
     title: 'How did you hear about us?',
-    shouldShow: (facts) => facts.showUpsells,
+    shouldShow: (facts) => !facts.hasAnsweredHeardAboutUs && facts.showUpsells,
   },
   ADVANCED_UPGRADE: {
     id: 'advanced-testing',
@@ -287,6 +288,7 @@ export function buildOnboardingFacts(
     hasStartedIntake,
     hasSeenWelcome: false,
     hasSeenGiftUpsell: false,
+    hasAnsweredHeardAboutUs: false,
     rxQuestionnaireContext: getRxQuestionnaireContext(
       onboardingData.questionnaires,
     ),

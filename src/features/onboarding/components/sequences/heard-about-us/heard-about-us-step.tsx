@@ -13,9 +13,11 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { Body1, Body2, H3 } from '@/components/ui/typography';
 import { useAnalytics } from '@/hooks/use-analytics';
+import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 
 import { useSequence } from '../../../hooks/use-screen-sequence';
+import { setOnboardingProgress } from '../../../stores/onboarding-progress-store';
 import { Sequence } from '../../sequence';
 
 import {
@@ -48,10 +50,12 @@ export const HeardAboutUsStep = () => {
 
   const { track } = useAnalytics();
   const { next } = useSequence();
+  const { data: user } = useUser();
 
-  // Shuffle once on mount (via useState initializer) to randomize option order,
-  // reducing position bias in survey responses (Fisher-Yates, see shuffleArray above)
-  const [shuffledCategories] = useState<HeardAboutUsCategory[]>(
+  // Shuffle once on mount (via useState lazy initializer) to randomize option
+  // order, reducing position bias in survey responses (Fisher-Yates, see
+  // shuffleArray above).
+  const [shuffledCategories] = useState<HeardAboutUsCategory[]>(() =>
     shuffleArray(HEARD_ABOUT_US_CATEGORIES),
   );
 
@@ -66,6 +70,10 @@ export const HeardAboutUsStep = () => {
         hdyhau_option: selectedOption.option,
       },
     });
+
+    if (user != null) {
+      setOnboardingProgress(user.id, 'hasAnsweredHeardAboutUs', true);
+    }
 
     next();
   };

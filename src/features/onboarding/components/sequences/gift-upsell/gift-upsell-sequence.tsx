@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Body1, H2 } from '@/components/ui/typography';
 import { useOnboardingNavigation } from '@/features/onboarding/hooks/use-onboarding-navigation';
-import { useGiftUpsellStore } from '@/features/onboarding/stores/gift-upsell-store';
+import { setOnboardingProgress } from '@/features/onboarding/stores/onboarding-progress-store';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { useUser } from '@/lib/auth';
 import { buildGiftCheckoutUrl } from '@/utils/gifting-routing';
@@ -21,24 +21,29 @@ const BENEFITS = [
 
 export const GiftUpsellSequence = () => {
   const { next } = useOnboardingNavigation();
-  const dismissGiftUpsell = useGiftUpsellStore(
-    (state) => state.dismissGiftUpsell,
-  );
   const { data: user } = useUser();
   const { track } = useAnalytics();
 
   const handleMaybeLater = () => {
     track('gifting_upsell_dismissed', { source: 'onboarding' });
-    dismissGiftUpsell();
+    if (user != null) setOnboardingProgress(user.id, 'hasSeenGiftUpsell', true);
     next();
   };
 
   const handleGiftSuperpower = () => {
     track('gifting_upsell_clicked', { source: 'onboarding' });
-    dismissGiftUpsell();
-    // Navigate away — when the user returns, getValidOnboardingSteps will skip
-    // the gift-upsell step (hasSeenGiftUpsell is now true) and land them on the
-    // correct next step.
+    // Defer the store mutation until the browser is unloading. Flipping
+    // hasSeenGiftUpsell synchronously would cause OnboardingFlow to re-evaluate
+    // validSteps and Navigate to the next step, briefly flashing it before the
+    // external redirect completes. Persist on pagehide so the rehydrated value
+    // skips this step when the user returns.
+    if (user != null) {
+      window.addEventListener(
+        'pagehide',
+        () => setOnboardingProgress(user.id, 'hasSeenGiftUpsell', true),
+        { once: true },
+      );
+    }
     window.location.assign(buildGiftCheckoutUrl('onboarding', user?.email));
   };
 
