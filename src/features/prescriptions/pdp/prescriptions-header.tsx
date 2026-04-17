@@ -81,6 +81,7 @@ export const Header = ({
   }
 
   const { benefits, headerFaq, includes } = info;
+  const tagline = 'tagline' in info ? (info.tagline as string) : undefined;
 
   return (
     <section id="prescription-header">
@@ -140,7 +141,7 @@ export const Header = ({
 
           <div className="flex flex-col gap-6">
             <Body1 className="whitespace-pre-line">
-              {prescription.description}
+              {tagline ?? prescription.description}
             </Body1>
 
             <ul className="space-y-2">

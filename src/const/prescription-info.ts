@@ -1,25 +1,33 @@
+const RX_SUBSCRIPTION_POLICY_FAQ = {
+  question: 'What are your RX subscription policies?',
+  answer:
+    'By starting treatment, you agree to the [Superpower Prescription Care Policies](https://superpower.com/informed-medical-consent/prescription-subscriptions).',
+};
+
 export const NAD_INTRANASAL = {
+  tagline:
+    'Injectable NAD+ that bypasses oral absorption to restore a coenzyme central to mitochondrial energy production and cellular repair pathways.',
   benefits: [
-    'Cellular energy production support',
-    'Improve mitochondrial function',
-    'DNA repair enhancement',
-    'Cognitive function improvement',
+    'Supports cellular energy production through mitochondrial optimization',
+    'Promotes DNA repair and genomic stability',
+    'Supports cognitive performance and mental clarity',
+    'Helps restore age-related NAD+ decline',
   ],
   includes: {
     monthly: [
-      '30-day supply, delivered monthly',
+      '30-day supply delivered monthly',
       'Medical evaluation',
       'Free shipping',
       'Unlimited messaging with your care team',
     ],
     quarterly: [
-      '90-day supply, delivered monthly',
+      '90-day supply delivered monthly',
       'Medical evaluation',
       'Free shipping',
       'Unlimited messaging with your care team',
     ],
     biannual: [
-      '6 months of medication, delivered in monthly shipments',
+      '6 months of medication delivered monthly',
       'Medical evaluation',
       'Free shipping',
       'Unlimited messaging with your care team',
@@ -27,59 +35,62 @@ export const NAD_INTRANASAL = {
   },
   science: {
     activeIngredients:
-      'Nicotinamide adenine dinucleotide (NAD+), saline solution, preservatives, stabilizers, and possibly flavoring agents.',
+      'Nicotinamide adenine dinucleotide (NAD+) is the core compound, suspended in a sterile saline solution with stabilizers and preservatives to maintain potency. NAD+ is a coenzyme present in every living cell. It functions as an electron carrier in metabolic reactions, shuttling hydrogen between enzymes in glycolysis, the citric acid cycle, and oxidative phosphorylation. Without adequate NAD+, mitochondria cannot efficiently convert nutrients into ATP, the cell\u2019s primary energy currency.',
     mechanism:
-      'Administer the spray into the nasal passages as described in the user instructions.',
+      'Administer the spray into each nasal passage as directed by your prescribing clinician. Intranasal delivery allows NAD+ to cross the nasal mucosa and enter systemic circulation without passing through the digestive tract. This route preserves the molecule\u2019s bioavailability, since oral NAD+ faces significant degradation by gut enzymes before reaching target tissues.',
     history:
-      'NAD+ has a rich history in cellular biology, known for its vital role in metabolism and energy production. Intranasal NAD+ delivery offers a modern approach to supporting cellular health and addressing age-related decline.',
+      'NAD+ was first identified in 1906 by Arthur Harden and William John Young during fermentation research. Its role expanded dramatically in the decades that followed. By the mid-20th century, scientists had mapped NAD+ as a central player in over 500 enzymatic reactions governing energy metabolism, DNA repair, and cell signaling. Research in the early 2000s revealed that NAD+ levels decline measurably with age, correlating with mitochondrial dysfunction and increased genomic instability. This finding catalyzed interest in direct NAD+ supplementation. Intranasal delivery represents a modern approach designed to bypass gastrointestinal degradation and support more efficient systemic absorption.',
   },
   headerFaq: [
     {
       question: 'What is NAD+ Nasal Spray?',
       answer:
-        'Revitalize your cellular health with our NAD+ Nasal Spray, a potent formulation delivering nicotinamide adenine dinucleotide (NAD+). This innovative nasal spray supports DNA repair and cellular resilience, promoting overall well-being and vitality.',
+        'NAD+ Nasal Spray delivers nicotinamide adenine dinucleotide directly through the nasal mucosa. NAD+ is a coenzyme required for mitochondrial energy production, DNA repair via sirtuins and PARPs, and cellular stress response. Levels decline naturally with age. Intranasal delivery bypasses the digestive system, where oral NAD+ is largely broken down before reaching the bloodstream. This formulation supports cellular resilience and metabolic function at the tissue level.',
     },
     {
       question: 'How does it work?',
       answer:
-        'NAD+ nasal spray supplements the essential coenzyme NAD+, crucial for energy metabolism, DNA repair, and cellular health. Intranasal administration enhances these cellular processes, potentially improving energy, focus, and well-being.',
+        'NAD+ participates in two core cellular processes. First, it serves as an electron carrier in the mitochondrial electron transport chain, directly powering ATP synthesis. Second, it acts as a substrate for sirtuin enzymes (SIRT1-7) and poly-ADP-ribose polymerases (PARPs), which govern DNA repair, inflammatory regulation, and epigenetic stability. Restoring NAD+ availability supports these pathways. Intranasal administration delivers the molecule across the highly vascularized nasal epithelium, offering a more direct route to systemic circulation than oral supplementation.',
     },
   ],
   faq: [
     {
       question: 'Am I a good candidate for NAD+ Intranasal?',
       answer:
-        'Ideal for individuals seeking to improve vitality, combat fatigue, or enhance cognitive and physical performance. Consultation with a healthcare provider is recommended.',
+        'This formulation may be appropriate for individuals experiencing persistent fatigue, cognitive sluggishness, or signs of age-related metabolic decline. Athletes seeking recovery support and people under chronic physiological stress are also reasonable candidates. Your clinician will evaluate your health history to confirm suitability.',
     },
     {
       question:
         'How does NAD+ nasal spray compare to other forms of NAD+ supplementation?',
       answer:
-        'It offers a convenient, non-invasive method with potentially faster absorption since it bypasses the digestive system. Bioavailability and response may vary by individual.',
+        'Oral NAD+ and its precursors (NMN, NR) must survive stomach acid and enzymatic breakdown before reaching cells. Intranasal delivery bypasses the gastrointestinal tract entirely, allowing the intact molecule to cross the nasal mucosa into systemic circulation. This route may offer faster onset and improved bioavailability, though individual response varies based on mucosal health and baseline NAD+ status.',
     },
     {
-      question:
-        'Are there any potential side effects or risks associated with NAD+ nasal spray?',
+      question: 'Are there any potential side effects or risks?',
       answer:
-        'Generally well-tolerated, but mild nasal irritation, allergic reactions, or medication interactions may occur. Review adverse reactions and consult a healthcare provider if needed.',
+        'Most people tolerate NAD+ Nasal Spray well. The most commonly reported side effects include mild nasal irritation or temporary congestion at the application site. Some individuals report transient headache, light dizziness, flushing, or mild nausea. These effects typically resolve without intervention. Allergic reactions are rare but possible. Report any persistent symptoms to your care team.',
     },
     {
       question: 'Who might benefit the most from using NAD+ nasal spray?',
       answer:
-        'Those experiencing fatigue, age-related decline, or mitochondrial dysfunction — including athletes and individuals under stress — may benefit from supplementation.',
+        'People with measurable fatigue, reduced cognitive sharpness, or signs of mitochondrial dysfunction tend to notice the most pronounced response. This includes individuals managing chronic stress, athletes in demanding training cycles, and those experiencing age-related energy decline. Your clinician can help determine whether NAD+ supplementation aligns with your specific health profile.',
     },
     {
       question: 'What are the potential side effects?',
-      answer: `NAD+ Nasal Spray is generally well-tolerated, but individuals may experience mild and transient side effects. Common side effects may include nasal irritation or congestion, which typically resolve on their own. Other common side effects include: Fatigue or Nausea, Headache, Dizziness, Mild injection site pain or Bruising, Flushing, Dyspepsia, Diarrhea.`,
+      answer:
+        'Common side effects are generally mild and transient. These may include nasal irritation or congestion, headache, dizziness, flushing, mild nausea, fatigue, or digestive discomfort such as dyspepsia or diarrhea. Serious adverse events are uncommon. Contact your care team if any symptoms persist or worsen.',
     },
     {
       question: 'What are potential contraindications?',
-      answer: `Contraindications: Known allergies to NAD+ or any components of the nasal spray. Pregnancy and lactation (safety unknown). Severe hepatic impairment (metabolism may be altered). Renal failure (excretion may be impaired). Unstable angina, acute decompensated heart failure, or advanced heart block (due to potential vasodilatory effects). Active malignancy (theoretical risk of fueling tumor metabolism). Moderate to severe cardiac and respiratory diseases. Precautions: Hypotension — monitor blood pressure during and after treatment due to potential vasodilatory effects. Arrhythmia — monitor heart rate and rhythm during and after treatment due to potential cardiac effects. Liver function — baseline and periodic testing of liver enzymes is advisable due to potential altered metabolism in severe hepatic impairment. Renal function — baseline and periodic testing of renal function is advisable due to potential impaired excretion in renal failure. Allergic reactions — monitor for signs and symptoms of allergic reactions during and after treatment.`,
+      answer:
+        'NAD+ Nasal Spray is contraindicated in individuals with known allergy to NAD+ or any component of the formulation. It is not recommended during pregnancy or lactation due to insufficient safety data. Additional contraindications include severe hepatic impairment, renal failure, unstable angina, acute decompensated heart failure, advanced heart block, active malignancy, and moderate to severe cardiac or respiratory disease. Your clinician will monitor blood pressure, heart rhythm, liver function, renal function, and allergic response as appropriate.',
     },
     {
-      question: 'Potential drug interactions?',
-      answer: `Potential interactions to consider prior to starting NAD+ include: Antidepressants: NAD supplements may interact with antidepressants, potentially affecting the levels of NAD in the body and the effectiveness of the supplements. Antihypertensive Drugs: Nicotinamide riboside may lower blood pressure, so taking it with blood pressure medications could cause blood pressure to drop too low. This includes drugs like amlodipine, metoprolol, and carvedilol. Cholesterol Medications: Patients should monitor their condition closely if combining NAD supplements with cholesterol-lowering drugs due to potential interactions with metabolic pathways. Diabetes Medications: NAD supplements could interact with diabetes medications by influencing blood sugar levels. Medications for Parkinson's and Alzheimer's Diseases: There could be interactions with medications for neurodegenerative diseases, potentially affecting the efficacy of these treatments. Blood Thinners: Supplements that affect cellular metabolism, such as NAD supplements, could theoretically interact with blood thinners by influencing platelet levels or function. Other Supplements: Interactions with other supplements, such as alpha-lipoic acid, CoQ10, and various vitamins, should be considered as they may amplify or reduce the effects of NAD+ supplements.`,
+      question: 'What are potential drug interactions?',
+      answer:
+        'Discuss all current medications with your clinician before starting. Potential interactions exist with antidepressants, antihypertensive drugs, cholesterol-lowering medications, diabetes therapies, medications for Parkinson\u2019s or Alzheimer\u2019s disease, and blood thinners. Concurrent use of supplements such as alpha-lipoic acid, CoQ10, or high-dose B vitamins should also be disclosed, as these compounds share overlapping metabolic pathways with NAD+.',
     },
+    RX_SUBSCRIPTION_POLICY_FAQ,
   ],
   tags: [
     'Cellular Repair',
@@ -90,33 +101,33 @@ export const NAD_INTRANASAL = {
 };
 
 export const SERMORELIN_INJECTION = {
+  tagline:
+    'A growth hormone-releasing hormone analog that stimulates pulsatile pituitary GH secretion, preserving the body\u2019s natural feedback regulation.',
   benefits: [
-    'Increased Growth Hormone Production',
-    'Enhanced Lean Muscle Mass',
-    'Fat Loss Support',
-    'Improved Energy Levels',
-    'Better Sleep Quality',
-    'Enhanced Cognitive Function',
-    'Balanced Mood',
-    'Collagen Formation for Skin Health',
+    'Stimulates natural growth hormone production through pituitary signaling',
+    'Supports lean muscle development and body composition',
+    'Promotes fat metabolism and metabolic efficiency',
+    'Supports deeper, more restorative sleep architecture',
+    'May improve cognitive function and mental clarity',
+    'Supports collagen synthesis and skin integrity',
   ],
   includes: {
     monthly: [
-      '30-day supply, delivered monthly',
+      '30-day supply delivered monthly',
       'Medical evaluation',
       'Free shipping',
       'Regular lab testing every 6 months',
       'Unlimited messaging with your care team',
     ],
     quarterly: [
-      '90-day supply, delivered monthly',
+      '90-day supply delivered monthly',
       'Medical evaluation',
       'Free shipping',
       'Regular lab testing every 6 months',
       'Unlimited messaging with your care team',
     ],
     biannual: [
-      '6 months of medication, delivered in monthly shipments',
+      '6 months of medication delivered monthly',
       'Medical evaluation',
       'Free shipping',
       'Regular lab testing every 6 months',
@@ -125,309 +136,286 @@ export const SERMORELIN_INJECTION = {
   },
   science: {
     activeIngredients:
-      'Sermorelin is a synthetic peptide made up of a chain of amino acids, specifically 29 amino acids. The primary ingredient in sermorelin is the peptide itself, which mimics the effects of natural growth hormone-releasing hormone (GHRH) produced by the hypothalamus in the brain. Additionally, the formulation may include other compounds necessary for stability and administration, such as bacteriostatic water or other solvents used for reconstitution.',
+      'Sermorelin acetate is a synthetic peptide consisting of the first 29 amino acids of naturally occurring growth hormone-releasing hormone (GHRH). This 29-amino-acid sequence is the shortest fragment that retains full biological activity at the pituitary gland. The injectable formulation includes bacteriostatic water for reconstitution and may contain stabilizing agents to preserve peptide integrity during storage.',
     mechanism:
-      'Sermorelin is usually administered through subcutaneous injection. The specific dosage and frequency will be determined by healthcare professionals based on individual needs. Strict adherence to the prescribed administration guidelines is crucial for optimal results.',
+      'Sermorelin is administered via subcutaneous injection, typically in the evening before sleep. This timing aligns with the body\u2019s natural growth hormone secretion pattern, which peaks during early deep sleep stages. Your clinician will determine the appropriate dosage and frequency based on lab results and clinical response. Consistent adherence to the prescribed schedule is important for sustained pituitary stimulation and measurable outcomes.',
     history:
-      'Sermorelin, first developed in the 1970s, represents a milestone in the field of endocrinology. It was designed as a synthetic analog of the naturally occurring growth hormone-releasing hormone (GHRH) to address growth hormone deficiencies. The research and development of Sermorelin aimed to provide a more targeted and safer alternative to traditional growth hormone therapy. Over the years, its use has evolved, with a focus on stimulating the pituitary gland for the pulsatile release of growth hormone, contributing to improved well-being. Since its discovery, Sermorelin has undergone rigorous clinical evaluation, solidifying its role in medical practice for managing growth hormone-related conditions.',
+      'Sermorelin was developed in the 1970s as a synthetic analog of GHRH after researchers isolated the hypothalamic hormone responsible for triggering growth hormone release from the anterior pituitary. The FDA approved sermorelin in 1997 for the diagnosis and treatment of growth hormone deficiency in children. Its mechanism of action differs fundamentally from exogenous growth hormone. Rather than flooding the body with synthetic GH, sermorelin stimulates the pituitary to produce and release growth hormone in its natural pulsatile rhythm. This preserves the body\u2019s feedback loops and reduces the risk of supraphysiologic GH levels. Clinical research has since explored sermorelin\u2019s role in age-related growth hormone decline, body composition, and metabolic health in adults.',
   },
   headerFaq: [
     {
       question: 'What is Sermorelin Injection?',
       answer:
-        'Designed to enhance lean muscle mass and promote fat loss.  Sermorelin  stimulates the pituitary gland to release growth hormone, supporting muscle development and a more efficient metabolism.',
+        'Sermorelin is a growth hormone-releasing hormone (GHRH) analog that signals the pituitary gland to produce and secrete growth hormone. Unlike direct GH administration, sermorelin preserves the body\u2019s natural pulsatile release pattern. This approach supports lean muscle development, fat metabolism, recovery, sleep quality, and overall metabolic function while maintaining physiologic feedback mechanisms.',
     },
     {
       question: 'How does it work?',
       answer:
-        'Sermorelin acts as a GHRH analog, stimulating the pituitary gland to release growth hormone in a pulsatile manner. This, in turn, has downstream effects on IGF-1 production and various physiological processes related to growth and metabolism. It is often used in medical settings to address growth hormone deficiency and related conditions.',
+        'Sermorelin binds to GHRH receptors on the anterior pituitary gland, triggering the synthesis and release of endogenous growth hormone. This growth hormone then stimulates the liver to produce insulin-like growth factor 1 (IGF-1), which mediates downstream effects on tissue growth, repair, and metabolism. Because the pituitary retains control of output, the body\u2019s negative feedback loop remains intact. Growth hormone is released in pulses rather than as a constant elevation, mirroring the natural secretion pattern that peaks during deep sleep.',
     },
   ],
   faq: [
     {
-      question: 'Am I a good candidate for Sermorelin Injection?',
+      question: 'Am I a good candidate for Sermorelin?',
       answer:
-        "Sermorelin may be recommended for individuals experiencing symptoms like decreased energy, loss of muscle mass, or signs of premature aging, often associated with growth hormone deficiency. If you're feeling these effects, sermorelin could potentially help by stimulating your body's natural growth hormone production.",
+        'Sermorelin may be appropriate for individuals experiencing decreased energy, loss of lean muscle mass, increased body fat (particularly central adiposity), poor sleep quality, or slow recovery from physical activity. These symptoms often correlate with declining growth hormone levels that occur naturally with age. Your clinician will review lab work, including IGF-1 levels, to assess candidacy.',
     },
     {
-      question: 'What is the purpose of using Sermorelin?',
+      question: 'What is the purpose of Sermorelin therapy?',
       answer:
-        'Sermorelin is primarily used to stimulate the production of growth hormone in individuals with deficiencies, which can help alleviate symptoms such as decreased energy levels, reduced muscle mass, and signs of premature aging. It can also be utilized for anti-aging purposes to promote overall well-being.',
+        'Sermorelin stimulates the body\u2019s own growth hormone production to address symptoms associated with age-related GH decline. The goal is to restore growth hormone to a physiologically optimal range, supporting muscle maintenance, metabolic health, sleep architecture, and recovery capacity without bypassing the body\u2019s regulatory mechanisms.',
     },
     {
       question: 'How is Sermorelin administered?',
       answer:
-        'Sermorelin is typically administered via subcutaneous injection, often before bedtime since the body naturally releases growth hormone during sleep. The injection is usually self-administered after proper training and under the guidance of a healthcare provider. The dosage and frequency of administration vary depending on individual needs and medical advice.',
-    },
-    {
-      question:
-        'Are there any side effects associated with Sermorelin therapy?',
-      answer:
-        "While generally well-tolerated, potential side effects of Sermorelin may include injection site reactions, such as redness or soreness. Some individuals may also experience mild headaches, dizziness, or nausea. However, these effects are typically temporary and subside with continued use. It's essential to discuss any concerns or adverse reactions with your healthcare provider for appropriate guidance.",
+        'Sermorelin is given as a subcutaneous injection, typically in the abdominal area or thigh. Most protocols call for evening administration before bedtime, as this timing complements the body\u2019s natural nocturnal GH surge. Your clinician will provide injection training and a specific dosing schedule.',
     },
     {
       question: 'What are the potential side effects?',
       answer:
-        'Common side effects of Sermorelin include injection site reactions, such as redness or swelling. Mild dizziness or headaches may also occur. While serious side effects are rare, immediate medical attention is necessary if allergic reactions or signs of tumor growth occur.',
+        'The most common side effects are mild and temporary. These include injection site reactions such as redness, swelling, or soreness. Some individuals experience mild headaches, dizziness, flushing, or transient nausea during the initial weeks of therapy. Serious adverse effects are rare. Report any persistent or unusual symptoms to your care team.',
     },
     {
-      question: 'What are potential contraindications?',
-      answer: `- Active Cancer: Contraindicated in individuals with active cancer due to potential stimulation of tumor growth.
-- Allergies: Avoid use in individuals with known hypersensitivity to Sermorelin or its components.
-- Pregnancy and Breastfeeding: Not recommended during pregnancy or breastfeeding; safety not established.
-- Medical Conditions: Exercise caution and consult healthcare professionals if there’s a history of cardiac disorders, edema, or other relevant medical conditions.
-- Interactions with Medications: Potential interactions with medications; disclose all current medications and supplements to healthcare providers.
-- Diabetes: Close monitoring advised for individuals with diabetes, as Sermorelin may impact insulin sensitivity.
-- Pediatric Use: Safety and efficacy not well-established in pediatric patients; careful consideration and consultation required.`,
-    },
-    {
-      question: 'Potential drug interactions?',
+      question: 'What are the contraindications?',
       answer:
-        'Sermorelin may interact with certain medications, highlighting the importance of disclosing all current medications and supplements to healthcare providers. If you are on insulin/diabetic meds, corticosteroids, or thyroid therapies, then you should consult your HCP prior to use. This ensures a thorough assessment of potential drug interactions, allowing for adjustments in treatment plans to avoid adverse effects.',
+        'Sermorelin is contraindicated in individuals with active malignancy, known allergy to sermorelin or any formulation component, and during pregnancy or breastfeeding. Caution is required in individuals with uncontrolled cardiac disorders, active diabetes management requiring insulin, and pediatric patients outside of approved indications. Your clinician will evaluate your full medical history before prescribing.',
     },
+    {
+      question: 'What drug interactions should I be aware of?',
+      answer:
+        'Sermorelin may interact with insulin and oral diabetes medications, as growth hormone influences glucose metabolism. Corticosteroids can blunt the GH response to sermorelin and may reduce therapeutic benefit. Thyroid hormone therapies may also require monitoring, since growth hormone and thyroid function are physiologically linked. Disclose all current medications and supplements to your clinician.',
+    },
+    RX_SUBSCRIPTION_POLICY_FAQ,
   ],
 };
 
 export const VIP_NASAL_SPRAY = {
+  tagline:
+    'Vasoactive intestinal peptide delivered intranasally to modulate neuroinflammation, autonomic regulation, and immune signaling along the brain-body axis.',
   benefits: [
-    'Enhanced Energy and Resilience',
-    'Improved Cognitive Clarity',
-    'Optimal Immune Function',
-    'Respiratory and Circulatory Support',
-    'Hormonal and Cellular Balance',
+    'Modulates inflammatory pathways and supports immune regulation',
+    'Supports cognitive clarity and neurological resilience',
+    'Promotes respiratory and vascular function',
+    'Supports hormonal and cellular signaling balance',
+    'May aid recovery in chronic inflammatory and biotoxin-related conditions',
   ],
   includes: {
     monthly: [
       '30-day medication supply',
-      'Free overnight shipping',
+      'Free shipping',
       'Medical evaluation',
-      'Regular symptom tracking & progress monitoring',
+      'Regular symptom tracking and progress monitoring',
       'Regular lab testing every 6 months',
       'Unlimited messaging with your provider',
     ],
     quarterly: [
-      '90-day medication supply',
-      'Free overnight shipping',
+      '90-day medication supply delivered monthly',
+      'Free shipping',
       'Medical evaluation',
-      'Regular symptom tracking & progress monitoring',
+      'Regular symptom tracking and progress monitoring',
       'Regular lab testing every 6 months',
       'Unlimited messaging with your provider',
     ],
     biannual: [
-      '6 months of medication',
-      'Free overnight shipping',
+      '6 months of medication delivered monthly',
+      'Free shipping',
       'Medical evaluation',
-      'Regular symptom tracking & progress monitoring',
+      'Regular symptom tracking and progress monitoring',
       'Regular lab testing every 6 months',
       'Unlimited messaging with your provider',
     ],
   },
   science: {
     activeIngredients:
-      'Vasoactive Intestinal Peptide (VIP): The active peptide, typically at a concentration prescribed by the physician (e.g., 50 mcg/mL or 100 mcg/mL).Sterile Water: Acts as the primary solvent for the peptide.Sodium Chloride (NaCl): Often included to make the solution isotonic and more comfortable for nasal administration.Benzyl Alcohol or Preservative: Sometimes used to maintain sterility and stability of the solution.Buffering Agents: Ingredients like sodium phosphate may be added to maintain a stable pH, ensuring the peptide remains effective.',
+      'Vasoactive intestinal peptide (VIP) is the active compound, a 28-amino-acid neuropeptide produced naturally in the gut, pancreas, and central nervous system. The formulation includes sterile water, sodium chloride for isotonicity, a preservative such as benzyl alcohol, and buffering agents to maintain pH stability and peptide integrity.',
     mechanism:
-      'VIP is administered via a nasal spray with a maximum of 2 sprays in each nostril daily. No doses should be taken after 3pm. A titration plan will be provided for you to help you build up to your treatment dose!',
+      'VIP is administered as a nasal spray, with a maximum of two sprays per nostril daily. All doses should be taken before 3 PM, as VIP can influence circadian-sensitive pathways. Your clinician will provide a titration plan that gradually increases dosage to the target level. Intranasal delivery allows VIP to cross the nasal mucosa and access systemic circulation, including proximity to the central nervous system via the olfactory region.',
     history:
-      'VIP (Vasoactive Intestinal Peptide), discovered in the 1970s, was initially identified as a neuropeptide involved in regulating vascular tone and smooth muscle relaxation. Researchers soon uncovered its broader roles in modulating immune responses, reducing inflammation, and supporting cellular repair. While initially studied for its impact on respiratory and gastrointestinal conditions, its therapeutic potential expanded to include chronic inflammatory diseases and immune dysfunction. Today, VIP is being explored in cutting-edge therapies for optimizing health, demonstrating its enduring relevance in medical science and human well-being.',
+      'VIP was first isolated in 1970 by Sami Said and Viktor Mutt from porcine intestinal tissue. It was initially characterized as a vasodilator and regulator of smooth muscle relaxation. Over the following decades, researchers discovered VIP\u2019s far broader role as an immunomodulatory and neuroprotective peptide. It acts on VPAC1 and VPAC2 receptors distributed throughout the lungs, gut, brain, and immune cells. In the early 2000s, research on chronic inflammatory response syndrome (CIRS) identified VIP as a key regulatory peptide in patients affected by mold and biotoxin exposure. Clinical protocols demonstrated that intranasal VIP could reduce inflammatory markers such as TGF-beta 1, C4a, and VEGF in these patients. This work expanded VIP\u2019s therapeutic applications into functional and integrative medicine, particularly for complex inflammatory and post-infectious conditions.',
   },
   headerFaq: [
     {
       question: 'What is VIP Nasal Spray?',
       answer:
-        'VIP (Vasoactive Intestinal Peptide) is a multifaceted therapeutic peptide originally identified for its role in regulating vascular tone and smooth muscle relaxation. Beyond its primary functions, VIP has gained recognition for its powerful anti-inflammatory and immune-modulating properties, making it a promising candidate in the treatment of chronic inflammatory and immune-related conditions. As research advances, VIP continues to be explored for its potential to enhance overall health and resilience, highlighting its versatility and broad therapeutic implications.',
+        'VIP (vasoactive intestinal peptide) is a naturally occurring 28-amino-acid neuropeptide with broad regulatory functions. It modulates vascular tone, smooth muscle relaxation, immune cell activity, and inflammatory signaling. As a nasal spray, VIP is delivered across the nasal mucosa for systemic distribution. It is used in clinical protocols targeting chronic inflammation, immune dysregulation, and biotoxin-related illness.',
     },
     {
       question: 'How does it work?',
       answer:
-        'VIP (Vasoactive Intestinal Peptide), a naturally occurring neuropeptide, plays a critical role in cellular communication and homeostasis. It binds to specific receptors to regulate inflammatory pathways, enhance immune function, and support vascular and respiratory health. By modulating cytokine production and promoting anti-inflammatory effects, VIP contributes to cellular repair and resilience. Current research explores its potential in treating conditions linked to chronic inflammation and immune dysregulation, as well as its broader applications in promoting overall vitality and well-being.',
+        'VIP binds to VPAC1 and VPAC2 receptors found on immune cells, pulmonary tissue, neurons, and vascular smooth muscle. This binding triggers a cascade of anti-inflammatory effects: downregulation of pro-inflammatory cytokines (TNF-alpha, IL-6, IL-12), upregulation of anti-inflammatory mediators (IL-10), and modulation of T-regulatory cell activity. In the lungs, VIP promotes bronchodilation and supports pulmonary artery pressure regulation. In the brain, it acts as a neuroprotective agent, supporting synaptic function and neuronal survival under inflammatory stress.',
     },
   ],
   faq: [
     {
       question: 'Am I a good candidate for VIP Nasal Spray?',
       answer:
-        'A good candidate for VIP (Vasoactive Intestinal Peptide) therapy typically includes individuals seeking support for conditions or symptoms related to immune, inflammatory, or respiratory health.',
+        'VIP therapy may be appropriate for individuals dealing with chronic inflammatory conditions, immune dysregulation, post-viral syndromes, or biotoxin-related illness such as CIRS from mold exposure. It is also used in protocols for autoimmune conditions and respiratory inflammation. Your clinician will evaluate your inflammatory markers, symptom history, and overall clinical picture to determine suitability.',
     },
     {
-      question: 'What is VIP and how does it work?',
+      question: 'What is VIP and how does it function in the body?',
       answer:
-        'VIP (Vasoactive Intestinal Peptide) is a naturally occurring peptide that regulates inflammation, immune function, and vascular health. By binding to specific receptors in the body, VIP promotes cellular repair, reduces inflammation, and supports overall vitality. It is particularly beneficial for individuals with immune dysregulation, chronic inflammation, or respiratory concerns.',
+        'VIP is a neuropeptide produced in the gut, pancreas, and suprachiasmatic nucleus of the brain. It regulates blood flow, smooth muscle tone, immune cell behavior, and circadian rhythm signaling. In immune function, VIP shifts the balance from pro-inflammatory Th1 and Th17 responses toward regulatory and anti-inflammatory Th2 and T-reg pathways. This makes it a central molecule in resolving chronic, self-perpetuating inflammatory cycles.',
     },
     {
       question: 'Who can benefit from VIP therapy?',
       answer:
-        'VIP therapy is ideal for individuals seeking to improve immune balance, reduce inflammation, or enhance respiratory health. It is often recommended for those managing conditions like mold toxicity (CIRS), autoimmune diseases, or post-viral syndromes. It can also be used by health-conscious individuals looking to optimize overall wellness and resilience.',
+        'Individuals with documented chronic inflammatory response syndrome (CIRS), particularly from mold or biotoxin exposure, represent the most studied population. VIP therapy is also explored in autoimmune conditions, post-viral inflammatory syndromes, and chronic respiratory illness. People with persistently elevated inflammatory markers such as TGF-beta 1, C4a, or MMP-9, despite other interventions, may be candidates for VIP as part of a broader protocol.',
     },
     {
-      question: 'Is VIP therapy safe and how is it administered?',
+      question: 'Is VIP therapy safe?',
       answer:
-        'VIP therapy is generally safe when prescribed and monitored by a healthcare provider. It is administered as a nasal spray, allowing for easy and effective delivery. Regular follow-ups with your healthcare provider ensure proper dosing and monitoring for any potential side effects, such as nasal irritation or mild dizziness.',
+        'VIP is generally well tolerated when prescribed and monitored by a qualified clinician. It is a naturally occurring peptide, and intranasal administration delivers controlled, measurable doses. Your care team will monitor your inflammatory markers and symptoms throughout treatment to track response and adjust dosing as needed.',
     },
     {
       question: 'What are the potential side effects?',
       answer:
-        'Nasal Irritation: Mild irritation; dryness; or discomfort in the nasal passages due to the nasal spray delivery method.Headache: Some individuals may experience mild headaches; as their body adjusts to the treatment.Dizziness or Lightheadedness: Rarely; VIP can cause temporary dizziness; particularly after the initial doses.Gastrointestinal Symptoms: Mild nausea or stomach discomfort may occur in some users.Fatigue: Some individuals report temporary fatigue; or feeling drowsy following administration.',
+        'Most side effects are mild. These may include nasal irritation, congestion, headache, dizziness, mild gastrointestinal symptoms, or transient fatigue. These effects often resolve as the body adjusts during titration. Report any persistent or worsening symptoms to your provider.',
     },
     {
-      question: 'What are potential contraindications?',
-      answer: `Contraindications
-
-Allergy or Hypersensitivity: Individuals with known hypersensitivity to VIP or any component of the formulation should avoid its use.
-Severe Renal or Hepatic Impairment: VIP metabolism may be impaired in individuals with severe kidney or liver dysfunction; potentially leading to complications.
-Active Infections: VIP therapy should not be initiated in individuals with active systemic infections; as it may modulate immune responses.
-
-Precautions
-
-Chronic Respiratory Conditions: Although VIP can support respiratory health; individuals with severe asthma or COPD should use it under close medical supervision.
-Immune Dysregulation: Patients with autoimmune diseases or immunodeficiency conditions should be monitored for unexpected immune responses.
-Pregnancy and Breastfeeding: There is limited safety data on the use of VIP in pregnant or breastfeeding individuals; so caution is advised.
-Storage and Handling: VIP nasal spray must be stored according to the compounding pharmacy’s guidelines; typically refrigerated to maintain stability and effectiveness.`,
+      question: 'What are the contraindications?',
+      answer:
+        'VIP Nasal Spray is contraindicated in individuals with known allergy or hypersensitivity to VIP or any formulation component. It is also contraindicated in severe renal or hepatic impairment and during active systemic infections. Caution is advised in individuals with chronic respiratory disease, significant immune dysregulation, or during pregnancy and breastfeeding due to limited safety data. Your clinician will review your full medical history before prescribing.',
     },
     {
-      question: 'Potential drug interactions?',
-      answer: `Immunosuppressants:
-      Examples: Prednisone, methotrexate, cyclosporine.Effect: VIP's immune-modulating effects may either enhance or counteract the effects of immunosuppressive drugs; potentially altering their efficacy.Anti-Inflammatory Medications:Examples: NSAIDs like ibuprofen or aspirin.Effect: The combination may influence inflammatory pathways; requiring careful monitoring for cumulative effects or unexpected changes in inflammation control.Bronchodilators or Respiratory Medications:Examples: Albuterol, corticosteroid inhalers.Effect: Since VIP impacts respiratory pathways; co-administration may affect respiratory function, necessitating monitoring in patients with asthma or COPD.Antihypertensives or Vasodilators:Examples: ACE inhibitors, nitrates.Effect: VIP’s vasodilatory effects may enhance the action of these medications; potentially leading to hypotension.Biologic Therapies or Cytokine Modulators:Examples: TNF-alpha inhibitors (e.g., adalimumab), IL-6 inhibitors (e.g., tocilizumab).Effect: VIP's modulation of cytokine production may interact with biologics targeting specific immune pathways.`,
+      question: 'What drug interactions should I be aware of?',
+      answer:
+        'VIP may interact with immunosuppressant medications, as both affect immune signaling pathways. Anti-inflammatory drugs, bronchodilators, and antihypertensives share overlapping physiological targets with VIP and may require dosage monitoring. Biologic therapies that modify cytokine activity warrant careful coordination. Disclose all current medications and supplements to your clinician before starting VIP therapy.',
     },
+    RX_SUBSCRIPTION_POLICY_FAQ,
   ],
 };
 
 export const SEMAGLUTIDE = {
+  tagline:
+    'GLP-1 receptor agonist that slows gastric emptying, increases satiety signaling, and improves glycemic control to support weight and metabolic goals.',
   benefits: [
-    'Appetite suppression',
-    'Weight loss of 10-15% of total body weight',
-    'Improve cardiovascular health',
-    'Blood sugar control',
-    'Anti-inflammatory effects',
+    'Reduces appetite through central and peripheral GLP-1 receptor signaling',
+    'Supports meaningful, sustained weight reduction',
+    'Improves cardiovascular risk markers including blood pressure and lipid profiles',
+    'Supports blood glucose regulation and insulin sensitivity',
+    'Modulates systemic inflammatory pathways',
   ],
   includes: {
     monthly: [
       '30-day medication supply',
-      'Free overnight shipping',
+      'Free shipping',
       'Medical evaluation',
-      'Regular symptom tracking & progress monitoring',
+      'Regular symptom tracking and progress monitoring',
       'Labs as needed',
       'Unlimited messaging with your provider',
     ],
     quarterly: [
       '90-day medication supply',
-      'Free overnight shipping',
+      'Free shipping',
       'Medical evaluation',
-      'Regular symptom tracking & progress monitoring',
+      'Regular symptom tracking and progress monitoring',
       'Labs as needed',
       'Unlimited messaging with your provider',
     ],
     biannual: [
-      '6 months of medication',
-      'Free overnight shipping',
+      '6 months of medication delivered quarterly',
+      'Free shipping',
       'Medical evaluation',
-      'Regular symptom tracking & progress monitoring',
+      'Regular symptom tracking and progress monitoring',
       'Labs as needed',
       'Unlimited messaging with your provider',
     ],
     annual: [
-      '12 months of medication, delivered in two shipments',
-      'Free overnight shipping',
+      '12 months of medication delivered in four shipments',
+      'Free shipping',
       'Medical evaluation',
-      'Regular symptom tracking & progress monitoring',
+      'Regular symptom tracking and progress monitoring',
       'Labs as needed',
       'Unlimited messaging with your provider',
     ],
   },
   science: {
     activeIngredients:
-      'Semaglutide is the primary active ingredient, which is the same as in commercial products like Ozempic® and Wegovy®. It’s a GLP-1 receptor agonist used to manage blood sugar levels and promote weight loss. Additional excipients, stabilizers and solvents are added to help with absorption.',
+      'Semaglutide is the active compound, a GLP-1 receptor agonist that improves glucose regulation, reduces appetite, and supports sustained weight management. It is a modified analog of human glucagon-like peptide-1, engineered with amino acid substitutions and a fatty acid side chain that extends its half-life to approximately one week. The injectable formulation includes excipients, stabilizers, and solvents that support absorption and maintain molecular stability.',
     mechanism:
-      'Semaglutide is usually administered through subcutaneous injection. The specific dosage will be determined by healthcare professionals based on individual needs. Strict adherence to the prescribed administration guidelines is crucial for optimal results.',
-    history: `Semaglutide is a relatively recent addition to the class of medications known as GLP-1 receptor agonists, which are used primarily for treating type 2 diabetes and, more recently, obesity. Semaglutide was developed by the Danish pharmaceutical company Novo Nordisk. It is based on the GLP-1 hormone, which helps regulate blood sugar levels and appetite. In December 2017, the U.S. Food and Drug Administration (FDA) approved semaglutide under the brand name Ozempic® for the treatment of type 2 diabetes.
-
-      Recognizing the significant weight-loss benefits observed in clinical trials, Novo Nordisk pursued additional approval for semaglutide as a treatment for obesity, approved in June 2021 under the brand name Wegovy®.`,
+      'Semaglutide is administered via subcutaneous injection once weekly. Most patients inject into the abdomen, thigh, or upper arm, rotating sites with each dose. Your clinician will start you at a lower dose and titrate upward over several weeks. This gradual escalation allows the gastrointestinal system to adapt and minimizes side effects. Consistent weekly timing supports stable drug levels. Your care team will determine your target dose based on clinical response, tolerability, and metabolic goals.',
+    history:
+      'GLP-1 was first characterized as an incretin hormone in the 1980s, when researchers discovered that nutrients in the gut triggered insulin-stimulating signals beyond what blood glucose alone could explain. Native GLP-1 had a half-life of only two to three minutes, making it impractical as a therapy. Over the next two decades, pharmaceutical scientists engineered analogs with structural modifications to resist enzymatic degradation by DPP-4. Semaglutide emerged from this work with a fatty acid chain that binds to albumin in the bloodstream, dramatically extending its duration of action. The FDA approved it for type 2 diabetes management in 2017, and subsequently for chronic weight management in 2021 at a higher dose. Clinical trials demonstrated significant reductions in body weight, HbA1c, and cardiovascular events. Semaglutide has since become one of the most extensively studied GLP-1 receptor agonists in metabolic medicine.',
   },
   headerFaq: [
     {
       question: 'What is Semaglutide?',
       answer:
-        "Semaglutide is a prescription GLP-1 receptor agonist that supports metabolic health by improving glucose control and reducing appetite; it's the active ingredient in FDA-approved medications such as Ozempic® (type 2 diabetes), Wegovy® (chronic weight management), and Rybelsus® (type 2 diabetes).",
+        'Semaglutide is a prescription GLP-1 receptor agonist that improves glucose regulation, reduces appetite, and supports sustained weight management. It is a modified version of the human incretin hormone GLP-1, engineered to remain active in the body for approximately seven days. Semaglutide supports metabolic health by improving glucose regulation, reducing appetite, and promoting sustained weight management through multiple physiological mechanisms.',
     },
     {
       question: 'How does it work?',
       answer:
-        'Semaglutide is designed to mimic a GLP-1, a hormone that we naturally produce when we eat to help control blood sugar levels. By mimicking this hormone, Semaglutide can help stimulate insulin production, suppress the release of glucagon, delay the rate at which your stomach empties & reduce your appetite.',
+        'Semaglutide mimics GLP-1, a hormone released by the gut after eating. It acts on three levels. In the pancreas, it stimulates insulin secretion and suppresses glucagon release in a glucose-dependent manner, improving blood sugar control. In the stomach, it slows gastric emptying, which extends the feeling of fullness after meals. In the brain, it acts on GLP-1 receptors in the hypothalamus to reduce appetite and food reward signaling. These combined effects create a sustained reduction in caloric intake without requiring willpower alone.',
     },
   ],
   faq: [
     {
       question: 'Am I a good candidate for Semaglutide?',
       answer:
-        'You may be a fit if your clinician identifies meaningful cardiometabolic risk such as prediabetes or type 2 diabetes, insulin resistance, elevated A1c, dyslipidemia, hypertension, central adiposity/visceral fat, fatty liver risk, or persistent difficulty improving metabolic markers despite lifestyle, and you can use it safely based on your medical history and current medications.',
+        'Your clinician will assess your cardiometabolic risk profile. Semaglutide may be appropriate if you have indicators such as insulin resistance, prediabetes, elevated HbA1c, dyslipidemia, hypertension, central adiposity, or elevated liver enzymes suggestive of fatty liver. It is prescribed as part of a comprehensive metabolic health strategy, not as a standalone cosmetic weight loss intervention.',
     },
     {
-      question:
-        'How long does it take to see results with Semaglutide therapy?',
+      question: 'How long does it take to see results?',
       answer:
-        'Everyone’s results will differ. Some people might only lose 1-5 lbs per month and some may lose 15-20 lbs per month. Also, keep in mind that it can take up to 2 months for the medication to fully absorb into your body. So, just have patience!',
+        'Individual responses vary based on starting dose, titration schedule, metabolic baseline, and lifestyle factors. Many patients notice reduced appetite within the first one to two weeks. Measurable weight changes typically emerge within the first month and accumulate over three to six months as the dose titrates upward. Full therapeutic effect at target dose can take eight to twelve weeks to stabilize.',
     },
     {
-      question:
-        'What do I do if I feel I have plateaued with my Semaglutide therapy?',
-      answer: `If you feel you've plateaued with your semaglutide therapy, remember that plateaus are a natural part of any weight loss or metabolic control journey. Over time, your body may adapt to the changes, which can sometimes slow down progress. This is normal, and it doesn’t mean the medication isn’t working.Semaglutide is designed to help with appetite control and glucose regulation, but it’s not a quick fix. It’s important to stay focused on your long-term goals and continue making healthy lifestyle choices, including regular physical activity and mindful eating. Feeling increased hunger or slower results may be your body adjusting to these changes.If you're concerned, reach out to your clinical team—they can review your progress, assess your current dosage, and help you troubleshoot any factors that may be contributing to the plateau. Sometimes, a dosage adjustment or a renewed focus on lifestyle factors may be needed to get you back on track. Stay consistent, stay patient, and remember that sustainable results take time.`,
-    },
-    {
-      question:
-        'What do I do if I need a higher dose of Semaglutide than is prescribed in the titration schedule?',
+      question: 'What if I hit a weight loss plateau?',
       answer:
-        "If you think you need a higher dose, don't increase it on your own, simply message your concierge so your clinician can review your response and side effects and adjust if appropriate. In our program we prescribe up to a maximum of 2.4 mg/week when medically indicated. There are no extra fees for this.",
+        'Plateaus are a normal part of metabolic adaptation. The body adjusts its energy expenditure as weight decreases. Your care team will review your dosing, dietary patterns, activity level, sleep, and stress to identify modifiable factors. Dosage adjustments may be appropriate. Sustained progress often resumes with protocol refinement.',
+    },
+    {
+      question: 'What if I need a higher dose?',
+      answer:
+        'Do not adjust your dose independently. Message your care team to discuss your response and tolerability. Semaglutide is prescribed at doses up to 2.4 mg per week. Dose increases are included in your membership at no additional cost. Your clinician will determine timing and increments based on your clinical trajectory.',
     },
     {
       question: 'What are the potential side effects?',
       answer:
-        'Most side effects are gastrointestinal, are more common during dose increases, and often improve over time. Your clinician can slow titration or adjust the plan if symptoms are persistent or limiting. Common side effects include nausea, vomiting, diarrhea, constipation, bloating, and decreased appetite. Less common or adverse effects may include pancreatitis, gallbladder disease, kidney injury (from dehydration), worsening diabetic retinopathy, severe GI intolerance, and dehydration.',
+        'The most common side effects are gastrointestinal and tend to occur during dose titration. These include nausea, vomiting, diarrhea, constipation, bloating, and decreased appetite. These effects typically diminish as the body adjusts. Less common but more serious risks include pancreatitis, gallbladder disease, acute kidney injury, and worsening of pre-existing diabetic retinopathy. Report any severe or persistent symptoms to your care team promptly.',
     },
     {
-      question: 'What are potential contraindications?',
+      question: 'What are the contraindications?',
       answer:
-        "Semaglutide isn't appropriate for everyone, and your clinician will confirm safety before prescribing. Contraindications include pancreatitis, uncontrolled T2D on insulin therapy, type 1 diabetes, medullary thyroid cancer, Multiple Endocrine Neoplasia type 2 (MEN2), severe GI disorders (bowel obstruction, refractory constipation), severe depression or suicidal ideation, pregnant or breastfeeding, and severe renal impairment (eGFR <45). Cautions apply to hiatal hernia, reflux disease, moderate renal impairment (eGFR 45–59), prior retinopathy, rapid weight loss risk, elderly/frail patients, significant polypharmacy, and gallbladder disease.",
+        'Semaglutide is contraindicated in individuals with a personal or family history of medullary thyroid carcinoma or multiple endocrine neoplasia syndrome type 2 (MEN2). It is also contraindicated in patients with a history of pancreatitis, type 1 diabetes, severe gastrointestinal disorders such as gastroparesis, severe renal impairment, uncontrolled type 2 diabetes currently managed with insulin, severe depression with active safety concerns, and during pregnancy or breastfeeding.',
     },
     {
-      question: 'Potential drug interactions?',
-      answer: `Major Drug Interactions
-Not all interacting drugs are listed below. Only those marked as a major interaction with semaglutide are included.
-To see the full list, please follow this link: https://www.drugs.com/drug-interactions/semaglutide.html
-
-- Bexarotene
-Using bexarotene together with semaglutide may increase the risk of pancreatitis, or inflammation of the pancreas.
-- Desflurane, Enflurane, Etomidate, Fospropofol, Halothane, Isoflurane, Ketamine, Methohexital, Methoxyflurane, Nitrous Oxide, Propofol, Sevoflurane, Thiopental
-These agents may increase the risk of regurgitation and pulmonary aspiration of gastric contents in patients undergoing general anesthesia. This is due to delayed gastric emptying caused by stimulation of central nervous system GLP-1 receptors and vagal nerve activation. Pulmonary aspiration during anesthesia can lead to pneumonitis, aspiration pneumonia, other lung injury, and even death.
-- Gatifloxacin
-Gatifloxacin can affect blood glucose levels and should not be used in patients with diabetes. Both hypoglycemia (low blood glucose) and, less frequently, hyperglycemia (high blood glucose) have been reported. Severe cases of hypoglycemia have resulted in coma and even death.`,
+      question: 'What drug interactions should I be aware of?',
+      answer:
+        'Semaglutide may interact with bexarotene due to increased pancreatitis risk. General anesthesia agents require coordination, as delayed gastric emptying from semaglutide can elevate aspiration risk during sedation. Gatifloxacin may have compounded blood glucose effects when used concurrently. Because semaglutide slows gastric emptying, it may also affect the absorption timing of other oral medications. Discuss your full medication list with your clinician to ensure appropriate monitoring and scheduling.',
     },
+    RX_SUBSCRIPTION_POLICY_FAQ,
   ],
 };
 
 export const GONADORELIN = {
+  tagline:
+    'A GnRH analog that pulses the pituitary to release LH and FSH, preserving endogenous testosterone production and testicular function.',
   benefits: [
-    'Hormone Regulation: Stimulates the release of LH and FSH, leading to optimized testosterone and estrogen balance.',
-    'Fertility & Reproductive Health: Supports normal ovulation cycles in women and healthy sperm production in men.',
-    'Energy & Vitality: More balanced sex hormones can translate to improved mood, energy, and libido.',
-    ' Bone Density & Muscle Mass: Adequate testosterone and estrogen are crucial for maintaining strong bones and healthy muscle composition.',
-    'Metabolic Support: Hormonal balance helps regulate metabolism, influencing weight management and body composition.',
+    'Stimulates natural testosterone production by signaling the pituitary to release LH and FSH',
+    'Supports fertility in men by maintaining sperm production alongside hormonal optimization',
+    'Restores endogenous hormone signaling rather than replacing it with exogenous hormones',
+    'Promotes improvements in energy, mood, and libido through balanced sex hormone levels',
+    'Preserves testicular function during or after testosterone replacement therapy',
   ],
   includes: {
     monthly: [
-      '30-day supply, delivered monthly',
+      '30-day supply delivered monthly',
       'Medical evaluation',
       'Free shipping',
       'Regular lab testing every 3 months',
       'Unlimited messaging with your care team',
     ],
     quarterly: [
-      '90-day supply, delivered monthly',
+      '90-day supply delivered monthly',
       'Medical evaluation',
       'Free shipping',
       'Regular lab testing every 3 months',
       'Unlimited messaging with your care team',
     ],
     biannual: [
-      '6 months of medication, delivered in monthly shipments',
+      '6-month supply delivered monthly',
       'Medical evaluation',
       'Free shipping',
       'Regular lab testing every 3 months',
@@ -436,377 +424,347 @@ export const GONADORELIN = {
   },
   science: {
     activeIngredients:
-      'Active Ingredient: Gonadorelin acetate (a synthetic version of the naturally occurring Gonadotropin-Releasing Hormone).Inactive Ingredients: May include sterile water, mannitol, or other stabilizers depending on the formulation.',
-    mechanism: `Administration Route: Gonadorelin is typically administered via subcutaneous injection (into fatty tissue).
-Suggested Frequency: Depending on your protocol; you may inject once or twice daily. Some protocols use a pulsatile pump to mimic natural GnRH pulses.
-Need-to-Know:
-Rotate injection sites to prevent irritation
-Follow your healthcare provider’s instructions on timing; especially if combining Gonadorelin with other therapies like hCG or Enclomiphene`,
-    history: `Discovery & Medical Use: Gonadorelin’s structure was first clarified by Nobel Prize–winning research on hypothalamic hormones in the 1970s.
-Clinical Applications: Initially used to diagnose pituitary function; it has since expanded into treating fertility issues in both men and women.
-Modern Evolution: Today; Gonadorelin is leveraged by forward-thinking men’s health practitioners seeking to restore and maintain endogenous testosterone production.`,
+      'Gonadorelin acetate is a synthetic peptide structurally identical to endogenous gonadotropin-releasing hormone (GnRH). It is reconstituted with bacteriostatic water for subcutaneous injection. Inactive ingredients may include mannitol or other stabilizing agents depending on the compounding pharmacy.',
+    mechanism:
+      'Gonadorelin is administered via subcutaneous injection. Dosing frequency varies based on your provider\u2019s protocol, typically ranging from every other day to three times per week. Rotate injection sites between the abdomen, thigh, and upper arm to minimize tissue irritation. Store reconstituted solution in the refrigerator and use within the timeframe your pharmacy specifies.',
+    history:
+      'The structure of gonadotropin-releasing hormone was first characterized in the early 1970s by Andrew Schally and Roger Guillemin, work that earned a Nobel Prize in Physiology or Medicine in 1977. Synthetic GnRH was initially used as a diagnostic tool to assess pituitary function in clinical endocrinology. Its therapeutic applications expanded into fertility medicine, where pulsatile GnRH administration proved effective for inducing ovulation and restoring spermatogenesis. Today, gonadorelin is used in functional and integrative medicine to support endogenous testosterone production, particularly for men who want hormonal optimization without suppressing their own hypothalamic-pituitary-gonadal axis.',
   },
   headerFaq: [
     {
       question: 'What is Gonadorelin?',
-      answer: `Gonadorelin is a synthetic peptide identical to the body’s own GnRH, delivering a precise signal to release crucial hormones for testosterone production and sperm health. Ideal for men seeking a natural, pituitary-level approach to hormone balance and fertility, Gonadorelin is a compelling alternative or complement to therapies like hCG and Enclomiphene.`,
+      answer:
+        'Gonadorelin is a synthetic peptide identical to the GnRH your hypothalamus produces naturally. It delivers a precise signal to the pituitary gland, triggering the release of luteinizing hormone (LH) and follicle-stimulating hormone (FSH). These two hormones drive testosterone production and sperm development. Gonadorelin works as a standalone therapy or alongside other protocols like enclomiphene or testosterone replacement, depending on your clinical picture.',
     },
     {
       question: 'How does it work?',
-      answer: `Stimulates LH & FSH: Gonadorelin binds to GnRH receptors in your pituitary gland, prompting the release of Luteinizing Hormone (LH) and Follicle-Stimulating Hormone (FSH). These two key hormones drive testosterone production and support healthy sperm development.Physiological Pulses: Unlike simply substituting hormones (like hCG does), Gonadorelin coaxes your body to produce them naturally, potentially preserving or enhancing fertility and normal testicular function.Synergy with Testosterone: By naturally boosting LH, Gonadorelin supports your body’s own testosterone synthesis, helping balance energy, mood, and libido.`,
+      answer:
+        'Your hypothalamus releases GnRH in pulses to regulate reproductive hormones. Gonadorelin mimics those pulses. When it reaches the pituitary, it stimulates LH and FSH secretion. LH signals the Leydig cells in the testes to produce testosterone. FSH supports the Sertoli cells responsible for sperm maturation. Unlike exogenous testosterone, which suppresses this signaling chain, gonadorelin preserves and restores it from the top down.',
     },
   ],
   faq: [
     {
       question: 'Am I a good candidate for Gonadorelin?',
       answer:
-        'If You Have:- Low testosterone or signs of low T (fatigue, reduced libido, difficulty building muscle).- Hypogonadotropic hypogonadism (your pituitary isn’t signaling enough).- Fertility goals—especially if you’d like to avoid the testicular shrinkage sometimes seen with exogenous testosterone.If You Want To:- Stimulate hormone production naturally without fully replacing your body’s hormone system.- Support healthy sperm count and quality.Considerations:- Not for primary testicular failure (when the testes themselves can’t produce hormones).- Requires willingness to do injections and regular lab monitoring.',
+        'Gonadorelin is appropriate for men with low testosterone caused by insufficient pituitary signaling, a condition called hypogonadotropic hypogonadism. It is also used by men who want to maintain fertility while on testosterone therapy, or who prefer to stimulate their own production rather than replace it. Gonadorelin is not effective for primary testicular failure, where the testes themselves cannot respond to LH and FSH. Your provider will use lab work to determine the right approach.',
     },
     {
-      question:
-        'Is Gonadorelin better than Enclomiphene for stimulating my testosterone?',
+      question: 'What is the difference between Gonadorelin and Enclomiphene?',
       answer:
-        'Gonadorelin directly signals the pituitary to release both LH and FSH, potentially benefiting both testosterone production and sperm health. Enclomiphene selectively blocks estrogen feedback at the hypothalamus. Which is “better” depends on your unique hormone profile, fertility goals, and medical history—consult with your provider for personalized guidance.',
+        'Both stimulate endogenous testosterone production, but through different mechanisms. Gonadorelin acts directly on the pituitary, mimicking the natural GnRH signal to release both LH and FSH. Enclomiphene works one step earlier by blocking estrogen receptors in the hypothalamus, which reduces negative feedback and indirectly increases GnRH output. The choice depends on your hormone profile, fertility goals, and how your body responds. Some protocols use both.',
     },
     {
-      question: 'Can I combine Gonadorelin with hCG injections?',
-      answer: `In some protocols, combining Gonadorelin with hCG can optimize LH/FSH release while also providing direct testicular stimulation. Always follow a supervised protocol to avoid overstimulation or hormonal imbalances.`,
+      question: 'Can I combine Gonadorelin with hCG?',
+      answer:
+        'Some clinical protocols combine gonadorelin with hCG, particularly for men on testosterone replacement who want to preserve testicular size and function. hCG mimics LH directly at the testicular level, while gonadorelin stimulates LH release from the pituitary. Your provider will determine whether combination therapy is appropriate based on your labs and treatment goals.',
     },
     {
-      question:
-        'How long before I see results in terms of fertility improvements?',
-      answer: `Men often notice improvements in energy and libido within a few weeks; however, fertility markers like sperm count may require 3–6 months for significant change due to the sperm production cycle.`,
+      question: 'How long before I notice results?',
+      answer:
+        'Improvements in energy, mood, and libido often appear within two to four weeks as testosterone levels rise. Fertility outcomes take longer. Meaningful changes in sperm concentration and motility typically require three to six months of consistent use, reflecting the full cycle of sperm development.',
     },
     {
       question: 'What are the potential side effects?',
-      answer: `Common: Mild injection site pain; temporary headaches; or hot flashes
-Less Common: Dizziness; mood changes; or transient fatigue
-Report Immediately: Signs of severe allergic reaction; abnormal swelling; or any unexpected severe reactions`,
+      answer:
+        'The most common side effects are mild injection site reactions, including redness, swelling, or brief discomfort. Some people report temporary headaches, flushing, or hot flashes. Less frequently, dizziness, mood changes, or fatigue may occur. Severe allergic reactions are rare but require immediate medical attention. Report any unusual symptoms to your care team.',
     },
     {
-      question: 'What are potential contraindications?',
-      answer: `Contraindications
-
-Known hypersensitivity to GnRH or similar peptides
-Primary testicular failure (where the testes themselves cannot respond)
-Precautions
-
-Pituitary Tumors: Use caution if a pituitary lesion is known or suspected
-Elevated Prolactin: Hyperprolactinemia may interfere with Gonadorelin efficacy
-Underlying Chronic Conditions: Discuss with your provider if you have severe heart; kidney; or liver disease`,
+      question: 'Who should not use Gonadorelin?',
+      answer:
+        'Gonadorelin is contraindicated in individuals with known hypersensitivity to GnRH or any component of the formulation. It is not appropriate for primary testicular failure. Use caution if you have a history of pituitary tumors, elevated prolactin levels, or significant cardiac, renal, or hepatic disease. Disclose your full medical history to your provider before starting treatment.',
     },
     {
-      question: 'Potential drug interactions?',
-      answer: `Hormonal Therapies (Testosterone, hCG): May alter pituitary feedback loops; necessitating dosage adjustments
-GnRH Antagonists or Agonists: Concomitant use can complicate gonadotropin levels
-OTC / Herbal Supplements: Always disclose supplements (like DHEA; ashwagandha) that could influence hormone metabolism`,
+      question: 'Are there any drug interactions?',
+      answer:
+        'Gonadorelin may interact with exogenous hormonal therapies, including testosterone and hCG, which can alter the feedback loop it depends on. GnRH agonists or antagonists used for other conditions may interfere with its action. Over-the-counter supplements that influence hormone levels, such as DHEA or ashwagandha, should be discussed with your provider. Share your complete medication and supplement list during your evaluation.',
     },
+    RX_SUBSCRIPTION_POLICY_FAQ,
   ],
 };
 
 export const OXYTOCIN_BREMELANOTIDE_TADALAFIL_TROCHES = {
+  tagline:
+    'A troche combining melanocortin receptor activation (bremelanotide), oxytocin signaling, and PDE5 inhibition to address central desire and peripheral vascular response.',
   benefits: [
-    'Boosted sexual arousal and intimacy',
-    'Enhanced libido and desire',
-    'Improved erectile function and performance',
-    'Support for emotional connection and confidence',
-    'Targeted activation of melanocortin pathways',
-    'Advanced support for vascular health and circulation',
-    'Holistic solution for sexual wellness',
-    'Innovative therapy for addressing sexual dysfunction',
-    'Improved satisfaction and quality of intimate experiences',
-    'Cutting-edge blend tailored for enhanced sexual health',
+    'Addresses desire, arousal, and erectile function in a single compounded formulation',
+    'Activates central nervous system pathways for sexual desire through melanocortin signaling',
+    'Enhances blood flow via PDE5 inhibition for reliable erectile response',
+    'Promotes emotional closeness and sensory intensity through oxytocin release',
+    'Offers a sublingual delivery method that bypasses first-pass liver metabolism',
   ],
   includes: {
     monthly: [
-      '10-count of mini troches',
+      '10-count of sublingual mini troches',
       'Free overnight shipping',
       'Medical evaluation',
-      'Regular symptom tracking & progress monitoring',
+      'Regular symptom tracking and progress monitoring',
       'Unlimited messaging with your provider',
     ],
     quarterly: [
-      '30-count of mini troches',
+      '30-count of sublingual mini troches',
       'Free overnight shipping',
       'Medical evaluation',
-      'Regular symptom tracking & progress monitoring',
+      'Regular symptom tracking and progress monitoring',
       'Unlimited messaging with your provider',
     ],
     biannual: [
-      '60-count of mini troches',
+      '60-count of sublingual mini troches delivered in two shipments',
       'Free overnight shipping',
       'Medical evaluation',
-      'Regular symptom tracking & progress monitoring',
+      'Regular symptom tracking and progress monitoring',
       'Unlimited messaging with your provider',
     ],
   },
   science: {
-    activeIngredients: `- Oxytocin (40 IU)
-- Bremelanotide (2 mg)
-- Tadalafil (20 mg)`,
-    mechanism: `Troches (lozenges) are placed under the tongue or in the cheek (buccal area) and allowed to dissolve.
-Timing:
-* Tadalafil is often taken at least 30 minutes to 1 hour before sexual activity for optimal effect.
-* Bremelanotide/oxytocin may have varying onset times. Take 90-120 minutes prior to sexual activity`,
-    history: `Oxytocin was first isolated in the early 1900s and has been studied extensively for its roles in childbirth, lactation, social bonding, and sexual response.
-Bremelanotide originated from research on melanocortin peptides in the 1980s-1990s, eventually gaining FDA approval (as an injection) for treating hypoactive sexual desire disorder (HSDD) in premenopausal women.
-Tadalafil was approved by the FDA in 2003 for erectile dysfunction and later for benign prostatic hyperplasia (BPH). Compounding pharmacies have more recently started formulating troches combining these agents to address sexual function in a more holistic manner.`,
+    activeIngredients:
+      'Each compounded troche contains oxytocin (40 IU), bremelanotide (2 mg), and tadalafil (20 mg). The troche base includes inactive excipients that allow for sublingual or buccal absorption. This formulation is prepared by a licensed compounding pharmacy and is not commercially available as a pre-made combination product.',
+    mechanism:
+      'Place the troche under the tongue or between the cheek and gum. Allow it to dissolve completely without chewing or swallowing. Tadalafil reaches effective levels within 30 to 60 minutes. Bremelanotide and oxytocin work through central nervous system pathways and may take 60 to 120 minutes for full effect. Use one troche per occasion. Do not exceed one troche in a 24-hour period. Avoid heavy meals and excessive alcohol beforehand, as both can reduce absorption and effectiveness.',
+    history:
+      'Oxytocin was first isolated in the early 1900s and was among the first peptide hormones to be structurally characterized and synthesized. Its role in social bonding, trust, and sexual response has been studied extensively over the past several decades. Bremelanotide emerged from melanocortin research in the 1980s and 1990s, when scientists discovered that melanocortin receptor activation influenced sexual arousal independent of vascular mechanisms. The FDA approved bremelanotide (Vyleesi) in 2019 for hypoactive sexual desire disorder in premenopausal women, validating its central mechanism of action. Tadalafil was developed by ICOS Corporation and Eli Lilly, receiving FDA approval in 2003 as Cialis for erectile dysfunction. Combining all three in a single troche targets the neurological, hormonal, and vascular dimensions of sexual function simultaneously.',
   },
   headerFaq: [
     {
-      question: 'What is Oxytocin/Bremelanotide/Tadalafil Troches?',
-      answer: `This compounded troche combines three active agents—oxytocin, bremelanotide, and tadalafil—in one convenient sublingual or buccal dosage form. It is designed to support libido, enhance erectile function (in men), and potentially improve overall sexual pleasure.`,
+      question: 'What is Olympus Max Male?',
+      answer:
+        'Olympus Max Male is a compounded sublingual troche that combines three active ingredients targeting different aspects of sexual function. Oxytocin supports emotional connection and sensory experience. Bremelanotide activates melanocortin receptors in the brain to increase sexual desire at its neurological source. Tadalafil inhibits PDE5 to improve blood flow and erectile reliability. Together, they address desire, arousal, and performance in a way that no single agent can.',
     },
     {
       question: 'How does it work?',
-      answer: `Oxytocin
-* Often called the “love hormone,” oxytocin is naturally produced in the hypothalamus and released by the posterior pituitary gland.
-* It can play a role in sexual arousal, pair bonding, and emotional connection by influencing certain social and emotional pathways in the brain.
-
-Bremelanotide
-* Bremelanotide (also known as PT-141) is a melanocortin receptor agonist.
-* It primarily targets the melanocortin 4 receptor (MC4R) in the central nervous system to enhance sexual desire and arousal in both men and women.
-* By stimulating certain receptors in the brain, it helps increase libido and may promote physiological responses associated with sexual activity.
-
-Tadalafil
-* Tadalafil is a phosphodiesterase type 5 (PDE5) inhibitor.
-* PDE5 inhibitors work by blocking the breakdown of cyclic guanosine monophosphate (cGMP), which helps relax and dilate blood vessels.
-* In men, this relaxation increases blood flow to the genital area, aiding in achieving and maintaining an erection. In women, increased blood flow can also potentially support arousal.
-
-When combined, these three agents aim to address several aspects of sexual function—desire, arousal, and, in men, erectile function—by affecting both the central nervous system (hormonal/neurological pathways) and peripheral blood flow.`,
+      answer:
+        'Each ingredient operates through a distinct pathway. Tadalafil blocks phosphodiesterase type 5, which allows nitric oxide to sustain smooth muscle relaxation and blood flow to erectile tissue. Bremelanotide binds to MC4 receptors in the hypothalamus, activating the central arousal circuitry that governs sexual desire. Oxytocin modulates limbic system activity, enhancing feelings of intimacy, trust, and physical sensitivity. The sublingual delivery allows all three to enter the bloodstream directly through oral mucosa.',
     },
   ],
   faq: [
     {
-      question: 'Am I a good candidate for Oxytocin/ Bremelanotide/ Tadalafil?',
-      answer: `You may be a candidate if you:
-
-* Struggle with low libido (in men or women).
-* Experience difficulty achieving or maintaining erections (in men).
-* Want to address multiple aspects of sexual function (desire, arousal, vascular support).
-* Have discussed potential options with a licensed healthcare provider and have no contraindications.
-* You may not be a good candidate if you:
-
-* Have underlying medical conditions (e.g., significant heart issues, low blood pressure, uncontrolled hypertension, or severe liver/kidney disease) without proper medical oversight.
-* Are taking certain medications (e.g., nitrates) that could dangerously interact with tadalafil.
-* Are pregnant, nursing, or planning to become pregnant—safety data are not well-established for these populations.`,
-    },
-    {
-      question: 'How quickly will I feel the effects?',
+      question: 'Am I a good candidate for this troche?',
       answer:
-        'Response time can vary among individuals. Tadalafil often begins working within 30–60 minutes, while bremelanotide/oxytocin effects on libido may be more gradual and variable. Your prescribing provider can give more personalized information based on your health profile.',
+        'This formulation is designed for men experiencing low libido, erectile difficulty, or diminished satisfaction during sexual activity. It is particularly relevant when these issues overlap, since each ingredient addresses a different dimension of sexual function. It is not appropriate for individuals with significant cardiovascular disease, those taking nitrate medications, or anyone with a history of priapism. Your provider will review your health history and medications before prescribing.',
     },
     {
-      question: 'Can women use this troche?',
-      answer: `Yes, in certain cases. Bremelanotide and oxytocin are studied for female sexual response, and while tadalafil is primarily indicated for erectile dysfunction in men, there is ongoing research exploring its effects on blood flow and sexual arousal in women. Consult a healthcare professional to determine if this therapy is appropriate for you.`,
+      question: 'How quickly will I feel effects?',
+      answer:
+        'Tadalafil\u2019s vascular effects typically begin within 30 to 60 minutes. Bremelanotide and oxytocin act through central nervous system pathways and may take 60 to 120 minutes for full effect. Individual response varies. Most men find the combined effect noticeable within the first one to two uses.',
+    },
+    {
+      question: 'Can women use this formulation?',
+      answer:
+        'This specific formulation is designed for men. Bremelanotide has FDA approval for hypoactive sexual desire disorder in premenopausal women, and oxytocin is being studied for female sexual response. Superpower offers formulations specifically designed for women. Speak with your provider about options tailored to your physiology.',
     },
     {
       question: 'What if I miss a dose?',
-      answer: `Since this is typically used “as needed,” missing a scheduled dose is less common. However, follow your healthcare provider’s instructions. Do not double dose to make up for a missed dose. Take only as prescribed.`,
+      answer:
+        'This troche is used on an as-needed basis, not on a daily schedule. There is no "missed dose" in the traditional sense. Do not take more than one troche within a 24-hour period.',
     },
     {
       question: 'What are the potential side effects?',
-      answer: `Potential side effects can include:
-- Headache
-- Flushing
-- Nausea (sometimes associated with bremelanotide)
-- Nasal congestion
-- Upset stomach or reflux
-- Dizziness or lightheadedness
-- Skin changes (rare; but possible with melanocortin agonists like bremelanotide)
-Most side effects are mild and transient. If you experience severe or persistent side effects (e.g.; severe drop in blood pressure; irregular heartbeat; prolonged erections); seek medical attention promptly.`,
+      answer:
+        'Common side effects include headache, facial flushing, nausea, nasal congestion, and mild stomach discomfort. Some individuals experience brief dizziness. Bremelanotide may cause transient darkening of skin in rare cases with repeated use. Tadalafil can cause back pain or muscle aches. If you experience an erection lasting more than four hours, chest pain, or sudden changes in vision or hearing, seek medical attention immediately.',
     },
     {
-      question: 'What are potential contraindications?',
-      answer: `Known allergies or hypersensitivity: Avoid this combination if you have known allergies or hypersensitivity to oxytocin, bremelanotide, tadalafil, or any of their components.
-
-Cardiovascular conditions: Exercise caution in individuals with significant cardiovascular conditions, uncontrolled hypertension, or low blood pressure, as the combination may pose risks, particularly during sexual activity.
-
-Nitrate medications: Contraindicated in individuals taking nitrates (e.g., nitroglycerin) or alpha-blockers, as combining these with tadalafil can cause dangerous drops in blood pressure.
-
-Pregnancy and breastfeeding: Not recommended during pregnancy, breastfeeding, or when planning to become pregnant, as safety data are not well-established for these populations.
-
-Hepatic or renal impairment: Consult healthcare professionals before using this combination if you have severe hepatic or renal impairment.
-
-Priapism history: Use cautiously in patients with a history of priapism or conditions predisposing to priapism, such as sickle cell anemia.`,
+      question: 'Who should not use this troche?',
+      answer:
+        'Do not use this product if you are taking nitrate medications or alpha-blockers for blood pressure, as dangerous drops in blood pressure can occur. Contraindications include known allergies to any of the three active ingredients, significant cardiovascular disease, hepatic or renal impairment, and a history of priapism. This product is not intended for use during pregnancy or breastfeeding.',
     },
     {
-      question: 'Potential drug interactions?',
-      answer: `- Nitrates (e.g. nitroglycerin) or alpha-blockers: Can cause significant blood pressure drops when combined with tadalafil.
-- CYP3A4 inhibitors: Certain medications (e.g., some antibiotics, antifungals) can increase the concentration of tadalafil.
-- Alcohol: Excessive alcohol may amplify certain side effects, such as dizziness and hypotension.`,
+      question: 'Are there any drug interactions?',
+      answer:
+        'Tadalafil interacts dangerously with nitrates and riociguat. Alpha-blockers may amplify its blood pressure effects. CYP3A4 inhibitors (such as ketoconazole, ritonavir, and grapefruit juice) can increase tadalafil blood levels. Alcohol can potentiate hypotension and reduce the effectiveness of all three active ingredients. Provide your full medication list to your provider before starting this therapy.',
     },
+    RX_SUBSCRIPTION_POLICY_FAQ,
   ],
 };
 
 export const TADALAFIL = {
+  tagline:
+    'Daily low-dose PDE5 inhibition that maintains steady cGMP signaling for erectile function and vascular tone, without dosing around intimacy.',
   benefits: [
-    'Always-ready erectile support — no planning around a pill',
-    'Continuous vascular optimization from steady-state PDE5 inhibition',
-    'Improved spontaneity and confidence with 24/7 coverage',
-    'Endothelial function benefits that extend beyond sexual health',
-    'Lower daily dose means fewer side effects than as-needed higher doses',
-    'Simple protocol — one tablet, same time, every day',
+    'Maintains steady-state PDE5 inhibition for consistent erectile readiness without timing a pill',
+    'Lower daily dose produces fewer side effects compared to higher as-needed dosing',
+    'Supports endothelial function and vascular health beyond sexual performance',
+    'Eliminates the need to plan around sexual activity',
+    'One tablet, same time, every day. No complexity.',
   ],
   includes: {
     monthly: [
-      '30-day 5mg supply',
+      '30-day supply of tadalafil 5mg tablets',
       'Medical evaluation',
       'Free shipping',
       'Unlimited messaging with your care team',
     ],
     quarterly: [
-      '90-day 5mg supply',
+      '90-day supply of tadalafil 5mg tablets',
       'Medical evaluation',
       'Free shipping',
       'Unlimited messaging with your care team',
     ],
     biannual: [
-      '180-day 5mg supply',
+      '180-day supply of tadalafil 5mg tablets',
       'Medical evaluation',
       'Free shipping',
       'Unlimited messaging with your care team',
     ],
   },
   science: {
-    activeIngredients: `Active ingredient: Tadalafil 5mg. Inactive ingredients: Croscarmellose sodium, hydroxypropyl cellulose, hypromellose, iron oxide, lactose monohydrate, magnesium stearate, microcrystalline cellulose, sodium lauryl sulfate, talc, titanium dioxide, triacetin. Note: Inactive ingredients may vary by manufacturer. The active ingredient and dose are standardized across all FDA-approved generic tadalafil tablets.`,
-    mechanism: `Take one 5mg tadalafil tablet by mouth daily. Swallow whole with water. Take with or without food — absorption is not affected by meals. Choose a consistent time each day. The specific hour does not matter — what matters is the routine. Morning or evening both work.`,
-    history: `Tadalafil was developed by ICOS Corporation and Eli Lilly. It received FDA approval in November 2003 under the brand name Cialis for as-needed treatment of erectile dysfunction at doses of 10mg and 20mg. In 2008, the FDA approved tadalafil 2.5mg and 5mg for daily use. Generic tadalafil became available in September 2018 after patent expiration. Daily 5mg tadalafil has become the preferred protocol among sexual health clinicians, eliminating the psychological burden of planning around medication and delivering vascular benefits that accumulate over months of use.`,
+    activeIngredients:
+      'Each tablet contains tadalafil 5mg. Inactive ingredients include croscarmellose sodium, hydroxypropyl cellulose, hypromellose, iron oxide, lactose monohydrate, magnesium stearate, microcrystalline cellulose, sodium lauryl sulfate, talc, titanium dioxide, and triacetin.',
+    mechanism:
+      'Take one 5mg tablet by mouth at the same time each day. Swallow whole with water. Food does not affect absorption. Choose a consistent time, morning or evening, and maintain it. Steady-state blood levels are typically reached within five days of daily use. If you miss a dose, take it when you remember, but do not double up.',
+    history:
+      'Tadalafil was developed by ICOS Corporation in partnership with Eli Lilly and Company. It received FDA approval in 2003, marketed as Cialis for on-demand treatment of erectile dysfunction. In 2008, the FDA approved the daily 5mg dose after clinical trials demonstrated that continuous low-dose use maintained therapeutic blood levels with a favorable side effect profile. The same 5mg daily dose also received approval for benign prostatic hyperplasia (BPH) in 2011, reflecting tadalafil\u2019s broader effects on smooth muscle relaxation. Generic tadalafil became available in 2018, significantly reducing cost and expanding access.',
   },
   headerFaq: [
     {
-      question: 'What is Tadalafil',
-      answer: `Tadalafil, commonly known by the brand name Cialis, is a medication designed to address erectile dysfunction by improving blood flow to the penis. As a phosphodiesterase type 5 (PDE5) inhibitor, it works by relaxing the smooth muscles in the blood vessels, allowing increased blood circulation during sexual arousal. Tadalafil provides a reliable and effective solution for men seeking enhanced sexual performance and the ability to maintain erections.`,
+      question: 'What is Tadalafil?',
+      answer:
+        'Tadalafil is a phosphodiesterase type 5 (PDE5) inhibitor. It is the same active ingredient found in brand-name Cialis. At a daily 5mg dose, it maintains a continuous therapeutic level in the bloodstream, providing reliable erectile support around the clock without the need to time a higher dose before sexual activity.',
     },
     {
       question: 'How does it work?',
-      answer: `Tadalafil, a phosphodiesterase type 5 (PDE5) inhibitor, works by enhancing the effects of nitric oxide, a chemical that relaxes smooth muscles in the blood vessels. This relaxation increases blood flow to specific areas of the body, primarily assisting in the treatment of erectile dysfunction.`,
+      answer:
+        'Sexual arousal triggers the release of nitric oxide in erectile tissue. Nitric oxide activates an enzyme that produces cyclic GMP, which relaxes smooth muscle and allows blood flow into the penis. PDE5 breaks down cyclic GMP. Tadalafil blocks PDE5, allowing cyclic GMP to accumulate and sustain its effect. At 5mg daily, enough tadalafil remains in circulation (half-life of 17.5 hours) to keep this pathway supported continuously.',
     },
   ],
   faq: [
     {
-      question: 'Am I a good candidate for Tadalafil?',
-      answer: `Daily tadalafil is appropriate for men who want consistent erectile support without timing a pill before sex. It is well-suited if you are sexually active more than twice per week, value spontaneity, want vascular health benefits beyond erectile function, or experience performance anxiety related to timing medication. You are not a candidate if you take nitrates (nitroglycerin, isosorbide) for chest pain, alpha-blockers for blood pressure that have not been stabilized, or if you have been told by a cardiologist to avoid sexual activity due to cardiovascular risk.`,
+      question: 'Am I a good candidate for daily Tadalafil?',
+      answer:
+        'Daily tadalafil is well suited for men who want consistent erectile support without planning around a pill. It is also appropriate for men who experience erectile difficulty frequently enough that as-needed dosing feels disruptive. Your provider will review your cardiovascular health, current medications, and medical history. Daily tadalafil is not safe for anyone taking nitrate medications or who has been advised against sexual activity for cardiac reasons.',
     },
     {
-      question: 'Is tadalafil the same as Cialis?',
-      answer: `Tadalafil is the active ingredient in Cialis. They are pharmacologically identical — the same molecule, same mechanism, same clinical effects. The difference is branding and price. Generic tadalafil became available in 2018 after Cialis patent expiration. Your 5mg daily tablet contains the same active compound at the same dose that a brand-name Cialis Daily prescription would provide.`,
+      question: 'Is Tadalafil the same as Cialis?',
+      answer:
+        'Yes. Tadalafil is the active pharmaceutical ingredient in Cialis. They are the same molecule with the same mechanism, pharmacokinetics, and clinical effect. Generic tadalafil has been available since 2018 and meets identical FDA bioequivalence standards.',
     },
     {
-      question: 'Why daily dosing instead of as-needed?',
-      answer: `Three reasons. First, consistency — daily 5mg maintains steady-state blood levels with continuous PDE5 inhibition and no timing window. Second, fewer side effects — as-needed doses are higher (10-20mg), producing sharper peaks that drive headache and flushing. Daily 5mg avoids those spikes. Third, vascular health — chronic PDE5 inhibition supports endothelial function over time, with improvements that do not occur with intermittent dosing.`,
+      question: 'Why take it daily instead of as needed?',
+      answer:
+        'Three reasons. First, steady-state levels eliminate the need to anticipate sexual activity. Second, the lower 5mg dose produces fewer side effects than the 10mg or 20mg on-demand doses. Third, chronic PDE5 inhibition appears to benefit endothelial function over time, meaning the vascular effects extend beyond erections. Research suggests daily use may support long-term cardiovascular and penile tissue health.',
     },
     {
       question: 'What happens if I miss a day?',
-      answer: `Tadalafil has a 17.5-hour half-life. Missing a single dose does not eliminate the drug from your system — therapeutic levels decline gradually, not abruptly. Take the missed dose when you remember, unless it is close to your next scheduled dose. If you miss multiple consecutive days, it takes approximately 5 days of daily dosing to re-establish steady-state levels.`,
+      answer:
+        'Tadalafil has a 17.5-hour half-life. A single missed dose does not eliminate the drug from your system. You will still have partial coverage. However, it takes approximately five days of daily dosing to re-establish full steady-state levels. Resume your normal schedule without doubling the dose.',
     },
     {
       question: 'What are the potential side effects?',
-      answer: `Common side effects include headache, flushing, dyspepsia, back pain, myalgia, and nasal congestion. These are typically mild and resolve within the first 1-2 weeks as vascular tone adapts. The lower 5mg daily dose produces fewer side effects than higher as-needed dosing. Rare but serious effects include priapism (erection lasting >4 hours) and sudden vision or hearing changes — seek immediate medical attention for these.`,
+      answer:
+        'The most common side effects at 5mg daily are headache, flushing, nasal congestion, dyspepsia, back pain, and muscle aches. These are typically mild and often resolve within the first one to two weeks as your body adjusts. Rare but serious side effects include priapism (an erection lasting more than four hours), sudden decrease in vision, and sudden hearing loss. Seek immediate medical attention for any of these.',
     },
     {
-      question: 'What are potential contraindications?',
-      answer: `Absolute contraindications include concurrent use of organic nitrates in any form (nitroglycerin, isosorbide), concurrent use of riociguat (Adempas), and known hypersensitivity to tadalafil. Use with caution in cases of unstable angina, recent stroke or myocardial infarction (within 90 days), uncontrolled hypertension, significant hepatic impairment, severe renal impairment, or conditions predisposing to priapism.`,
+      question: 'Who should not use Tadalafil?',
+      answer:
+        'Tadalafil is contraindicated with nitrate medications of any form, including nitroglycerin, isosorbide, and recreational amyl nitrite. It is also contraindicated with riociguat (Adempas). Use caution if you have unstable angina, a recent stroke or heart attack, uncontrolled hypertension, significant liver or kidney impairment, or conditions predisposing to priapism (such as sickle cell disease). Disclose all medical conditions and medications to your provider.',
     },
     {
-      question: 'Potential drug interactions?',
-      answer: `Contraindicated combinations include organic nitrates (severe, potentially fatal hypotension) and riociguat. Clinically significant interactions include alpha-blockers (additive blood pressure lowering), strong CYP3A4 inhibitors (ketoconazole, ritonavir — increase tadalafil exposure), and CYP3A4 inducers (rifampin — decrease tadalafil exposure). No significant interaction with aspirin, acetaminophen, NSAIDs, statins, SSRIs, metformin, or thyroid medications.`,
+      question: 'Are there any drug interactions?',
+      answer:
+        'The combination of tadalafil with nitrates is dangerous and can cause life-threatening drops in blood pressure. Alpha-blockers used for blood pressure or prostate conditions may amplify tadalafil\u2019s hypotensive effect. CYP3A4 inhibitors (ketoconazole, itraconazole, ritonavir, clarithromycin, grapefruit juice) increase tadalafil exposure. CYP3A4 inducers (rifampin, phenytoin, carbamazepine) decrease it. Tadalafil does not interact significantly with aspirin, NSAIDs, statins, SSRIs, or metformin.',
     },
+    RX_SUBSCRIPTION_POLICY_FAQ,
   ],
 };
 
 export const METFORMIN = {
+  tagline:
+    'Activates AMPK and reduces hepatic glucose output, improving insulin sensitivity and supporting long-term metabolic regulation.',
   benefits: [
-    'Improved insulin sensitivity',
-    'Regulation of glucose production',
-    'Activation of AMPK for enhanced cellular energy',
-    'Potential anti-aging effects',
-    'Ongoing research for broader health benefits',
+    'Improves insulin sensitivity at the cellular level by enhancing glucose uptake in muscle and fat tissue',
+    'Reduces hepatic glucose output, the primary driver of elevated fasting blood sugar',
+    'Activates AMPK, a master regulator of cellular energy metabolism and autophagy',
+    'Supported by emerging research on longevity, cardiovascular protection, and cancer risk reduction',
+    'Well-established safety profile with over 60 years of clinical use worldwide',
   ],
   includes: {
     monthly: [
       '30-day medication supply',
-      'Free overnight shipping',
+      'Free shipping',
       'Medical evaluation',
-      'Regular symptom tracking & progress monitoring',
+      'Regular symptom tracking and progress monitoring',
       'Labs as needed',
       'Unlimited messaging with your provider',
     ],
     quarterly: [
       '90-day medication supply',
-      'Free overnight shipping',
+      'Free shipping',
       'Medical evaluation',
-      'Regular symptom tracking & progress monitoring',
+      'Regular symptom tracking and progress monitoring',
       'Labs as needed',
       'Unlimited messaging with your provider',
     ],
     biannual: [
-      '6 months of medication',
-      'Free overnight shipping',
+      '6-month medication supply',
+      'Free shipping',
       'Medical evaluation',
-      'Regular symptom tracking & progress monitoring',
+      'Regular symptom tracking and progress monitoring',
       'Labs as needed',
       'Unlimited messaging with your provider',
     ],
   },
   science: {
-    activeIngredients: `The active ingredient in metformin is metformin hydrochloride. In addition to the active ingredient, metformin tablets may also contain inactive ingredients such as microcrystalline cellulose, magnesium stearate, hypromellose, and polyethylene glycol. These inactive ingredients serve various purposes, including as binders, lubricants, and fillers to form the tablet and aid in its dissolution.`,
-    mechanism: `Metformin is typically taken orally with meals to reduce gastrointestinal side effects. The prescribed dosage varies depending on individual health conditions, and healthcare providers may recommend starting with a lower dose and gradually increasing it to achieve optimal therapeutic effects. Regular monitoring of blood glucose levels and adherence to healthcare provider instructions are essential for maximizing the benefits of Metformin therapy.`,
-    history: `Metformin, a cornerstone in diabetes management, traces its history back to the 1920s when the plant-derived compound Galega officinalis was noted for its glucose-lowering properties. The active ingredient, later identified as metformin, gained attention for its glucose-regulating effects. Fast forward to the late 1950s, and Metformin was introduced as an anti-diabetic medication, achieving FDA approval in 1994 for type 2 diabetes treatment. Its long-standing history and continuous evolution underscore its significance in the field of metabolic health.`,
+    activeIngredients:
+      'Each tablet contains metformin hydrochloride in a dose determined by your provider, typically starting at 500mg. Inactive ingredients include microcrystalline cellulose, magnesium stearate, hypromellose, and polyethylene glycol. Extended-release formulations may contain additional matrix-forming agents.',
+    mechanism:
+      'Take metformin orally with meals to reduce gastrointestinal side effects. Most protocols begin at 500mg once daily and increase gradually over two to four weeks to the target dose. Swallow tablets whole with water. Do not crush or chew extended-release tablets. Consistent timing supports stable blood levels. Your provider will monitor fasting glucose, HbA1c, and metabolic markers at regular intervals to guide dose adjustments.',
+    history:
+      'Metformin\u2019s lineage traces to Galega officinalis (French lilac), a plant used in medieval European folk medicine to treat symptoms of diabetes. In the 1920s, researchers identified guanidine derivatives from this plant as the active compounds that lowered blood sugar. Metformin itself was synthesized and studied in the 1920s and 1930s but was overshadowed by insulin and other treatments. French physician Jean Sterne conducted the first clinical trials of metformin in the 1950s and introduced it under the name Glucophage. It became widely used in Europe over the following decades. The FDA approved metformin for type 2 diabetes in the United States in 1994. The landmark UKPDS trial in 1998 demonstrated that metformin reduced diabetes-related mortality in overweight patients, establishing it as a first-line therapy. Today, metformin is the most prescribed diabetes medication globally and is the subject of the TAME (Targeting Aging with Metformin) trial, which investigates its potential to delay age-related diseases.',
   },
   headerFaq: [
     {
       question: 'What is Metformin?',
-      answer: `Metformin is a versatile medication initially developed for diabetes management. Beyond its primary use, Metformin is increasingly recognized for its potential in promoting longevity and anti-aging effects. This multifaceted compound continues to be a subject of exploration for its broader health implications.`,
+      answer:
+        'Metformin is a biguanide medication and the most widely prescribed drug for type 2 diabetes worldwide. It lowers blood glucose primarily by reducing the liver\u2019s glucose production and improving how cells respond to insulin. Beyond glycemic control, metformin activates AMPK, an enzyme that functions as a cellular energy sensor. This mechanism has generated significant interest in metformin\u2019s potential role in longevity, cardiovascular protection, and metabolic optimization.',
     },
     {
       question: 'How does it work?',
-      answer: `Metformin, originally designed for diabetes management, is being explored for its potential in longevity and anti-aging. By improving insulin sensitivity and activating AMPK, it regulates glucose metabolism and cellular energy, contributing to potential anti-aging effects. Ongoing research focuses on understanding Metformin's impact on cellular processes and its role in promoting longevity.`,
+      answer:
+        'Metformin works through several complementary pathways. It suppresses hepatic gluconeogenesis, the process by which the liver manufactures and releases glucose into the bloodstream. It enhances insulin sensitivity in peripheral tissues, allowing muscle and fat cells to take up glucose more efficiently. It activates AMP-activated protein kinase (AMPK), which regulates energy balance at the cellular level, influencing fat oxidation, mitochondrial function, and autophagy. These effects combine to lower blood sugar, improve lipid profiles, and support metabolic health broadly.',
     },
   ],
   faq: [
     {
       question: 'Am I a good candidate for Metformin?',
-      answer: `A good candidate for metformin typically has type 2 diabetes or prediabetes. Metformin is often recommended as a first-line medication due to its effectiveness in lowering blood sugar levels, particularly in individuals who are overweight or obese, as it can also help with weight management. Additionally, those with polycystic ovary syndrome (PCOS) may benefit from metformin due to its ability to regulate menstrual cycles and improve fertility.`,
-    },
-    {
-      question: 'How does Metformin affect Vitamin B12 levels?',
       answer:
-        'Metformin can cause a reduction in Vitamin B12 levels, perhaps by interfering with its absorption, or by some other mechanism. For this reason, patients on Metformin should either monitor their B12 levels or take extra B12 out of precaution. However, some studies suggest that there is no significant connection between B12 levels and Metformin.Regardless of whether or not you take Metformin, it is important to maintain proper levels of Vitamin B12. For adults under age 65, the easiest way to get B12 is to take at least one 2,000mcg supplement each week, or a daily dose of 50mcg. As we age, our ability to absorb Vitamin B12 may decline. For those over 65 who eat plant-based diets, the supplementation should probably be increased up to 1,000mcg of B12 each day.',
+        'Metformin is appropriate for individuals with type 2 diabetes, prediabetes, or insulin resistance. It is also used in the management of polycystic ovary syndrome (PCOS) due to the insulin resistance component of that condition. An increasing number of clinicians prescribe metformin for metabolic optimization and longevity in individuals with elevated fasting glucose, high HbA1c, or other markers of metabolic dysfunction. Your provider will evaluate your labs, kidney function, and health history to determine if metformin is appropriate.',
+    },
+    {
+      question: 'How does Metformin affect Vitamin B12?',
+      answer:
+        'Long-term metformin use can reduce vitamin B12 absorption in the ileum. Studies estimate that 10 to 30 percent of metformin users develop low B12 levels over time. Symptoms of deficiency include fatigue, numbness or tingling in the extremities, and cognitive changes. Your provider should monitor B12 levels periodically. Supplementation guidelines: adults under 65 may take 2,000mcg weekly or 50mcg daily. Adults over 65 may need up to 1,000mcg daily. Methylcobalamin is the preferred supplemental form.',
     },
     {
       question:
-        'How does metformin work differently in individuals with varying degrees of insulin resistance?',
-      answer: `Metformin primarily works by decreasing glucose production in the liver and improving insulin sensitivity in peripheral tissues. In individuals with high insulin resistance, metformin's ability to enhance insulin sensitivity becomes particularly crucial, as it helps tissues respond more effectively to insulin, leading to better glucose uptake and utilization.`,
+        'How does Metformin work across different levels of insulin resistance?',
+      answer:
+        'In mild insulin resistance, metformin\u2019s primary effect is reducing hepatic glucose output, bringing fasting glucose into a healthier range. In moderate to severe insulin resistance, the improvement in peripheral insulin sensitivity becomes more pronounced, allowing cells to respond to existing insulin more effectively. Metformin does not increase insulin secretion from the pancreas, which is why it carries virtually no risk of hypoglycemia when used alone.',
     },
     {
-      question:
-        'Are there any emerging research findings suggesting potential benefits or risks of long-term metformin use beyond glycemic control, such as its impact on cardiovascular health or cancer prevention?',
-      answer: `Metformin has shown promise in potentially reducing the risk of cardiovascular events and mortality among individuals with diabetes. Moreover, there are suggestions of its role in cancer prevention and treatment due to its impact on cellular metabolism and inflammation.`,
+      question: 'What does the emerging research show?',
+      answer:
+        'The TAME trial is the first FDA-approved clinical trial to test whether a drug can delay aging itself, using metformin as the intervention. Observational data suggests metformin users have lower rates of cardiovascular events, certain cancers (particularly colorectal and breast), and all-cause mortality compared to matched controls. The proposed mechanisms include reduced chronic inflammation via inhibition of NF-kB, improved mitochondrial efficiency, and enhanced autophagy through AMPK activation. These findings are promising but not yet definitive. Your provider can discuss how this research applies to your individual situation.',
     },
     {
       question: 'What are the potential side effects?',
-      answer: `Common side effects of Metformin include gastrointestinal symptoms such as nausea, diarrhea, and abdominal discomfort, especially when initiating treatment. These effects are often transient and can be mitigated by taking Metformin with meals or as directed by a healthcare professional. Persistent or severe side effects should be promptly reported to a healthcare provider for further evaluation and potential dosage adjustments.`,
+      answer:
+        'Gastrointestinal symptoms are the most common: nausea, diarrhea, abdominal cramping, and bloating. These are typically most pronounced during the first few weeks and during dose increases. Taking metformin with meals significantly reduces GI discomfort. Extended-release formulations are better tolerated than immediate-release. Lactic acidosis is a rare but serious risk, almost exclusively occurring in individuals with significant renal impairment or other contraindicated conditions.',
     },
     {
-      question: 'What are potential contraindications?',
-      answer: `Renal Impairment
-Avoid use in cases of severe renal impairment or dysfunction, as Metformin relies on renal elimination. Regular monitoring of kidney function is essential to ensure safe use.
-Hepatic Insufficiency
-Use with caution in patients with hepatic insufficiency. Liver function should be closely monitored, and consultation with a healthcare provider is recommended.
-Heart Failure
-Individuals with heart failure should use Metformin cautiously, as it may worsen this condition. Ongoing cardiac assessment and medical supervision are advised.
-Lactic Acidosis Predisposition
-Avoid Metformin in conditions that increase the risk of lactic acidosis, such as acute or chronic metabolic acidosis. A thorough evaluation by a healthcare provider is necessary before prescribing.`,
+      question: 'Who should not use Metformin?',
+      answer:
+        'Metformin is contraindicated in individuals with significant renal impairment (eGFR below 30 mL/min), acute or chronic metabolic acidosis, and severe hepatic insufficiency. It should be temporarily discontinued before procedures involving iodinated contrast dye due to the risk of contrast-induced nephropathy compounding metformin\u2019s renal effects. Use caution in individuals with heart failure, chronic alcohol use, or conditions that predispose to tissue hypoxia.',
     },
     {
-      question: 'Potential drug interactions?',
-      answer: `Metformin may interact with medications that affect renal function or involve the use of iodinated contrast agents, potentially increasing the risk of lactic acidosis. Certain drugs, like cimetidine, can alter Metformin absorption, emphasizing the importance of close monitoring and dosage adjustments when co-administered. Healthcare professionals should consider potential interactions and adjust treatment plans accordingly to ensure the safe and effective use of Metformin.`,
+      question: 'Are there any drug interactions?',
+      answer:
+        'Medications that impair kidney function can increase metformin accumulation and the risk of lactic acidosis. These include certain NSAIDs, ACE inhibitors, and ARBs in susceptible individuals. Iodinated contrast agents used in imaging require temporary discontinuation of metformin. Cimetidine competes with metformin for renal tubular secretion and can increase metformin blood levels. Carbonic anhydrase inhibitors (topiramate, zonisamide) may increase lactic acidosis risk. Provide your complete medication list to your provider.',
     },
+    RX_SUBSCRIPTION_POLICY_FAQ,
   ],
 };
 
 export const TRETINOIN = {
+  tagline:
+    'Prescription retinoid that increases keratinocyte turnover, stimulates dermal collagen synthesis, and normalizes pigment distribution. One molecule, decades of evidence.',
   benefits: [
     'Accelerates cellular turnover to clear damaged surface cells',
     'Stimulates collagen synthesis for measurable reduction in fine lines',
@@ -816,97 +774,86 @@ export const TRETINOIN = {
   ],
   includes: {
     monthly: [
-      '30-day supply, delivered monthly',
+      '30-day supply delivered monthly',
       'Medical evaluation',
       'Free shipping',
       'Unlimited messaging with your care team',
     ],
     quarterly: [
-      '90-day supply, delivered quarterly',
+      '90-day supply delivered quarterly',
       'Medical evaluation',
       'Free shipping',
       'Unlimited messaging with your care team',
     ],
     biannual: [
-      '6 months of medication, delivered in two shipments',
+      '6 months of medication delivered in two shipments',
       'Medical evaluation',
       'Free shipping',
       'Unlimited messaging with your care team',
     ],
   },
   science: {
-    activeIngredients: `The active ingredient is Tretinoin (0.025%), a direct metabolite of vitamin A and the most clinically validated topical retinoid. The cream base includes emollients and stabilizers designed for even distribution and absorption across the skin surface.`,
-    mechanism: `Apply a pea-sized amount to clean, completely dry skin in the evening. Spread evenly across the face, avoiding the eye area, corners of the nose, and lips.
-
-Phase-in schedule:
-• Weeks 1–2: Every third night — establishes baseline tolerance and allows barrier recovery between applications
-• Weeks 3–4: Every other night — increases receptor activation as skin adapts
-• Week 5+: Nightly (as tolerated) — full therapeutic frequency for ongoing collagen remodeling and turnover
-
-Wait at least 20 minutes after cleansing before applying. Damp skin increases penetration and irritation risk. Follow with a gentle, fragrance-free moisturizer if needed. Every morning, apply broad-spectrum sunscreen (SPF 30+). Tretinoin thins the outer skin layer — UV protection during treatment is required, not optional.`,
-    history: `Tretinoin was first developed in the 1960s as a treatment for acne and has since become one of the most extensively studied topical compounds in dermatology. Decades of clinical research have established its efficacy for improving skin texture, reducing fine lines, and correcting hyperpigmentation. It remains the gold standard topical retinoid — the molecule against which all other retinoids are measured.`,
+    activeIngredients:
+      'Tretinoin (0.025%) is the direct metabolite of vitamin A and the most clinically validated topical retinoid available by prescription. The cream base includes emollients and stabilizers that support skin tolerance during the adjustment period.',
+    mechanism:
+      'Apply a pea-sized amount to clean, dry skin each evening. Phase in gradually: every third night during weeks one and two, every other night during weeks three and four, then nightly from week five onward. Wait 20 minutes after cleansing before application. Follow with a moisturizer. SPF 30 or higher every morning is required for the duration of treatment.',
+    history:
+      'Tretinoin was developed in the 1960s as an acne treatment. Decades of controlled research established its efficacy for texture improvement, fine line reduction, and hyperpigmentation correction. It remains the gold standard topical retinoid in dermatology.',
   },
   headerFaq: [
     {
       question: 'What is Tretinoin Cream?',
-      answer: `Tretinoin Cream is a prescription-strength retinoid that works at the cellular level to resurface skin. It accelerates the turnover of damaged cells, stimulates new collagen production, and normalizes pigmentation. The result is measurably smoother, clearer, and more even skin — improvements that build with consistent use over months.`,
+      answer:
+        'A prescription-strength retinoid that works at the cellular level. It accelerates turnover, stimulates collagen production, and normalizes pigmentation. Improvements are cumulative and build with consistent use.',
     },
     {
       question: 'How does it work?',
-      answer: `Tretinoin is the active metabolite of vitamin A. It binds directly to nuclear retinoic acid receptors (RARs), which modulate gene expression controlling epidermal differentiation and proliferation. This produces several measurable effects: accelerated shedding of damaged surface cells, normalization of keratinocyte maturation, stimulation of procollagen synthesis in the dermis, and redistribution of melanin granules. The net effect is structural remodeling of both the epidermis and upper dermis over time.`,
+      answer:
+        'Tretinoin is the active metabolite of vitamin A. It binds to nuclear retinoic acid receptors (RARs), modulating gene expression that governs epidermal differentiation. This produces accelerated shedding of damaged cells, normalized keratinocyte maturation, increased procollagen synthesis, and redistribution of excess melanin.',
     },
   ],
   faq: [
     {
-      question: 'Am I a good candidate for Tretinoin?',
-      answer: `Tretinoin is well-suited for anyone looking to address fine lines, uneven texture, hyperpigmentation, or mild to moderate acne. It works best for individuals who can commit to a consistent evening routine and daily sunscreen use.
-
-If you have a history of severe eczema, rosacea, or significant skin sensitivity, your clinician will evaluate whether tretinoin is appropriate or whether an adjusted protocol makes more sense for your skin.`,
+      question: 'Am I a good candidate?',
+      answer:
+        'Tretinoin is well suited for fine lines, uneven texture, hyperpigmentation, and mild to moderate acne. It requires a consistent evening routine and daily sunscreen. A history of severe eczema, rosacea, or significant skin sensitivity warrants clinician evaluation before starting.',
     },
     {
-      question: 'What is the "purging" phase and how long does it last?',
-      answer: `In the first 2–6 weeks, tretinoin accelerates the turnover of skin cells — including cells that were already forming microcomedones beneath the surface. This can temporarily increase breakouts as those pre-existing impactions are pushed out. This is not new acne. It is existing congestion reaching the surface faster.
-
-The purging phase typically resolves within 4–6 weeks as skin turnover normalizes at the new rate.`,
+      question: 'What is purging?',
+      answer:
+        'During the first two to six weeks, tretinoin pushes pre-existing congestion to the surface faster than normal. This is not new acne. It typically resolves within four to six weeks.',
     },
     {
-      question: 'How long does it take to see results?',
-      answer: `Texture improvements often appear within 4–6 weeks. Fine line reduction and tone correction develop more gradually over 3–6 months as dermal collagen remodeling accumulates. Tretinoin's benefits are cumulative — the longer you use it consistently, the more structural improvement occurs beneath the surface.
-
-Most clinical studies measure outcomes at 6–12 months.`,
+      question: 'How long until I see results?',
+      answer:
+        'Texture improvements appear at four to six weeks. Fine lines and tone improve over three to six months. Benefits are cumulative. Most clinical studies measure outcomes at six to twelve months.',
     },
     {
       question: 'Can I use other skincare products with tretinoin?',
-      answer: `Keep your routine simple during the adjustment phase. Use a gentle, fragrance-free cleanser and a basic moisturizer. Avoid vitamin C serums, AHAs, BHAs, benzoyl peroxide, and alcohol-based products until your skin has fully adapted (typically 6–8 weeks).
-
-Once stable, actives can be reintroduced one at a time — preferably on alternating days or mornings only. Your clinician can help sequence this.`,
+      answer:
+        'Keep the routine minimal during the adjustment phase. Avoid vitamin C, AHAs, BHAs, benzoyl peroxide, and alcohol-based products until the skin has adapted, typically six to eight weeks. Reintroduce one product at a time.',
     },
     {
-      question:
-        'Can tretinoin be used during pregnancy or while breastfeeding?',
-      answer: `Tretinoin Cream is contraindicated during pregnancy due to established risk to a developing fetus. Avoid use while breastfeeding. Pregnant individuals should avoid direct skin contact with the product. Consult your clinician before use if you are pregnant, planning pregnancy, or nursing.`,
+      question: 'Can I use tretinoin during pregnancy or breastfeeding?',
+      answer:
+        'No. Tretinoin is contraindicated during pregnancy due to established fetal risk. It should also be avoided while breastfeeding.',
     },
     {
-      question: 'What are the potential side effects?',
-      answer: `Weeks 1–4 (Adaptation Phase): Tretinoin accelerates epidermal turnover beyond your skin's current baseline. Common effects include dryness and peeling, redness, mild burning or stinging, and temporary breakouts (purging). These are signs the medication is working, not damage.
-
-After Week 6 (Stabilization): Your skin adapts to the increased turnover rate. Most initial side effects resolve. Continued mild dryness is common and manageable with moisturizer. If irritation persists beyond 8 weeks, contact your care team to evaluate concentration or frequency adjustments.`,
+      question: 'What are the side effects?',
+      answer:
+        'Weeks one through four: dryness, peeling, redness, mild burning, and temporary breakouts. These are signs the medication is active. Most side effects resolve after week six. Contact the care team if irritation persists beyond eight weeks.',
     },
     {
-      question: 'What are potential contraindications?',
-      answer: `- Allergy or Hypersensitivity: Do not use if you have a known allergy to tretinoin or any component in the formulation.
-- Pregnancy: Contraindicated during pregnancy. Retinoids carry established risk to a developing fetus.
-- Breastfeeding: Avoid use while breastfeeding. Small amounts of tretinoin may transfer into breast milk.
-- Handling Precautions: Pregnant individuals should avoid direct skin contact with the product.
-- Sun Sensitivity: Tretinoin thins the outer layer of skin, increasing UV vulnerability. Daily broad-spectrum sunscreen (SPF 30+) is required during treatment.
-- Medical Consultation: Discuss use with your clinician if you are pregnant, planning pregnancy, nursing, or using other prescription topicals.`,
+      question: 'What are the contraindications?',
+      answer:
+        'Allergy to tretinoin, pregnancy, and breastfeeding. Tretinoin increases sun sensitivity, making SPF 30 or higher a daily requirement.',
     },
     {
-      question: 'Potential drug interactions?',
-      answer: `Avoid layering with other active topicals — particularly benzoyl peroxide, alpha/beta hydroxy acids (glycolic, salicylic), alcohol-based toners, or astringents. These increase the likelihood of irritation, dryness, and barrier disruption when combined with tretinoin.
-
-Introduce new actives one at a time. Pair with a gentle, fragrance-free cleanser and moisturizer to maintain skin barrier integrity and support tretinoin's effects.`,
+      question: 'Are there drug interactions?',
+      answer:
+        'Avoid concurrent use of benzoyl peroxide, AHAs, BHAs, alcohol-based toners, and astringents. Introduce new active ingredients one at a time after the skin has fully adjusted.',
     },
+    RX_SUBSCRIPTION_POLICY_FAQ,
   ],
 };
 
@@ -940,24 +887,30 @@ export const HCG = {
     ],
   },
   science: {
-    activeIngredients: `The primary ingredient in HCG, or human chorionic gonadotropin, is a hormone produced during pregnancy. It is typically derived from the urine of pregnant women or produced synthetically. HCG products may also contain other inactive ingredients such as preservatives, stabilizers, and solvents to maintain the stability and effectiveness of the hormone.`,
-    mechanism: `To use HCG, first, ensure proper reconstitution of the medication as instructed by your healthcare provider. Administer the prescribed dosage through subcutaneous or intramuscular injection, rotating injection sites. Follow the recommended injection schedule diligently, and consult healthcare professionals if you have any concerns or experience difficulties during the administration process.`,
-    history: `HCG, or human chorionic gonadotropin, has a rich history dating back to the early 20th century. Its discovery traces back to the work of Nobel laureates Aschheim and Zondek in 1927, who identified HCG as a hormone produced during pregnancy. Over the years, HCG has gained recognition for its diverse applications, from supporting fertility treatments to aiding in weight loss protocols.`,
+    activeIngredients:
+      'The primary ingredient in HCG, or human chorionic gonadotropin, is a hormone produced during pregnancy. It is typically derived from the urine of pregnant women or produced synthetically. HCG products may also contain other inactive ingredients such as preservatives, stabilizers, and solvents to maintain the stability and effectiveness of the hormone.',
+    mechanism:
+      'To use HCG, first, ensure proper reconstitution of the medication as instructed by your healthcare provider. Administer the prescribed dosage through subcutaneous or intramuscular injection, rotating injection sites. Follow the recommended injection schedule diligently, and consult healthcare professionals if you have any concerns or experience difficulties during the administration process.',
+    history:
+      'HCG, or human chorionic gonadotropin, has a rich history dating back to the early 20th century. Its discovery traces back to the work of Nobel laureates Aschheim and Zondek in 1927, who identified HCG as a hormone produced during pregnancy. Over the years, HCG has gained recognition for its diverse applications, from supporting fertility treatments to aiding in weight loss protocols.',
   },
   headerFaq: [
     {
       question: 'What is HCG?',
-      answer: `Human Chorionic Gonadotropin (HCG) is a hormone crucial in reproductive health, commonly associated with fertility treatments and weight loss protocols. Its benefits may include supporting natural testosterone and estrogen production, aiding in fertility treatments, and contributing to weight loss efforts when used as part of a specific diet plan. The hormone's versatile role makes it a valuable tool in addressing various health concerns.`,
+      answer:
+        'Human Chorionic Gonadotropin (HCG) is a hormone crucial in reproductive health, commonly associated with fertility treatments and weight loss protocols. Its benefits may include supporting natural testosterone and estrogen production, aiding in fertility treatments, and contributing to weight loss efforts when used as part of a specific diet plan.',
     },
     {
       question: 'How does it work?',
-      answer: `Human Chorionic Gonadotropin (HCG) operates by mimicking luteinizing hormone (LH) in the body. Structurally similar to LH, HCG stimulates the gonads—testes in males and ovaries in females—to produce sex hormones such as testosterone and estrogen. This mimicking action can help address hormonal imbalances and support fertility, making HCG a valuable tool in reproductive health.`,
+      answer:
+        'Human Chorionic Gonadotropin (HCG) operates by mimicking luteinizing hormone (LH) in the body. Structurally similar to LH, HCG stimulates the gonads\u2014testes in males and ovaries in females\u2014to produce sex hormones such as testosterone and estrogen. This mimicking action can help address hormonal imbalances and support fertility, making HCG a valuable tool in reproductive health.',
     },
   ],
   faq: [
     {
       question: 'Am I a good candidate for hCG?',
-      answer: `A good candidate for HCG is someone who is overweight or suffers from obesity, as indicated by their body mass index (BMI) being over 24.9. Additionally, individuals who have struggled to lose weight through other methods and are committed to following a low-calorie diet are also suitable candidates for the HCG diet.`,
+      answer:
+        'A good candidate for HCG is someone who is overweight or suffers from obesity, as indicated by their body mass index (BMI) being over 24.9. Additionally, individuals who have struggled to lose weight through other methods and are committed to following a low-calorie diet are also suitable candidates for the HCG diet.',
     },
     {
       question: 'Can men use HCG for weight loss?',
@@ -966,43 +919,44 @@ export const HCG = {
     },
     {
       question: 'How is HCG administered?',
-      answer: `HCG can be administered through injections or oral forms such as drops or tablets. The specific method of administration may vary based on the individual's preferences and the guidance of a healthcare professional.`,
+      answer:
+        'HCG can be administered through injections or oral forms such as drops or tablets. The specific method of administration may vary based on the individual\u2019s preferences and the guidance of a healthcare professional.',
     },
     {
       question: 'What is the recommended duration of the HCG diet?',
-      answer: `The recommended duration of the HCG diet can vary, but it typically consists of a "loading" phase followed by a low-calorie phase, which can last from 3 to 6 weeks. After completing the low-calorie phase, a maintenance phase is usually advised to help stabilize weight loss and adjust to a regular diet.`,
+      answer:
+        'The recommended duration of the HCG diet can vary, but it typically consists of a "loading" phase followed by a low-calorie phase, which can last from 3 to 6 weeks. After completing the low-calorie phase, a maintenance phase is usually advised to help stabilize weight loss and adjust to a regular diet.',
     },
     {
       question: 'What are the potential side effects?',
-      answer: `Common side effects of HCG may include pain or swelling at the injection site, headaches, and mood swings. It is essential to promptly report any severe or persistent side effects to healthcare professionals for appropriate guidance. Regular monitoring and communication with healthcare providers can help manage potential side effects and ensure a safe and well-tolerated experience with HCG therapy.`,
+      answer:
+        'Common side effects of HCG may include pain or swelling at the injection site, headaches, and mood swings. It is essential to promptly report any severe or persistent side effects to healthcare professionals for appropriate guidance.',
     },
     {
       question: 'What are potential contraindications?',
-      answer: `- Cardiovascular Conditions: Individuals with pre-existing cardiovascular conditions; such as heart disease or hypertension; should exercise caution when considering HCG use. Consultation with healthcare professionals is crucial to assess potential risks and tailor usage to specific cardiovascular health considerations.
-- Hormonal Disorders: Individuals with known hormonal disorders or imbalances should consult with healthcare providers before using HCG. Professional guidance ensures a thorough evaluation of the hormonal profile and the safe integration of HCG into treatment plans.
-- Pregnancy: HCG is contraindicated during pregnancy; pregnant individuals should avoid its use due to potential risks to the developing fetus. It is essential to inform healthcare providers of any pregnancy or plans for pregnancy before initiating HCG therapy.
-- Breastfeeding: Breastfeeding women should exercise caution with HCG use; its safety during breastfeeding is not well-established. Healthcare professionals should be consulted to assess potential risks and benefits in the context of breastfeeding.
-- Prostate Cancer: Individuals with prostate cancer or a history of prostate-related issues should avoid HCG use. Consultation with healthcare providers is necessary to ensure safe and personalized recommendations.
-- Allergies: Individuals with known allergies or hypersensitivity to HCG or its components should avoid its use to prevent potential allergic reactions. Reviewing the product’s ingredients is essential for safety.
-- Pediatric Use: HCG is not intended for pediatric use; precautions should be taken to keep the product out of reach of children. In exceptional circumstances, seek guidance from healthcare professionals.
-- Consultation with Healthcare Professionals: Before initiating HCG use; individuals should consult with healthcare professionals—especially if they have underlying health conditions. Regular medical supervision is essential for ongoing assessment and guidance; ensuring safe and effective use of HCG.`,
+      answer:
+        'Cardiovascular Conditions: Individuals with pre-existing cardiovascular conditions should exercise caution when considering HCG use.\nHormonal Disorders: Individuals with known hormonal disorders or imbalances should consult with healthcare providers before using HCG.\nPregnancy: HCG is contraindicated during pregnancy.\nBreastfeeding: Breastfeeding women should exercise caution with HCG use.\nProstate Cancer: Individuals with prostate cancer or a history of prostate-related issues should avoid HCG use.\nAllergies: Individuals with known allergies or hypersensitivity to HCG or its components should avoid its use.\nPediatric Use: HCG is not intended for pediatric use.',
     },
     {
       question: 'Potential drug interactions?',
-      answer: `Certain medications, particularly those related to hormonal therapies or fertility treatments, may interact with HCG. It is crucial to provide a comprehensive list of current medications to healthcare providers, allowing them to assess and address potential interactions effectively. This proactive approach ensures the safe and optimal use of HCG in diverse medical interventions without compromising its efficacy.`,
+      answer:
+        'Certain medications, particularly those related to hormonal therapies or fertility treatments, may interact with HCG. It is crucial to provide a comprehensive list of current medications to healthcare providers, allowing them to assess and address potential interactions effectively.',
     },
+    RX_SUBSCRIPTION_POLICY_FAQ,
   ],
 };
 
 export const LOW_DOSE_NALTREXONE = {
+  tagline:
+    'At low doses, naltrexone transiently blocks opioid receptors to upregulate endogenous endorphin production and modulate microglial activity.',
   benefits: [
-    'Immune Modulation',
-    'Anti-Inflammatory Effects',
-    'Mental health benefits',
+    'Immune modulation through transient opioid receptor blockade and endorphin upregulation',
+    'Anti-inflammatory effects that may support chronic pain and autoimmune conditions',
+    'Mental health support through endorphin and enkephalin rebound',
   ],
   includes: {
     monthly: [
-      '30-day supply, delivered monthly',
+      '30-day supply delivered monthly',
       'Medical evaluation',
       'Free shipping',
       'Unlimited messaging with your care team',
@@ -1014,125 +968,93 @@ export const LOW_DOSE_NALTREXONE = {
       'Unlimited messaging with your care team',
     ],
     biannual: [
-      '6 month supply',
+      '6-month supply delivered quarterly',
       'Medical evaluation',
       'Free shipping',
       'Unlimited messaging with your care team',
     ],
   },
   science: {
-    activeIngredients: `The active ingredient in low dose naltrexone (LDN) is naltrexone hydrochloride, typically administered in very low doses ranging from 1.5 to 4.5 milligrams. In addition to the active ingredient, LDN formulations may contain inactive ingredients such as fillers, binders, and coating agents to facilitate proper dosage form and administration.`,
-    mechanism: `Low Dose Naltrexone (LDN) is typically administered orally, and the recommended dosage often falls within the range of 1 to 5 mg. It is crucial to follow the prescribed dosage and administration guidelines provided by healthcare professionals. LDN is commonly taken at night before bedtime to minimize potential side effects, and it is advisable to avoid consuming opioid-containing medications during the LDN regimen to prevent interference with its effects.`,
-    history: `Low Dose Naltrexone (LDN) has a rich history of over 40 years of prescription use, primarily known for its exceptional safety record. Originally FDA-approved for treating opioid dependencies and obesity at higher doses, LDN gained prominence for its alternative use at lower dosages, with 4.5mg/day being the most common. Beyond its conventional applications, LDN has exhibited novel and paradoxical effects, garnering attention for potential therapeutic benefits across various conditions. Since 1985, LDN has been explored in the treatment of autoimmune diseases and viral infections, sparking ongoing research and discussions within the medical community.`,
+    activeIngredients:
+      'Naltrexone hydrochloride at 1.5 to 4.5 mg, compounded with inactive fillers and binders. At standard doses (50 mg), naltrexone is an opioid antagonist used for addiction medicine. At low doses, it operates through a fundamentally different mechanism. The brief, partial receptor blockade triggers a compensatory upregulation of endogenous opioid production and receptor sensitivity. This rebound effect is what drives the immune-modulating and anti-inflammatory properties that distinguish LDN from its full-dose counterpart.',
+    mechanism:
+      'LDN is taken orally, typically at bedtime. Nighttime dosing aligns with the body\u2019s peak endorphin production cycle between 2 and 4 AM. Most patients start at 1.5 mg and titrate to 4.5 mg over several weeks based on tolerability. Avoid opioid-containing medications while on LDN, as the receptor blockade will interfere with their effect.',
+    history:
+      'Naltrexone has been in prescription use for over 40 years. The FDA approved it at 50 mg for opioid dependence and later for alcohol use disorder. In 1985, Dr. Bernard Bihari began exploring low-dose protocols for immune dysregulation, observing that brief opioid receptor blockade could modulate immune function rather than suppress it. Since then, LDN has been investigated in autoimmune diseases, chronic pain syndromes, and neuroinflammatory conditions. While large-scale randomized trials are still building, a growing body of clinical evidence and case literature supports its use across multiple conditions.',
   },
   headerFaq: [
     {
-      question: 'What is LDN?',
-      answer: `Low-dose naltrexone (LDN) has emerged as a promising option for managing chronic pain, autoimmune diseases, mental health issues, and improving overall disease prevention and quality of life. It exhibits analgesic and anti-inflammatory effects beneficial for conditions like fibromyalgia and chronic neuropathic pain, mainly through a mechanism that temporarily blocks opioid receptors, increasing endorphin production. In autoimmune diseases such as multiple sclerosis and Crohn's disease, LDN may enhance immune regulation and decrease inflammation. LDN also shows potential in psychiatric conditions by upregulating endogenous opioid activity, which may improve stress resilience, social bonding, and emotional well-being. Additionally, its immunomodulatory properties could play a role in disease prevention and enhancing quality of life by reducing oncogenic and inflammatory processes.`,
+      question: 'What is Low Dose Naltrexone?',
+      answer:
+        'LDN is naltrexone prescribed at 1.5 to 4.5 mg, far below the standard 50 mg dose used in addiction medicine. At these low doses, it briefly blocks opioid receptors, triggering a rebound increase in endorphin production. This mechanism supports immune regulation, reduces inflammation, and may improve chronic pain and mood.',
     },
     {
       question: 'How does it work?',
-      answer: `Low Dose Naltrexone (LDN) operates by binding to and temporarily blocking opioid receptors, a mechanism typically associated with higher doses of the medication. At lower doses, approximately ranging from 1 to 5 mg, LDN is believed to stimulate the production of endorphins, the body's natural opioids. This unique modulation of endorphin levels contributes to its potential in immune modulation, anti-inflammatory effects, and influencing cellular processes for overall well-being.`,
+      answer:
+        'LDN binds to opioid receptors for a short window, typically four to six hours. The body interprets this as a deficit and compensates by producing more endorphins and enkephalins. These endogenous opioids then modulate immune cell activity, reduce inflammatory signaling, and support cellular repair. The net effect is immune rebalancing rather than suppression.',
     },
   ],
   faq: [
     {
       question: 'Am I a good candidate for LDN?',
-      answer: `A good candidate for low dose naltrexone (LDN) typically has a chronic condition such as autoimmune disease, chronic pain, or inflammation. They may also be seeking alternatives to traditional treatments or have had limited success with conventional therapies.`,
+      answer:
+        'LDN may be appropriate if you have a chronic condition involving immune dysregulation, chronic pain, or systemic inflammation. Candidates often include individuals with autoimmune disease, fibromyalgia, or mood disorders who have had limited success with conventional therapies. Your provider will assess whether LDN fits your clinical picture.',
     },
     {
-      question:
-        'What conditions is low dose naltrexone (LDN) commonly used for?',
-      answer: `LDN has shown promise in managing various conditions such as autoimmune diseases like multiple sclerosis, rheumatoid arthritis, and Crohn's disease, as well as chronic pain conditions like fibromyalgia and neuropathic pain. Research also suggests potential benefits for mood disorders, neurodegenerative diseases, and immune system dysregulation.`,
+      question: 'What conditions is LDN used for?',
+      answer:
+        'LDN has been explored for autoimmune conditions (multiple sclerosis, rheumatoid arthritis, Crohn\u2019s disease), chronic pain syndromes (fibromyalgia, neuropathic pain), mood disorders, neurodegenerative diseases, and broader immune dysregulation. It is used off-label for these indications.',
     },
     {
-      question:
-        'What is the mechanism of action behind low dose naltrexone (LDN)?',
-      answer: `LDN works by temporarily blocking opioid receptors in the brain, which leads to a rebound increase in endorphin production. This increase in endorphins is believed to modulate immune function, reduce inflammation, and potentially alleviate symptoms associated with various conditions.`,
-    },
-    {
-      question:
-        'Are there any significant side effects or risks associated with low dose naltrexone (LDN)?',
-      answer: `Naltrexone administration can lead to a variety of side effects across multiple body systems. Gastrointestinal effects are common, with nausea occurring in 33% of patients, and other symptoms like abdominal pain, decreased appetite, diarrhea, and vomiting also reported. The nervous system can be affected, with notable side effects including anxiety, asthenia, headaches, insomnia, and dizziness. Liver enzyme levels may increase, indicating potential hepatic side effects, and neuromuscular & skeletal complaints such as arthralgia, arthritis, and increased creatine phosphokinase levels are observed. Less common and postmarketing side effects span a wide range, including dermatologic, respiratory, cardiovascular, and hypersensitivity reactions, highlighting the broad impact naltrexone can have on patients.`,
+      question: 'How does the mechanism of action work?',
+      answer:
+        'The brief opioid receptor blockade at low doses triggers a compensatory rebound. The body upregulates endorphin and enkephalin production, increasing receptor sensitivity. These endogenous opioids modulate immune cell behavior, particularly toll-like receptor 4 (TLR4) signaling on microglia and macrophages. The result is reduced neuroinflammation and a shift away from pro-inflammatory immune activity.',
     },
     {
       question: 'What are the potential side effects?',
-      answer: `While Low Dose Naltrexone (LDN) is generally well-tolerated, some individuals can experience side effects across multiple body systems. Gastrointestinal effects are common, with nausea occurring in 33% of patients, and other symptoms like abdominal pain, decreased appetite, diarrhea, and vomiting also reported. The nervous system can be affected, with notable side effects including anxiety, asthenia, headaches, insomnia, and dizziness. Liver enzyme levels may increase, indicating potential hepatic side effects, and neuromuscular & skeletal complaints such as arthralgia, arthritis, and increased creatine phosphokinase levels are observed. Less common and postmarketing side effects span a wide range, including dermatologic, respiratory, cardiovascular, and hypersensitivity reactions, highlighting the broad impact naltrexone can have on patients.`,
+      answer:
+        'Gastrointestinal effects are the most common: nausea (reported in approximately one-third of patients at standard doses, less frequent at low doses), abdominal discomfort, decreased appetite, and diarrhea. Nervous system effects may include vivid dreams, mild insomnia, headache, dizziness, or transient anxiety. Liver enzyme elevation is possible and monitored through labs. Joint discomfort occurs rarely. At low doses, LDN is generally well tolerated, and side effects that do appear tend to resolve within the first few weeks.',
     },
     {
-      question: 'What are potential contraindications?',
-      answer: `Any of the following are contraindications to taking the medication:
-- People with hypersensitivity to any component of the medication
-- Current physiological opioid dependence or current use of opioid analgesics (including partial opioid agonists)
-- Acute opioid withdrawal
-- People with alcohol use disorder
-- Moderate-Severe Liver Disease
-- Moderate-Severe Kidney Disease
-- History of Depression
-- History of Suicide Ideation or Attempt
-- Pregnant women, women attempting to conceive, and women at high risk of pregnancy
-- Women who are breast-feeding`,
+      question: 'What are the contraindications?',
+      answer:
+        'LDN is contraindicated in individuals with current opioid dependence or active opioid use, acute opioid withdrawal, known hypersensitivity to naltrexone, alcohol use disorder under active treatment, moderate to severe liver or kidney disease, history of depression with suicidal ideation, pregnancy or active attempts to conceive, and breastfeeding. Your provider will screen for all of these before prescribing.',
     },
     {
-      question: 'Potential drug interactions?',
-      answer: `Interacting drugs include, but not limited to:
-
-Bremelanotide
-May decrease the serum concentration of Naltrexone.
-Risk X: Avoid combination
-
-Lofexidine
-May decrease the serum concentration of Naltrexone.
-Risk C: Monitor therapy
-
-Methylnaltrexone
-May enhance the adverse/toxic effect of Opioid Antagonists. Specifically, the risk for opioid withdrawal may be increased.
-Risk X: Avoid combination
-
-Naldemedine
-Opioid Antagonists may enhance the adverse/toxic effect of Naldemedine. Specifically, the risk for opioid withdrawal may be increased.
-Risk X: Avoid combination
-
-Naloxegol
-Opioid Antagonists may enhance the adverse/toxic effect of Naloxegol. Specifically, the risk for opioid withdrawal may be increased.
-Risk X: Avoid combination
-
-Opioid Agonists
-Naltrexone may diminish the therapeutic effect of Opioid Agonists.
-Management: Seek therapeutic alternatives to opioids. See full drug interaction monograph for detailed recommendations.
-Risk X: Avoid combination
-
-Sibutramine
-May enhance the adverse/toxic effect of Centrally Acting Weight Loss Agents.
-Risk X: Avoid combination`,
+      question: 'Are there drug interactions?',
+      answer:
+        'Several interactions require avoidance or close monitoring. Avoid combining LDN with opioid agonists (Risk X), methylnaltrexone, naldemedine, naloxegol, bremelanotide, or sibutramine. Lofexidine requires monitoring if co-prescribed. Any medication that acts on opioid receptors may interact with LDN. Disclose your complete medication list during your evaluation.',
     },
+    RX_SUBSCRIPTION_POLICY_FAQ,
   ],
 };
 
 export const VITAMIN_B12_INJECTION = {
+  tagline:
+    'Injectable methylcobalamin that bypasses gut absorption to support methylation, red blood cell production, and neurological function.',
   benefits: [
-    'Increased energy levels',
-    'Improved red blood cell production',
-    'Enhanced neurological function',
-    'Support for DNA synthesis',
+    'Direct-to-bloodstream B12 delivery that bypasses gut absorption entirely',
+    'Supports cellular energy production through mitochondrial methylation pathways',
+    'Promotes healthy red blood cell formation and oxygen transport',
+    'Supports neurological function, myelin integrity, and cognitive clarity',
   ],
   includes: {
     monthly: [
-      '30-day supply, delivered monthly',
+      '30-day supply delivered monthly',
       'Medical evaluation',
       'Free shipping',
       'Regular lab testing every 6 months',
       'Unlimited messaging with your care team',
     ],
     quarterly: [
-      '90-day supply, delivered monthly',
+      '90-day supply delivered monthly',
       'Medical evaluation',
       'Free shipping',
       'Regular lab testing every 6 months',
       'Unlimited messaging with your care team',
     ],
     biannual: [
-      '6 months of medication, delivered in monthly shipments',
+      '6 months of medication delivered monthly',
       'Medical evaluation',
       'Free shipping',
       'Regular lab testing every 6 months',
@@ -1140,479 +1062,444 @@ export const VITAMIN_B12_INJECTION = {
     ],
   },
   science: {
-    activeIngredients: `B12 injections contain cyanocobalamin, a synthetic form of vitamin B12, along with sterile water and sometimes other additives for preservation. These injections provide a direct and efficient way to deliver a concentrated dose of vitamin B12, bypassing the digestive system for maximum absorption and effectiveness.`,
-    mechanism: `B12 Injections are administered through intramuscular injection, a process typically performed by healthcare professionals. The precise technique and dosage are determined by healthcare providers, ensuring accurate and safe administration.`,
-    history: `Vitamin B12, essential for various physiological functions, was discovered in 1947, marking a significant advancement in nutritional science. Over time, B12 Injections have become a valuable therapeutic tool to address deficiencies, support overall health, and provide a targeted approach to ensuring adequate levels of this vital vitamin in the body.`,
+    activeIngredients:
+      'Methylcobalamin is the bioactive, methylated form of vitamin B12. Unlike cyanocobalamin (the synthetic form), methylcobalamin requires no hepatic conversion before the body can use it. It serves as a cofactor in two critical enzymatic reactions: methionine synthase (which regenerates methionine and drives methylation) and methylmalonyl-CoA mutase (which feeds into the citric acid cycle for energy production). Delivered by intramuscular injection, it enters the bloodstream directly, bypassing the intrinsic factor dependency and absorption variability that limit oral supplementation.',
+    mechanism:
+      'B12 is administered by intramuscular injection, typically into the deltoid or gluteal muscle. Your provider will determine injection frequency based on your labs and symptoms. Most protocols involve weekly injections during the initial repletion phase, transitioning to monthly maintenance once levels stabilize. Self-injection kits with instructions are included in your shipment for at-home administration.',
+    history:
+      'Vitamin B12 was first isolated in 1948 after decades of research into pernicious anemia, a then-fatal condition caused by the inability to absorb B12 from food. Researchers discovered that injectable B12 bypassed the absorption defect entirely, transforming a lethal diagnosis into a manageable condition. The methylcobalamin form gained clinical preference over cyanocobalamin as research revealed its superior bioavailability and direct participation in methylation chemistry. B12 injection remains the gold standard for deficiency correction, particularly in patients with malabsorption, gastric surgery history, or high metabolic demand.',
   },
   headerFaq: [
     {
-      question: 'What is B12 injections?',
-      answer: `Injections confer multiple benefits over oral supplementation for ensuring optimal cellular function, as they bypass potential absorption issues in the gut and provide immediate, bioavailable support for energy production, cognitive health, and long-term vitality.`,
+      question: 'What are B12 injections?',
+      answer:
+        'B12 injections deliver methylcobalamin directly into the bloodstream, bypassing the digestive tract entirely. This matters because oral B12 depends on intrinsic factor and intact gut absorption, both of which decline with age, medication use, and GI conditions. Injectable B12 provides immediate, bioavailable support for energy, cognitive function, and long-term neurological health.',
     },
     {
       question: 'How does it work?',
-      answer: `B12 injections primarily function by delivering a concentrated dose of vitamin B12 directly into the bloodstream. Vitamin B12, also known as cobalamin, plays a crucial role in various physiological processes within the body. Once administered, B12 is readily absorbed and utilized in cellular metabolism, particularly in the synthesis of DNA, red blood cells, and the maintenance of the nervous system. This injection method ensures swift absorption, making it an effective strategy for addressing B12 deficiency and supporting overall health.`,
+      answer:
+        'Methylcobalamin enters the bloodstream within minutes of injection. It participates directly in two essential pathways: DNA synthesis through the methylation cycle, and energy production through the citric acid cycle. These processes sustain red blood cell formation, nerve myelin maintenance, and cellular metabolism throughout the body.',
     },
   ],
   faq: [
     {
-      question: 'Am I a good candidate for Vitamin B12 Injections?',
-      answer: `A good candidate for B12 injections typically includes individuals with diagnosed or suspected B12 deficiency, those with malabsorption issues, vegetarians/vegans, and individuals seeking to boost energy levels or improve neurological function. Additionally, those with certain medical conditions, such as pernicious anemia or gastrointestinal disorders that affect B12 absorption, may benefit significantly from B12 injections under the guidance of a healthcare professional.`,
+      question: 'Am I a good candidate for B12 injections?',
+      answer:
+        'B12 injections are appropriate for individuals with diagnosed or suspected B12 deficiency, malabsorption conditions (celiac disease, Crohn\u2019s, gastric bypass history), pernicious anemia, or long-term use of medications that deplete B12 (metformin, proton pump inhibitors). Vegetarians and vegans are also strong candidates given the absence of B12 in plant-based diets. Individuals seeking cognitive, energy, or neurological support beyond what oral supplements provide may also benefit.',
     },
     {
-      question:
-        'Why should I consider B12 injections when I can take oral supplements?',
-      answer: `While oral supplements are effective for many individuals, B12 injections offer a direct route of absorption into the bloodstream, bypassing potential absorption issues in the digestive system. This method ensures maximum potency and efficiency, making it ideal for those with malabsorption issues or seeking rapid results.`,
+      question: 'Why injections instead of oral supplements?',
+      answer:
+        'Oral B12 absorption depends on intrinsic factor, a protein produced in the stomach. Up to 40% of adults over 60 have reduced intrinsic factor production. Medications like metformin and PPIs further impair absorption. Injections bypass the entire GI tract, delivering the full dose directly into circulation. This is the most reliable route for anyone with absorption concerns or documented deficiency.',
     },
     {
-      question: 'Are B12 injections suitable for vegetarians and vegans?',
-      answer: `Yes, B12 injections are particularly beneficial for vegetarians and vegans who may have limited dietary sources of vitamin B12, primarily found in animal products. Since B12 is crucial for energy metabolism and neurological function, supplementing with injections can help maintain optimal levels and prevent deficiency-related symptoms.`,
+      question: 'Is this suitable for vegetarians and vegans?',
+      answer:
+        'Yes. B12 is found almost exclusively in animal-derived foods. Plant-based diets provide negligible amounts. Injection ensures consistent repletion regardless of dietary intake.',
     },
     {
-      question: 'How often should I get B12 injections?',
-      answer: `The frequency of B12 injections varies depending on individual needs and health conditions. Generally, people may receive injections weekly or monthly to maintain optimal B12 levels.`,
+      question: 'How often are injections given?',
+      answer:
+        'Frequency depends on your baseline levels and clinical goals. Most patients begin with weekly injections for four to eight weeks to build stores, then transition to monthly maintenance. Your provider will adjust the schedule based on follow-up labs.',
     },
     {
       question: 'What are the potential side effects?',
-      answer: `Common side effects of B12 Injections are generally mild and transient, including redness or pain at the injection site. In some cases, individuals may experience mild gastrointestinal symptoms such as nausea or diarrhea. These effects are usually temporary and tend to diminish as the body adjusts to the supplementation.`,
+      answer:
+        'Side effects are uncommon. Mild redness or soreness at the injection site is the most frequent. Occasional GI symptoms (nausea, mild diarrhea) may occur but are typically brief. Serious adverse effects are rare with B12 supplementation.',
     },
     {
-      question: 'What are potential contraindications?',
-      answer: `- Consultation with Healthcare Professionals
-Prior consultation is advised before using B12 injections, especially during pregnancy, when planning pregnancy, or while breastfeeding.
-- Allergy or Hypersensitivity
-Avoid use if allergic to cobalamin (vitamin B12) or any components in the injection.
-- Renal Impairment
-Use with caution in individuals with severe renal impairment. Dosage adjustments may be necessary.
-- Interaction with Medications
-Consult a healthcare professional to assess potential interactions with any current medications.
-- Blood Disorders
-Individuals with blood disorders should consult their healthcare provider before starting B12 injections.
-- Iron or Folate Deficiency
-Address any coexisting deficiencies before starting B12 supplementation to avoid masking underlying issues.
-- Dermatologic Conditions
-Seek medical advice for proper administration in individuals with skin-related conditions.
-- Neurologic Disorders
-Special consideration is required for individuals with neurologic conditions. A thorough medical assessment is recommended.
-- Cardiovascular Conditions
-Consult with a healthcare provider before starting B12 supplementation if there are existing cardiovascular concerns.
-- Pregnancy and Breastfeeding
-Ongoing consultation is recommended to ensure optimal B12 levels during pregnancy and breastfeeding.`,
+      question: 'What are the contraindications?',
+      answer:
+        'Avoid B12 injections if you have a known allergy to cobalamin or cobalt. Use caution with renal impairment, as the kidneys clear excess B12. Conditions including polycythemia vera, iron or folate deficiency, and certain dermatologic or cardiovascular conditions require medical assessment before starting. Discuss pregnancy or breastfeeding plans with your provider before beginning therapy.',
     },
     {
-      question: 'Potential drug interactions?',
-      answer: `B12 Injections may interact with certain medications, and individuals using other drugs should consult healthcare professionals to assess potential interactions before starting B12 supplementation. Drugs that may interfere with B12 absorption or utilization, such as proton pump inhibitors or metformin, require careful consideration. Healthcare providers can provide tailored guidance to optimize B12 supplementation while mitigating potential interactions.`,
+      question: 'Are there drug interactions?',
+      answer:
+        'Proton pump inhibitors and metformin both reduce B12 absorption and may accelerate depletion, which actually strengthens the case for injectable delivery. Chloramphenicol may reduce the hematologic response to B12. Disclose all medications during your evaluation.',
     },
+    RX_SUBSCRIPTION_POLICY_FAQ,
   ],
 };
 
 export const GHK_CU_CREAM = {
+  tagline:
+    'Copper peptide that supports fibroblast activity, collagen and elastin synthesis, and the skin\u2019s antioxidant defense at the matrix level.',
   benefits: [
-    'Reduction in Fine Lines and Wrinkles',
-    'Improved Elasticity',
-    'Even Skin Tone',
-    'Enhanced Hydration',
-    'Faster Healing',
-    'Overall Skin Rejuvenation',
+    'Stimulates collagen and elastin synthesis for measurable reduction in fine lines',
+    'Restores skin elasticity through extracellular matrix remodeling',
+    'Reduces hyperpigmentation and promotes even skin tone',
+    'Strengthens the skin barrier and improves moisture retention',
+    'Accelerates wound healing and scar repair',
+    'Reduces chronic low-grade inflammation in aging skin',
   ],
   includes: {
     monthly: [
-      '30-day supply, delivered monthly',
+      '30-day supply delivered monthly',
       'Medical evaluation',
       'Free shipping',
       'Unlimited messaging with your care team',
     ],
     quarterly: [
-      '90-day supply',
+      '90-day supply delivered quarterly',
       'Medical evaluation',
       'Free shipping',
       'Unlimited messaging with your care team',
     ],
     biannual: [
-      '6 month supply',
+      '6-month supply delivered in two shipments',
       'Medical evaluation',
       'Free shipping',
       'Unlimited messaging with your care team',
     ],
   },
   science: {
-    activeIngredients: `GHK-Cu (Copper Tripeptide-1) 0.5% (Anhydrous): Signals skin renewal and supports collagen-rich, resilient skin. Anhydrous Cream Base: Water-free blend of emollients and occlusives (e.g., squalane, caprylic/capric triglyceride, dimethicone, shea butter, beeswax) that locks in moisture, enhances glide, and improves peptide stability. No water, no glycerin, and typically no added preservatives required.`,
-    mechanism: `GHK-CU is administered via a cream. Apply a small, pea sized amount to your face or affected areas. If there is no skin irritation, you can increase to 2 x pea sized amounts daily, as long as it isn't being combined with other skincare products like retinoids, vitamin c, AHAs/BHAs.`,
-    history: `GHK-Cu (Glycyl-L-Histidyl-L-Lysine Copper) was discovered in the 1970s as a naturally occurring peptide in human plasma with profound roles in tissue repair and regeneration. Initially identified for its ability to stimulate collagen production and accelerate wound healing, GHK-Cu gained recognition for its anti-inflammatory and antioxidant properties. Early studies highlighted its impact on skin health, scar reduction, and hair growth, paving the way for its use in dermatological and cosmetic treatments. Today, GHK-Cu remains at the forefront of anti-aging research, with its applications expanding into broader areas of regenerative medicine and cellular health.`,
+    activeIngredients:
+      'GHK-Cu (Copper Tripeptide-1) at 0.5% concentration in an anhydrous base. The water-free formulation uses squalane, caprylic/capric triglyceride, dimethicone, shea butter, and beeswax as emollients and occlusives. No water, no glycerin, no added preservatives. The anhydrous design maximizes peptide stability and skin penetration.',
+    mechanism:
+      'Apply a pea-sized amount to the face or target areas once daily. If no irritation develops and the cream is not being combined with retinoids, vitamin C, or AHAs/BHAs, frequency can increase to twice daily. Clean, dry skin before application yields best absorption.',
+    history:
+      'GHK-Cu was discovered in the 1970s as a naturally occurring tripeptide in human blood plasma. Early research identified its roles in tissue repair, collagen synthesis, and wound healing. Subsequent studies revealed significant anti-inflammatory and antioxidant properties. The peptide\u2019s concentration in plasma declines with age, paralleling visible skin aging. It is now one of the most studied peptides in regenerative dermatology.',
   },
   headerFaq: [
     {
-      question: 'What is GHK-Cu?',
-      answer: `GHK-Cu, a powerful peptide therapy, harnesses the benefits of copper to promote skin rejuvenation and overall well-being. Known for its collagen-stimulating properties, GHK-Cu enhances skin firmness, reduces wrinkles, and contributes to a more youthful complexion. With additional antioxidant and anti-inflammatory effects, this peptide therapy is a versatile solution for skincare and may support various aspects of skin health.`,
+      question: 'What is GHK-Cu Cream?',
+      answer:
+        'GHK-Cu is a copper-binding peptide that occurs naturally in human plasma. It activates collagen production, accelerates tissue remodeling, and reduces inflammation. Topical application delivers these regenerative signals directly to aging or damaged skin.',
     },
     {
       question: 'How does it work?',
-      answer: `GHK-Cu (Glycyl-L-Histidyl-L-Lysine Copper), a naturally occurring tripeptide, plays a pivotal role in skin repair and regeneration. It binds to copper ions, activating processes that stimulate collagen production, enhance tissue remodeling, and reduce inflammation. By promoting antioxidant activity and supporting cellular communication, GHK-Cu strengthens the skin barrier, improves elasticity, and accelerates healing. Current research highlights its potential in addressing signs of aging, hyperpigmentation, and scarring, while its broader applications in skin rejuvenation and overall health continue to inspire innovation in dermatological care.`,
+      answer:
+        'GHK-Cu binds copper ions and delivers them into skin cells, where copper serves as a cofactor for enzymes critical to collagen crosslinking and antioxidant defense. The peptide upregulates genes involved in extracellular matrix production while downregulating inflammatory and tissue-destructive pathways. This dual action, building new structure while reducing degradation, distinguishes it from single-mechanism ingredients.',
     },
   ],
   faq: [
     {
-      question: 'Am I a good candidate for GHK-CU Cream?',
-      answer: `A good candidate for GHK-Cu (Copper Peptide) typically exhibits signs of aging such as fine lines, wrinkles, and loss of skin elasticity. Additionally, individuals with hyperpigmentation, scars, or compromised skin barrier function may benefit from its regenerative and healing properties.`,
+      question: 'Am I a good candidate?',
+      answer:
+        'GHK-Cu is well suited for visible signs of aging, including fine lines, loss of elasticity, and thinning skin. It also benefits those with hyperpigmentation, scarring, or a compromised skin barrier. Its anti-inflammatory profile makes it appropriate for skin that does not tolerate more aggressive actives.',
     },
     {
-      question: 'Why use GHK-CU for skin health?',
-      answer: `GHK-Cu stands out for its multifaceted approach to skin rejuvenation. While retinol primarily targets fine lines and wrinkles by promoting cell turnover, and hyaluronic acid focuses on hydration, GHK-Cu offers a comprehensive solution. It not only boosts collagen and elastin production for improved firmness but also supports wound healing, reduces inflammation, and enhances skin repair mechanisms, making it a versatile option for addressing various signs of aging.`,
+      question: 'Why choose GHK-Cu over other anti-aging ingredients?',
+      answer:
+        'GHK-Cu works across multiple pathways simultaneously. It boosts collagen and elastin production, supports wound repair, reduces inflammation, and enhances antioxidant defense. Most single ingredients, including retinol and hyaluronic acid, address only one or two of these mechanisms.',
     },
     {
-      question: 'Is GHK-CU safe to use?',
-      answer: `GHK-Cu is considered safe for topical use, but like any skincare ingredient, it may cause adverse reactions in some individuals. These can include mild irritation, redness, or itching, particularly for those with sensitive skin or allergies to copper. It's advisable to perform a patch test before full application and to consult with a dermatologist if you have any concerns or experience persistent reactions.`,
+      question: 'Is it safe?',
+      answer:
+        'GHK-Cu has a strong safety profile for topical use. Mild irritation or redness is possible with sensitive skin types. A patch test on a small area for 24 hours before full application is recommended.',
     },
     {
-      question: 'Can GHK-CU be used with my current skincare routine?',
-      answer: `Yes, GHK-Cu is compatible with many other skincare ingredients and can be integrated into various routines. However, it's essential to be mindful of potential interactions or sensitivities. For example, combining GHK-Cu with vitamin C may enhance its antioxidant properties, while using it alongside exfoliating acids like glycolic or salicylic acid may increase skin sensitivity. It's wise to introduce new products gradually and to pay attention to how your skin responds to different combinations to optimize efficacy and minimize the risk of irritation.`,
+      question: 'Can I use it with my current skincare routine?',
+      answer:
+        'GHK-Cu is compatible with most skincare ingredients. Use caution when combining with exfoliating acids, as sensitivity may increase. Introduce new products one at a time to isolate any reactions.',
     },
     {
-      question: 'What are the potential side effects?',
-      answer: `GHK-Cu, as a lipid therapy, is generally well-tolerated when used topically. Common side effects are rare but may include mild irritation or redness at the application site. It is advisable to perform a patch test before widespread use and, if any persistent or severe side effects occur, discontinue use and seek medical advice promptly.`,
+      question: 'What are the side effects?',
+      answer:
+        'GHK-Cu is generally well tolerated. Rare reports include mild irritation or transient redness. Discontinue use if irritation persists and contact your care team.',
     },
     {
-      question: 'What are potential contraindications?',
-      answer: `Medical Conditions: Seek guidance from healthcare providers; especially for individuals with underlying medical conditions; to ensure safe and appropriate use of GHK-Cu.`,
+      question: 'What are the contraindications?',
+      answer:
+        'Individuals with known copper sensitivity or allergy to any formulation ingredient should not use this product. Those with underlying dermatological conditions should consult their clinician before starting.',
     },
     {
-      question: 'Potential drug interactions?',
-      answer: `GHK-Cu, being primarily utilized in topical skincare applications, generally has limited interactions with other substances. However, it is advisable to avoid combining GHK-Cu products with certain skincare ingredients that may have potential interactions, such as strong acids or retinoids. Users should carefully check the ingredient lists of other skincare products they use simultaneously. While GHK-Cu is well-tolerated, seeking professional advice is recommended for those using prescription skincare treatments or undergoing specific dermatological procedures to ensure compatibility and prevent any unforeseen interactions.`,
+      question: 'Are there drug interactions?',
+      answer:
+        'Topical drug interactions are limited. Avoid layering with strong acids or prescription retinoids without clinician guidance. If using other prescription topicals, discuss timing and compatibility with your care team.',
     },
+    RX_SUBSCRIPTION_POLICY_FAQ,
   ],
 };
 
 export const NAD_INJECTION = {
+  tagline:
+    'Injectable NAD+ that bypasses oral absorption to restore a coenzyme central to mitochondrial energy production and cellular repair pathways.',
   benefits: [
-    'Cellular energy production support',
-    'Improve mitochondrial function ',
-    'DNA repair enhancement',
-    'Cognitive function improvement',
+    'Replenishes a coenzyme central to mitochondrial energy production',
+    'Supports DNA repair pathways that decline with age',
+    'Enhances cognitive clarity and sustained mental performance',
+    'Promotes cellular resilience against oxidative stress',
   ],
   includes: {
     monthly: [
-      '30-day supply, delivered monthly',
+      '30-day supply delivered monthly',
       'Medical evaluation',
       'Free shipping',
       'Unlimited messaging with your care team',
     ],
     quarterly: [
-      '90-day supply, delivered monthly',
+      '90-day supply delivered monthly',
       'Medical evaluation',
       'Free shipping',
       'Unlimited messaging with your care team',
     ],
     biannual: [
-      '6 months of medication, delivered in monthly shipments',
+      '6 months of medication delivered in monthly shipments',
       'Medical evaluation',
       'Free shipping',
       'Unlimited messaging with your care team',
     ],
   },
   science: {
-    activeIngredients: `NAD+ injections typically contain Nicotinamide Adenine Dinucleotide (NAD+), a coenzyme naturally produced in the body that plays a crucial role in cellular energy production and DNA repair.`,
-    mechanism: `NAD+ solution, injection materials, and user instructions will be provided upon purchase.`,
-    history: `NAD+ has a rich history in cellular biology, gaining increasing attention for its pivotal role in cellular metabolism and health. The use of NAD+ supplementation, including intravenously, has emerged as a novel approach to support cellular function. In recent years, around 2018, the application of NAD+ injections gained popularity as a potential intervention for enhancing overall well-being and addressing age-related concerns.`,
+    activeIngredients:
+      'Nicotinamide adenine dinucleotide (NAD+) is a coenzyme present in every living cell. It functions as a critical electron carrier in mitochondrial respiration and serves as a substrate for enzymes involved in DNA repair, including sirtuins and PARPs. Endogenous NAD+ levels decline measurably with age, contributing to reduced cellular energy output and impaired repair capacity.',
+    mechanism:
+      'Each shipment includes NAD+ solution, injection materials, and detailed instructions. Subcutaneous injection technique is straightforward. Your prescribing clinician will determine dosing frequency based on your health goals and response.',
+    history:
+      'NAD+ was first identified in 1906 during research on fermentation and has been studied in cellular biology for over a century. Its role in mitochondrial function and aging pathways gained significant scientific attention through sirtuin research in the early 2000s. Supplementation via injection emerged as a direct delivery method, bypassing the conversion steps required by oral precursors like NMN and NR. Clinical interest expanded around 2018 as evidence for age-related NAD+ decline became more robust.',
   },
   headerFaq: [
     {
-      question: 'What is NAD+ injections?',
-      answer: `Revitalize your cellular health with our NAD+ Injection, a potent formulation delivering the essential coenzyme nicotinamide adenine dinucleotide (NAD+). This injection is crafted to support fundamental metabolic processes, including DNA repair and cellular resilience, promoting overall well-being. Experience the natural benefits of NAD+ as it works to rejuvenate your cells and enhance your vitality.`,
+      question: 'What are NAD+ Injections?',
+      answer:
+        'NAD+ is a coenzyme required for mitochondrial energy production, DNA repair, and cellular stress response. Levels drop significantly with age. Injectable NAD+ delivers the molecule directly, bypassing the digestive losses and conversion bottlenecks of oral supplements.',
     },
     {
       question: 'How does it work?',
-      answer: `NAD+ injection functions by supplementing the cellular coenzyme nicotinamide adenine dinucleotide (NAD+), a crucial player in various metabolic processes. As cells metabolize nutrients, NAD+ plays a vital role in facilitating energy production, DNA repair, and cellular resilience. Administering NAD+ through injections aims to enhance these cellular processes, supporting overall cellular health, energy metabolism, and potentially contributing to improved well-being.`,
+      answer:
+        'NAD+ participates in over 500 enzymatic reactions. It is essential for converting nutrients into ATP within the mitochondria. It also activates sirtuins, a family of proteins that regulate DNA repair, inflammation, and cellular aging. Injection delivers NAD+ into circulation without requiring the multi-step conversion that oral precursors depend on.',
     },
   ],
   faq: [
     {
-      question: 'Am I a good candidate for NAD+ Injection?',
-      answer: `A good candidate for NAD+ supplementation therapy is someone seeking to optimize their overall health and well-being. This treatment is particularly beneficial for individuals experiencing fatigue, cognitive decline, or looking to enhance general performance.`,
+      question: 'Am I a good candidate?',
+      answer:
+        'NAD+ injections are appropriate for individuals experiencing persistent fatigue, cognitive fog, or slow recovery. They are also used by those focused on proactive cellular maintenance as part of a longevity-oriented protocol.',
     },
     {
-      question:
-        'How often should I receive NAD+ injections for optimal results?',
-      answer: `The frequency of NAD+ injections can vary depending on individual health goals and needs. Some people may benefit from a series of injections over a few weeks to jumpstart their energy levels and cellular rejuvenation, while others may opt for regular maintenance injections every few months.`,
+      question: 'How often do I inject?',
+      answer:
+        'Frequency varies by protocol. Some individuals benefit from a loading series over two to four weeks, then shift to weekly or biweekly maintenance. Your clinician will tailor the schedule based on your response and goals.',
     },
     {
-      question:
-        'Can NAD+ injection therapy be combined with other wellness treatments or supplements?',
-      answer: `Yes, NAD+ injection therapy can complement other wellness practices and supplements. However, it's essential to consult with a healthcare professional to ensure compatibility and prevent potential interactions. Combining NAD+ therapy with a balanced diet, regular exercise, and other evidence-based interventions may enhance overall health and wellness synergistically.`,
+      question: 'Can NAD+ be combined with other treatments?',
+      answer:
+        'Yes. NAD+ complements many wellness and longevity protocols. Disclose all current medications and supplements to your clinician so they can assess compatibility.',
     },
     {
-      question:
-        'How soon can I expect to notice the effects of NAD+ injection therapy?',
-      answer: `The timeline for experiencing the effects of NAD+ injection therapy can vary among individuals. Some people report feeling increased energy and mental clarity shortly after receiving injections, while others may notice gradual improvements over several weeks. Consistency with treatment and adherence to a healthy lifestyle can contribute to optimizing the benefits of NAD+ therapy over time.`,
+      question: 'How soon will I notice effects?',
+      answer:
+        'Some individuals report increased energy and mental clarity within the first few sessions. Others experience gradual improvements over several weeks. Response varies based on baseline NAD+ status and overall health.',
     },
     {
-      question: 'What are the potential side effects?',
-      answer: `While NAD+ Injection is generally well-tolerated, individuals may experience mild side effects at the injection site, such as redness, swelling, or discomfort. These reactions are typically transient and resolve on their own.
-
-Other common side effects include:
-
-- Fatigue
-- Nausea
-- Headache
-- Dizziness
-- Mild injection site pain or bruising
-- Flushing
-- Dyspepsia
-- Diarrhea`,
+      question: 'What are the side effects?',
+      answer:
+        'Mild injection site reactions, including redness, swelling, or discomfort, are the most common. Some individuals report temporary fatigue, nausea, headache, dizziness, flushing, or gastrointestinal discomfort. These effects are generally short-lived.',
     },
     {
-      question: 'What are potential contraindications?',
-      answer: `Contraindications:
-- Known allergies to NAD+ or any components of the injection
-- Pregnancy and lactation (safety unknown)
-- Severe hepatic impairment (metabolism may be altered)
-- Renal failure (excretion may be impaired)
-- Unstable angina, acute decompensated heart failure, or advanced heart block (due to potential vasodilatory effects)
-- Active malignancy (theoretical risk of fueling tumor metabolism)
-- Moderate to severe cardiac & respiratory diseases
-
-Precautions:
-- Hypotension: Monitor blood pressure during and after treatment due to potential vasodilatory effects
-- Arrhythmia: Monitor heart rate and rhythm during and after treatment due to potential cardiac effects
-- Liver function: Baseline and periodic testing of liver enzymes is advisable due to potential altered metabolism in severe hepatic impairment
-- Renal function: Baseline and periodic testing of renal function is advisable due to potential impaired excretion in renal failure
-- Allergic reactions: Monitor for signs and symptoms of allergic reactions during and after treatment`,
+      question: 'What are the contraindications?',
+      answer:
+        'Known allergy to NAD+ or any formulation component, pregnancy, lactation, severe liver impairment, renal failure, unstable angina, heart failure, active malignancy, and moderate to severe cardiac or respiratory disease. Individuals with hypotension, arrhythmia history, or compromised liver or kidney function require close monitoring.',
     },
     {
-      question: 'Potential drug interactions?',
-      answer: `Potential interactions to consider prior to starting NAD+ include:
-
-- Antidepressants: NAD supplements may interact with antidepressants, potentially affecting the levels of NAD in the body and the effectiveness of the supplements.
-- Antihypertensive Drugs: Nicotinamide riboside may lower blood pressure, so taking it with blood pressure medications could cause blood pressure to drop too low. This includes drugs like amlodipine, metoprolol, and carvedilol.
-- Cholesterol Medications: Patients should monitor their condition closely if combining NAD supplements with cholesterol-lowering drugs due to potential interactions with metabolic pathways.
-- Diabetes Medications: NAD supplements could interact with diabetes medications by influencing blood sugar levels.
-- Medications for Parkinson's and Alzheimer's Diseases: There could be interactions with medications for neurodegenerative diseases, potentially affecting the efficacy of these treatments.
-- Blood Thinners: Supplements that affect cellular metabolism, such as NAD supplements, could theoretically interact with blood thinners by influencing platelet levels or function.
-- Other Supplements: Interactions with other supplements, such as alpha-lipoic acid, CoQ10, and various vitamins, should be considered as they may amplify or reduce the effects of NAD+ supplements.`,
+      question: 'Are there drug interactions?',
+      answer:
+        'NAD+ may interact with antidepressants, antihypertensives, cholesterol-lowering medications, diabetes medications, Parkinson\u2019s or Alzheimer\u2019s medications, blood thinners, and other supplements. A thorough medication review is required before prescribing.',
     },
+    RX_SUBSCRIPTION_POLICY_FAQ,
   ],
 };
 
 export const ENCLOMIPHENE = {
+  tagline:
+    'Selective estrogen receptor modulator that blocks hypothalamic estrogen feedback, raising LH and FSH to support endogenous testosterone production.',
   benefits: [
-    'Blocks estrogen receptors in the hypothalamus, reducing negative feedback from estrogen',
-    'Increases secretion of GnRH (gonadotropin-releasing hormone) ',
-    'Stimulates pituitary release of LH (luteinizing hormone)',
-    'Promotes testosterone production in the testes',
+    'Blocks estrogen receptors in the hypothalamus, removing the brake on testosterone signaling',
+    'Increases GnRH secretion, restoring the hormonal cascade from the top down',
+    'Stimulates pituitary release of LH and FSH',
+    'Promotes endogenous testosterone production while preserving fertility',
   ],
   includes: {
     monthly: [
       '30-day supply of medication',
-      'Free 2-day shipping',
       'Medical evaluation',
       'Regular lab testing every 3 months',
-      'Unlimited messaging',
+      'Free shipping',
+      'Unlimited messaging with your care team',
     ],
     quarterly: [
       '90-day supply of medication',
-      'Free 2-day shipping',
       'Medical evaluation',
       'Regular lab testing every 3 months',
-      'Unlimited messaging',
+      'Free shipping',
+      'Unlimited messaging with your care team',
     ],
     biannual: [
-      '6 month supply of medication',
-      'Free 2-day shipping',
+      '6-month supply of medication delivered quarterly',
       'Medical evaluation',
       'Regular lab testing every 3 months',
-      'Unlimited messaging',
+      'Free shipping',
+      'Unlimited messaging with your care team',
     ],
     annual: [
-      '12 month supply of medication',
-      'Free 2-day shipping',
+      '12-month supply of medication delivered quarterly',
       'Medical evaluation',
       'Regular lab testing every 3 months',
-      'Unlimited messaging',
+      'Free shipping',
+      'Unlimited messaging with your care team',
     ],
   },
   science: {
-    activeIngredients: `Enclomiphene citrate, the active pharmaceutical ingredient, is the primary component of enclomiphene. It's formulated with inactive ingredients like microcrystalline cellulose, lactose monohydrate, magnesium stearate, and colloidal silicon dioxide to form tablets for oral administration.`,
-    mechanism: `Enclomiphene is administered orally in tablet form. The recommended dosage and duration of treatment vary based on the specific medical condition being addressed and goals of treatment. A Superpower physician will prescribe in individual protocol including dosing plans, follow-up testing, and surveys to ensure proper monitoring and adjustment of the treatment plan if necessary.`,
-    history: `Enclomiphene, is a non-FDA-approved medication that has garnered attention for its off-label application in the treatment of hypogonadism in males. It is an isomer of Clomiphene Citrate (brand name: Clomid), an FDA approved medication for the indication ovulatory dysfunction in women desiring pregnancy.  Unlike its conventional use, enclomiphene's potential in managing low testosterone levels is a newer exploration. While the FDA has not specifically approved enclomiphene for hypogonadism, healthcare professionals consider its use for this purpose.A growing body of evidence suggests that enclomiphene may be a rapid and more effective treatment than Clomiphene citrate for treating secondary hypogonadism in men.  Male secondary hypogonadism is a clinical syndrome caused by androgen deficiency attributed to the hypothalamic-pituitary-gonadal (HPG) axis. Initial studies indicate that Enclomiphene citrate possesses distinct advantages over Clomid (clomiphene citrate) and aromatase inhibitors for managing secondary hypogonadism. Firstly, enclomiphene citrate is the trans-isomer of clomiphene citrate and exhibits higher potency in stimulating the hypothalamic-pituitary-gonadal axis. This improved specificity enables enclomiphene citrate to effectively increase testosterone levels while minimizing estrogen-related side effects. Moreover, unlike aromatase inhibitors, enclomiphene citrate does not inhibit the aromatase enzyme responsible for converting testosterone into estrogen. This property allows enclomiphene citrate to maintain appropriate estrogen levels, contributing to better overall hormonal balance.`,
+    activeIngredients:
+      'Enclomiphene citrate is the active compound. Inactive ingredients include microcrystalline cellulose, lactose monohydrate, magnesium stearate, and colloidal silicon dioxide.',
+    mechanism:
+      'Enclomiphene is taken as an oral tablet. Dosage and duration vary based on lab results, symptoms, and treatment goals. Your Superpower physician will prescribe an individualized protocol that includes dosing instructions, follow-up lab testing at regular intervals, and progress surveys.',
+    history:
+      'Enclomiphene is one of two isomers in clomiphene citrate (Clomid), which has been FDA-approved for ovulatory dysfunction since the 1960s. Enclomiphene is the trans-isomer and a selective estrogen receptor antagonist. It is not FDA-approved as a standalone compound and is prescribed off-label for male hypogonadism. Growing clinical evidence indicates that enclomiphene is more rapid and effective than mixed clomiphene for stimulating the hypothalamic-pituitary-gonadal (HPG) axis. It achieves higher potency without the estrogenic side effects caused by its counterpart isomer, zuclomiphene.',
   },
   headerFaq: [
     {
       question: 'What is Enclomiphene?',
-      answer: `Enclomiphene, is a non-FDA-approved medication used off-label for the treatment of low testosterone and hypogonadism in males. It is an isomer of Clomiphene Citrate (brand name: Clomid), an FDA-approved medication for the indication of ovulatory dysfunction in women desiring pregnancy.  A growing body of evidence suggests that enclomiphene may be a rapid and more effective treatment than Clomiphene citrate for treating low testosterone and secondary hypogonadism in men. `,
+      answer:
+        'Enclomiphene is a selective estrogen receptor modulator (SERM) prescribed off-label for low testosterone and male hypogonadism. It is the isolated active isomer of clomiphene citrate (Clomid). Clinical evidence suggests it raises testosterone more effectively than mixed clomiphene, with fewer estrogenic side effects.',
     },
     {
       question: 'How does it work?',
-      answer: `Enclomiphene, a selective estrogen receptor modulator (SERM), operates by binding to estrogen receptors in the hypothalamus, a region of the brain that plays a crucial role in regulating hormonal balance. By doing so, enclomiphene blocks the negative feedback effects of estrogen, leading to an increase in the secretion of gonadotropin-releasing hormone (GnRH). This heightened GnRH production subsequently stimulates the release of follicle-stimulating hormone (FSH) and luteinizing hormone (LH), ultimately leading to the stimulation of testosterone production in men.`,
+      answer:
+        'Enclomiphene blocks estrogen receptors in the hypothalamus. This removes the negative feedback signal that suppresses GnRH release. With GnRH restored, the pituitary increases output of FSH and LH. LH then signals the testes to produce more testosterone. The entire HPG axis stays active, which is why fertility is preserved rather than suppressed.',
     },
   ],
   faq: [
     {
-      question: 'Am I a good candidate for Enclomiphene?',
-      answer: `Eligibility for Enclomiphene Treatment with Superpower entails a careful assessment via asynchronous review of an intake form. Candidates suitable for this treatment should exhibit symptoms indicative of testosterone deficiency.`,
+      question: 'Am I a good candidate?',
+      answer:
+        'Enclomiphene is appropriate for individuals with symptoms consistent with testosterone deficiency, including fatigue, low libido, reduced muscle mass, cognitive fog, and mood changes. Candidacy is assessed through an intake form review and lab work confirming low or suboptimal testosterone levels.',
     },
     {
       question: 'Does enclomiphene cause infertility?',
-      answer: `No, one of the key advantages of taking enclomiphene instead of testosterone replacement therapy is that enclomiphene maintains a normal brain, pituitary, and testes axis.It increases testosterone production while maintaining normal follicle-stimulating hormone (FSH) and luteinizing hormone (LH) levels.In clinical studies, men taking enclomiphene maintained or increased their sperm motility and total sperm count.`,
+      answer:
+        'No. Unlike exogenous testosterone, enclomiphene works through the brain-pituitary-testes axis rather than bypassing it. This maintains and often increases sperm motility and total sperm count.',
     },
     {
       question: 'Is enclomiphene a form of TRT?',
-      answer: `No, enclomiphene is an alternative to TRT.
-Like testosterone replacement therapy (TRT), enclomiphene is used to increase testosterone levels in men with low testosterone and hypogonadism. Hypogonadism is a condition in which the testes do not produce enough testosterone.`,
+      answer:
+        'No. Enclomiphene is an alternative to testosterone replacement therapy. Both raise testosterone levels, but through fundamentally different mechanisms. TRT introduces external testosterone, which suppresses the body\u2019s own production and can impair fertility. Enclomiphene stimulates the body to produce more of its own testosterone.',
     },
     {
-      question: 'What is Clomid?',
-      answer: `Clomid is a mixture of two isomers: zuclomiphene and enclomiphene. Zuclomiphene is a weak estrogen agonist with a long half-life, and enclomiphene is an estrogen antagonist with a much shorter half-life.When taking Clomid, you receive the benefits of enclomiphene but must deal with the side effects of zuclomiphene.`,
+      question: 'What is the difference between Clomid and enclomiphene?',
+      answer:
+        'Clomid (clomiphene citrate) is a mixture of two isomers: enclomiphene and zuclomiphene. Enclomiphene is an estrogen antagonist with a shorter half-life and is responsible for the testosterone-raising effect. Zuclomiphene is a weak estrogen agonist with a long half-life that accumulates over time and drives many of Clomid\u2019s side effects, including mood disturbance and visual changes. Isolated enclomiphene delivers the therapeutic benefit without the zuclomiphene burden.',
     },
     {
-      question: 'What are the potential side effects?',
-      answer: `Common side effects include (% = percentage of patients that experienced side effects during the clinical trial)
-
-- Headache (3.3%)
-- Nausea (2.1%)
-- Diarrhea (1.9%)
-- Common cold (1.7%)
-- Hot flush (1.7%)
-- Joint pain (1.2%)
-- Dizziness (1%)
-- Muscle spasms (0.9%)
-- Fatigue (0.6%)
-- Increased appetite (0.6%)
-- Aggression (0.5%)
-- Irritability (0.5%)
-- Acne (0.5%)
-- Increased libido
-- Mood swings`,
+      question: 'What are the side effects?',
+      answer:
+        'Reported side effects by incidence: headache (3.3%), nausea (2.1%), diarrhea (1.9%), common cold symptoms (1.7%), hot flush (1.7%), joint pain (1.2%), dizziness (1.0%), muscle spasms (0.9%), fatigue (0.6%), increased appetite (0.6%), aggression (0.5%), irritability (0.5%), acne (0.5%). Some individuals also report increased libido and mood fluctuations.',
     },
     {
-      question: 'What are potential contraindications?',
-      answer: `Enclomiphene is potentially contraindicated in members who meet any of the following criteria and further assessment should be completed by the Superpower clinician and documented prior to the prescription of Enclomiphene:
-
-- Female sex (assigned at birth)
-- History of breast, endometrial (uterine), ovarian, or prostate cancer.
-- History or pre-existing risk of blood clots
-- History of heart disease
-- History of liver disease
-- Presence of current pituitary adenoma
-- Uncontrolled adrenal or thyroid dysfunction
-- Known allergy to enclomiphene or clomiphene
-- History of mania, bipolar disorder, or current manic symptoms (d/t risk of mood swings)
-
-Pregnancy Risks: Enclomiphene is not recommended for use during pregnancy due to a lack of data from controlled studies in humans. The FDA has not assigned a pregnancy risk category to the substance.`,
+      question: 'What are the contraindications?',
+      answer:
+        'Female sex assigned at birth. History of breast, endometrial, ovarian, or prostate cancer. Elevated blood clot risk. Heart disease. Liver disease. Pituitary adenoma. Uncontrolled adrenal or thyroid dysfunction. Known allergy to the compound. History of mania or bipolar disorder. Not recommended when pregnancy is possible due to fetal risk.',
     },
     {
-      question: 'Potential drug interactions?',
-      answer: `Enclomiphene's interactions with other medications should be carefully assessed to ensure optimal safety and efficacy. Individuals using drugs metabolized by the liver, especially those affecting the cytochrome P450 system, may experience altered metabolism when concurrently using enclomiphene. Additionally, caution is advised when combining enclomiphene with other hormonal therapies, as potential synergistic or antagonistic effects could influence overall therapeutic outcomes. It is crucial for healthcare professionals to thoroughly review a patient's medication profile and consider potential interactions before prescribing enclomiphene.`,
+      question: 'Are there drug interactions?',
+      answer:
+        'Enclomiphene is metabolized through the CYP450 enzyme system, creating potential interactions with a range of medications. These include other hormonal therapies, which can produce conflicting signals on the HPG axis. A thorough medication review is required before prescribing.',
     },
+    RX_SUBSCRIPTION_POLICY_FAQ,
   ],
 };
 
 export const TIRZEPATIDE = {
+  tagline:
+    'Dual GIP and GLP-1 receptor agonist that slows gastric emptying, blunts appetite signaling, and improves insulin sensitivity to support metabolic and weight-related goals.',
   benefits: [
-    'Dual receptor activation for greater blood sugar control than medications that just target GLP-1 receptors',
-    'Weight loss',
-    'Appetite suppression',
-    'Reduced risk of cardiovascular disease',
+    'Dual-receptor activation targeting both GLP-1 and GIP pathways for stronger metabolic signaling than single-receptor medications',
+    'Clinically meaningful weight reduction through central appetite regulation',
+    'Improved glycemic control and insulin sensitivity',
+    'Cardiovascular risk reduction associated with sustained metabolic improvement',
   ],
   includes: {
     monthly: [
       '30-day medication supply',
-      'Free overnight shipping',
+      'Free shipping',
       'Medical evaluation',
-      'Regular symptom tracking & progress monitoring',
+      'Regular symptom tracking and progress monitoring',
       'Labs as needed',
       'Unlimited messaging with your provider',
     ],
     quarterly: [
       '90-day medication supply',
-      'Free overnight shipping',
+      'Free shipping',
       'Medical evaluation',
-      'Regular symptom tracking & progress monitoring',
+      'Regular symptom tracking and progress monitoring',
       'Labs as needed',
       'Unlimited messaging with your provider',
     ],
     biannual: [
       '6 months of medication',
-      'Free overnight shipping',
+      'Free shipping',
       'Medical evaluation',
-      'Regular symptom tracking & progress monitoring',
+      'Regular symptom tracking and progress monitoring',
       'Labs as needed',
       'Unlimited messaging with your provider',
     ],
     annual: [
-      '12 months of medication, delivered in two shipments',
-      'Free overnight shipping',
+      '12 months of medication delivered in two shipments',
+      'Free shipping',
       'Medical evaluation',
-      'Regular symptom tracking & progress monitoring',
+      'Regular symptom tracking and progress monitoring',
       'Labs as needed',
       'Unlimited messaging with your provider',
     ],
   },
   science: {
     activeIngredients:
-      "Tirzepatide is the primary active ingredient, which is the same as in commercial products like Mounjaro® and Zepbound®. It's a GLP-1 / GIP receptor agonist used to manage blood sugar levels and promote weight loss. Additional excipients, stabilizers and solvents are added to help with absorption.",
+      'Tirzepatide is a dual GIP/GLP-1 receptor agonist that activates both incretin pathways to improve glucose regulation and reduce appetite. By activating both incretin receptor pathways simultaneously, tirzepatide produces stronger insulin secretion, greater glucagon suppression, and more significant appetite reduction than GLP-1-only agents. The compound is delivered as a subcutaneous injection, with dosing determined by your prescribing clinician based on tolerability and therapeutic response.',
     mechanism:
-      'Tirzepatide is usually administered through subcutaneous injection. The specific dosage will be determined by healthcare professionals based on individual needs. Strict adherence to the prescribed administration guidelines is crucial for optimal results.',
+      'Tirzepatide is administered once weekly by subcutaneous injection, typically in the abdomen, thigh, or upper arm. Rotate injection sites with each dose. Your provider will start at a lower dose and titrate upward based on your response and tolerability. Consistent weekly timing supports stable drug levels. Store medication in the refrigerator and follow all handling instructions provided with your shipment.',
     history:
-      'The concept for Tirzepatide emerged from research into incretin hormones—GLP-1 and GIP—that play key roles in regulating blood sugar levels and metabolism. Eli Lilly began developing Tirzepatide as part of its efforts to advance diabetes treatment options. The drug was designed to harness the effects of both GLP-1 and GIP to provide more comprehensive blood sugar control and weight loss. In May 2022, the FDA approved Tirzepatide under the brand name Mounjaro™ for the treatment of type 2 diabetes. Later, Tirzepatide was approved for weight loss under the name Zepbound™.',
+      'Tirzepatide emerged from decades of research into incretin hormones, the gut-derived signals that regulate insulin release after eating. Scientists identified that activating both GIP and GLP-1 receptors together produced metabolic effects beyond what either pathway achieved alone. Eli Lilly developed the compound and received FDA approval in May 2022 for type 2 diabetes management. Subsequent clinical trials demonstrated significant weight reduction, leading to additional FDA approval for chronic weight management. The dual-agonist mechanism represents a distinct pharmacological approach within the incretin class.',
   },
   headerFaq: [
     {
       question: 'What is Tirzepatide?',
       answer:
-        'Tirzepatide is a prescription medication that activates two gut-hormone pathways (GIP and GLP-1) to improve glucose regulation and reduce appetite, supporting metabolic health and, in many people, clinically meaningful weight reduction.',
+        'Tirzepatide is a prescription injectable that activates two gut-hormone receptors: GIP and GLP-1. This dual-pathway mechanism improves glucose regulation, reduces appetite, and supports sustained weight reduction.',
     },
     {
       question: 'How does it work?',
       answer:
-        'Tirzepatide works by mimicking two hormones in your body called GLP-1 and GIP, which help control your blood sugar levels and appetite. Tirzepatide achieves this by helping your body produce more insulin which lowers your blood sugar. Tirzepatide also acts on your brain to make you feel less hungry. Reduced hunger will help you lose weight over time.',
+        'Tirzepatide mimics two incretin hormones your body produces naturally after meals. GLP-1 activation slows gastric emptying and signals fullness to the brain. GIP activation amplifies insulin response and enhances fat metabolism. Together, these pathways reduce hunger, improve blood sugar control, and drive meaningful weight loss over time.',
     },
   ],
   faq: [
     {
       question: 'Am I a good candidate for Tirzepatide?',
       answer:
-        "You may be a fit if your clinician identifies meaningful cardiometabolic risk (e.g., insulin resistance, prediabetes/type 2 diabetes, elevated A1c, dyslipidemia, hypertension, visceral/central adiposity, or persistent difficulty improving weight/metabolic markers with lifestyle alone) and you can use it safely. It's not appropriate with a personal/family history of medullary thyroid cancer or MEN2, or if you've had a serious allergy to the medication.",
+        'Tirzepatide is appropriate for individuals with meaningful cardiometabolic risk factors. These include insulin resistance, prediabetes or type 2 diabetes, elevated A1c, dyslipidemia, hypertension, or significant visceral adiposity. It is not appropriate for individuals with a personal or family history of medullary thyroid carcinoma or Multiple Endocrine Neoplasia syndrome type 2 (MEN2). Your Superpower provider will evaluate your full clinical picture before prescribing.',
     },
     {
-      question:
-        'How long does it take to see results with Tirzepatide therapy?',
+      question: 'How long before I see results?',
       answer:
-        "Everyone's results will differ. Some people might only lose 1-5 lbs per month and some may lose 15-20 lbs per month. Also, keep in mind that it can take up to 2 months for the medication to fully absorb into your body. So, just have patience!",
+        'Response timelines vary. Most patients notice appetite changes within the first two weeks. Weight reduction of 1 to 5 pounds per month is common in the early titration phase, increasing to 15 to 20 pounds per month at therapeutic doses for some individuals. Full metabolic adaptation can take up to two months. Consistent adherence produces the strongest outcomes.',
     },
     {
-      question:
-        'What do I do if I feel I have plateaued with my Tirzepatide therapy?',
+      question: 'What if I hit a plateau?',
       answer:
-        "If you feel you've plateaued with your Tirzepatide therapy, remember that plateaus are a natural part of any weight loss or metabolic control journey. Over time, your body may adapt to the changes, which can sometimes slow down progress. This is normal, and it doesn't mean the medication isn't working. Tirzepatide is designed to help with appetite control and glucose regulation, but it's not a quick fix. It's important to stay focused on your long-term goals and continue making healthy lifestyle choices, including regular physical activity and mindful eating. Feeling increased hunger or slower results may be your body adjusting to these changes. If you're concerned, reach out to your clinical team—they can review your progress, assess your current dosage, and help you troubleshoot any factors that may be contributing to the plateau. Sometimes, a dosage adjustment or a renewed focus on lifestyle factors may be needed to get you back on track. Stay consistent, stay patient, and remember that sustainable results take time.",
+        'Plateaus are a normal part of metabolic adaptation. The body recalibrates its energy balance as weight changes. This is not a sign of failure. Your clinical team can review your current dose, assess labs, and adjust your protocol. Long-term metabolic health is the goal, not linear weekly losses.',
     },
     {
-      question:
-        'What do I do if I need a higher dose of Tirzepatide than is prescribed in the titration schedule?',
+      question: 'What if I need a higher dose?',
       answer:
-        "If you think you need a higher dose, don't increase it on your own, simply message your concierge so your clinician can review your response and side effects and adjust if appropriate. In our program we prescribe up to a maximum of 12.5 mg/week when medically indicated. There are no extra fees for this.",
+        'Do not adjust your dose independently. Message your Superpower care team to discuss titration. Tirzepatide can be prescribed up to 12.5 mg per week based on clinical assessment. Dose adjustments are included at no additional cost.',
     },
     {
       question: 'What are the potential side effects?',
       answer:
-        'Like all prescription medications, Tirzepatide can cause side effects. Most are gastrointestinal, tend to show up during dose increases, and often improve over time. Our clinicians use a gradual titration plan to support tolerability and will adjust if symptoms are persistent or severe. Common side effects include constipation, mild nausea, fatigue, headache, and reduced appetite. Less common or adverse effects may include gallbladder disease, pancreatitis, severe dehydration, and electrolyte imbalance.',
+        'The most common side effects are gastrointestinal and tend to occur during dose increases. These include mild nausea, constipation, reduced appetite, fatigue, and headache. Symptoms typically diminish as the body adjusts. Less common but serious effects include gallbladder disease, pancreatitis, and severe dehydration with electrolyte imbalance. Report any persistent or severe symptoms to your provider promptly.',
     },
     {
-      question: 'What are potential contraindications?',
+      question: 'What are the contraindications?',
       answer:
-        "Tirzepatide isn't appropriate for everyone, and your clinician will confirm safety before prescribing. Absolute contraindications include history of pancreatitis, type 1 diabetes, uncontrolled T2D (DKA risk), medullary thyroid carcinoma or MEN-2 (personal or family history), pregnancy or breastfeeding, severe GI disease (bowel obstruction, gastroparesis), severe renal impairment (eGFR <30), and active eating disorder or severe depression. Additional cautions apply to gallbladder disease or prior cholecystectomy, high constipation risk (opioids, low fiber diet, IBS-C), history of dehydration, and sarcopenia risk during rapid weight loss.",
+        'Tirzepatide is contraindicated in individuals with a history of pancreatitis, type 1 diabetes, uncontrolled type 2 diabetes with diabetic ketoacidosis risk, medullary thyroid carcinoma or MEN2, pregnancy or breastfeeding, severe gastrointestinal disease, severe renal impairment (eGFR below 30), active eating disorders, or severe depression. Caution is warranted with gallbladder disease, chronic constipation, history of dehydration, or risk of sarcopenia. Your provider will screen for all of these before prescribing.',
     },
     {
-      question: 'Potential drug interactions?',
-      answer: `Major Drug Interactions
-Not all interacting drugs are listed below. Only those marked as a major interaction with Tirzepatide are included.
-To see the full list, please follow this link: https://www.drugs.com/drug-interactions/tirzepatide-index.html?filter=3
-
-- Bexarotene
-Using bexarotene together with Tirzepatide may increase the risk of pancreatitis, or inflammation of the pancreas.
-- Desflurane, Enflurane, Etomidate, Fospropofol, Halothane, Isoflurane, Ketamine, Methohexital, Methoxyflurane, Nitrous Oxide, Propofol, Sevoflurane, Thiopental
-These agents may increase the risk of regurgitation and pulmonary aspiration of gastric contents in patients undergoing general anesthesia. This is due to delayed gastric emptying caused by stimulation of central nervous system GLP-1 receptors and vagal nerve activation. Pulmonary aspiration during anesthesia can lead to pneumonitis, aspiration pneumonia, other lung injury, and even death.
-- Gatifloxacin
-Gatifloxacin can affect blood glucose levels and should not be used in patients with diabetes. Both hypoglycemia (low blood glucose) and, less frequently, hyperglycemia (high blood glucose) have been reported. Severe cases of hypoglycemia have resulted in coma and even death.`,
+      question: 'Are there drug interactions?',
+      answer:
+        'Tirzepatide may interact with bexarotene due to increased pancreatitis risk. General anesthesia agents carry aspiration risk when combined with GLP-1 agonists due to delayed gastric emptying. Gatifloxacin can compound blood glucose fluctuations. Disclose all medications during your evaluation so your provider can assess for interactions.',
     },
+    RX_SUBSCRIPTION_POLICY_FAQ,
   ],
 };
 
@@ -1669,25 +1556,25 @@ export const TIRZEPATIDE_MICRODOSE = {
     mechanism:
       'Administered via subcutaneous injection once weekly, on the same day each week. Injection sites include the abdomen (at least 2 inches from the navel), front of thigh, or upper outer buttock. Your clinician sets your dose based on your response and goals. Rotate injection sites to prevent tissue irritation. Your action plan includes detailed injection instructions and a syringe guide.',
     history:
-      'Tirzepatide was developed by Eli Lilly and first approved by the FDA in 2022 for type 2 diabetes (Mounjaro) and in 2023 for chronic weight management (Zepbound) at doses up to 15mg weekly. The compound is a novel dual GIP/GLP-1 receptor agonist — the first in its class. Unlike semaglutide, which targets GLP-1 alone, tirzepatide simultaneously activates GIP receptors, producing superior improvements in glycemic control, body composition, and lipid metabolism in clinical trials (SURPASS and SURMOUNT programs). Microdosing applies the same molecule at sub-therapeutic weight-loss levels, leveraging the dual metabolic benefits without the aggressive appetite suppression of higher doses. This approach reflects growing clinical interest in incretin-based therapies as metabolic health and longevity tools.',
+      'Tirzepatide was developed by Eli Lilly and first approved by the FDA in 2022 for type 2 diabetes (Mounjaro) and in 2023 for chronic weight management (Zepbound) at doses up to 15mg weekly. The compound is a novel dual GIP/GLP-1 receptor agonist \u2014 the first in its class. Unlike semaglutide, which targets GLP-1 alone, tirzepatide simultaneously activates GIP receptors, producing superior improvements in glycemic control, body composition, and lipid metabolism in clinical trials (SURPASS and SURMOUNT programs). Microdosing applies the same molecule at sub-therapeutic weight-loss levels, leveraging the dual metabolic benefits without the aggressive appetite suppression of higher doses. This approach reflects growing clinical interest in incretin-based therapies as metabolic health and longevity tools.',
   },
   headerFaq: [
     {
       question: 'What is Tirzepatide Microdose?',
       answer:
-        'Tirzepatide activates both GIP and GLP-1 receptors at low intensity. This dual mechanism supports insulin sensitivity, lipid metabolism, adipose tissue remodeling, and cardiometabolic health as part of a longevity-focused protocol. The GIP component is the key differentiator — it drives body composition improvement and metabolic flexibility that single-target GLP-1 agonists do not achieve.',
+        'Tirzepatide activates both GIP and GLP-1 receptors at low intensity. This dual mechanism supports insulin sensitivity, lipid metabolism, adipose tissue remodeling, and cardiometabolic health as part of a longevity-focused protocol. The GIP component is the key differentiator \u2014 it drives body composition improvement and metabolic flexibility that single-target GLP-1 agonists do not achieve.',
     },
     {
       question: 'How does it work?',
       answer:
-        'Tirzepatide activates two distinct incretin receptors: GIP and GLP-1. The GIP receptor drives lipid metabolism, adipose tissue remodeling, and bone mineral density support. GIP signaling changes how your body handles fuel — burning fat for energy rather than storing it. The GLP-1 receptor handles insulin sensitivity, gastric emptying rate, and central appetite signaling. At low doses, both receptor systems activate gently for metabolic optimization rather than pharmacological override. The formulation includes pyridoxine (B6), which supports over 100 processes in the body, including serotonin and GABA production — both tied to mood stability as your metabolism adjusts.',
+        'Tirzepatide activates two distinct incretin receptors: GIP and GLP-1. The GIP receptor drives lipid metabolism, adipose tissue remodeling, and bone mineral density support. GIP signaling changes how your body handles fuel \u2014 burning fat for energy rather than storing it. The GLP-1 receptor handles insulin sensitivity, gastric emptying rate, and central appetite signaling. At low doses, both receptor systems activate gently for metabolic optimization rather than pharmacological override. The formulation includes pyridoxine (B6), which supports over 100 processes in the body, including serotonin and GABA production \u2014 both tied to mood stability as your metabolism adjusts.',
     },
   ],
   faq: [
     {
       question: 'Am I a good candidate for Tirzepatide Microdose?',
       answer:
-        'Strong fit: Members pursuing metabolic health optimization, longevity protocols, or body composition improvement who want dual GIP/GLP-1 pathway activation without aggressive dose escalation. Particularly relevant for members interested in fat loss with lean mass preservation — the GIP pathway drives adipose tissue remodeling and lipid partitioning that GLP-1-only protocols do not activate. Also a strong option for members transitioning off a full-dose weight loss protocol who want to maintain metabolic gains at a lower intensity. Consider full-dose tirzepatide or semaglutide instead if the primary goal is significant weight loss.',
+        'Strong fit: Members pursuing metabolic health optimization, longevity protocols, or body composition improvement who want dual GIP/GLP-1 pathway activation without aggressive dose escalation. Particularly relevant for members interested in fat loss with lean mass preservation \u2014 the GIP pathway drives adipose tissue remodeling and lipid partitioning that GLP-1-only protocols do not activate. Also a strong option for members transitioning off a full-dose weight loss protocol who want to maintain metabolic gains at a lower intensity. Consider full-dose tirzepatide or semaglutide instead if the primary goal is significant weight loss.',
     },
     {
       question:
@@ -1698,35 +1585,22 @@ export const TIRZEPATIDE_MICRODOSE = {
     {
       question: 'Will I lose weight on this protocol?',
       answer:
-        'Some gradual body composition changes are expected — particularly fat redistribution driven by GIP receptor activation. Scale weight may or may not change significantly. This protocol targets metabolic optimization and body recomposition, not rapid weight loss. If significant weight loss is your primary goal, talk to your clinician about whether a full-dose protocol is more appropriate.',
+        'Some gradual body composition changes are expected \u2014 particularly fat redistribution driven by GIP receptor activation. Scale weight may or may not change significantly. This protocol targets metabolic optimization and body recomposition, not rapid weight loss. If significant weight loss is your primary goal, talk to your clinician about whether a full-dose protocol is more appropriate.',
     },
     {
       question: 'How long should I stay on microdose tirzepatide?',
       answer:
-        'This is a long-term protocol. The metabolic and cardiometabolic benefits accumulate over months and are maintained with consistent use. Your clinician will evaluate your progress at each 3-month check-in and adjust the protocol as needed. There is no predetermined end date — duration depends on your goals and clinical response.',
+        'This is a long-term protocol. The metabolic and cardiometabolic benefits accumulate over months and are maintained with consistent use. Your clinician will evaluate your progress at each 3-month check-in and adjust the protocol as needed. There is no predetermined end date \u2014 duration depends on your goals and clinical response.',
     },
     {
       question: 'What are the potential side effects?',
-      answer: `At low doses, side effects are less common and less severe than full-dose protocols. The dual GIP/GLP-1 mechanism can produce slightly more GI signaling than single-target GLP-1 agonists during adaptation.
-
-What you may notice in the first 1-2 weeks:
-- Mild nausea — GLP-1 slows gastric emptying while GIP shifts lipid handling. The gut adapts to both signals simultaneously.
-- Reduced appetite — GLP-1-mediated satiety recalibration. At low doses, this presents as earlier fullness rather than appetite elimination.
-- Mild headache — blood glucose and insulin dynamics shift as receptor sensitivity improves. Hydration and consistent meals reduce this.
-- Acid reflux or burping — altered gastric motility from GLP-1 slowing stomach emptying. Smaller meals help.
-
-These effects reflect receptor adaptation and generally resolve within the first 2 weeks. Serious side effects are rare at this dose but include pancreatitis (severe abdominal pain radiating to the back) and allergic reaction.`,
+      answer:
+        'At low doses, side effects are less common and less severe than full-dose protocols. The dual GIP/GLP-1 mechanism can produce slightly more GI signaling than single-target GLP-1 agonists during adaptation.\n\nWhat you may notice in the first 1-2 weeks:\n- Mild nausea \u2014 GLP-1 slows gastric emptying while GIP shifts lipid handling. The gut adapts to both signals simultaneously.\n- Reduced appetite \u2014 GLP-1-mediated satiety recalibration. At low doses, this presents as earlier fullness rather than appetite elimination.\n- Mild headache \u2014 blood glucose and insulin dynamics shift as receptor sensitivity improves. Hydration and consistent meals reduce this.\n- Acid reflux or burping \u2014 altered gastric motility from GLP-1 slowing stomach emptying. Smaller meals help.\n\nThese effects reflect receptor adaptation and generally resolve within the first 2 weeks. Serious side effects are rare at this dose but include pancreatitis (severe abdominal pain radiating to the back) and allergic reaction.',
     },
     {
       question: 'What are potential contraindications?',
-      answer: `- Personal or family history of medullary thyroid carcinoma (MTC) or MEN 2 syndrome
-- Known hypersensitivity to tirzepatide or any GIP/GLP-1 receptor agonist
-- History of pancreatitis
-- Pregnancy or breastfeeding — not recommended; safety not established
-- Diabetic retinopathy — discuss with clinician before starting
-- Severe gastrointestinal disease — gastroparesis or inflammatory bowel disease require clinical evaluation
-- Renal impairment — monitor closely, especially in moderate to severe cases
-- History of gallbladder disease — GLP-1 agonists may increase gallstone risk`,
+      answer:
+        '- Personal or family history of medullary thyroid carcinoma (MTC) or MEN 2 syndrome\n- Known hypersensitivity to tirzepatide or any GIP/GLP-1 receptor agonist\n- History of pancreatitis\n- Pregnancy or breastfeeding \u2014 not recommended; safety not established\n- Diabetic retinopathy \u2014 discuss with clinician before starting\n- Severe gastrointestinal disease \u2014 gastroparesis or inflammatory bowel disease require clinical evaluation\n- Renal impairment \u2014 monitor closely, especially in moderate to severe cases\n- History of gallbladder disease \u2014 GLP-1 agonists may increase gallstone risk',
     },
     {
       question: 'What does off-label usage mean?',
@@ -1736,107 +1610,100 @@ These effects reflect receptor adaptation and generally resolve within the first
     {
       question: 'Potential drug interactions?',
       answer:
-        'Tirzepatide may interact with insulin and other diabetes medications by enhancing glucose-lowering effects, increasing hypoglycemia risk. It slows gastric emptying, which can affect absorption of oral medications — particularly those requiring rapid absorption. The dual GIP/GLP-1 mechanism may have additive effects with other incretin-based therapies. Share all current medications and supplements with your clinician before starting. Pay close attention to interactions with insulin, sulfonylureas, oral contraceptives, and medications with narrow therapeutic windows. Berberine and metformin may potentiate glucose-lowering effects — discuss with your clinician.',
+        'Tirzepatide may interact with insulin and other diabetes medications by enhancing glucose-lowering effects, increasing hypoglycemia risk. It slows gastric emptying, which can affect absorption of oral medications \u2014 particularly those requiring rapid absorption. The dual GIP/GLP-1 mechanism may have additive effects with other incretin-based therapies. Share all current medications and supplements with your clinician before starting. Pay close attention to interactions with insulin, sulfonylureas, oral contraceptives, and medications with narrow therapeutic windows. Berberine and metformin may potentiate glucose-lowering effects \u2014 discuss with your clinician.',
     },
+    RX_SUBSCRIPTION_POLICY_FAQ,
   ],
 };
 
 export const SERMORELIN_TROCHES = {
+  tagline:
+    'Sublingual GHRH analog that signals the pituitary to release growth hormone in physiologic pulses while bypassing first-pass metabolism.',
   benefits: [
-    'Increased Growth Hormone Production',
-    'Enhanced Lean Muscle Mass',
-    'Fat Loss Support',
-    'Improved Energy Levels',
-    'Better Sleep Quality',
-    'Enhanced Cognitive Function',
-    'Balanced Mood',
-    'Collagen Formation for Skin Health',
+    'Stimulates your pituitary gland to restore natural growth hormone production',
+    'Supports lean muscle development and recovery',
+    'Promotes fat metabolism through improved growth hormone signaling',
+    'May improve sleep quality by aligning with the body\u2019s natural nocturnal GH release cycle',
+    'Supports energy, cognitive clarity, and mood through downstream IGF-1 activity',
+    'Promotes collagen synthesis for skin integrity',
   ],
   includes: {
     monthly: [
       '30-day medication supply',
-      'Free overnight shipping',
+      'Free shipping',
       'Medical evaluation',
-      'Regular symptom tracking & progress monitoring',
+      'Regular symptom tracking and progress monitoring',
       'Regular lab testing every 6 months',
       'Unlimited messaging with your provider',
     ],
     quarterly: [
       '90-day medication supply',
-      'Free overnight shipping',
+      'Free shipping',
       'Medical evaluation',
-      'Regular symptom tracking & progress monitoring',
+      'Regular symptom tracking and progress monitoring',
       'Regular lab testing every 6 months',
       'Unlimited messaging with your provider',
     ],
     biannual: [
-      '6 months of medication',
-      'Free overnight shipping',
+      '6 months of medication delivered quarterly',
+      'Free shipping',
       'Medical evaluation',
-      'Regular symptom tracking & progress monitoring',
+      'Regular symptom tracking and progress monitoring',
       'Regular lab testing every 6 months',
       'Unlimited messaging with your provider',
     ],
   },
   science: {
-    activeIngredients: `Sermorelin is a synthetic peptide made up of a chain of amino acids, specifically 29 amino acids. The primary ingredient in sermorelin is the peptide itself, which mimics the effects of natural growth hormone-releasing hormone (GHRH) produced by the hypothalamus in the brain. Additionally, the formulation may include other compounds necessary for stability and administration, such as bacteriostatic water or other solvents used for reconstitution.`,
-    mechanism: `Sermorelin troches are administered orally by placing the troche under the tongue or in the cheek (buccal area) and allowing it to dissolve. The specific dosage and frequency will be determined by healthcare professionals based on individual needs. It is typically taken before bedtime since the body naturally releases growth hormone during sleep. Strict adherence to the prescribed administration guidelines is crucial for optimal results.`,
-    history: `Sermorelin, first developed in the 1970s, represents a milestone in the field of endocrinology. It was designed as a synthetic analog of the naturally occurring growth hormone-releasing hormone (GHRH) to address growth hormone deficiencies. The research and development of Sermorelin aimed to provide a more targeted and safer alternative to traditional growth hormone therapy. Over the years, its use has evolved, with a focus on stimulating the pituitary gland for the pulsatile release of growth hormone, contributing to improved well-being. Since its discovery, Sermorelin has undergone rigorous clinical evaluation, solidifying its role in medical practice for managing growth hormone-related conditions.`,
+    activeIngredients:
+      'Sermorelin is a synthetic 29-amino acid peptide that replicates the biologically active segment of growth hormone-releasing hormone (GHRH). Unlike exogenous growth hormone, sermorelin works upstream. It stimulates the pituitary gland to produce and release GH in its natural pulsatile pattern. This preserves the body\u2019s feedback loop and avoids the supraphysiologic spikes associated with direct GH administration. The troche formulation may include stabilizing compounds to support mucosal absorption.',
+    mechanism:
+      'Place the troche under the tongue or between the cheek and gum. Allow it to dissolve completely without chewing or swallowing. Take it before bedtime, when the body\u2019s natural growth hormone release is highest. This timing works with your circadian biology rather than against it. Dosage is determined by your prescribing provider based on your labs and clinical response.',
+    history:
+      'Sermorelin was first synthesized in the 1970s as researchers mapped the structure of growth hormone-releasing hormone. The goal was to find a safer alternative to direct growth hormone replacement, which carried risks of joint pain, insulin resistance, and abnormal tissue growth. By stimulating the pituitary rather than bypassing it, sermorelin preserved the body\u2019s natural regulatory mechanisms. It underwent rigorous clinical evaluation and was approved for diagnostic and therapeutic use. Its favorable safety profile and physiologic approach to GH optimization have sustained clinical interest for decades.',
   },
   headerFaq: [
     {
       question: 'What is Sermorelin?',
-      answer: `Designed to enhance lean muscle mass and promote fat loss. Sermorelin  stimulates the pituitary gland to release growth hormone, supporting muscle development and a more efficient metabolism.`,
+      answer:
+        'Sermorelin is a prescription peptide that stimulates the pituitary gland to release growth hormone naturally. It supports lean muscle development, fat metabolism, sleep quality, and recovery by restoring the body\u2019s own GH signaling rather than replacing it with synthetic hormone.',
     },
     {
       question: 'How does it work?',
-      answer: `Sermorelin acts as a GHRH analog, stimulating the pituitary gland to release growth hormone in a pulsatile manner. This, in turn, has downstream effects on IGF-1 production and various physiological processes related to growth and metabolism. It is often used in medical settings to address growth hormone deficiency and related conditions.`,
+      answer:
+        'Sermorelin mimics GHRH, the signal your hypothalamus sends to trigger growth hormone release. By activating this pathway, it promotes pulsatile GH secretion, which drives downstream IGF-1 production. IGF-1 mediates the tissue-level effects: muscle protein synthesis, fat oxidation, cellular repair, and collagen formation.',
     },
   ],
   faq: [
     {
-      question: 'Am I a good candidate for Sermorelin Troches?',
-      answer: `Sermorelin may be recommended for individuals experiencing symptoms like decreased energy, loss of muscle mass, or signs of premature aging, often associated with growth hormone deficiency. If you're feeling these effects, sermorelin could potentially help by stimulating your body's natural growth hormone production.`,
+      question: 'Am I a good candidate for Sermorelin?',
+      answer:
+        'Sermorelin is appropriate for adults experiencing signs consistent with declining growth hormone levels. These include decreased energy, loss of lean muscle mass, increased body fat (particularly visceral), poor sleep quality, slow recovery from exercise, and visible signs of accelerated aging. Your provider will evaluate your symptoms and labs to determine candidacy.',
     },
     {
-      question: 'What is the purpose of using Sermorelin?',
-      answer: `Sermorelin is primarily used to stimulate the production of growth hormone in individuals with deficiencies, which can help alleviate symptoms such as decreased energy levels, reduced muscle mass, and signs of premature aging. It can also be utilized for anti-aging purposes to promote overall well-being.`,
+      question: 'What is the purpose of Sermorelin therapy?',
+      answer:
+        'The goal is to restore growth hormone production toward youthful physiologic levels. This supports body composition, sleep architecture, energy, recovery, and tissue repair. Because sermorelin works through the pituitary, it maintains the body\u2019s natural feedback mechanisms and avoids the risks of exogenous GH.',
     },
     {
-      question: 'How is Sermorelin administered?',
-      answer: `Sermorelin is typically administered via subcutaneous injection, but can be taken via a troche. It is typically taken before bedtime since the body naturally releases growth hormone during sleep. The dosage and frequency of administration vary depending on individual needs and medical advice.`,
-    },
-    {
-      question:
-        'Are there any side effects associated with Sermorelin therapy?',
-      answer: `While generally well-tolerated, potential side effects of Sermorelin may include mild headaches, dizziness, or nausea. However, these effects are typically temporary and subside with continued use. It's essential to discuss any concerns or adverse reactions with your healthcare provider for appropriate guidance.`,
+      question: 'How is it administered?',
+      answer:
+        'The troche dissolves sublingually (under the tongue) or buccally (between the cheek and gum). Most patients take it nightly before bed. Sermorelin can also be administered by subcutaneous injection if preferred. Your provider will recommend the best route based on your clinical needs.',
     },
     {
       question: 'What are the potential side effects?',
-      answer: `Common side effects of Sermorelin troches may include oral irritation or discomfort in the mouth, mild dizziness, or headaches. Some individuals may experience a temporary taste sensation. While serious side effects are rare, immediate medical attention is necessary if allergic reactions or signs of tumor growth occur.`,
+      answer:
+        'Side effects are uncommon and typically mild. These include temporary headache, mild dizziness, nausea, or a brief taste sensation from the troche. Oral irritation at the dissolution site can occur. Rare effects include allergic reactions. Report any unusual symptoms to your provider.',
     },
     {
-      question: 'What are potential contraindications?',
-      answer: `- Active Cancer
-Use is contraindicated in individuals with active cancer due to the potential stimulation of tumor growth.
-- Allergies
-Avoid use in individuals with known hypersensitivity to Sermorelin or any of its components.
-- Pregnancy and Breastfeeding
-Not recommended during pregnancy or breastfeeding, as safety has not been established.
-- Medical Conditions
-Exercise caution and consult a healthcare professional if there is a history of cardiac disorders, edema, or other relevant medical conditions.
-- Interactions with Medications
-Disclose all current medications and supplements to a healthcare provider due to the potential for interactions.
-- Diabetes
-Close monitoring is advised, as Sermorelin may impact insulin sensitivity.
-- Pediatric Use
-Safety and efficacy have not been well established in pediatric patients. Use only with careful consideration and professional guidance.`,
+      question: 'What are the contraindications?',
+      answer:
+        'Sermorelin is contraindicated in individuals with active cancer or a history of malignancy, known allergy to sermorelin or its components, pregnancy or breastfeeding, and certain cardiac disorders. Caution is warranted in patients with diabetes or those on corticosteroid or thyroid therapies, as these can influence GH dynamics. Pediatric use has not been established for this formulation.',
     },
     {
-      question: 'Potential drug interactions?',
-      answer: `Sermorelin may interact with certain medications, highlighting the importance of disclosing all current medications and supplements to healthcare providers.
-
-If you are on insulin/diabetic meds, corticosteroids, or thyroid therapies, then you should consult your HCP prior to use. This ensures a thorough assessment of potential drug interactions, allowing for adjustments in treatment plans to avoid adverse effects.`,
+      question: 'Are there drug interactions?',
+      answer:
+        'Insulin and oral diabetic medications may require dose adjustment, as growth hormone influences glucose metabolism. Corticosteroids can blunt the GH response to sermorelin. Thyroid hormone therapy may alter the axis. Disclose all medications during your evaluation.',
     },
+    RX_SUBSCRIPTION_POLICY_FAQ,
   ],
 };

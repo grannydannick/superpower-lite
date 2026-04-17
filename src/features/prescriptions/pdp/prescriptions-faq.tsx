@@ -9,6 +9,28 @@ import { cn } from '@/lib/utils';
 import type { Rx } from '@/types/api';
 import { getPrescriptionInfo } from '@/utils/prescription';
 
+function renderFaqAnswer(text: string) {
+  const parts = text.split(/(\[[^\]]+\]\([^)]+\))/g);
+  if (parts.length === 1) return text;
+  return parts.map((part, i) => {
+    const match = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (match) {
+      return (
+        <a
+          key={i}
+          href={match[2]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
+          {match[1]}
+        </a>
+      );
+    }
+    return part;
+  });
+}
+
 type PrescriptionsFaqProps = {
   prescription: Rx;
   className?: string;
@@ -47,7 +69,7 @@ export const Faq = ({ prescription, className }: PrescriptionsFaqProps) => {
             </AccordionTrigger>
             <AccordionContent className="text-secondary">
               <Body2 className="whitespace-pre-line text-base leading-7 text-secondary">
-                {answer}
+                {renderFaqAnswer(answer)}
               </Body2>
             </AccordionContent>
           </AccordionItem>
