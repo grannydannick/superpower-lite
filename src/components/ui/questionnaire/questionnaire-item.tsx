@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import { Checkbox } from '@/components/ui/checkbox';
+import { AnimatedCheckbox, Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import {
   Popover,
@@ -729,13 +729,51 @@ function ConsentPaymentConfirmButton({
   const { activePaymentMethod, isSelectingPaymentMethod, isFlexSelected } =
     usePaymentMethodSelection();
 
+  const [tosAccepted, setTosAccepted] = useState(false);
+
   const disabled =
     isSelectingPaymentMethod ||
     activePaymentMethod?.externalPaymentMethodId == null ||
-    isFlexSelected;
+    isFlexSelected ||
+    !tosAccepted;
 
   return (
     <QuestionnaireErrorWrapper isError={isErrored}>
+      <div className="mb-4 flex items-start gap-3">
+        <div
+          className={cn(
+            'flex aspect-square size-5 shrink-0 rounded-md border transition-all duration-150',
+            tosAccepted
+              ? 'border-zinc-900 bg-black'
+              : 'border-zinc-400 hover:border-zinc-500 hover:bg-zinc-100',
+          )}
+        >
+          <AnimatedCheckbox
+            id="rx-tos-consent"
+            className="data-[state=checked]:text-white"
+            checked={tosAccepted}
+            onCheckedChange={(checked) => setTosAccepted(checked === true)}
+          />
+        </div>
+        <label
+          htmlFor="rx-tos-consent"
+          className="cursor-pointer text-sm leading-5 text-zinc-500"
+        >
+          I understand that clicking Confirm submits my order for clinical
+          review. Once a clinician approves my prescription, this order cannot
+          be canceled or refunded. I agree to the{' '}
+          <a
+            href="https://superpower.com/informed-medical-consent/prescription-subscriptions"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+            onClick={(e) => e.stopPropagation()}
+          >
+            Superpower Prescription Policies
+          </a>
+          .
+        </label>
+      </div>
       <Button
         type="button"
         className="w-full"

@@ -119,6 +119,14 @@ test('submits when consent-payment confirm is clicked', async () => {
     />,
   );
 
+  // Check the ToS consent checkbox before clicking Confirm
+  await userEvent.click(
+    screen.getByRole('checkbox', { name: /I understand/ }),
+    {
+      pointerEventsCheck: 0,
+    },
+  );
+
   await userEvent.click(screen.getByRole('button', { name: 'Confirm' }), {
     pointerEventsCheck: 0,
   });
