@@ -27,13 +27,18 @@ const revealMock = {
   lastCompletedPhase: 'completed' as const,
 };
 const DEV_REVEAL_ABORT_MS = 150;
+const REVEAL_ABORT_MS = 500;
 let skipRevealLookupInDev = false;
 
 async function getRevealData(queryClient: QueryClient) {
   if (!import.meta.env.DEV) {
-    return queryClient
+    const revealPromise = queryClient
       .ensureQueryData(revealLatestQueryOptions())
       .catch(() => null);
+    const timeoutPromise = new Promise<null>((resolve) => {
+      window.setTimeout(() => resolve(null), REVEAL_ABORT_MS);
+    });
+    return Promise.race([revealPromise, timeoutPromise]);
   }
 
   if (skipRevealLookupInDev) {
