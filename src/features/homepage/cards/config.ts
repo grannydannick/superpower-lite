@@ -1,6 +1,5 @@
 import { FamilyInsightsBanner } from '@/features/homepage/components/family-insights-banner';
 import { FamilyRiskBanner } from '@/features/homepage/components/family-risk-banner';
-import { RecommendationsList } from '@/features/homepage/components/recommendations-list';
 
 import { cardRegistry } from '../registry/card-registry';
 import { CardConfig, HomepageState } from '../types';
@@ -31,16 +30,6 @@ const labOrderCardConfig: CardConfig = {
   component: LabOrderCard,
   shouldShow: (state: HomepageState) => state.hasActiveLabOrders,
   getPriority: () => 10,
-};
-
-/**
- * Card configuration for Switch Rx card
- */
-const switchRxCardConfig: CardConfig = {
-  id: 'switchRx',
-  component: RecommendationsList,
-  shouldShow: (state: HomepageState) => !state.hasFinalResults,
-  getPriority: () => 60,
 };
 
 /**
@@ -118,7 +107,6 @@ cardRegistry.register(aiapSummaryCardWebConfig);
 // cardRegistry.register(phlebotomyAppointmentCardConfig);
 cardRegistry.register(actionableOrdersCardConfig);
 cardRegistry.register(actionItemsCardConfig);
-cardRegistry.register(switchRxCardConfig);
 cardRegistry.register(navigationCardConfig);
 cardRegistry.register(labOrderCardConfig);
 cardRegistry.register(keyInsightsCardConfig);
