@@ -37,7 +37,7 @@ export const DigitalTwinCard = () => {
         <div className="absolute left-6 top-6 z-10">
           {user ? (
             <h2 className="text-4xl font-normal tracking-tight text-zinc-900">
-              Welcome {user?.firstName}!
+              Welcome {user?.firstName}
             </h2>
           ) : (
             <h2 className="text-3xl font-medium text-zinc-900">
