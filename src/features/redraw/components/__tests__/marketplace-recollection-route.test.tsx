@@ -24,6 +24,7 @@ import type { User } from '@/types/api';
 vi.mock('@/features/redraw/api/get-redraws', () => {
   return {
     useRedraws: vi.fn(),
+    getRedrawsQueryOptions: () => ({ queryKey: ['redraws'] }),
   };
 });
 

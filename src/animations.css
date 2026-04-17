@@ -513,3 +513,18 @@
     black 80%
   );
 }
+
+@keyframes bio-arc-expand {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes bio-dot-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

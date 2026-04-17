@@ -13,20 +13,22 @@ export default function DigitalTwinModel({
   model,
   area,
   level,
+  overlayStrength,
   onLoadingStateChange,
 }: {
   model: Model;
   area?: Area;
   level?: Level;
+  overlayStrength?: number;
   onLoadingStateChange?: (loaded: number) => void;
 }) {
   const cameraProps = useMemo(
-    () => ({ position: [0, 0.5, 9.4] as [number, number, number], fov: 6.86 }),
+    () => ({ position: [0, 0.5, 9.4] as [number, number, number], fov: 6.0 }),
     [],
   );
 
   const controlsTarget = useMemo(
-    () => [0, 0.375, 0] as [number, number, number],
+    () => [0, 0.35, 0] as [number, number, number],
     [],
   );
 
@@ -45,12 +47,9 @@ export default function DigitalTwinModel({
       linear
       flat
       camera={cameraProps}
-      // Lower max DPR to reduce initial shader/RT cost on first paint
       dpr={[1, 1.25]}
       gl={{ powerPreference: 'high-performance' }}
     >
-      {/* <Stats showPanel={0} className="stats" /> */}
-
       <SoftLimitedOrbitControls target={controlsTarget} />
 
       {area === 'sleep' && (
@@ -65,6 +64,7 @@ export default function DigitalTwinModel({
         model={model}
         area={area}
         level={level}
+        overlayStrength={overlayStrength}
         onLoadingStateChange={onLoadingStateChange}
       />
 

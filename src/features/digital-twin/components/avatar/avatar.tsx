@@ -19,8 +19,9 @@ export const Avatar = ({
   model,
   area,
   level,
+  overlayStrength,
   onLoadingStateChange,
-}: DigitalTwinProps) => {
+}: DigitalTwinProps & { overlayStrength?: number }) => {
   const { gl } = useThree();
   const onLoadingStateChangeRef = useRef(onLoadingStateChange);
 
@@ -101,7 +102,12 @@ export const Avatar = ({
   }, [gl, model]);
 
   // initiating the multi-texture shader material
-  const shaderMaterial = useShaderMaterial({ textures, area, level });
+  const shaderMaterial = useShaderMaterial({
+    textures,
+    area,
+    level,
+    overlayStrength,
+  });
 
   // main model
   const avatar = useMemo(() => cloneSkeleton(modelScene), [modelScene]);

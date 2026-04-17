@@ -59,7 +59,7 @@ export const AvatarClone = ({
   const materialTween = useMemo(
     () =>
       createTweenValue(initialGlowRef.current, {
-        duration: 1.5,
+        duration: 0.8,
         onUpdate: (value) => {
           material.opacity = MAX_GLOW * value;
         },
@@ -68,7 +68,7 @@ export const AvatarClone = ({
   );
 
   useLayoutEffect(() => {
-    setTarget((level && COLORS[level]) || '#ffffff');
+    setTarget((level && COLORS[level]) || '#ffffff', { duration: 0.8 });
     materialTween.set(
       !!level && !!area && (SCENES as any)?.[area]?.glow ? 1 : 0,
     );

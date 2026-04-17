@@ -9,6 +9,7 @@ import { authHandlers } from './auth';
 import { biomarkersHandlers } from './biomarkers';
 import { consultsHandlers } from './consults';
 import { googleHandlers } from './google';
+import { homepageHandlers } from './homepage';
 import { klaviyoHandlers } from './klaviyo';
 import { messagesHandlers } from './messages';
 import { phlebotomyHandlers } from './phlebotomy';
@@ -28,6 +29,7 @@ export const handlers = [
   ...phlebotomyHandlers,
   ...biomarkersHandlers,
   ...googleHandlers,
+  ...homepageHandlers,
   ...klaviyoHandlers,
   ...tasksHandlers,
   http.get(`${env.API_URL}/healthcheck`, async () => {

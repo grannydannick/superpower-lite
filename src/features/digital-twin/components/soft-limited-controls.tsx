@@ -15,8 +15,10 @@ export const SoftLimitedOrbitControls = ({
 
   const radiusRef = useRef<number | null>(null);
 
-  const maxAzimuth = MathUtils.degToRad(15);
-  const recenterSpeed = 0.05;
+  const maxSwing = MathUtils.degToRad(25);
+  const swingSpeed = 0.025;
+  const autoSwingDamping = 0.08;
+  const boundaryDamping = 0.2;
 
   useEffect(() => {
     const domElement = gl.domElement;
@@ -63,13 +65,21 @@ export const SoftLimitedOrbitControls = ({
     let targetAzimuth = currentAzimuth;
 
     if (isUserInteracting === false) {
-      targetAzimuth = MathUtils.lerp(currentAzimuth, 0, recenterSpeed);
-    } else {
-      if (currentAzimuth > maxAzimuth) {
-        targetAzimuth = MathUtils.lerp(currentAzimuth, maxAzimuth, 0.2);
-      } else if (currentAzimuth < -maxAzimuth) {
-        targetAzimuth = MathUtils.lerp(currentAzimuth, -maxAzimuth, 0.2);
-      }
+      const time = performance.now() * 0.001 * swingSpeed * Math.PI * 2;
+      const autoSwingAzimuth = Math.sin(time) * maxSwing;
+      targetAzimuth = MathUtils.lerp(
+        currentAzimuth,
+        autoSwingAzimuth,
+        autoSwingDamping,
+      );
+    } else if (currentAzimuth > maxSwing) {
+      targetAzimuth = MathUtils.lerp(currentAzimuth, maxSwing, boundaryDamping);
+    } else if (currentAzimuth < -maxSwing) {
+      targetAzimuth = MathUtils.lerp(
+        currentAzimuth,
+        -maxSwing,
+        boundaryDamping,
+      );
     }
 
     const x = radius * Math.sin(polar) * Math.sin(targetAzimuth);

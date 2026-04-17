@@ -1,11 +1,12 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { getOrdersQueryOptions } from '@/features/orders/api';
 import { OrderStatus } from '@/types/api';
 
 export const useCurrentLabOrder = () => {
-  const { data } = useSuspenseQuery(getOrdersQueryOptions());
+  const query = useQuery(getOrdersQueryOptions());
+  const data = query.data;
 
   const activeLabOrder = useMemo(() => {
     const requestGroups = data?.requestGroups ?? [];
@@ -43,5 +44,7 @@ export const useCurrentLabOrder = () => {
 
   return {
     activeLabOrder,
+    isError: query.isError,
+    isPending: query.isPending,
   };
 };

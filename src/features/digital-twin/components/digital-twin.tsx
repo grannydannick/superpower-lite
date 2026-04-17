@@ -14,13 +14,77 @@ import { cn } from '@/lib/utils';
 import { Category } from '@/types/api';
 
 import { useCheckPerformance } from '../hooks/use-check-performance';
-import { Level } from '../types';
+import { Area, Level } from '../types';
 
 import { DigitalTwinFallback } from './digital-twin-fallback';
 
 const DigitalTwinModel = lazy(() => import('./digital-twin-model'));
 
-export const DigitalTwin = ({ category }: { category?: Category }) => {
+interface HealthAreaState {
+  area: Area;
+  level: Level;
+}
+
+const ALL_HEALTH_AREAS: HealthAreaState[] = [
+  { area: 'heart', level: 'good' },
+  { area: 'metabolic', level: 'neutral' },
+  { area: 'liver', level: 'good' },
+  { area: 'kidney', level: 'good' },
+  { area: 'inflammation', level: 'good' },
+  { area: 'nutrients', level: 'neutral' },
+  { area: 'immune', level: 'good' },
+  { area: 'thyroid', level: 'good' },
+  { area: 'sex', level: 'neutral' },
+];
+
+const CyclingDigitalTwinModel = ({
+  healthAreas,
+  model,
+  overlayStrength,
+  onLoadingStateChange,
+}: {
+  healthAreas: HealthAreaState[];
+  model: 'male' | 'female';
+  overlayStrength: number;
+  onLoadingStateChange: (state: number) => void;
+}) => {
+  const [areaIdx, setAreaIdx] = useState(0);
+  let healthAreasSignature = '';
+
+  for (const healthArea of healthAreas) {
+    healthAreasSignature += `${healthArea.area}:${healthArea.level}|`;
+  }
+
+  useEffect(() => {
+    if (healthAreas.length === 0) return;
+
+    const interval = setInterval(() => {
+      setAreaIdx((prev) => (prev + 1) % healthAreas.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [healthAreas.length, healthAreasSignature]);
+
+  const currentArea = healthAreas[areaIdx % healthAreas.length];
+
+  return (
+    <DigitalTwinModel
+      model={model}
+      area={currentArea?.area}
+      level={currentArea?.level}
+      overlayStrength={overlayStrength}
+      onLoadingStateChange={onLoadingStateChange}
+    />
+  );
+};
+
+export const DigitalTwin = ({
+  category,
+  filterCategories,
+}: {
+  category?: Category;
+  filterCategories?: string[];
+}) => {
   const [ready, setReady] = useState(false);
   const [loadState, setLoadState] = useState<number>(0);
   const rafRef = useRef<number | null>(null);
@@ -30,11 +94,8 @@ export const DigitalTwin = ({ category }: { category?: Category }) => {
   const { isPerformanceSufficient, isLoading: isPerformanceLoading } =
     useCheckPerformance();
 
-  // Stable gender → model mapping
-  const model = useMemo<'male' | 'female'>(
-    () => (user?.gender === 'MALE' ? 'male' : 'female'),
-    [user?.gender],
-  );
+  const model: 'male' | 'female' =
+    user?.gender?.toLowerCase() === 'male' ? 'male' : 'female';
 
   const handleLoadingStateChange = useCallback((state: number) => {
     const scaled = Math.round((100 * state) / 43);
@@ -47,27 +108,63 @@ export const DigitalTwin = ({ category }: { category?: Category }) => {
     });
   }, []);
 
-  const level = useMemo(() => {
-    switch (category?.value) {
-      case 'A':
-        return 'good';
-      case 'B':
-        return 'neutral';
-      case 'C':
-        return 'bad';
-    }
-  }, [category]) as Level;
+  const healthAreas = useMemo(() => {
+    if (filterCategories === undefined) return ALL_HEALTH_AREAS;
 
-  const area = useMemo(() => {
-    const key = category?.category?.toLowerCase();
-    return key ? CATEGORY_MAP[key] : undefined;
-  }, [category]);
+    const allowedAreas = new Set<Area>();
+    for (const categoryName of filterCategories) {
+      const mappedArea = CATEGORY_MAP[categoryName.toLowerCase()];
+      if (mappedArea === undefined) continue;
+      allowedAreas.add(mappedArea);
+    }
+
+    const filteredAreas: HealthAreaState[] = [];
+    for (const healthArea of ALL_HEALTH_AREAS) {
+      if (!allowedAreas.has(healthArea.area)) continue;
+      filteredAreas.push(healthArea);
+    }
+
+    return filteredAreas;
+  }, [filterCategories]);
+
+  let level: Level | undefined;
+  if (category != null) {
+    switch (category.value) {
+      case 'A':
+        level = 'good';
+        break;
+      case 'B':
+        level = 'neutral';
+        break;
+      case 'C':
+        level = 'bad';
+        break;
+      default:
+        level = 'good';
+        break;
+    }
+  }
+
+  let area: Area | undefined;
+  if (category != null) {
+    const key = category.category?.toLowerCase();
+    area = key != null ? CATEGORY_MAP[key] : undefined;
+  }
+
+  const cycleKey = (() => {
+    if (category != null) return category.category;
+    if (filterCategories === undefined) return 'all-categories';
+    if (filterCategories.length === 0) return 'no-categories';
+    return filterCategories.join('|');
+  })();
+
+  const overlayStrength =
+    category != null || (filterCategories?.length ?? 0) > 0 ? 1.0 : 0.5;
 
   const markReady = useCallback(() => {
     setReady(true);
   }, []);
 
-  // defer mounting the heavy 3D scene until the main thread is idle
   useEffect(() => {
     const anyWindow: any = window as any;
     if (typeof anyWindow.requestIdleCallback === 'function') {
@@ -90,18 +187,29 @@ export const DigitalTwin = ({ category }: { category?: Category }) => {
   return (
     <div
       className={cn(
-        'will-change-opacity -mt-12 h-[28rem] w-full cursor-grab transition-opacity duration-1000 active:cursor-grabbing md:mt-0 md:h-[80vh] md:max-h-[56rem] [&>div]:!touch-pan-y md:[@media(max-height:800px)]:h-[48rem]',
+        'will-change-opacity -mt-12 h-[24rem] w-full shrink-0 cursor-grab transition-opacity duration-1000 active:cursor-grabbing md:-mt-20 md:h-[120vh] md:max-h-[76rem] [&>div]:!touch-pan-y md:[@media(max-height:800px)]:h-[56rem]',
         loadState === 0 && 'opacity-0',
       )}
     >
       {!isUserLoading && ready && (
         <Suspense fallback={null}>
-          <DigitalTwinModel
-            model={model}
-            area={area}
-            level={level}
-            onLoadingStateChange={handleLoadingStateChange}
-          />
+          {category != null ? (
+            <DigitalTwinModel
+              model={model}
+              area={area}
+              level={level}
+              overlayStrength={overlayStrength}
+              onLoadingStateChange={handleLoadingStateChange}
+            />
+          ) : (
+            <CyclingDigitalTwinModel
+              key={cycleKey}
+              healthAreas={healthAreas}
+              model={model}
+              overlayStrength={overlayStrength}
+              onLoadingStateChange={handleLoadingStateChange}
+            />
+          )}
         </Suspense>
       )}
     </div>

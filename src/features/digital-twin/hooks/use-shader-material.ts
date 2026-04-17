@@ -8,10 +8,12 @@ export const useShaderMaterial = ({
   textures,
   level,
   area,
+  overlayStrength = 1.0,
 }: {
   textures: any;
   area?: Area;
   level?: Level;
+  overlayStrength?: number;
 }) => {
   const baseTexture = textures?.base;
   const shaderMaterial = useMemo(() => {
@@ -23,7 +25,7 @@ export const useShaderMaterial = ({
     if (!shaderMaterial) return null;
 
     return createShaderMaterialFader(shaderMaterial, {
-      duration: 0.2,
+      duration: 0.8,
     });
   }, [shaderMaterial]);
 
@@ -41,6 +43,11 @@ export const useShaderMaterial = ({
       materialFader.setTexture(textures.base);
     }
   }, [area, level, textures, materialFader]);
+
+  useEffect(() => {
+    if (!shaderMaterial) return;
+    shaderMaterial.uniforms.overlayStrength.value = overlayStrength;
+  }, [shaderMaterial, overlayStrength]);
 
   return shaderMaterial;
 };

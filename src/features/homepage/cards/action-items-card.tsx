@@ -1,12 +1,10 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { type ReactElement } from 'react';
 
-import {
-  ActionableAccordion,
-  ActionableAccordionItem,
-} from '@/components/shared/actionable-accordion';
-import { getWearablesQueryOptions } from '@/features/settings/api/get-wearables';
+import { ActionableAccordionItem } from '@/components/shared/actionable-accordion';
+import { wearablesQuery } from '@/features/homepage/api/queries';
+import { HomepageActionAccordion } from '@/features/homepage/components/homepage-action-accordion';
 import { useUser } from '@/lib/auth';
 import { shouldShowImportMemory } from '@/utils/show-action-conditions';
 
@@ -20,10 +18,7 @@ interface ActionItem {
 
 export const ActionItemsCard = () => {
   const navigate = useNavigate();
-  const { data: wearablesData } = useSuspenseQuery(getWearablesQueryOptions());
-  const hasNoWearables =
-    (wearablesData?.wearables?.filter((w) => w.status === 'connected') ?? [])
-      .length === 0;
+  const wearablesQueryResult = useQuery(wearablesQuery());
   const { data: user } = useUser();
   const showImportMemory = shouldShowImportMemory(user?.createdAt);
 
@@ -42,7 +37,16 @@ export const ActionItemsCard = () => {
     },
   ];
 
-  if (hasNoWearables) {
+  const connectedWearables = wearablesQueryResult.data?.wearables ?? [];
+  let hasConnectedWearable = false;
+  for (const wearable of connectedWearables) {
+    if (wearable.status === 'connected') {
+      hasConnectedWearable = true;
+      break;
+    }
+  }
+
+  if (wearablesQueryResult.isSuccess && !hasConnectedWearable) {
     actions.push({
       id: 'connect-wearables',
       title: 'Connect your wearables',
@@ -73,8 +77,6 @@ export const ActionItemsCard = () => {
     });
   }
 
-  const shouldForceOpen = actions.length < 3;
-
   const items: ReactElement[] = [];
   for (const action of actions) {
     items.push(
@@ -89,15 +91,8 @@ export const ActionItemsCard = () => {
   }
 
   return (
-    <ActionableAccordion
-      title="Action Items"
-      defaultOpen={shouldForceOpen}
-      allowCollapse={!shouldForceOpen}
-      highlighted={false}
-      showHeaderIndicator={false}
-      showTopSeparator={false}
-    >
+    <HomepageActionAccordion title="Action Items" variant="minimal">
       {items}
-    </ActionableAccordion>
+    </HomepageActionAccordion>
   );
 };

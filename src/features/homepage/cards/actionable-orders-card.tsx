@@ -1,23 +1,26 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { type ReactElement } from 'react';
 
-import { ActionableAccordion } from '@/components/shared/actionable-accordion';
-import { getCreditsQueryOptions } from '@/features/orders/api/credits';
-import { getGiftsQueryOptions } from '@/features/orders/api/get-gifts';
+import {
+  creditsQuery,
+  giftsQuery,
+  redrawsQuery,
+} from '@/features/homepage/api/queries';
+import { CardSkeleton } from '@/features/homepage/components/card-skeleton';
+import { HomepageActionAccordion } from '@/features/homepage/components/homepage-action-accordion';
 import { CreditActionCard } from '@/features/orders/components/credit-action-card';
 import { GiftActionCard } from '@/features/orders/components/gift-action-card';
-import { getRedrawsQueryOptions } from '@/features/redraw/api/get-redraws';
 import { RedrawActionCard } from '@/features/redraw/components/redraw-action-card';
 
 export const ActionableOrdersCard = () => {
   const navigate = useNavigate();
-  const { data: creditsData } = useSuspenseQuery(getCreditsQueryOptions());
-  const { data: redrawsData } = useSuspenseQuery(getRedrawsQueryOptions());
-  const { data: giftsData } = useSuspenseQuery(getGiftsQueryOptions());
-  const credits = creditsData?.credits ?? [];
-  const redraws = redrawsData?.redraws ?? [];
-  const gifts = giftsData?.gifts ?? [];
+  const creditsQueryResult = useQuery(creditsQuery());
+  const redrawsQueryResult = useQuery(redrawsQuery());
+  const giftsQueryResult = useQuery(giftsQuery());
+  const credits = creditsQueryResult.data?.credits ?? [];
+  const redraws = redrawsQueryResult.data?.redraws ?? [];
+  const gifts = giftsQueryResult.data?.gifts ?? [];
   const items: ReactElement[] = [];
 
   let hasUnsentGifts = false;
@@ -51,5 +54,16 @@ export const ActionableOrdersCard = () => {
     items.push(<CreditActionCard key={credit.id} credit={credit} />);
   }
 
-  return <ActionableAccordion>{items}</ActionableAccordion>;
+  if (
+    items.length === 0 &&
+    (creditsQueryResult.isPending ||
+      redrawsQueryResult.isPending ||
+      giftsQueryResult.isPending)
+  ) {
+    return <CardSkeleton />;
+  }
+
+  if (items.length === 0) return null;
+
+  return <HomepageActionAccordion>{items}</HomepageActionAccordion>;
 };

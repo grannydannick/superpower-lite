@@ -44,9 +44,9 @@ type NavItem = {
 const baseLinks: NavItem[] = [
   { icon: HomeIcon, name: 'Home', to: '/' },
   { icon: DataIcon, name: 'Data', to: '/data' },
+  { icon: MessageIcon, name: 'Superpower AI', to: '/concierge' },
   { icon: PlansIcon, name: 'Protocol', to: '/protocol' },
-  { icon: MessageIcon, name: 'Concierge', to: '/concierge' },
-  { icon: MarketplaceIcon, name: 'Marketplace', to: '/marketplace' },
+  { icon: MarketplaceIcon, name: 'Clinic', to: '/marketplace' },
 ];
 
 const profileDropdownItems = [
@@ -152,14 +152,14 @@ export const DesktopNavbar = () => {
           </Link>
         </div>
         <div className="relative flex flex-1 items-center justify-center">
-          <div className="relative flex items-center justify-center rounded-full bg-black p-1 shadow-xl shadow-black/5 transition-all duration-200 lg:gap-2">
+          <div className="relative flex items-center justify-center rounded-full bg-zinc-950 p-1 shadow-xl shadow-black/5 transition-all duration-200 lg:gap-2">
             {allLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.to}
                 activeOptions={{ exact: link.to === '/' }}
                 onClick={() => {
-                  if (link.name === 'Marketplace') {
+                  if (link.name === 'Clinic') {
                     track('click_marketplace_button');
                   }
                 }}
@@ -318,13 +318,13 @@ export const MobileNavbar = () => {
         )}
       >
         {baseLinks
-          .filter((link) => link.name !== 'Concierge')
-          .map((link, idx) => (
+          .filter((link) => link.name !== 'Superpower AI')
+          .map((link) => (
             <MobileNavLink
-              key={idx}
+              key={link.to}
               to={link.to}
               onClick={() => {
-                if (link.name === 'Marketplace') {
+                if (link.name === 'Clinic') {
                   track('click_marketplace_button');
                 }
               }}

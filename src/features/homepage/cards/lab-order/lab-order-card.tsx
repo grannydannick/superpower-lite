@@ -5,6 +5,8 @@ import { useCallback } from 'react';
 import { AddToCalendar } from '@/components/shared/add-to-calendar-button';
 import { Button } from '@/components/ui/button';
 import { Body1, Body2, H3 } from '@/components/ui/typography';
+import { CardSkeleton } from '@/features/homepage/components/card-skeleton';
+import { HomepageCard } from '@/features/homepage/components/homepage-card';
 import { useCurrentLabOrder } from '@/features/orders/hooks';
 import { useNowMs } from '@/hooks/use-now-ms';
 import { Address } from '@/types/api';
@@ -45,7 +47,7 @@ const isValidAddress = (address?: Address): boolean => {
 };
 
 export const LabOrderCard = () => {
-  const { activeLabOrder } = useCurrentLabOrder();
+  const { activeLabOrder, isError, isPending } = useCurrentLabOrder();
   const nowMs = useNowMs();
 
   /**
@@ -69,6 +71,9 @@ export const LabOrderCard = () => {
     const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
     window.open(url, '_blank');
   }, []);
+
+  if (isPending) return <CardSkeleton />;
+  if (isError) return null;
 
   if (!activeLabOrder) {
     return null;
@@ -169,7 +174,7 @@ export const LabOrderCard = () => {
   }
 
   return (
-    <div className="md:rounded-3xl md:bg-white md:p-6 md:shadow-sm">
+    <HomepageCard>
       {/* Header */}
       <div className="mb-6 text-center">
         <Body2 className="mb-2 text-zinc-500">{serviceNames}</Body2>
@@ -300,6 +305,6 @@ export const LabOrderCard = () => {
           <PreparationTipsCarousel />
         </div>
       )}
-    </div>
+    </HomepageCard>
   );
 };

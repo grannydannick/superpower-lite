@@ -17,6 +17,11 @@ const HIDE_WRAPPER_PATHNAMES = [
   '/protocol/reveal/text-sequence',
 ];
 
+// Paths that require an exact match (e.g. the homepage has its own embedded
+// chat bar, so the floating assistant is redundant there but should still
+// render on nested routes).
+const HIDE_WRAPPER_EXACT_PATHNAMES = ['/'];
+
 export const FloatingWrapper = () => {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const containerRef = useRef<HTMLDivElement>(null);
@@ -51,11 +56,13 @@ export const FloatingWrapper = () => {
     };
   }, []);
 
-  let shouldHide = false;
-  for (const segment of HIDE_WRAPPER_PATHNAMES) {
-    if (pathname.includes(segment)) {
-      shouldHide = true;
-      break;
+  let shouldHide = HIDE_WRAPPER_EXACT_PATHNAMES.includes(pathname);
+  if (!shouldHide) {
+    for (const segment of HIDE_WRAPPER_PATHNAMES) {
+      if (pathname.includes(segment)) {
+        shouldHide = true;
+        break;
+      }
     }
   }
 

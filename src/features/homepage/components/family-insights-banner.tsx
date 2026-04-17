@@ -19,7 +19,6 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Body1, Body2, H3 } from '@/components/ui/typography';
-import { useLatestFamilyRiskPlan } from '@/features/family-risks';
 import { useQuestionnaireInsights } from '@/features/questionnaires/api/get-questionnaire-insights';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
@@ -72,34 +71,25 @@ const MOCK_INSIGHTS: QuestionnaireInsights[] = [
 // TODO: god damn it we should standarize fonts across the app
 // TODO 2: I didnt find better way to use that background image...
 export const FamilyInsightsBanner = () => {
-  const { data: familyRiskPlan } = useLatestFamilyRiskPlan();
-
-  // Don't show intake insights banner if family risk plan is available
-  if (familyRiskPlan?.risks?.length) {
-    return null;
-  }
-
   return (
     <FamilyInsightsDialog>
-      <div className="mb-6">
-        <div
-          className="group flex cursor-pointer items-center gap-4 rounded-[20px] bg-cover bg-no-repeat px-6 py-2 shadow-[0_0_4px_rgba(24,24,27,0.1)]"
-          style={{
-            backgroundImage: `
+      <div
+        className="group flex cursor-pointer items-center gap-4 rounded-[20px] bg-cover bg-no-repeat pr-6 shadow-[0_0_4px_rgba(24,24,27,0.1)]"
+        style={{
+          backgroundImage: `
       url('/home/health-insights-banner.png'),
       linear-gradient(135deg, #252F22 0%, #252F22 20%, #43523A 60%, #4C4F2F 100%)
     `,
-          }}
-        >
-          <div className="size-20 lg:w-28 xl:w-36" />
-          <div className="flex-1">
-            <Body1 className="text-base text-white">
-              Review family health insights
-              <br /> from your intake
-            </Body1>
-          </div>
-          <ChevronRight className="size-5 text-white transition-all group-hover:-mr-1" />
+        }}
+      >
+        <div className="size-20 lg:w-28 xl:w-36" />
+        <div className="flex-1 md:py-6">
+          <Body1 className="text-base text-white">
+            Review family health insights
+            <br /> from your intake
+          </Body1>
         </div>
+        <ChevronRight className="size-5 text-white transition-all group-hover:-mr-1" />
       </div>
     </FamilyInsightsDialog>
   );

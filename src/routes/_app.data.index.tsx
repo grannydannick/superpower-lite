@@ -88,7 +88,14 @@ function DataComponent() {
                 : 'Unlocks after data is processed'}
             </Badge>
           )}
-          {!isLoading && <DigitalTwin category={activeCategory} />}
+          {!isLoading && (
+            <DigitalTwin
+              category={activeCategory}
+              filterCategories={
+                activeCategory ? undefined : categories.map((c) => c.category)
+              }
+            />
+          )}
         </div>
         <div className="relative z-10 col-span-6 bg-zinc-50/75 backdrop-blur-lg md:pt-16 xl:col-span-5">
           {isWearables ? (

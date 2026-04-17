@@ -6,13 +6,8 @@ import { useAnalytics } from '@/hooks/use-analytics';
 import { cn } from '@/lib/utils';
 
 import type { ProtocolGoal } from '../../api';
+import { CARD_GRADIENTS } from '../../const/color-gradients';
 import { ProtocolIndexNumber } from '../protocol-index-number';
-
-const CARD_GRADIENTS = [
-  'from-[#FF5D4D]/[.06] via-[#FFB088]/[.08] to-[#FFF0E8]/[.12]',
-  'from-[#FC5F2B]/[.06] via-[#FFD4A8]/[.08] to-[#FFF5E8]/[.12]',
-  'from-[#74B0FF]/[.06] via-[#B8D8FF]/[.08] to-[#EDF5FF]/[.12]',
-] as const;
 
 interface GoalsProps {
   goals: ProtocolGoal[];

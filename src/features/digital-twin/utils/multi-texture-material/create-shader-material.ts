@@ -2,10 +2,12 @@ import { ShaderMaterial, Texture } from 'three';
 
 export function createShaderMaterial(baseTexture: Texture): ShaderMaterial {
   const uniforms = {
+    neutralMap: { value: baseTexture },
     baseMap: { value: baseTexture },
     overlayFrom: { value: baseTexture },
     overlayTo: { value: baseTexture },
     alpha: { value: 0.0 },
+    overlayStrength: { value: 1.0 },
     brightness: { value: 1.15 },
     whiten: { value: 0.4 },
   };
@@ -41,10 +43,12 @@ export function createShaderMaterial(baseTexture: Texture): ShaderMaterial {
     #include <logdepthbuf_pars_fragment>
     #include <clipping_planes_pars_fragment>
 
+    uniform sampler2D neutralMap;
     uniform sampler2D baseMap;
     uniform sampler2D overlayFrom;
     uniform sampler2D overlayTo;
     uniform float alpha;
+    uniform float overlayStrength;
     uniform float brightness;
     uniform float whiten;
 
@@ -53,6 +57,7 @@ export function createShaderMaterial(baseTexture: Texture): ShaderMaterial {
     void main() {
       #include <clipping_planes_fragment>
 
+      vec4 neutralColor = texture2D(neutralMap, vUv);
       vec4 baseColor = texture2D(baseMap, vUv);
       vec4 fromColor = texture2D(overlayFrom, vUv);
       vec4 toColor = texture2D(overlayTo, vUv);
@@ -62,6 +67,9 @@ export function createShaderMaterial(baseTexture: Texture): ShaderMaterial {
 
       // Blend overlay on top of base using overlay alpha
       vec4 finalColor = mix(baseColor, overlay, overlay.a);
+
+      // Blend towards neutral base by overlayStrength
+      finalColor = mix(neutralColor, finalColor, overlayStrength);
 
       // Apply brightness and subtle whitening towards white
       vec3 color = finalColor.rgb * brightness;
