@@ -1,9 +1,9 @@
-import { TransitionWrapper } from '@/components/shared/transition-wrapper';
 import { Button } from '@/components/ui/button';
 import { Body1, H2 } from '@/components/ui/typography';
 
 import { useSequence } from '../../../hooks/use-screen-sequence';
 import { Sequence } from '../../sequence';
+import { ImageWithReveal } from '../../shared/image-with-reveal';
 
 export const ActionStep = () => {
   const { next } = useSequence();
@@ -11,13 +11,11 @@ export const ActionStep = () => {
   return (
     <Sequence.StepLayout centered>
       <Sequence.StepMedia>
-        <TransitionWrapper type="fade-in" delay={0.25}>
-          <img
-            src="/onboarding/introduction/insights.webp"
-            alt="Action on your insights"
-            className="h-auto w-full pt-16 rounded-mask"
-          />
-        </TransitionWrapper>
+        <ImageWithReveal
+          src="/onboarding/introduction/insights.webp"
+          alt="Action on your insights"
+          className="h-auto w-full pt-16 rounded-mask"
+        />
       </Sequence.StepMedia>
       <Sequence.StepContent className="mx-auto max-w-md text-center">
         <H2>Get actionable insights</H2>
