@@ -32,15 +32,17 @@ const PanelDetailMarkdown = ({ children }: { children: string }) => {
             );
           }
 
-          return <Body1 className="text-zinc-500">{children}</Body1>;
+          return (
+            <Body1 className="mt-4 text-zinc-500 first:mt-0">{children}</Body1>
+          );
         },
         ul: ({ children }) => (
-          <ul className="ml-1 space-y-1 [&>li]:relative [&>li]:flex [&>li]:items-start [&>li]:pl-4 [&>li]:before:absolute [&>li]:before:left-0 [&>li]:before:top-1/2 [&>li]:before:size-1 [&>li]:before:shrink-0 [&>li]:before:-translate-y-1/2 [&>li]:before:rounded-full [&>li]:before:bg-zinc-300">
+          <ul className="ml-1 mt-4 space-y-1 first:mt-0 [&>li]:relative [&>li]:flex [&>li]:items-start [&>li]:pl-4 [&>li]:before:absolute [&>li]:before:left-0 [&>li]:before:top-1/2 [&>li]:before:size-1 [&>li]:before:shrink-0 [&>li]:before:-translate-y-1/2 [&>li]:before:rounded-full [&>li]:before:bg-zinc-300">
             {children}
           </ul>
         ),
         ol: ({ children }) => (
-          <ol className="ml-1 space-y-1 [counter-reset:list-counter] [&>li]:flex [&>li]:items-start [&>li]:[counter-increment:list-counter] [&>li]:before:mr-2 [&>li]:before:text-sm [&>li]:before:font-medium [&>li]:before:text-zinc-500 [&>li]:before:[content:counter(list-counter)'.']">
+          <ol className="ml-1 mt-4 space-y-1 [counter-reset:list-counter] first:mt-0 [&>li]:flex [&>li]:items-start [&>li]:[counter-increment:list-counter] [&>li]:before:mr-2 [&>li]:before:text-sm [&>li]:before:font-medium [&>li]:before:text-zinc-500 [&>li]:before:[content:counter(list-counter)'.']">
             {children}
           </ol>
         ),
