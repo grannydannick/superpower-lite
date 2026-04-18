@@ -1,4 +1,10 @@
-import { Biomarker, BiomarkerStatus } from '@/types/api';
+import { BiomarkerStatus } from '@/types/api';
+
+export type ScoredBiomarker = {
+  id?: string;
+  name: string;
+  status: BiomarkerStatus;
+};
 
 export interface MergedSegment {
   status: BiomarkerStatus;
@@ -9,7 +15,7 @@ export interface MergedSegment {
 }
 
 export interface SegmentData {
-  biomarker: Biomarker;
+  biomarker: ScoredBiomarker;
   index: number;
   startAngle: number;
   endAngle: number;

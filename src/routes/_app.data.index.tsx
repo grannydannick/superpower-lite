@@ -6,11 +6,10 @@ import { ContentLayout } from '@/components/layouts';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Body1, H2 } from '@/components/ui/typography';
-import { useCategories } from '@/features/data/api/get-categories';
+import { useDataSummarySuspense } from '@/features/data/api/get-data-summary';
 import { CategoryView } from '@/features/data/components/category-view';
 import { Overview } from '@/features/data/components/overview';
 import { DataSidebar } from '@/features/data/components/sidebar/data-sidebar';
-import { encodeCategory } from '@/features/data/utils/category/encode-category';
 import { DigitalTwin } from '@/features/digital-twin/components/digital-twin';
 import { WearablesDataView } from '@/features/wearables/components/wearables-data-view';
 import { useWearablesData } from '@/features/wearables/hooks/use-wearables-data';
@@ -21,15 +20,21 @@ export const Route = createFileRoute('/_app/data/')({
 });
 
 function DataComponent() {
-  const userQuery = useUser();
-  const categoriesQuery = useCategories();
+  return (
+    <Suspense fallback={null}>
+      <DataContent />
+    </Suspense>
+  );
+}
+
+function DataContent() {
+  const { data: dataSummary } = useDataSummarySuspense();
+  const { data: user } = useUser();
   const navigate = Route.useNavigate();
   const category = Route.useSearch({ select: (s) => s.category });
 
-  const isLoading = categoriesQuery.isLoading || userQuery.isLoading;
-
-  const categories = categoriesQuery.data?.categories ?? [];
-  const gating = userQuery.data?.resultsGate;
+  const categories = dataSummary.categories;
+  const gating = user?.resultsGate;
 
   const isWearables = category === 'wearables';
   const { showEmptyState: showWearablesLock } = useWearablesData({
@@ -40,9 +45,7 @@ function DataComponent() {
     !gating.hasFinalDiagnosticReport &&
     !gating.hasUserUploadedResults;
 
-  const activeCategory = categories.find(
-    (c) => encodeCategory(c.category) === encodeCategory(category ?? ''),
-  );
+  const activeCategory = categories.find((c) => c.slug === category);
   const shouldShowCategoryView =
     activeCategory != null || (category != null && category.length > 0);
 
@@ -50,10 +53,7 @@ function DataComponent() {
     category != null &&
     category.length > 0 &&
     !isWearables &&
-    !isLoading &&
-    !categories.some(
-      (c) => encodeCategory(c.category) === encodeCategory(category),
-    )
+    !categories.some((c) => c.slug === category)
   ) {
     return (
       <div className="flex h-full min-h-[calc(100vh-100px)] flex-col items-center justify-center gap-2">
@@ -88,14 +88,12 @@ function DataComponent() {
                 : 'Unlocks after data is processed'}
             </Badge>
           )}
-          {!isLoading && (
-            <DigitalTwin
-              category={activeCategory}
-              filterCategories={
-                activeCategory ? undefined : categories.map((c) => c.category)
-              }
-            />
-          )}
+          <DigitalTwin
+            category={activeCategory}
+            filterCategories={
+              activeCategory ? undefined : categories.map((c) => c.title)
+            }
+          />
         </div>
         <div className="relative z-10 col-span-6 bg-zinc-50/75 backdrop-blur-lg md:pt-16 xl:col-span-5">
           {isWearables ? (

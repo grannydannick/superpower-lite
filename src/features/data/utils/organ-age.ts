@@ -1,24 +1,12 @@
-export function getOrganAgeBiomarkers<T extends { name: string }>(
-  biomarkers: T[] | undefined | null,
-): T[] {
-  return (biomarkers ?? []).filter((b) =>
-    b.name.toLowerCase().includes('organ age'),
-  );
-}
+import type { DataBiomarker } from '../types/data-api';
 
-export function resolveRelatedBiomarkers<
-  T extends { name: string; value?: any },
->(organAge: T, allBiomarkers: T[] | undefined | null): T[] {
-  const latest = organAge?.value?.[organAge?.value?.length - 1];
+export const ORGAN_AGE_NAME_FRAGMENT = 'organ age';
 
-  const titles = ((latest?.component ?? [])
-    .map((c: any) => c.title)
-    .filter(Boolean) ?? []) as string[];
+export const isOrganAgeBiomarker = (b: DataBiomarker): boolean =>
+  (b.observation?.name?.toLowerCase() ?? '').includes(ORGAN_AGE_NAME_FRAGMENT);
 
-  const all = allBiomarkers ?? [];
-
-  return all.filter(
-    (bm) =>
-      titles.includes(bm.name) && !bm.name.toLowerCase().includes('organ age'),
-  );
+export function getOrganAgeBiomarkers(
+  biomarkers: DataBiomarker[] | undefined | null,
+): DataBiomarker[] {
+  return (biomarkers ?? []).filter(isOrganAgeBiomarker);
 }

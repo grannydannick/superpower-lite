@@ -19,7 +19,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Body1, Body2 } from '@/components/ui/typography';
-import { BiomarkerDialog } from '@/features/data/components/dialogs/biomarker-dialog';
+import { BiomarkerLegacyDialog } from '@/features/data/components/dialogs/biomarker-legacy-dialog';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
 
@@ -78,12 +78,12 @@ export function CitationsDialog({ citations, trigger }: CitationsDialogProps) {
           );
           if (biomarker) {
             return (
-              <BiomarkerDialog key={key} biomarker={biomarker}>
+              <BiomarkerLegacyDialog key={key} biomarker={biomarker}>
                 <div className="group flex cursor-pointer items-center gap-3 rounded-xl border border-zinc-200 bg-white p-3 shadow-sm hover:bg-zinc-50">
                   {inner}
                   <ChevronRight className="mr-1 size-4 text-secondary transition-all duration-200 ease-out group-hover:mr-0" />
                 </div>
-              </BiomarkerDialog>
+              </BiomarkerLegacyDialog>
             );
           }
           if (href) {

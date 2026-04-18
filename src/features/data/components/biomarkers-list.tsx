@@ -2,11 +2,11 @@ import { Spinner } from '@/components/ui/spinner';
 import { Body2, H4 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 
-import { useBiomarkers } from '../api';
+import { useDataBiomarkers } from '../api/get-data-biomarkers';
 import { biomarkerStatusCount } from '../utils/biomarkers-status-count';
 
 export const BiomarkersList = () => {
-  const biomarkers = useBiomarkers();
+  const biomarkers = useDataBiomarkers();
 
   if (biomarkers.isLoading) {
     return (

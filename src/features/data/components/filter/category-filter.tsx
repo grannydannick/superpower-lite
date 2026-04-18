@@ -10,13 +10,13 @@ import {
 } from '@/components/ui/dropdown';
 import { Body1 } from '@/components/ui/typography';
 
-import { useCategories } from '../../api/get-categories';
+import { useDataSummary } from '../../api/get-data-summary';
 import { useDataFilterStore } from '../../stores/data-filter-store';
 
 export const CategoryFilter = () => {
   const { selectedCategories, updateCategories, clearCategories } =
     useDataFilterStore();
-  const { data: categories } = useCategories();
+  const { data: categories } = useDataSummary();
 
   const handleClear = () => {
     clearCategories();
@@ -55,16 +55,16 @@ export const CategoryFilter = () => {
         </div>
         {categories?.categories.map((category) => (
           <DropdownMenuItem
-            key={category.category}
+            key={category.slug}
             className="group flex items-center gap-3"
             onSelect={(e) => e.preventDefault()}
-            onClick={() => handleCategoryClick(category.category)}
+            onClick={() => handleCategoryClick(category.slug)}
           >
             <AnimatedCheckbox
               className="border-none bg-zinc-100 transition-colors duration-300 group-hover:bg-zinc-200 data-[state=checked]:!bg-vermillion-900"
-              checked={selectedCategories.includes(category.category)}
+              checked={selectedCategories.includes(category.slug)}
             />
-            <Body1>{category.category}</Body1>
+            <Body1>{category.title}</Body1>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

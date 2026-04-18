@@ -14,33 +14,40 @@ import {
 import { useOrders } from '@/features/orders/api';
 import { useService, useServices } from '@/features/services/api';
 import { cn } from '@/lib/utils';
-import { Category, OrderStatus, SuperpowerCategory } from '@/types/api';
+import { OrderStatus } from '@/types/api';
 import { getServiceImage } from '@/utils/service';
 
-import { useBiomarkers } from '../../api';
+import {
+  SuperpowerCategorySlug,
+  useDataBiomarkers,
+} from '../../api/get-data-biomarkers';
 import { useFilteredBiomarkers } from '../../hooks/use-filtered-biomarkers';
 import { useDataFilterStore } from '../../stores/data-filter-store';
+import type { DataSummaryCategory } from '../../types/data-api';
 import { DataSearch } from '../filter/data-search';
 import { DateFilter } from '../filter/date-filter';
 import { RangesFilter } from '../filter/ranges-filter';
 
 import { BiomarkersDataTable } from './biomarkers-data-table';
 
-export const CategoryDataTable = ({ category }: { category?: Category }) => {
+export const CategoryDataTable = ({
+  category,
+}: {
+  category?: DataSummaryCategory;
+}) => {
   const searchQuery = useDataFilterStore((s) => s.searchQuery);
   const updateSearchQuery = useDataFilterStore((s) => s.updateSearchQuery);
   const [localQuery, setLocalQuery] = useState(searchQuery);
 
-  const ordersQuery = useOrders();
-  const biomarkersQuery = useBiomarkers({
-    category: category?.category,
+  const biomarkersQuery = useDataBiomarkers({
+    category: category ? { slug: category.slug } : undefined,
   });
-
   const biomarkers = biomarkersQuery.data?.biomarkers ?? [];
 
   const filteredBiomarkers = useFilteredBiomarkers({
-    biomarkers: biomarkers,
+    biomarkers,
     enabledFilters: { categories: false, date: true, range: true },
+    includeUntested: true,
   });
 
   const [_, startTransition] = useTransition();
@@ -49,11 +56,7 @@ export const CategoryDataTable = ({ category }: { category?: Category }) => {
     startTransition(() => updateSearchQuery(q));
   }, 200);
 
-  const isLoading =
-    ordersQuery.isLoading ||
-    biomarkersQuery.isLoading ||
-    ordersQuery.isFetching ||
-    biomarkersQuery.isFetching;
+  const isLoading = biomarkersQuery.isLoading;
 
   return (
     <div>
@@ -86,10 +89,10 @@ export const CategoryDataTable = ({ category }: { category?: Category }) => {
             </div>
           </div>
         </div>
-        {category?.category === SuperpowerCategory.GUT_HEALTH ? (
+        {category?.slug === SuperpowerCategorySlug.GUT_HEALTH ? (
           <GutInsights />
         ) : null}
-        {category?.category === SuperpowerCategory.TOXIN_EXPOSURE ? (
+        {category?.slug === SuperpowerCategorySlug.TOXIN_EXPOSURE ? (
           <ToxinsInsights />
         ) : null}
       </div>
@@ -99,6 +102,7 @@ export const CategoryDataTable = ({ category }: { category?: Category }) => {
           biomarkers={filteredBiomarkers}
           isLoading={isLoading}
           displayPending={true}
+          currentCategory={category}
         />
       </div>
     </div>

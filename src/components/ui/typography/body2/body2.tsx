@@ -23,16 +23,14 @@ import { cn } from '@/lib/utils';
  * @returns {React.ReactElement} The styled paragraph element.
  */
 
+export const body2ClassName = 'text-sm font-normal text-zinc-900';
+
 const Body2 = forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >((props, ref) => {
   return (
-    <p
-      {...props}
-      ref={ref}
-      className={cn('text-sm font-normal text-zinc-900', props.className)}
-    >
+    <p {...props} ref={ref} className={cn(body2ClassName, props.className)}>
       {props.children}
     </p>
   );

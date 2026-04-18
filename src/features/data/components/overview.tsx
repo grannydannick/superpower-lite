@@ -6,11 +6,10 @@ import { BiologicalAgeLogo } from '@/components/shared/biological-age-logo';
 import { SuperpowerScoreLogo } from '@/components/shared/score-logo';
 import { QuickLinkButton } from '@/components/ui/quick-link';
 import { Body2, H2, H4 } from '@/components/ui/typography';
-import { useOrders } from '@/features/orders/api';
 import { useUser } from '@/lib/auth';
 import { yearsSinceDate } from '@/utils/format';
 
-import { useBiomarkers } from '../api';
+import { useDataBiomarkers } from '../api/get-data-biomarkers';
 import { MESSAGES } from '../const/messages';
 import { useFilteredBiomarkers } from '../hooks/use-filtered-biomarkers';
 import { useDataFilterStore } from '../stores/data-filter-store';
@@ -123,16 +122,14 @@ export function Overview() {
   const { clearRange, clearCategories, clearSelectedOrder, clearSearchQuery } =
     useDataFilterStore();
   const { data: user, isLoading: isUserLoading } = useUser();
-  const biomarkersQuery = useBiomarkers();
-  const ordersQuery = useOrders();
+  const biomarkersQuery = useDataBiomarkers();
 
   const biomarkers = biomarkersQuery.data?.biomarkers ?? [];
 
   const filteredBiomarkers = useFilteredBiomarkers({
-    biomarkers: biomarkers,
+    biomarkers,
   });
 
-  // we want to remove all filters initially
   useEffect(() => {
     clearRange();
     clearCategories();
@@ -140,20 +137,22 @@ export function Overview() {
     clearSearchQuery();
   }, [clearRange, clearCategories, clearSelectedOrder, clearSearchQuery]);
 
-  const isLoading =
-    isUserLoading || ordersQuery.isLoading || biomarkersQuery.isLoading;
+  const isLoading = isUserLoading || biomarkersQuery.isLoading;
 
   const gating = user?.resultsGate;
 
-  const latestScoreMarker = mostRecent(
-    biomarkers.find((b) => b.name === 'Health Score')?.value ?? [],
-  );
+  // Health Score and Biological Age are CMS biomarkers with well-known slugs.
+  // TODO: confirm exact CMS slugs with backend if these don't resolve.
+  const healthScoreObs = biomarkers.find(
+    (b) => b.slug === 'health-score',
+  )?.observation;
+  const latestScoreMarker = mostRecent(healthScoreObs?.value ?? []);
   const superpowerScore = latestScoreMarker?.quantity?.value;
 
-  const biologicalAgeMarker = biomarkers.find(
-    (b) => b.name === 'Biological Age',
-  );
-  const biologicalAge = biologicalAgeMarker?.value[0]?.quantity?.value;
+  const biologicalAgeObs = biomarkers.find(
+    (b) => b.slug === 'biological-age',
+  )?.observation;
+  const biologicalAge = biologicalAgeObs?.value[0]?.quantity?.value;
   const ageDifference = biologicalAge
     ? Math.round(
         (yearsSinceDate(user?.dateOfBirth ?? '') - biologicalAge) * 10,
@@ -167,14 +166,14 @@ export function Overview() {
   );
 
   const mostRecentBiomarkerTimestamp = biomarkers
-    .flatMap((biomarker) => biomarker.value)
+    .flatMap((b) => b.observation?.value ?? [])
     .reduce(
       (latest, result) => {
         const latestDate = new Date(latest?.timestamp ?? 0);
         const resultDate = new Date(result.timestamp);
         return resultDate > latestDate ? result : latest;
       },
-      biomarkers.flatMap((biomarker) => biomarker.value)[0],
+      biomarkers.flatMap((b) => b.observation?.value ?? [])[0],
     )?.timestamp;
 
   const isResultsLocked =

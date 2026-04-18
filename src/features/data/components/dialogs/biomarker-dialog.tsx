@@ -1,7 +1,8 @@
 import { Description } from '@radix-ui/react-dialog';
-import { useNavigate } from '@tanstack/react-router';
-import { Lock, X } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { Link as RouterLink, useNavigate } from '@tanstack/react-router';
+import { X } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import NumberFlow from '@/components/shared/number-flow';
 import { Button } from '@/components/ui/button';
@@ -22,57 +23,105 @@ import {
 } from '@/components/ui/dialog';
 import { dialogVariants } from '@/components/ui/dialog/utils/dialog-variants';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, Body2, Body3, H4 } from '@/components/ui/typography';
-import { useAnalytics } from '@/hooks/use-analytics';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
-import { Biomarker } from '@/types/api';
+import type { Biomarker } from '@/types/api';
 import { getDisplayComparator } from '@/utils/get-display-comparator';
 
 import { STATUS_TO_COLOR } from '../../../../const/status-to-color';
+import {
+  dataBiomarkerContentQueryOptions,
+  useDataBiomarker,
+  useDataBiomarkerContent,
+} from '../../api/get-data-biomarkers';
+import { useTrackBiomarkerEvent } from '../../hooks/use-track-biomarker-event';
+import type { DataBiomarker, DataSummaryCategory } from '../../types/data-api';
 
-import { BiomarkerContentTabs } from './biomarker-content-tabs';
+import {
+  BiomarkerContentSkeleton,
+  BiomarkerMdxContent,
+} from './biomarker-mdx-content';
 import { formatOptimalRange } from './utils/format-optimal-range';
 
+type DialogState = 'loading' | 'not_found' | 'locked' | 'ready';
+
 export const BiomarkerDialog = ({
+  biomarkerId,
   children,
-  biomarker,
   disabled = false,
+  currentCategory,
 }: {
+  biomarkerId: string;
   children: React.ReactNode;
-  biomarker: Biomarker;
   disabled?: boolean;
+  currentCategory?: DataSummaryCategory;
 }) => {
   const [open, setOpen] = useState(false);
   const { width } = useWindowDimensions();
-  const { track } = useAnalytics();
-  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const prefetchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const cancelPrefetch = useCallback(() => {
+    if (prefetchTimerRef.current) {
+      clearTimeout(prefetchTimerRef.current);
+      prefetchTimerRef.current = null;
+    }
+  }, []);
+
+  const prefetch = useCallback(() => {
+    cancelPrefetch();
+    prefetchTimerRef.current = setTimeout(() => {
+      queryClient.prefetchQuery(dataBiomarkerContentQueryOptions(biomarkerId));
+    }, 200);
+  }, [queryClient, biomarkerId, cancelPrefetch]);
+
+  useEffect(() => cancelPrefetch, [cancelPrefetch]);
+
+  const { data: biomarker, isPending } = useDataBiomarker(biomarkerId, {
+    enabled: open,
+  });
+  const obs = biomarker?.observation;
+
+  const trackBiomarkerEvent = useTrackBiomarkerEvent({
+    id: biomarkerId,
+    biomarker,
+    currentCategory,
+  });
+
+  const state = useMemo<DialogState>(() => {
+    if (isPending) return 'loading';
+    if (biomarker === null) return 'not_found';
+    if (!obs) return 'locked';
+    return 'ready';
+  }, [isPending, biomarker, obs]);
 
   const handleOpenChange = useCallback(
     (newOpen: boolean) => {
       setOpen(newOpen);
-
       if (newOpen) {
-        track('viewed_biomarker', {
-          biomarker_name: biomarker.name,
-          biomarker_interpretation: biomarker.status,
-        });
+        trackBiomarkerEvent('viewed_biomarker');
       }
     },
-    [track, biomarker.name, biomarker.status],
+    [trackBiomarkerEvent],
   );
+
+  const title = obs?.name ?? biomarker?.title ?? '';
 
   const content = (
     <>
       <div className="-my-3 flex items-center justify-between">
         <DialogTitle>
-          <Body1 className="line-clamp-2 text-zinc-500">{biomarker.name}</Body1>
+          {state === 'loading' ? (
+            <Skeleton className="h-5 w-32 rounded-full" />
+          ) : (
+            <Body1 className="line-clamp-2 text-zinc-500">{title}</Body1>
+          )}
         </DialogTitle>
         <div className="-mr-3 flex items-center gap-2">
-          {biomarker.status !== 'RECOMMENDED' &&
-          biomarker.dataType !== 'text' ? (
-            <BiomarkerStatusBadge biomarker={biomarker} />
-          ) : null}
+          {state === 'ready' ? <BiomarkerStatusBadge biomarker={obs!} /> : null}
           <DialogClose asChild>
             <Button variant="ghost" className="text-zinc-400">
               <X strokeWidth={2.5} className="size-4" />
@@ -81,50 +130,16 @@ export const BiomarkerDialog = ({
           </DialogClose>
         </div>
       </div>
-      <div className="flex flex-col gap-4">
-        {biomarker.status === 'RECOMMENDED' ? (
-          <div className="relative">
-            <Button
-              variant="outline"
-              className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col space-y-2 rounded-2xl border border-zinc-200 bg-white shadow-lg"
-              onClick={() => {
-                const firstServiceId =
-                  biomarker.recommendedTests.services[0]?.id;
 
-                if (firstServiceId != null) {
-                  void navigate({
-                    to: '/services/$id',
-                    params: { id: firstServiceId },
-                  });
-                }
-              }}
-            >
-              <Lock className="size-[18px] text-secondary" />
-              <span>
-                <Body2>Discover your value</Body2>
-                <Body3 className="text-secondary">Test now</Body3>
-              </span>
-            </Button>
-            <TimeSeriesChartPlaceholder />
-          </div>
-        ) : // Select the appropriate detail chart based on dataType
-        biomarker.dataType === 'codedValue' ? (
-          <CodedValueChart biomarker={biomarker} />
-        ) : biomarker.dataType === 'text' ? (
-          <TextValueChart biomarker={biomarker} />
-        ) : (
-          <TimeSeriesChart biomarker={biomarker} />
-        )}
-        {biomarker.status !== 'RECOMMENDED' && biomarker.dataType !== 'text' ? (
-          <div className="mb-4 grid gap-2 min-[375px]:grid-cols-2">
-            <LatestResultCard biomarker={biomarker} />
-            <OptimalRangeCard biomarker={biomarker} />
-          </div>
-        ) : null}
-
-        <BiomarkerContentTabs biomarker={biomarker} />
-      </div>
-      <Description hidden>Insights about {biomarker.name}</Description>
+      {state === 'loading' ? (
+        <BiomarkerLoadingView />
+      ) : state === 'not_found' ? (
+        <BiomarkerNotFoundView />
+      ) : state === 'locked' ? (
+        <BiomarkerLockedView biomarker={biomarker!} />
+      ) : (
+        <BiomarkerView biomarker={biomarker!} />
+      )}
     </>
   );
 
@@ -135,6 +150,10 @@ export const BiomarkerDialog = ({
           asChild
           disabled={disabled}
           className={cn(disabled && 'pointer-events-none')}
+          onPointerEnter={prefetch}
+          onPointerLeave={cancelPrefetch}
+          onFocus={prefetch}
+          onBlur={cancelPrefetch}
         >
           {children}
         </SheetTrigger>
@@ -151,6 +170,10 @@ export const BiomarkerDialog = ({
         asChild
         disabled={disabled}
         className={cn(disabled && 'pointer-events-none')}
+        onPointerEnter={prefetch}
+        onPointerLeave={cancelPrefetch}
+        onFocus={prefetch}
+        onBlur={cancelPrefetch}
       >
         {children}
       </DialogTrigger>
@@ -167,8 +190,122 @@ export const BiomarkerDialog = ({
   );
 };
 
-// Shows the newest result value in a card. Handles all dataTypes:
-// codedValue -> capitalized text, range -> "low-high unit", quantity -> animated number + unit
+function BiomarkerLoadingView() {
+  return (
+    <div className="flex flex-col gap-4 pt-3">
+      <Skeleton className="h-64 w-full rounded-2xl" />
+      <div className="grid gap-2 min-[375px]:grid-cols-2">
+        <Skeleton className="h-16 rounded-2xl" />
+        <Skeleton className="h-16 rounded-2xl" />
+      </div>
+      <Skeleton className="h-4 w-1/3 rounded-full" />
+      <Skeleton className="h-20 w-full rounded-2xl" />
+    </div>
+  );
+}
+
+function BiomarkerNotFoundView() {
+  return (
+    <div className="flex flex-1 items-center justify-center">
+      <Body2 className="text-secondary">Biomarker not found</Body2>
+    </div>
+  );
+}
+
+function BiomarkerLockedView({ biomarker }: { biomarker: DataBiomarker }) {
+  const { data: content, isPending: isContentPending } =
+    useDataBiomarkerContent(biomarker.id);
+  const trackBiomarkerEvent = useTrackBiomarkerEvent({
+    id: biomarker.id,
+    biomarker,
+  });
+
+  const handleUnlockClick = useCallback(() => {
+    trackBiomarkerEvent('clicked_biomarker_product_cta');
+  }, [trackBiomarkerEvent]);
+
+  return (
+    <>
+      <div className="relative">
+        <div className="absolute left-1/2 top-1/2 flex w-40 -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-3 rounded-2xl border border-zinc-200 bg-white p-4 shadow-lg">
+          <Body2 className="text-center text-secondary">No data yet</Body2>
+          {/* TODO: replace diagnosticTests[0].id with product id after marketplace refactor */}
+          {biomarker.diagnosticTests[0] && (
+            <Button asChild size="small" className="w-full">
+              <RouterLink
+                to="/services/$id"
+                params={{ id: biomarker.diagnosticTests[0].id }}
+                onClick={handleUnlockClick}
+              >
+                Unlock now
+              </RouterLink>
+            </Button>
+          )}
+        </div>
+        <TimeSeriesChartPlaceholder />
+      </div>
+      {isContentPending ? (
+        <BiomarkerContentSkeleton />
+      ) : content ? (
+        <BiomarkerMdxContent content={content} />
+      ) : null}
+    </>
+  );
+}
+
+function BiomarkerView({ biomarker }: { biomarker: DataBiomarker }) {
+  const obs = biomarker.observation!;
+  const { data: content, isPending: isContentPending } =
+    useDataBiomarkerContent(biomarker.id);
+  const navigate = useNavigate();
+  const trackBiomarkerEvent = useTrackBiomarkerEvent({
+    id: biomarker.id,
+    biomarker,
+  });
+
+  // TODO: replace diagnosticTests[0].id with product id after marketplace refactor
+  const serviceId = biomarker.diagnosticTests[0]?.id;
+
+  const handleBookNow = useCallback(() => {
+    if (!serviceId) return;
+    trackBiomarkerEvent('clicked_biomarker_product_cta');
+    void navigate({
+      to: '/services/$id',
+      params: { id: serviceId },
+    });
+  }, [serviceId, trackBiomarkerEvent, navigate]);
+
+  return (
+    <>
+      <div className="flex flex-col gap-4">
+        {obs.dataType === 'codedValue' ? (
+          <CodedValueChart biomarker={obs} />
+        ) : obs.dataType === 'text' ? (
+          <TextValueChart biomarker={obs} />
+        ) : (
+          <TimeSeriesChart
+            biomarker={obs}
+            hideBookNow={!serviceId}
+            onBookNow={serviceId ? handleBookNow : undefined}
+          />
+        )}
+        {obs.dataType !== 'text' ? (
+          <div className="mb-4 grid gap-2 min-[375px]:grid-cols-2">
+            <LatestResultCard biomarker={obs} />
+            <OptimalRangeCard biomarker={obs} />
+          </div>
+        ) : null}
+        {isContentPending ? (
+          <BiomarkerContentSkeleton />
+        ) : content ? (
+          <BiomarkerMdxContent content={content} />
+        ) : null}
+      </div>
+      <Description hidden>Insights about {obs.name}</Description>
+    </>
+  );
+}
+
 const LatestResultCard = ({ biomarker }: { biomarker: Biomarker }) => {
   const statusColor =
     STATUS_TO_COLOR[
@@ -182,12 +319,7 @@ const LatestResultCard = ({ biomarker }: { biomarker: Biomarker }) => {
   return (
     <div className="flex flex-col gap-1 rounded-2xl border px-3 py-2 shadow-sm">
       <Body3 className="text-secondary">Latest result</Body3>
-      <H4
-        className="truncate"
-        style={{
-          color: statusColor,
-        }}
-      >
+      <H4 className="truncate" style={{ color: statusColor }}>
         {isCodedValue ? (
           <span className="capitalize">
             {biomarker.value[0]?.valueCoded || '-'}
@@ -213,8 +345,6 @@ const LatestResultCard = ({ biomarker }: { biomarker: Biomarker }) => {
   );
 };
 
-// Shows the optimal reference range. For codedValue biomarkers, displays the
-// optimal coded value text. For numeric biomarkers, shows the optimal range bounds.
 const OptimalRangeCard = ({ biomarker }: { biomarker: Biomarker }) => {
   const isCodedValue = biomarker.dataType === 'codedValue';
 
@@ -227,7 +357,6 @@ const OptimalRangeCard = ({ biomarker }: { biomarker: Biomarker }) => {
   if (isCodedValue) {
     const codedRanges = biomarker.codedRanges?.[lastValueSource] || [];
     const optimal = codedRanges.find((range) => range.status === 'optimal');
-
     optimalCodedValue = optimal?.code || null;
   }
 
@@ -242,12 +371,7 @@ const OptimalRangeCard = ({ biomarker }: { biomarker: Biomarker }) => {
   return (
     <div className="flex flex-col gap-1 rounded-2xl border px-3 py-2 shadow-sm">
       <Body3 className="text-secondary">Optimal range</Body3>
-      <H4
-        className="truncate"
-        style={{
-          color: STATUS_TO_COLOR.optimal,
-        }}
-      >
+      <H4 className="truncate" style={{ color: STATUS_TO_COLOR.optimal }}>
         {isCodedValue ? (
           <span className="capitalize">{optimalCodedValue || '-'}</span>
         ) : (
@@ -297,16 +421,11 @@ const BiomarkerStatusBadge = ({ biomarker }: { biomarker: Biomarker }) => {
       className="flex items-center gap-1.5 rounded-full px-2 py-1"
     >
       <div
-        style={{
-          backgroundColor: statusColor,
-        }}
+        style={{ backgroundColor: statusColor }}
         className="size-1.5 shrink-0 rounded-full"
       />
       <Body2
-        style={{
-          color: statusColor,
-          backgroundColor: statusColorLight,
-        }}
+        style={{ color: statusColor, backgroundColor: statusColorLight }}
         className="capitalize"
       >
         {biomarker.status.toLowerCase()}

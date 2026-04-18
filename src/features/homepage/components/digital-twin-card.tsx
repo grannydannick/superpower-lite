@@ -22,14 +22,10 @@ const DigitalTwin = lazy(() =>
 export const DigitalTwinCard = () => {
   const { data: user } = useUser();
   const { data: categoriesData } = useQuery(categoriesQuery());
-  const filterCategories = useMemo(() => {
-    const categories: string[] = [];
-    const availableCategories = categoriesData?.categories ?? [];
-    for (const category of availableCategories) {
-      categories.push(category.category);
-    }
-    return categories;
-  }, [categoriesData?.categories]);
+  const filterCategories = useMemo(
+    () => (categoriesData?.categories ?? []).map((c) => c.title),
+    [categoriesData?.categories],
+  );
 
   return (
     <div className="relative h-full">

@@ -1,9 +1,13 @@
-import { Biomarker, BiomarkerStatus } from '@/types/api';
+import { BiomarkerStatus } from '@/types/api';
+
+import type { ScoredBiomarker } from '../score-chart/types/score-chart';
 
 // Sorts biomarkers by clinical urgency: out-of-range first (HIGH/LOW/ABNORMAL),
 // then NORMAL, OPTIMAL, PENDING, and finally UNKNOWN/RECOMMENDED.
 // Within the same priority tier, sorts alphabetically by name.
-export const sortBiomarkers = (biomarkers: Biomarker[]): Biomarker[] => {
+export const sortBiomarkers = (
+  biomarkers: ScoredBiomarker[],
+): ScoredBiomarker[] => {
   return biomarkers.sort((a, b) => {
     const statusOrder: Record<BiomarkerStatus, number> = {
       HIGH: 1,
@@ -23,6 +27,6 @@ export const sortBiomarkers = (biomarkers: Biomarker[]): Biomarker[] => {
       return aOrder - bOrder;
     }
 
-    return a.name.localeCompare(b.name);
+    return (a.name ?? '').localeCompare(b.name ?? '');
   });
 };

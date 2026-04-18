@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Body2, Body3 } from '@/components/ui/typography';
-import { Biomarker, CategoryValue } from '@/types/api';
+import { CategoryValue } from '@/types/api';
 
 import { ChartTooltip } from '../chart-tooltip';
 import { getBiomarkerColor } from '../utils/get-biomarker-color';
 
+import { ScoredBiomarker } from './types/score-chart';
 import { useScoreChart } from './use-score-chart';
 
 export const ScoreChart = ({
@@ -13,7 +14,7 @@ export const ScoreChart = ({
   value,
   size = 120,
 }: {
-  biomarkers: Biomarker[];
+  biomarkers: ScoredBiomarker[];
   value?: CategoryValue;
   size?: number;
 }) => {

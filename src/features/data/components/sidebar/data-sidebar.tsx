@@ -5,19 +5,18 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Link } from '@/components/ui/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { H3 } from '@/components/ui/typography';
+import { useDataSummary } from '@/features/data/api/get-data-summary';
+import type { DataSummaryCategory } from '@/features/data/types/data-api';
 import { useWearables } from '@/features/settings/api/get-wearables';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
-import { Category } from '@/types/api';
 
-import { useCategories } from '../../api/get-categories';
 import { useDataFilterStore } from '../../stores/data-filter-store';
-import { encodeCategory } from '../../utils/category/encode-category';
 
-import { DataSidebarLink } from './data-sidebar-link';
+import { DataSidebarLink, SUMMARY_CATEGORY } from './data-sidebar-link';
 
-const EMPTY_CATEGORIES: Category[] = [];
+const EMPTY_CATEGORIES: DataSummaryCategory[] = [];
 
 export function DataSidebar() {
   const selectorRef = useRef<HTMLDivElement>(null);
@@ -25,12 +24,12 @@ export function DataSidebar() {
   const rafIdRef = useRef<number | null>(null);
   const previousActiveCategoryRef = useRef<string | null>(null);
   const userQuery = useUser();
-  const categoriesQuery = useCategories();
+  const dataSummaryQuery = useDataSummary();
   const wearablesQuery = useWearables();
 
-  const isLoading = categoriesQuery.isLoading || userQuery.isLoading;
+  const isLoading = dataSummaryQuery.isLoading || userQuery.isLoading;
 
-  const categories = categoriesQuery.data?.categories ?? EMPTY_CATEGORIES;
+  const categories = dataSummaryQuery.data?.categories ?? EMPTY_CATEGORIES;
   const gating = userQuery.data?.resultsGate;
 
   const activeCategory = useSearch({
@@ -47,10 +46,8 @@ export function DataSidebar() {
     if (activeCategory == null) return null;
 
     for (const category of categories) {
-      if (
-        encodeCategory(category.category) === encodeCategory(activeCategory)
-      ) {
-        return category.category;
+      if (category.slug === activeCategory) {
+        return category.slug;
       }
     }
 
@@ -78,7 +75,7 @@ export function DataSidebar() {
 
       const activeKey =
         activeCategory != null && activeCategory.length > 0
-          ? decodeURIComponent(activeCategory).toLowerCase()
+          ? activeCategory
           : 'summary';
       const activeCategoryElement = document.getElementById(
         `selector-${activeKey}`,
@@ -94,7 +91,6 @@ export function DataSidebar() {
           `${activeCategoryElement.offsetWidth}px`,
         );
 
-        // On mobile (below md), scroll the horizontal container so the active
         const container = containerRef.current;
         if (isMobile && container) {
           const containerRect = container.getBoundingClientRect();
@@ -144,11 +140,8 @@ export function DataSidebar() {
 
     items.push(
       <DataSidebarLink
-        key="overview"
-        category={{
-          category: 'Summary',
-          value: '-',
-        }}
+        key="summary"
+        category={SUMMARY_CATEGORY}
         isActive={activeCategory == null || activeCategory.length === 0}
       />,
     );
@@ -194,13 +187,11 @@ export function DataSidebar() {
     }
 
     categories.forEach((category) => {
-      const isActive =
-        encodeCategory(category.category) ===
-        encodeCategory(activeCategory ?? '');
+      const isActive = category.slug === activeCategory;
 
       items.push(
         <DataSidebarLink
-          key={category.category}
+          key={category.slug}
           category={category}
           isActive={isActive}
         />,

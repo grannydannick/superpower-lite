@@ -11,7 +11,7 @@ import {
 export const Toxins = memo(
   ({
     area,
-    level = 'good',
+    level,
     position,
     layers,
   }: {

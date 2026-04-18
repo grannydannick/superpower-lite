@@ -16,15 +16,12 @@ import { dialogVariants } from '@/components/ui/dialog/utils/dialog-variants';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { SimpleTabs, SimpleTabsContent } from '@/components/ui/simple-tabs';
 import { Body1, H3 } from '@/components/ui/typography';
-import {
-  getOrganAgeBiomarkers,
-  resolveRelatedBiomarkers,
-} from '@/features/data/utils/organ-age';
+import { getOrganAgeBiomarkers } from '@/features/data/utils/organ-age';
 import { AgeShareCard } from '@/features/shareables/components/cards/age-share-card';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
 
-import { useBiomarkers } from '../../api';
+import { useDataBiomarkers } from '../../api';
 import { BiomarkersAccordion } from '../biomarkers-accordion';
 
 import { BiomarkerContentTabs } from './biomarker-content-tabs';
@@ -55,15 +52,17 @@ export const BiologicalAgeDialog = ({
   });
   const [showAge, setShowAge] = useState(false);
   const { width } = useWindowDimensions();
-  const { data: biomarkersData } = useBiomarkers();
-  const biologicalAgeMarker = biomarkersData?.biomarkers.find(
-    (b) => b.name == 'Biological Age',
-  );
+  const { data: dataBiomarkersData } = useDataBiomarkers();
+  const biologicalAgeMarker = dataBiomarkersData?.biomarkers.find(
+    (b) => b.slug === 'biological-age',
+  )?.observation;
 
   const [selectedTab, setSelectedTab] =
     useState<(typeof tabs)[number]['value']>('chart');
 
-  const organAgeBiomarkers = getOrganAgeBiomarkers(biomarkersData?.biomarkers);
+  const organAgeBiomarkers = getOrganAgeBiomarkers(
+    dataBiomarkersData?.biomarkers,
+  );
 
   useEffect(() => {
     const shouldBeOpen = modal === 'biological-age' && !disabled;
@@ -127,19 +126,9 @@ export const BiologicalAgeDialog = ({
       {organAgeBiomarkers.length > 0 && (
         <div className="mb-8 space-y-4">
           <H3>Your OrganAge Report</H3>
-          {organAgeBiomarkers.map((bm) => {
-            const related = resolveRelatedBiomarkers(
-              bm,
-              biomarkersData?.biomarkers,
-            );
-            return (
-              <BiomarkersAccordion
-                key={bm.id ?? bm.name}
-                biomarker={bm}
-                biomarkers={related}
-              />
-            );
-          })}
+          {organAgeBiomarkers.map((bm) => (
+            <BiomarkersAccordion key={bm.id} biomarker={bm} />
+          ))}
         </div>
       )}
       {biologicalAgeMarker && (

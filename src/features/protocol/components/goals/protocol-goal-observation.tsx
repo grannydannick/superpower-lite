@@ -11,7 +11,7 @@ import {
 import { Body2 } from '@/components/ui/typography';
 import { STATUS_TO_COLOR } from '@/const/status-to-color';
 import { useBiomarkers } from '@/features/data/api';
-import { BiomarkerDialog } from '@/features/data/components/dialogs/biomarker-dialog';
+import { BiomarkerLegacyDialog } from '@/features/data/components/dialogs/biomarker-legacy-dialog';
 import { BiomarkerRange } from '@/features/data/components/range';
 import { BiomarkerValueUnit } from '@/features/data/components/value-unit';
 import { cn } from '@/lib/utils';
@@ -42,7 +42,7 @@ export function ProtocolGoalObservation({
   const { status, name } = biomarker;
 
   return (
-    <BiomarkerDialog biomarker={biomarker}>
+    <BiomarkerLegacyDialog biomarker={biomarker}>
       <div
         className={cn(
           'flex h-20 grow items-center justify-between rounded-2xl border border-zinc-200 bg-white py-2.5 pl-6 pr-3 shadow shadow-black/[0.025] transition-all hover:cursor-pointer hover:bg-zinc-50',
@@ -95,6 +95,6 @@ export function ProtocolGoalObservation({
           <SparklineChart biomarker={biomarker} />
         </div>
       </div>
-    </BiomarkerDialog>
+    </BiomarkerLegacyDialog>
   );
 }

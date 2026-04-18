@@ -1,17 +1,19 @@
 import { useDeferredValue, useMemo } from 'react';
 
 import { mostRecent } from '@/features/data/utils/most-recent-biomarker';
-import { Biomarker, RequestGroup } from '@/types/api';
+import type { RequestGroup } from '@/types/api';
 
 import { useDataFilterStore } from '../stores/data-filter-store';
+import type { DataBiomarker } from '../types/data-api';
 import { StatusFilterOptionType } from '../types/filters';
 
 interface FilterBiomarkersParams {
-  biomarkers: Biomarker[];
+  biomarkers: DataBiomarker[];
   selectedCategories: string[];
   selectedOrder?: RequestGroup;
   selectedRange?: StatusFilterOptionType;
   searchQuery: string;
+  includeUntested?: boolean;
 }
 
 interface FilterConfig {
@@ -21,25 +23,29 @@ interface FilterConfig {
   search?: boolean;
 }
 
-// Pure filter function that reduces the biomarker list by active UI filters:
-// categories (include list), search query (name/category substring),
-// status range (optimal/normal/out-of-range including ABNORMAL), and
-// selected order (biomarkers with results matching specific order IDs).
 export const filterBiomarkers = ({
   biomarkers,
   selectedCategories,
   selectedOrder,
   selectedRange,
   searchQuery,
-}: FilterBiomarkersParams): Biomarker[] => {
-  let filtered = biomarkers;
+  includeUntested = false,
+}: FilterBiomarkersParams): DataBiomarker[] => {
+  let filtered = biomarkers.filter((b) => {
+    if (b.observation != null) return true;
+    if (b.hidden) return false;
+    if (!b.diagnosticTests.some((dt) => dt.product?.status === 'published'))
+      return false;
+    return includeUntested;
+  });
 
   if (selectedCategories.length > 0) {
     const selectedCategorySet = new Set(selectedCategories);
-    const next: Biomarker[] = [];
+    const next: DataBiomarker[] = [];
 
     for (const biomarker of filtered) {
-      if (!selectedCategorySet.has(biomarker.category)) continue;
+      if (!biomarker.categories.some((c) => selectedCategorySet.has(c.slug)))
+        continue;
       next.push(biomarker);
     }
 
@@ -49,12 +55,14 @@ export const filterBiomarkers = ({
   const trimmedQuery = searchQuery.trim();
   if (trimmedQuery !== '') {
     const searchTerm = trimmedQuery.toLowerCase();
-    const next: Biomarker[] = [];
+    const next: DataBiomarker[] = [];
 
     for (const biomarker of filtered) {
-      const name = biomarker.name.toLowerCase();
-      const category = biomarker.category.toLowerCase();
-      if (name.includes(searchTerm) || category.includes(searchTerm)) {
+      const title = biomarker.title.toLowerCase();
+      const categoryMatch = biomarker.categories.some((c) =>
+        c.title.toLowerCase().includes(searchTerm),
+      );
+      if (title.includes(searchTerm) || categoryMatch) {
         next.push(biomarker);
       }
     }
@@ -63,13 +71,13 @@ export const filterBiomarkers = ({
   }
 
   if (selectedRange != null && selectedRange !== 'all') {
-    const next: Biomarker[] = [];
+    const next: DataBiomarker[] = [];
 
     for (const biomarker of filtered) {
-      const mostRecentResult = mostRecent(biomarker.value);
+      const mostRecentResult = mostRecent(biomarker.observation?.value ?? []);
       if (mostRecentResult == null) continue;
 
-      const status = mostRecentResult.status ?? biomarker.status;
+      const status = mostRecentResult.status ?? biomarker.observation?.status;
 
       switch (selectedRange) {
         case 'optimal':
@@ -96,14 +104,12 @@ export const filterBiomarkers = ({
       selectedOrderIdSet.add(order.id);
     }
 
-    // only filter which biomarkers are shown (those that have a value for this order/date),
-    // but keep each biomarker's full value history intact for charts and dialogs.
-    const next: Biomarker[] = [];
+    const next: DataBiomarker[] = [];
 
     for (const biomarker of filtered) {
       let hasSelectedOrder = false;
 
-      for (const result of biomarker.value) {
+      for (const result of biomarker.observation?.value ?? []) {
         for (const orderId of result.orderIds) {
           if (!selectedOrderIdSet.has(orderId)) continue;
           hasSelectedOrder = true;
@@ -124,14 +130,16 @@ export const filterBiomarkers = ({
 };
 
 interface UseFilteredBiomarkersParams {
-  biomarkers?: Biomarker[];
+  biomarkers?: DataBiomarker[];
   enabledFilters?: FilterConfig;
+  includeUntested?: boolean;
 }
 
 export const useFilteredBiomarkers = ({
   biomarkers,
   enabledFilters,
-}: UseFilteredBiomarkersParams): Biomarker[] => {
+  includeUntested = false,
+}: UseFilteredBiomarkersParams): DataBiomarker[] => {
   const { selectedCategories, selectedOrder, selectedRange, searchQuery } =
     useDataFilterStore();
   const deferredQuery = useDeferredValue(searchQuery);
@@ -146,6 +154,7 @@ export const useFilteredBiomarkers = ({
 
     return filterBiomarkers({
       biomarkers,
+      includeUntested,
       selectedCategories: categoriesEnabled ? selectedCategories : [],
       selectedOrder: dateEnabled ? selectedOrder : undefined,
       selectedRange: rangeEnabled ? selectedRange : undefined,
@@ -161,5 +170,6 @@ export const useFilteredBiomarkers = ({
     dateEnabled,
     rangeEnabled,
     searchEnabled,
+    includeUntested,
   ]);
 };

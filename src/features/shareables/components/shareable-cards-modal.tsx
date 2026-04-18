@@ -15,12 +15,9 @@ import { dialogVariants } from '@/components/ui/dialog/utils/dialog-variants';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { SimpleTabs, SimpleTabsContent } from '@/components/ui/simple-tabs';
 import { Body1, H3 } from '@/components/ui/typography';
-import { useBiomarkers } from '@/features/data/api';
+import { useDataBiomarkers } from '@/features/data/api';
 import { BiomarkersAccordion } from '@/features/data/components/biomarkers-accordion';
-import {
-  getOrganAgeBiomarkers,
-  resolveRelatedBiomarkers,
-} from '@/features/data/utils/organ-age';
+import { getOrganAgeBiomarkers } from '@/features/data/utils/organ-age';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
@@ -171,28 +168,19 @@ export const ShareableCardsModal = ({
 };
 
 const OrganAgeSection = () => {
-  const { data: biomarkersData } = useBiomarkers();
-  const organAgeBiomarkers = getOrganAgeBiomarkers(biomarkersData?.biomarkers);
+  const { data: dataBiomarkersData } = useDataBiomarkers();
+  const organAgeBiomarkers = getOrganAgeBiomarkers(
+    dataBiomarkersData?.biomarkers,
+  );
 
   if (organAgeBiomarkers.length === 0) return null;
 
   return (
     <div className="my-4 w-full space-y-4">
       <H3 className="text-base">Your OrganAge Report</H3>
-      {organAgeBiomarkers.map((bm) => {
-        const related = resolveRelatedBiomarkers(
-          bm,
-          biomarkersData?.biomarkers,
-        );
-
-        return (
-          <BiomarkersAccordion
-            key={bm.id ?? bm.name}
-            biomarker={bm}
-            biomarkers={related}
-          />
-        );
-      })}
+      {organAgeBiomarkers.map((bm) => (
+        <BiomarkersAccordion key={bm.id} biomarker={bm} />
+      ))}
     </div>
   );
 };

@@ -3,7 +3,7 @@ import { m } from 'framer-motion';
 import { forwardRef, type ButtonHTMLAttributes } from 'react';
 
 import { Body2, H3 } from '@/components/ui/typography';
-import { useBiomarkers } from '@/features/data/api';
+import { useDataBiomarkers } from '@/features/data/api/get-data-biomarkers';
 import { biomarkerStatusCount } from '@/features/data/utils/biomarkers-status-count';
 import { cn } from '@/lib/utils';
 
@@ -53,7 +53,7 @@ const BiomarkerFilterButton = forwardRef<
       type="button"
       className={cn(
         'flex select-none flex-col rounded-lg p-1.5 text-left outline-none transition-all duration-200 focus-visible:bg-zinc-100 focus-visible:outline-none',
-        'cursor-pointer disabled:cursor-default',
+        'cursor-pointer disabled:pointer-events-none disabled:cursor-default',
         className,
       )}
       aria-pressed={selected}
@@ -84,7 +84,7 @@ export const BiomarkersDistributionBar = ({
 }) => {
   const { selectedRange: storeSelectedRange, updateRange } =
     useDataFilterStore();
-  const biomarkersQuery = useBiomarkers();
+  const biomarkersQuery = useDataBiomarkers();
 
   const biomarkers = biomarkersQuery.data?.biomarkers ?? [];
 

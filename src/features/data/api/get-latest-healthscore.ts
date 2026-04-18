@@ -1,31 +1,34 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
 
-import { api } from '@/lib/api-client';
-import { QueryConfig } from '@/lib/react-query';
-import { BiomarkerResult } from '@/types/api';
+import { api } from '@/orpc/client';
 
-export const getLatestHealthScore = async (): Promise<{
-  healthScore: BiomarkerResult | null;
-}> => {
-  return await api.get(`/biomarkers/healthscore/latest`);
+import type { DataBiomarker } from '../types/data-api';
+import { getLatestObservationValue } from '../utils/get-latest-observation-value';
+
+const HEALTH_SCORE_SLUG = 'health-score';
+
+const selectLatestHealthScore = (data: {
+  biomarkers: { slug: string; observation?: unknown }[];
+}) => {
+  const biomarkers = data.biomarkers as DataBiomarker[];
+  const observation = biomarkers.find(
+    (b) => b.slug === HEALTH_SCORE_SLUG,
+  )?.observation;
+  return { healthScore: getLatestObservationValue(observation) ?? null };
 };
 
-export const getLatestHealthScoreQueryOptions = () => {
-  return queryOptions({
-    queryKey: ['healthScore', 'latest'],
-    queryFn: () => getLatestHealthScore(),
+export const getLatestHealthScoreQueryOptions = () =>
+  queryOptions({
+    queryKey: ['data', 'biomarkers'],
+    queryFn: async () => {
+      const { data, error } = await api.GET('/data/biomarkers', {
+        params: { query: {} },
+      });
+      if (error) throw error;
+      return data;
+    },
+    select: selectLatestHealthScore,
   });
-};
 
-type UseLatestHealthScoreOptions = {
-  queryConfig?: QueryConfig<typeof getLatestHealthScoreQueryOptions>;
-};
-
-export const useLatestHealthScore = ({
-  queryConfig,
-}: UseLatestHealthScoreOptions = {}) => {
-  return useQuery({
-    ...getLatestHealthScoreQueryOptions(),
-    ...queryConfig,
-  });
-};
+export const useLatestHealthScore = () =>
+  useQuery(getLatestHealthScoreQueryOptions());

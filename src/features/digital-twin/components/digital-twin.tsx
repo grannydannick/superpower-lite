@@ -9,9 +9,9 @@ import {
 } from 'react';
 
 import { CATEGORY_MAP } from '@/const/category-map';
+import type { DataSummaryCategory } from '@/features/data/types/data-api';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
-import { Category } from '@/types/api';
 
 import { useCheckPerformance } from '../hooks/use-check-performance';
 import { Area, Level } from '../types';
@@ -82,7 +82,7 @@ export const DigitalTwin = ({
   category,
   filterCategories,
 }: {
-  category?: Category;
+  category?: DataSummaryCategory;
   filterCategories?: string[];
 }) => {
   const [ready, setReady] = useState(false);
@@ -108,6 +108,24 @@ export const DigitalTwin = ({
     });
   }, []);
 
+  const level = useMemo<Level | undefined>(() => {
+    switch (category?.score?.value) {
+      case 'A':
+        return 'good';
+      case 'B':
+        return 'neutral';
+      case 'C':
+        return 'bad';
+      default:
+        return undefined;
+    }
+  }, [category]);
+
+  const area = useMemo<Area | undefined>(() => {
+    const key = category?.title?.toLowerCase();
+    return key ? CATEGORY_MAP[key] : undefined;
+  }, [category]);
+
   const healthAreas = useMemo(() => {
     if (filterCategories === undefined) return ALL_HEALTH_AREAS;
 
@@ -127,32 +145,8 @@ export const DigitalTwin = ({
     return filteredAreas;
   }, [filterCategories]);
 
-  let level: Level | undefined;
-  if (category != null) {
-    switch (category.value) {
-      case 'A':
-        level = 'good';
-        break;
-      case 'B':
-        level = 'neutral';
-        break;
-      case 'C':
-        level = 'bad';
-        break;
-      default:
-        level = 'good';
-        break;
-    }
-  }
-
-  let area: Area | undefined;
-  if (category != null) {
-    const key = category.category?.toLowerCase();
-    area = key != null ? CATEGORY_MAP[key] : undefined;
-  }
-
   const cycleKey = (() => {
-    if (category != null) return category.category;
+    if (category != null) return category.slug;
     if (filterCategories === undefined) return 'all-categories';
     if (filterCategories.length === 0) return 'no-categories';
     return filterCategories.join('|');

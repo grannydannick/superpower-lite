@@ -21,7 +21,7 @@ import { ScoreShareCard } from '@/features/shareables/components/cards/score-sha
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
 
-import { useBiomarkers } from '../../api';
+import { useDataBiomarkers } from '../../api/get-data-biomarkers';
 import { mostRecent } from '../../utils/most-recent-biomarker';
 import { BiomarkersDataTable } from '../table/biomarkers-data-table';
 
@@ -50,10 +50,10 @@ export const SuperpowerScoreDialog = ({
     select: (s) => s.modal,
   });
   const { width } = useWindowDimensions();
-  const { data: biomarkersData } = useBiomarkers();
+  const { data: biomarkersData } = useDataBiomarkers();
   const superpowerScoreMarker = biomarkersData?.biomarkers.find(
-    (b) => b.name == 'Health Score',
-  );
+    (b) => b.slug === 'health-score',
+  )?.observation;
 
   const [selectedTab, setSelectedTab] =
     useState<(typeof tabs)[number]['value']>('chart');
@@ -70,7 +70,7 @@ export const SuperpowerScoreDialog = ({
   // if we have category biomarker IDs, filter by those
   const categoryBiomarkers =
     biomarkersData?.biomarkers.filter((b) =>
-      b.value?.some((v) => v.id && relatedBiomarkerIds.has(v.id)),
+      b.observation?.value?.some((v) => v.id && relatedBiomarkerIds.has(v.id)),
     ) ?? [];
 
   useEffect(() => {

@@ -1,15 +1,20 @@
 import { useCallback, useMemo } from 'react';
 
-import { Biomarker, BiomarkerStatus, CategoryValue } from '@/types/api';
+import { BiomarkerStatus, CategoryValue } from '@/types/api';
 
 import { getBiomarkerColor } from '../utils/get-biomarker-color';
 import { sortBiomarkers } from '../utils/sort-biomarkers';
 
 import { CHART_CONFIG } from './config';
-import { MergedSegment, SegmentData, SegmentPath } from './types/score-chart';
+import {
+  MergedSegment,
+  ScoredBiomarker,
+  SegmentData,
+  SegmentPath,
+} from './types/score-chart';
 
 export const useScoreChart = (
-  biomarkers: Biomarker[],
+  biomarkers: ScoredBiomarker[],
   value?: CategoryValue,
   size: number = CHART_CONFIG.DEFAULT_SIZE,
 ) => {
@@ -133,7 +138,7 @@ export const useScoreChart = (
 
   const mergedSegments = useMemo((): MergedSegment[] => {
     const segments: MergedSegment[] = [];
-    let currentGroup: { biomarker: Biomarker; index: number }[] = [];
+    let currentGroup: { biomarker: ScoredBiomarker; index: number }[] = [];
     let currentColor: string | null = null;
     let currentStatus: BiomarkerStatus | null = null;
 
@@ -252,16 +257,8 @@ export const useScoreChart = (
           biomarker: {
             id: 'full-circle',
             name: 'Category',
-            description: '',
-            importance: '',
             status: value as BiomarkerStatus,
-            category: '',
-            unit: '',
-            favorite: false,
-            range: [],
-            value: [],
-            metadata: {} as any,
-          } as unknown as Biomarker,
+          },
           index: 0,
           startAngle: 0,
           endAngle: 360,

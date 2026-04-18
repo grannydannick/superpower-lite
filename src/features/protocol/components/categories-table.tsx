@@ -7,7 +7,7 @@ import { Fragment, Suspense, lazy, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { getBiomarkerColor } from '@/components/ui/charts/utils/get-biomarker-color';
 import { H4 } from '@/components/ui/typography';
-import { BiomarkerDialog } from '@/features/data/components/dialogs/biomarker-dialog';
+import { BiomarkerLegacyDialog } from '@/features/data/components/dialogs/biomarker-legacy-dialog';
 import { AnimatedIcon } from '@/features/messages/components/ai/animated-icon';
 import { useAssistantStore } from '@/features/messages/stores/assistant-store';
 
@@ -44,7 +44,7 @@ const BiomarkerRow = ({ biomarker }: BiomarkerRowProps) => {
     biomarker.status === 'HIGH' || biomarker.status === 'LOW';
 
   return (
-    <BiomarkerDialog biomarker={biomarker}>
+    <BiomarkerLegacyDialog biomarker={biomarker}>
       <button
         className="w-full rounded-xl text-left transition-colors hover:bg-zinc-50"
         style={isOutOfRange ? { backgroundColor: colors.light } : undefined}
@@ -77,7 +77,7 @@ const BiomarkerRow = ({ biomarker }: BiomarkerRowProps) => {
           </div>
         </div>
       </button>
-    </BiomarkerDialog>
+    </BiomarkerLegacyDialog>
   );
 };
 

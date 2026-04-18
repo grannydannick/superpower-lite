@@ -3,10 +3,9 @@ import { cva } from 'class-variance-authority';
 import type { CSSProperties } from 'react';
 
 import { TableCell, TableRow } from '@/components/ui/table';
-import { useAnalytics } from '@/hooks/use-analytics';
 import { cn } from '@/lib/utils';
-import { Biomarker } from '@/types/api';
 
+import type { DataBiomarker, DataSummaryCategory } from '../../types/data-api';
 import { BiomarkerDialog } from '../dialogs/biomarker-dialog';
 
 type ScreenSize = 'mobile' | 'tablet' | 'desktop' | 'widescreen';
@@ -56,7 +55,7 @@ function BiomarkerRowCell({
   screenSize: ScreenSize;
   index: number;
   lastIndex: number;
-  cell: ReturnType<Row<Biomarker>['getVisibleCells']>[number];
+  cell: ReturnType<Row<DataBiomarker>['getVisibleCells']>[number];
 }) {
   const style = getCellStyle(screenSize, cell.column.id, cell.column.getSize());
   const className = cellClass({
@@ -76,33 +75,23 @@ export const BiomarkerDataRow = ({
   row,
   screenSize,
   hideDialog = false,
+  currentCategory,
 }: {
-  row: Row<Biomarker>;
+  row: Row<DataBiomarker>;
   screenSize: ScreenSize;
   hideDialog?: boolean;
+  currentCategory?: DataSummaryCategory;
 }) => {
-  const { track } = useAnalytics();
   const cells = row.getVisibleCells();
   const lastIndex = cells.length - 1;
-
-  const trackRecommendedClick = () => {
-    track('clicked_empty_biomarker', {
-      biomarkerName: row.original.name,
-      biomarkerId: row.original.id,
-    });
-  };
+  const obs = row.original.observation;
 
   const tableRowContent = (
     <TableRow
-      onClick={() =>
-        row.original.status === 'RECOMMENDED'
-          ? trackRecommendedClick()
-          : undefined
-      }
       style={rowContentVisibilityStyle}
       className={cn(
         'h-24 cursor-pointer rounded-xl border-transparent',
-        row.original.status === 'RECOMMENDED'
+        !obs
           ? 'bg-zinc-100'
           : 'bg-white shadow-sm outline outline-1 -outline-offset-1 outline-zinc-100 transition-all hover:bg-white hover:outline-zinc-200',
         !hideDialog && 'cursor-pointer',
@@ -125,7 +114,10 @@ export const BiomarkerDataRow = ({
   }
 
   return (
-    <BiomarkerDialog biomarker={row.original}>
+    <BiomarkerDialog
+      biomarkerId={row.original.id}
+      currentCategory={currentCategory}
+    >
       {tableRowContent}
     </BiomarkerDialog>
   );

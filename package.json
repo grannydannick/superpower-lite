@@ -31,6 +31,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@imgly/background-removal": "^1.6.0",
     "@leeoniya/ufuzzy": "^1.0.19",
+    "@mdx-js/mdx": "^3.1.1",
     "@medplum/core": "^5.0.15",
     "@medplum/fhirtypes": "^5.0.15",
     "@ngneat/falso": "^8.0.2",

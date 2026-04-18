@@ -78,7 +78,7 @@ const TextMesh = ({
 export const Sleep = memo(
   ({
     area,
-    level = 'good',
+    level,
     position,
     layers,
   }: {

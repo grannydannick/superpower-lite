@@ -11,15 +11,8 @@ import {
   Row,
   useReactTable,
 } from '@tanstack/react-table';
-import { ChevronDown, Lock, MessageSquareText } from 'lucide-react';
-import {
-  memo,
-  useCallback,
-  useDeferredValue,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { ChevronDown, MessageSquareText } from 'lucide-react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { InView } from 'react-intersection-observer';
 
 import { Button } from '@/components/ui/button';
@@ -41,30 +34,31 @@ import {
 import { Body1, Body2, H4 } from '@/components/ui/typography';
 import { useScreenSize } from '@/features/data/hooks/use-screen-size';
 import { cn } from '@/lib/utils';
-import { Biomarker } from '@/types/api';
+import type { Biomarker } from '@/types/api';
 import { getDisplayComparator } from '@/utils/get-display-comparator';
 
 import { STATUS_TO_COLOR } from '../../../../const/status-to-color';
+import type { DataBiomarker, DataSummaryCategory } from '../../types/data-api';
 
 import { BiomarkerDataRow } from './biomarker-data-row';
 import { BiomarkerSkeletonRow } from './biomarker-skeleton-row';
 
 function BiomarkersTableBodyContent({
   rows,
-  isFiltering,
   isLoading,
   skeletonColSpan,
   screenSize,
   hideDialog = false,
+  currentCategory,
 }: {
-  rows: Row<Biomarker>[];
-  isFiltering: boolean;
+  rows: Row<DataBiomarker>[];
   isLoading?: boolean;
   skeletonColSpan: number;
   screenSize: 'mobile' | 'tablet' | 'desktop' | 'widescreen';
   hideDialog?: boolean;
+  currentCategory?: DataSummaryCategory;
 }) {
-  if (isFiltering || isLoading) {
+  if (isLoading) {
     return (
       <>
         {Array.from({ length: 8 }).map((_, idx) => (
@@ -89,15 +83,13 @@ function BiomarkersTableBodyContent({
           row={row}
           screenSize={screenSize}
           hideDialog={hideDialog}
+          currentCategory={currentCategory}
         />
       ))}
     </>
   );
 }
 
-// Lazy-loaded sparkline wrappers: defer chart rendering until the row scrolls into
-// view (InView with 200px rootMargin). Prevents rendering hundreds of SVG charts
-// at once when the data table has many biomarkers.
 const LazySparklineChart = memo(function LazySparklineChart({
   biomarker,
 }: {
@@ -161,13 +153,13 @@ const LazyRangeSparkline = memo(function LazyRangeSparkline({
 const getColumns = (
   screenSize: 'mobile' | 'tablet' | 'desktop' | 'widescreen' = 'desktop',
   hiddenColumns: string[] = [],
-): ColumnDef<Biomarker>[] => {
+): ColumnDef<DataBiomarker>[] => {
   const isDesktop = screenSize === 'desktop' || screenSize === 'widescreen';
   const allColumns = [
     {
-      accessorKey: 'name',
+      accessorKey: 'title',
       size: 200,
-      header: ({ column }: { column: Column<Biomarker, unknown> }) => (
+      header: ({ column }: { column: Column<DataBiomarker, unknown> }) => (
         <Button
           variant="ghost"
           className="gap-2 p-0 text-sm text-zinc-400"
@@ -182,22 +174,24 @@ const getColumns = (
           />
         </Button>
       ),
-      cell: ({ row }: { row: Row<Biomarker> }) => {
-        const name: string = row.getValue('name');
+      cell: ({ row }: { row: Row<DataBiomarker> }) => {
+        const title: string = row.getValue('title');
 
         return (
           <div className="flex items-center gap-2.5 pl-2 md:pl-0">
             <Body1 className={cn('line-clamp-2', !isDesktop && 'text-sm')}>
-              {name}
+              {title}
             </Body1>
           </div>
         );
       },
     },
     {
-      accessorKey: 'status',
+      id: 'status',
+      accessorFn: (row: DataBiomarker) => row.observation?.status,
+      sortUndefined: 'last' as const,
       size: 120,
-      header: ({ column }: { column: Column<Biomarker, unknown> }) => (
+      header: ({ column }: { column: Column<DataBiomarker, unknown> }) => (
         <Button
           variant="ghost"
           className="gap-2 p-0 text-sm text-zinc-400"
@@ -212,14 +206,10 @@ const getColumns = (
           />
         </Button>
       ),
-      cell: ({ row }: { row: Row<Biomarker> }) => {
-        const biomarker = row.original;
-        const statusColor =
-          STATUS_TO_COLOR[
-            biomarker.status.toLowerCase() as keyof typeof STATUS_TO_COLOR
-          ] || STATUS_TO_COLOR.pending;
+      cell: ({ row }: { row: Row<DataBiomarker> }) => {
+        const obs = row.original.observation;
 
-        if (row.original.status === 'RECOMMENDED')
+        if (!obs)
           return (
             <Body2
               className={cn(
@@ -227,11 +217,17 @@ const getColumns = (
                 !isDesktop && 'text-sm',
               )}
             >
-              Unlock this insight
+              Test this biomarker
             </Body2>
           );
 
-        if (biomarker.dataType === 'text') {
+        const status = obs.status;
+        const statusColor =
+          STATUS_TO_COLOR[
+            status.toLowerCase() as keyof typeof STATUS_TO_COLOR
+          ] || STATUS_TO_COLOR.pending;
+
+        if (obs?.dataType === 'text') {
           return (
             <span className="flex items-center gap-1.5 whitespace-nowrap text-black">
               <MessageSquareText className="size-4 shrink-0 text-zinc-400" />
@@ -243,37 +239,31 @@ const getColumns = (
         return (
           <div className="flex items-center gap-2">
             <div
-              style={{
-                backgroundColor: statusColor,
-              }}
+              style={{ backgroundColor: statusColor }}
               className="-mt-0.5 flex size-1.5 items-center gap-2 rounded-full"
             />
             <Body2
-              style={{
-                color: statusColor,
-              }}
+              style={{ color: statusColor }}
               className={cn('capitalize', !isDesktop && 'text-sm')}
             >
-              {biomarker.status.toLowerCase()}
+              {status.toLowerCase()}
             </Body2>
           </div>
         );
       },
     },
     {
-      accessorKey: 'value',
+      id: 'value',
       size: 120,
       header: () => <span className="text-sm text-zinc-400">Value</span>,
-      // Renders the latest value differently depending on dataType:
-      // codedValue -> capitalized text, text -> MessageSquareText icon,
-      // range -> "low-high unit", quantity -> "value unit"
-      cell: ({ row }: { row: Row<Biomarker> }) => {
-        const biomarker = row.original;
-        // should always return latest because we sort on backend
-        const currentValue = biomarker.value?.[0];
+      cell: ({ row }: { row: Row<DataBiomarker> }) => {
+        const obs = row.original.observation;
+        if (!obs) return null;
+
+        const currentValue = obs.value?.[0];
 
         const formatCurrentValue = () => {
-          if (biomarker.dataType === 'codedValue') {
+          if (obs?.dataType === 'codedValue') {
             const latestValue = currentValue?.valueCoded;
             return latestValue ? (
               <span className="capitalize text-black">{latestValue}</span>
@@ -282,14 +272,14 @@ const getColumns = (
             );
           }
 
-          if (biomarker.dataType === 'text') {
+          if (obs?.dataType === 'text') {
             return null;
           }
 
-          if (biomarker.dataType === 'range') {
+          if (obs?.dataType === 'range') {
             const range = currentValue?.valueRange;
             if (!range) return 'No value';
-            const displayUnit = range.unit || biomarker.unit;
+            const displayUnit = range.unit || obs.unit;
             return (
               <span>
                 <span className="text-black">
@@ -303,7 +293,7 @@ const getColumns = (
           if (!currentValue?.quantity) return 'No value';
 
           const { value, unit, comparator } = currentValue.quantity;
-          const displayUnit = unit || biomarker.unit;
+          const displayUnit = unit || obs?.unit;
 
           return (
             <span>
@@ -316,8 +306,6 @@ const getColumns = (
           );
         };
 
-        if (row.original.status === 'RECOMMENDED') return null;
-
         return (
           <Body2 className={cn('text-zinc-600', !isDesktop && 'text-sm')}>
             {formatCurrentValue()}
@@ -326,27 +314,27 @@ const getColumns = (
       },
     },
     {
-      accessorKey: 'optimalRange',
+      id: 'optimalRange',
       size: 140,
       header: () => (
         <span className="text-sm text-zinc-400">Optimal Range</span>
       ),
-      cell: ({ row }: { row: Row<Biomarker> }) => {
-        const biomarker = row.original;
+      cell: ({ row }: { row: Row<DataBiomarker> }) => {
+        const obs = row.original.observation;
+        if (!obs) return null;
 
         const formatRange = () => {
-          if (biomarker.dataType === 'codedValue') {
-            const { ranges: codedRanges } = getCodedBiomarkerRanges(biomarker);
+          if (obs?.dataType === 'codedValue') {
+            const { ranges: codedRanges } = getCodedBiomarkerRanges(obs);
             const optimalCoded = codedRanges.find(
               (r) => r.status === 'optimal',
             );
-
             const code = optimalCoded?.code;
             return code ? <span className="capitalize">{code}</span> : '-';
           }
 
-          if (biomarker.dataType === 'text') {
-            const latestText = biomarker.value?.[0]?.valueText || '';
+          if (obs?.dataType === 'text') {
+            const latestText = obs.value?.[0]?.valueText || '';
             if (!latestText) return null;
 
             return (
@@ -365,7 +353,9 @@ const getColumns = (
             );
           }
 
-          const { ranges } = getBiomarkerRanges(biomarker);
+          if (!obs) return 'No optimal range';
+
+          const { ranges } = getBiomarkerRanges(obs);
           const optimalRange = ranges.find((r) => r.status === 'OPTIMAL');
 
           if (!optimalRange) return 'No optimal range';
@@ -383,8 +373,6 @@ const getColumns = (
           return 'Range not specified';
         };
 
-        if (biomarker.status === 'RECOMMENDED') return null;
-
         return (
           <Body2
             className={cn(
@@ -398,18 +386,15 @@ const getColumns = (
       },
     },
     {
-      accessorKey: 'history',
+      id: 'history',
       size: 180,
       header: () => (
         <span className="text-sm text-zinc-400 md:ml-8">History</span>
       ),
-      // Renders the appropriate sparkline chart type based on biomarker.dataType.
-      // codedValue -> CodedValueSparkline, range -> RangeSparkline,
-      // text -> null (no sparkline), quantity -> SparklineChart
-      cell: ({ row }: { row: Row<Biomarker> }) => {
-        const biomarker = row.original;
+      cell: ({ row }: { row: Row<DataBiomarker> }) => {
+        const obs = row.original.observation;
 
-        if (row.original.status === 'RECOMMENDED') {
+        if (!obs) {
           return (
             <div className="flex w-full items-end">
               <Button
@@ -417,30 +402,29 @@ const getColumns = (
                 variant="outline"
                 className="ml-auto items-center gap-1 bg-white"
               >
-                <Lock className="size-4 text-zinc-400" />
-                Unlock
+                Learn More
               </Button>
             </div>
           );
         }
 
-        if (biomarker.status === 'PENDING' || biomarker.status === 'UNKNOWN') {
+        if (obs.status === 'PENDING' || obs.status === 'UNKNOWN') {
           return <div className="h-16" />;
         }
 
-        if (biomarker.dataType === 'codedValue') {
-          return <LazyCodedValueSparkline biomarker={biomarker} />;
+        if (obs.dataType === 'codedValue') {
+          return <LazyCodedValueSparkline biomarker={obs} />;
         }
 
-        if (biomarker.dataType === 'range') {
-          return <LazyRangeSparkline biomarker={biomarker} />;
+        if (obs.dataType === 'range') {
+          return <LazyRangeSparkline biomarker={obs} />;
         }
 
-        if (biomarker.dataType === 'text') {
+        if (obs.dataType === 'text') {
           return null;
         }
 
-        return <LazySparklineChart biomarker={biomarker} />;
+        return <LazySparklineChart biomarker={obs} />;
       },
     },
   ];
@@ -450,27 +434,34 @@ const getColumns = (
   if (screenSize === 'mobile') {
     filteredColumns = allColumns.filter(
       (column) =>
-        column.accessorKey === 'name' ||
-        column.accessorKey === 'status' ||
-        column.accessorKey === 'history',
+        column.id === 'title' ||
+        column.accessorKey === 'title' ||
+        column.id === 'status' ||
+        column.id === 'history',
     );
   } else if (screenSize === 'tablet') {
     filteredColumns = allColumns.filter(
       (column) =>
-        column.accessorKey === 'name' ||
-        column.accessorKey === 'status' ||
-        column.accessorKey === 'value' ||
-        column.accessorKey === 'history',
+        column.id === 'title' ||
+        column.accessorKey === 'title' ||
+        column.id === 'status' ||
+        column.id === 'value' ||
+        column.id === 'history',
     );
   } else if (screenSize === 'desktop') {
-    // On standard desktop, hide Optimal Range (only show on >1600px)
     filteredColumns = allColumns.filter(
-      (column) => column.accessorKey !== 'optimalRange',
+      (column) => column.id !== 'optimalRange',
     );
   }
 
+  const hiddenSet = new Set(hiddenColumns);
   return filteredColumns.filter(
-    (column) => !hiddenColumns.includes(column.accessorKey),
+    (column) =>
+      !hiddenSet.has(
+        (column as { id?: string; accessorKey?: string }).id ??
+          (column as { accessorKey?: string }).accessorKey ??
+          '',
+      ),
   );
 };
 
@@ -483,21 +474,23 @@ export function BiomarkersDataTable({
   displayPending = false,
   isLoading,
   hideDialog = false,
+  currentCategory,
 }: {
-  biomarkers: Biomarker[];
+  biomarkers: DataBiomarker[];
   hideHeader?: boolean;
   hiddenColumns?: string[];
   isLoading?: boolean;
   displayPending?: boolean;
   hideDialog?: boolean;
+  currentCategory?: DataSummaryCategory;
 }) {
   'use no memo';
 
-  const [isFiltering, setIsFiltering] = useState(false);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'status', desc: false },
+  ]);
 
-  // responsive handler using media-query backed hook to avoid frequent re-renders
   const screenSize = useScreenSize();
 
   const columns = useMemo(
@@ -505,9 +498,6 @@ export function BiomarkersDataTable({
     [screenSize, hiddenColumns],
   );
 
-  /**
-   * Callback to handle column filter changes
-   */
   const handleColumnFiltersChange: OnChangeFn<ColumnFiltersState> = useCallback(
     (updaterOrValue) => {
       setColumnFilters(
@@ -517,9 +507,6 @@ export function BiomarkersDataTable({
     [],
   );
 
-  /**
-   * Callback to handle sorting changes
-   */
   const handleSortingChange: OnChangeFn<SortingState> = useCallback(
     (updaterOrValue) => {
       setSorting(updaterOrValue as React.SetStateAction<SortingState>);
@@ -527,38 +514,8 @@ export function BiomarkersDataTable({
     [],
   );
 
-  /**
-   * This cleans up filtering set by handler above (handleColumnFiltersChange)
-   */
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
-    if (isFiltering) {
-      timer = setTimeout(() => {
-        setIsFiltering(false);
-      }, 600); // 600ms delay
-    }
-
-    return () => {
-      if (timer) {
-        clearTimeout(timer);
-      }
-    };
-  }, [isFiltering]);
-
-  const deferredBiomarkers = useDeferredValue(biomarkers);
-
-  /**
-   * Trigger skeletons while the deferred value lags the latest input
-   * (indicates an in-flight transition from filter/search changes).
-   */
-  useEffect(() => {
-    if (biomarkers !== deferredBiomarkers) {
-      setIsFiltering(true);
-    }
-  }, [biomarkers, deferredBiomarkers]);
-
   const table = useReactTable({
-    data: deferredBiomarkers,
+    data: biomarkers,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -577,22 +534,13 @@ export function BiomarkersDataTable({
     ? rows
     : rows.filter(
         (r) =>
-          r.original.status !== 'PENDING' && r.original.status !== 'UNKNOWN',
+          r.original.observation?.status !== 'PENDING' &&
+          r.original.observation?.status !== 'UNKNOWN',
       );
 
-  // sort rows to place RECOMMENDED first, then others
-  const visibleRows = useMemo(() => {
-    return [...filteredRows].sort((a, b) => {
-      const aIsRecommended = a.original.status === 'RECOMMENDED';
-      const bIsRecommended = b.original.status === 'RECOMMENDED';
+  const visibleRows = filteredRows;
 
-      if (aIsRecommended && !bIsRecommended) return -1;
-      if (!aIsRecommended && bIsRecommended) return 1;
-      return 0;
-    });
-  }, [filteredRows]);
-
-  if (biomarkers.length === 0 && !isFiltering && !isLoading) {
+  if (biomarkers.length === 0 && !isLoading) {
     return (
       <div className="py-16 text-center text-zinc-400">
         <H4 className="mb-2">No markers found</H4>
@@ -677,11 +625,11 @@ export function BiomarkersDataTable({
         >
           <BiomarkersTableBodyContent
             rows={visibleRows}
-            isFiltering={isFiltering}
             isLoading={isLoading}
             skeletonColSpan={skeletonColSpan}
             screenSize={screenSize}
             hideDialog={hideDialog}
+            currentCategory={currentCategory}
           />
         </TableBody>
       </Table>

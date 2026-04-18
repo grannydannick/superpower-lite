@@ -1,7 +1,7 @@
 import { queryOptions } from '@tanstack/react-query';
 
-import { getBiomarkersQueryOptions } from '@/features/data/api/get-biomarkers';
-import { getCategoriesQueryOptions } from '@/features/data/api/get-categories';
+import { dataBiomarkersQueryOptions } from '@/features/data/api/get-data-biomarkers';
+import { dataSummaryQueryOptions } from '@/features/data/api/get-data-summary';
 import { getLatestBioAgeQueryOptions } from '@/features/data/api/get-latest-bio-age';
 import { getLatestHealthScoreQueryOptions } from '@/features/data/api/get-latest-healthscore';
 import { createFollowups } from '@/features/messages/api/create-followups';
@@ -27,8 +27,8 @@ const HOMEPAGE_FOLLOWUPS_COUNT = 3;
 
 export const healthScoreQuery = () => getLatestHealthScoreQueryOptions();
 export const bioAgeQuery = () => getLatestBioAgeQueryOptions();
-export const biomarkersQuery = () => getBiomarkersQueryOptions();
-export const categoriesQuery = () => getCategoriesQueryOptions();
+export const biomarkersQuery = () => dataBiomarkersQueryOptions();
+export const categoriesQuery = () => dataSummaryQueryOptions();
 export const protocolQuery = () =>
   $aiChatApi.queryOptions('get', '/protocol-v2/latest');
 export const ordersQuery = () => getOrdersQueryOptions();

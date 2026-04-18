@@ -1,9 +1,13 @@
-import { Biomarker, BiomarkerStatus } from '@/types/api';
+import type { BiomarkerStatus } from '@/types/api';
+
+import type { DataBiomarker } from '../types/data-api';
 
 export const biomarkerStatusCount = (
-  biomarkers: Biomarker[],
+  biomarkers: DataBiomarker[],
   statuses: BiomarkerStatus[],
 ): number => {
-  return biomarkers.filter((b: Biomarker) => statuses.includes(b.status))
-    .length;
+  return biomarkers.filter((b) => {
+    const status = b.observation?.status;
+    return status != null && statuses.includes(status);
+  }).length;
 };

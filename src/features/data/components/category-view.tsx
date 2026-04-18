@@ -1,19 +1,18 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
 import { useSearch } from '@tanstack/react-router';
 import { ArrowUpRight } from 'lucide-react';
 import { useRef } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { ScoreChart } from '@/components/ui/charts/score-chart/score-chart';
+import { ScoredBiomarker } from '@/components/ui/charts/score-chart/types/score-chart';
 import { H4 } from '@/components/ui/typography';
 import { AnimatedIcon } from '@/features/messages/components/ai/animated-icon';
 import { useAssistantStore } from '@/features/messages/stores/assistant-store';
 import { useUser } from '@/lib/auth';
+import type { BiomarkerStatus, CategoryValue } from '@/types/api';
 
-import { useBiomarkers } from '../api';
 import { useBiomarkerSummary } from '../api/get-biomarker-summary';
-import { getCategoriesQueryOptions } from '../api/get-categories';
-import { encodeCategory } from '../utils/category/encode-category';
+import { useDataSummary } from '../api/get-data-summary';
 
 import { PersonalizedExplanation } from './personalized-explanation';
 import { CategoryDataTable } from './table/category-data-table';
@@ -31,49 +30,40 @@ export const CategoryView = () => {
     category: activeCategory ?? '',
   });
 
-  const { data: categoriesData } = useSuspenseQuery(
-    getCategoriesQueryOptions(),
+  const dataSummaryQuery = useDataSummary();
+  const activeCategoryData = dataSummaryQuery.data?.categories.find(
+    (c) => c.slug === activeCategory,
   );
-  const activeCategoryData = categoriesData?.categories.find(
-    (category) =>
-      encodeCategory(category.category) ===
-      encodeCategory(activeCategory ?? ''),
-  );
-
-  const { data: biomarkersData } = useBiomarkers({
-    category: activeCategoryData?.category,
-  });
 
   if (!activeCategoryData) {
     return null;
   }
 
-  const relatedBiomarkerIds = new Set(
-    activeCategoryData.relatedBiomarkers ?? [],
-  );
-
-  const categoryBiomarkers =
-    biomarkersData?.biomarkers.filter((b) =>
-      b.value?.some((v) => v.id && relatedBiomarkerIds.has(v.id)),
-    ) ?? [];
+  const categoryBiomarkers: ScoredBiomarker[] = (
+    activeCategoryData.score?.observations ?? []
+  ).map((o) => ({
+    id: o.id,
+    name: o.biomarker.title,
+    status: o.status as BiomarkerStatus,
+  }));
 
   const summaryAvailable = !summaryQuery.isError && !summaryQuery.isLoading;
 
   return (
     <div className="w-full space-y-4">
       <div className="relative mx-auto w-full flex-1 overflow-visible rounded-[24px] border-none bg-white p-6 pb-4 shadow-sm hover:bg-white/80">
-        <H4>{activeCategoryData.category}</H4>
+        <H4>{activeCategoryData.title}</H4>
         <div className="mb-8 flex w-full items-center justify-center py-2">
           <ScoreChart
-            biomarkers={categoryBiomarkers ?? []}
-            value={activeCategoryData.value}
+            biomarkers={categoryBiomarkers}
+            value={(activeCategoryData.score?.value ?? '-') as CategoryValue}
           />
         </div>
         <div className="space-y-4">
           <div ref={contentRef} className="space-y-4">
             <PersonalizedExplanation
-              key={activeCategoryData.category}
-              category={activeCategoryData.category}
+              key={activeCategoryData.slug}
+              category={activeCategoryData.title}
             />
             {summaryAvailable && (
               <Button

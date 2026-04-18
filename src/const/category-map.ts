@@ -15,6 +15,9 @@ export const CATEGORY_MAP: Record<string, Area | undefined> = {
   'sex hormones': 'sex',
   'bood & oxygen': undefined,
 
+  'gut health': 'gut',
+  'toxin exposure': 'toxic',
+
   // categories not initially mapped - might need adjustments in the future
   gut: 'gut',
   'body health': 'body',

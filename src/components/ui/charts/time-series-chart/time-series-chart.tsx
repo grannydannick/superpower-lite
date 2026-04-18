@@ -53,9 +53,13 @@ interface DisplayedPoint {
 export const TimeSeriesChart = ({
   biomarker,
   height,
+  onBookNow,
+  hideBookNow,
 }: {
   biomarker: Biomarker;
   height?: number;
+  onBookNow?: () => void;
+  hideBookNow?: boolean;
 }) => {
   const { containerRef, containerWidth } = useContainerWidth(755);
   const isMobile = useIsMobile();
@@ -165,10 +169,13 @@ export const TimeSeriesChart = ({
         displayedPoint={displayedPoint}
         dataPoints={data.dataPoints}
         biomarkerUnit={biomarker.unit}
-        hideBookNow={isRevealRoute}
-        onBookNow={() => {
-          void navigate({ to: '/marketplace' });
-        }}
+        hideBookNow={isRevealRoute || hideBookNow}
+        onBookNow={
+          onBookNow ??
+          (() => {
+            void navigate({ to: '/marketplace' });
+          })
+        }
         onMouseEnter={handleTooltipMouseEnter}
         onMouseLeave={handleTooltipMouseLeave}
       />
@@ -780,14 +787,15 @@ function TimeSeriesChartTooltipPortal({
             <div className="mb-3 text-center font-semibold">
               Schedule your annual re-test
             </div>
-            <Button
-              onClick={onBookNow}
-              size="small"
-              className="w-full rounded-md"
-              disabled={hideBookNow}
-            >
-              Book now
-            </Button>
+            {!hideBookNow && (
+              <Button
+                onClick={onBookNow}
+                size="small"
+                className="w-full rounded-md"
+              >
+                Book now
+              </Button>
+            )}
           </div>
         </div>
       ) : (

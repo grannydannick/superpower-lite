@@ -12,7 +12,7 @@ const MAX_GLOW = 0.9;
 
 export const AvatarClone = ({
   area,
-  level = 'good',
+  level,
   object,
   layers,
 }: {

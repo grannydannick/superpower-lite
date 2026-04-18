@@ -15,6 +15,7 @@ export type BiomarkerSummary = {
  * Backend expects specific slugs like 'heart_and_vascular', not 'heart_&_vascular_health'.
  */
 const CATEGORY_TO_API_SLUG: Record<string, string> = {
+  // Display names (legacy)
   'heart & vascular health': 'heart_and_vascular',
   'liver health': 'liver',
   'kidney health': 'kidney',
@@ -37,6 +38,20 @@ const CATEGORY_TO_API_SLUG: Record<string, string> = {
   'body composition': 'body_composition',
   'body health': 'body_composition',
   wearables: 'wearables',
+  // CMS slugs
+  'heart-vascular-health': 'heart_and_vascular',
+  'liver-health': 'liver',
+  'kidney-health': 'kidney',
+  'metabolic-health': 'metabolic',
+  'immune-system': 'immune_system',
+  'dna-health': 'dna_health',
+  'brain-health': 'brain_health',
+  'thyroid-health': 'thyroid_health',
+  'sex-hormones': 'sex_hormones',
+  'gut-health': 'gut_health',
+  'toxin-exposure': 'toxin_exposure',
+  'skin-hair': 'skin_and_hair',
+  'body-composition': 'body_composition',
 };
 
 const normalizeCategoryToSlug = (category: string): string => {

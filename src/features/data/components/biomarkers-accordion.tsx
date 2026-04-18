@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import {
   Accordion,
   AccordionItem,
@@ -7,30 +9,56 @@ import {
 import { Body1, Body2 } from '@/components/ui/typography';
 import { STATUS_TO_COLOR } from '@/const/status-to-color';
 import { cn } from '@/lib/utils';
-import { Biomarker } from '@/types/api';
+
+import { useDataBiomarkers } from '../api';
+import type { DataBiomarker } from '../types/data-api';
+import { getLatestObservationValue } from '../utils/get-latest-observation-value';
 
 import { BiomarkersDataTable } from './table/biomarkers-data-table';
 
+const getRelatedDataBiomarkers = (
+  organAge: DataBiomarker,
+  allBiomarkers: DataBiomarker[],
+): DataBiomarker[] => {
+  const latest = getLatestObservationValue(organAge.observation);
+  const titles = new Set(
+    (
+      (latest?.component ?? [])
+        .map((c: { title?: string | null }) => c.title)
+        .filter(Boolean) as string[]
+    ).map((t) => t.toLowerCase()),
+  );
+
+  return allBiomarkers.filter(
+    (bm) =>
+      bm.id !== organAge.id &&
+      (titles.has(bm.name.toLowerCase()) || titles.has(bm.title.toLowerCase())),
+  );
+};
+
 export const BiomarkersAccordion = ({
   biomarker,
-  biomarkers,
   className,
 }: {
-  biomarker: Biomarker;
-  biomarkers?: Biomarker[];
+  biomarker: DataBiomarker;
   className?: string;
 }) => {
-  const latest = biomarker.value?.[biomarker.value.length - 1];
+  const { data } = useDataBiomarkers();
 
+  const rows = useMemo(
+    () => getRelatedDataBiomarkers(biomarker, data?.biomarkers ?? []),
+    [biomarker, data?.biomarkers],
+  );
+
+  const observation = biomarker.observation;
+  const latest = getLatestObservationValue(observation);
   const latestValue = latest?.quantity?.value;
   const latestUnit = latest?.quantity?.unit;
+  const status = observation?.status ?? 'pending';
 
   const statusColor =
-    STATUS_TO_COLOR[
-      biomarker.status.toLowerCase() as keyof typeof STATUS_TO_COLOR
-    ] || STATUS_TO_COLOR.pending;
-
-  const rows = biomarkers ?? [];
+    STATUS_TO_COLOR[status.toLowerCase() as keyof typeof STATUS_TO_COLOR] ||
+    STATUS_TO_COLOR.pending;
 
   return (
     <Accordion
@@ -39,7 +67,7 @@ export const BiomarkersAccordion = ({
       className={cn('rounded-2xl bg-white shadow-sm', className)}
     >
       <AccordionItem
-        value={biomarker.id ?? biomarker.name}
+        value={biomarker.id}
         className="rounded-2xl border border-zinc-200"
       >
         <AccordionTrigger
@@ -51,7 +79,7 @@ export const BiomarkersAccordion = ({
         >
           <div className="flex py-2.5">
             <div className="w-[140px] px-4 md:w-[160px]">
-              <Body1 className="text-sm md:text-base">{biomarker.name}</Body1>
+              <Body1 className="text-sm md:text-base">{biomarker.title}</Body1>
               <Body2 className="text-secondary">
                 {rows.length} marker{rows.length > 1 ? 's' : ''}
               </Body2>
@@ -69,7 +97,7 @@ export const BiomarkersAccordion = ({
                 }}
                 className="line-clamp-1 capitalize"
               >
-                {biomarker.status.toLowerCase()}
+                {status.toLowerCase()}
               </Body2>
             </div>
             <div className="hidden items-center gap-2 px-4 xs:flex lg:w-[120px]">
@@ -80,13 +108,6 @@ export const BiomarkersAccordion = ({
             </div>
             <div className="hidden items-center gap-2 px-4 lg:flex">
               {/* Delta not available yet */}
-              {/*<Body2 className="line-clamp-1 max-w-[200px] rounded-sm bg-zinc-200 px-2 text-secondary">
-                {typeof category.delta === 'number'
-                  ? `${category.delta > 0 ? '+' : category.delta < 0 ? '-' : ''}${Math.abs(
-                      category.delta,
-                    )} ${category.delta > 0 ? 'older' : category.delta < 0 ? 'younger' : ''}`
-                  : '-'}
-              </Body2>*/}
             </div>
           </div>
         </AccordionTrigger>

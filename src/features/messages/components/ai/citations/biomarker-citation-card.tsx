@@ -4,7 +4,7 @@ import { SparklineChart } from '@/components/ui/charts/sparkline-chart/sparkline
 import { getBiomarkerRanges } from '@/components/ui/charts/utils/get-biomarker-ranges';
 import { Body2 } from '@/components/ui/typography';
 import { STATUS_TO_COLOR } from '@/const/status-to-color';
-import { BiomarkerDialog } from '@/features/data/components/dialogs/biomarker-dialog';
+import { BiomarkerLegacyDialog } from '@/features/data/components/dialogs/biomarker-legacy-dialog';
 import { cn } from '@/lib/utils';
 import type { Biomarker } from '@/types/api';
 
@@ -70,7 +70,7 @@ export const BiomarkerCitationCard = memo(function BiomarkerCitationCard({
   const rangeText = formatRange();
 
   return (
-    <BiomarkerDialog biomarker={biomarker}>
+    <BiomarkerLegacyDialog biomarker={biomarker}>
       <div
         id={cardId}
         role="note"
@@ -125,6 +125,6 @@ export const BiomarkerCitationCard = memo(function BiomarkerCitationCard({
           <SparklineChart biomarker={biomarker} />
         </div>
       </div>
-    </BiomarkerDialog>
+    </BiomarkerLegacyDialog>
   );
 });
