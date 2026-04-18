@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { m } from 'framer-motion';
 import { memo, useCallback, useRef, useState } from 'react';
 
+import { dataBiomarkersQueryOptions } from '@/features/data/api/get-data-biomarkers';
 import { FILE_EXTRACTION_PHASE_LABELS } from '@/features/files/const/extraction-labels';
 
 import type { FileIngestionDataPart } from '../../../utils/data-parts';
@@ -127,6 +128,9 @@ export const FileIngestionBlock = memo(function FileIngestionBlock({
       if (!invalidatedCompletionKeysRef.current.has(completionKey)) {
         invalidatedCompletionKeysRef.current.add(completionKey);
         queryClient.invalidateQueries({ queryKey: ['biomarkers'] });
+        queryClient.invalidateQueries({
+          queryKey: dataBiomarkersQueryOptions().queryKey,
+        });
         queryClient.invalidateQueries({ queryKey: ['files'] });
         queryClient.invalidateQueries({ queryKey: ['authenticated-user'] });
       }
