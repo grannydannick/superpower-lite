@@ -8,12 +8,15 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, H2, H4 } from '@/components/ui/typography';
 import { MESSAGES } from '@/features/data/const/messages';
+import { BioAgeArc } from '@/features/homepage/components/score-cards/score-card-arcs';
 import { type ScoreRevealMetrics } from '@/features/homepage/types/score-reveal-metrics';
 
 const BLACKOUT_DURATION = 800;
 const CONTENT_DELAY = 1200;
 const REVEAL_DURATION = 3000;
 const REVEAL_EASING = 'cubic-bezier(0.05, 0.7, 0.1, 1)';
+const BIOLOGICAL_AGE_BACKGROUND_IMAGE = "url('/cards/age-card.webp')";
+const BIOLOGICAL_AGE_RING_SIZE = 220;
 
 interface ScoreRevealOverlayProps {
   type: 'score' | 'age';
@@ -156,7 +159,7 @@ const SuperpowerScoreReveal = ({
                 <div className="flex w-full max-w-sm flex-col gap-3">
                   <Button
                     variant="ghost"
-                    className="w-full rounded-full text-white/70 hover:bg-white/10 hover:text-white"
+                    className="w-full rounded-full text-white/70 transition-all duration-200 hover:bg-white/10 hover:text-white"
                     onClick={onClose}
                   >
                     Dismiss
@@ -180,37 +183,30 @@ const SuperpowerScoreReveal = ({
 const BiologicalAgeReveal = ({ onClose, animate, metrics }: RevealProps) => {
   return (
     <div className="h-screen w-full">
-      <div className="relative size-full bg-gradient-to-t from-[#4D201B] via-[#93410B] to-[#4D201B]">
+      <div
+        className="relative size-full overflow-hidden bg-cover bg-center"
+        style={{ backgroundImage: BIOLOGICAL_AGE_BACKGROUND_IMAGE }}
+      >
+        <div className="absolute inset-0 bg-emerald-950/70" />
+        <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/80 via-emerald-900/55 to-emerald-700/35" />
         <div className="pointer-events-auto absolute left-1/2 top-8 z-20 flex -translate-x-1/2 items-center gap-3">
           <SuperpowerLogo fill="white" className="mt-1" />
         </div>
         <div className="absolute inset-0 z-10 overflow-visible p-6">
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-visible">
             {animate ? (
-              <ProgressCircle
-                value={metrics.biologicalAge}
-                animate
-                progressMax={100}
-                animationDuration={REVEAL_DURATION}
-                easing={REVEAL_EASING}
-                className="size-64 text-white lg:size-[320px]"
-                borderCircles={[
-                  {
-                    strokeWidth: 6,
-                    lgStrokeWidth: 4,
-                    color: 'white',
-                    blur: 'blur-[2px] lg:blur-sm',
-                  },
-                  {
-                    strokeWidth: 28,
-                    lgStrokeWidth: 64,
-                    color: '#facc15',
-                    blur: 'blur-2xl',
-                  },
-                ]}
-              >
-                <div className="duration-1000 animate-in fade-in">
-                  <H4 className="text-center font-bold text-white">
+              <div className="relative scale-110 lg:scale-[1.35]">
+                <BioAgeArc
+                  bioAge={metrics.biologicalAge}
+                  realAge={metrics.biologicalAge + metrics.ageDifference}
+                  size={BIOLOGICAL_AGE_RING_SIZE}
+                  showGlow
+                />
+                <div className="absolute inset-0 flex -translate-y-1 flex-col items-center justify-center text-white">
+                  <span className="-mt-2 text-5xl font-medium leading-none lg:text-6xl">
+                    {metrics.biologicalAge.toFixed(1)}
+                  </span>
+                  <H4 className="mt-1 text-center font-bold text-white">
                     biological age
                   </H4>
                   <Body1 className="text-center text-white/80">
@@ -218,7 +214,7 @@ const BiologicalAgeReveal = ({ onClose, animate, metrics }: RevealProps) => {
                     {metrics.isBiologicallyYounger ? 'younger' : 'older'}
                   </Body1>
                 </div>
-              </ProgressCircle>
+              </div>
             ) : (
               <Skeleton className="mx-auto size-64 rounded-full bg-white/10 lg:size-[320px]" />
             )}
@@ -237,7 +233,7 @@ const BiologicalAgeReveal = ({ onClose, animate, metrics }: RevealProps) => {
                 <div className="flex w-full max-w-sm flex-col gap-3">
                   <Button
                     variant="ghost"
-                    className="w-full rounded-full text-white/70 hover:bg-white/10 hover:text-white"
+                    className="w-full rounded-full text-white/70 transition-all duration-200 hover:bg-white/10 hover:text-white"
                     onClick={onClose}
                   >
                     Dismiss

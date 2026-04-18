@@ -75,9 +75,15 @@ interface BioAgeArcProps {
   bioAge: number;
   realAge: number;
   size?: number;
+  showGlow?: boolean;
 }
 
-export const BioAgeArc = ({ bioAge, realAge, size = 150 }: BioAgeArcProps) => {
+export const BioAgeArc = ({
+  bioAge,
+  realAge,
+  size = 150,
+  showGlow = false,
+}: BioAgeArcProps) => {
   const deltaGradientId = useId().replaceAll(':', '');
   const strokeWidth = 5;
   const center = size / 2;
@@ -102,6 +108,12 @@ export const BioAgeArc = ({ bioAge, realAge, size = 150 }: BioAgeArcProps) => {
   const realAngle = ((startAngle + realFraction * totalAngle) * Math.PI) / 180;
   const deltaStartAngle = bioFraction > realFraction ? bioAngle : realAngle;
   const deltaEndAngle = bioFraction > realFraction ? realAngle : bioAngle;
+  const deltaPath = `M ${center + radius * Math.cos(deltaStartAngle)} ${center + radius * Math.sin(deltaStartAngle)} A ${radius} ${radius} 0 0 0 ${center + radius * Math.cos(deltaEndAngle)} ${center + radius * Math.sin(deltaEndAngle)}`;
+  const animatedStrokeStyle = {
+    strokeDasharray: deltaLength,
+    strokeDashoffset: deltaLength,
+    animation: 'bio-arc-expand 1s ease-out 0.5s forwards',
+  };
 
   return (
     <svg width={size} height={size} overflow="visible">
@@ -129,17 +141,26 @@ export const BioAgeArc = ({ bioAge, realAge, size = 150 }: BioAgeArcProps) => {
         strokeDasharray={`${arcLength} ${gapLength}`}
         transform={`rotate(${startAngle} ${center} ${center})`}
       />
+      {showGlow ? (
+        <path
+          d={deltaPath}
+          fill="none"
+          stroke="rgba(255,255,255,0.85)"
+          strokeWidth={strokeWidth + 14}
+          strokeLinecap="round"
+          style={{
+            ...animatedStrokeStyle,
+            filter: 'blur(8px)',
+          }}
+        />
+      ) : null}
       <path
-        d={`M ${center + radius * Math.cos(deltaStartAngle)} ${center + radius * Math.sin(deltaStartAngle)} A ${radius} ${radius} 0 0 0 ${center + radius * Math.cos(deltaEndAngle)} ${center + radius * Math.sin(deltaEndAngle)}`}
+        d={deltaPath}
         fill="none"
         stroke={`url(#${deltaGradientId})`}
         strokeWidth={strokeWidth}
         strokeLinecap="round"
-        style={{
-          strokeDasharray: deltaLength,
-          strokeDashoffset: deltaLength,
-          animation: 'bio-arc-expand 1s ease-out 0.5s forwards',
-        }}
+        style={animatedStrokeStyle}
       />
       <circle
         cx={center + radius * Math.cos(bioAngle)}

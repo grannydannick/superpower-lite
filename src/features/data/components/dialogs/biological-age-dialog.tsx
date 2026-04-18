@@ -21,7 +21,6 @@ import {
   resolveRelatedBiomarkers,
 } from '@/features/data/utils/organ-age';
 import { AgeShareCard } from '@/features/shareables/components/cards/age-share-card';
-import { SharingOptionsModal } from '@/features/shareables/components/sharing-options-modal';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
 
@@ -54,7 +53,6 @@ export const BiologicalAgeDialog = ({
     strict: false,
     select: (s) => s.modal,
   });
-  const [sharingOptionsOpen, setSharingOptionsOpen] = useState(false);
   const [showAge, setShowAge] = useState(false);
   const { width } = useWindowDimensions();
   const { data: biomarkersData } = useBiomarkers();
@@ -119,7 +117,11 @@ export const BiologicalAgeDialog = ({
           <TimeSeriesChart biomarker={biologicalAgeMarker!} />
         </SimpleTabsContent>
         <SimpleTabsContent className="w-full" value="card">
-          <AgeShareCard showAge={showAge} setShowAge={setShowAge} />
+          <AgeShareCard
+            showAge={showAge}
+            setShowAge={setShowAge}
+            showPrivacyToggle={false}
+          />
         </SimpleTabsContent>
       </SimpleTabs>
       {organAgeBiomarkers.length > 0 && (
@@ -158,20 +160,10 @@ export const BiologicalAgeDialog = ({
           >
             {children}
           </SheetTrigger>
-          <SheetContent
-            className={cn(
-              'flex h-[calc(100vh-8rem)] flex-col rounded-t-3xl p-4 pt-7 md:p-8',
-              sharingOptionsOpen && '-mt-10 scale-[.92] opacity-75',
-            )}
-          >
+          <SheetContent className="flex h-[calc(100vh-8rem)] flex-col rounded-t-3xl p-4 pt-7 md:p-8">
             {content}
           </SheetContent>
         </Sheet>
-        <SharingOptionsModal
-          open={sharingOptionsOpen}
-          onOpenChange={setSharingOptionsOpen}
-          cardType={showAge ? 'age' : 'age-hidden'}
-        />
       </>
     );
   }
@@ -191,17 +183,11 @@ export const BiologicalAgeDialog = ({
             'flex flex-col',
             dialogVariants({ size: '2xlarge' }),
             'max-h-[70vh] md:min-h-[750px]',
-            sharingOptionsOpen && '-mt-10 scale-[.92] opacity-75',
           )}
         >
           {content}
         </DialogContent>
       </Dialog>
-      <SharingOptionsModal
-        open={sharingOptionsOpen}
-        onOpenChange={setSharingOptionsOpen}
-        cardType={showAge ? 'age' : 'age-hidden'}
-      />
     </>
   );
 };

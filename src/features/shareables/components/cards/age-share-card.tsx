@@ -12,9 +12,11 @@ import { cardVariants } from '../../utils/card-variants';
 export const AgeShareCard = ({
   showAge,
   setShowAge,
+  showPrivacyToggle = true,
 }: {
   showAge: boolean;
   setShowAge: (showAge: boolean) => void;
+  showPrivacyToggle?: boolean;
 }) => {
   const { data: user } = useUser();
   // const { data: avatar } = useAvatar({
@@ -62,6 +64,8 @@ export const AgeShareCard = ({
               cardVariants({ type: 'ageCard' }),
             )}
           >
+            <div className="absolute inset-0 bg-emerald-950/40" />
+            <div className="absolute inset-0 bg-gradient-to-b from-emerald-300/15 via-transparent to-emerald-950/30" />
             <div className="relative z-10 flex h-full flex-col">
               <div className="flex size-full items-start justify-end gap-4 p-1">
                 <H4
@@ -106,30 +110,32 @@ export const AgeShareCard = ({
           </div>
         </div>
       </Hover3D>
-      <div
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            setShowAge(!showAge);
-          }
-        }}
-        onClick={() => setShowAge(!showAge)}
-        className="group mx-auto mt-10 flex cursor-pointer select-none items-center justify-center gap-4"
-      >
-        <Body1
-          className={cn(
-            'text-sm text-zinc-400 transition-colors duration-200 group-hover:text-zinc-500',
-            !showAge && 'text-zinc-500',
-          )}
+      {showPrivacyToggle ? (
+        <div
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              setShowAge(!showAge);
+            }
+          }}
+          onClick={() => setShowAge(!showAge)}
+          className="group mx-auto mt-10 flex cursor-pointer select-none items-center justify-center gap-4"
         >
-          Hide age
-        </Body1>
-        <Switch
-          checked={!showAge}
-          onCheckedChange={() => setShowAge(!showAge)}
-        />
-      </div>
+          <Body1
+            className={cn(
+              'text-sm text-zinc-400 transition-colors duration-200 group-hover:text-zinc-500',
+              !showAge && 'text-zinc-500',
+            )}
+          >
+            Hide age
+          </Body1>
+          <Switch
+            checked={!showAge}
+            onCheckedChange={() => setShowAge(!showAge)}
+          />
+        </div>
+      ) : null}
     </div>
   );
 };

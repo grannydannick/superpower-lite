@@ -36,11 +36,11 @@ export const DigitalTwinCard = () => {
       <div className="relative h-[calc(100vh-160px)] max-h-[1000px] overflow-hidden rounded-3xl bg-zinc-100">
         <div className="absolute left-6 top-6 z-10">
           {user ? (
-            <h2 className="text-4xl font-normal tracking-tight text-zinc-900">
-              Welcome {user?.firstName}
+            <h2 className="text-4xl font-normal tracking-tight text-slate-900/25">
+              Welcome, {user?.firstName}
             </h2>
           ) : (
-            <h2 className="text-3xl font-medium text-zinc-900">
+            <h2 className="text-3xl font-medium text-slate-900/25">
               Unlock after
               <br />
               your first baseline test
@@ -71,6 +71,7 @@ const PROMPT_COUNT = 3;
 function HomepageChatBar() {
   const navigate = useNavigate();
   const [value, setValue] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
   const { data: prompts, isLoading } = useQuery(homepageFollowupsQuery());
 
   const goToConcierge = (message: string) => {
@@ -82,33 +83,47 @@ function HomepageChatBar() {
 
   const submit = () => {
     const trimmed = value.trim();
-    if (!trimmed) return;
+    if (trimmed.length === 0) return;
     goToConcierge(trimmed);
   };
 
   const visiblePrompts = prompts?.slice(0, PROMPT_COUNT) ?? [];
 
   return (
-    <div className="absolute inset-x-4 bottom-4 z-10 flex flex-col gap-2.5">
-      <div className="flex flex-wrap gap-1.5">
-        {isLoading || visiblePrompts.length === 0
-          ? Array.from({ length: PROMPT_COUNT }).map((_, i) => (
-              <Skeleton
-                key={i}
-                className="h-[38px] min-w-[140px] flex-1 rounded-xl border border-zinc-200/60 bg-white/70 shadow-lg shadow-black/5 backdrop-blur-sm"
-              />
-            ))
-          : visiblePrompts.map((prompt) => (
-              <button
-                key={prompt}
-                type="button"
-                onClick={() => goToConcierge(prompt)}
-                className="min-w-[140px] flex-1 rounded-xl border border-zinc-200/60 bg-white/70 px-3 py-2.5 text-xs font-medium text-zinc-500 shadow-lg shadow-black/5 backdrop-blur-sm transition-all hover:bg-white hover:text-zinc-700"
-              >
-                {prompt}
-              </button>
-            ))}
-      </div>
+    <div
+      className="absolute inset-x-4 bottom-4 z-10 flex flex-col gap-2.5"
+      onFocus={() => setIsFocused(true)}
+      onBlur={(e) => {
+        if (
+          e.relatedTarget instanceof Node &&
+          e.currentTarget.contains(e.relatedTarget)
+        ) {
+          return;
+        }
+        setIsFocused(false);
+      }}
+    >
+      {isFocused ? (
+        <div className="flex flex-wrap gap-1.5 duration-300 animate-in fade-in slide-in-from-bottom-3">
+          {isLoading || visiblePrompts.length === 0
+            ? Array.from({ length: PROMPT_COUNT }).map((_, i) => (
+                <Skeleton
+                  key={i}
+                  className="h-[38px] min-w-[140px] flex-1 rounded-xl border border-zinc-200/60 bg-white/70 shadow-lg shadow-black/5 backdrop-blur-sm"
+                />
+              ))
+            : visiblePrompts.map((prompt) => (
+                <button
+                  key={prompt}
+                  type="button"
+                  onClick={() => goToConcierge(prompt)}
+                  className="min-w-[140px] flex-1 rounded-xl border border-zinc-200/60 bg-white/70 px-3 py-2.5 text-xs font-medium text-zinc-500 shadow-lg shadow-black/5 backdrop-blur-sm transition-all hover:bg-white hover:text-zinc-700"
+                >
+                  {prompt}
+                </button>
+              ))}
+        </div>
+      ) : null}
       <div className="flex items-center gap-2.5 rounded-2xl border border-zinc-200/60 bg-white/80 px-4 py-3.5 shadow-lg shadow-black/5 backdrop-blur-sm transition-colors focus-within:border-zinc-300 focus-within:bg-white">
         <AIIcon size={24} className="shrink-0 opacity-60" />
         <input
@@ -127,7 +142,7 @@ function HomepageChatBar() {
         <button
           type="button"
           onClick={submit}
-          disabled={!value.trim()}
+          disabled={value.trim().length === 0}
           className="flex size-7 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-white transition-colors disabled:bg-zinc-300"
         >
           <ArrowUpIcon size={14} />

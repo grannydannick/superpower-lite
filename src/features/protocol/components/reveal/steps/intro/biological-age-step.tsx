@@ -1,13 +1,15 @@
 import { Info } from 'lucide-react';
 
 import { SuperpowerLogo } from '@/components/icons/superpower-logo';
-import { ProgressCircle } from '@/components/shared/progress-circle';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, H2, H4 } from '@/components/ui/typography';
 import { BiologicalAgeDialog } from '@/features/data/components/dialogs/biological-age-dialog';
 import { useBiologicalAge } from '@/features/data/hooks/use-biological-age';
+import { BioAgeArc } from '@/features/homepage/components/score-cards/score-card-arcs';
 import { useProtocolStepperContext } from '@/features/protocol/components/reveal/protocol-stepper-context';
+
+const BIOLOGICAL_AGE_RING_SIZE = 220;
 
 export const BiologicalAgeStep = () => {
   const { next } = useProtocolStepperContext();
@@ -15,8 +17,13 @@ export const BiologicalAgeStep = () => {
     useBiologicalAge();
 
   return (
-    <div className="h-screen w-full bg-black">
-      <div className="relative size-full bg-gradient-to-t from-[#4D201B] via-[#93410B] to-[#4D201B] animate-in fade-in">
+    <div className="h-screen w-full bg-emerald-950">
+      <div
+        className="relative size-full overflow-hidden bg-cover bg-center animate-in fade-in"
+        style={{ backgroundImage: "url('/cards/age-card.webp')" }}
+      >
+        <div className="absolute inset-0 bg-emerald-950/70" />
+        <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/80 via-emerald-900/55 to-emerald-700/35" />
         <div className="pointer-events-auto absolute left-1/2 top-8 z-20 flex -translate-x-1/2 items-center gap-3">
           <SuperpowerLogo fill="white" className="mt-1" />
           <BiologicalAgeDialog>
@@ -34,30 +41,22 @@ export const BiologicalAgeStep = () => {
             {isLoading ? (
               <Skeleton className="mx-auto size-64 rounded-full bg-white/10 lg:size-[320px]" />
             ) : (
-              <ProgressCircle
-                value={biologicalAge ?? 0}
-                animate
-                progressMax={100}
-                animationDuration={1000}
-                easing="cubic-bezier(0.16, 1, 0.3, 1)"
-                className="size-64 text-white lg:size-[320px]"
-                borderCircles={[
-                  {
-                    strokeWidth: 6,
-                    lgStrokeWidth: 4,
-                    color: 'white',
-                    blur: 'blur-[2px] lg:blur-sm',
-                  },
-                  {
-                    strokeWidth: 28,
-                    lgStrokeWidth: 64,
-                    color: '#facc15',
-                    blur: 'blur-2xl',
-                  },
-                ]}
-              >
-                <div className="duration-1000 animate-in fade-in">
-                  <H4 className="text-center font-bold text-white">
+              <div className="relative scale-110 lg:scale-[1.35]">
+                <BioAgeArc
+                  bioAge={biologicalAge ?? 0}
+                  realAge={
+                    biologicalAge == null || ageDifference == null
+                      ? (biologicalAge ?? 0)
+                      : biologicalAge + ageDifference
+                  }
+                  size={BIOLOGICAL_AGE_RING_SIZE}
+                  showGlow
+                />
+                <div className="absolute inset-0 flex -translate-y-1 flex-col items-center justify-center text-white">
+                  <span className="-mt-2 text-5xl font-medium leading-none lg:text-6xl">
+                    {biologicalAge?.toFixed(1) ?? '0.0'}
+                  </span>
+                  <H4 className="mt-1 text-center font-bold text-white">
                     biological age
                   </H4>
                   {ageDifference !== null && (
@@ -67,7 +66,7 @@ export const BiologicalAgeStep = () => {
                     </Body1>
                   )}
                 </div>
-              </ProgressCircle>
+              </div>
             )}
           </div>
           <div className="pointer-events-auto absolute inset-x-0 bottom-0 z-20 flex w-full flex-col items-center bg-gradient-to-b from-transparent via-black/40 to-black/60 px-6 py-24 lg:pb-[5vw] lg:pt-[10vw]">

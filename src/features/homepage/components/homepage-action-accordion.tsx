@@ -1,6 +1,9 @@
-import { type ReactNode } from 'react';
+import { Children, type ReactNode } from 'react';
 
 import { ActionableAccordion } from '@/components/shared/actionable-accordion';
+import { Separator } from '@/components/ui/separator';
+
+import { HomepageCard } from './homepage-card';
 
 interface HomepageActionAccordionProps {
   children: ReactNode;
@@ -14,17 +17,23 @@ export const HomepageActionAccordion = ({
   variant = 'default',
 }: HomepageActionAccordionProps) => {
   if (variant === 'minimal') {
+    const items = Children.toArray(children);
+    if (items.length === 0) return null;
+
+    const rows: ReactNode[] = [];
+    let separatorKey = 0;
+    for (const item of items) {
+      if (rows.length > 0) {
+        rows.push(<Separator key={`item-separator-${separatorKey}`} />);
+        separatorKey += 1;
+      }
+      rows.push(item);
+    }
+
     return (
-      <ActionableAccordion
-        title={title}
-        defaultOpen
-        allowCollapse={false}
-        highlighted={false}
-        showHeaderIndicator={false}
-        showTopSeparator={false}
-      >
-        {children}
-      </ActionableAccordion>
+      <HomepageCard title={title}>
+        <div className="-mx-4 -mb-4 md:-mx-6 md:-mb-6">{rows}</div>
+      </HomepageCard>
     );
   }
 
