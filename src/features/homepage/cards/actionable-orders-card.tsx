@@ -23,15 +23,15 @@ export const ActionableOrdersCard = () => {
   const gifts = giftsQueryResult.data?.gifts ?? [];
   const items: ReactElement[] = [];
 
-  let hasUnsentGifts = false;
+  let hasGiftWithoutRecipient = false;
   for (const gift of gifts) {
-    if (gift.sentGiftAt === null) {
-      hasUnsentGifts = true;
+    if (gift.addedRecipientAt === null) {
+      hasGiftWithoutRecipient = true;
       break;
     }
   }
 
-  if (hasUnsentGifts) {
+  if (hasGiftWithoutRecipient) {
     items.push(<GiftActionCard key="gift" />);
   }
 
