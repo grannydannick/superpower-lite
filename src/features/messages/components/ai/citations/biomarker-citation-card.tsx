@@ -4,16 +4,16 @@ import { SparklineChart } from '@/components/ui/charts/sparkline-chart/sparkline
 import { getBiomarkerRanges } from '@/components/ui/charts/utils/get-biomarker-ranges';
 import { Body2 } from '@/components/ui/typography';
 import { STATUS_TO_COLOR } from '@/const/status-to-color';
-import { BiomarkerLegacyDialog } from '@/features/data/components/dialogs/biomarker-legacy-dialog';
+import { BiomarkerDialog } from '@/features/data/components/dialogs/biomarker-dialog';
+import type { DataBiomarker } from '@/features/data/types/data-api';
 import { cn } from '@/lib/utils';
-import type { Biomarker } from '@/types/api';
 
 import type { CitationInfo } from '../../../types/message-parts';
 
 interface BiomarkerCitationCardProps {
   messageId: string;
   citation: CitationInfo;
-  biomarker: Biomarker;
+  biomarker: DataBiomarker;
 }
 
 /**
@@ -26,19 +26,22 @@ export const BiomarkerCitationCard = memo(function BiomarkerCitationCard({
   biomarker,
 }: BiomarkerCitationCardProps) {
   const cardId = `${messageId}-citation-${citation.number}`;
-  const { status, name } = biomarker;
+  const observation = biomarker.observation;
+  const name = biomarker.title;
 
-  const statusColor =
-    STATUS_TO_COLOR[status.toLowerCase() as keyof typeof STATUS_TO_COLOR] ||
-    STATUS_TO_COLOR.pending;
+  const statusColor = observation
+    ? STATUS_TO_COLOR[
+        observation.status.toLowerCase() as keyof typeof STATUS_TO_COLOR
+      ] || STATUS_TO_COLOR.pending
+    : STATUS_TO_COLOR.pending;
 
-  const currentValue = biomarker.value?.[0];
+  const currentValue = observation?.value?.[0];
 
   const formatCurrentValue = () => {
-    if (!currentValue?.quantity) return null;
+    if (!currentValue?.quantity || !observation) return null;
 
     const { value, unit } = currentValue.quantity;
-    const displayUnit = unit || biomarker.unit;
+    const displayUnit = unit || observation.unit;
 
     return (
       <>
@@ -49,7 +52,8 @@ export const BiomarkerCitationCard = memo(function BiomarkerCitationCard({
   };
 
   const formatRange = () => {
-    const { ranges } = getBiomarkerRanges(biomarker);
+    if (!observation) return null;
+    const { ranges } = getBiomarkerRanges(observation);
     const optimalRange = ranges.find((r) => r.status === 'OPTIMAL');
 
     if (!optimalRange) return null;
@@ -70,7 +74,7 @@ export const BiomarkerCitationCard = memo(function BiomarkerCitationCard({
   const rangeText = formatRange();
 
   return (
-    <BiomarkerLegacyDialog biomarker={biomarker}>
+    <BiomarkerDialog biomarkerId={biomarker.id}>
       <div
         id={cardId}
         role="note"
@@ -91,20 +95,22 @@ export const BiomarkerCitationCard = memo(function BiomarkerCitationCard({
         </div>
 
         {/* Status */}
-        <div className="flex shrink-0 flex-col items-start justify-center px-4">
-          <div className="flex items-center gap-2">
-            <div
-              style={{ backgroundColor: statusColor }}
-              className="size-2 rounded-full"
-            />
-            <Body2
-              style={{ color: statusColor }}
-              className="text-xs capitalize"
-            >
-              {status.toLowerCase()}
-            </Body2>
+        {observation && (
+          <div className="flex shrink-0 flex-col items-start justify-center px-4">
+            <div className="flex items-center gap-2">
+              <div
+                style={{ backgroundColor: statusColor }}
+                className="size-2 rounded-full"
+              />
+              <Body2
+                style={{ color: statusColor }}
+                className="text-xs capitalize"
+              >
+                {observation.status.toLowerCase()}
+              </Body2>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Value */}
         <div className="hidden shrink-0 flex-col items-start justify-center px-3 sm:flex">
@@ -121,10 +127,12 @@ export const BiomarkerCitationCard = memo(function BiomarkerCitationCard({
         )}
 
         {/* Sparkline */}
-        <div className="h-[52px] w-[150px] shrink-0 pr-4">
-          <SparklineChart biomarker={biomarker} />
-        </div>
+        {observation && (
+          <div className="h-[52px] w-[150px] shrink-0 pr-4">
+            <SparklineChart biomarker={observation} />
+          </div>
+        )}
       </div>
-    </BiomarkerLegacyDialog>
+    </BiomarkerDialog>
   );
 });

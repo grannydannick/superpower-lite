@@ -1,7 +1,8 @@
+import * as Sentry from '@sentry/react';
 import { memo } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
-import type { Biomarker } from '@/types/api';
+import type { DataBiomarker } from '@/features/data/types/data-api';
 
 import type { ProductIndex } from '../../../hooks/use-product-index';
 import type { CitationInfo } from '../../../types/message-parts';
@@ -21,7 +22,8 @@ import { WearablesCitationCard } from './wearables-citation-card';
 interface SmartCitationCardProps {
   messageId: string;
   citation: CitationInfo;
-  observationIndex: Map<string, Biomarker>;
+  observationIndex: Map<string, DataBiomarker>;
+  isObservationIndexLoaded: boolean;
   productIndex: ProductIndex;
 }
 
@@ -39,6 +41,7 @@ export const SmartCitationCard = memo(function SmartCitationCard({
   messageId,
   citation,
   observationIndex,
+  isObservationIndexLoaded,
   productIndex,
 }: SmartCitationCardProps) {
   // Check if this citation type should only show inline markers (no card)
@@ -59,8 +62,28 @@ export const SmartCitationCard = memo(function SmartCitationCard({
         />
       );
     }
-    // Biomarker data not loaded yet - show skeleton
-    return <Skeleton className="h-[76px] w-full rounded-[20px]" />;
+    if (!isObservationIndexLoaded) {
+      // Biomarker data not loaded yet - show skeleton
+      return <Skeleton className="h-[76px] w-full rounded-[20px]" />;
+    }
+    const err = new Error(
+      'Biomarker citation references an unknown observation id',
+    );
+    console.error(err.message, {
+      observationId: fhirParsed.observationId,
+      citationSource: citation.source,
+      citationTitle: citation.title,
+    });
+    Sentry.captureException(err, {
+      contexts: {
+        citation: {
+          observationId: fhirParsed.observationId,
+          source: citation.source,
+          title: citation.title,
+        },
+      },
+    });
+    return null;
   }
 
   // Try to parse as Marketplace product

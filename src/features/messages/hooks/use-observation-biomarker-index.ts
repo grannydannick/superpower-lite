@@ -1,28 +1,35 @@
 import { useMemo } from 'react';
 
-import { useBiomarkers } from '@/features/data/api';
-import type { Biomarker } from '@/types/api';
+import { useDataBiomarkers } from '@/features/data/api';
+import type { DataBiomarker } from '@/features/data/types/data-api';
 
 /**
- * Builds an index mapping observation IDs to their parent biomarkers.
- * Uses cached biomarker data from React Query.
+ * Maps observation-value ids (as referenced by AI chat citations) to the
+ * parent CMS DataBiomarker. The DataBiomarker carries both the CMS id/slug
+ * used by BiomarkerDialog and the FHIR observation used for card rendering.
  *
- * @returns Map where keys are observation IDs and values are Biomarker objects
+ * `isLoaded` tells callers whether the `/data/biomarkers` query has settled,
+ * so a missing observation id can be distinguished from a still-loading index.
  */
-export function useObservationBiomarkerIndex(): Map<string, Biomarker> {
-  const { data } = useBiomarkers();
+export function useObservationBiomarkerIndex(): {
+  index: Map<string, DataBiomarker>;
+  isLoaded: boolean;
+} {
+  const { data, isSuccess } = useDataBiomarkers();
 
-  return useMemo(() => {
-    const index = new Map<string, Biomarker>();
-    if (!data?.biomarkers) return index;
+  const index = useMemo(() => {
+    const map = new Map<string, DataBiomarker>();
+    if (!data?.biomarkers) return map;
 
     for (const biomarker of data.biomarkers) {
-      for (const result of biomarker.value ?? []) {
+      for (const result of biomarker.observation?.value ?? []) {
         if (result.id) {
-          index.set(result.id.toString(), biomarker);
+          map.set(result.id.toString(), biomarker);
         }
       }
     }
-    return index;
+    return map;
   }, [data?.biomarkers]);
+
+  return { index, isLoaded: isSuccess };
 }

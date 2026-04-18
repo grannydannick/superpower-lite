@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { ChevronRight, X } from 'lucide-react';
 import { forwardRef } from 'react';
 
@@ -19,7 +20,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Body1, Body2 } from '@/components/ui/typography';
-import { BiomarkerLegacyDialog } from '@/features/data/components/dialogs/biomarker-legacy-dialog';
+import { BiomarkerDialog } from '@/features/data/components/dialogs/biomarker-dialog';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
 
@@ -42,15 +43,35 @@ interface CitationsDialogProps {
 export function CitationsDialog({ citations, trigger }: CitationsDialogProps) {
   const { width } = useWindowDimensions();
   const isMobile = width <= 768;
-  const observationIndex = useObservationBiomarkerIndex();
+  const { index: observationIndex, isLoaded: isObservationIndexLoaded } =
+    useObservationBiomarkerIndex();
   const productIndex = useProductIndex();
   const items = citations.map((citation) => {
     const fhir = parseFhirObservationCitation(citation);
     if (fhir) {
       const b = observationIndex.get(fhir.observationId);
+      if (!b && isObservationIndexLoaded) {
+        const err = new Error(
+          'Biomarker citation references an unknown observation id',
+        );
+        console.error(err.message, {
+          observationId: fhir.observationId,
+          citationSource: citation.source,
+          citationTitle: citation.title,
+        });
+        Sentry.captureException(err, {
+          contexts: {
+            citation: {
+              observationId: fhir.observationId,
+              source: citation.source,
+              title: citation.title,
+            },
+          },
+        });
+      }
       return {
         citation,
-        label: b?.name ?? fhir.biomarkerName ?? citation.source,
+        label: b?.title ?? fhir.biomarkerName ?? citation.source,
         biomarker: b,
       };
     }
@@ -78,12 +99,12 @@ export function CitationsDialog({ citations, trigger }: CitationsDialogProps) {
           );
           if (biomarker) {
             return (
-              <BiomarkerLegacyDialog key={key} biomarker={biomarker}>
+              <BiomarkerDialog key={key} biomarkerId={biomarker.id}>
                 <div className="group flex cursor-pointer items-center gap-3 rounded-xl border border-zinc-200 bg-white p-3 shadow-sm hover:bg-zinc-50">
                   {inner}
                   <ChevronRight className="mr-1 size-4 text-secondary transition-all duration-200 ease-out group-hover:mr-0" />
                 </div>
-              </BiomarkerLegacyDialog>
+              </BiomarkerDialog>
             );
           }
           if (href) {

@@ -25,7 +25,8 @@ export const CitationCards = memo(function CitationCards({
   citations,
 }: CitationCardsProps) {
   // Lift hooks here - called once per paragraph instead of per card
-  const observationIndex = useObservationBiomarkerIndex();
+  const { index: observationIndex, isLoaded: isObservationIndexLoaded } =
+    useObservationBiomarkerIndex();
   const productIndex = useProductIndex();
 
   if (citations.length === 0) {
@@ -57,6 +58,7 @@ export const CitationCards = memo(function CitationCards({
               messageId={messageId}
               citation={c}
               observationIndex={observationIndex}
+              isObservationIndexLoaded={isObservationIndexLoaded}
               productIndex={productIndex}
             />
           ));
@@ -68,6 +70,7 @@ export const CitationCards = memo(function CitationCards({
             messageId={messageId}
             citation={group.citation}
             observationIndex={observationIndex}
+            isObservationIndexLoaded={isObservationIndexLoaded}
             productIndex={productIndex}
           />
         );

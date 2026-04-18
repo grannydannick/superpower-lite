@@ -39,6 +39,7 @@ import {
 import { useTrackBiomarkerEvent } from '../../hooks/use-track-biomarker-event';
 import type { DataBiomarker, DataSummaryCategory } from '../../types/data-api';
 
+import { BiomarkerAiSuggestions } from './biomarker-ai-suggestions';
 import {
   BiomarkerContentSkeleton,
   BiomarkerMdxContent,
@@ -244,6 +245,7 @@ function BiomarkerLockedView({ biomarker }: { biomarker: DataBiomarker }) {
         </div>
         <TimeSeriesChartPlaceholder />
       </div>
+      <BiomarkerAiSuggestions name={biomarker.title} />
       {isContentPending ? (
         <BiomarkerContentSkeleton />
       ) : content ? (
@@ -295,6 +297,7 @@ function BiomarkerView({ biomarker }: { biomarker: DataBiomarker }) {
             <OptimalRangeCard biomarker={obs} />
           </div>
         ) : null}
+        <BiomarkerAiSuggestions name={obs.name} />
         {isContentPending ? (
           <BiomarkerContentSkeleton />
         ) : content ? (
