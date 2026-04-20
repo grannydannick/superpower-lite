@@ -30,24 +30,19 @@ import { createChatV2Transport } from '@/features/messages/utils/chatv2-transpor
 import { extractTiming } from '@/features/messages/utils/extract-timing';
 import { scrollToBottom } from '@/features/messages/utils/scroll-to-bottom';
 import { useAnalytics } from '@/hooks/use-analytics';
-import { usePosthogFeatureFlagEnabled } from '@/hooks/use-posthog-feature-flag-enabled';
 import { useUser } from '@/lib/auth';
-import { FeatureFlags } from '@/lib/posthog';
-import { shouldShowSingleThreadIntro } from '@/utils/show-action-conditions';
 
 import {
   useMessageQueue,
   type QueuedMessage,
 } from '../../hooks/use-message-queue';
 
-import { AnimatedIcon } from './animated-icon';
 import { classifyChatError } from './chat-error-utils';
 import { Greeting } from './greeting';
 import { Messages } from './messages';
 import { MultimodalInput } from './multimodal-input';
 import { type Preset, PRESET_MESSAGES } from './preset-messages';
 import { QueuedMessages } from './queued-messages';
-import { SingleThreadIntroDialog } from './single-thread-intro-dialog';
 import { type SetupAction, SuggestedActions } from './suggested-actions';
 
 const publicErrors = [
@@ -1026,11 +1021,6 @@ function ChatView({
 
   const effectiveHasInteracted = hasInteractedRef.current;
 
-  const [introDialogOpen, setIntroDialogOpen] = useState(false);
-  const isSingleThread = usePosthogFeatureFlagEnabled(
-    FeatureFlags.ConciergeSingleThread,
-  );
-
   // Wrap sendMessage to track user interaction for scroll behavior
   const handleSend: typeof sendMessage = useCallback(
     (...args) => {
@@ -1099,17 +1089,8 @@ function ChatView({
       },
     ];
 
-    if (isSingleThread && shouldShowSingleThreadIntro()) {
-      actions.push({
-        title: 'Meet your new AI',
-        subtitle: 'All conversations, one thread.',
-        icon: <AnimatedIcon state="idle" size={32} />,
-        onClick: () => setIntroDialogOpen(true),
-      });
-    }
-
     return actions;
-  }, [navigate, isSingleThread]);
+  }, [navigate]);
 
   const showErrorUi =
     status === 'error' ||
@@ -1257,11 +1238,6 @@ function ChatView({
           experiencing an emergent medical issue.
         </p>
       </div>
-
-      <SingleThreadIntroDialog
-        open={introDialogOpen}
-        onOpenChange={setIntroDialogOpen}
-      />
     </div>
   );
 }
