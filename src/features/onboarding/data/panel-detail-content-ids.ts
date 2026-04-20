@@ -29,6 +29,7 @@ const PANEL_DETAIL_ITEM_IDS = new Set([
   'mosaic-mycotox',
   'mosaic-toxic-metals',
   'v2-organ-age-bundle-quest',
+  'v2-respiratory-allergy-panel-quest',
 ]);
 
 function normalizePanelDetailKey(itemId: string) {

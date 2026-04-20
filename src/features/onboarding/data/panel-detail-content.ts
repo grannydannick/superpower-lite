@@ -836,6 +836,53 @@ Tracking OrganAge over time also shows whether what you're doing is working. A b
       'Musculoskeletal Age',
     ],
   },
+
+  // Respiratory Allergy
+  'v2-respiratory-allergy-panel-quest': {
+    details: `**What does this test for?**
+
+About 1 in 4 U.S. adults has environmental allergies, but most people never find out what they're actually reacting to. They end up on rotating antihistamines, guessing at triggers, and managing symptoms instead of addressing the cause.
+
+This panel measures IgE antibodies to 20 of the most common environmental allergens in the U.S. — the specific grasses, weed and tree pollens, molds, dust mites, pets, and cockroach proteins that drive sneezing, congestion, itchy eyes, and asthma flares. It also measures Total IgE, your overall allergic baseline.
+
+Standard care rarely runs this kind of testing unless symptoms are severe or asthma is already diagnosed. But knowing exactly which allergens you react to changes everything — what to avoid, when to pre-treat, and which changes at home will actually help.
+
+**Who should get tested?**
+
+- You have seasonal sneezing, congestion, itchy eyes, or a persistent runny nose and don't know what's setting it off
+- You have year-round symptoms (dust mites, mold, or pet dander are often the cause, and they're frequently missed without testing)
+- You have asthma, chronic sinus issues, or recurrent ear infections and want to identify the environmental triggers
+- You've been managing symptoms with antihistamines for years and want to move from symptom control to a plan that actually resolves them
+
+**What will you learn?**
+
+Exactly which allergens your immune system is reacting to, and how strongly. If you're reacting to tree pollen, your spring symptoms finally make sense and you can pre-treat before the season starts. If dust mites are the driver, specific bedding changes and humidity control can meaningfully reduce symptoms at home. If it's your pet, you'll know whether targeted cleaning and air filtration are likely to help, or whether the exposure is driving longer-term issues.
+
+With results, you can also have an informed conversation about treatment options like allergen-specific immunotherapy, which retrains your immune system over time and can only be prescribed when the specific triggers are known.`,
+    biomarkers: [
+      'Total IgE',
+      'Bermuda Grass',
+      'Timothy Grass',
+      'Common Ragweed',
+      'Mugwort',
+      'Rough Pigweed',
+      'Birch',
+      'Elm',
+      'Mountain Cedar/Juniper',
+      'Oak',
+      'Sycamore/Maple Leaf',
+      'White Ash',
+      'Mulberry',
+      'Cat Dander',
+      'Dog Dander',
+      'Alternaria alternata',
+      'Aspergillus fumigatus',
+      'Penicillium notatum',
+      'Cockroach',
+      'Dust Mite (D. farinae)',
+      'Dust Mite (D. pteronyssinus)',
+    ],
+  },
 };
 
 function normalizePanelDetailKey(itemId: string) {
