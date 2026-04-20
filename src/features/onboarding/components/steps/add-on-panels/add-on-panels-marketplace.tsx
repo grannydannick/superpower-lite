@@ -348,7 +348,7 @@ const TestCard = ({
             </div>
             {!isLocked && (
               <div className="flex shrink-0 items-center gap-2">
-                {originalPrice != null && (
+                {originalPrice != null && originalPrice > item.price && (
                   <span className="text-base leading-[22px] text-zinc-400 line-through">
                     {formatMoney(originalPrice)}
                   </span>
