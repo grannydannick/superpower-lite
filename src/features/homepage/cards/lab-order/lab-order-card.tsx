@@ -269,7 +269,7 @@ export const LabOrderCard = () => {
 
       {/* Mobile: Action buttons - Only show when scheduled */}
       {appointmentStatus === 'scheduled' && (
-        <div className="mb-6 flex gap-3 md:hidden">
+        <div className="mb-6 mt-4 flex gap-3 md:hidden">
           {calendarData && calendarData.address && (
             <AddToCalendar
               slot={calendarData.slot}

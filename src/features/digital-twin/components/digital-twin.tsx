@@ -154,6 +154,8 @@ export const DigitalTwin = ({
 
   const overlayStrength =
     category != null || (filterCategories?.length ?? 0) > 0 ? 1.0 : 0.5;
+  const shouldAnimateCategories =
+    user?.resultsGate?.hasFinalDiagnosticReport !== false;
 
   const markReady = useCallback(() => {
     setReady(true);
@@ -192,6 +194,12 @@ export const DigitalTwin = ({
               model={model}
               area={area}
               level={level}
+              overlayStrength={overlayStrength}
+              onLoadingStateChange={handleLoadingStateChange}
+            />
+          ) : !shouldAnimateCategories ? (
+            <DigitalTwinModel
+              model={model}
               overlayStrength={overlayStrength}
               onLoadingStateChange={handleLoadingStateChange}
             />

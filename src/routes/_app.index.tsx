@@ -20,6 +20,7 @@ import {
   HomepageCard,
   HomepageLinkCard,
 } from '@/features/homepage/components/homepage-card';
+import { useUser } from '@/lib/auth';
 
 export const Route = createFileRoute('/_app/')({
   loader: ({ context: { queryClient } }) => {
@@ -73,6 +74,10 @@ const HomepageSection = ({
 };
 
 function HomepageComponent() {
+  const { data: user, isLoading: isUserLoading } = useUser();
+  const shouldShowBiomarkersCard =
+    !isUserLoading && user?.resultsGate?.hasFinalDiagnosticReport !== false;
+
   return (
     <ContentLayout
       title="Home"
@@ -100,20 +105,22 @@ function HomepageComponent() {
               <ScoreCards />
             </HomepageSection>
 
-            <HomepageLinkCard
-              to="/data"
-              title="Your biomarkers"
-              headerRight={
-                <span className="inline-flex items-center gap-1 text-sm font-medium text-secondary transition-colors group-hover:text-primary">
-                  Explore more
-                  <ChevronRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-                </span>
-              }
-            >
-              <HomepageSection>
-                <BiomarkersDistributionBar />
-              </HomepageSection>
-            </HomepageLinkCard>
+            {shouldShowBiomarkersCard ? (
+              <HomepageLinkCard
+                to="/data"
+                title="Your biomarkers"
+                headerRight={
+                  <span className="inline-flex items-center gap-1 text-sm font-medium text-secondary transition-colors group-hover:text-primary">
+                    Explore more
+                    <ChevronRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                  </span>
+                }
+              >
+                <HomepageSection>
+                  <BiomarkersDistributionBar />
+                </HomepageSection>
+              </HomepageLinkCard>
+            ) : null}
 
             <HomepageSection>
               <ProtocolGoalsCard
