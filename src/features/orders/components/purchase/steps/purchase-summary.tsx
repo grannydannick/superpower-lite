@@ -58,7 +58,7 @@ export function PurchaseSummaryStep(): ReactNode {
           <H2>Checkout</H2>
           <Body1 className="text-secondary">
             Complete your purchase. You can schedule your tests after a
-            successfull checkout.
+            successful checkout.
           </Body1>
         </div>
         {isQueryLoading ? (
