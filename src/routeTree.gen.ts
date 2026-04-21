@@ -38,7 +38,6 @@ import { Route as AppRxSubscriptionsIndexRouteImport } from './routes/_app.rx-su
 import { Route as AppProtocolIndexRouteImport } from './routes/_app.protocol.index'
 import { Route as AppOrdersIndexRouteImport } from './routes/_app.orders.index'
 import { Route as AppDataIndexRouteImport } from './routes/_app.data.index'
-import { Route as AppConciergeIndexRouteImport } from './routes/_app.concierge.index'
 import { Route as AppServicesIdRouteImport } from './routes/_app.services.$id'
 import { Route as AppRxSubscriptionsIdRouteImport } from './routes/_app.rx-subscriptions.$id'
 import { Route as AppRecollectionServiceRequestIdRouteImport } from './routes/_app.recollection.$serviceRequestId'
@@ -51,7 +50,6 @@ import { Route as AppPlansIdRouteImport } from './routes/_app.plans.$id'
 import { Route as AppOrdersIdRouteImport } from './routes/_app.orders.$id'
 import { Route as AppFamilyRiskPlanRouteImport } from './routes/_app.family-risk.plan'
 import { Route as AppDataRecordsRouteImport } from './routes/_app.data.records'
-import { Route as AppConciergeIdRouteImport } from './routes/_app.concierge.$id'
 import { Route as AppMapsUsersRouteImport } from './routes/_app._maps.users'
 import { Route as AppMapsSettingsRouteImport } from './routes/_app._maps.settings'
 import { Route as AppMapsScheduleRouteImport } from './routes/_app._maps.schedule'
@@ -209,11 +207,6 @@ const AppDataIndexRoute = AppDataIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppDataRoute,
 } as any)
-const AppConciergeIndexRoute = AppConciergeIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppConciergeRoute,
-} as any)
 const AppServicesIdRoute = AppServicesIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -274,11 +267,6 @@ const AppDataRecordsRoute = AppDataRecordsRouteImport.update({
   id: '/records',
   path: '/records',
   getParentRoute: () => AppDataRoute,
-} as any)
-const AppConciergeIdRoute = AppConciergeIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AppConciergeRoute,
 } as any)
 const AppMapsUsersRoute = AppMapsUsersRouteImport.update({
   id: '/users',
@@ -359,7 +347,7 @@ export interface FileRoutesByFullPath {
   '/setpassword': typeof SetpasswordRoute
   '/signin': typeof SigninRoute
   '/verify-email': typeof VerifyEmailRoute
-  '/concierge': typeof AppConciergeRouteWithChildren
+  '/concierge': typeof AppConciergeRoute
   '/data': typeof AppDataRouteWithChildren
   '/family-risk': typeof AppFamilyRiskRouteWithChildren
   '/intake': typeof AppIntakeRoute
@@ -376,7 +364,6 @@ export interface FileRoutesByFullPath {
   '/schedule': typeof AppMapsScheduleRoute
   '/settings': typeof AppMapsSettingsRoute
   '/users': typeof AppMapsUsersRoute
-  '/concierge/$id': typeof AppConciergeIdRoute
   '/data/records': typeof AppDataRecordsRoute
   '/family-risk/plan': typeof AppFamilyRiskPlanRoute
   '/orders/$id': typeof AppOrdersIdRoute
@@ -389,7 +376,6 @@ export interface FileRoutesByFullPath {
   '/recollection/$serviceRequestId': typeof AppRecollectionServiceRequestIdRoute
   '/rx-subscriptions/$id': typeof AppRxSubscriptionsIdRoute
   '/services/$id': typeof AppServicesIdRoute
-  '/concierge/': typeof AppConciergeIndexRoute
   '/data/': typeof AppDataIndexRoute
   '/orders/': typeof AppOrdersIndexRoute
   '/protocol/': typeof AppProtocolIndexRoute
@@ -415,6 +401,7 @@ export interface FileRoutesByTo {
   '/signin': typeof SigninRoute
   '/verify-email': typeof VerifyEmailRoute
   '/': typeof AppIndexRoute
+  '/concierge': typeof AppConciergeRoute
   '/family-risk': typeof AppFamilyRiskRouteWithChildren
   '/intake': typeof AppIntakeRoute
   '/invite': typeof AppInviteRoute
@@ -425,7 +412,6 @@ export interface FileRoutesByTo {
   '/schedule': typeof AppMapsScheduleRoute
   '/settings': typeof AppMapsSettingsRoute
   '/users': typeof AppMapsUsersRoute
-  '/concierge/$id': typeof AppConciergeIdRoute
   '/data/records': typeof AppDataRecordsRoute
   '/family-risk/plan': typeof AppFamilyRiskPlanRoute
   '/orders/$id': typeof AppOrdersIdRoute
@@ -437,7 +423,6 @@ export interface FileRoutesByTo {
   '/recollection/$serviceRequestId': typeof AppRecollectionServiceRequestIdRoute
   '/rx-subscriptions/$id': typeof AppRxSubscriptionsIdRoute
   '/services/$id': typeof AppServicesIdRoute
-  '/concierge': typeof AppConciergeIndexRoute
   '/data': typeof AppDataIndexRoute
   '/orders': typeof AppOrdersIndexRoute
   '/protocol': typeof AppProtocolIndexRoute
@@ -465,7 +450,7 @@ export interface FileRoutesById {
   '/signin': typeof SigninRoute
   '/verify-email': typeof VerifyEmailRoute
   '/_app/_maps': typeof AppMapsRouteWithChildren
-  '/_app/concierge': typeof AppConciergeRouteWithChildren
+  '/_app/concierge': typeof AppConciergeRoute
   '/_app/data': typeof AppDataRouteWithChildren
   '/_app/family-risk': typeof AppFamilyRiskRouteWithChildren
   '/_app/intake': typeof AppIntakeRoute
@@ -483,7 +468,6 @@ export interface FileRoutesById {
   '/_app/_maps/schedule': typeof AppMapsScheduleRoute
   '/_app/_maps/settings': typeof AppMapsSettingsRoute
   '/_app/_maps/users': typeof AppMapsUsersRoute
-  '/_app/concierge/$id': typeof AppConciergeIdRoute
   '/_app/data/records': typeof AppDataRecordsRoute
   '/_app/family-risk/plan': typeof AppFamilyRiskPlanRoute
   '/_app/orders/$id': typeof AppOrdersIdRoute
@@ -496,7 +480,6 @@ export interface FileRoutesById {
   '/_app/recollection/$serviceRequestId': typeof AppRecollectionServiceRequestIdRoute
   '/_app/rx-subscriptions/$id': typeof AppRxSubscriptionsIdRoute
   '/_app/services/$id': typeof AppServicesIdRoute
-  '/_app/concierge/': typeof AppConciergeIndexRoute
   '/_app/data/': typeof AppDataIndexRoute
   '/_app/orders/': typeof AppOrdersIndexRoute
   '/_app/protocol/': typeof AppProtocolIndexRoute
@@ -541,7 +524,6 @@ export interface FileRouteTypes {
     | '/schedule'
     | '/settings'
     | '/users'
-    | '/concierge/$id'
     | '/data/records'
     | '/family-risk/plan'
     | '/orders/$id'
@@ -554,7 +536,6 @@ export interface FileRouteTypes {
     | '/recollection/$serviceRequestId'
     | '/rx-subscriptions/$id'
     | '/services/$id'
-    | '/concierge/'
     | '/data/'
     | '/orders/'
     | '/protocol/'
@@ -580,6 +561,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/verify-email'
     | '/'
+    | '/concierge'
     | '/family-risk'
     | '/intake'
     | '/invite'
@@ -590,7 +572,6 @@ export interface FileRouteTypes {
     | '/schedule'
     | '/settings'
     | '/users'
-    | '/concierge/$id'
     | '/data/records'
     | '/family-risk/plan'
     | '/orders/$id'
@@ -602,7 +583,6 @@ export interface FileRouteTypes {
     | '/recollection/$serviceRequestId'
     | '/rx-subscriptions/$id'
     | '/services/$id'
-    | '/concierge'
     | '/data'
     | '/orders'
     | '/protocol'
@@ -647,7 +627,6 @@ export interface FileRouteTypes {
     | '/_app/_maps/schedule'
     | '/_app/_maps/settings'
     | '/_app/_maps/users'
-    | '/_app/concierge/$id'
     | '/_app/data/records'
     | '/_app/family-risk/plan'
     | '/_app/orders/$id'
@@ -660,7 +639,6 @@ export interface FileRouteTypes {
     | '/_app/recollection/$serviceRequestId'
     | '/_app/rx-subscriptions/$id'
     | '/_app/services/$id'
-    | '/_app/concierge/'
     | '/_app/data/'
     | '/_app/orders/'
     | '/_app/protocol/'
@@ -894,13 +872,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDataIndexRouteImport
       parentRoute: typeof AppDataRoute
     }
-    '/_app/concierge/': {
-      id: '/_app/concierge/'
-      path: '/'
-      fullPath: '/concierge/'
-      preLoaderRoute: typeof AppConciergeIndexRouteImport
-      parentRoute: typeof AppConciergeRoute
-    }
     '/_app/services/$id': {
       id: '/_app/services/$id'
       path: '/$id'
@@ -984,13 +955,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/data/records'
       preLoaderRoute: typeof AppDataRecordsRouteImport
       parentRoute: typeof AppDataRoute
-    }
-    '/_app/concierge/$id': {
-      id: '/_app/concierge/$id'
-      path: '/$id'
-      fullPath: '/concierge/$id'
-      preLoaderRoute: typeof AppConciergeIdRouteImport
-      parentRoute: typeof AppConciergeRoute
     }
     '/_app/_maps/users': {
       id: '/_app/_maps/users'
@@ -1119,20 +1083,6 @@ const AppMapsRouteChildren: AppMapsRouteChildren = {
 const AppMapsRouteWithChildren =
   AppMapsRoute._addFileChildren(AppMapsRouteChildren)
 
-interface AppConciergeRouteChildren {
-  AppConciergeIdRoute: typeof AppConciergeIdRoute
-  AppConciergeIndexRoute: typeof AppConciergeIndexRoute
-}
-
-const AppConciergeRouteChildren: AppConciergeRouteChildren = {
-  AppConciergeIdRoute: AppConciergeIdRoute,
-  AppConciergeIndexRoute: AppConciergeIndexRoute,
-}
-
-const AppConciergeRouteWithChildren = AppConciergeRoute._addFileChildren(
-  AppConciergeRouteChildren,
-)
-
 interface AppDataRouteChildren {
   AppDataRecordsRoute: typeof AppDataRecordsRoute
   AppDataIndexRoute: typeof AppDataIndexRoute
@@ -1260,7 +1210,7 @@ const AppServicesRouteWithChildren = AppServicesRoute._addFileChildren(
 
 interface AppRouteChildren {
   AppMapsRoute: typeof AppMapsRouteWithChildren
-  AppConciergeRoute: typeof AppConciergeRouteWithChildren
+  AppConciergeRoute: typeof AppConciergeRoute
   AppDataRoute: typeof AppDataRouteWithChildren
   AppFamilyRiskRoute: typeof AppFamilyRiskRouteWithChildren
   AppIntakeRoute: typeof AppIntakeRoute
@@ -1282,7 +1232,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppMapsRoute: AppMapsRouteWithChildren,
-  AppConciergeRoute: AppConciergeRouteWithChildren,
+  AppConciergeRoute: AppConciergeRoute,
   AppDataRoute: AppDataRouteWithChildren,
   AppFamilyRiskRoute: AppFamilyRiskRouteWithChildren,
   AppIntakeRoute: AppIntakeRoute,

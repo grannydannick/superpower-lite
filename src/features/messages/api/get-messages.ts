@@ -10,7 +10,6 @@ export type MessagesSort = 'asc' | 'desc';
 export type MessagesCursor = { id: string; skip?: number };
 
 interface GetMessagesOptions {
-  chatId?: string;
   cursor?: MessagesCursor;
   sort?: MessagesSort;
   limit?: number;
@@ -18,36 +17,17 @@ interface GetMessagesOptions {
 }
 
 export const getMessages = async ({
-  chatId,
   cursor,
   sort = 'desc',
   limit = DEFAULT_MESSAGES_PAGE_SIZE,
   hideToast,
 }: GetMessagesOptions): Promise<UIMessage[]> => {
-  const path = chatId ? `/chat/${chatId}/messages` : '/chat/messages';
-  return api.get(path, {
+  return api.get('/chat/messages', {
     headers: hideToast === true ? { 'x-hide-toast': 'true' } : undefined,
     params: {
       sort,
       limit,
       ...(cursor ? { cursor } : {}),
-    },
-  });
-};
-
-export const getMessagesQueryOptions = (
-  chatId: string,
-  options?: { hideToast?: boolean },
-) => {
-  return queryOptions({
-    queryKey: ['chat', chatId],
-    queryFn: async () => {
-      const page = await getMessages({
-        chatId,
-        sort: 'desc',
-        hideToast: options?.hideToast,
-      });
-      return page.slice().reverse();
     },
   });
 };
@@ -62,23 +42,6 @@ export const getTimelineQueryOptions = (options?: { hideToast?: boolean }) => {
       });
       return page.slice().reverse();
     },
-  });
-};
-
-type UseMessagesOptions = {
-  queryConfig?: QueryConfig<typeof getMessagesQueryOptions>;
-  chatId: string;
-  hideToast?: boolean;
-};
-
-export const useMessages = ({
-  queryConfig,
-  chatId,
-  hideToast,
-}: UseMessagesOptions) => {
-  return useQuery({
-    ...getMessagesQueryOptions(chatId, { hideToast }),
-    ...queryConfig,
   });
 };
 
