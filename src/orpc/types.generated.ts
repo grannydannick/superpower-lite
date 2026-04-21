@@ -19207,7 +19207,7 @@ export interface operations {
                             serviceRequestId: string;
                             serviceRequestIds: string[];
                             /** @enum {unknown} */
-                            redrawStatus: "redraw_available" | "requisition_created" | "scheduled" | "skipped" | "cancelled" | "completed";
+                            redrawStatus: "redraw_available" | "requisition_created" | "scheduled" | "scheduled_no_appointment" | "skipped" | "cancelled" | "completed";
                             taskId?: string;
                             /** @enum {unknown} */
                             taskStatus?: "draft" | "requested" | "received" | "accepted" | "rejected" | "ready" | "cancelled" | "in-progress" | "on-hold" | "failed" | "completed" | "entered-in-error";
@@ -19628,9 +19628,14 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
+                    /**
+                     * @default SCHEDULED
+                     * @enum {unknown}
+                     */
+                    appointmentType?: "SCHEDULED" | "UNSCHEDULED";
                     /** Format: date-time */
-                    timestamp: string;
-                    timezone: string;
+                    timestamp?: string;
+                    timezone?: string;
                     address: {
                         id: string;
                         line: string[];

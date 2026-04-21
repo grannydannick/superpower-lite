@@ -5,7 +5,11 @@ export function hasRedrawOrder(order: Order): boolean {
 }
 
 export function isScheduledRedrawOrder(order: Order): boolean {
-  return hasRedrawOrder(order) && order.redrawStatus === 'scheduled';
+  return (
+    hasRedrawOrder(order) &&
+    (order.redrawStatus === 'scheduled' ||
+      order.redrawStatus === 'scheduled_no_appointment')
+  );
 }
 
 export function getScheduledRedrawOrder(

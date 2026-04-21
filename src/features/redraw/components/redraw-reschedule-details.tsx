@@ -114,7 +114,11 @@ export function RedrawRescheduleDetails({
       {scheduledAppointmentType ? (
         <AppointmentDetails
           collectionMethod={scheduledCollectionMethod}
-          confirmationCode={scheduledConfirmationCode}
+          confirmationCode={
+            scheduledAppointmentType === 'UNSCHEDULED'
+              ? undefined
+              : scheduledConfirmationCode
+          }
           slot={
             scheduledTimestamp && scheduledEndTimestamp
               ? {

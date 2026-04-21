@@ -433,6 +433,7 @@ export type Order = Entity<{
     | 'redraw_available'
     | 'requisition_created'
     | 'scheduled'
+    | 'scheduled_no_appointment'
     | 'skipped'
     | 'cancelled'
     | 'completed';

@@ -86,14 +86,20 @@ const RedrawScheduleFlowContent = ({
   };
 
   const handleConfirm = async () => {
-    if (!location?.address || !slot || !tz) {
+    if (!location?.address || !slot) {
       return;
     }
 
+    const appointmentType: 'SCHEDULED' | 'UNSCHEDULED' =
+      location.capabilities.includes('APPOINTMENT_SCHEDULING')
+        ? 'SCHEDULED'
+        : 'UNSCHEDULED';
+
     await onConfirm({
-      timestamp: slot.start,
-      timezone: tz,
+      appointmentType,
       address: location.address,
+      timestamp: appointmentType === 'SCHEDULED' ? slot.start : undefined,
+      timezone: appointmentType === 'SCHEDULED' ? (tz ?? undefined) : undefined,
     });
   };
 
@@ -124,9 +130,7 @@ const RedrawScheduleFlowContent = ({
                 <H2>Select a time & location for your visit</H2>
                 <Body1 className="text-zinc-500">{instructions}</Body1>
               </div>
-              {collectionMethod === 'IN_LAB' ? (
-                <InLabScheduler scheduledOnly />
-              ) : null}
+              {collectionMethod === 'IN_LAB' ? <InLabScheduler /> : null}
               {collectionMethod === 'AT_HOME' ? <AtHomeScheduler /> : null}
             </div>
 

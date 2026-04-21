@@ -153,6 +153,7 @@ describe('RedrawScheduleFlow', () => {
 
     await waitFor(() =>
       expect(onConfirm).toHaveBeenCalledWith({
+        appointmentType: 'SCHEDULED',
         timestamp: '2026-03-24T12:00:00.000Z',
         timezone: 'America/Chicago',
         address: {
