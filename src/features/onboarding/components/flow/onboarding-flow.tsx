@@ -45,6 +45,7 @@ export const OnboardingIndexRedirect = () => {
     hasSeenWelcome,
     hasSeenGiftUpsell,
     hasAnsweredHeardAboutUs,
+    intakeEnabled: user?.access?.intake !== false,
   });
   const firstStep = validSteps[0] ?? null;
   if (firstStep == null) {
@@ -84,6 +85,7 @@ export const OnboardingFlow = ({ stepPath }: OnboardingFlowProps) => {
     hasSeenWelcome,
     hasSeenGiftUpsell,
     hasAnsweredHeardAboutUs,
+    intakeEnabled: user?.access?.intake !== false,
   });
   const fallbackStep = validSteps[0] ?? null;
   if (fallbackStep == null) {

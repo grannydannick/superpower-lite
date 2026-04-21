@@ -24,6 +24,7 @@ const baseContext: OnboardingFacts = {
   hasAnsweredHeardAboutUs: false,
   rxQuestionnaireContext: { status: 'none' },
   showUpsells: true,
+  intakeEnabled: true,
 };
 
 const baseOnboardingData: GetOnboardingResponse = {
@@ -120,9 +121,34 @@ describe('onboarding step manifest', () => {
       hasAnsweredHeardAboutUs: true,
       rxQuestionnaireContext: { status: 'none' },
       showUpsells: false,
+      intakeEnabled: true,
     });
 
     expect(steps).toEqual([ONBOARDING_STEP_IDS.PHLEBOTOMY_BOOKING]);
+  });
+
+  it('skips intake-related steps when intake is disabled', () => {
+    const steps = getValidOnboardingSteps({
+      ...baseContext,
+      userInfoCompleted: true,
+      userGender: 'female',
+      hasSeenWelcome: true,
+      hasSeenGiftUpsell: true,
+      hasAnsweredHeardAboutUs: true,
+      intakeEnabled: false,
+    });
+
+    expect(steps).not.toContain(ONBOARDING_STEP_IDS.INTRODUCTION);
+    expect(steps).not.toContain(ONBOARDING_STEP_IDS.HEALTH_PROFILE);
+    expect(steps).not.toContain(ONBOARDING_STEP_IDS.PRIMER_INTRO);
+    expect(steps).not.toContain(ONBOARDING_STEP_IDS.PRIMER);
+    expect(steps).not.toContain(ONBOARDING_STEP_IDS.MEDICAL_HISTORY_INTRO);
+    expect(steps).not.toContain(ONBOARDING_STEP_IDS.MEDICAL_HISTORY);
+    expect(steps).not.toContain(ONBOARDING_STEP_IDS.FEMALE_HEALTH_INTRO);
+    expect(steps).not.toContain(ONBOARDING_STEP_IDS.FEMALE_HEALTH);
+    expect(steps).not.toContain(ONBOARDING_STEP_IDS.LIFESTYLE_INTRO);
+    expect(steps).not.toContain(ONBOARDING_STEP_IDS.LIFESTYLE);
+    expect(steps).toContain(ONBOARDING_STEP_IDS.PHLEBOTOMY_BOOKING);
   });
 
   it('builds onboarding facts from questionnaires and credited services', () => {

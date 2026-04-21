@@ -28,6 +28,7 @@ export interface OnboardingFacts {
   hasAnsweredHeardAboutUs: boolean;
   rxQuestionnaireContext: RxQuestionnaireContext;
   showUpsells: boolean;
+  intakeEnabled: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -113,13 +114,13 @@ const ONBOARDING_STEPS = {
     id: 'welcome',
     analyticsId: 'introduction',
     title: 'Welcome to Superpower',
-    shouldShow: (facts) => !facts.hasStartedIntake,
+    shouldShow: (facts) => facts.intakeEnabled && !facts.hasStartedIntake,
   },
   HEALTH_PROFILE: {
     id: 'health-profile',
     analyticsId: 'health-profile',
     title: 'Build your health profile',
-    shouldShow: (facts) => !facts.hasStartedIntake,
+    shouldShow: (facts) => facts.intakeEnabled && !facts.hasStartedIntake,
   },
   WHAT_HAPPENS_NEXT: {
     id: 'what-happens-next',
@@ -138,6 +139,7 @@ const ONBOARDING_STEPS = {
     analyticsId: 'primer-intro',
     title: 'Tell us about yourself',
     shouldShow: (facts) =>
+      facts.intakeEnabled &&
       !facts.completedQuestionnaires.has(QUESTIONNAIRE.PRIMER),
     isResumeIntro: true,
   },
@@ -146,6 +148,7 @@ const ONBOARDING_STEPS = {
     analyticsId: 'primer',
     title: 'About you',
     shouldShow: (facts) =>
+      facts.intakeEnabled &&
       !facts.completedQuestionnaires.has(QUESTIONNAIRE.PRIMER),
   },
   MEDICAL_HISTORY_INTRO: {
@@ -153,6 +156,7 @@ const ONBOARDING_STEPS = {
     analyticsId: 'medical-history-intro',
     title: 'Medical history',
     shouldShow: (facts) =>
+      facts.intakeEnabled &&
       !facts.completedQuestionnaires.has(QUESTIONNAIRE.MEDICAL_HISTORY),
     isResumeIntro: true,
   },
@@ -161,6 +165,7 @@ const ONBOARDING_STEPS = {
     analyticsId: 'medical-history',
     title: 'Medical history',
     shouldShow: (facts) =>
+      facts.intakeEnabled &&
       !facts.completedQuestionnaires.has(QUESTIONNAIRE.MEDICAL_HISTORY),
   },
   FEMALE_HEALTH_INTRO: {
@@ -168,6 +173,7 @@ const ONBOARDING_STEPS = {
     analyticsId: 'female-health-intro',
     title: 'Hormone health',
     shouldShow: (facts) =>
+      facts.intakeEnabled &&
       !facts.completedQuestionnaires.has(QUESTIONNAIRE.FEMALE_HEALTH) &&
       facts.userGender === 'female',
     isResumeIntro: true,
@@ -177,6 +183,7 @@ const ONBOARDING_STEPS = {
     analyticsId: 'female-health',
     title: 'Hormone health',
     shouldShow: (facts) =>
+      facts.intakeEnabled &&
       !facts.completedQuestionnaires.has(QUESTIONNAIRE.FEMALE_HEALTH) &&
       facts.userGender === 'female',
   },
@@ -185,6 +192,7 @@ const ONBOARDING_STEPS = {
     analyticsId: 'lifestyle-intro',
     title: 'Lifestyle',
     shouldShow: (facts) =>
+      facts.intakeEnabled &&
       !facts.completedQuestionnaires.has(QUESTIONNAIRE.LIFESTYLE),
     isResumeIntro: true,
   },
@@ -193,6 +201,7 @@ const ONBOARDING_STEPS = {
     analyticsId: 'lifestyle',
     title: 'Lifestyle',
     shouldShow: (facts) =>
+      facts.intakeEnabled &&
       !facts.completedQuestionnaires.has(QUESTIONNAIRE.LIFESTYLE),
   },
   BUILDING_RECOMMENDATIONS: {
@@ -293,6 +302,7 @@ export function buildOnboardingFacts(
       onboardingData.questionnaires,
     ),
     showUpsells: onboardingData.onboardingPolicy.showUpsells,
+    intakeEnabled: true,
   };
 }
 

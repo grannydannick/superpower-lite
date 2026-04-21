@@ -69,6 +69,7 @@ export interface User extends BaseUser {
   identityVerificationStatus?: IdentityVerificationStatus;
   access?: {
     rx: boolean;
+    intake: boolean;
   };
   resultsGate?: ResultsGate;
 }
