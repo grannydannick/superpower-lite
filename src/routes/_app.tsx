@@ -169,7 +169,7 @@ export const Route = createFileRoute('/_app')({
 
     const intakeDismissed = isIntakeDismissed();
     const shouldRunLegacyIntakeChecks =
-      !import.meta.env.DEV && !intakeDismissed;
+      !import.meta.env.DEV && !intakeDismissed && user.access?.intake !== false;
     const createdAtDate = new Date(user.createdAt);
     const createdAtIsValid = !Number.isNaN(createdAtDate.getTime());
 

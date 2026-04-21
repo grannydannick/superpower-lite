@@ -79,7 +79,8 @@ const ONBOARDING_STEPS = {
     id: 'gift-upsell',
     analyticsId: 'gift-upsell',
     title: 'Gift Superpower',
-    shouldShow: (facts) => !facts.hasSeenGiftUpsell && !facts.hasStartedIntake,
+    shouldShow: (facts) =>
+      !facts.hasSeenGiftUpsell && !facts.hasStartedIntake && facts.showUpsells,
   },
   UPDATE_INFO: {
     id: 'account-setup',
