@@ -10,14 +10,14 @@ import {
   getOnboardingStepTitle,
   ONBOARDING_STEP_IDS,
 } from '@/features/onboarding/components/flow/onboarding-step-manifest';
-import { useOnboardingCartStore } from '@/features/onboarding/stores/onboarding-cart-store';
+import { Sequence } from '@/features/onboarding/components/sequence';
 import { cn } from '@/lib/utils';
 
-import { Sequence } from '../../sequence';
-
 import {
+  type AddOnPanelsNavigation,
   AddOnPanelsStepProvider,
-  useAddOnPanelsStep,
+  useAddOnPanelsCore,
+  useAddOnPanelsMarketplace,
 } from './add-on-panels-context';
 import {
   MarketplaceScreen,
@@ -30,18 +30,23 @@ import {
   getCurrentRecommendation,
   getSelectedItems,
 } from './add-on-panels-selectors';
+import type { AddOnPanelsStepVariant } from './add-on-panels-variants';
+import type { AddOnPanelsCartController } from './use-local-add-on-panels-cart';
 
 const FADE_TRANSITION = { duration: 0.2 };
 
 const AddOnPanelsStepScreen = () => {
-  const { addOnsData, goBack, recommendationIndex } = useAddOnPanelsStep();
-  const selectedServiceIds = useOnboardingCartStore(
-    (s) => s.selectedServiceIds,
-  );
-  const currentRecommendation = getCurrentRecommendation(
+  const {
     addOnsData,
-    recommendationIndex,
-  );
+    goBack,
+    marketplaceCopy,
+    selectedServiceIds,
+    showRecommendations,
+  } = useAddOnPanelsCore();
+  const { recommendationIndex } = useAddOnPanelsMarketplace();
+  const currentRecommendation = showRecommendations
+    ? getCurrentRecommendation(addOnsData, recommendationIndex)
+    : null;
   const viewMode =
     currentRecommendation == null ? 'marketplace' : 'recommendations';
   const shouldShowHeaderBack =
@@ -56,7 +61,7 @@ const AddOnPanelsStepScreen = () => {
         title={
           viewMode === 'recommendations'
             ? getOnboardingStepTitle(ONBOARDING_STEP_IDS.ADD_ON_PANELS)
-            : 'Explore Tests'
+            : marketplaceCopy.title
         }
       />
       <m.div
@@ -122,7 +127,7 @@ const AddOnPanelsStepLoadingScreen = () => (
 
     <div className="mx-auto w-full max-w-lg px-4 py-6">
       <div className="space-y-6 pt-0.5">
-        <H2>Explore Tests</H2>
+        <H2>Explore tests</H2>
         <div className="h-11 rounded-full bg-zinc-100" />
         <div className="flex gap-2">
           <Skeleton className="h-8 w-24 rounded-full" />
@@ -139,9 +144,23 @@ const AddOnPanelsStepLoadingScreen = () => (
   </Sequence.StepLayout>
 );
 
-export const AddOnPanelsStep = () => (
+interface AddOnPanelsStepProps {
+  navigation: AddOnPanelsNavigation;
+  cart: AddOnPanelsCartController;
+  variant: AddOnPanelsStepVariant;
+}
+
+export const AddOnPanelsStep = ({
+  navigation,
+  cart,
+  variant,
+}: AddOnPanelsStepProps) => (
   <Suspense fallback={<AddOnPanelsStepLoadingScreen />}>
-    <AddOnPanelsStepProvider>
+    <AddOnPanelsStepProvider
+      navigation={navigation}
+      cart={cart}
+      variant={variant}
+    >
       <AddOnPanelsStepScreen />
     </AddOnPanelsStepProvider>
   </Suspense>

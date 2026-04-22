@@ -7,3 +7,4 @@ export * from './schedule-success';
 export * from './schedule-summary';
 export * from './advisory-scheduler';
 export * from './intro';
+export * from './schedule-marketplace';

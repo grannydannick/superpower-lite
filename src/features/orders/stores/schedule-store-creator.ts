@@ -11,12 +11,16 @@ import {
   ServiceGroup,
 } from '@/types/api';
 
+import type { ScheduleMarketplaceVariant } from '../components/schedule/schedule-marketplace-variant';
+
 export interface ScheduleStoreProps {
   onSuccess?: () => void;
   onDone?: () => void;
   // used for filtering
   mode: ServiceGroup;
   initialCollectionMethod?: CollectionMethodType | null;
+  showAddons?: boolean;
+  marketplaceVariant?: ScheduleMarketplaceVariant;
 }
 
 export interface ScheduleStore extends ScheduleStoreProps {

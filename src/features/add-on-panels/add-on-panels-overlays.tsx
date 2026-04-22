@@ -9,24 +9,28 @@ import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner/spinner';
 import { Body1, Body2 } from '@/components/ui/typography';
-import type { AddOnItem } from '@/features/onboarding/api/onboarding-add-ons';
-import { useOnboardingCartStore } from '@/features/onboarding/stores/onboarding-cart-store';
 import { CurrentPaymentMethodCard } from '@/features/users/components/payment';
 import { cn } from '@/lib/utils';
 import { formatMoney } from '@/utils/format-money';
 import { getServiceImage } from '@/utils/service';
 
-import { useAddOnPanelsStep } from './add-on-panels-context';
+import {
+  useAddOnPanelsCart,
+  useAddOnPanelsCore,
+  useAddOnPanelsDetail,
+  useAddOnPanelsMarketplace,
+} from './add-on-panels-context';
+import { canAddOnItemToCart } from './add-on-panels-derived';
 import {
   findGroupByItemId,
   findItemById,
   getCurrentRecommendation,
   getSelectedItems,
 } from './add-on-panels-selectors';
+import type { AddOnItem } from './api/add-on-panels';
 
 const LazyAddOnPanelsDetailContent = lazy(
-  () =>
-    import('@/features/onboarding/components/steps/add-on-panels/add-on-panels-detail-content'),
+  () => import('./add-on-panels-detail-content'),
 );
 
 interface CartFooterProps {
@@ -38,26 +42,24 @@ export const CartFooter = ({
 }: CartFooterProps) => {
   const {
     addOnsData,
-    proceed,
-    skip,
-    isPending,
+    cartTitle,
     hasPaymentMethodId,
     isFlexSelected,
+    isPending,
     isSelectingPaymentMethod,
-    isCartExpanded,
-    toggleCartExpanded,
-    recommendationIndex,
-    goToNextRecommendation,
+    proceed,
     removeItemFromCart,
-  } = useAddOnPanelsStep();
-  const selectedServiceIds = useOnboardingCartStore(
-    (s) => s.selectedServiceIds,
-  );
+    selectedServiceIds,
+    showRecommendations,
+    skip,
+  } = useAddOnPanelsCore();
+  const { isCartExpanded, toggleCartExpanded } = useAddOnPanelsCart();
+  const { goToNextRecommendation, recommendationIndex } =
+    useAddOnPanelsMarketplace();
 
-  const currentRecommendation = getCurrentRecommendation(
-    addOnsData,
-    recommendationIndex,
-  );
+  const currentRecommendation = showRecommendations
+    ? getCurrentRecommendation(addOnsData, recommendationIndex)
+    : null;
   const selectedItems = getSelectedItems(addOnsData.groups, selectedServiceIds);
   const hasSelected = selectedItems.length > 0;
   const totalPrice = selectedItems.reduce((sum, i) => sum + i.price, 0);
@@ -89,7 +91,7 @@ export const CartFooter = ({
                 <div className="flex flex-1 items-center gap-2">
                   <IconChecklist className="size-5 text-zinc-900" />
                   <span className="text-base text-zinc-900">
-                    Your Tests{' '}
+                    {cartTitle}{' '}
                     <span className="text-zinc-900/40">
                       {selectedItems.length}
                     </span>
@@ -187,7 +189,7 @@ export const CartFooter = ({
                   </span>
                 ) : hasSelected ? (
                   <>
-                    {`Confirm & Pay${isFlexSelected ? ' with HSA/FSA' : ''}`}
+                    {`Confirm & pay${isFlexSelected ? ' with HSA/FSA' : ''}`}
                     <span className="ml-2 opacity-80">
                       {formatMoney(totalPrice)}
                     </span>
@@ -243,16 +245,9 @@ interface DetailPanelProps {
 }
 
 const DetailPanel = ({ itemId = null }: DetailPanelProps) => {
-  const {
-    addOnsData,
-    detailItemId,
-    closeDetail,
-    isPending,
-    applySelectionToggle,
-  } = useAddOnPanelsStep();
-  const selectedServiceIds = useOnboardingCartStore(
-    (s) => s.selectedServiceIds,
-  );
+  const { addOnsData, applySelectionToggle, isPending, selectedServiceIds } =
+    useAddOnPanelsCore();
+  const { closeDetail, detailItemId } = useAddOnPanelsDetail();
   const currentItemId = itemId ?? detailItemId;
 
   if (currentItemId == null) return null;
@@ -263,7 +258,7 @@ const DetailPanel = ({ itemId = null }: DetailPanelProps) => {
   if (group == null || item == null) return null;
 
   const isSelected = selectedServiceIds.has(item.id);
-  const isToggleDisabled = isPending || item.status !== 'available';
+  const isToggleDisabled = isPending || !canAddOnItemToCart(item);
 
   const onToggle = () => {
     applySelectionToggle(group, item, 'detail_sheet');
@@ -284,7 +279,7 @@ const DetailPanel = ({ itemId = null }: DetailPanelProps) => {
 };
 
 export const DetailSheet = () => {
-  const { detailItemId, closeDetail } = useAddOnPanelsStep();
+  const { closeDetail, detailItemId } = useAddOnPanelsDetail();
 
   return (
     <Sheet

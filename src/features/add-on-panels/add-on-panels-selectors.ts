@@ -1,14 +1,33 @@
+import {
+  canAddOnItemToCart,
+  hasCompletedAddOnItem,
+  isPurchasedAddOnItem,
+  isUntestedAddOnItem,
+  shouldShowAddOnItemInMarketplace,
+} from './add-on-panels-derived';
 import type {
   AddOnGroup,
   AddOnItem,
   AddOnItemId,
   OnboardingAddOnsResponse,
-} from '@/features/onboarding/api/onboarding-add-ons';
+} from './api/add-on-panels';
 
 export const ALL_TESTS_FILTER_ID = 'all';
+export const UNTESTED_FILTER_ID = 'untested';
+const CORE_BLOOD_PANEL_GROUP_ID = 'blood-panels';
 export type PanelFilterId =
   | OnboardingAddOnsResponse['filters'][number]['id']
-  | typeof ALL_TESTS_FILTER_ID;
+  | typeof ALL_TESTS_FILTER_ID
+  | typeof UNTESTED_FILTER_ID;
+
+export function hasCompletedHistory(groups: AddOnGroup[]): boolean {
+  for (const group of groups) {
+    for (const item of getGroupItems(group)) {
+      if (hasCompletedAddOnItem(item)) return true;
+    }
+  }
+  return false;
+}
 
 export function getGroupItems(group: AddOnGroup): AddOnItem[] {
   if (group.selection.type === 'bundle-or-components') {
@@ -24,17 +43,13 @@ export function getGroupItems(group: AddOnGroup): AddOnItem[] {
   return group.selection.items;
 }
 
-function isPurchasedItem(item: AddOnItem) {
-  return item.status === 'purchased';
-}
-
 export function getPurchasedItems(groups: AddOnGroup[]) {
   const items: AddOnItem[] = [];
   const seenIds = new Set<AddOnItemId>();
 
   for (const group of groups) {
     for (const item of getGroupItems(group)) {
-      if (!isPurchasedItem(item) || seenIds.has(item.id)) {
+      if (!isPurchasedAddOnItem(item) || seenIds.has(item.id)) {
         continue;
       }
 
@@ -46,27 +61,40 @@ export function getPurchasedItems(groups: AddOnGroup[]) {
   return items;
 }
 
-export function getMarketplaceGroups(groups: AddOnGroup[]) {
+export function getMarketplaceGroups(
+  groups: AddOnGroup[],
+  options: {
+    includeBaselineBloodPanels?: boolean;
+    onlyPurchasable?: boolean;
+  } = {},
+) {
   const visibleGroups: AddOnGroup[] = [];
 
   for (const group of groups) {
-    // The baseline and advanced blood panels are core products and should
-    // never appear in the marketplace list; they only surface in the
-    // purchased section above when owned.
-    if (group.id === 'blood-panels') {
+    // The baseline and advanced blood panels are core products and normally
+    // shouldn't appear in the add-on marketplace (they surface in the
+    // purchased section when owned). In retest contexts they ARE the primary
+    // target, so the caller can opt in.
+    if (group.id === 'blood-panels' && !options.includeBaselineBloodPanels) {
       continue;
     }
 
     if (group.selection.type === 'bundle-or-components') {
       const bundle =
         group.selection.bundle != null &&
-        !isPurchasedItem(group.selection.bundle)
+        (!options.onlyPurchasable
+          ? shouldShowAddOnItemInMarketplace(group.selection.bundle)
+          : canAddOnItemToCart(group.selection.bundle))
           ? group.selection.bundle
           : null;
       const components: AddOnItem[] = [];
 
       for (const component of group.selection.components) {
-        if (isPurchasedItem(component)) {
+        const shouldIncludeComponent = !options.onlyPurchasable
+          ? shouldShowAddOnItemInMarketplace(component)
+          : canAddOnItemToCart(component);
+
+        if (!shouldIncludeComponent) {
           continue;
         }
 
@@ -87,7 +115,11 @@ export function getMarketplaceGroups(groups: AddOnGroup[]) {
     const items: AddOnItem[] = [];
 
     for (const item of group.selection.items) {
-      if (isPurchasedItem(item)) {
+      const shouldIncludeItem = !options.onlyPurchasable
+        ? shouldShowAddOnItemInMarketplace(item)
+        : canAddOnItemToCart(item);
+
+      if (!shouldIncludeItem) {
         continue;
       }
 
@@ -136,10 +168,12 @@ export function computeToggle(
     };
   }
 
-  // Selecting a sub-panel: check if this completes the set
+  // Selecting a sub-panel: check if this completes the set. Collapse into the
+  // bundle when it is still cart-eligible. Don't collapse if the bundle already
+  // has coverage or pending work, since the user cannot purchase it again.
+  const bundlePurchasable = bundle != null && canAddOnItemToCart(bundle);
   const allSiblingsSelected =
-    bundle != null &&
-    bundle.status === 'available' &&
+    bundlePurchasable &&
     components.every((c) => c.id === item.id || selectedServiceIds.has(c.id));
 
   if (allSiblingsSelected) {
@@ -163,7 +197,7 @@ export function getSelectedItems(
 
   for (const group of groups) {
     for (const item of getGroupItems(group)) {
-      if (selectedServiceIds.has(item.id) && item.status === 'available') {
+      if (selectedServiceIds.has(item.id) && canAddOnItemToCart(item)) {
         items.push(item);
       }
     }
@@ -183,20 +217,30 @@ export function getFilteredGroups(
   for (const group of groups) {
     if (
       activeFilterId !== ALL_TESTS_FILTER_ID &&
+      activeFilterId !== UNTESTED_FILTER_ID &&
       group.filterId !== activeFilterId
     ) {
       continue;
     }
 
-    if (query.length === 0) {
-      filtered.push(group);
+    const onlyUntested = activeFilterId === UNTESTED_FILTER_ID;
+    if (onlyUntested && group.id === CORE_BLOOD_PANEL_GROUP_ID) {
       continue;
     }
 
-    const matchItem = (item: AddOnItem) =>
-      `${group.label} ${item.name} ${item.description ?? ''}`
+    const matchItem = (item: AddOnItem) => {
+      if (onlyUntested && !isUntestedAddOnItem(item)) return false;
+      if (query.length === 0) return true;
+      return `${group.label} ${item.name} ${item.description ?? ''}`
         .toLowerCase()
         .includes(query);
+    };
+
+    // Fast path: no active item-level filtering, pass the group as-is.
+    if (!onlyUntested && query.length === 0) {
+      filtered.push(group);
+      continue;
+    }
 
     if (group.selection.type === 'bundle-or-components') {
       const bundle =

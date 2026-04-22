@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { getOnboardingAddOnsQueryOptions } from '@/features/onboarding/api/onboarding-add-ons';
+import { getOnboardingAddOnsQueryOptions } from '@/features/add-on-panels/api/add-on-panels';
 import { OnboardingFlow } from '@/features/onboarding/components/flow/onboarding-flow';
 import { ONBOARDING_STEP_IDS } from '@/features/onboarding/components/flow/onboarding-step-manifest';
 
@@ -11,7 +11,7 @@ export const Route = createFileRoute('/_app/_maps/onboarding/$step')({
     }
 
     await Promise.all([
-      import('@/features/onboarding/components/steps/add-on-panels/add-on-panels-step'),
+      import('@/features/add-on-panels/add-on-panels-step'),
       context.queryClient.ensureQueryData(getOnboardingAddOnsQueryOptions()),
     ]);
 

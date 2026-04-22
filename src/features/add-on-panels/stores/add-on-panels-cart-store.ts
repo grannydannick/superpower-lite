@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import type { AddOnItemId } from '../api/onboarding-add-ons';
+import type { AddOnItemId } from '../api/add-on-panels';
 
 interface OnboardingCartStoreState {
   selectedServiceIds: Set<AddOnItemId>;

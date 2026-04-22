@@ -40,11 +40,25 @@ export function PurchaseSummaryStep(): ReactNode {
 
     const response = await createCreditMutation.mutateAsync({ data });
     if (response.credits) {
+      const paymentProvider =
+        activePaymentMethod?.paymentProvider?.toLowerCase() ?? 'unknown';
+
       track('marketplace_credits_purchased', {
         value: service.price,
         service: service.name,
-        payment_provider:
-          activePaymentMethod?.paymentProvider?.toLowerCase() ?? 'unknown',
+        payment_provider: paymentProvider,
+      });
+
+      track('credits_purchased', {
+        value: service.price / 100,
+        total_price_cents: service.price,
+        item_count: 1,
+        item_ids: [service.id],
+        items: [
+          { id: service.id, name: service.name, price: service.price / 100 },
+        ],
+        payment_provider: paymentProvider,
+        flow_context: 'marketplace',
       });
 
       next();

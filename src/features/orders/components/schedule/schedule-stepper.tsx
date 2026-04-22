@@ -5,6 +5,7 @@ import { useScheduleStore } from '../../stores/schedule-store';
 
 export const SCHEDULE_STEPS = {
   INTRO: 'intro',
+  MARKETPLACE: 'marketplace',
   CREDITS_SELECT: 'credits-select',
   PHLEBOTOMY: 'phlebotomy',
   SCHEDULER: 'scheduler',
@@ -16,6 +17,7 @@ export const SCHEDULE_STEPS = {
 
 export const ScheduleFlowStepper = defineStepper(
   { id: SCHEDULE_STEPS.INTRO },
+  { id: SCHEDULE_STEPS.MARKETPLACE },
   { id: SCHEDULE_STEPS.CREDITS_SELECT },
   { id: SCHEDULE_STEPS.CONFIRM_ADDRESS },
   { id: SCHEDULE_STEPS.PHLEBOTOMY },
@@ -46,6 +48,7 @@ interface UseScheduleFlowStepperType extends ScheduleFlowStepperUseStepperType {
 
 export const useScheduleFlowStepper = (): UseScheduleFlowStepperType => {
   const mode = useScheduleStore((s) => s.mode);
+  const showAddons = useScheduleStore((s) => s.showAddons);
   const matchRoute = useMatchRoute();
   const isOnOnboarding =
     matchRoute({ to: '/onboarding', fuzzy: true }) !== false;
@@ -62,6 +65,10 @@ export const useScheduleFlowStepper = (): UseScheduleFlowStepperType => {
 
   if (isOnOnboarding) {
     steps.unshift({ id: SCHEDULE_STEPS.INTRO });
+  }
+
+  if (mode === 'phlebotomy' && showAddons) {
+    steps.unshift({ id: SCHEDULE_STEPS.MARKETPLACE });
   }
 
   switch (mode) {

@@ -169,10 +169,10 @@ const ONBOARDING_STEP_RENDERERS: Record<
   ),
   [ONBOARDING_STEP_IDS.ADD_ON_PANELS]: createLazyStepRenderer(async () => {
     const module =
-      await import('@/features/onboarding/components/steps/add-on-panels/add-on-panels-step');
+      await import('@/features/onboarding/components/steps/add-on-panels-step');
 
     return {
-      default: module.AddOnPanelsStep,
+      default: module.default,
     };
   }),
   [ONBOARDING_STEP_IDS.PHLEBOTOMY_BOOKING]: createLazyStepRenderer(async () => {

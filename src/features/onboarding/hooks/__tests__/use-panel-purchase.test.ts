@@ -2,12 +2,12 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { toast } from '@/components/ui/sonner';
+import { useOnboardingCartStore } from '@/features/add-on-panels/stores/add-on-panels-cart-store';
 import { useCreateCredit } from '@/features/orders/api/credits';
 import { useServices } from '@/features/services/api';
 import { usePaymentMethods } from '@/features/settings/api';
 import { HealthcareService } from '@/types/api';
 
-import { useOnboardingCartStore } from '../../stores/onboarding-cart-store';
 import { useOnboardingAnalytics } from '../use-onboarding-analytics';
 import { usePanelPurchase } from '../use-panel-purchase';
 
@@ -154,9 +154,16 @@ describe('usePanelPurchase', () => {
       },
     });
     expect(trackOnboardingCreditPurchaseMock).toHaveBeenCalledWith({
-      credits: [{ id: TEST_SERVICE.id, price: TEST_SERVICE.price }],
+      credits: [
+        {
+          id: TEST_SERVICE.id,
+          price: TEST_SERVICE.price,
+          name: TEST_SERVICE.name,
+        },
+      ],
       totalValue: TEST_SERVICE.price,
       paymentProvider: 'stripe',
+      flowContext: 'onboarding',
     });
     expect(trackOnboardingCreditAddedToCartMock).not.toHaveBeenCalled();
     expect(toast.success).toHaveBeenCalledWith('Purchase successful!');
@@ -188,6 +195,7 @@ describe('usePanelPurchase', () => {
     expect(trackOnboardingCreditAddedToCartMock).toHaveBeenCalledWith({
       id: TEST_SERVICE.id,
       price: TEST_SERVICE.price,
+      flowContext: 'onboarding',
     });
     expect(toast.success).toHaveBeenCalledWith('Added to cart!');
     expect(onSuccess).toHaveBeenCalledTimes(1);

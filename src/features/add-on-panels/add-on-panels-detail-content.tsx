@@ -1,7 +1,7 @@
-import type { AddOnItem } from '@/features/onboarding/api/onboarding-add-ons';
 import { getPanelDetailContent } from '@/features/onboarding/data/panel-detail-content';
 
 import { AddOnPanelsDetail } from './add-on-panels-detail';
+import type { AddOnItem } from './api/add-on-panels';
 
 const AddOnPanelsDetailContent = ({
   item,

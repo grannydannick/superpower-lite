@@ -1,12 +1,13 @@
 import { IconCheckCircle2 } from '@central-icons-react/round-filled-radius-2-stroke-1.5/IconCheckCircle2';
 import { IconCheckmark1 } from '@central-icons-react/round-filled-radius-2-stroke-1.5/IconCheckmark1';
 import { IconSparkle } from '@central-icons-react/round-filled-radius-2-stroke-1.5/IconSparkle';
+import { IconCalendarCheck } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconCalendarCheck';
 import { IconChevronLeft } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconChevronLeft';
 import { IconChevronRight } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconChevronRight';
 import { IconCrossMedium } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconCrossMedium';
 import { IconLock } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconLock';
 import { IconMagnifyingGlass } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconMagnifyingGlass';
-import { type UIEvent, useRef } from 'react';
+import { type UIEvent, useMemo, useRef } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -17,27 +18,34 @@ import {
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Body1, Body2, Body3, H2, H3 } from '@/components/ui/typography';
-import type {
-  AddOnGroup,
-  AddOnItem,
-} from '@/features/onboarding/api/onboarding-add-ons';
-import { hasPanelDetailContent } from '@/features/onboarding/data/panel-detail-content-ids';
-import { useOnboardingCartStore } from '@/features/onboarding/stores/onboarding-cart-store';
 import { cn } from '@/lib/utils';
 import { formatMoney } from '@/utils/format-money';
 import { getServiceImage } from '@/utils/service';
 
-import { useAddOnPanelsStep } from './add-on-panels-context';
+import {
+  useAddOnPanelsCore,
+  useAddOnPanelsDetail,
+  useAddOnPanelsMarketplace,
+} from './add-on-panels-context';
+import {
+  canAddOnItemToCart,
+  getAddOnItemEntitlementState,
+  getAddOnItemPresentation,
+  type AddOnItemMetaLabel,
+  type AddOnItemDisplayBadgeTone,
+} from './add-on-panels-derived';
 import { CartFooter } from './add-on-panels-overlays';
 import { useSupplementaryControlsVisibility } from './add-on-panels-scroll-visibility';
 import {
-  findGroupByItemId,
   getCurrentRecommendation,
   getFilteredGroups,
   getGroupItems,
   getMarketplaceGroups,
   getPurchasedItems,
 } from './add-on-panels-selectors';
+import { AddOnPanelsStepIndicator } from './add-on-panels-step-indicator';
+import type { AddOnGroup, AddOnItem } from './api/add-on-panels';
+import { hasPanelDetailContent } from './data/panel-detail-content-ids';
 
 export const TEST_CARD_SKELETON_KEYS: string[] = [
   'test-card-skeleton-1',
@@ -76,34 +84,35 @@ function getBundleOriginalPrice(group: AddOnGroup): number | null {
     return null;
   }
 
-  return group.selection.components.reduce((sum, component) => {
-    return sum + component.price;
-  }, 0);
-}
-
-function getItemBadgeLabel(item: AddOnItem): string | null {
-  if (item.status === 'purchased') return 'Purchased';
-  if (item.status === 'included') return 'Included';
-  if (item.isRecommended && item.kind !== 'complete-panel') {
-    return 'Recommended';
+  let sum = 0;
+  for (const component of group.selection.components) {
+    sum += component.price;
   }
 
-  return null;
+  if (sum <= group.selection.bundle.price) return null;
+
+  return sum;
 }
 
-function getItemBadgeTone(
-  item: AddOnItem,
-): 'included' | 'purchased' | 'recommended' {
-  if (item.status === 'included') return 'included';
-  if (item.status === 'purchased') return 'purchased';
-  if (item.isRecommended && item.status === 'available') return 'recommended';
+const ItemMetaLabelRow = ({ metaLabel }: { metaLabel: AddOnItemMetaLabel }) => {
+  const icon =
+    metaLabel.kind === 'history' ? (
+      <IconCalendarCheck className="size-3 shrink-0" />
+    ) : (
+      <IconCheckCircle2 className="size-3 shrink-0" />
+    );
 
-  return 'included';
-}
+  return (
+    <span className="inline-flex items-center gap-1 rounded border border-zinc-200 bg-zinc-50 px-1.5 text-[11px] font-normal leading-5 tracking-wide text-zinc-600">
+      {icon}
+      {metaLabel.label}
+    </span>
+  );
+};
 
 const ExploreTestsSearch = () => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { searchQuery, setSearchQuery } = useAddOnPanelsStep();
+  const { searchQuery, setSearchQuery } = useAddOnPanelsMarketplace();
 
   return (
     <div className="relative min-w-0">
@@ -134,7 +143,7 @@ const ExploreTestsSearch = () => {
 
 const FilterPillsContent = () => {
   const { activeFilterId, filterOptions, setActiveFilterId } =
-    useAddOnPanelsStep();
+    useAddOnPanelsMarketplace();
   const { canScrollPrev, canScrollNext, scrollPrev, scrollNext } =
     useCarousel();
 
@@ -213,7 +222,7 @@ const ItemBadge = ({
   tone,
 }: {
   label: string;
-  tone: 'included' | 'purchased' | 'recommended';
+  tone: AddOnItemDisplayBadgeTone;
 }) => {
   if (label == null) return null;
 
@@ -221,7 +230,7 @@ const ItemBadge = ({
     <span
       className={cn(
         'inline-flex items-center gap-1 rounded border px-1.5 text-[11px] font-normal leading-5 tracking-wide',
-        tone === 'recommended'
+        tone === 'recommended' || tone === 'completed'
           ? 'border-[#fc5f2b]/10 bg-[#fc5f2b]/10 text-[#fc5f2b]'
           : tone === 'purchased'
             ? 'border-emerald-100 bg-emerald-50 text-emerald-700'
@@ -230,6 +239,28 @@ const ItemBadge = ({
     >
       {tone === 'recommended' ? (
         <IconSparkle className="size-3 shrink-0" />
+      ) : tone === 'completed' ? (
+        <svg
+          viewBox="0 0 16 16"
+          fill="none"
+          aria-hidden
+          className="size-3 shrink-0"
+        >
+          <path
+            d="M13 3.5V6.5H10"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M13 8A5 5 0 1 1 11.54 4.46L13 6.5"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       ) : tone === 'purchased' || tone === 'included' ? (
         <IconCheckCircle2 className="size-3 shrink-0" />
       ) : null}
@@ -255,15 +286,21 @@ const TestCard = ({
   disabled,
   originalPrice,
 }: TestCardProps) => {
-  const { openDetail } = useAddOnPanelsStep();
-  const isLocked = item.status !== 'available';
+  const { showRecommendations } = useAddOnPanelsCore();
+  const { openDetail } = useAddOnPanelsDetail();
+  const presentation = getAddOnItemPresentation(item, {
+    recommendedBadgeLabel: showRecommendations
+      ? 'Recommended'
+      : 'Recommended add-on',
+  });
+  const canAddToCart = canAddOnItemToCart(item);
+  const entitlementState = getAddOnItemEntitlementState(item);
+  const isLocked = !canAddToCart;
   const showLearnMore = !isLocked && hasPanelDetailContent(item.id);
   const displayName =
     item.kind === 'complete-panel' ? 'Add the complete panel' : item.name;
-  const badgeLabel = getItemBadgeLabel(item);
   const hasRecommendationReason =
-    item.status === 'available' &&
-    item.kind !== 'complete-panel' &&
+    presentation.badge?.tone === 'recommended' &&
     item.recommendation?.reason != null &&
     item.recommendation.reason.trim().length > 0;
 
@@ -272,12 +309,12 @@ const TestCard = ({
       role="button"
       tabIndex={0}
       onClick={() => {
-        if (!disabled && item.status === 'available') onToggle();
+        if (!disabled && canAddToCart) onToggle();
       }}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          if (!disabled && item.status === 'available') onToggle();
+          if (!disabled && canAddToCart) onToggle();
         }
       }}
       className={cn(
@@ -301,11 +338,11 @@ const TestCard = ({
               : 'bg-white',
         )}
       >
-        {item.status === 'included' ? (
+        {entitlementState === 'included' ? (
           <IconCheckmark1 className="size-3.5 text-zinc-400" />
         ) : isLocked ? (
           <IconLock className="size-3 text-zinc-400" />
-        ) : item.status === 'available' ? (
+        ) : canAddToCart ? (
           <svg
             width="14"
             height="14"
@@ -342,8 +379,11 @@ const TestCard = ({
           <div className="flex w-full items-start gap-2">
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
               <Body1 className="text-zinc-900">{displayName}</Body1>
-              {badgeLabel != null && (
-                <ItemBadge label={badgeLabel} tone={getItemBadgeTone(item)} />
+              {presentation.badge != null && (
+                <ItemBadge
+                  label={presentation.badge.label}
+                  tone={presentation.badge.tone}
+                />
               )}
             </div>
             {!isLocked && (
@@ -366,6 +406,16 @@ const TestCard = ({
                 {item.description}
               </Body2>
             )}
+          {presentation.metaLabels.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {presentation.metaLabels.map((metaLabel) => (
+                <ItemMetaLabelRow
+                  key={`${metaLabel.kind}-${metaLabel.label}`}
+                  metaLabel={metaLabel}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -470,10 +520,8 @@ const GroupSectionHeader = ({ group }: { group: AddOnGroup }) => {
 };
 
 const GroupSectionItems = ({ group }: { group: AddOnGroup }) => {
-  const { isPending, addOnsData, applySelectionToggle } = useAddOnPanelsStep();
-  const selectedServiceIds = useOnboardingCartStore(
-    (s) => s.selectedServiceIds,
-  );
+  const { addOnsData, applySelectionToggle, isPending, selectedServiceIds } =
+    useAddOnPanelsCore();
   const originalPrice = getBundleOriginalPrice(group);
 
   const bundleSelected =
@@ -483,7 +531,7 @@ const GroupSectionItems = ({ group }: { group: AddOnGroup }) => {
 
   const renderItem = (item: AddOnItem, isBundle: boolean) => {
     const toggle = () => {
-      if (item.status !== 'available') return;
+      if (!canAddOnItemToCart(item)) return;
       // The `group` here may be search-filtered (missing components that don't
       // match the query), which would cause `computeToggle`'s sibling check to
       // misfire. Always toggle against the original unfiltered group.
@@ -504,7 +552,7 @@ const GroupSectionItems = ({ group }: { group: AddOnGroup }) => {
         isSelected={selectedServiceIds.has(item.id)}
         includedByBundle={!isBundle && bundleSelected}
         onToggle={toggle}
-        disabled={isPending || item.status !== 'available'}
+        disabled={isPending || !canAddOnItemToCart(item)}
         originalPrice={isBundle ? originalPrice : null}
       />
     );
@@ -547,32 +595,57 @@ const MarketplaceGroupSection = ({ group }: { group: AddOnGroup }) => {
 };
 
 const PurchasedPanelRow = ({
-  name,
+  item,
   groupId,
 }: {
-  name: string;
+  item: AddOnItem;
   groupId: string;
-}) => (
-  <div className="grid grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-zinc-100 bg-zinc-50 px-4 py-3">
-    <div className="relative size-8 shrink-0 overflow-hidden rounded-md opacity-40">
-      <img
-        src={getAddOnImage(groupId, name)}
-        alt=""
-        className="size-full object-contain"
-      />
-      <div className="absolute bottom-0 left-0 h-3 w-full bg-gradient-to-b from-transparent to-white" />
+}) => {
+  const presentation = getAddOnItemPresentation(item);
+  const visibleMetaLabels = presentation.metaLabels.filter((metaLabel) => {
+    return metaLabel.kind !== 'history';
+  });
+
+  return (
+    <div className="rounded-2xl border border-zinc-100 bg-zinc-50 px-4 py-3">
+      <div className="grid grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-3">
+        <div className="relative size-8 shrink-0 overflow-hidden rounded-md opacity-40">
+          <img
+            src={getAddOnImage(groupId, item.name)}
+            alt=""
+            className="size-full object-contain"
+          />
+          <div className="absolute bottom-0 left-0 h-3 w-full bg-gradient-to-b from-transparent to-white" />
+        </div>
+        <Body1 className="min-w-0 truncate text-zinc-900">{item.name}</Body1>
+        {presentation.badge != null && (
+          <ItemBadge
+            label={presentation.badge.label}
+            tone={presentation.badge.tone}
+          />
+        )}
+      </div>
+      {visibleMetaLabels.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 pl-11 pt-2">
+          {visibleMetaLabels.map((metaLabel) => (
+            <ItemMetaLabelRow
+              key={`${metaLabel.kind}-${metaLabel.label}`}
+              metaLabel={metaLabel}
+            />
+          ))}
+        </div>
+      )}
     </div>
-    <Body1 className="min-w-0 truncate text-zinc-900">{name}</Body1>
-    <ItemBadge label="Purchased" tone="purchased" />
-  </div>
-);
+  );
+};
 
 const RecommendationGroupSection = ({ group }: { group: AddOnGroup }) => {
   return <GroupSectionItems group={group} />;
 };
 
 export const RecommendationView = () => {
-  const { addOnsData, recommendationIndex } = useAddOnPanelsStep();
+  const { addOnsData } = useAddOnPanelsCore();
+  const { recommendationIndex } = useAddOnPanelsMarketplace();
   const currentRec = getCurrentRecommendation(addOnsData, recommendationIndex);
 
   if (currentRec == null) return null;
@@ -609,28 +682,50 @@ interface MarketplaceHeaderProps {
   areFiltersHidden: boolean;
 }
 
-const MarketplaceHeader = ({ areFiltersHidden }: MarketplaceHeaderProps) => (
-  <div className="shrink-0 bg-white pb-4">
-    <div className="mx-auto max-w-lg px-4 pt-6">
-      <div className="space-y-6">
-        <H2>Explore Tests</H2>
-        <div className="relative z-10 bg-white">
-          <ExploreTestsSearch />
+const MARKETPLACE_STEPS = [
+  { id: 'add-ons', label: 'Add-ons' },
+  { id: 'schedule', label: 'Schedule tests' },
+];
+
+const MarketplaceHeader = ({ areFiltersHidden }: MarketplaceHeaderProps) => {
+  const { marketplaceCopy, showStepIndicator } = useAddOnPanelsCore();
+
+  return (
+    <div className="shrink-0 bg-white pb-4">
+      <div className="mx-auto max-w-lg px-4 pt-6">
+        <div className="space-y-6">
+          {showStepIndicator && (
+            <AddOnPanelsStepIndicator
+              steps={MARKETPLACE_STEPS}
+              activeStepId="add-ons"
+            />
+          )}
+          <div className="space-y-2">
+            <H2>{marketplaceCopy.title}</H2>
+            {marketplaceCopy.subtitle != null && (
+              <Body2 className="text-zinc-500">
+                {marketplaceCopy.subtitle}
+              </Body2>
+            )}
+          </div>
+          <div className="relative z-10 bg-white">
+            <ExploreTestsSearch />
+          </div>
+        </div>
+        <div
+          className={cn(
+            'relative z-0 overflow-hidden transition-all duration-300 ease-out',
+            areFiltersHidden
+              ? 'pointer-events-none max-h-0 -translate-y-2 opacity-0'
+              : 'mt-6 max-h-16 translate-y-0 opacity-100',
+          )}
+        >
+          <FilterPills />
         </div>
       </div>
-      <div
-        className={cn(
-          'relative z-0 overflow-hidden transition-all duration-300 ease-out',
-          areFiltersHidden
-            ? 'pointer-events-none max-h-0 -translate-y-2 opacity-0'
-            : 'mt-6 max-h-16 translate-y-0 opacity-100',
-        )}
-      >
-        <FilterPills />
-      </div>
     </div>
-  </div>
-);
+  );
+};
 
 interface MarketplaceListProps {
   bottomPaddingClass: string;
@@ -641,13 +736,49 @@ const MarketplaceList = ({
   bottomPaddingClass,
   onScroll,
 }: MarketplaceListProps) => {
-  const { activeFilterId, addOnsData, searchQuery } = useAddOnPanelsStep();
-  const purchasedItems = getPurchasedItems(addOnsData.groups);
-  const marketplaceGroups = getMarketplaceGroups(addOnsData.groups);
-  const filtered = getFilteredGroups(
-    marketplaceGroups,
-    activeFilterId,
-    searchQuery,
+  const {
+    addOnsData,
+    includeBaselineBloodPanels,
+    showOnlyPurchasableMarketplaceItems,
+  } = useAddOnPanelsCore();
+  const { activeFilterId, searchQuery } = useAddOnPanelsMarketplace();
+  const purchasedItems = useMemo(() => {
+    if (showOnlyPurchasableMarketplaceItems) {
+      return [];
+    }
+
+    const groupIdsByItemId = new Map<string, string>();
+    for (const group of addOnsData.groups) {
+      for (const item of getGroupItems(group)) {
+        groupIdsByItemId.set(item.id, group.id);
+      }
+    }
+
+    const rows: Array<{ item: AddOnItem; groupId: string }> = [];
+    for (const item of getPurchasedItems(addOnsData.groups)) {
+      rows.push({
+        item,
+        groupId: groupIdsByItemId.get(item.id) ?? '',
+      });
+    }
+
+    return rows;
+  }, [addOnsData.groups, showOnlyPurchasableMarketplaceItems]);
+  const marketplaceGroups = useMemo(
+    () =>
+      getMarketplaceGroups(addOnsData.groups, {
+        includeBaselineBloodPanels,
+        onlyPurchasable: showOnlyPurchasableMarketplaceItems,
+      }),
+    [
+      addOnsData.groups,
+      includeBaselineBloodPanels,
+      showOnlyPurchasableMarketplaceItems,
+    ],
+  );
+  const filtered = useMemo(
+    () => getFilteredGroups(marketplaceGroups, activeFilterId, searchQuery),
+    [marketplaceGroups, activeFilterId, searchQuery],
   );
 
   return (
@@ -657,17 +788,9 @@ const MarketplaceList = ({
     >
       <div className="mx-auto max-w-lg pt-2">
         <div className="space-y-3">
-          {purchasedItems.map((item) => {
-            const group = findGroupByItemId(addOnsData.groups, item.id);
-
-            return (
-              <PurchasedPanelRow
-                key={item.id}
-                name={item.name}
-                groupId={group?.id ?? ''}
-              />
-            );
-          })}
+          {purchasedItems.map(({ item, groupId }) => (
+            <PurchasedPanelRow key={item.id} item={item} groupId={groupId} />
+          ))}
           {filtered.length === 0 ? (
             <div className="py-8 text-center">
               <Body1 className="text-zinc-500">

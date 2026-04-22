@@ -43,10 +43,20 @@ export const CreditActionCard = ({
 
   const getUrl = () => {
     const service = services.find((s) => s.id === credit.serviceId);
+    const serviceGroup = service?.group;
 
-    if (!service || !service?.group) return linkOptions({ to: '/schedule' });
+    if (serviceGroup === 'test-kit' || serviceGroup === 'advisory-call') {
+      return linkOptions({ to: '/schedule', search: { mode: serviceGroup } });
+    }
 
-    return linkOptions({ to: '/schedule', search: { mode: service.group } });
+    return linkOptions({
+      to: '/schedule',
+      search: {
+        mode: 'phlebotomy',
+        showAddons: true,
+        variant: 'add-ons',
+      },
+    });
   };
 
   const isMandatoryRxLabCredit = credit.serviceId.startsWith('rx-cbp-');

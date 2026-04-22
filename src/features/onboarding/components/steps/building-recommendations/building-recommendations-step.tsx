@@ -1,9 +1,9 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { m } from 'framer-motion';
-import { useEffect, useEffectEvent, useState } from 'react';
+import { useEffect, useEffectEvent, useReducer } from 'react';
 
 import { TextShimmer } from '@/components/ui/text-shimmer';
-import { getOnboardingAddOnsQueryOptions } from '@/features/onboarding/api/onboarding-add-ons';
+import { getOnboardingAddOnsQueryOptions } from '@/features/add-on-panels/api/add-on-panels';
 import { ONBOARDING_STEP_IDS } from '@/features/onboarding/components/flow/onboarding-step-manifest';
 import { useOnboardingNavigation } from '@/features/onboarding/hooks/use-onboarding-navigation';
 
@@ -22,13 +22,53 @@ const RECOMMENDATION_MESSAGES = [
 ];
 const FADE_TRANSITION = { duration: 0.2 };
 const preloadAddOnPanelsStep = () =>
-  import('@/features/onboarding/components/steps/add-on-panels/add-on-panels-step');
+  import('@/features/add-on-panels/add-on-panels-step');
+
+interface RecommendationMessageState {
+  messageIndex: number;
+  isVisible: boolean;
+}
+
+interface FadeOutRecommendationMessageAction {
+  type: 'fade-out';
+}
+
+interface AdvanceRecommendationMessageAction {
+  type: 'advance-message';
+}
+
+type RecommendationMessageAction =
+  | FadeOutRecommendationMessageAction
+  | AdvanceRecommendationMessageAction;
+
+const INITIAL_RECOMMENDATION_MESSAGE_STATE: RecommendationMessageState = {
+  messageIndex: 0,
+  isVisible: true,
+};
+
+function recommendationMessageReducer(
+  state: RecommendationMessageState,
+  action: RecommendationMessageAction,
+) {
+  switch (action.type) {
+    case 'fade-out':
+      return { ...state, isVisible: false };
+    case 'advance-message':
+      return {
+        messageIndex: state.messageIndex + 1,
+        isVisible: true,
+      };
+  }
+}
 
 export const BuildingRecommendationsStep = () => {
   const queryClient = useQueryClient();
   const { currentStep, next, validSteps } = useOnboardingNavigation();
-  const [messageIndex, setMessageIndex] = useState(0);
-  const [isVisible, setIsVisible] = useState(true);
+  const [messageState, dispatch] = useReducer(
+    recommendationMessageReducer,
+    INITIAL_RECOMMENDATION_MESSAGE_STATE,
+  );
+  const { isVisible, messageIndex } = messageState;
 
   const currentIndex = validSteps.indexOf(currentStep);
   const nextStep =
@@ -57,6 +97,8 @@ export const BuildingRecommendationsStep = () => {
     let isCancelled = false;
 
     const pollForRecommendations = async () => {
+      let shouldAdvance = false;
+
       if (RECOMMENDATION_POLL_START_MS > 0) {
         const initialWaitMs = Math.min(
           RECOMMENDATION_POLL_START_MS,
@@ -81,15 +123,16 @@ export const BuildingRecommendationsStep = () => {
         if (isCancelled) {
           return;
         }
-        if (addOnsData != null && addOnsData.recommendedGroupIds.length > 0) {
-          advance();
-          return;
+        shouldAdvance =
+          addOnsData != null && addOnsData.recommendedGroupIds.length > 0;
+        if (shouldAdvance) {
+          break;
         }
 
         const remainingMs = deadlineAtMs - Date.now();
         if (remainingMs <= 0) {
-          advance();
-          return;
+          shouldAdvance = true;
+          break;
         }
 
         await new Promise<void>((resolve) => {
@@ -100,6 +143,10 @@ export const BuildingRecommendationsStep = () => {
             Math.min(RECOMMENDATION_POLL_INTERVAL_MS, remainingMs),
           );
         });
+      }
+
+      if (!isCancelled && shouldAdvance) {
+        advance();
       }
     };
 
@@ -119,12 +166,11 @@ export const BuildingRecommendationsStep = () => {
     }
 
     const fadeOutTimer = setTimeout(() => {
-      setIsVisible(false);
+      dispatch({ type: 'fade-out' });
     }, MESSAGE_STEP_DURATION_MS - FADE_DURATION_MS);
 
     const nextMessageTimer = setTimeout(() => {
-      setMessageIndex((currentIndex) => currentIndex + 1);
-      setIsVisible(true);
+      dispatch({ type: 'advance-message' });
     }, MESSAGE_STEP_DURATION_MS);
 
     return () => {

@@ -7,10 +7,16 @@ import ReactMarkdown from 'react-markdown';
 
 import { Button } from '@/components/ui/button';
 import { Body1, H2 } from '@/components/ui/typography';
-import type { AddOnItem } from '@/features/onboarding/api/onboarding-add-ons';
 import type { PanelDetailContent } from '@/features/onboarding/data/panel-detail-content';
 import { cn } from '@/lib/utils';
 import { formatMoney } from '@/utils/format-money';
+
+import { useAddOnPanelsCore } from './add-on-panels-context';
+import {
+  canAddOnItemToCart,
+  getAddOnItemPresentation,
+} from './add-on-panels-derived';
+import type { AddOnItem } from './api/add-on-panels';
 
 const PanelDetailMarkdown = ({ children }: { children: string }) => {
   return (
@@ -71,7 +77,13 @@ export const AddOnPanelsDetail = ({
   onClose: () => void;
   className?: string;
 }) => {
-  const isLocked = item.status !== 'available';
+  const isLocked = !canAddOnItemToCart(item);
+  const { showRecommendations } = useAddOnPanelsCore();
+  const presentation = getAddOnItemPresentation(item, {
+    recommendedBadgeLabel: showRecommendations
+      ? 'Recommended'
+      : 'Recommended add-on',
+  });
 
   return (
     <div
@@ -95,10 +107,10 @@ export const AddOnPanelsDetail = ({
         <div className="space-y-2 pb-6">
           <div className="flex items-center gap-2">
             <H2>{item.name}</H2>
-            {item.isRecommended && item.status === 'available' && (
+            {presentation.badge?.tone === 'recommended' && (
               <span className="inline-flex shrink-0 items-center gap-1 rounded bg-[#fc5f2b]/10 px-1 text-[11px] font-normal leading-5 tracking-wide text-[#fc5f2b]">
                 <IconSparkle className="size-3 shrink-0" />
-                Recommended
+                {presentation.badge.label}
               </span>
             )}
           </div>

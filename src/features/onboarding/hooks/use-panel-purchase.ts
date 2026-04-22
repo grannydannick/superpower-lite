@@ -2,12 +2,11 @@ import { useEffect } from 'react';
 
 import { toast } from '@/components/ui/sonner';
 import { KIT_SERVICES } from '@/const/services';
+import { useOnboardingCartStore } from '@/features/add-on-panels/stores/add-on-panels-cart-store';
 import { useCreateCredit } from '@/features/orders/api/credits';
 import { useServices } from '@/features/services/api';
 import { usePaymentMethodSelection } from '@/features/settings/hooks';
 import { HealthcareService } from '@/types/api';
-
-import { useOnboardingCartStore } from '../stores/onboarding-cart-store';
 
 import { useOnboardingAnalytics } from './use-onboarding-analytics';
 
@@ -80,6 +79,7 @@ export const usePanelPurchase = ({
       trackOnboardingCreditAddedToCart({
         id: service.id,
         price: service.price ?? 0,
+        flowContext: 'onboarding',
       });
       toast.success('Added to cart!');
       onSuccess?.();
@@ -104,9 +104,12 @@ export const usePanelPurchase = ({
     }
 
     trackOnboardingCreditPurchase({
-      credits: [{ id: service.id, price: service.price ?? 0 }],
+      credits: [
+        { id: service.id, price: service.price ?? 0, name: service.name },
+      ],
       totalValue: service.price ?? 0,
       paymentProvider: activePaymentMethod?.paymentProvider ?? 'unknown',
+      flowContext: 'onboarding',
     });
     toast.success('Purchase successful!');
     onSuccess?.();

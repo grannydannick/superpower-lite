@@ -5,7 +5,6 @@ import type { operations } from '@/orpc/types.generated';
 
 type OnboardingAddOnsResponse =
   operations['onboarding.getOnboardingAddOns']['responses'][200]['content']['application/json'];
-
 type AddOnGroup = OnboardingAddOnsResponse['groups'][number];
 type AddOnFilter = OnboardingAddOnsResponse['filters'][number];
 type AddOnMeta = OnboardingAddOnsResponse['meta'];
@@ -23,7 +22,6 @@ type AddOnItem =
   | AddOnBundleSelection['components'][number]
   | AddOnIndependentSelection['items'][number];
 type AddOnItemId = AddOnItem['id'];
-type AddOnItemStatus = AddOnItem['status'];
 
 export type {
   AddOnFilter,
@@ -31,23 +29,39 @@ export type {
   AddOnIndependentSelection,
   AddOnItem,
   AddOnItemId,
-  AddOnItemStatus,
   AddOnMeta,
   AddOnSelection,
   AddOnBundleSelection,
   OnboardingAddOnsResponse,
 };
 
-export const getOnboardingAddOnsQueryOptions = () =>
-  $api.queryOptions('get', '/rpc/onboarding/add-ons');
+export type AddOnCollectionMethod = 'phlebotomy' | 'test-kit';
 
-export function useOnboardingAddOns(options?: { enabled?: boolean }) {
+export const getOnboardingAddOnsQueryOptions = (input?: {
+  collectionMethod?: AddOnCollectionMethod;
+}) =>
+  $api.queryOptions('get', '/rpc/onboarding/add-ons', {
+    params: {
+      query: input?.collectionMethod
+        ? { collectionMethod: input.collectionMethod }
+        : undefined,
+    },
+  });
+
+export function useOnboardingAddOns(options?: {
+  enabled?: boolean;
+  collectionMethod?: AddOnCollectionMethod;
+}) {
   return useQuery({
-    ...getOnboardingAddOnsQueryOptions(),
+    ...getOnboardingAddOnsQueryOptions({
+      collectionMethod: options?.collectionMethod,
+    }),
     enabled: options?.enabled ?? true,
   });
 }
 
-export function useSuspenseOnboardingAddOns() {
-  return useSuspenseQuery(getOnboardingAddOnsQueryOptions());
+export function useSuspenseOnboardingAddOns(input?: {
+  collectionMethod?: AddOnCollectionMethod;
+}) {
+  return useSuspenseQuery(getOnboardingAddOnsQueryOptions(input));
 }
