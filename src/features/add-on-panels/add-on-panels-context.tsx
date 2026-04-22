@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import {
   createContext,
   type PropsWithChildren,
@@ -40,6 +41,7 @@ import {
   type AddOnItem,
   type AddOnItemId,
   type OnboardingAddOnsResponse,
+  getOnboardingAddOnsQueryOptions,
   useSuspenseOnboardingAddOns,
 } from './api/add-on-panels';
 import type { AddOnPanelsCartController } from './use-local-add-on-panels-cart';
@@ -220,6 +222,7 @@ export const AddOnPanelsStepProvider = ({
   const { data: addOnsData } = useSuspenseOnboardingAddOns({
     collectionMethod: variant.collectionMethod,
   });
+  const queryClient = useQueryClient();
   const { activePaymentMethod, isFlexSelected, isSelectingPaymentMethod } =
     usePaymentMethodSelection();
   const createCreditMutation = useCreateCredit();
@@ -398,6 +401,11 @@ export const AddOnPanelsStepProvider = ({
       items: selectedItems,
       paymentProvider,
     });
+    await queryClient.invalidateQueries({
+      queryKey: getOnboardingAddOnsQueryOptions({
+        collectionMethod: variant.collectionMethod,
+      }).queryKey,
+    });
 
     toast.success('Purchase successful');
     clear();
@@ -410,7 +418,9 @@ export const AddOnPanelsStepProvider = ({
     clear,
     createCreditMutation,
     next,
+    queryClient,
     selectedServiceIds,
+    variant.collectionMethod,
   ]);
 
   const coreValue = useMemo(
