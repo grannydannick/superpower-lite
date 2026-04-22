@@ -5,11 +5,9 @@ import { Link } from '@/components/ui/link';
 import type { DataSummaryCategory } from '@/features/data/types/data-api';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { cn } from '@/lib/utils';
-import type { CategoryValue } from '@/types/api';
 
 const SUMMARY_CATEGORY: DataSummaryCategory = {
   id: 'summary',
-  version: '',
   slug: 'summary',
   name: 'Summary',
   title: 'Summary',
@@ -19,6 +17,7 @@ const SUMMARY_CATEGORY: DataSummaryCategory = {
   content: null,
   metaTitle: null,
   metaDescription: null,
+  healthScore: { value: '-', factors: [] },
 };
 
 export { SUMMARY_CATEGORY };
@@ -65,9 +64,7 @@ export const DataSidebarLink = ({
           <Heart className="size-full" />
         </div>
       ) : (
-        <MiniScoreChart
-          value={(category.score?.value ?? '-') as CategoryValue}
-        />
+        <MiniScoreChart value={category.healthScore.value} />
       )}
       <span className="truncate">{category.title}</span>
     </Link>

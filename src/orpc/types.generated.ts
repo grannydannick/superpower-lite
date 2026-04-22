@@ -21337,7 +21337,6 @@ export interface operations {
                     "application/json": {
                         categories: ({
                             id: string;
-                            version: string;
                             slug: string;
                             name: string;
                             title: string;
@@ -21356,11 +21355,24 @@ export interface operations {
                                     status: string;
                                     biomarker: {
                                         id: string;
-                                        version: string;
                                         slug: string;
                                         name: string;
                                         title: string;
                                     };
+                                }[];
+                            };
+                            healthScore: {
+                                /** @enum {unknown} */
+                                value: "A" | "B" | "C" | "-";
+                                factors: {
+                                    biomarker: {
+                                        id: string;
+                                        slug: string;
+                                        name: string;
+                                        title: string;
+                                    };
+                                    weight: number;
+                                    status: string;
                                 }[];
                             };
                         })[];
@@ -21581,7 +21593,6 @@ export interface operations {
         parameters: {
             query?: {
                 slug?: string;
-                category?: string;
                 gender?: "male" | "female";
             };
             header?: never;
@@ -21599,7 +21610,6 @@ export interface operations {
                     "application/json": {
                         biomarkers: ({
                             id: string;
-                            version: string;
                             slug: string;
                             name: string;
                             title: string;
@@ -21620,14 +21630,12 @@ export interface operations {
                             }[];
                             categories: {
                                 id: string;
-                                version: string;
                                 slug: string;
                                 name: string;
                                 title: string;
                             }[];
                             diagnosticTests: ({
                                 id: string;
-                                version: string;
                                 slug: string;
                                 name: string;
                                 /** @enum {unknown} */
@@ -21637,7 +21645,6 @@ export interface operations {
                             } & {
                                 product: {
                                     id: string;
-                                    version: string;
                                     slug: string;
                                     name: string;
                                     title: string;
@@ -22115,7 +22122,6 @@ export interface operations {
                 content: {
                     "application/json": ({
                         id: string;
-                        version: string;
                         slug: string;
                         name: string;
                         title: string;
@@ -22138,7 +22144,6 @@ export interface operations {
                         }[];
                         categories: {
                             id: string;
-                            version: string;
                             slug: string;
                             name: string;
                             title: string;

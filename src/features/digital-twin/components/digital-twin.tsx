@@ -109,7 +109,7 @@ export const DigitalTwin = ({
   }, []);
 
   const level = useMemo<Level | undefined>(() => {
-    switch (category?.score?.value) {
+    switch (category?.healthScore.value) {
       case 'A':
         return 'good';
       case 'B':

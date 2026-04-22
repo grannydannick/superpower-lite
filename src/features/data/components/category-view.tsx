@@ -9,7 +9,7 @@ import { H4 } from '@/components/ui/typography';
 import { AnimatedIcon } from '@/features/messages/components/ai/animated-icon';
 import { useAssistantStore } from '@/features/messages/stores/assistant-store';
 import { useUser } from '@/lib/auth';
-import type { BiomarkerStatus, CategoryValue } from '@/types/api';
+import type { BiomarkerStatus } from '@/types/api';
 
 import { useBiomarkerSummary } from '../api/get-biomarker-summary';
 import { useDataSummary } from '../api/get-data-summary';
@@ -39,13 +39,12 @@ export const CategoryView = () => {
     return null;
   }
 
-  const categoryBiomarkers: ScoredBiomarker[] = (
-    activeCategoryData.score?.observations ?? []
-  ).map((o) => ({
-    id: o.id,
-    name: o.biomarker.title,
-    status: o.status as BiomarkerStatus,
-  }));
+  const categoryBiomarkers: ScoredBiomarker[] =
+    activeCategoryData.healthScore.factors.map((f) => ({
+      id: f.biomarker.id,
+      name: f.biomarker.title,
+      status: f.status as BiomarkerStatus,
+    }));
 
   const summaryAvailable = !summaryQuery.isError && !summaryQuery.isLoading;
 
@@ -56,7 +55,7 @@ export const CategoryView = () => {
         <div className="mb-8 flex w-full items-center justify-center py-2">
           <ScoreChart
             biomarkers={categoryBiomarkers}
-            value={(activeCategoryData.score?.value ?? '-') as CategoryValue}
+            value={activeCategoryData.healthScore.value}
           />
         </div>
         <div className="space-y-4">
