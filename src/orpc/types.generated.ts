@@ -1745,6 +1745,7 @@ export interface operations {
                             collectionMethod: "AT_HOME" | "IN_LAB" | "PHLEBOTOMY_KIT" | "EVENT";
                         }[];
                         rxEnabled: boolean;
+                        intakeEnabled: boolean;
                     };
                 };
             };
@@ -22581,7 +22582,10 @@ export interface operations {
     };
     "onboarding.getOnboardingAddOns": {
         parameters: {
-            query?: never;
+            query?: {
+                group?: "phlebotomy" | "test-kit";
+                collectionMethod?: "phlebotomy" | "test-kit";
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -22622,7 +22626,7 @@ export interface operations {
                                     price: number;
                                     bloodTubeCount: number;
                                     /** @enum {unknown} */
-                                    status: "available" | "purchased" | "included";
+                                    status: "available" | "purchased" | "in-progress" | "completed" | "included";
                                     isRecommended: boolean;
                                     recommendation?: {
                                         reason: string | null;
@@ -22631,6 +22635,19 @@ export interface operations {
                                             source: "condition" | "symptom" | "goal" | "family_history" | "diet" | "fertility" | "demographic" | "lifestyle";
                                             label: string;
                                         }[];
+                                    };
+                                    entitlement?: {
+                                        /** @enum {unknown} */
+                                        status: "purchased" | "in-progress" | "included";
+                                        /** @enum {unknown} */
+                                        source: "direct" | "bundle" | "overlap";
+                                        coveringServiceNames: string[];
+                                    };
+                                    completion?: {
+                                        /** @enum {unknown} */
+                                        source: "direct" | "bundle";
+                                        lastCompletedAt: string | null;
+                                        completedByServiceName: string | null;
                                     };
                                 } | null;
                                 components: {
@@ -22642,7 +22659,7 @@ export interface operations {
                                     price: number;
                                     bloodTubeCount: number;
                                     /** @enum {unknown} */
-                                    status: "available" | "purchased" | "included";
+                                    status: "available" | "purchased" | "in-progress" | "completed" | "included";
                                     isRecommended: boolean;
                                     recommendation?: {
                                         reason: string | null;
@@ -22651,6 +22668,19 @@ export interface operations {
                                             source: "condition" | "symptom" | "goal" | "family_history" | "diet" | "fertility" | "demographic" | "lifestyle";
                                             label: string;
                                         }[];
+                                    };
+                                    entitlement?: {
+                                        /** @enum {unknown} */
+                                        status: "purchased" | "in-progress" | "included";
+                                        /** @enum {unknown} */
+                                        source: "direct" | "bundle" | "overlap";
+                                        coveringServiceNames: string[];
+                                    };
+                                    completion?: {
+                                        /** @enum {unknown} */
+                                        source: "direct" | "bundle";
+                                        lastCompletedAt: string | null;
+                                        completedByServiceName: string | null;
                                     };
                                 }[];
                             } | {
@@ -22665,7 +22695,7 @@ export interface operations {
                                     price: number;
                                     bloodTubeCount: number;
                                     /** @enum {unknown} */
-                                    status: "available" | "purchased" | "included";
+                                    status: "available" | "purchased" | "in-progress" | "completed" | "included";
                                     isRecommended: boolean;
                                     recommendation?: {
                                         reason: string | null;
@@ -22674,6 +22704,19 @@ export interface operations {
                                             source: "condition" | "symptom" | "goal" | "family_history" | "diet" | "fertility" | "demographic" | "lifestyle";
                                             label: string;
                                         }[];
+                                    };
+                                    entitlement?: {
+                                        /** @enum {unknown} */
+                                        status: "purchased" | "in-progress" | "included";
+                                        /** @enum {unknown} */
+                                        source: "direct" | "bundle" | "overlap";
+                                        coveringServiceNames: string[];
+                                    };
+                                    completion?: {
+                                        /** @enum {unknown} */
+                                        source: "direct" | "bundle";
+                                        lastCompletedAt: string | null;
+                                        completedByServiceName: string | null;
                                     };
                                 }[];
                             };
