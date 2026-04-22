@@ -29,6 +29,7 @@ import { GHK_CU_CREAM, HCG, TRETINOIN } from '@/const';
 import { RxClinicianCallCta } from '@/features/protocol/components/rx-clinician-call-cta';
 import { cn } from '@/lib/utils';
 import type { Rx } from '@/types/api';
+import { formatCentsAsUSD, getPerMonthCents } from '@/utils/plan-pricing';
 import {
   getPrescriptionImage,
   getPrescriptionInfo,
@@ -219,16 +220,6 @@ const getIntervalLabel = (intervalCount: number): string => {
   return 'Annual';
 };
 
-const getPerMonthPrice = (amount: number, intervalCount: number): number => {
-  const months = Math.max(1, Math.round(intervalCount / 30));
-  return amount / months;
-};
-
-const formatPrice = (cents: number): string => {
-  const dollars = cents / 100;
-  return dollars % 1 === 0 ? `$${dollars}` : `$${dollars.toFixed(2)}`;
-};
-
 type BillingTierIncludes = {
   monthly: string[];
   quarterly: string[];
@@ -267,7 +258,7 @@ const BillingTierSelector = ({
   );
   const monthlyPrice = prices.find((p) => p.interval_count <= 30);
   const basePerMonth = monthlyPrice
-    ? getPerMonthPrice(monthlyPrice.amount, monthlyPrice.interval_count)
+    ? getPerMonthCents(monthlyPrice.amount, monthlyPrice.interval_count)
     : 0;
 
   if (prices.length === 0) {
@@ -313,7 +304,7 @@ const BillingTierSelector = ({
       >
         {prices.map((price) => {
           const isSelected = price.billing_code === selectedCode;
-          const perMonth = getPerMonthPrice(price.amount, price.interval_count);
+          const perMonth = getPerMonthCents(price.amount, price.interval_count);
           const savingsPercent =
             basePerMonth > 0 && price.interval_count > 30
               ? Math.round((1 - perMonth / basePerMonth) * 100)
@@ -352,7 +343,7 @@ const BillingTierSelector = ({
                       </Badge>
                     )}
                     <Body1 className="font-semibold">
-                      {formatPrice(perMonth)}/mo
+                      {formatCentsAsUSD(perMonth)}/mo
                     </Body1>
                   </div>
                 </div>
@@ -372,10 +363,10 @@ const BillingTierSelector = ({
                       <div className="mt-3 flex items-baseline justify-between border-t border-zinc-200 pt-3">
                         <Body2 className="text-secondary">Total</Body2>
                         <Body2 className="text-secondary">
-                          {formatPrice(perMonth)}/mo &times;{' '}
+                          {formatCentsAsUSD(perMonth)}/mo &times;{' '}
                           {Math.round(price.interval_count / 30)} ={' '}
                           <span className="font-semibold text-primary">
-                            {formatPrice(price.amount)}
+                            {formatCentsAsUSD(price.amount)}
                           </span>
                         </Body2>
                       </div>

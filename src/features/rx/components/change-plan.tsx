@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { Check, Info, X } from 'lucide-react';
 import { ReactNode, useState } from 'react';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -10,6 +11,11 @@ import { Spinner } from '@/components/ui/spinner';
 import { Body1, Body2, H2, H3 } from '@/components/ui/typography';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { RxSubscription } from '@/types/api';
+import {
+  formatCentsAsUSD,
+  getBillingMonthsFromInterval,
+  getPerMonthCents,
+} from '@/utils/plan-pricing';
 
 import {
   PlanOption,
@@ -24,6 +30,23 @@ const toPhrase = (label: string): string =>
   label ? label.charAt(0).toLowerCase() + label.slice(1) : '';
 
 const formatDaysSupply = (days: number): string => `${days}-day supply`;
+
+const getBasePerMonthCents = (options: PlanOption[] | undefined): number => {
+  if (!options?.length) return 0;
+  const monthly = options.find((o) => o.interval_count <= 30);
+  if (!monthly) return 0;
+  return getPerMonthCents(monthly.amount, monthly.interval_count);
+};
+
+const getSavingsPercent = (
+  option: PlanOption,
+  basePerMonthCents: number,
+): number => {
+  if (basePerMonthCents <= 0) return 0;
+  if (option.interval_count <= 30) return 0;
+  const perMonth = getPerMonthCents(option.amount, option.interval_count);
+  return Math.round((1 - perMonth / basePerMonthCents) * 100);
+};
 
 export const ChangePlanDialog = ({
   children,
@@ -93,6 +116,7 @@ const ChangePlanDialogContent = ({
   const pendingOption = planData?.options.find(
     (o) => o.billing_code === planData.pending_billing_code,
   );
+  const basePerMonthCents = getBasePerMonthCents(planData?.options);
 
   const anchorDate = subscription.contract.anchorDate
     ? new Date(subscription.contract.anchorDate)
@@ -180,6 +204,7 @@ const ChangePlanDialogContent = ({
           <PlanOptionCard
             key={option.billing_code}
             option={option}
+            basePerMonthCents={basePerMonthCents}
             isSelected={selectedBillingCode === option.billing_code}
             isPending={planData.pending_billing_code === option.billing_code}
             onSelect={() => {
@@ -238,11 +263,13 @@ const ChangePlanDialogContent = ({
 
 const PlanOptionCard = ({
   option,
+  basePerMonthCents,
   isSelected,
   isPending,
   onSelect,
 }: {
   option: PlanOption;
+  basePerMonthCents: number;
   isSelected: boolean;
   isPending: boolean;
   onSelect: () => void;
@@ -255,43 +282,67 @@ const PlanOptionCard = ({
       ? 'border-vermillion-900 bg-vermillion-50'
       : 'border-zinc-200';
 
+  const perMonthCents = getPerMonthCents(option.amount, option.interval_count);
+  const perMonthLabel = `${formatCentsAsUSD(perMonthCents)}/mo`;
+  const savingsPercent = getSavingsPercent(option, basePerMonthCents);
+  const months = getBillingMonthsFromInterval(option.interval_count);
+  const showBreakdown = isSelected && option.interval_count > 30;
+
   return (
     <button
       type="button"
       onClick={onSelect}
       disabled={isDisabled}
-      className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left transition-colors ${borderClass} ${
+      className={`flex w-full items-start gap-3 rounded-xl border px-4 py-3 text-left transition-colors ${borderClass} ${
         isDisabled ? 'cursor-not-allowed' : 'hover:border-zinc-400'
       }`}
     >
-      <div className="flex items-center gap-3">
-        <div
-          className={`flex size-5 shrink-0 items-center justify-center rounded-full border ${
-            isLocked
-              ? 'border-zinc-300 bg-zinc-200'
-              : isSelected
-                ? 'border-vermillion-900 bg-vermillion-900 text-white'
-                : 'border-zinc-300'
-          }`}
-        >
-          {isLocked ? (
-            <span className="size-1.5 rounded-full bg-zinc-400" />
-          ) : isSelected ? (
-            <Check className="size-3" />
-          ) : null}
-        </div>
-        <div className="space-y-0.5">
+      <div
+        className={`mt-1 flex size-5 shrink-0 items-center justify-center rounded-full border ${
+          isLocked
+            ? 'border-zinc-300 bg-zinc-200'
+            : isSelected
+              ? 'border-vermillion-900 bg-vermillion-900 text-white'
+              : 'border-zinc-300'
+        }`}
+      >
+        {isLocked ? (
+          <span className="size-1.5 rounded-full bg-zinc-400" />
+        ) : isSelected ? (
+          <Check className="size-3" />
+        ) : null}
+      </div>
+      <div className="flex w-full flex-col">
+        <div className="flex items-baseline justify-between gap-4">
           <Body1 className="font-medium">
             {option.plan_label}
             {option.is_current ? ' · Current plan' : ''}
             {isPending ? ' · Scheduled' : ''}
           </Body1>
-          <Body2 className="text-secondary">
-            {formatDaysSupply(option.days_supply)}
-          </Body2>
+          <div className="flex shrink-0 items-center gap-2">
+            {savingsPercent > 0 && (
+              <Badge variant="vermillion" className="py-0.5 text-xs">
+                Save {savingsPercent}%
+              </Badge>
+            )}
+            <Body1 className="font-semibold">{perMonthLabel}</Body1>
+          </div>
         </div>
+        <Body2 className="text-secondary">
+          {formatDaysSupply(option.days_supply)}
+        </Body2>
+        {showBreakdown && (
+          <div className="mt-2 flex items-baseline justify-between border-t border-zinc-200 pt-2">
+            <Body2 className="text-secondary">Total</Body2>
+            <Body2 className="text-secondary">
+              {perMonthLabel} &times; {months} ={' '}
+              <span className="font-semibold text-primary">
+                {option.plan_amount}
+              </span>
+            </Body2>
+          </div>
+        )}
       </div>
-      <Body1 className="font-semibold">{option.plan_amount}</Body1>
     </button>
   );
 };
