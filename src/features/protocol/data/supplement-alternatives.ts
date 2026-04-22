@@ -27,7 +27,7 @@ export const SUPPLEMENT_ALTERNATIVES: SupplementAlternatives = {
   '10087551107393': ['10193291608385'],
 
   // PureGenomics UltraMultivitamin → PE O.N.E. Multivitamin, Thorne Basic Nutrients 2/Day
-  '9690945716545': ['10193340268865', '8802369143105'],
+  // '9690945716545': ['10193340268865', '8802369143105'],
 
   // Berberine UltraSorb → DFH GlucoSupreme, Thorne Berberine
   '9747209486657': ['9569397801281', '8802369339713'],
