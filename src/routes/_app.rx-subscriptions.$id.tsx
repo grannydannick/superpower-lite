@@ -1,15 +1,23 @@
 import { capitalize } from '@medplum/core';
 import { createFileRoute } from '@tanstack/react-router';
 import { format } from 'date-fns';
-import { ChevronRight, CirclePause, CircleX, LoaderCircle } from 'lucide-react';
+import {
+  ChevronRight,
+  CirclePause,
+  CircleX,
+  LoaderCircle,
+  SlidersHorizontal,
+} from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ProgressiveImage } from '@/components/ui/progressive-image';
 import { Body1, Body2, H3, H4 } from '@/components/ui/typography';
 import { useSubscriptions } from '@/features/rx/api/get-subscriptions';
+import { ChangePlanDialog } from '@/features/rx/components/change-plan';
 import { ChangeRefillDialog } from '@/features/rx/components/change-refill';
 import { PauseOrCancelRxSubscriptionDialog } from '@/features/rx/components/pause-or-cancel-rx-subscription';
+import { PendingPlanChangeCard } from '@/features/rx/components/pending-plan-change-card';
 import { CurrentAddressCard } from '@/features/users/components/current-address-card';
 import { CurrentPaymentMethodCard } from '@/features/users/components/payment';
 import { getPrescriptionImage } from '@/utils/prescription';
@@ -42,6 +50,14 @@ function RxSubscriptionsComponent() {
     subscription.contract.billingCycleStatus !== 'cancelled';
   const isCancellable =
     subscription.contract.billingCycleStatus !== 'cancelled';
+  const isPlanChangeable =
+    subscription.contract.billingCycleStatus !== 'paused' &&
+    subscription.contract.billingCycleStatus !== 'cancelled' &&
+    subscription.contract.billingCycleStatus !== 'failed' &&
+    subscription.contract.billingCycleStatus !== 'attempted';
+
+  const currentPlanLabel = subscription.contract.currentPlanLabel;
+  const currentPlanAmount = subscription.contract.currentPlanAmount;
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-10 px-6 py-9 lg:px-0">
@@ -92,17 +108,29 @@ function RxSubscriptionsComponent() {
               ) : null}
             </div>
           </div>
-          <div className="space-y-2">
-            <Body1>Plan details</Body1>
-            <Body1 className="text-secondary">
-              Auto renews on{' '}
-              {subscription.contract.anchorDate
-                ? format(
-                    new Date(subscription.contract.anchorDate),
-                    'MMM do, yyyy',
-                  )
-                : 'TBD'}
-            </Body1>
+          <div className="space-y-3">
+            <div className="space-y-2">
+              <Body1>Plan details</Body1>
+              <Body1 className="text-secondary">
+                {[
+                  currentPlanLabel || null,
+                  currentPlanAmount || null,
+                  `Auto renews on ${
+                    subscription.contract.anchorDate
+                      ? format(
+                          new Date(subscription.contract.anchorDate),
+                          'MMM do, yyyy',
+                        )
+                      : 'your next billing cycle'
+                  }`,
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </Body1>
+            </div>
+            {subscription.contract.pendingBillingCode ? (
+              <PendingPlanChangeCard contract={subscription.contract} />
+            ) : null}
           </div>
         </div>
       </div>
@@ -111,6 +139,14 @@ function RxSubscriptionsComponent() {
         <CurrentPaymentMethodCard />
         <CurrentAddressCard />
         <div className="flex flex-col items-center gap-2 md:flex-row">
+          {isPlanChangeable ? (
+            <ChangePlanDialog subscription={subscription}>
+              <Button variant="outline" className="w-full items-center gap-2">
+                <SlidersHorizontal className="size-[18px] text-secondary" />
+                Change Plan
+              </Button>
+            </ChangePlanDialog>
+          ) : null}
           {isPausable ? (
             <PauseOrCancelRxSubscriptionDialog
               subscription={subscription}

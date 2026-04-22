@@ -901,6 +901,12 @@ export interface RxContract {
   fillsRemaining: number;
   daysSupply: number;
   rxCode?: string;
+  billingCode?: string;
+  pendingBillingCode?: string;
+  currentPlanLabel?: string;
+  currentPlanAmount?: string;
+  pendingPlanLabel?: string;
+  pendingPlanAmount?: string;
 }
 
 export interface RxMedicationRequest {
