@@ -89,13 +89,6 @@ function HomepageRetestingCta() {
   const nowMs = useNowMs();
   const requestGroups = ordersData.requestGroups;
   const credits = creditsData.credits;
-  const shouldCheckPhlebotomyCredits = getRetestingCtaVisibility({
-    nowMs,
-    requestGroups,
-    credits: [],
-    phlebotomyServiceIds: [],
-  });
-  if (!shouldCheckPhlebotomyCredits) return null;
   if (credits.length === 0) return <RetestingCtaCard source="homepage" />;
 
   return (

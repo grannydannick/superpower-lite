@@ -27,13 +27,13 @@ const makeRequestGroup = (overrides: Partial<RequestGroup> = {}) =>
   }) satisfies RequestGroup;
 
 describe('getRetestingCtaVisibility', () => {
-  it('shows only when the last completed request group is older than 60 days and there are no in-lab credits', () => {
+  it('shows when the user has no credits even without qualifying request groups', () => {
     const result = getRetestingCtaVisibility({
       nowMs: Date.parse('2026-04-23T00:00:00.000Z'),
       requestGroups: [
         makeRequestGroup({
-          collectionMethod: 'IN_LAB',
-          endTimestamp: '2026-02-20T00:00:00.000Z',
+          collectionMethod: 'AT_HOME',
+          endTimestamp: '2025-12-31T17:00:00.000Z',
         }),
       ],
       credits: [],
@@ -43,7 +43,7 @@ describe('getRetestingCtaVisibility', () => {
     expect(result).toBe(true);
   });
 
-  it('hides when the last completed request group is 60 days old or newer', () => {
+  it('hides when the last completed request group is 60 days old or newer and the user has other credits', () => {
     const nowMs = Date.parse('2026-04-23T00:00:00.000Z');
     const result = getRetestingCtaVisibility({
       nowMs,
@@ -53,8 +53,13 @@ describe('getRetestingCtaVisibility', () => {
           endTimestamp: new Date(nowMs - 60 * DAY_MS).toISOString(),
         }),
       ],
-      credits: [],
-      phlebotomyServiceIds: [],
+      credits: [
+        makeCredit({
+          collectionMethod: 'IN_LAB',
+          serviceId: 'other-in-lab-service',
+        }),
+      ],
+      phlebotomyServiceIds: ['phlebotomy-service'],
     });
 
     expect(result).toBe(false);
@@ -102,7 +107,7 @@ describe('getRetestingCtaVisibility', () => {
     expect(result).toBe(true);
   });
 
-  it('ignores newer non-in-lab completed request groups', () => {
+  it('uses the latest completed request group regardless of collection method when checking users with other credits', () => {
     const result = getRetestingCtaVisibility({
       nowMs: Date.parse('2026-04-23T00:00:00.000Z'),
       requestGroups: [
@@ -116,10 +121,15 @@ describe('getRetestingCtaVisibility', () => {
           endTimestamp: '2026-04-10T00:00:00.000Z',
         }),
       ],
-      credits: [],
-      phlebotomyServiceIds: [],
+      credits: [
+        makeCredit({
+          collectionMethod: 'IN_LAB',
+          serviceId: 'other-in-lab-service',
+        }),
+      ],
+      phlebotomyServiceIds: ['phlebotomy-service'],
     });
 
-    expect(result).toBe(true);
+    expect(result).toBe(false);
   });
 });

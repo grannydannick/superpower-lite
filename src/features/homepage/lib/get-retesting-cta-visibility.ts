@@ -10,6 +10,8 @@ interface RetestingCtaVisibilityInput {
 }
 
 export function getRetestingCtaVisibility(input: RetestingCtaVisibilityInput) {
+  if (input.credits.length === 0) return true;
+
   const phlebotomyServiceIds = new Set(input.phlebotomyServiceIds);
 
   for (const credit of input.credits) {
@@ -21,12 +23,6 @@ export function getRetestingCtaVisibility(input: RetestingCtaVisibilityInput) {
   let latestCompletedMs: number | null = null;
   for (const requestGroup of input.requestGroups) {
     if (requestGroup.status !== OrderStatus.completed) continue;
-    if (
-      requestGroup.collectionMethod != null &&
-      requestGroup.collectionMethod !== 'IN_LAB'
-    ) {
-      continue;
-    }
 
     const timestamp =
       requestGroup.endTimestamp ??
