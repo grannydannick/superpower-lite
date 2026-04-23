@@ -1,13 +1,16 @@
 import { IconCheckCircle2 } from '@central-icons-react/round-filled-radius-2-stroke-1.5/IconCheckCircle2';
 import { IconCheckmark1 } from '@central-icons-react/round-filled-radius-2-stroke-1.5/IconCheckmark1';
 import { IconSparkle } from '@central-icons-react/round-filled-radius-2-stroke-1.5/IconSparkle';
+import { IconArrowDown } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconArrowDown';
+import { IconArrowUp } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconArrowUp';
 import { IconCalendarCheck } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconCalendarCheck';
 import { IconChevronLeft } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconChevronLeft';
 import { IconChevronRight } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconChevronRight';
 import { IconCrossMedium } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconCrossMedium';
+import { IconExclamationCircle } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconExclamationCircle';
 import { IconLock } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconLock';
 import { IconMagnifyingGlass } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconMagnifyingGlass';
-import { type UIEvent, useMemo, useRef } from 'react';
+import { type ComponentType, type UIEvent, useMemo, useRef } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -217,6 +220,57 @@ const FilterPills = () => {
   );
 };
 
+type BiomarkerStatusChipStatus = 'LOW' | 'HIGH' | 'ABNORMAL';
+
+const BIOMARKER_STATUS_CHIP_STYLES: Record<
+  BiomarkerStatusChipStatus,
+  {
+    className: string;
+    Icon: ComponentType<{ className?: string }>;
+    srLabel: string;
+  }
+> = {
+  // Tones match the app's canonical out-of-range color (see const/status-to-color.ts);
+  // the direction icon differentiates LOW vs HIGH at a glance.
+  LOW: {
+    className: 'border-fuchsia-200 bg-fuchsia-50 text-fuchsia-700',
+    Icon: IconArrowDown,
+    srLabel: 'Low',
+  },
+  HIGH: {
+    className: 'border-fuchsia-200 bg-fuchsia-50 text-fuchsia-700',
+    Icon: IconArrowUp,
+    srLabel: 'High',
+  },
+  ABNORMAL: {
+    className: 'border-amber-200 bg-amber-50 text-amber-700',
+    Icon: IconExclamationCircle,
+    srLabel: 'Abnormal',
+  },
+};
+
+const BiomarkerStatusChip = ({
+  label,
+  status,
+}: {
+  label: string;
+  status: BiomarkerStatusChipStatus;
+}) => {
+  const { className, Icon, srLabel } = BIOMARKER_STATUS_CHIP_STYLES[status];
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center gap-1 rounded border px-1.5 text-[11px] font-normal leading-5 tracking-wide',
+        className,
+      )}
+    >
+      <Icon className="size-3 shrink-0" aria-hidden />
+      <span className="sr-only">{srLabel}: </span>
+      {label}
+    </span>
+  );
+};
+
 const ItemBadge = ({
   label,
   tone,
@@ -303,7 +357,36 @@ const TestCard = ({
     presentation.badge?.tone === 'recommended' &&
     item.recommendation?.reason != null &&
     item.recommendation.reason.trim().length > 0;
+  // Surface out-of-range biomarker overlap regardless of status or scored
+  // recommendation — the chip is informational, not a recommendation hook.
+  const outOfRangeBiomarkers = item.outOfRangeBiomarkers ?? [];
+  const hasBiomarkerChips = outOfRangeBiomarkers.length > 0;
+  const nonBiomarkerRationale: NonNullable<
+    NonNullable<AddOnItem['recommendation']>['rationale']
+  > = [];
+  const seenNonBiomarkerRationaleLabels = new Set<string>();
 
+  for (const rationale of item.recommendation?.rationale ?? []) {
+    if (rationale.source === 'biomarker-follow-up') continue;
+    if (seenNonBiomarkerRationaleLabels.has(rationale.label)) continue;
+
+    seenNonBiomarkerRationaleLabels.add(rationale.label);
+    nonBiomarkerRationale.push(rationale);
+  }
+  const hasNonBiomarkerRationale = nonBiomarkerRationale.length > 0;
+  const showRecommendationBlock =
+    hasRecommendationReason || hasBiomarkerChips || hasNonBiomarkerRationale;
+  const topMetaLabels: AddOnItemMetaLabel[] = [];
+  const trailingMetaLabels: AddOnItemMetaLabel[] = [];
+
+  for (const metaLabel of presentation.metaLabels) {
+    if (showRecommendationBlock && metaLabel.kind === 'history') {
+      trailingMetaLabels.push(metaLabel);
+      continue;
+    }
+
+    topMetaLabels.push(metaLabel);
+  }
   return (
     <div
       role="button"
@@ -372,7 +455,7 @@ const TestCard = ({
       <div
         className={cn(
           'flex w-full items-start pl-[3.25rem] pr-4 pt-5 text-left',
-          showLearnMore || hasRecommendationReason ? 'pb-3' : 'pb-5',
+          showLearnMore || showRecommendationBlock ? 'pb-3' : 'pb-5',
         )}
       >
         <div className="flex flex-1 flex-col items-start gap-3">
@@ -406,9 +489,9 @@ const TestCard = ({
                 {item.description}
               </Body2>
             )}
-          {presentation.metaLabels.length > 0 && (
+          {topMetaLabels.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
-              {presentation.metaLabels.map((metaLabel) => (
+              {topMetaLabels.map((metaLabel) => (
                 <ItemMetaLabelRow
                   key={`${metaLabel.kind}-${metaLabel.label}`}
                   metaLabel={metaLabel}
@@ -419,23 +502,37 @@ const TestCard = ({
         </div>
       </div>
 
-      {hasRecommendationReason && (
+      {showRecommendationBlock && (
         <div className="space-y-3 px-4 pb-5 pl-[3.25rem]">
-          <div className="space-y-1.5">
-            <Body3 className="font-medium text-zinc-500">
-              Why we recommend this test
-            </Body3>
-            <Body2 className="text-left text-zinc-400">
-              {item.recommendation!.reason}
-            </Body2>
-          </div>
-          {item.recommendation!.rationale.length > 0 && (
+          {hasRecommendationReason && (
+            <div className="space-y-1.5">
+              <Body3 className="font-medium text-zinc-500">
+                Why we recommend this test
+              </Body3>
+              <Body2 className="text-left text-zinc-400">
+                {item.recommendation!.reason}
+              </Body2>
+            </div>
+          )}
+          {hasBiomarkerChips && (
+            <div className="space-y-1.5">
+              <Body3 className="font-medium text-zinc-500">
+                Covers your out-of-range biomarkers
+              </Body3>
+              <div className="flex flex-wrap gap-1.5">
+                {outOfRangeBiomarkers.map((biomarker) => (
+                  <BiomarkerStatusChip
+                    key={biomarker.id}
+                    label={biomarker.title}
+                    status={biomarker.latestStatus}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+          {hasNonBiomarkerRationale && (
             <div className="flex flex-wrap gap-x-3 gap-y-1.5">
-              {[
-                ...new Map(
-                  item.recommendation!.rationale.map((r) => [r.label, r]),
-                ).values(),
-              ].map((r) => (
+              {nonBiomarkerRationale.map((r) => (
                 <span
                   key={r.label}
                   className="inline-flex items-center gap-1 text-[13px] leading-5 text-zinc-500"
@@ -443,6 +540,16 @@ const TestCard = ({
                   <IconSparkle className="size-3 shrink-0 text-vermillion-900" />
                   {r.label}
                 </span>
+              ))}
+            </div>
+          )}
+          {trailingMetaLabels.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {trailingMetaLabels.map((metaLabel) => (
+                <ItemMetaLabelRow
+                  key={`${metaLabel.kind}-${metaLabel.label}`}
+                  metaLabel={metaLabel}
+                />
               ))}
             </div>
           )}
@@ -464,7 +571,7 @@ const TestCard = ({
         </div>
       )}
 
-      {!hasRecommendationReason && showLearnMore && (
+      {!showRecommendationBlock && showLearnMore && (
         <div className="pb-5 pl-[3.25rem] pr-4">
           <button
             type="button"

@@ -58,6 +58,7 @@ interface AddOnPanelsCoreContextValue {
   skip: () => void;
   goBack: () => void;
   isPending: boolean;
+  flowContext: AddOnPanelsStepVariant['flowContext'];
   hasPaymentMethodId: boolean;
   isFlexSelected: boolean;
   isSelectingPaymentMethod: boolean;
@@ -431,6 +432,7 @@ export const AddOnPanelsStepProvider = ({
       skip,
       goBack,
       isPending: createCreditMutation.isPending,
+      flowContext: variant.flowContext,
       hasPaymentMethodId,
       isFlexSelected,
       isSelectingPaymentMethod,
@@ -451,6 +453,7 @@ export const AddOnPanelsStepProvider = ({
       skip,
       goBack,
       createCreditMutation.isPending,
+      variant.flowContext,
       hasPaymentMethodId,
       isFlexSelected,
       isSelectingPaymentMethod,

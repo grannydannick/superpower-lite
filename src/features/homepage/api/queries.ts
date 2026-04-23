@@ -9,6 +9,7 @@ import { getCreditsQueryOptions } from '@/features/orders/api/credits';
 import { getGiftsQueryOptions } from '@/features/orders/api/get-gifts';
 import { getOrdersQueryOptions } from '@/features/orders/api/get-orders';
 import { getRedrawsQueryOptions } from '@/features/redraw/api/get-redraws';
+import { getServicesQueryOptions } from '@/features/services/api';
 import { getWearablesQueryOptions } from '@/features/settings/api/get-wearables';
 import { $aiChatApi } from '@/orpc/ai-chat-api';
 import { $api } from '@/orpc/client';
@@ -33,6 +34,11 @@ export const protocolQuery = () =>
   $aiChatApi.queryOptions('get', '/protocol-v2/latest');
 export const ordersQuery = () => getOrdersQueryOptions();
 export const creditsQuery = () => getCreditsQueryOptions();
+export const phlebotomyServicesQuery = () =>
+  getServicesQueryOptions({
+    group: 'phlebotomy',
+    includeUnorderable: true,
+  });
 export const giftsQuery = () => getGiftsQueryOptions();
 export const redrawsQuery = () => getRedrawsQueryOptions();
 export const wearablesQuery = () => getWearablesQueryOptions();

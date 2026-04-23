@@ -20,6 +20,7 @@ export const ScheduleFlow: React.FC<ScheduleStoreProps> = ({
   onDone,
   mode,
   showAddons,
+  marketplaceVariant,
 }) => {
   const matchRoute = useMatchRoute();
   const isOnOnboarding =
@@ -31,6 +32,7 @@ export const ScheduleFlow: React.FC<ScheduleStoreProps> = ({
       onDone={onDone}
       mode={mode}
       showAddons={showAddons}
+      marketplaceVariant={marketplaceVariant}
     >
       <ScheduleFlowStepper.Scoped>
         <ScheduleFlowContent isOnOnboarding={isOnOnboarding} />

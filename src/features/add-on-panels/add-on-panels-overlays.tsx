@@ -9,6 +9,8 @@ import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner/spinner';
 import { Body1, Body2 } from '@/components/ui/typography';
+import { useCredits } from '@/features/orders/api/credits';
+import { useServices } from '@/features/services/api';
 import { CurrentPaymentMethodCard } from '@/features/users/components/payment';
 import { cn } from '@/lib/utils';
 import { formatMoney } from '@/utils/format-money';
@@ -43,6 +45,7 @@ export const CartFooter = ({
   const {
     addOnsData,
     cartTitle,
+    flowContext,
     hasPaymentMethodId,
     isFlexSelected,
     isPending,
@@ -67,6 +70,43 @@ export const CartFooter = ({
   const needsMultipleAppointments =
     addOnsData.meta.coveredTubeCount + tubeCount >
     addOnsData.meta.multipleAppointmentThreshold;
+  const shouldCheckRetestAdvance =
+    flowContext === 'schedule_retest' && !hasSelected;
+  const creditsQuery = useCredits({
+    queryConfig: {
+      enabled: shouldCheckRetestAdvance,
+    },
+  });
+  const phlebotomyServicesQuery = useServices({
+    group: 'phlebotomy',
+    includeUnorderable: true,
+    queryConfig: {
+      enabled: shouldCheckRetestAdvance,
+    },
+  });
+  let hasExistingPhlebotomyCredit = false;
+
+  if (shouldCheckRetestAdvance) {
+    const phlebotomyServiceIds = new Set<string>();
+
+    for (const service of phlebotomyServicesQuery.data?.services ?? []) {
+      phlebotomyServiceIds.add(service.id);
+    }
+
+    for (const credit of creditsQuery.data?.credits ?? []) {
+      if (!phlebotomyServiceIds.has(credit.serviceId)) continue;
+
+      hasExistingPhlebotomyCredit = true;
+      break;
+    }
+  }
+
+  const isCheckingRetestAdvance =
+    shouldCheckRetestAdvance &&
+    (creditsQuery.isLoading || phlebotomyServicesQuery.isLoading);
+  const isRetestAdvanceBlocked =
+    shouldCheckRetestAdvance &&
+    (isCheckingRetestAdvance || !hasExistingPhlebotomyCredit);
 
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 pb-8 pt-16">
@@ -178,7 +218,8 @@ export const CartFooter = ({
                 disabled={
                   isPending ||
                   isSelectingPaymentMethod ||
-                  (hasSelected && !hasPaymentMethodId)
+                  (hasSelected && !hasPaymentMethodId) ||
+                  isRetestAdvanceBlocked
                 }
                 className="w-full"
               >

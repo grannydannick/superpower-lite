@@ -27,7 +27,9 @@ interface HistoricalTestingLabelInput {
 }
 
 const HISTORY_DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
-  dateStyle: 'medium',
+  month: 'short',
+  day: 'numeric',
+  year: '2-digit',
 });
 
 function formatHistoricalTestingLabel(item: HistoricalTestingLabelInput) {
@@ -37,13 +39,13 @@ function formatHistoricalTestingLabel(item: HistoricalTestingLabelInput) {
 
   if (item.resultsPostedAt == null) {
     if (!hasServiceName) return null;
-    return `Last tested · ${item.completedByServiceName}`;
+    return `Last tested ${item.completedByServiceName}`;
   }
 
   const parsed = new Date(item.resultsPostedAt);
   if (Number.isNaN(parsed.getTime())) {
     if (!hasServiceName) return null;
-    return `Last tested · ${item.completedByServiceName}`;
+    return `Last tested ${item.completedByServiceName}`;
   }
 
   const formattedDate = HISTORY_DATE_FORMATTER.format(parsed);

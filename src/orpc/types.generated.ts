@@ -804,7 +804,7 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /** @enum {unknown} */
-        CheckoutProductId: "v2-baseline-membership-20250801" | "v2-performance-membership-20260331" | "v2-complete-membership-20260331" | "baseline-membership-experiment-299-20260107" | "v2-membership-advanced-upgrade-20250801" | "at-home-sample-collection-20251016" | "membership-gift-20251125" | "membership-gift-nynj-20251128" | "free-membership-gift-20251207" | "free-membership-gift-nynj-20251207" | "supermom-bundle-gift-20260414" | "supermom-bundle-gift-nynj-20260414" | "v2-supermom-panel-march-2026-20260320" | "v2-autoimmunity-bundle-20250929" | "v2-cardiovascular-bundle-20250929" | "v2-metabolic-bundle-20250929" | "v2-fertility-bundle-20250929" | "v2-methylation-bundle-20250929" | "v2-nutrients-bundle-20250929" | "v2-baseline-blood-panel-20250801" | "v2-advanced-blood-panel-20250801" | "v2-custom-blood-panel-20251002" | "v3-performance-initial-blood-panel-20260415" | "v3-performance-retest-blood-panel-20260415" | "gut-microbiome-analysis-20240513" | "grail-galleri-multi-cancer-test-20240513" | "mosaic-toxic-metals-20260107" | "mosaic-mycotox-20260107" | "mosaic-envirotox-20260107" | "mosaic-toxdetect-20260107" | "prenuvo-scan-20260416" | "autopilot-subscription-20260209" | "rx-enclomiphene-monthly-20250930" | "rx-enclomiphene-90day-20251022" | "rx-enclomiphene-180day-20251022" | "rx-enclomiphene-365day-20260227" | "rx-semaglutide-90day-20251022" | "rx-semaglutide-180day-20251022" | "rx-semaglutide-60day-20251124" | "rx-tirzepatide-monthly-20251224" | "rx-tirzepatide-90d-20251224" | "rx-tirzepatide-180d-20251224" | "rx-tirzepatide-365day-20260318" | "rx-cbp-stepup-enclomiphene-all-quest" | "rx-cbp-stepup-enclomiphene-all-bioref" | "membership-onetime-baseline-20260226";
+        CheckoutProductId: "v2-baseline-membership-20250801" | "v2-performance-membership-20260331" | "v2-complete-membership-20260331" | "baseline-membership-experiment-299-20260107" | "v2-membership-advanced-upgrade-20250801" | "at-home-sample-collection-20251016" | "membership-gift-20251125" | "membership-gift-nynj-20251128" | "free-membership-gift-20251207" | "free-membership-gift-nynj-20251207" | "supermom-bundle-gift-20260414" | "supermom-bundle-gift-nynj-20260414" | "v2-supermom-panel-march-2026-20260320" | "v2-autoimmunity-bundle-20250929" | "v2-cardiovascular-bundle-20250929" | "v2-metabolic-bundle-20250929" | "v2-fertility-bundle-20250929" | "v2-methylation-bundle-20250929" | "v2-nutrients-bundle-20250929" | "v2-respiratory-allergy-panel-20260415" | "v2-baseline-blood-panel-20250801" | "v2-advanced-blood-panel-20250801" | "v2-custom-blood-panel-20251002" | "v3-performance-initial-blood-panel-20260415" | "v3-performance-retest-blood-panel-20260415" | "gut-microbiome-analysis-20240513" | "grail-galleri-multi-cancer-test-20240513" | "mosaic-toxic-metals-20260107" | "mosaic-mycotox-20260107" | "mosaic-envirotox-20260107" | "mosaic-toxdetect-20260107" | "prenuvo-scan-20260416" | "autopilot-subscription-20260209" | "rx-enclomiphene-monthly-20250930" | "rx-enclomiphene-90day-20251022" | "rx-enclomiphene-180day-20251022" | "rx-enclomiphene-365day-20260227" | "rx-semaglutide-90day-20251022" | "rx-semaglutide-180day-20251022" | "rx-semaglutide-60day-20251124" | "rx-tirzepatide-monthly-20251224" | "rx-tirzepatide-90d-20251224" | "rx-tirzepatide-180d-20251224" | "rx-tirzepatide-365day-20260318" | "rx-cbp-stepup-enclomiphene-all-quest" | "rx-cbp-stepup-enclomiphene-all-bioref" | "membership-onetime-baseline-20260226";
         /** @enum {unknown} */
         GiftPromo: "two_for_one" | "four_for_three";
         CheckoutSessionLineItem: {
@@ -22633,11 +22633,19 @@ export interface operations {
                                     /** @enum {unknown} */
                                     status: "available" | "purchased" | "in-progress" | "completed" | "included";
                                     isRecommended: boolean;
+                                    outOfRangeBiomarkers?: {
+                                        id: string;
+                                        slug: string;
+                                        name: string;
+                                        title: string;
+                                        /** @enum {unknown} */
+                                        latestStatus: "LOW" | "HIGH" | "ABNORMAL";
+                                    }[];
                                     recommendation?: {
                                         reason: string | null;
                                         rationale: {
                                             /** @enum {unknown} */
-                                            source: "condition" | "symptom" | "goal" | "family_history" | "diet" | "fertility" | "demographic" | "lifestyle";
+                                            source: "condition" | "symptom" | "goal" | "family_history" | "diet" | "fertility" | "demographic" | "lifestyle" | "biomarker-follow-up";
                                             label: string;
                                         }[];
                                     };
@@ -22666,11 +22674,19 @@ export interface operations {
                                     /** @enum {unknown} */
                                     status: "available" | "purchased" | "in-progress" | "completed" | "included";
                                     isRecommended: boolean;
+                                    outOfRangeBiomarkers?: {
+                                        id: string;
+                                        slug: string;
+                                        name: string;
+                                        title: string;
+                                        /** @enum {unknown} */
+                                        latestStatus: "LOW" | "HIGH" | "ABNORMAL";
+                                    }[];
                                     recommendation?: {
                                         reason: string | null;
                                         rationale: {
                                             /** @enum {unknown} */
-                                            source: "condition" | "symptom" | "goal" | "family_history" | "diet" | "fertility" | "demographic" | "lifestyle";
+                                            source: "condition" | "symptom" | "goal" | "family_history" | "diet" | "fertility" | "demographic" | "lifestyle" | "biomarker-follow-up";
                                             label: string;
                                         }[];
                                     };
@@ -22702,11 +22718,19 @@ export interface operations {
                                     /** @enum {unknown} */
                                     status: "available" | "purchased" | "in-progress" | "completed" | "included";
                                     isRecommended: boolean;
+                                    outOfRangeBiomarkers?: {
+                                        id: string;
+                                        slug: string;
+                                        name: string;
+                                        title: string;
+                                        /** @enum {unknown} */
+                                        latestStatus: "LOW" | "HIGH" | "ABNORMAL";
+                                    }[];
                                     recommendation?: {
                                         reason: string | null;
                                         rationale: {
                                             /** @enum {unknown} */
-                                            source: "condition" | "symptom" | "goal" | "family_history" | "diet" | "fertility" | "demographic" | "lifestyle";
+                                            source: "condition" | "symptom" | "goal" | "family_history" | "diet" | "fertility" | "demographic" | "lifestyle" | "biomarker-follow-up";
                                             label: string;
                                         }[];
                                     };
