@@ -27,7 +27,41 @@ const makeRequestGroup = (overrides: Partial<RequestGroup> = {}) =>
   }) satisfies RequestGroup;
 
 describe('getRetestingCtaVisibility', () => {
-  it('shows when the user has no credits even without qualifying request groups', () => {
+  it('hides when the user has no credits but still has an active request group', () => {
+    const result = getRetestingCtaVisibility({
+      nowMs: Date.parse('2026-04-23T00:00:00.000Z'),
+      requestGroups: [
+        makeRequestGroup({
+          status: OrderStatus.active,
+          collectionMethod: 'AT_HOME',
+          endTimestamp: '2026-04-20T00:00:00.000Z',
+        }),
+      ],
+      credits: [],
+      phlebotomyServiceIds: [],
+    });
+
+    expect(result).toBe(false);
+  });
+
+  it('hides when the user has no credits and the latest completed request group is 60 days old or newer', () => {
+    const nowMs = Date.parse('2026-04-23T00:00:00.000Z');
+    const result = getRetestingCtaVisibility({
+      nowMs,
+      requestGroups: [
+        makeRequestGroup({
+          collectionMethod: 'AT_HOME',
+          endTimestamp: new Date(nowMs - 60 * DAY_MS).toISOString(),
+        }),
+      ],
+      credits: [],
+      phlebotomyServiceIds: [],
+    });
+
+    expect(result).toBe(false);
+  });
+
+  it('shows when the user has no credits and the latest completed request group is older than 60 days', () => {
     const result = getRetestingCtaVisibility({
       nowMs: Date.parse('2026-04-23T00:00:00.000Z'),
       requestGroups: [

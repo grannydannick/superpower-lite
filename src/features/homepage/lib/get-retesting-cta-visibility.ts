@@ -10,14 +10,8 @@ interface RetestingCtaVisibilityInput {
 }
 
 export function getRetestingCtaVisibility(input: RetestingCtaVisibilityInput) {
-  if (input.credits.length === 0) return true;
-
-  const phlebotomyServiceIds = new Set(input.phlebotomyServiceIds);
-
-  for (const credit of input.credits) {
-    if (!phlebotomyServiceIds.has(credit.serviceId)) continue;
-
-    return false;
+  for (const requestGroup of input.requestGroups) {
+    if (requestGroup.status === OrderStatus.active) return false;
   }
 
   let latestCompletedMs: number | null = null;
@@ -37,8 +31,19 @@ export function getRetestingCtaVisibility(input: RetestingCtaVisibilityInput) {
     }
   }
 
-  return (
-    latestCompletedMs != null &&
-    input.nowMs - latestCompletedMs > RETESTING_ELIGIBILITY_MS
-  );
+  if (latestCompletedMs == null) return false;
+  if (input.nowMs - latestCompletedMs <= RETESTING_ELIGIBILITY_MS) {
+    return false;
+  }
+  if (input.credits.length === 0) return true;
+
+  const phlebotomyServiceIds = new Set(input.phlebotomyServiceIds);
+
+  for (const credit of input.credits) {
+    if (!phlebotomyServiceIds.has(credit.serviceId)) continue;
+
+    return false;
+  }
+
+  return true;
 }
