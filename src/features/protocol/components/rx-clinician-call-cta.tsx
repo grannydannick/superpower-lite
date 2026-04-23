@@ -1,8 +1,8 @@
+import { Link } from '@tanstack/react-router';
+
 import { Body1, Body2 } from '@/components/ui/typography';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { usePosthogFeatureFlagEnabled } from '@/hooks/use-posthog-feature-flag-enabled';
-
-const CONSULT_URL = 'https://cal.com/team/superpower/member-consult';
 
 type RxClinicianCallCtaProps = {
   source:
@@ -10,7 +10,10 @@ type RxClinicianCallCtaProps = {
     | 'reveal_recommendations'
     | 'additional_content_dialog'
     | 'todo_dialog'
-    | 'rx_pdp';
+    | 'rx_pdp'
+    | 'rx_marketplace'
+    | 'protocol_main'
+    | 'protocol_goal_detail';
 };
 
 export const RxClinicianCallCta = ({ source }: RxClinicianCallCtaProps) => {
@@ -34,17 +37,15 @@ export const RxClinicianCallCta = ({ source }: RxClinicianCallCtaProps) => {
           Talk to your care team about treatment options.
         </Body2>
       </div>
-      <a
-        href={CONSULT_URL}
-        target="_blank"
-        rel="noopener noreferrer"
+      <Link
+        to="/consults/new"
         onClick={() => {
           track('protocol_rx_clinician_call_cta_clicked', { source });
         }}
         className="flex w-full items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm shadow-[0px_2px_2px_0px_rgba(0,0,0,0.02)] transition-colors hover:bg-zinc-50"
       >
         Schedule a 1:1 consult
-      </a>
+      </Link>
     </div>
   );
 };

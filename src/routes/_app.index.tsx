@@ -15,6 +15,7 @@ import {
 } from '@/features/homepage/api/queries';
 import { ActionItemsCard } from '@/features/homepage/cards/action-items-card';
 import { ActionableOrdersCard } from '@/features/homepage/cards/actionable-orders-card';
+import { ConsultCallCard } from '@/features/homepage/cards/consult-call-card';
 import { LabOrderCard } from '@/features/homepage/cards/lab-order/lab-order-card';
 import { ProtocolGoalsCard } from '@/features/homepage/cards/protocol-goals-card';
 import { LiveBetterTogetherCard } from '@/features/homepage/cards/referral-card';
@@ -162,6 +163,10 @@ function HomepageComponent() {
 
             <HomepageSection>
               <ActionableOrdersCard />
+            </HomepageSection>
+
+            <HomepageSection>
+              <ConsultCallCard />
             </HomepageSection>
 
             <HomepageSection>

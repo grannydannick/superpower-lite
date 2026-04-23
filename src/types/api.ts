@@ -530,6 +530,22 @@ export type Slot = {
   end: string;
 };
 
+export type ConsultSlot = Slot & {
+  status: string;
+  practitionerId: string;
+  practitionerName: string;
+};
+
+export type BookingSummary = {
+  calBookingUid: string;
+  medplumAppointmentId: string;
+  start: string;
+  end: string;
+  status: string;
+  practitionerId: string;
+  meetingUrl?: string;
+};
+
 export type MultiPlatformOrder = {
   occurredAt: string;
   name: string;

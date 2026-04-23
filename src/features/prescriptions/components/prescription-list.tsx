@@ -3,6 +3,7 @@ import { MarketplaceFilter } from '@/features/marketplace/const/categories';
 import { getFilterDisplayLabel } from '@/features/marketplace/utils/category-utils';
 import { getMarketplaceSearchMeta } from '@/features/marketplace/utils/get-marketplace-search-meta';
 import { searchMarketplaceItems } from '@/features/marketplace/utils/search-marketplace-items';
+import { RxClinicianCallCta } from '@/features/protocol/components/rx-clinician-call-cta';
 import { useUser } from '@/lib/auth';
 import { Rx } from '@/types/api';
 
@@ -98,6 +99,7 @@ export const PrescriptionsList = ({
 
   return (
     <div className="flex flex-col gap-14">
+      <RxClinicianCallCta source="rx_marketplace" />
       {sections.map(({ title, subtitle, prescriptions }, index) => (
         <PrescriptionsCategory
           key={title}

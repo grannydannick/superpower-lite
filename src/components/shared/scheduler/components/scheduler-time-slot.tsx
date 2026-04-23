@@ -5,19 +5,19 @@ import { Body2 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 import { Slot } from '@/types/api';
 
-interface SchedulerTimeSlotProps {
-  timeSlot: Slot;
+interface SchedulerTimeSlotProps<T extends Slot = Slot> {
+  timeSlot: T;
   selectedSlot?: Slot | null;
   tz: string;
-  onSlotSelect: (slot: Slot) => void;
+  onSlotSelect: (slot: T) => void;
 }
 
-export const SchedulerTimeSlot = ({
+export function SchedulerTimeSlot<T extends Slot = Slot>({
   timeSlot,
   selectedSlot,
   tz,
   onSlotSelect,
-}: SchedulerTimeSlotProps) => {
+}: SchedulerTimeSlotProps<T>) {
   const selected = timeSlot.start === selectedSlot?.start;
 
   return (
@@ -34,7 +34,7 @@ export const SchedulerTimeSlot = ({
       <Body2>{timeRangeText(timeSlot, tz)}</Body2>
     </div>
   );
-};
+}
 
 const timeRangeText = (slot: Slot, tz: string): string => {
   const start = new TZDateMini(slot.start, tz);

@@ -54,13 +54,17 @@ export const schedulerStoreCreator = (initProps: SchedulerProps) => {
       set({ loading: true, error: null });
 
       try {
-        const response: { slots: Slot[]; timezone: string | undefined } =
-          await api.post(URL, {
+        const start = startRange ? new Date(startRange.getTime()) : new Date();
+
+        const response: { slots: Slot[]; timezone?: string } = await api.post(
+          URL,
+          {
             collectionMethod,
             address,
-            start: startRange ? new Date(startRange.getTime()) : new Date(),
+            start,
             isAdvisory,
-          });
+          },
+        );
 
         const tz = resolveTimeZone(response.timezone ?? state.tz);
 

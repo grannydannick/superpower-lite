@@ -17,6 +17,7 @@ import {
   useProtocols,
 } from '../../api';
 import { ProtocolWaitingScreen } from '../protocol-waiting-screen';
+import { RxClinicianCallCta } from '../rx-clinician-call-cta';
 
 import { ConsiderAdding } from './consider-adding';
 import { Goals } from './goals';
@@ -153,6 +154,7 @@ export const ProtocolDashboard = ({
       <H3>Protocol</H3>
       <TodaysList actions={todaysActions} />
       <Goals goals={protocol.goals} protocolId={protocol.id} />
+      <RxClinicianCallCta source="protocol_main" />
       {nonAcceptedActions.length > 0 && (
         <ConsiderAdding protocolId={protocol.id} actions={nonAcceptedActions} />
       )}

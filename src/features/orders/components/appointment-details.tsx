@@ -9,7 +9,6 @@ import {
   Calendar,
   Hash,
 } from 'lucide-react';
-import React from 'react';
 
 import { PdfFileIcon } from '@/components/icons';
 import { DotIcon } from '@/components/icons/dot';
