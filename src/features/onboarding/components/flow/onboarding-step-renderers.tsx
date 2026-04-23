@@ -46,14 +46,6 @@ const ONBOARDING_STEP_RENDERERS: Record<
       default: module.WelcomeSequence,
     };
   }),
-  [ONBOARDING_STEP_IDS.GIFT_UPSELL]: createLazyStepRenderer(async () => {
-    const module =
-      await import('@/features/onboarding/components/sequences/gift-upsell/gift-upsell-sequence');
-
-    return {
-      default: module.GiftUpsellSequence,
-    };
-  }),
   [ONBOARDING_STEP_IDS.UPDATE_INFO]: createLazyStepRenderer(async () => {
     const module =
       await import('@/features/onboarding/components/steps/info/update-info-step');
@@ -76,6 +68,14 @@ const ONBOARDING_STEP_RENDERERS: Record<
 
     return {
       default: module.AdvancedPanelUpgradeStep,
+    };
+  }),
+  [ONBOARDING_STEP_IDS.BUNDLED_DISCOUNT]: createLazyStepRenderer(async () => {
+    const module =
+      await import('@/features/onboarding/components/steps/bundled-discount/bundled-discount-step');
+
+    return {
+      default: module.default,
     };
   }),
   [ONBOARDING_STEP_IDS.INTRODUCTION]: createLazyStepRenderer(async () => {

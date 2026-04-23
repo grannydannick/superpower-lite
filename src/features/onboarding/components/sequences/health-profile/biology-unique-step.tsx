@@ -16,10 +16,10 @@ export const BiologyUniqueStep = () => {
   }, [next]);
 
   return (
-    <Sequence.StepLayout centered>
-      <Sequence.StepContent className="flex flex-1 items-center justify-center text-center">
+    <Sequence.StepLayout centered className="max-h-screen justify-center">
+      <div className="flex flex-1 items-center justify-center">
         <AnimatedHeadline>Your biology is unique.</AnimatedHeadline>
-      </Sequence.StepContent>
+      </div>
     </Sequence.StepLayout>
   );
 };

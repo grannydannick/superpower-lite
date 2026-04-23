@@ -152,7 +152,7 @@ function getAddOnItemDisplayBadge(item: AddOnItem) {
 
   if (entitlementState === 'purchased') {
     const badge = {
-      label: 'Credit purchased',
+      label: 'Purchased',
       tone: 'purchased',
     } satisfies AddOnItemDisplayBadge;
     return badge;

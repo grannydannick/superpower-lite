@@ -1,9 +1,8 @@
 import { useEffect } from 'react';
 
-import { TextShimmer } from '@/components/ui/text-shimmer';
-
 import { useSequence } from '../../../hooks/use-screen-sequence';
 import { Sequence } from '../../sequence';
+import { AnimatedHeadline } from '../../shared/animated-headline';
 
 const TIME_TO_WAIT = 5000;
 
@@ -21,12 +20,7 @@ export const OutroStep = () => {
   return (
     <Sequence.StepLayout centered className="max-h-screen justify-center">
       <div className="flex flex-1 items-center justify-center">
-        <TextShimmer
-          className="truncate text-sm [--base-color:rgba(0,0,0,0.5)] [--base-gradient-color:#ffffff]"
-          duration={2}
-        >
-          Configuring profile...
-        </TextShimmer>
+        <AnimatedHeadline>Configuring profile...</AnimatedHeadline>
       </div>
     </Sequence.StepLayout>
   );

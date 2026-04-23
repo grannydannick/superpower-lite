@@ -1,13 +1,13 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { m } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { useEffect, useEffectEvent, useReducer } from 'react';
 
-import { TextShimmer } from '@/components/ui/text-shimmer';
 import { getOnboardingAddOnsQueryOptions } from '@/features/add-on-panels/api/add-on-panels';
 import { ONBOARDING_STEP_IDS } from '@/features/onboarding/components/flow/onboarding-step-manifest';
 import { useOnboardingNavigation } from '@/features/onboarding/hooks/use-onboarding-navigation';
 
 import { Sequence } from '../../sequence';
+import { AnimatedHeadline } from '../../shared/animated-headline';
 
 const MAX_WAIT_MS = 15000;
 const RECOMMENDATION_POLL_START_MS = 8000;
@@ -189,15 +189,20 @@ export const BuildingRecommendationsStep = () => {
     >
       <Sequence.StepLayout centered className="max-h-screen justify-center">
         <div className="flex flex-1 items-center justify-center">
-          <TextShimmer
-            className={[
-              'truncate text-sm transition-opacity duration-300 [--base-color:rgba(0,0,0,0.5)] [--base-gradient-color:#ffffff]',
-              isVisible ? 'opacity-100' : 'opacity-0',
-            ].join(' ')}
-            duration={2}
-          >
-            {RECOMMENDATION_MESSAGES[messageIndex]}
-          </TextShimmer>
+          <AnimatePresence mode="wait">
+            <m.div
+              key={messageIndex}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isVisible ? 1 : 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              className="w-full"
+            >
+              <AnimatedHeadline>
+                {RECOMMENDATION_MESSAGES[messageIndex]}
+              </AnimatedHeadline>
+            </m.div>
+          </AnimatePresence>
         </div>
       </Sequence.StepLayout>
     </m.div>

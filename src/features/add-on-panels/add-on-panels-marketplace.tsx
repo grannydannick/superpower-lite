@@ -850,10 +850,6 @@ const MarketplaceList = ({
   } = useAddOnPanelsCore();
   const { activeFilterId, searchQuery } = useAddOnPanelsMarketplace();
   const purchasedItems = useMemo(() => {
-    if (showOnlyPurchasableMarketplaceItems) {
-      return [];
-    }
-
     const groupIdsByItemId = new Map<string, string>();
     for (const group of addOnsData.groups) {
       for (const item of getGroupItems(group)) {
@@ -870,7 +866,7 @@ const MarketplaceList = ({
     }
 
     return rows;
-  }, [addOnsData.groups, showOnlyPurchasableMarketplaceItems]);
+  }, [addOnsData.groups]);
   const marketplaceGroups = useMemo(
     () =>
       getMarketplaceGroups(addOnsData.groups, {

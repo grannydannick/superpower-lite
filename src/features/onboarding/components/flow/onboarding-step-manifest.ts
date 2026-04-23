@@ -24,11 +24,11 @@ export interface OnboardingFacts {
   creditedServiceIds: ReadonlySet<string>;
   hasStartedIntake: boolean;
   hasSeenWelcome: boolean;
-  hasSeenGiftUpsell: boolean;
   hasAnsweredHeardAboutUs: boolean;
   rxQuestionnaireContext: RxQuestionnaireContext;
   showUpsells: boolean;
   intakeEnabled: boolean;
+  skipAddOnsFlow: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -75,25 +75,6 @@ const ONBOARDING_STEPS = {
     title: 'Welcome to Superpower',
     shouldShow: (facts) => !facts.hasSeenWelcome && !facts.hasStartedIntake,
   },
-  GIFT_UPSELL: {
-    id: 'gift-upsell',
-    analyticsId: 'gift-upsell',
-    title: 'Gift Superpower',
-    shouldShow: (facts) =>
-      !facts.hasSeenGiftUpsell && !facts.hasStartedIntake && facts.showUpsells,
-  },
-  UPDATE_INFO: {
-    id: 'account-setup',
-    analyticsId: 'update-info',
-    title: 'Set up your account',
-    shouldShow: (facts) => !facts.userInfoCompleted,
-  },
-  HEARD_ABOUT_US: {
-    id: 'how-you-heard-about-us',
-    analyticsId: 'heard-about-us',
-    title: 'How did you hear about us?',
-    shouldShow: (facts) => !facts.hasAnsweredHeardAboutUs && facts.showUpsells,
-  },
   ADVANCED_UPGRADE: {
     id: 'advanced-testing',
     analyticsId: 'advanced-upgrade',
@@ -111,6 +92,35 @@ const ONBOARDING_STEPS = {
       facts.rxQuestionnaireContext.status !== 'required' &&
       facts.showUpsells,
   },
+  BUNDLED_DISCOUNT: {
+    id: 'bundled-discount',
+    analyticsId: 'bundled-discount',
+    title: 'Retesting cadence',
+    shouldShow: (facts) =>
+      !facts.hasStartedIntake &&
+      !hasCreditForService(
+        facts.creditedServiceIds,
+        ADVANCED_BLOOD_PANEL_SERVICE_PREFIX,
+      ) &&
+      !hasCreditForService(
+        facts.creditedServiceIds,
+        PERFORMANCE_BLOOD_PANEL_SERVICE_PREFIX,
+      ) &&
+      facts.rxQuestionnaireContext.status !== 'required' &&
+      facts.showUpsells,
+  },
+  HEARD_ABOUT_US: {
+    id: 'how-you-heard-about-us',
+    analyticsId: 'heard-about-us',
+    title: 'How did you hear about us?',
+    shouldShow: (facts) => !facts.hasAnsweredHeardAboutUs && facts.showUpsells,
+  },
+  UPDATE_INFO: {
+    id: 'account-setup',
+    analyticsId: 'update-info',
+    title: 'Set up your account',
+    shouldShow: (facts) => !facts.userInfoCompleted,
+  },
   INTRODUCTION: {
     id: 'welcome',
     analyticsId: 'introduction',
@@ -127,7 +137,8 @@ const ONBOARDING_STEPS = {
     id: 'what-happens-next',
     analyticsId: 'what-happens-next',
     title: 'What happens next',
-    shouldShow: (facts) => facts.showUpsells,
+    shouldShow: (facts) =>
+      facts.showUpsells && (!facts.skipAddOnsFlow || !facts.hasStartedIntake),
   },
   RX_ASSESSMENT: {
     id: 'care-assessment',
@@ -209,19 +220,19 @@ const ONBOARDING_STEPS = {
     id: 'building-recommendations',
     analyticsId: 'building-recommendations',
     title: 'Building your recommendations',
-    shouldShow: (facts) => facts.showUpsells,
+    shouldShow: (facts) => facts.showUpsells && !facts.skipAddOnsFlow,
   },
   ADD_ON_PANELS: {
     id: 'add-on-panels',
     analyticsId: 'add-on-panels',
     title: 'Your recommendations',
-    shouldShow: (facts) => facts.showUpsells,
+    shouldShow: (facts) => facts.showUpsells && !facts.skipAddOnsFlow,
   },
   PHLEBOTOMY_BOOKING: {
     id: 'schedule-blood-draw',
     analyticsId: 'phlebotomy-booking',
     title: 'Schedule your blood draw',
-    shouldShow: () => true,
+    shouldShow: (facts) => !facts.skipAddOnsFlow,
   },
 } as const satisfies Record<string, OnboardingStepConfig>;
 
@@ -297,13 +308,13 @@ export function buildOnboardingFacts(
     creditedServiceIds,
     hasStartedIntake,
     hasSeenWelcome: false,
-    hasSeenGiftUpsell: false,
     hasAnsweredHeardAboutUs: false,
     rxQuestionnaireContext: getRxQuestionnaireContext(
       onboardingData.questionnaires,
     ),
     showUpsells: onboardingData.onboardingPolicy.showUpsells,
     intakeEnabled: true,
+    skipAddOnsFlow: false,
   };
 }
 

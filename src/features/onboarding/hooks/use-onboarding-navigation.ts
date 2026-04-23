@@ -4,8 +4,10 @@ import {
   createElement,
   type ReactNode,
   useContext,
+  useRef,
 } from 'react';
 
+import { useUpdateTask } from '@/features/tasks/api/update-task';
 import { useAnalytics } from '@/hooks/use-analytics';
 
 import {
@@ -49,6 +51,8 @@ export const useOnboardingNavigation = () => {
   const navigate = useNavigate();
   const navigationContext = useContext(OnboardingNavigationContext);
   const { track } = useAnalytics();
+  const { mutateAsync: updateTaskProgress } = useUpdateTask();
+  const isCompletingRef = useRef(false);
 
   if (navigationContext == null) {
     throw new Error(
@@ -81,6 +85,25 @@ export const useOnboardingNavigation = () => {
     });
   };
 
+  const completeOnboarding = () => {
+    if (isCompletingRef.current) {
+      return;
+    }
+
+    isCompletingRef.current = true;
+    void updateTaskProgress({
+      taskName: 'onboarding',
+      data: { status: 'completed' },
+    })
+      .then(() => {
+        void navigate({ to: '/' });
+      })
+      .catch((error: unknown) => {
+        console.error('Failed to complete onboarding', error);
+        isCompletingRef.current = false;
+      });
+  };
+
   const next = () => {
     if (currentStep == null) return;
     if (currentIndex === -1) {
@@ -93,10 +116,7 @@ export const useOnboardingNavigation = () => {
 
     const nextStep = validSteps[currentIndex + 1];
     if (nextStep == null) {
-      console.warn('Onboarding next() called on last step', {
-        currentStep,
-        validSteps,
-      });
+      completeOnboarding();
       return;
     }
 

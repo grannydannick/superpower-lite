@@ -40,10 +40,10 @@ const ONBOARDING_QUESTIONNAIRES = [
 
 const SEQUENCE_STEPS: Array<{ id: OnboardingStepId; label: string }> = [
   { id: ONBOARDING_STEP_IDS.WELCOME, label: 'Welcome' },
-  { id: ONBOARDING_STEP_IDS.GIFT_UPSELL, label: 'Gift Upsell' },
-  { id: ONBOARDING_STEP_IDS.UPDATE_INFO, label: 'Account Setup' },
-  { id: ONBOARDING_STEP_IDS.HEARD_ABOUT_US, label: 'Heard About Us' },
   { id: ONBOARDING_STEP_IDS.ADVANCED_UPGRADE, label: 'Advanced Upgrade' },
+  { id: ONBOARDING_STEP_IDS.BUNDLED_DISCOUNT, label: 'Retesting Cadence' },
+  { id: ONBOARDING_STEP_IDS.HEARD_ABOUT_US, label: 'Heard About Us' },
+  { id: ONBOARDING_STEP_IDS.UPDATE_INFO, label: 'Account Setup' },
   { id: ONBOARDING_STEP_IDS.INTRODUCTION, label: 'Introduction Sequence' },
   { id: ONBOARDING_STEP_IDS.HEALTH_PROFILE, label: 'Health Profile Sequence' },
   {
