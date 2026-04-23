@@ -2,7 +2,6 @@ import { Link } from '@tanstack/react-router';
 
 import { Body1, Body2 } from '@/components/ui/typography';
 import { useAnalytics } from '@/hooks/use-analytics';
-import { usePosthogFeatureFlagEnabled } from '@/hooks/use-posthog-feature-flag-enabled';
 
 type RxClinicianCallCtaProps = {
   source:
@@ -17,12 +16,7 @@ type RxClinicianCallCtaProps = {
 };
 
 export const RxClinicianCallCta = ({ source }: RxClinicianCallCtaProps) => {
-  const enabled = usePosthogFeatureFlagEnabled(
-    'protocol-inapp-rx-clinician-call',
-  );
   const { track } = useAnalytics();
-
-  if (!enabled) return null;
 
   return (
     <div className="flex flex-col items-center gap-3 rounded-2xl bg-zinc-100 p-3">
