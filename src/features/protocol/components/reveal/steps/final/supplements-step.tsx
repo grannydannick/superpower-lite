@@ -300,7 +300,7 @@ export const SupplementsStep = () => {
               {totalOriginal !== totalDiscounted && hasSelectedSupplements && (
                 <span className="text-sm text-zinc-400 line-through">
                   <NumberFlow
-                    value={totalOriginal / 100}
+                    value={(totalOriginal + shipping.shippingCents) / 100}
                     prefix="$"
                     format={{
                       minimumFractionDigits: 0,
