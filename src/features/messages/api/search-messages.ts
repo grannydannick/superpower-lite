@@ -14,7 +14,6 @@ export interface MatchPosition {
 export interface SearchHit {
   id: string;
   userId: string;
-  chatId: string | null;
   role: string;
   content: string;
   /** Unix timestamp (seconds or ms — backend uses number) */
@@ -42,14 +41,12 @@ interface SearchMessagesParams {
   query: string;
   limit?: number;
   offset?: number;
-  chatId?: string;
 }
 
 export const searchMessages = async ({
   query,
   limit = SEARCH_PAGE_SIZE,
   offset = 0,
-  chatId,
 }: SearchMessagesParams): Promise<SearchMessagesResponse> => {
   return api.get('/chat/chatv2/search', {
     headers: { 'x-hide-toast': 'true' },
@@ -57,7 +54,6 @@ export const searchMessages = async ({
       q: query,
       limit,
       offset,
-      ...(chatId ? { chatId } : {}),
     },
   });
 };

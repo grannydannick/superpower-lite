@@ -23,19 +23,15 @@ import { cn } from '@/lib/utils';
 import { ChatSuggestion } from '../chat-suggestion';
 
 export function AssistantChat({
-  chatId,
   isActive = false,
   isResizing = false,
 }: {
-  chatId: string;
   isActive: boolean;
   isResizing?: boolean;
 }) {
   const { track } = useAnalytics();
   const { pathname } = useLocation();
   const queryClient = useQueryClient();
-
-  const id = chatId;
 
   // input is handled by custom store to avoid additional effects to sync preset inputs
   const input = useAssistantStore((s) => s.input);
@@ -52,7 +48,7 @@ export function AssistantChat({
   const setHasMessages = useAssistantStore((s) => s.setHasMessages);
   const [attachments, setAttachments] = useState<Array<FileUIPart>>([]);
 
-  // Load the user's timeline so the assistant continues the existing thread
+  // Load the shared timeline so the assistant stays in the same conversation.
   const { data: timelineMessages } = useTimeline({ hideToast: true });
 
   // Freeze timeline messages after first successful load so React Query
@@ -67,7 +63,6 @@ export function AssistantChat({
   const hasResumedRef = useRef(false);
 
   const { messages, setMessages, sendMessage, status, resumeStream } = useChat({
-    id,
     transport,
     messages: frozenTimelineMessages,
     generateId: () => crypto.randomUUID(),
@@ -91,10 +86,7 @@ export function AssistantChat({
 
       const message = err instanceof Error ? err.message : String(err);
 
-      const publicErrors = [
-        'Too many requests, please try again later.',
-        'This chat has ended. Please start a new chat.',
-      ];
+      const publicErrors = ['Too many requests, please try again later.'];
 
       if (publicErrors.includes(message)) {
         toast(message);
@@ -125,6 +117,21 @@ export function AssistantChat({
     setMessages,
     setHasSetInitialMessages,
   ]);
+
+  // TEMPORARY HACK
+  // useChat reads `messages` only as initial value. On first-ever open,
+  // the timeline query hasn't resolved yet, so useChat starts empty and
+  // stays empty even after the fetch lands. Sync once the timeline is
+  // available, provided the chat is still empty (don't clobber preset
+  // initialMessages or in-flight user sends).
+  const hasSyncedTimelineRef = useRef(false);
+  useEffect(() => {
+    if (hasSyncedTimelineRef.current) return;
+    if (frozenTimelineMessages.length === 0) return;
+    if (messages.length > 0) return;
+    hasSyncedTimelineRef.current = true;
+    setMessages(frozenTimelineMessages);
+  }, [frozenTimelineMessages, messages.length, setMessages]);
 
   const followupsContext = `I'm currently visiting ${pathname} in the Superpower app, please give me some suggestions based on this.`;
 
@@ -234,7 +241,6 @@ export function AssistantChat({
     >
       <div className="mx-auto flex min-h-0 w-full min-w-0 max-w-3xl flex-1 flex-col pr-1">
         <AssistantMessages
-          chatId={id}
           messages={messages}
           setMessages={setMessages}
           status={status}

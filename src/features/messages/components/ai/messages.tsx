@@ -19,7 +19,6 @@ import { PreviewMessage, ThinkingMessage } from './message';
 const BOTTOM_AUTO_SCROLL_THRESHOLD_PX = 24;
 
 interface MessagesProps {
-  chatId: string;
   status: UseChatHelpers<UIMessage>['status'];
   messages: UseChatHelpers<UIMessage>['messages'];
   setMessages: UseChatHelpers<UIMessage>['setMessages'];
@@ -38,7 +37,6 @@ interface MessagesProps {
 }
 
 function PureMessages({
-  chatId,
   status,
   messages,
   setMessages,
@@ -241,20 +239,25 @@ function PureMessages({
       return;
     }
 
-    if (messages.length === 0) return;
+    if (messages.length === 0) {
+      return;
+    }
 
-    const targetKey = `${chatId}:${ctxMessageId}`;
-    if (lastScrolledTargetRef.current === targetKey) return;
+    if (lastScrolledTargetRef.current === ctxMessageId) {
+      return;
+    }
 
     const el = document.getElementById(`message-${ctxMessageId}`);
     if (el == null) {
-      if (!hasMoreOlder || isLoadingOlder || onLoadOlder == null) return;
+      if (!hasMoreOlder || isLoadingOlder || onLoadOlder == null) {
+        return;
+      }
 
       requestOlderMessages({ disableAutoScroll: true });
       return;
     }
 
-    lastScrolledTargetRef.current = targetKey;
+    lastScrolledTargetRef.current = ctxMessageId;
     autoScrollEnabledRef.current = false;
 
     // Defer to ensure layout is settled after framer-motion animations
@@ -262,7 +265,6 @@ function PureMessages({
       el.scrollIntoView({ behavior: 'instant', block: 'start' });
     });
   }, [
-    chatId,
     ctxMessageId,
     hasMoreOlder,
     isLoadingOlder,
@@ -341,7 +343,6 @@ function PureMessages({
         {messages.map((message, index) => (
           <div key={message.id}>
             <PreviewMessage
-              chatId={chatId}
               message={message}
               isLoading={
                 status === 'streaming' && messages.length - 1 === index

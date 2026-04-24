@@ -17,7 +17,6 @@ import { PreviewMessage, ThinkingMessage } from '../ai/message';
 const BOTTOM_AUTO_SCROLL_THRESHOLD_PX = 24;
 
 interface AssistantMessagesProps {
-  chatId: string;
   status: UseChatHelpers<UIMessage>['status'];
   messages: UseChatHelpers<UIMessage>['messages'];
   setMessages: UseChatHelpers<UIMessage>['setMessages'];
@@ -25,7 +24,6 @@ interface AssistantMessagesProps {
 }
 
 export function AssistantMessages({
-  chatId,
   status,
   messages,
   setMessages,
@@ -133,7 +131,6 @@ export function AssistantMessages({
             )}
           >
             <PreviewMessage
-              chatId={chatId}
               message={message}
               isLoading={
                 status === 'streaming' && messages.length - 1 === index

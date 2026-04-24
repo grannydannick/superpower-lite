@@ -7,16 +7,12 @@
  * Usage:
  * ```ts
  * // Direct API calls:
- * const { data } = await aiChatApi.GET('/history');
- * const { data } = await aiChatApi.GET('/{chatId}', {
- *   params: { path: { chatId } }
- * });
+ * const { data } = await aiChatApi.GET('/messages');
+ * const { data } = await aiChatApi.GET('v2/stream');
  *
  * // React Query hooks:
- * const { data } = $aiChatApi.useQuery('get', '/history');
- * const { data } = $aiChatApi.useQuery('get', '/{chatId}', {
- *   params: { path: { chatId } }
- * });
+ * const { data } = $aiChatApi.useQuery('get', '/messages');
+ * const { data } = $aiChatApi.useQuery('get', 'v2/stream');
  * ```
  */
 import createFetchClient from 'openapi-fetch';

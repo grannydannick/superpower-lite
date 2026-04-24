@@ -25,7 +25,7 @@ export function FileDropdown({ children, file }: FileDropdownProps) {
   // For now we don't have options for tests
   if (file.contentType === 'test') return null;
 
-  const { summaryChatId, summaryMessageId, hasSummary, canGenerateSummary } =
+  const { summaryMessageId, hasSummary, canGenerateSummary } =
     getLabSummaryState(file);
 
   return (
@@ -36,7 +36,7 @@ export function FileDropdown({ children, file }: FileDropdownProps) {
         className="w-[160px] rounded-[16px] border-zinc-100"
         onClick={(e) => e.stopPropagation()}
       >
-        {hasSummary && summaryChatId != null && summaryMessageId != null && (
+        {hasSummary && summaryMessageId != null && (
           <ViewLabSummaryMenuItem messageId={summaryMessageId} />
         )}
         {canGenerateSummary && <GenerateLabSummaryMenuItem file={file} />}

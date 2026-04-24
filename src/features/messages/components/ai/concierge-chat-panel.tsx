@@ -1,10 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
-import { type MutableRefObject, useMemo } from 'react';
+import { type MutableRefObject } from 'react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getHistoryPage } from '@/features/messages/api/get-history';
 import { useTimeline } from '@/features/messages/api/get-messages';
 
 import { Chat } from './chat';
@@ -24,20 +22,7 @@ export function ConciergeChatPanel({
 }: ConciergeChatPanelProps) {
   const timelineQuery = useTimeline({ hideToast: true });
 
-  // Fetch the latest chat so we can reuse its ID for stream resumption.
-  // If the user reloads mid-stream, useChat can resume using this ID.
-  const latestChatQuery = useQuery({
-    queryKey: ['history', 'latest'],
-    queryFn: () => getHistoryPage({ limit: 1 }),
-    staleTime: 0,
-  });
-
-  const chatId = useMemo(() => {
-    const latestChat = latestChatQuery.data?.[0];
-    return latestChat?.id ?? crypto.randomUUID();
-  }, [latestChatQuery.data]);
-
-  if (timelineQuery.isLoading || latestChatQuery.isLoading) {
+  if (timelineQuery.isLoading) {
     return (
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 pt-8">
         <div className="ml-auto max-w-2xl">
@@ -82,8 +67,6 @@ export function ConciergeChatPanel({
 
   return (
     <Chat
-      key={chatId}
-      id={chatId}
       initialMessages={timelineQuery.data ?? []}
       jumpToMessageRef={jumpToMessageRef}
       onJumpReady={onJumpReady}

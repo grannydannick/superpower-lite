@@ -1,6 +1,6 @@
 import { useNavigate } from '@tanstack/react-router';
 import { ChevronsDownUp, Link, Maximize2 } from 'lucide-react';
-import { useCallback, useMemo, useState, type Ref } from 'react';
+import { useCallback, useState, type Ref } from 'react';
 import { Resizable } from 'react-resizable';
 
 import { Button } from '@/components/ui/button';
@@ -31,7 +31,6 @@ export const AssistantModal = () => {
 
   const [isResizing, setIsResizing] = useState(false);
   const collapsedHeight = 48; // equals Tailwind h-12
-  const chatId = useMemo(() => crypto.randomUUID(), []);
   const boxHeight = isExpanded ? height : collapsedHeight;
   const boxWidth = isExpanded ? width : undefined;
 
@@ -196,11 +195,7 @@ export const AssistantModal = () => {
           </div>
         </div>
         <div className={cn('min-h-0 w-full flex-1', !isExpanded && 'hidden')}>
-          <AssistantChat
-            chatId={chatId}
-            isActive={isExpanded}
-            isResizing={isResizing}
-          />
+          <AssistantChat isActive={isExpanded} isResizing={isResizing} />
         </div>
       </div>
     </Resizable>

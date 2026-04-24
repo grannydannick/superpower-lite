@@ -45,10 +45,7 @@ import { type Preset, PRESET_MESSAGES } from './preset-messages';
 import { QueuedMessages } from './queued-messages';
 import { type SetupAction, SuggestedActions } from './suggested-actions';
 
-const publicErrors = [
-  'Too many requests, please try again later.',
-  'This chat has ended. Please start a new chat.',
-] as const;
+const publicErrors = ['Too many requests, please try again later.'] as const;
 
 const conciergeLoadErrorMessage =
   'Currently chat is under heavy load. Please try again later.';
@@ -152,13 +149,11 @@ function isNetworkError(err: unknown): boolean {
 }
 
 export function Chat({
-  id,
   initialMessages,
   jumpToMessageRef,
   onJumpReady,
   isSearchOpen,
 }: {
-  id: string;
   initialMessages: Array<UIMessage>;
   jumpToMessageRef?: MutableRefObject<
     ((messageId: string) => Promise<void>) | null
@@ -166,7 +161,7 @@ export function Chat({
   onJumpReady?: (fn: (messageId: string) => Promise<void>) => void;
   isSearchOpen?: boolean;
 }) {
-  const controller = useConciergeChatController({ id, initialMessages });
+  const controller = useConciergeChatController({ initialMessages });
 
   // Expose jumpToMessage to parent via ref (no effects needed).
   if (jumpToMessageRef) {
@@ -180,7 +175,6 @@ export function Chat({
 
   return (
     <ChatView
-      chatId={id}
       messages={controller.messages}
       setMessages={controller.setMessages}
       status={controller.status}
@@ -210,10 +204,8 @@ export function Chat({
 }
 
 function useConciergeChatController({
-  id,
   initialMessages,
 }: {
-  id: string;
   initialMessages: Array<UIMessage>;
 }) {
   const defaultMessage = useSearch({
@@ -284,11 +276,6 @@ function useConciergeChatController({
     ];
   }, [user?.firstName]);
 
-  const sessionStartTime = useChatStore((s) => s.sessionStartTime);
-  const setSessionStartTime = useChatStore((s) => s.setSessionStartTime);
-  const incrementMessageCount = useChatStore((s) => s.incrementMessageCount);
-  const addResponseTime = useChatStore((s) => s.addResponseTime);
-
   const transport = useMemo(() => createChatV2Transport<UIMessage>(), []);
 
   const reportChatError = useCallback(
@@ -298,11 +285,10 @@ function useConciergeChatController({
       lastReportedErrorRef.current = normalizedError;
 
       track('ai_chat_error', {
-        chat_id: id,
         error: normalizedError,
       });
     },
-    [id, track],
+    [track],
   );
 
   const {
@@ -313,7 +299,6 @@ function useConciergeChatController({
     clearError,
     resumeStream,
   } = useChat({
-    id,
     transport,
     messages: initialMessagesWithPreset,
     generateId: () => crypto.randomUUID(),
@@ -325,7 +310,7 @@ function useConciergeChatController({
       });
 
       if (isDisconnect) {
-        console.debug('chat stream disconnected', { chatId: id });
+        console.debug('chat stream disconnected');
         setShowReconnectBanner(true);
         setShowLoadErrorBanner(false);
         return;
@@ -352,10 +337,6 @@ function useConciergeChatController({
       track('received_message_ai', {
         response_time: timing.totalMs,
       });
-
-      if (timing.totalMs) {
-        addResponseTime(timing.totalMs);
-      }
     },
     onError: (err) => {
       console.warn('chat error', err);
@@ -411,7 +392,6 @@ function useConciergeChatController({
         track('ai_sdk_validation_error', {
           error_message: safeMessage,
           error_name: safeName,
-          chat_id: id,
         });
         return;
       }
@@ -557,7 +537,6 @@ function useConciergeChatController({
       track('sent_message_ai', { message_length: msg.text.length });
       if (preset === 'import-memory') {
         track('import_memory_submitted', {
-          chat_id: id,
           message_length: msg.text.length,
         });
       }
@@ -565,21 +544,13 @@ function useConciergeChatController({
       setShowLoadErrorBanner(false);
       setShowReconnectBanner(false);
       setAssistantBusyMessage(null);
-      incrementMessageCount();
 
       sendMessage({
         ...(msg.text ? { text: msg.text } : {}),
         files: msg.files,
       });
     },
-    [
-      id,
-      sendMessage,
-      track,
-      incrementMessageCount,
-      setAssistantBusyMessage,
-      preset,
-    ],
+    [sendMessage, track, setAssistantBusyMessage, preset],
   );
 
   const {
@@ -662,11 +633,9 @@ function useConciergeChatController({
         });
         if (preset === 'import-memory') {
           track('import_memory_submitted', {
-            chat_id: id,
             message_length: messageLength,
           });
         }
-        incrementMessageCount();
         return sendMessage(message, options);
       }
 
@@ -677,8 +646,6 @@ function useConciergeChatController({
       defaultMessage,
       didJump,
       enqueue,
-      id,
-      incrementMessageCount,
       navigate,
       preset,
       resetToLatest,
@@ -746,11 +713,6 @@ function useConciergeChatController({
       attachmentAutoSendTimeoutIdRef.current = null;
     };
   }, [autoSend, attachments, status, setAttachments]);
-
-  useEffect(() => {
-    if (sessionStartTime != null) return;
-    setSessionStartTime(Date.now());
-  }, [sessionStartTime, setSessionStartTime]);
 
   // DEV: Simulate data-compaction by injecting fake parts into the last assistant message
   useEffect(() => {
@@ -932,7 +894,6 @@ function useConciergeChatController({
 }
 
 interface ChatViewProps {
-  chatId: string;
   messages: UseChatHelpers<UIMessage>['messages'];
   setMessages: UseChatHelpers<UIMessage>['setMessages'];
   status: UseChatHelpers<UIMessage>['status'];
@@ -980,7 +941,6 @@ function WelcomeContent({
 }
 
 function ChatView({
-  chatId,
   messages,
   setMessages,
   status,
@@ -1151,7 +1111,6 @@ function ChatView({
     <div className="mx-auto flex min-h-0 w-full min-w-0 max-w-3xl flex-1 flex-col">
       <div className="flex min-h-0 flex-1 flex-col">
         <Messages
-          chatId={chatId}
           messages={messages}
           setMessages={setMessages}
           status={status}

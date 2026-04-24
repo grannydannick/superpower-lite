@@ -36,7 +36,7 @@ export function createChatV2Transport<UI_MESSAGE extends UIMessage>() {
         ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       };
     },
-    prepareSendMessagesRequest: ({ id, messages }) => {
+    prepareSendMessagesRequest: ({ messages }) => {
       const lastUserMessage = [...messages]
         .reverse()
         .find((m) => m.role === 'user');
@@ -45,7 +45,12 @@ export function createChatV2Transport<UI_MESSAGE extends UIMessage>() {
       }
 
       return {
-        body: { id, message: lastUserMessage },
+        body: { message: lastUserMessage },
+      };
+    },
+    prepareReconnectToStreamRequest: ({ api }) => {
+      return {
+        api: `${api}/stream`,
       };
     },
   });

@@ -21,7 +21,6 @@ export function getLabSummaryState(file: File) {
 
   if (extraction == null) {
     return {
-      summaryChatId: null,
       summaryMessageId: null,
       hasSummary: false,
       canGenerateSummary: false,
@@ -29,9 +28,8 @@ export function getLabSummaryState(file: File) {
     };
   }
 
-  const summaryChatId = extraction.summaryChatId ?? extraction.chatId;
   const summaryMessageId = extraction.summaryMessageId ?? extraction.messageId;
-  const hasSummary = summaryChatId != null && summaryMessageId != null;
+  const hasSummary = summaryMessageId != null;
   const hasWrittenResults =
     typeof extraction.counts?.written === 'number' &&
     extraction.counts.written > 0;
@@ -41,7 +39,6 @@ export function getLabSummaryState(file: File) {
     file.contentType === 'application/pdf' && extraction.status === 'failed';
 
   return {
-    summaryChatId,
     summaryMessageId,
     hasSummary,
     canGenerateSummary,
@@ -56,13 +53,8 @@ export function LabSummaryLink({
   file: File;
   className?: string;
 }) {
-  const {
-    summaryChatId,
-    summaryMessageId,
-    hasSummary,
-    canGenerateSummary,
-    canIngest,
-  } = getLabSummaryState(file);
+  const { summaryMessageId, hasSummary, canGenerateSummary, canIngest } =
+    getLabSummaryState(file);
   const { mutateAsync, isPending } = useIngestFile();
   const navigate = useNavigate();
   const resolvedClassName =
@@ -84,7 +76,7 @@ export function LabSummaryLink({
     });
   };
 
-  if (hasSummary && summaryChatId != null && summaryMessageId != null) {
+  if (hasSummary && summaryMessageId != null) {
     return (
       <TooltipProvider>
         <Tooltip>

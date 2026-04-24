@@ -20,11 +20,9 @@ import { CitationsDialog } from '../citations-dialog';
 type Feedback = 'positive' | 'negative';
 
 export function MessageActions({
-  chatId,
   message,
   isLoading,
 }: {
-  chatId: string;
   message: UIMessage;
   isLoading: boolean;
 }) {
@@ -78,7 +76,6 @@ export function MessageActions({
     setFeedback(next);
 
     track('message_feedback', {
-      chat_id: chatId,
       message_id: message.id,
       feedback: next ?? 'none',
     });

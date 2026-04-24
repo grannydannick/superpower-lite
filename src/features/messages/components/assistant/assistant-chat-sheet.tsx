@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 import {
   Sheet,
@@ -30,11 +30,7 @@ export function AssistantChatSheet({
   const openSendMessageRef = useRef(_sendMessage);
   const prevOpenRef = useRef(open);
 
-  // Derive fresh chatId synchronously when open transitions false→true
-  const [chatId, setChatId] = useState(() => crypto.randomUUID());
   if (open && !prevOpenRef.current) {
-    const newId = crypto.randomUUID();
-    setChatId(newId);
     sentRef.current = false;
     openSendMessageRef.current = _sendMessage;
   }
@@ -74,7 +70,7 @@ export function AssistantChatSheet({
           </div>
         </SheetClose>
         <div className="min-h-0 flex-1 overflow-hidden px-2 pb-4">
-          <AssistantChat key={chatId} chatId={chatId} isActive={open} />
+          <AssistantChat isActive={open} />
         </div>
       </SheetContent>
     </Sheet>

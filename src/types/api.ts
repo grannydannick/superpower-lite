@@ -755,9 +755,7 @@ export type FileExtraction = {
   phase: 'classifying' | 'extracting' | 'validating' | 'writing' | null;
   reportDate: string | null;
   counts: ExtractionCounts | null;
-  chatId: string | null;
   messageId: string | null;
-  summaryChatId: string | null;
   summaryMessageId: string | null;
 };
 
@@ -811,14 +809,6 @@ export type TimelineItem = Entity<{
 
 /* AI CHAT */
 export type Visibility = 'public' | 'private';
-
-export interface Chat {
-  id: string; // UUID
-  createdAt: Date;
-  title: string;
-  userId: string; // UUID, references User.id
-  visibility: Visibility;
-}
 
 export interface ChatMessagePart {
   text: string;

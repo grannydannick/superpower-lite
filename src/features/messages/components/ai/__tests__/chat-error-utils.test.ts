@@ -2,10 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { classifyChatError } from '../chat-error-utils';
 
-const publicErrors = [
-  'Too many requests, please try again later.',
-  'This chat has ended. Please start a new chat.',
-] as const;
+const publicErrors = ['Too many requests, please try again later.'] as const;
 
 describe('classifyChatError', () => {
   it('classifies SDK validation errors', () => {

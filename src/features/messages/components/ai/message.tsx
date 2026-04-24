@@ -237,12 +237,10 @@ const AssistantMessageContent = memo(function AssistantMessageContent({
 // ============================================================================
 
 const PurePreviewMessage = ({
-  chatId,
   message,
   isLoading,
   disableLayoutAnimation = false,
 }: {
-  chatId: string;
   message: UIMessage;
   isLoading: boolean;
   setMessages: UseChatHelpers<UIMessage>['setMessages'];
@@ -301,7 +299,6 @@ const PurePreviewMessage = ({
             {!isEmptyMessage && (
               <MessageActions
                 key={`action-${message.id}`}
-                chatId={chatId}
                 message={message}
                 isLoading={isLoading}
               />
