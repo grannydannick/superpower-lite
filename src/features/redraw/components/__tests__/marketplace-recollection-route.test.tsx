@@ -246,7 +246,7 @@ describe('recollection route', () => {
     await renderMarketplaceRoute('/marketplace');
 
     expect(
-      await screen.findAllByRole('heading', { name: /^marketplace$/i }),
+      await screen.findAllByRole('heading', { name: /^clinic$/i }),
     ).not.toHaveLength(0);
   });
 
@@ -290,7 +290,7 @@ describe('recollection route', () => {
       }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole('heading', { name: /^marketplace$/i }),
+      screen.queryByRole('heading', { name: /^clinic$/i }),
     ).not.toBeInTheDocument();
   });
 

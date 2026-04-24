@@ -77,7 +77,9 @@ describe('FinishScheduleList', () => {
     expect(screen.getByText('Tasks')).toBeInTheDocument();
 
     await userEvent.click(
-      screen.getByRole('button', { name: /you have 1 task/i }),
+      screen.getByRole('button', {
+        name: /you have 1 test available to schedule/i,
+      }),
     );
 
     expect(screen.getByText('Recollection Available')).toBeInTheDocument();

@@ -21,9 +21,9 @@ export const Route = createFileRoute('/_app/marketplace')({
 
 function MarketplaceComponent() {
   return (
-    <ContentLayout title="Marketplace" className="max-w-[1600px] md:space-y-6">
+    <ContentLayout title="Clinic" className="max-w-[1600px] md:space-y-6">
       <Header
-        title="Marketplace"
+        title="Clinic"
         callToAction={<MarketplaceCta />}
         className="hidden md:flex"
       />

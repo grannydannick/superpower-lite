@@ -23,10 +23,13 @@ export const FinishScheduleList = () => {
 
   if (credits.length === 0 && redraws.length === 0) return null;
 
+  const total = credits.length + redraws.length;
+  const title = `You have ${total} test${total === 1 ? '' : 's'} available to schedule`;
+
   return (
     <div className="space-y-2">
       <H4>Tasks</H4>
-      <ActionableAccordion>
+      <ActionableAccordion title={title}>
         {redraws.map((redraw) => (
           <RedrawActionCard
             key={redraw.serviceRequestId}
