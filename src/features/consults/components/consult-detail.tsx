@@ -1,7 +1,7 @@
 import { TZDateMini } from '@date-fns/tz';
 import { useNavigate, useParams } from '@tanstack/react-router';
 import { format } from 'date-fns';
-import { CalendarCheck, CalendarX, ChevronLeft, Video } from 'lucide-react';
+import { CalendarX, ChevronLeft, Video } from 'lucide-react';
 import { useState } from 'react';
 
 import { DotIcon } from '@/components/icons/dot';
@@ -71,23 +71,25 @@ export function ConsultDetail() {
       {mode === 'view' && (
         <div className="space-y-8">
           <div className="space-y-1">
-            <H2>Superpower 1:1 Rx Consult</H2>
+            <H2>Superpower 1:1 Complimentary Call</H2>
             <Body1 className="text-secondary">
               {isCancelled
                 ? 'This appointment has been cancelled.'
                 : isPast
                   ? 'This appointment has been completed.'
-                  : 'Your upcoming Rx consult appointment.'}
+                  : 'Your upcoming complimentary call appointment.'}
             </Body1>
           </div>
 
           <div className="flex flex-col rounded-[20px] border border-zinc-200 bg-white px-5 py-4 shadow shadow-black/[.03]">
             <div className="flex items-center gap-3">
               <div className="flex size-16 items-center justify-center rounded-xl bg-vermillion-50">
-                <CalendarCheck className="size-7 text-vermillion-900" />
+                <Video className="size-7 text-vermillion-900" />
               </div>
               <div className="space-y-0.5">
-                <Body1 className="font-medium">Superpower 1:1 Rx Consult</Body1>
+                <Body1 className="font-medium">
+                  Superpower 1:1 Complimentary Call
+                </Body1>
                 <Body2 className="text-zinc-400">Video call</Body2>
               </div>
             </div>
@@ -97,7 +99,7 @@ export function ConsultDetail() {
             <H3>Appointment details</H3>
             <div className="flex gap-2">
               <div className="flex size-6 items-center justify-center rounded-full bg-vermillion-100">
-                <CalendarCheck className="size-4 text-vermillion-900" />
+                <Video className="size-4 text-vermillion-900" />
               </div>
               <div className="space-y-2">
                 <Body1>Video appointment</Body1>
@@ -166,11 +168,11 @@ export function ConsultDetail() {
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <div className="flex size-12 items-center justify-center rounded-xl bg-vermillion-50">
-                  <CalendarCheck className="size-6 text-vermillion-900" />
+                  <Video className="size-6 text-vermillion-900" />
                 </div>
                 <div className="space-y-0.5">
                   <Body1 className="font-medium">
-                    Superpower 1:1 Rx Consult
+                    Superpower 1:1 Complimentary Call
                   </Body1>
                   <Body2 className="text-zinc-400">
                     {format(new TZDateMini(booking.start, tz), 'MMM do, yyyy')}{' '}

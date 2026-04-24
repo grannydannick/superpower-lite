@@ -10,8 +10,6 @@ import { COMPOUNDED_PRODUCTS_DISCLAIMER } from '../const';
 
 import { PrescriptionCard } from './prescriptions-card';
 
-const CONSULT_URL = 'https://cal.com/team/superpower/member-consult';
-
 type PrescriptionCategoryProps = {
   title: string;
   subtitle?: string;
@@ -78,10 +76,8 @@ export const PrescriptionsCategory = ({
               </Body2>
             </div>
           </div>
-          <a
-            href={CONSULT_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to="/consults/new"
             onClick={() => {
               track('protocol_rx_clinician_call_cta_clicked', {
                 source: 'rx_marketplace',
@@ -90,7 +86,7 @@ export const PrescriptionsCategory = ({
             className="flex w-full shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white px-5 py-2.5 text-sm shadow-[0px_2px_2px_0px_rgba(0,0,0,0.02)] transition-colors hover:bg-zinc-50 sm:w-auto"
           >
             Schedule a 1:1 consult
-          </a>
+          </Link>
         </div>
       ) : null}
 

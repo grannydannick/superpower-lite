@@ -47,7 +47,9 @@ function ConsultCallCardContent({ booking }: { booking: BookingSummary }) {
       <HomepageCard>
         <div className="space-y-4">
           <div className="space-y-1">
-            <Body1 className="font-medium">Cancel your Rx consult?</Body1>
+            <Body1 className="font-medium">
+              Cancel your complimentary call?
+            </Body1>
             <Body2 className="text-secondary">
               You can always schedule a new one from the consults page.
             </Body2>
@@ -91,7 +93,7 @@ function ConsultCallCardContent({ booking }: { booking: BookingSummary }) {
             <div>
               <Body1 className="font-medium">Your call is booked</Body1>
               <Body2 className="text-secondary">
-                Superpower 1:1 Rx Consult
+                Superpower 1:1 Complimentary Call
               </Body2>
             </div>
           </div>

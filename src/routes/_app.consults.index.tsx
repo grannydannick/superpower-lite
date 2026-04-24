@@ -46,7 +46,7 @@ function ConsultsComponent() {
       ) : bookings.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-xl border border-dashed px-3 py-10">
           <Body1 className="text-center text-secondary">
-            No consults yet. Schedule your first Rx consult.
+            No consults yet. Schedule your first complimentary call.
           </Body1>
         </div>
       ) : (
@@ -77,7 +77,9 @@ function ConsultCard({ booking }: { booking: BookingSummary }) {
           <Calendar className="size-5 text-vermillion-900" />
         </div>
         <div className="space-y-1 text-left">
-          <Body1 className="font-medium">Superpower 1:1 Rx Consult</Body1>
+          <Body1 className="font-medium">
+            Superpower 1:1 Complimentary Call
+          </Body1>
           <Body2 className="text-secondary">
             {format(new TZDateMini(booking.start, tz), 'MMM do, yyyy')} at{' '}
             {format(new TZDateMini(booking.start, tz), 'h:mm a')}
