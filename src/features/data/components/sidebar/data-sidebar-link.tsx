@@ -17,6 +17,7 @@ const SUMMARY_CATEGORY: DataSummaryCategory = {
   content: null,
   metaTitle: null,
   metaDescription: null,
+  products: [],
   healthScore: { value: '-', factors: [] },
 };
 

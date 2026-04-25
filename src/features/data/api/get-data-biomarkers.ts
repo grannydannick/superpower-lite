@@ -57,12 +57,12 @@ export const dataBiomarkersQueryOptions = ({
     }),
   });
 
-export const dataBiomarkerQueryOptions = (id: string) =>
+export const dataBiomarkerQueryOptions = (slug: string) =>
   queryOptions({
     queryKey: ['data', 'biomarkers'],
     queryFn: fetchDataBiomarkers,
     select: (data) =>
-      (data.biomarkers as DataBiomarker[]).find((b) => b.id === id) ?? null,
+      (data.biomarkers as DataBiomarker[]).find((b) => b.slug === slug) ?? null,
   });
 
 export const useDataBiomarkers = ({
@@ -70,8 +70,10 @@ export const useDataBiomarkers = ({
 }: { category?: CategoryFilter } = {}) =>
   useQuery(dataBiomarkersQueryOptions({ category }));
 
-export const useDataBiomarker = (id: string, options?: { enabled?: boolean }) =>
-  useQuery({ ...dataBiomarkerQueryOptions(id), ...options });
+export const useDataBiomarker = (
+  slug: string,
+  options?: { enabled?: boolean },
+) => useQuery({ ...dataBiomarkerQueryOptions(slug), ...options });
 
 type RawBiomarkerContent =
   operations['data.biomarkerContent']['responses'][200]['content']['application/json'];
@@ -80,12 +82,12 @@ export type BiomarkerContent = RawBiomarkerContent & {
   ContentComponent: MdxModule['default'] | null;
 };
 
-export const dataBiomarkerContentQueryOptions = (id: string) =>
+export const dataBiomarkerContentQueryOptions = (slug: string) =>
   queryOptions({
-    queryKey: ['data', 'biomarkers', id, 'content'],
+    queryKey: ['data', 'biomarkers', slug, 'content'],
     queryFn: async (): Promise<BiomarkerContent | null> => {
-      const { data, error } = await api.GET('/data/biomarkers/{id}/content', {
-        params: { path: { id } },
+      const { data, error } = await api.GET('/data/biomarkers/{slug}/content', {
+        params: { path: { slug } },
       });
       if (error) throw error;
       if (!data) return null;
@@ -94,7 +96,7 @@ export const dataBiomarkerContentQueryOptions = (id: string) =>
         try {
           ContentComponent = (await evaluateMdx(data.content)).default;
         } catch (err) {
-          console.error('Failed to parse biomarker MDX', { id, err });
+          console.error('Failed to parse biomarker MDX', { slug, err });
         }
       }
       return { ...data, ContentComponent };
@@ -104,6 +106,6 @@ export const dataBiomarkerContentQueryOptions = (id: string) =>
   });
 
 export const useDataBiomarkerContent = (
-  id: string,
+  slug: string,
   options?: { enabled?: boolean },
-) => useQuery({ ...dataBiomarkerContentQueryOptions(id), ...options });
+) => useQuery({ ...dataBiomarkerContentQueryOptions(slug), ...options });

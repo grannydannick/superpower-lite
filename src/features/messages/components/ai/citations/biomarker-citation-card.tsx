@@ -74,7 +74,7 @@ export const BiomarkerCitationCard = memo(function BiomarkerCitationCard({
   const rangeText = formatRange();
 
   return (
-    <BiomarkerDialog biomarkerId={biomarker.id}>
+    <BiomarkerDialog slug={biomarker.slug}>
       <div
         id={cardId}
         role="note"

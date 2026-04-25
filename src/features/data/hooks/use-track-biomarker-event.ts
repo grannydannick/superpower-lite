@@ -7,11 +7,9 @@ import type { DataBiomarker, DataSummaryCategory } from '../types/data-api';
 type BiomarkerEventName = 'viewed_biomarker' | 'clicked_biomarker_product_cta';
 
 export const useTrackBiomarkerEvent = ({
-  id,
   biomarker,
   currentCategory,
 }: {
-  id: string;
   biomarker?: DataBiomarker | null;
   currentCategory?: DataSummaryCategory;
 }) => {
@@ -30,8 +28,12 @@ export const useTrackBiomarkerEvent = ({
       const diagnosticTest = biomarker?.diagnosticTests[0];
       const product = diagnosticTest?.product;
 
+      if (!biomarker) return;
+
       track(event, {
-        biomarker_id: biomarker?.id ?? id,
+        biomarker_id: biomarker?.id,
+        biomarker_slug: biomarker?.slug,
+        biomarker_name: biomarker?.name,
         has_results: values.length > 0,
         result_count: values.length,
         latest_result_at: latestResultAt,
@@ -77,6 +79,6 @@ export const useTrackBiomarkerEvent = ({
         },
       });
     },
-    [track, id, biomarker, currentCategory],
+    [track, biomarker, currentCategory],
   );
 };

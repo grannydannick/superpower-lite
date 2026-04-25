@@ -49,12 +49,12 @@ import { formatOptimalRange } from './utils/format-optimal-range';
 type DialogState = 'loading' | 'not_found' | 'locked' | 'ready';
 
 export const BiomarkerDialog = ({
-  biomarkerId,
+  slug,
   children,
   disabled = false,
   currentCategory,
 }: {
-  biomarkerId: string;
+  slug: string;
   children: React.ReactNode;
   disabled?: boolean;
   currentCategory?: DataSummaryCategory;
@@ -75,19 +75,18 @@ export const BiomarkerDialog = ({
   const prefetch = useCallback(() => {
     cancelPrefetch();
     prefetchTimerRef.current = setTimeout(() => {
-      queryClient.prefetchQuery(dataBiomarkerContentQueryOptions(biomarkerId));
+      queryClient.prefetchQuery(dataBiomarkerContentQueryOptions(slug));
     }, 200);
-  }, [queryClient, biomarkerId, cancelPrefetch]);
+  }, [queryClient, slug, cancelPrefetch]);
 
   useEffect(() => cancelPrefetch, [cancelPrefetch]);
 
-  const { data: biomarker, isPending } = useDataBiomarker(biomarkerId, {
+  const { data: biomarker, isPending } = useDataBiomarker(slug, {
     enabled: open,
   });
   const obs = biomarker?.observation;
 
   const trackBiomarkerEvent = useTrackBiomarkerEvent({
-    id: biomarkerId,
     biomarker,
     currentCategory,
   });
@@ -215,9 +214,8 @@ function BiomarkerNotFoundView() {
 
 function BiomarkerLockedView({ biomarker }: { biomarker: DataBiomarker }) {
   const { data: content, isPending: isContentPending } =
-    useDataBiomarkerContent(biomarker.id);
+    useDataBiomarkerContent(biomarker.slug);
   const trackBiomarkerEvent = useTrackBiomarkerEvent({
-    id: biomarker.id,
     biomarker,
   });
 
@@ -258,10 +256,9 @@ function BiomarkerLockedView({ biomarker }: { biomarker: DataBiomarker }) {
 function BiomarkerView({ biomarker }: { biomarker: DataBiomarker }) {
   const obs = biomarker.observation!;
   const { data: content, isPending: isContentPending } =
-    useDataBiomarkerContent(biomarker.id);
+    useDataBiomarkerContent(biomarker.slug);
   const navigate = useNavigate();
   const trackBiomarkerEvent = useTrackBiomarkerEvent({
-    id: biomarker.id,
     biomarker,
   });
 
