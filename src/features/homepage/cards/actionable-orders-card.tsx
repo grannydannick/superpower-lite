@@ -65,5 +65,13 @@ export const ActionableOrdersCard = () => {
 
   if (items.length === 0) return null;
 
-  return <HomepageActionAccordion>{items}</HomepageActionAccordion>;
+  const scheduleableCount = credits.length + redraws.length;
+  const title =
+    scheduleableCount > 0
+      ? `You have ${scheduleableCount} test${scheduleableCount === 1 ? '' : 's'} available to schedule`
+      : undefined;
+
+  return (
+    <HomepageActionAccordion title={title}>{items}</HomepageActionAccordion>
+  );
 };
