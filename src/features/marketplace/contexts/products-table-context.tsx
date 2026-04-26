@@ -13,7 +13,10 @@ import { createContext, useContextSelector } from 'use-context-selector';
 
 import { useMarketplaceProducts } from '../api/marketplace-products';
 import { useMarketplaceSummary } from '../api/marketplace-summary';
-import { type ProductCategory } from '../const/product-categories';
+import {
+  DEFAULT_CATEGORY,
+  type ProductCategory,
+} from '../const/product-categories';
 import type { ProductTableRow } from '../types/product-table-row';
 import type { ProductsFilter } from '../types/products-filter';
 import {
@@ -52,7 +55,7 @@ const categoryFilterFn: FilterFn<ProductTableRow> = (
   const type = CATEGORY_TO_TYPE[value];
   return type == null || row.original.type === type;
 };
-categoryFilterFn.autoRemove = (val: string) => !val || val === 'all';
+categoryFilterFn.autoRemove = (val: string) => !val;
 
 const subFilterFn: FilterFn<ProductTableRow> = (
   row,
@@ -92,9 +95,9 @@ export function ProductsTableProvider({
 }: ProductsTableProviderProps) {
   const navigate = useNavigate({ from: '/marketplace' });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(() => {
-    const filters: ColumnFiltersState = [];
-    if (initialFilter.category !== 'all')
-      filters.push({ id: 'category', value: initialFilter.category });
+    const filters: ColumnFiltersState = [
+      { id: 'category', value: initialFilter.category },
+    ];
     if (initialFilter.filter)
       filters.push({ id: 'subFilter', value: initialFilter.filter });
     return filters;
@@ -103,7 +106,7 @@ export function ProductsTableProvider({
 
   const category =
     (columnFilters.find((f) => f.id === 'category')
-      ?.value as ProductCategory) ?? 'all';
+      ?.value as ProductCategory) ?? DEFAULT_CATEGORY;
   const filter =
     (columnFilters.find((f) => f.id === 'subFilter')?.value as string) ?? null;
 
@@ -134,7 +137,10 @@ export function ProductsTableProvider({
           const merged = { ...prev, ...updates };
           return {
             ...merged,
-            category: merged.category === 'all' ? undefined : merged.category,
+            category:
+              merged.category === DEFAULT_CATEGORY
+                ? undefined
+                : merged.category,
             filter: (merged.filter as string | null | undefined) ?? undefined,
             search: (merged.search as string | undefined) || undefined,
           };
@@ -146,7 +152,7 @@ export function ProductsTableProvider({
 
   const setCategory = useCallback(
     (next: ProductCategory) => {
-      setColumnFilters(next === 'all' ? [] : [{ id: 'category', value: next }]);
+      setColumnFilters([{ id: 'category', value: next }]);
       updateUrl({ category: next, filter: null });
     },
     [updateUrl],
@@ -174,14 +180,11 @@ export function ProductsTableProvider({
   const availableFilters = useMemo<FilterOption[]>(() => {
     const allTags = summary?.tags ?? [];
 
-    const categoryProducts =
-      category === 'all'
-        ? tableData
-        : tableData.filter(
-            (p) =>
-              CATEGORY_TO_TYPE[category] == null ||
-              p.type === CATEGORY_TO_TYPE[category],
-          );
+    const categoryProducts = tableData.filter(
+      (p) =>
+        CATEGORY_TO_TYPE[category] == null ||
+        p.type === CATEGORY_TO_TYPE[category],
+    );
 
     const presentSlugs = new Set(
       categoryProducts.flatMap((p) => p.tags.map((t) => t.slug)),

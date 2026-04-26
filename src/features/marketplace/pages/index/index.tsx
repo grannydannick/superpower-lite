@@ -48,7 +48,6 @@ export function MarketplaceIndexPage() {
 
   const handleClearSearch = () => {
     setSearch('');
-    if (category !== 'all') setCategory('all');
   };
 
   return (
@@ -61,14 +60,11 @@ export function MarketplaceIndexPage() {
           <TabsList className="w-fit items-center justify-start gap-2 self-start overflow-x-auto md:w-fit">
             {PRODUCT_CATEGORIES.map((cat) => {
               const Icon = CATEGORY_ICONS[cat];
-              const isDisabled = isSearching && cat !== 'all';
               return (
                 <TabsTrigger
                   key={cat}
                   value={cat}
                   aria-label={CATEGORY_LABELS[cat]}
-                  disabled={isDisabled}
-                  aria-disabled={isDisabled}
                 >
                   <Icon className="size-5" />
                   <span className="hidden sm:inline">
@@ -91,7 +87,6 @@ export function MarketplaceIndexPage() {
             value={search}
             onChange={(v) => {
               setSearch(v);
-              if (category !== 'all') setCategory('all');
             }}
             className="w-full md:w-72"
           />
@@ -276,8 +271,6 @@ function ProductsEmptyState({
   search: string;
   onClearSearch: () => void;
 }) {
-  const { category, setCategory } = useProductsTableCategory();
-
   return (
     <div className="flex flex-col items-center space-y-4 rounded-2xl border border-dashed border-zinc-200 px-6 py-10 text-center text-sm text-secondary">
       <p>
@@ -288,15 +281,6 @@ function ProductsEmptyState({
       {isSearching && (
         <Button variant="outline" size="medium" onClick={onClearSearch}>
           Clear search
-        </Button>
-      )}
-      {!isSearching && category !== 'all' && (
-        <Button
-          variant="outline"
-          size="medium"
-          onClick={() => setCategory('all')}
-        >
-          Show all products
         </Button>
       )}
     </div>

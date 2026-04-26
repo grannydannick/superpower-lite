@@ -1,11 +1,14 @@
 import * as z from 'zod';
 
-import { PRODUCT_CATEGORIES } from '../const/product-categories';
+import {
+  DEFAULT_CATEGORY,
+  PRODUCT_CATEGORIES,
+} from '../const/product-categories';
 
 export const ProductCategorySchema = z
   .enum(PRODUCT_CATEGORIES)
-  .default('all')
-  .catch('all');
+  .default(DEFAULT_CATEGORY)
+  .catch(DEFAULT_CATEGORY);
 
 export const ProductsFilterSchema = z.object({
   category: ProductCategorySchema,
