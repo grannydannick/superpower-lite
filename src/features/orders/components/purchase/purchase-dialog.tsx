@@ -34,37 +34,19 @@ import {
 } from './purchase-dialog-stepper';
 import { PurchaseDialogSteps } from './purchase-dialog-steps';
 
-/**
- *
- * `children` is expected to be a button that triggers this dialog from anywhere.
- *
- * @param {ReactNode} children - A button to trigger the dialog for scheduling services.
- * @param healthcareService - The healthcare service being scheduled. If not provided, then won't render inside the modal
- * @param excludeSteps - Steps that we want to exclude. It's important to check if step is required and can be skipped.
- * @param flow - Will render full steps flow or just information about service
- * @param infoFlowBtn - Will replace regular footer on the info step
- */
 type PurchaseDialogProps = {
   healthcareService: HealthcareService;
   children?: ReactNode;
-  flow?: 'full' | 'info';
-  infoFlowBtn?: () => ReactNode;
   onClose?: () => void;
 };
 
 export const PurchaseDialog: React.FC<PurchaseDialogProps> = ({
   healthcareService,
   children,
-  flow = 'full',
-  infoFlowBtn,
   onClose,
 }) => {
   return (
-    <PurchaseStoreProvider
-      service={healthcareService}
-      flow={flow}
-      infoFlowBtn={infoFlowBtn}
-    >
+    <PurchaseStoreProvider service={healthcareService}>
       <PurchaseDialogConsumer onClose={onClose}>
         {children}
       </PurchaseDialogConsumer>

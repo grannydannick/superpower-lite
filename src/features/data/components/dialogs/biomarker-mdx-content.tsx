@@ -58,7 +58,7 @@ const components = {
 
 export function BiomarkerContentSkeleton() {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 pb-8">
       <Skeleton className="h-4 w-full rounded-full" />
       <Skeleton className="h-4 w-11/12 rounded-full" />
       <Skeleton className="h-4 w-3/4 rounded-full" />
@@ -103,7 +103,7 @@ export function BiomarkerMdxContent({
   ) : null;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 pb-8">
       {ContentComponent ? (
         <ErrorBoundary fallback={descriptionFallback ?? <></>}>
           <MDXProvider components={components}>

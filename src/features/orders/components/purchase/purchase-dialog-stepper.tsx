@@ -13,7 +13,6 @@ import {
 import { usePurchaseStore } from '../../stores/purchase-store';
 
 export const PURCHASE_DIALOG_STEPS = {
-  INFO: 'info',
   INFORMED_CONSENT: 'informed-consent',
   SUMMARY: 'summary',
   SUCCESS: 'success',
@@ -21,7 +20,6 @@ export const PURCHASE_DIALOG_STEPS = {
 } as const satisfies Record<string, string>;
 
 export const PurchaseDialogStepper = defineStepper(
-  { id: PURCHASE_DIALOG_STEPS.INFO },
   { id: PURCHASE_DIALOG_STEPS.EARLY_ACCESS },
   { id: PURCHASE_DIALOG_STEPS.INFORMED_CONSENT },
   { id: PURCHASE_DIALOG_STEPS.SUMMARY },
@@ -64,7 +62,6 @@ export const usePurchaseDialogStepper = (): UsePurchaseDialogStepperType => {
     case MYCOTOXINS_TEST:
     case HEAVY_METALS_TEST:
       steps = [
-        { id: PURCHASE_DIALOG_STEPS.INFO },
         { id: PURCHASE_DIALOG_STEPS.INFORMED_CONSENT },
         { id: PURCHASE_DIALOG_STEPS.SUMMARY },
         { id: PURCHASE_DIALOG_STEPS.SUCCESS },
@@ -72,7 +69,6 @@ export const usePurchaseDialogStepper = (): UsePurchaseDialogStepperType => {
       break;
     default:
       steps = [
-        { id: PURCHASE_DIALOG_STEPS.INFO },
         { id: PURCHASE_DIALOG_STEPS.SUMMARY },
         { id: PURCHASE_DIALOG_STEPS.SUCCESS },
       ];
@@ -80,10 +76,7 @@ export const usePurchaseDialogStepper = (): UsePurchaseDialogStepperType => {
 
   const validSteps: PurchaseDialogStep[] = service.active
     ? steps
-    : [
-        { id: PURCHASE_DIALOG_STEPS.INFO },
-        { id: PURCHASE_DIALOG_STEPS.EARLY_ACCESS },
-      ];
+    : [{ id: PURCHASE_DIALOG_STEPS.EARLY_ACCESS }];
 
   const getCurrentIndex = () =>
     validSteps.findIndex((step) => step.id === methods.state.current.data.id);

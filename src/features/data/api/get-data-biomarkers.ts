@@ -1,4 +1,5 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
+import { useCallback } from 'react';
 
 import { api } from '@/orpc/client';
 import type { operations } from '@/orpc/types.generated';
@@ -26,15 +27,10 @@ export const SuperpowerCategorySlug = {
 export type SuperpowerCategorySlug =
   (typeof SuperpowerCategorySlug)[keyof typeof SuperpowerCategorySlug];
 
-type CategoryFilter = { id: string } | { slug: string };
-
-const matchesCategory = (
+const matchesCategorySlug = (
   categories: DataBiomarker['categories'],
-  filter: CategoryFilter,
-) =>
-  categories.some((c) =>
-    'id' in filter ? c.id === filter.id : c.slug === filter.slug,
-  );
+  slug: string,
+) => categories.some((c) => c.slug === slug);
 
 const fetchDataBiomarkers = async () => {
   const { data, error } = await api.GET('/data/biomarkers', {
@@ -44,17 +40,10 @@ const fetchDataBiomarkers = async () => {
   return data;
 };
 
-export const dataBiomarkersQueryOptions = ({
-  category,
-}: { category?: CategoryFilter } = {}) =>
+export const dataBiomarkersQueryOptions = () =>
   queryOptions({
     queryKey: ['data', 'biomarkers'],
     queryFn: fetchDataBiomarkers,
-    select: (data) => ({
-      biomarkers: (data.biomarkers as DataBiomarker[]).filter((b) =>
-        category ? matchesCategory(b.categories, category) : true,
-      ),
-    }),
   });
 
 export const dataBiomarkerQueryOptions = (slug: string) =>
@@ -66,9 +55,21 @@ export const dataBiomarkerQueryOptions = (slug: string) =>
   });
 
 export const useDataBiomarkers = ({
-  category,
-}: { category?: CategoryFilter } = {}) =>
-  useQuery(dataBiomarkersQueryOptions({ category }));
+  categorySlug,
+}: { categorySlug?: string } = {}) => {
+  const select = useCallback(
+    (data: Awaited<ReturnType<typeof fetchDataBiomarkers>>) => ({
+      biomarkers: (data.biomarkers as DataBiomarker[]).filter((b) =>
+        categorySlug != null
+          ? matchesCategorySlug(b.categories, categorySlug)
+          : true,
+      ),
+    }),
+    [categorySlug],
+  );
+
+  return useQuery({ ...dataBiomarkersQueryOptions(), select });
+};
 
 export const useDataBiomarker = (
   slug: string,

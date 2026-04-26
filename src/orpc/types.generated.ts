@@ -991,6 +991,7 @@ export interface operations {
                             }[];
                             metaTitle: string | null;
                             metaDescription: string | null;
+                            sampleReport: string | null;
                         }) & {
                             prices?: {
                                 amount: number;
@@ -1514,6 +1515,7 @@ export interface operations {
                             }[];
                             metaTitle: string | null;
                             metaDescription: string | null;
+                            sampleReport: string | null;
                         }) & {
                             prices?: {
                                 amount: number;
@@ -1780,6 +1782,7 @@ export interface operations {
                             }[];
                             metaTitle: string | null;
                             metaDescription: string | null;
+                            sampleReport: string | null;
                         }) & {
                             prices?: {
                                 amount: number;
@@ -2050,6 +2053,7 @@ export interface operations {
                             }[];
                             metaTitle: string | null;
                             metaDescription: string | null;
+                            sampleReport: string | null;
                         }) & {
                             prices?: {
                                 amount: number;

@@ -158,12 +158,6 @@ vi.mock('@/features/marketplace/components/marketplace-cta', () => {
   };
 });
 
-vi.mock('@/features/marketplace/components/marketplace-tabs', () => {
-  return {
-    MarketplaceTabs: () => <div>Marketplace tabs</div>,
-  };
-});
-
 const useRedrawsMock = vi.mocked(useRedraws, { partial: true });
 const useOrdersMock = vi.mocked(useOrders, { partial: true });
 const useSkipRedrawMock = vi.mocked(useSkipRedraw, { partial: true });

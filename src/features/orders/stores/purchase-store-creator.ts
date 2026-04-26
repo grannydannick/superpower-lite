@@ -1,4 +1,3 @@
-import { ReactNode } from 'react';
 import { createStore } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
@@ -8,8 +7,6 @@ import { CreateCreditInput } from '../api/credits';
 
 export interface PurchaseStoreProps {
   service: HealthcareService;
-  flow: 'full' | 'info';
-  infoFlowBtn?: () => ReactNode;
 }
 
 export interface PurchaseStore extends PurchaseStoreProps {

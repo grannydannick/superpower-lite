@@ -38,6 +38,7 @@ import { Route as AppServicesIndexRouteImport } from './routes/_app.services.ind
 import { Route as AppRxSubscriptionsIndexRouteImport } from './routes/_app.rx-subscriptions.index'
 import { Route as AppProtocolIndexRouteImport } from './routes/_app.protocol.index'
 import { Route as AppOrdersIndexRouteImport } from './routes/_app.orders.index'
+import { Route as AppMarketplaceIndexRouteImport } from './routes/_app.marketplace.index'
 import { Route as AppDataIndexRouteImport } from './routes/_app.data.index'
 import { Route as AppConsultsIndexRouteImport } from './routes/_app.consults.index'
 import { Route as AppServicesIdRouteImport } from './routes/_app.services.$id'
@@ -63,7 +64,10 @@ import { Route as AppMapsOnboardingIndexRouteImport } from './routes/_app._maps.
 import { Route as AppProtocolRevealStepRouteImport } from './routes/_app.protocol.reveal.$step'
 import { Route as AppProtocolPlansIdRouteImport } from './routes/_app.protocol.plans.$id'
 import { Route as AppProtocolLegacyIdRouteImport } from './routes/_app.protocol.legacy.$id'
+import { Route as AppMarketplaceProductsSlugRouteImport } from './routes/_app.marketplace.products.$slug'
 import { Route as AppMapsOnboardingStepRouteImport } from './routes/_app._maps.onboarding.$step'
+import { Route as AppMarketplaceProductsSlugIndexRouteImport } from './routes/_app.marketplace.products.$slug.index'
+import { Route as AppMarketplaceProductsSlugCheckoutRouteImport } from './routes/_app.marketplace.products.$slug.checkout'
 import { Route as AppMapsRecollectionServiceRequestIdScheduleRouteImport } from './routes/_app._maps.recollection.$serviceRequestId.schedule'
 import { Route as AppProtocolPlansPlanIdGoalsGoalIdRouteImport } from './routes/_app.protocol.plans.$planId.goals.$goalId'
 import { Route as AppProtocolLegacyPlanIdGoalsGoalIdRouteImport } from './routes/_app.protocol.legacy.$planId.goals.$goalId'
@@ -211,6 +215,11 @@ const AppOrdersIndexRoute = AppOrdersIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppOrdersRoute,
 } as any)
+const AppMarketplaceIndexRoute = AppMarketplaceIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppMarketplaceRoute,
+} as any)
 const AppDataIndexRoute = AppDataIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -337,11 +346,29 @@ const AppProtocolLegacyIdRoute = AppProtocolLegacyIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AppProtocolLegacyRoute,
 } as any)
+const AppMarketplaceProductsSlugRoute =
+  AppMarketplaceProductsSlugRouteImport.update({
+    id: '/products/$slug',
+    path: '/products/$slug',
+    getParentRoute: () => AppMarketplaceRoute,
+  } as any)
 const AppMapsOnboardingStepRoute = AppMapsOnboardingStepRouteImport.update({
   id: '/$step',
   path: '/$step',
   getParentRoute: () => AppMapsOnboardingRoute,
 } as any)
+const AppMarketplaceProductsSlugIndexRoute =
+  AppMarketplaceProductsSlugIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppMarketplaceProductsSlugRoute,
+  } as any)
+const AppMarketplaceProductsSlugCheckoutRoute =
+  AppMarketplaceProductsSlugCheckoutRouteImport.update({
+    id: '/checkout',
+    path: '/checkout',
+    getParentRoute: () => AppMarketplaceProductsSlugRoute,
+  } as any)
 const AppMapsRecollectionServiceRequestIdScheduleRoute =
   AppMapsRecollectionServiceRequestIdScheduleRouteImport.update({
     id: '/recollection/$serviceRequestId/schedule',
@@ -377,7 +404,7 @@ export interface FileRoutesByFullPath {
   '/family-risk': typeof AppFamilyRiskRouteWithChildren
   '/intake': typeof AppIntakeRoute
   '/invite': typeof AppInviteRoute
-  '/marketplace': typeof AppMarketplaceRoute
+  '/marketplace': typeof AppMarketplaceRouteWithChildren
   '/orders': typeof AppOrdersRouteWithChildren
   '/protocol': typeof AppProtocolRouteWithChildren
   '/rx-screen-out': typeof AppRxScreenOutRoute
@@ -405,17 +432,21 @@ export interface FileRoutesByFullPath {
   '/services/$id': typeof AppServicesIdRoute
   '/consults/': typeof AppConsultsIndexRoute
   '/data/': typeof AppDataIndexRoute
+  '/marketplace/': typeof AppMarketplaceIndexRoute
   '/orders/': typeof AppOrdersIndexRoute
   '/protocol/': typeof AppProtocolIndexRoute
   '/rx-subscriptions/': typeof AppRxSubscriptionsIndexRoute
   '/services/': typeof AppServicesIndexRoute
   '/onboarding/$step': typeof AppMapsOnboardingStepRoute
+  '/marketplace/products/$slug': typeof AppMarketplaceProductsSlugRouteWithChildren
   '/protocol/legacy/$id': typeof AppProtocolLegacyIdRoute
   '/protocol/plans/$id': typeof AppProtocolPlansIdRoute
   '/protocol/reveal/$step': typeof AppProtocolRevealStepRoute
   '/onboarding/': typeof AppMapsOnboardingIndexRoute
   '/protocol/reveal/': typeof AppProtocolRevealIndexRoute
   '/recollection/$serviceRequestId/schedule': typeof AppMapsRecollectionServiceRequestIdScheduleRoute
+  '/marketplace/products/$slug/checkout': typeof AppMarketplaceProductsSlugCheckoutRoute
+  '/marketplace/products/$slug/': typeof AppMarketplaceProductsSlugIndexRoute
   '/protocol/legacy/$planId/goals/$goalId': typeof AppProtocolLegacyPlanIdGoalsGoalIdRoute
   '/protocol/plans/$planId/goals/$goalId': typeof AppProtocolPlansPlanIdGoalsGoalIdRoute
 }
@@ -433,7 +464,6 @@ export interface FileRoutesByTo {
   '/family-risk': typeof AppFamilyRiskRouteWithChildren
   '/intake': typeof AppIntakeRoute
   '/invite': typeof AppInviteRoute
-  '/marketplace': typeof AppMarketplaceRoute
   '/rx-screen-out': typeof AppRxScreenOutRoute
   '/shopify-redirect': typeof AppShopifyRedirectRoute
   '/vault': typeof AppVaultRoute
@@ -455,6 +485,7 @@ export interface FileRoutesByTo {
   '/services/$id': typeof AppServicesIdRoute
   '/consults': typeof AppConsultsIndexRoute
   '/data': typeof AppDataIndexRoute
+  '/marketplace': typeof AppMarketplaceIndexRoute
   '/orders': typeof AppOrdersIndexRoute
   '/protocol': typeof AppProtocolIndexRoute
   '/rx-subscriptions': typeof AppRxSubscriptionsIndexRoute
@@ -466,6 +497,8 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AppMapsOnboardingIndexRoute
   '/protocol/reveal': typeof AppProtocolRevealIndexRoute
   '/recollection/$serviceRequestId/schedule': typeof AppMapsRecollectionServiceRequestIdScheduleRoute
+  '/marketplace/products/$slug/checkout': typeof AppMarketplaceProductsSlugCheckoutRoute
+  '/marketplace/products/$slug': typeof AppMarketplaceProductsSlugIndexRoute
   '/protocol/legacy/$planId/goals/$goalId': typeof AppProtocolLegacyPlanIdGoalsGoalIdRoute
   '/protocol/plans/$planId/goals/$goalId': typeof AppProtocolPlansPlanIdGoalsGoalIdRoute
 }
@@ -487,7 +520,7 @@ export interface FileRoutesById {
   '/_app/family-risk': typeof AppFamilyRiskRouteWithChildren
   '/_app/intake': typeof AppIntakeRoute
   '/_app/invite': typeof AppInviteRoute
-  '/_app/marketplace': typeof AppMarketplaceRoute
+  '/_app/marketplace': typeof AppMarketplaceRouteWithChildren
   '/_app/orders': typeof AppOrdersRouteWithChildren
   '/_app/protocol': typeof AppProtocolRouteWithChildren
   '/_app/rx-screen-out': typeof AppRxScreenOutRoute
@@ -516,17 +549,21 @@ export interface FileRoutesById {
   '/_app/services/$id': typeof AppServicesIdRoute
   '/_app/consults/': typeof AppConsultsIndexRoute
   '/_app/data/': typeof AppDataIndexRoute
+  '/_app/marketplace/': typeof AppMarketplaceIndexRoute
   '/_app/orders/': typeof AppOrdersIndexRoute
   '/_app/protocol/': typeof AppProtocolIndexRoute
   '/_app/rx-subscriptions/': typeof AppRxSubscriptionsIndexRoute
   '/_app/services/': typeof AppServicesIndexRoute
   '/_app/_maps/onboarding/$step': typeof AppMapsOnboardingStepRoute
+  '/_app/marketplace/products/$slug': typeof AppMarketplaceProductsSlugRouteWithChildren
   '/_app/protocol/legacy/$id': typeof AppProtocolLegacyIdRoute
   '/_app/protocol/plans/$id': typeof AppProtocolPlansIdRoute
   '/_app/protocol/reveal/$step': typeof AppProtocolRevealStepRoute
   '/_app/_maps/onboarding/': typeof AppMapsOnboardingIndexRoute
   '/_app/protocol/reveal/': typeof AppProtocolRevealIndexRoute
   '/_app/_maps/recollection/$serviceRequestId/schedule': typeof AppMapsRecollectionServiceRequestIdScheduleRoute
+  '/_app/marketplace/products/$slug/checkout': typeof AppMarketplaceProductsSlugCheckoutRoute
+  '/_app/marketplace/products/$slug/': typeof AppMarketplaceProductsSlugIndexRoute
   '/_app/protocol/legacy/$planId/goals/$goalId': typeof AppProtocolLegacyPlanIdGoalsGoalIdRoute
   '/_app/protocol/plans/$planId/goals/$goalId': typeof AppProtocolPlansPlanIdGoalsGoalIdRoute
 }
@@ -576,17 +613,21 @@ export interface FileRouteTypes {
     | '/services/$id'
     | '/consults/'
     | '/data/'
+    | '/marketplace/'
     | '/orders/'
     | '/protocol/'
     | '/rx-subscriptions/'
     | '/services/'
     | '/onboarding/$step'
+    | '/marketplace/products/$slug'
     | '/protocol/legacy/$id'
     | '/protocol/plans/$id'
     | '/protocol/reveal/$step'
     | '/onboarding/'
     | '/protocol/reveal/'
     | '/recollection/$serviceRequestId/schedule'
+    | '/marketplace/products/$slug/checkout'
+    | '/marketplace/products/$slug/'
     | '/protocol/legacy/$planId/goals/$goalId'
     | '/protocol/plans/$planId/goals/$goalId'
   fileRoutesByTo: FileRoutesByTo
@@ -604,7 +645,6 @@ export interface FileRouteTypes {
     | '/family-risk'
     | '/intake'
     | '/invite'
-    | '/marketplace'
     | '/rx-screen-out'
     | '/shopify-redirect'
     | '/vault'
@@ -626,6 +666,7 @@ export interface FileRouteTypes {
     | '/services/$id'
     | '/consults'
     | '/data'
+    | '/marketplace'
     | '/orders'
     | '/protocol'
     | '/rx-subscriptions'
@@ -637,6 +678,8 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/protocol/reveal'
     | '/recollection/$serviceRequestId/schedule'
+    | '/marketplace/products/$slug/checkout'
+    | '/marketplace/products/$slug'
     | '/protocol/legacy/$planId/goals/$goalId'
     | '/protocol/plans/$planId/goals/$goalId'
   id:
@@ -686,17 +729,21 @@ export interface FileRouteTypes {
     | '/_app/services/$id'
     | '/_app/consults/'
     | '/_app/data/'
+    | '/_app/marketplace/'
     | '/_app/orders/'
     | '/_app/protocol/'
     | '/_app/rx-subscriptions/'
     | '/_app/services/'
     | '/_app/_maps/onboarding/$step'
+    | '/_app/marketplace/products/$slug'
     | '/_app/protocol/legacy/$id'
     | '/_app/protocol/plans/$id'
     | '/_app/protocol/reveal/$step'
     | '/_app/_maps/onboarding/'
     | '/_app/protocol/reveal/'
     | '/_app/_maps/recollection/$serviceRequestId/schedule'
+    | '/_app/marketplace/products/$slug/checkout'
+    | '/_app/marketplace/products/$slug/'
     | '/_app/protocol/legacy/$planId/goals/$goalId'
     | '/_app/protocol/plans/$planId/goals/$goalId'
   fileRoutesById: FileRoutesById
@@ -918,6 +965,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOrdersIndexRouteImport
       parentRoute: typeof AppOrdersRoute
     }
+    '/_app/marketplace/': {
+      id: '/_app/marketplace/'
+      path: '/'
+      fullPath: '/marketplace/'
+      preLoaderRoute: typeof AppMarketplaceIndexRouteImport
+      parentRoute: typeof AppMarketplaceRoute
+    }
     '/_app/data/': {
       id: '/_app/data/'
       path: '/'
@@ -1093,12 +1147,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProtocolLegacyIdRouteImport
       parentRoute: typeof AppProtocolLegacyRoute
     }
+    '/_app/marketplace/products/$slug': {
+      id: '/_app/marketplace/products/$slug'
+      path: '/products/$slug'
+      fullPath: '/marketplace/products/$slug'
+      preLoaderRoute: typeof AppMarketplaceProductsSlugRouteImport
+      parentRoute: typeof AppMarketplaceRoute
+    }
     '/_app/_maps/onboarding/$step': {
       id: '/_app/_maps/onboarding/$step'
       path: '/$step'
       fullPath: '/onboarding/$step'
       preLoaderRoute: typeof AppMapsOnboardingStepRouteImport
       parentRoute: typeof AppMapsOnboardingRoute
+    }
+    '/_app/marketplace/products/$slug/': {
+      id: '/_app/marketplace/products/$slug/'
+      path: '/'
+      fullPath: '/marketplace/products/$slug/'
+      preLoaderRoute: typeof AppMarketplaceProductsSlugIndexRouteImport
+      parentRoute: typeof AppMarketplaceProductsSlugRoute
+    }
+    '/_app/marketplace/products/$slug/checkout': {
+      id: '/_app/marketplace/products/$slug/checkout'
+      path: '/checkout'
+      fullPath: '/marketplace/products/$slug/checkout'
+      preLoaderRoute: typeof AppMarketplaceProductsSlugCheckoutRouteImport
+      parentRoute: typeof AppMarketplaceProductsSlugRoute
     }
     '/_app/_maps/recollection/$serviceRequestId/schedule': {
       id: '/_app/_maps/recollection/$serviceRequestId/schedule'
@@ -1196,6 +1271,37 @@ const AppFamilyRiskRouteChildren: AppFamilyRiskRouteChildren = {
 
 const AppFamilyRiskRouteWithChildren = AppFamilyRiskRoute._addFileChildren(
   AppFamilyRiskRouteChildren,
+)
+
+interface AppMarketplaceProductsSlugRouteChildren {
+  AppMarketplaceProductsSlugCheckoutRoute: typeof AppMarketplaceProductsSlugCheckoutRoute
+  AppMarketplaceProductsSlugIndexRoute: typeof AppMarketplaceProductsSlugIndexRoute
+}
+
+const AppMarketplaceProductsSlugRouteChildren: AppMarketplaceProductsSlugRouteChildren =
+  {
+    AppMarketplaceProductsSlugCheckoutRoute:
+      AppMarketplaceProductsSlugCheckoutRoute,
+    AppMarketplaceProductsSlugIndexRoute: AppMarketplaceProductsSlugIndexRoute,
+  }
+
+const AppMarketplaceProductsSlugRouteWithChildren =
+  AppMarketplaceProductsSlugRoute._addFileChildren(
+    AppMarketplaceProductsSlugRouteChildren,
+  )
+
+interface AppMarketplaceRouteChildren {
+  AppMarketplaceIndexRoute: typeof AppMarketplaceIndexRoute
+  AppMarketplaceProductsSlugRoute: typeof AppMarketplaceProductsSlugRouteWithChildren
+}
+
+const AppMarketplaceRouteChildren: AppMarketplaceRouteChildren = {
+  AppMarketplaceIndexRoute: AppMarketplaceIndexRoute,
+  AppMarketplaceProductsSlugRoute: AppMarketplaceProductsSlugRouteWithChildren,
+}
+
+const AppMarketplaceRouteWithChildren = AppMarketplaceRoute._addFileChildren(
+  AppMarketplaceRouteChildren,
 )
 
 interface AppOrdersRouteChildren {
@@ -1306,7 +1412,7 @@ interface AppRouteChildren {
   AppFamilyRiskRoute: typeof AppFamilyRiskRouteWithChildren
   AppIntakeRoute: typeof AppIntakeRoute
   AppInviteRoute: typeof AppInviteRoute
-  AppMarketplaceRoute: typeof AppMarketplaceRoute
+  AppMarketplaceRoute: typeof AppMarketplaceRouteWithChildren
   AppOrdersRoute: typeof AppOrdersRouteWithChildren
   AppProtocolRoute: typeof AppProtocolRouteWithChildren
   AppRxScreenOutRoute: typeof AppRxScreenOutRoute
@@ -1329,7 +1435,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppFamilyRiskRoute: AppFamilyRiskRouteWithChildren,
   AppIntakeRoute: AppIntakeRoute,
   AppInviteRoute: AppInviteRoute,
-  AppMarketplaceRoute: AppMarketplaceRoute,
+  AppMarketplaceRoute: AppMarketplaceRouteWithChildren,
   AppOrdersRoute: AppOrdersRouteWithChildren,
   AppProtocolRoute: AppProtocolRouteWithChildren,
   AppRxScreenOutRoute: AppRxScreenOutRoute,

@@ -28,15 +28,6 @@ import {
   TOTAL_TOXIN_TEST,
   VO2_MAX_TEST,
 } from '@/const';
-import { SERVICE_DETAILS } from '@/const/service-details';
-import { ServiceDetails } from '@/types/service';
-
-export const getDetailsForService = (
-  serviceName: string,
-): ServiceDetails | undefined => {
-  return SERVICE_DETAILS[serviceName];
-};
-
 export const getSampleReportLinkForService = (service: string) => {
   switch (service) {
     case GRAIL_GALLERI_MULTI_CANCER_TEST:
@@ -127,9 +118,7 @@ const serviceImages: Record<string, string> = {
   SuperpowerBloodPanel: '/services/transparent/baseline_blood_panel.png',
   AdvancedBloodPanel: '/services/transparent/advanced_blood_panel.png',
   OneOnOneAdvisory: '/services/1-1_advisory_call.png',
-  ComprehensiveGeneticsPanel: '/services/comprehensive_genetics_panel.png',
   ContinuousGlucoseMonitor: '/services/continuous_glucose_monitor.png',
-  CustomBloodPanel: '/services/transparent/custom_blood_panel.png',
   DexaScan: '/services/dexa_scan.png',
   EnvironmentToxin: '/services/transparent/environmental_toxin_test.png',
   EnvironmentToxins: '/services/environmental_toxins.png',

@@ -114,7 +114,11 @@ export const BiomarkerDataRow = ({
   }
 
   return (
-    <BiomarkerDialog slug={row.original.slug} currentCategory={currentCategory}>
+    <BiomarkerDialog
+      slug={row.original.slug}
+      currentCategory={currentCategory}
+      showRetests
+    >
       {tableRowContent}
     </BiomarkerDialog>
   );

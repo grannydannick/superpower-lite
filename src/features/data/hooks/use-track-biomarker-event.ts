@@ -26,7 +26,7 @@ export const useTrackBiomarkerEvent = ({
           : latest;
       }, null);
       const diagnosticTest = biomarker?.diagnosticTests[0];
-      const product = diagnosticTest?.product;
+      const product = diagnosticTest?.products[0];
 
       if (!biomarker) return;
 

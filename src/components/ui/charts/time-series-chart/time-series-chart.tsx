@@ -784,7 +784,9 @@ function TimeSeriesChartTooltipPortal({
       {status === 'next-test' ? (
         <div className="pointer-events-auto flex max-w-32 items-center gap-4 p-2">
           <div className="text-sm">
-            <div className="mb-3 text-center font-semibold">
+            <div
+              className={`text-center font-semibold${!hideBookNow ? ' mb-3' : ''}`}
+            >
               Schedule your annual re-test
             </div>
             {!hideBookNow && (

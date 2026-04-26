@@ -34,7 +34,11 @@ export const filterBiomarkers = ({
   let filtered = biomarkers.filter((b) => {
     if (b.observation != null) return true;
     if (b.hidden) return false;
-    if (!b.diagnosticTests.some((dt) => dt.product?.status === 'published'))
+    if (
+      !b.diagnosticTests.some((dt) =>
+        dt.products.some((p) => p.status === 'published'),
+      )
+    )
       return false;
     return includeUntested;
   });

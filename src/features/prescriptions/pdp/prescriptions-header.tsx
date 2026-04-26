@@ -414,7 +414,7 @@ const PrescriptionBreadcrumb = ({
 
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link to="/marketplace" search={{ tab: 'prescriptions' }}>
+            <Link to="/marketplace" search={{ category: 'prescriptions' }}>
               Prescriptions
             </Link>
           </BreadcrumbLink>

@@ -27,10 +27,13 @@ export const PurchaseDialogSteps = () => {
     void methods.navigation.goTo(methods.validSteps[0].id);
   }, [methods]);
 
+  const currentId = methods.state.current.data.id;
+  const isCurrentStepValid = methods.validSteps.some((s) => s.id === currentId);
+  if (!isCurrentStepValid) return null;
+
   return (
     <React.Fragment>
       {methods.flow.switch({
-        [PURCHASE_DIALOG_STEPS.INFO]: () => <Steps.ServiceDetailsStep />,
         [PURCHASE_DIALOG_STEPS.INFORMED_CONSENT]: () => (
           <Steps.InformedConsentStep />
         ),

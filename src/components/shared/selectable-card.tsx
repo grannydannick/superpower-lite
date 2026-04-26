@@ -22,7 +22,7 @@ type SelectableCardProps = {
   title: string;
   description?: string;
   price?: number;
-  imageSrc: string;
+  imageSrc?: string;
   onToggle: () => void;
   disabled?: boolean;
   checked?: boolean;
@@ -92,11 +92,13 @@ export const SelectableCard = ({
               }}
             />
           ) : null}
-          <img
-            src={imageSrc}
-            className="size-16 rounded-lg object-cover"
-            alt={title}
-          />
+          {imageSrc && (
+            <img
+              src={imageSrc}
+              className="size-16 rounded-lg object-cover"
+              alt={title}
+            />
+          )}
           <div className="flex flex-1 flex-col items-start">
             <Body1 className="flex items-center gap-2">{title}</Body1>
             {price && price > 0 && !disabled && (

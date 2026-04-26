@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 
 export const MarketplaceCta = () => {
   const tab = useSearch({
-    from: '/_app/marketplace',
+    from: '/_app/marketplace/',
     select: (s) => s.tab,
   });
   const isOrdersTab = tab === 'orders';

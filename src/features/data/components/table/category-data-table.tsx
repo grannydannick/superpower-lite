@@ -1,26 +1,9 @@
-import { useNavigate } from '@tanstack/react-router';
-import { useState, useTransition } from 'react';
+import { useMemo, useState, useTransition } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { SelectableCard } from '@/components/shared/selectable-card';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import {
-  ENVIRONMENTAL_TOXINS_TEST_ID,
-  GUT_MICROBIOME_ANALYSIS_ID,
-  HEAVY_METALS_TEST_ID,
-  MYCOTOXINS_TEST_ID,
-} from '@/const';
-import { useOrders } from '@/features/orders/api';
-import { useService, useServices } from '@/features/services/api';
 import { cn } from '@/lib/utils';
-import { OrderStatus } from '@/types/api';
-import { getServiceImage } from '@/utils/service';
 
-import {
-  SuperpowerCategorySlug,
-  useDataBiomarkers,
-} from '../../api/get-data-biomarkers';
+import { useDataBiomarkers } from '../../api/get-data-biomarkers';
 import { useFilteredBiomarkers } from '../../hooks/use-filtered-biomarkers';
 import { useDataFilterStore } from '../../stores/data-filter-store';
 import type { DataSummaryCategory } from '../../types/data-api';
@@ -29,6 +12,7 @@ import { DateFilter } from '../filter/date-filter';
 import { RangesFilter } from '../filter/ranges-filter';
 
 import { BiomarkersDataTable } from './biomarkers-data-table';
+import { ProductCardsList } from './product-cards-list';
 
 export const CategoryDataTable = ({
   category,
@@ -39,10 +23,11 @@ export const CategoryDataTable = ({
   const updateSearchQuery = useDataFilterStore((s) => s.updateSearchQuery);
   const [localQuery, setLocalQuery] = useState(searchQuery);
 
-  const biomarkersQuery = useDataBiomarkers({
-    category: category ? { slug: category.slug } : undefined,
-  });
-  const biomarkers = biomarkersQuery.data?.biomarkers ?? [];
+  const biomarkersQuery = useDataBiomarkers({ categorySlug: category?.slug });
+  const biomarkers = useMemo(
+    () => biomarkersQuery.data?.biomarkers ?? [],
+    [biomarkersQuery.data],
+  );
 
   const filteredBiomarkers = useFilteredBiomarkers({
     biomarkers,
@@ -89,11 +74,8 @@ export const CategoryDataTable = ({
             </div>
           </div>
         </div>
-        {category?.slug === SuperpowerCategorySlug.GUT_HEALTH ? (
-          <GutInsights />
-        ) : null}
-        {category?.slug === SuperpowerCategorySlug.TOXIN_EXPOSURE ? (
-          <ToxinsInsights />
+        {category?.products?.length ? (
+          <ProductCardsList products={category.products} />
         ) : null}
       </div>
 
@@ -105,125 +87,6 @@ export const CategoryDataTable = ({
           currentCategory={category}
         />
       </div>
-    </div>
-  );
-};
-
-// TODO: check if AIAP already exists for any of this services
-const GutInsights = () => {
-  const navigate = useNavigate();
-
-  const getServiceQuery = useService({
-    serviceId: GUT_MICROBIOME_ANALYSIS_ID,
-    method: 'IN_LAB',
-  });
-
-  const service = getServiceQuery.data?.service;
-
-  if (getServiceQuery.isLoading) {
-    return <Skeleton className="h-[106px] w-full rounded-[20px]" />;
-  }
-
-  if (!service) {
-    return null;
-  }
-
-  return (
-    <SelectableCard
-      title={service.name}
-      imageSrc={getServiceImage(service.name)}
-      description={service.description}
-      onToggle={() => {
-        void navigate({ to: '/services/$id', params: { id: service.id } });
-      }}
-      trigger={
-        <Button size="small" variant="outline">
-          Unlock
-        </Button>
-      }
-    />
-  );
-};
-
-const ToxinsInsights = () => {
-  const navigate = useNavigate();
-
-  const getServicesQuery = useServices();
-  const getOrdersQuery = useOrders();
-
-  const services = getServicesQuery.data?.services;
-  const requestGroups = getOrdersQuery.data?.requestGroups;
-
-  const allOrders = requestGroups?.flatMap((rg) => rg.orders) ?? [];
-
-  const hasCompletedOrder = (serviceId: string) =>
-    allOrders.some(
-      (o) => o.serviceId === serviceId && o.status === OrderStatus.completed,
-    );
-
-  if (getServicesQuery.isLoading) {
-    return <Skeleton className="h-[106px] w-full rounded-[20px]" />;
-  }
-
-  if (!services) return null;
-
-  const env = services.find((s) => s.id === ENVIRONMENTAL_TOXINS_TEST_ID);
-  const mycotoxins = services.find((s) => s.id === MYCOTOXINS_TEST_ID);
-  const heavymetals = services.find((s) => s.id === HEAVY_METALS_TEST_ID);
-
-  return (
-    <div className="space-y-2">
-      {env && !hasCompletedOrder(ENVIRONMENTAL_TOXINS_TEST_ID) ? (
-        <SelectableCard
-          title={env.name}
-          imageSrc={getServiceImage(env.name)}
-          description={env.description}
-          onToggle={() => {
-            void navigate({ to: '/services/$id', params: { id: env.id } });
-          }}
-          trigger={
-            <Button size="small" variant="outline">
-              Unlock
-            </Button>
-          }
-        />
-      ) : null}
-      {mycotoxins && !hasCompletedOrder(MYCOTOXINS_TEST_ID) ? (
-        <SelectableCard
-          title={mycotoxins.name}
-          imageSrc={getServiceImage(mycotoxins.name)}
-          description={mycotoxins.description}
-          onToggle={() => {
-            void navigate({
-              to: '/services/$id',
-              params: { id: mycotoxins.id },
-            });
-          }}
-          trigger={
-            <Button size="small" variant="outline">
-              Unlock
-            </Button>
-          }
-        />
-      ) : null}
-      {heavymetals && !hasCompletedOrder(HEAVY_METALS_TEST_ID) ? (
-        <SelectableCard
-          title={heavymetals.name}
-          imageSrc={getServiceImage(heavymetals.name)}
-          description={heavymetals.description}
-          onToggle={() => {
-            void navigate({
-              to: '/services/$id',
-              params: { id: heavymetals.id },
-            });
-          }}
-          trigger={
-            <Button size="small" variant="outline">
-              Unlock
-            </Button>
-          }
-        />
-      ) : null}
     </div>
   );
 };

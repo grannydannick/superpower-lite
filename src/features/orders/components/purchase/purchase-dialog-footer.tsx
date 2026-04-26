@@ -1,10 +1,7 @@
 import { ReactNode } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-
-import { usePurchaseStore } from '../../stores/purchase-store';
 
 import { usePurchaseDialogStepper } from './purchase-dialog-stepper';
 
@@ -22,13 +19,6 @@ export const PurchaseDialogFooter = ({
   nextBtnDisabled?: boolean;
 }) => {
   const { isLast, next, prev, isFirst } = usePurchaseDialogStepper();
-
-  const { flow, infoFlowBtn } = usePurchaseStore(
-    useShallow((s) => ({
-      flow: s.flow,
-      infoFlowBtn: s.infoFlowBtn,
-    })),
-  );
 
   let prevButton: ReactNode | null = null;
   if (!isFirst) {
@@ -49,9 +39,7 @@ export const PurchaseDialogFooter = ({
   }
 
   let nextButton: ReactNode | null = null;
-  if (flow === 'info' && infoFlowBtn) {
-    nextButton = infoFlowBtn();
-  } else if (nextBtn) {
+  if (nextBtn) {
     nextButton = nextBtn;
   } else if (!isLast) {
     nextButton = (

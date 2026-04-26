@@ -1,6 +1,6 @@
 import NumberFlow from '@number-flow/react';
 import { format } from 'date-fns';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { BiologicalAgeLogo } from '@/components/shared/biological-age-logo';
 import { SuperpowerScoreLogo } from '@/components/shared/score-logo';
@@ -124,7 +124,10 @@ export function Overview() {
   const { data: user, isLoading: isUserLoading } = useUser();
   const biomarkersQuery = useDataBiomarkers();
 
-  const biomarkers = biomarkersQuery.data?.biomarkers ?? [];
+  const biomarkers = useMemo(
+    () => biomarkersQuery.data?.biomarkers ?? [],
+    [biomarkersQuery.data],
+  );
 
   const filteredBiomarkers = useFilteredBiomarkers({
     biomarkers,
