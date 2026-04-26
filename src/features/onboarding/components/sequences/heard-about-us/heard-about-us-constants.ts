@@ -8,6 +8,7 @@ import {
   Mail,
   Tv,
 } from 'lucide-react';
+import { createElement } from 'react';
 
 import {
   BingIcon,
@@ -29,13 +30,25 @@ export type IconComponent =
   | LucideIcon
   | React.ComponentType<React.SVGProps<SVGSVGElement>>
   // this allows icon components that accept a size prop as we have such specific logo
-  | React.ComponentType<{ size?: number }>;
+  | React.ComponentType<{ size?: number }>
+  | React.ComponentType<{ className?: string; 'aria-hidden'?: boolean }>;
 
-export type HeardAboutUsOption = {
+const createImageIcon = (src: string) => {
+  return (props: React.ComponentProps<'img'>) =>
+    createElement('img', {
+      src,
+      alt: '',
+      'aria-hidden': props['aria-hidden'],
+      className:
+        `${props.className ?? ''} rounded-sm object-contain w-7 h-4`.trim(),
+    });
+};
+
+export interface HeardAboutUsOption {
   value: string;
   label: string;
   icon: IconComponent;
-};
+}
 
 export type HeardAboutUsCategory = {
   id: string;
@@ -77,6 +90,41 @@ export const HEARD_ABOUT_US_CATEGORIES: HeardAboutUsCategory[] = [
   {
     id: 'creator',
     title: 'Creator',
+    options: [
+      {
+        value: 'giannis',
+        label: 'Giannis',
+        icon: createImageIcon('/onboarding/heard-about-us/giannis.webp'),
+      },
+      {
+        value: 'steve-aoki',
+        label: 'Steve Aoki',
+        icon: createImageIcon('/onboarding/heard-about-us/steve-aoki.webp'),
+      },
+      {
+        value: 'logan-paul',
+        label: 'Logan Paul',
+        icon: createImageIcon('/onboarding/heard-about-us/logan-paul.webp'),
+      },
+      { value: 'other', label: 'Other', icon: MoreHorizontal },
+    ],
+  },
+  {
+    id: 'clinician',
+    title: 'Clinician',
+    options: [
+      {
+        value: 'dr-amy-shah',
+        label: 'Dr Amy Shah',
+        icon: createImageIcon('/onboarding/heard-about-us/dr-amy-shah.webp'),
+      },
+      {
+        value: 'dr-connealy',
+        label: 'Dr Connealy',
+        icon: createImageIcon('/onboarding/heard-about-us/dr-connealy.webp'),
+      },
+      { value: 'other', label: 'Other', icon: MoreHorizontal },
+    ],
   },
   {
     id: 'web-search',

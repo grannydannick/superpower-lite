@@ -46,6 +46,7 @@ export const HeardAboutUsStep = () => {
   const [selectedOption, setSelectedOption] = useState<SelectedOption | null>(
     null,
   );
+  const [otherDetails, setOtherDetails] = useState('');
   const [openCategoryId, setOpenCategoryId] = useState<string | null>(null);
 
   const { track } = useAnalytics();
@@ -61,13 +62,19 @@ export const HeardAboutUsStep = () => {
 
   const handleNext = () => {
     if (!selectedOption) return;
+    if (selectedOption.option === 'Other' && otherDetails.trim() === '') return;
+
+    const selectedValue =
+      selectedOption.option === 'Other'
+        ? otherDetails.trim()
+        : selectedOption.option;
 
     track('answered_survey_hdyhau', {
       category: selectedOption.category,
-      option: selectedOption.option,
+      option: selectedValue,
       $set: {
         hdyhau_category: selectedOption.category,
-        hdyhau_option: selectedOption.option,
+        hdyhau_option: selectedValue,
       },
     });
 
@@ -79,6 +86,9 @@ export const HeardAboutUsStep = () => {
   };
 
   const handleSelectOption = (categoryTitle: string, optionLabel: string) => {
+    if (optionLabel !== 'Other') {
+      setOtherDetails('');
+    }
     setSelectedOption({ category: categoryTitle, option: optionLabel });
   };
 
@@ -111,6 +121,7 @@ export const HeardAboutUsStep = () => {
                 key={category.id}
                 category={category}
                 selectedOption={selectedOption}
+                otherDetails={otherDetails}
                 isOpen={openCategoryId === category.id}
                 onOpenChange={() =>
                   setOpenCategoryId(
@@ -118,6 +129,7 @@ export const HeardAboutUsStep = () => {
                   )
                 }
                 onSelectOption={handleSelectOption}
+                onOtherDetailsChange={setOtherDetails}
               />
             ))}
           </RadioGroup>
@@ -126,7 +138,10 @@ export const HeardAboutUsStep = () => {
 
       <Sequence.StepFooter className="mx-auto w-full max-w-xl">
         <Button
-          disabled={!selectedOption?.option?.trim()}
+          disabled={
+            selectedOption == null ||
+            (selectedOption.option === 'Other' && otherDetails.trim() === '')
+          }
           onClick={handleNext}
           className="w-full"
         >
@@ -140,19 +155,26 @@ export const HeardAboutUsStep = () => {
 type CategoryCardProps = {
   category: HeardAboutUsCategory;
   selectedOption: SelectedOption | null;
+  otherDetails: string;
   isOpen: boolean;
   onOpenChange: () => void;
   onSelectOption: (category: string, option: string) => void;
+  onOtherDetailsChange: (value: string) => void;
 };
 
 const CategoryCard = ({
   category,
   selectedOption,
+  otherDetails,
   isOpen,
   onOpenChange,
   onSelectOption,
+  onOtherDetailsChange,
 }: CategoryCardProps) => {
   const isCategorySelected = selectedOption?.category === category.title;
+  const isOtherSelected =
+    selectedOption?.category === category.title &&
+    selectedOption.option === 'Other';
 
   return (
     <Collapsible
@@ -196,39 +218,56 @@ const CategoryCard = ({
               />
             </div>
           ) : (
-            <ul className="-mb-4 divide-y divide-zinc-200 border-t border-zinc-200">
-              {category.options.map((option) => {
-                const OptionIcon = option.icon;
-                const value = `${category.title}-${option.label}`;
+            <>
+              <ul
+                className={cn(
+                  'divide-y divide-zinc-200 border-t border-zinc-200',
+                  !isOtherSelected && '-mb-4',
+                )}
+              >
+                {category.options.map((option) => {
+                  const OptionIcon = option.icon;
+                  const value = `${category.title}-${option.label}`;
 
-                return (
-                  <li key={option.value}>
-                    <Label
-                      htmlFor={value}
-                      onClick={() =>
-                        onSelectOption(category.title, option.label)
-                      }
-                      className="flex w-full cursor-pointer items-center justify-between gap-4 py-4 text-left text-sm"
-                    >
-                      <div className="flex items-center gap-4">
-                        <OptionIcon
-                          className="size-4 text-zinc-400"
-                          aria-hidden={true}
+                  return (
+                    <li key={option.value}>
+                      <Label
+                        htmlFor={value}
+                        onClick={() =>
+                          onSelectOption(category.title, option.label)
+                        }
+                        className="flex w-full cursor-pointer items-center justify-between gap-4 py-4 text-left text-sm"
+                      >
+                        <div className="flex items-center gap-4">
+                          <OptionIcon
+                            className="size-4 text-zinc-400"
+                            aria-hidden={true}
+                          />
+                          <Body2>{option.label}</Body2>
+                        </div>
+                        <RadioGroupItem
+                          id={value}
+                          value={value}
+                          variant="vermillion"
+                          className="size-4"
+                          aria-label={option.label}
                         />
-                        <Body2>{option.label}</Body2>
-                      </div>
-                      <RadioGroupItem
-                        id={value}
-                        value={value}
-                        variant="vermillion"
-                        className="size-4"
-                        aria-label={option.label}
-                      />
-                    </Label>
-                  </li>
-                );
-              })}
-            </ul>
+                      </Label>
+                    </li>
+                  );
+                })}
+              </ul>
+              {isOtherSelected ? (
+                <div className="border-t border-zinc-200 pt-4">
+                  <Textarea
+                    placeholder="Please tell us more..."
+                    value={otherDetails}
+                    onChange={(e) => onOtherDetailsChange(e.target.value)}
+                    className="min-h-[100px] resize-none"
+                  />
+                </div>
+              ) : null}
+            </>
           )}
         </div>
       </CollapsibleContent>
