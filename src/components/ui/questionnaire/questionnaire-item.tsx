@@ -734,6 +734,7 @@ function ConsentPaymentConfirmButton({
   const disabled =
     isSelectingPaymentMethod ||
     activePaymentMethod?.externalPaymentMethodId == null ||
+    activePaymentMethod.default !== true ||
     isFlexSelected ||
     !tosAccepted;
 

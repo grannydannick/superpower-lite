@@ -36,11 +36,14 @@ export const useSetDefaultPaymentMethod = ({
   const queryClient = useQueryClient();
 
   return useMutation({
-    onSuccess: (...args) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (...args) => {
+      // Await the refetch so `isPending` stays true until the payment methods
+      // list reflects the new default — keeps the "Default method" label move
+      // and the disabled-row state in sync for callers that read `isPending`.
+      await queryClient.invalidateQueries({
         queryKey: getPaymentMethodsQueryOptions().queryKey,
       });
-      onSuccess?.(...args);
+      await onSuccess?.(...args);
     },
     ...restConfig,
     mutationFn: setDefaultPaymentMethod,

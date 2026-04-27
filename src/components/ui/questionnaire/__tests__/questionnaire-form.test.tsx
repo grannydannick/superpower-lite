@@ -22,12 +22,23 @@ vi.mock('@/hooks/use-identity-verification', () => ({
 vi.mock('../consent-payment-summary', () => ({
   ConsentPaymentSummary: () => null,
 }));
+const defaultPaymentMethodSelection = {
+  activePaymentMethod: {
+    externalPaymentMethodId: 'pm_test_123',
+    default: true,
+  },
+  isSelectingPaymentMethod: false,
+  isFlexSelected: false,
+};
+const mockPaymentMethodSelection = vi.fn(() => defaultPaymentMethodSelection);
 vi.mock('@/features/settings/hooks', () => ({
-  usePaymentMethodSelection: () => ({
-    activePaymentMethod: { externalPaymentMethodId: 'pm_test_123' },
-    isSelectingPaymentMethod: false,
-  }),
+  usePaymentMethodSelection: () => mockPaymentMethodSelection(),
 }));
+afterEach(() => {
+  mockPaymentMethodSelection.mockImplementation(
+    () => defaultPaymentMethodSelection,
+  );
+});
 
 const mockUser: User = {
   id: 'test-user-id',
@@ -142,6 +153,54 @@ test('submits when consent-payment confirm is clicked', async () => {
       }),
     ]),
   );
+});
+
+test('consent-payment confirm is disabled when active PM is not the Stripe default', async () => {
+  mockPaymentMethodSelection.mockImplementation(() => ({
+    activePaymentMethod: {
+      externalPaymentMethodId: 'pm_test_123',
+      default: false,
+    },
+    isSelectingPaymentMethod: false,
+    isFlexSelected: false,
+  }));
+
+  const questionnaire: Questionnaire = {
+    resourceType: 'Questionnaire',
+    status: 'active',
+    id: 'test-questionnaire',
+    item: [
+      {
+        linkId: 'consent-payment.payment',
+        text: 'Confirm your purchase',
+        type: 'choice',
+        required: true,
+        answerOption: [{ valueString: 'Confirm' }],
+      },
+    ],
+  };
+
+  const response: QuestionnaireResponse = {
+    resourceType: 'QuestionnaireResponse',
+    status: 'in-progress',
+  };
+
+  rtlRender(
+    <QuestionnaireForm
+      questionnaire={questionnaire}
+      response={response}
+      user={mockUser}
+      onSave={vi.fn()}
+      onSubmit={vi.fn()}
+    />,
+  );
+
+  await userEvent.click(
+    screen.getByRole('checkbox', { name: /I understand/ }),
+    { pointerEventsCheck: 0 },
+  );
+
+  expect(screen.getByRole('button', { name: 'Confirm' })).toBeDisabled();
 });
 
 test('uses entryFormat extension as placeholder for string inputs', () => {

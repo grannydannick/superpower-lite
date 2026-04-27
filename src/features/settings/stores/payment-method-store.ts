@@ -9,6 +9,7 @@ interface PaymentMethodStoreState {
   selectedPaymentMethodId: string | undefined;
   isSelectingPaymentMethod: boolean;
   setActivePaymentMethod: (paymentMethodId: string) => void;
+  setSelectedPaymentMethodId: (paymentMethodId: string) => void;
   startSelectingPaymentMethod: () => void;
   stopSelectingPaymentMethod: () => void;
 
@@ -35,6 +36,10 @@ export const usePaymentMethodStore = create<PaymentMethodStoreState>()(
       set(() => ({
         selectedPaymentMethodId: paymentMethodId,
         isSelectingPaymentMethod: false,
+      })),
+    setSelectedPaymentMethodId: (paymentMethodId) =>
+      set(() => ({
+        selectedPaymentMethodId: paymentMethodId,
       })),
     startSelectingPaymentMethod: () =>
       set(() => ({

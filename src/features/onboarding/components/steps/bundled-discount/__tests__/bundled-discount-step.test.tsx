@@ -137,6 +137,7 @@ describe('BundledDiscountStep', () => {
       activePaymentMethod: basePaymentMethod,
       activePaymentMethodId: basePaymentMethod.externalPaymentMethodId,
       setActivePaymentMethod: vi.fn(),
+      setSelectedPaymentMethodId: vi.fn(),
       startSelectingPaymentMethod: vi.fn(),
       stopSelectingPaymentMethod: vi.fn(),
       isFlexSelected: false,
