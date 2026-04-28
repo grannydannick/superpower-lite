@@ -16,6 +16,7 @@ import {
 import { ActionItemsCard } from '@/features/homepage/cards/action-items-card';
 import { ActionableOrdersCard } from '@/features/homepage/cards/actionable-orders-card';
 import { ConsultCallCard } from '@/features/homepage/cards/consult-call-card';
+import { DownloadAppCard } from '@/features/homepage/cards/download-app-card';
 import { LabOrderCard } from '@/features/homepage/cards/lab-order/lab-order-card';
 import { ProtocolGoalsCard } from '@/features/homepage/cards/protocol-goals-card';
 import { LiveBetterTogetherCard } from '@/features/homepage/cards/referral-card';
@@ -158,6 +159,14 @@ function HomepageComponent() {
         <div className="flex flex-col pb-20 lg:col-span-2 lg:pb-60 lg:pt-[3px] xl:col-span-1">
           <div className="flex flex-col gap-6">
             <HomepageSection>
+              <DownloadAppCard />
+            </HomepageSection>
+
+            <HomepageSection>
+              <ActionItemsCard />
+            </HomepageSection>
+
+            <HomepageSection>
               <HomepageRetestingCta />
             </HomepageSection>
 
@@ -198,10 +207,6 @@ function HomepageComponent() {
               <ProtocolGoalsCard
                 headerRight={<ExploreMoreLink to="/protocol" />}
               />
-            </HomepageSection>
-
-            <HomepageSection>
-              <ActionItemsCard />
             </HomepageSection>
 
             <HomepageSection>

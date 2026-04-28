@@ -51,7 +51,7 @@ export const ActionItemsCard = () => {
       id: 'connect-wearables',
       title: 'Connect your wearables',
       description:
-        'Download our iOS App to connect & get personalised insights from your wearable data.',
+        'Download our iOS App to connect & get personalized insights from your wearable data.',
       imageSrc: '/data/wearables.webp',
       onClick: () => {
         void navigate({

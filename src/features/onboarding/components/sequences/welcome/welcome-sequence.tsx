@@ -26,7 +26,7 @@ const NEXT_STEPS = [
   },
   {
     Icon: IconNumber3Circle,
-    label: 'Get your personalised action plan',
+    label: 'Get your personalized action plan',
   },
 ] as const;
 

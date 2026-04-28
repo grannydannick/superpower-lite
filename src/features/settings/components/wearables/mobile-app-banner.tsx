@@ -45,7 +45,7 @@ function QrDialogBody() {
           Scan the QR code to download Superpower on iOS.
         </h3>
         <p className="text-sm text-zinc-400">
-          Get personalised insights from your wearables data.
+          Get personalized insights from your wearables data.
         </p>
       </div>
       <QrCodeAnimated />
@@ -55,13 +55,19 @@ function QrDialogBody() {
 }
 
 /** Reusable wrapper – renders a Dialog (desktop) or Sheet (mobile) with the QR code content. */
-export function QrCodeDialog({ trigger }: { trigger: ReactNode }) {
+export function QrCodeDialog({
+  trigger,
+  onOpenChange,
+}: {
+  trigger: ReactNode;
+  onOpenChange?: (open: boolean) => void;
+}) {
   const { width } = useWindowDimensions();
   const isMobile = width <= 1024;
 
   if (isMobile) {
     return (
-      <Sheet>
+      <Sheet onOpenChange={onOpenChange}>
         <SheetTrigger asChild>{trigger}</SheetTrigger>
         <SheetContent className="flex flex-col items-center rounded-t-3xl p-4 pt-7">
           <SheetClose asChild className="absolute right-2 top-2 z-10">
@@ -76,7 +82,7 @@ export function QrCodeDialog({ trigger }: { trigger: ReactNode }) {
   }
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="max-w-sm rounded-3xl p-0">
         <DialogTitle className="sr-only">Download Superpower</DialogTitle>

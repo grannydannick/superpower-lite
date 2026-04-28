@@ -22,8 +22,10 @@ storybook-static
 # production
 /dist
 
-# superpowers specs
-docs/superpowers/specs/
+# superpowers
+docs/superpowers/
+.superpowers/
+.claude/scheduled_tasks.lock
 
 # local specs
 docs/specs/
