@@ -55,7 +55,7 @@ export const appointmentSchedulerStoreCreator = (
         );
 
         const tz = resolveTimeZone(state.tz);
-        const allSlots = response.slots;
+        const allSlots = response.slots ?? [];
         let newStartRange = state.startRange
           ? new TZDateMini(state.startRange.getTime(), tz)
           : undefined;
