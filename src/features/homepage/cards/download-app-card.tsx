@@ -25,7 +25,7 @@ const CARD_BACKGROUND_IMAGE = [
 const CARD_STYLE = { backgroundImage: CARD_BACKGROUND_IMAGE };
 
 const CARD_CLASS_NAME =
-  'relative overflow-hidden rounded-[20px] border border-black/10 text-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.05)]';
+  'relative block w-full overflow-hidden rounded-[20px] border border-black/10 text-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.05)]';
 
 /**
  * Apple App Store badge — official Figma export (file
@@ -161,7 +161,7 @@ export function DownloadAppCard() {
           <button
             type="button"
             aria-label="Get the Superpower app"
-            className={`${CARD_CLASS_NAME} block w-full cursor-pointer text-left`}
+            className={`${CARD_CLASS_NAME} cursor-pointer text-left`}
             style={CARD_STYLE}
           >
             {cardContent}
