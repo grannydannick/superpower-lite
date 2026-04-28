@@ -25,7 +25,6 @@ import {
 import { ProtocolIndexNumber } from '../protocol-index-number';
 import { ProtocolMarkdown } from '../protocol-markdown';
 import { BiomarkerCausesDialog } from '../reveal/steps/key-actions/biomarker-causes-dialog';
-import { RxClinicianCallCta } from '../rx-clinician-call-cta';
 import { SymptomsCarousel } from '../symptoms-carousel';
 
 interface GoalDetailPageProps {
@@ -153,8 +152,6 @@ export const GoalDetailPage = ({
           />
         </TabsPrimitive.Content>
       </TabsPrimitive.Root>
-
-      <RxClinicianCallCta source="protocol_goal_detail" />
 
       {/* Ask Superpower AI */}
       <div className="space-y-4 pt-4">

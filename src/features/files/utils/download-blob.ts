@@ -1,5 +1,5 @@
 export const downloadBlob = (blob: Blob, fileName?: string): void => {
-  // Convert your blob into a Blob URL (a special url that points to an object in the browser's memory)
+  // Convert the blob into an object URL that can be downloaded via an anchor tag.
   const blobUrl = URL.createObjectURL(blob);
 
   // Create a link element
@@ -24,4 +24,7 @@ export const downloadBlob = (blob: Blob, fileName?: string): void => {
 
   // Remove link from body
   document.body.removeChild(link);
+
+  // Allow the browser to begin the download before releasing the object URL.
+  setTimeout(() => URL.revokeObjectURL(blobUrl), 0);
 };

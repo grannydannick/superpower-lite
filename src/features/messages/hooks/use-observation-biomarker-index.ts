@@ -2,6 +2,24 @@ import { useMemo } from 'react';
 
 import { useDataBiomarkers } from '@/features/data/api';
 import type { DataBiomarker } from '@/features/data/types/data-api';
+import type { Biomarker } from '@/types/api';
+
+export function createObservationBiomarkerIndex(
+  biomarkers?: Biomarker[],
+): Map<string, Biomarker> {
+  const index = new Map<string, Biomarker>();
+  if (!biomarkers) return index;
+
+  for (const biomarker of biomarkers) {
+    for (const result of biomarker.value ?? []) {
+      if (result.id) {
+        index.set(result.id.toString(), biomarker);
+      }
+    }
+  }
+
+  return index;
+}
 
 /**
  * Maps observation-value ids (as referenced by AI chat citations) to the

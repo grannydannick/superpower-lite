@@ -13,6 +13,7 @@ import { Body1, H1, H2, H3, H4 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 
 import type { Citation } from '../api';
+import { sanitizeProtocolMarkdown } from '../utils/sanitize-markdown';
 
 interface ProtocolMarkdownProps {
   content: string;
@@ -75,7 +76,7 @@ export const ProtocolMarkdown = ({
 
   const sanitizedContent = useMemo(() => {
     try {
-      return sanitizeMarkdown(content);
+      return sanitizeProtocolMarkdown(content);
     } catch (error) {
       console.error('Error sanitizing markdown', error);
       return null;
@@ -165,11 +166,3 @@ export const ProtocolMarkdown = ({
     </div>
   );
 };
-
-function sanitizeMarkdown(input: string): string {
-  // Remove em dashes
-  // Makes it look really AI generated lol
-  // Jacob request
-  // Also remove inline citation markers like [^1], [^2]
-  return input.replace(/\u2014/g, ' -- ').replace(/\[\^\d+\]/g, '');
-}

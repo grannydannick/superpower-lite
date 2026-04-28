@@ -1,11 +1,19 @@
 import { useParams } from '@tanstack/react-router';
-import { LucideInfo } from 'lucide-react';
+import { Download, LucideInfo } from 'lucide-react';
+import { useState } from 'react';
 
 import { ChevronLeft } from '@/components/icons/chevron-left-icon';
+import { Button } from '@/components/ui/button';
 import { Link } from '@/components/ui/link';
 import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from '@/components/ui/sonner';
 import { Body1, Body2, H3, H4 } from '@/components/ui/typography';
+import { useBiomarkers } from '@/features/data/api';
 import { AiSuggestions } from '@/features/messages/components/ai-suggestions';
+import { createObservationBiomarkerIndex } from '@/features/messages/hooks/use-observation-biomarker-index';
+import { useAnalytics } from '@/hooks/use-analytics';
+import { usePosthogFeatureFlagEnabled } from '@/hooks/use-posthog-feature-flag-enabled';
+import { FeatureFlags } from '@/lib/posthog';
 
 import {
   Protocol,
@@ -17,7 +25,6 @@ import {
   useProtocols,
 } from '../../api';
 import { ProtocolWaitingScreen } from '../protocol-waiting-screen';
-import { RxClinicianCallCta } from '../rx-clinician-call-cta';
 
 import { ConsiderAdding } from './consider-adding';
 import { Goals } from './goals';
@@ -101,6 +108,62 @@ export const ProtocolDashboard = ({
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
 
+  const isPdfDownloadEnabled = usePosthogFeatureFlagEnabled(
+    FeatureFlags.ProtocolPdfDownload,
+  );
+  const {
+    data: biomarkersData,
+    isLoading: isBiomarkersLoading,
+    refetch: refetchBiomarkers,
+  } = useBiomarkers({
+    queryConfig: { enabled: Boolean(isPdfDownloadEnabled) },
+  });
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const { track } = useAnalytics();
+
+  const handleDownloadPdf = async () => {
+    if (!protocol) return;
+    track('protocol_pdf_download_clicked', {
+      protocol_id: protocol.id,
+    });
+    setIsGeneratingPdf(true);
+    try {
+      let biomarkers = biomarkersData?.biomarkers;
+
+      if (!biomarkers) {
+        const biomarkerResult = await refetchBiomarkers();
+        biomarkers = biomarkerResult.data?.biomarkers;
+
+        if (!biomarkers) {
+          track('protocol_pdf_failed', {
+            protocol_id: protocol.id,
+            reason: 'biomarkers_unavailable',
+          });
+          toast.error('Unable to load biomarker data for your PDF.');
+          return;
+        }
+      }
+
+      const { generateProtocolPdf } = await import('../../pdf');
+      const observationIndex = createObservationBiomarkerIndex(biomarkers);
+      await generateProtocolPdf(protocol, observationIndex);
+      track('protocol_pdf_generated', {
+        protocol_id: protocol.id,
+        goal_count: protocol.goals.length,
+      });
+    } catch (error) {
+      console.error('Failed to generate PDF:', error);
+      track('protocol_pdf_failed', {
+        protocol_id: protocol.id,
+        reason: 'generation_error',
+        error_message: error instanceof Error ? error.message : String(error),
+      });
+      toast.error('Failed to generate PDF. Please try again.');
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="mx-auto h-screen w-full max-w-[800px] space-y-6 p-6 lg:px-16">
@@ -151,10 +214,23 @@ export const ProtocolDashboard = ({
           </Body2>
         </Link>
       )}
-      <H3>Protocol</H3>
+      <div className="flex w-full items-center justify-between">
+        <H3>Protocol</H3>
+        {isPdfDownloadEnabled && (
+          <Button
+            variant="outline"
+            size="small"
+            className="ml-auto shrink-0"
+            disabled={isGeneratingPdf || !protocol || isBiomarkersLoading}
+            onClick={handleDownloadPdf}
+          >
+            <Download className="mr-1.5 size-4" />
+            {isGeneratingPdf ? 'Generating...' : 'Download PDF'}
+          </Button>
+        )}
+      </div>
       <TodaysList actions={todaysActions} />
       <Goals goals={protocol.goals} protocolId={protocol.id} />
-      <RxClinicianCallCta source="protocol_main" />
       {nonAcceptedActions.length > 0 && (
         <ConsiderAdding protocolId={protocol.id} actions={nonAcceptedActions} />
       )}
