@@ -25,6 +25,9 @@ storybook-static
 # superpowers specs
 docs/superpowers/specs/
 
+# local specs
+docs/specs/
+
 # misc
 .DS_Store
 .env

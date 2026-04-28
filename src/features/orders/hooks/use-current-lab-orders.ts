@@ -4,13 +4,12 @@ import { useMemo } from 'react';
 import { getOrdersQueryOptions } from '@/features/orders/api';
 import { OrderStatus } from '@/types/api';
 
-export const useCurrentLabOrder = () => {
+export const useCurrentLabOrders = () => {
   const query = useQuery(getOrdersQueryOptions());
   const data = query.data;
 
-  const activeLabOrder = useMemo(() => {
+  const activeLabOrders = useMemo(() => {
     const requestGroups = data?.requestGroups ?? [];
-    // const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
     // Filter for blood panel orders that are not completed/revoked
     const bloodPanelOrders = requestGroups.filter((rg) => {
@@ -39,11 +38,11 @@ export const useCurrentLabOrder = () => {
       );
     });
 
-    return bloodPanelOrders[0] || null;
+    return bloodPanelOrders;
   }, [data]);
 
   return {
-    activeLabOrder,
+    activeLabOrders,
     isError: query.isError,
     isPending: query.isPending,
   };
