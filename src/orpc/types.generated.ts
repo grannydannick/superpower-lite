@@ -879,12 +879,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/rpc/onboarding/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["onboarding.getOnboardingProducts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /** @enum {unknown} */
-        CheckoutProductId: "v2-baseline-membership-20250801" | "v2-performance-membership-20260331" | "v2-complete-membership-20260331" | "baseline-membership-experiment-299-20260107" | "v2-membership-advanced-upgrade-20250801" | "at-home-sample-collection-20251016" | "membership-gift-20251125" | "membership-gift-nynj-20251128" | "free-membership-gift-20251207" | "free-membership-gift-nynj-20251207" | "supermom-bundle-gift-20260414" | "supermom-bundle-gift-nynj-20260414" | "v2-supermom-panel-march-2026-20260320" | "v2-autoimmunity-bundle-20250929" | "v2-cardiovascular-bundle-20250929" | "v2-metabolic-bundle-20250929" | "v2-fertility-bundle-20250929" | "v2-methylation-bundle-20250929" | "v2-nutrients-bundle-20250929" | "v2-respiratory-allergy-panel-20260415" | "v2-baseline-blood-panel-20250801" | "v2-advanced-blood-panel-20250801" | "v2-custom-blood-panel-20251002" | "v3-performance-initial-blood-panel-20260415" | "v3-performance-retest-blood-panel-20260415" | "gut-microbiome-analysis-20240513" | "grail-galleri-multi-cancer-test-20240513" | "mosaic-toxic-metals-20260107" | "mosaic-mycotox-20260107" | "mosaic-envirotox-20260107" | "mosaic-toxdetect-20260107" | "prenuvo-scan-20260416" | "autopilot-subscription-20260209" | "rx-enclomiphene-monthly-20250930" | "rx-enclomiphene-90day-20251022" | "rx-enclomiphene-180day-20251022" | "rx-enclomiphene-365day-20260227" | "rx-semaglutide-90day-20251022" | "rx-semaglutide-180day-20251022" | "rx-semaglutide-60day-20251124" | "rx-tirzepatide-monthly-20251224" | "rx-tirzepatide-90d-20251224" | "rx-tirzepatide-180d-20251224" | "rx-tirzepatide-365day-20260318" | "rx-cbp-stepup-enclomiphene-all-quest" | "rx-cbp-stepup-enclomiphene-all-bioref" | "membership-onetime-baseline-20260226";
+        CheckoutProductId: "v2-baseline-membership-20250801" | "v2-performance-membership-20260331" | "v2-complete-membership-20260331" | "baseline-membership-experiment-299-20260107" | "v2-membership-advanced-upgrade-20250801" | "v2-membership-advanced-microbiome-bundle-20260428" | "v2-membership-complete-bundle-20260428" | "at-home-sample-collection-20251016" | "membership-gift-20251125" | "membership-gift-nynj-20251128" | "free-membership-gift-20251207" | "free-membership-gift-nynj-20251207" | "supermom-bundle-gift-20260414" | "supermom-bundle-gift-nynj-20260414" | "v2-supermom-panel-march-2026-20260320" | "v2-autoimmunity-bundle-20250929" | "v2-cardiovascular-bundle-20250929" | "v2-metabolic-bundle-20250929" | "v2-fertility-bundle-20250929" | "v2-methylation-bundle-20250929" | "v2-nutrients-bundle-20250929" | "v2-respiratory-allergy-panel-20260415" | "v2-baseline-blood-panel-20250801" | "v2-advanced-blood-panel-20250801" | "v2-custom-blood-panel-20251002" | "v3-performance-initial-blood-panel-20260415" | "v3-performance-retest-blood-panel-20260415" | "gut-microbiome-analysis-20240513" | "grail-galleri-multi-cancer-test-20240513" | "mosaic-toxic-metals-20260107" | "mosaic-mycotox-20260107" | "mosaic-envirotox-20260107" | "mosaic-toxdetect-20260107" | "prenuvo-scan-20260416" | "autopilot-subscription-20260209" | "rx-enclomiphene-monthly-20250930" | "rx-enclomiphene-90day-20251022" | "rx-enclomiphene-180day-20251022" | "rx-enclomiphene-365day-20260227" | "rx-semaglutide-90day-20251022" | "rx-semaglutide-180day-20251022" | "rx-semaglutide-60day-20251124" | "rx-tirzepatide-monthly-20251224" | "rx-tirzepatide-90d-20251224" | "rx-tirzepatide-180d-20251224" | "rx-tirzepatide-365day-20260318" | "rx-cbp-stepup-enclomiphene-all-quest" | "rx-cbp-stepup-enclomiphene-all-bioref" | "membership-onetime-baseline-20260226";
         /** @enum {unknown} */
         GiftPromo: "two_for_one" | "four_for_three";
         CheckoutSessionLineItem: {
@@ -1250,8 +1266,6 @@ export interface operations {
                             aliases: string[];
                             hidden: boolean;
                             tags: string[];
-                            metaTitle: string | null;
-                            metaDescription: string | null;
                         } & {
                             categories: {
                                 id: string;
@@ -2066,6 +2080,53 @@ export interface operations {
                                 bloodTubeCount: number | null;
                             };
                         })[];
+                        recommendations: {
+                            id: string;
+                            productId: string;
+                            shortDescription: string;
+                            biomarkers: {
+                                id: string;
+                                slug: string;
+                                name: string;
+                                title: string;
+                                subtitle: string | null;
+                                shortDescription: string | null;
+                                description: string | null;
+                                /** @enum {unknown} */
+                                gender: "all" | "male" | "female";
+                                aliases: string[];
+                                hidden: boolean;
+                                tags: string[];
+                            }[];
+                            product: {
+                                id: string;
+                                slug: string;
+                                name: string;
+                                title: string;
+                                subtitle: string | null;
+                                /** @enum {unknown} */
+                                type: "diagnostic_test" | "prescription";
+                                /** @enum {unknown} */
+                                status: "draft" | "published" | "archived";
+                                shortDescription: string | null;
+                                description: string | null;
+                                image: string | null;
+                                hidden: boolean;
+                            } & {
+                                prices?: {
+                                    amount: number;
+                                    currency: string;
+                                }[];
+                                legacy?: {
+                                    id: string;
+                                    description: string | null;
+                                    active: boolean;
+                                    bloodTubeCount: number | null;
+                                };
+                            };
+                            /** Format: date-time */
+                            createdAt: string;
+                        }[];
                     };
                 };
             };
@@ -23032,8 +23093,6 @@ export interface operations {
                             aliases: string[];
                             hidden: boolean;
                             tags: string[];
-                            metaTitle: string | null;
-                            metaDescription: string | null;
                         } & {
                             citations: {
                                 label: string;
@@ -23560,8 +23619,6 @@ export interface operations {
                         aliases: string[];
                         hidden: boolean;
                         tags: string[];
-                        metaTitle: string | null;
-                        metaDescription: string | null;
                     } & {
                         content: string | null;
                     }) & {
@@ -24089,6 +24146,55 @@ export interface operations {
                                         lastCompletedAt: string | null;
                                         completedByServiceName: string | null;
                                     };
+                                    productDetails?: ((({
+                                        id: string;
+                                        slug: string;
+                                        name: string;
+                                        title: string;
+                                        subtitle: string | null;
+                                        /** @enum {unknown} */
+                                        type: "diagnostic_test" | "prescription";
+                                        /** @enum {unknown} */
+                                        status: "draft" | "published" | "archived";
+                                        shortDescription: string | null;
+                                        description: string | null;
+                                        image: string | null;
+                                        hidden: boolean;
+                                    } & {
+                                        tags: {
+                                            id: string;
+                                            name: string;
+                                            slug: string;
+                                            title: string;
+                                        }[];
+                                        metaTitle: string | null;
+                                        metaDescription: string | null;
+                                        sampleReport: string | null;
+                                    }) & {
+                                        biomarkers: ({
+                                            id: string;
+                                            slug: string;
+                                            name: string;
+                                            title: string;
+                                            subtitle: string | null;
+                                            shortDescription: string | null;
+                                            description: string | null;
+                                            /** @enum {unknown} */
+                                            gender: "all" | "male" | "female";
+                                            aliases: string[];
+                                            hidden: boolean;
+                                            tags: string[];
+                                        } & {
+                                            categories: {
+                                                id?: unknown;
+                                                slug?: unknown;
+                                                name?: unknown;
+                                                title?: unknown;
+                                            }[];
+                                        })[];
+                                    }) & {
+                                        content: string | null;
+                                    }) | null;
                                 } | null;
                                 components: {
                                     id: string;
@@ -24130,6 +24236,50 @@ export interface operations {
                                         lastCompletedAt: string | null;
                                         completedByServiceName: string | null;
                                     };
+                                    productDetails?: ((({
+                                        id: string;
+                                        slug: string;
+                                        name: string;
+                                        title: string;
+                                        subtitle: string | null;
+                                        /** @enum {unknown} */
+                                        type: "diagnostic_test" | "prescription";
+                                        /** @enum {unknown} */
+                                        status: "draft" | "published" | "archived";
+                                        shortDescription: string | null;
+                                        description: string | null;
+                                        image: string | null;
+                                        hidden: boolean;
+                                    } & {
+                                        tags: {
+                                            id: string;
+                                            name: string;
+                                            slug: string;
+                                            title: string;
+                                        }[];
+                                        metaTitle: string | null;
+                                        metaDescription: string | null;
+                                        sampleReport: string | null;
+                                    }) & {
+                                        biomarkers: ({
+                                            id: string;
+                                            slug: string;
+                                            name: string;
+                                            title: string;
+                                            subtitle: string | null;
+                                            shortDescription: string | null;
+                                            description: string | null;
+                                            /** @enum {unknown} */
+                                            gender: "all" | "male" | "female";
+                                            aliases: (unknown | null)[];
+                                            hidden: boolean;
+                                            tags: (unknown | null)[];
+                                        } & {
+                                            categories: (unknown | null)[];
+                                        })[];
+                                    }) & {
+                                        content: string | null;
+                                    }) | null;
                                 }[];
                             } | {
                                 /** @constant */
@@ -24174,6 +24324,50 @@ export interface operations {
                                         lastCompletedAt: string | null;
                                         completedByServiceName: string | null;
                                     };
+                                    productDetails?: ((({
+                                        id: string;
+                                        slug: string;
+                                        name: string;
+                                        title: string;
+                                        subtitle: string | null;
+                                        /** @enum {unknown} */
+                                        type: "diagnostic_test" | "prescription";
+                                        /** @enum {unknown} */
+                                        status: "draft" | "published" | "archived";
+                                        shortDescription: string | null;
+                                        description: string | null;
+                                        image: string | null;
+                                        hidden: boolean;
+                                    } & {
+                                        tags: {
+                                            id: string;
+                                            name: string;
+                                            slug: string;
+                                            title: string;
+                                        }[];
+                                        metaTitle: string | null;
+                                        metaDescription: string | null;
+                                        sampleReport: string | null;
+                                    }) & {
+                                        biomarkers: ({
+                                            id: string;
+                                            slug: string;
+                                            name: string;
+                                            title: string;
+                                            subtitle: string | null;
+                                            shortDescription: string | null;
+                                            description: string | null;
+                                            /** @enum {unknown} */
+                                            gender: "all" | "male" | "female";
+                                            aliases: (unknown | null)[];
+                                            hidden: boolean;
+                                            tags: (unknown | null)[];
+                                        } & {
+                                            categories: (unknown | null)[];
+                                        })[];
+                                    }) & {
+                                        content: string | null;
+                                    }) | null;
                                 }[];
                             };
                         }[];
@@ -24350,6 +24544,284 @@ export interface operations {
                         /** @constant */
                         status: 500;
                         /** @default Internal server error */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    "onboarding.getOnboardingProducts": {
+        parameters: {
+            query: {
+                slugs: string[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        products: (({
+                            id: string;
+                            slug: string;
+                            name: string;
+                            title: string;
+                            subtitle: string | null;
+                            /** @enum {unknown} */
+                            type: "diagnostic_test" | "prescription";
+                            /** @enum {unknown} */
+                            status: "draft" | "published" | "archived";
+                            shortDescription: string | null;
+                            description: string | null;
+                            image: string | null;
+                            hidden: boolean;
+                        } & {
+                            tags: {
+                                id: string;
+                                name: string;
+                                slug: string;
+                                title: string;
+                            }[];
+                            metaTitle: string | null;
+                            metaDescription: string | null;
+                            sampleReport: string | null;
+                        }) & {
+                            biomarkers: ({
+                                id: string;
+                                slug: string;
+                                name: string;
+                                title: string;
+                                subtitle: string | null;
+                                shortDescription: string | null;
+                                description: string | null;
+                                /** @enum {unknown} */
+                                gender: "all" | "male" | "female";
+                                aliases: string[];
+                                hidden: boolean;
+                                tags: string[];
+                            } & {
+                                categories: {
+                                    id: string;
+                                    slug: string;
+                                    name: string;
+                                    title: string;
+                                }[];
+                            })[];
+                        })[];
+                    };
+                };
+            };
+            /** @description 400 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "BAD_REQUEST";
+                        /** @constant */
+                        status: 400;
+                        /** @default Bad Request */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 401 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "UNAUTHORIZED";
+                        /** @constant */
+                        status: 401;
+                        /** @default Unauthorized */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 403 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "FORBIDDEN";
+                        /** @constant */
+                        status: 403;
+                        /** @default Forbidden */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 404 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "NOT_FOUND";
+                        /** @constant */
+                        status: 404;
+                        /** @default Not found */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 409 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "CONFLICT";
+                        /** @constant */
+                        status: 409;
+                        /** @default Conflict */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 429 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "RATE_LIMIT_EXCEEDED";
+                        /** @constant */
+                        status: 429;
+                        /** @default Rate limit exceeded */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 500 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "INTERNAL_SERVER_ERROR";
+                        /** @constant */
+                        status: 500;
+                        /** @default Internal Server Error */
+                        message: string;
+                        data?: unknown;
+                    } | {
+                        /** @constant */
+                        defined: false;
+                        code: string;
+                        status: number;
+                        message: string;
+                        data?: unknown;
+                    };
+                };
+            };
+            /** @description 503 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @constant */
+                        defined: true;
+                        /** @constant */
+                        code: "SERVICE_UNAVAILABLE";
+                        /** @constant */
+                        status: 503;
+                        /** @default Service Unavailable */
                         message: string;
                         data?: unknown;
                     } | {
