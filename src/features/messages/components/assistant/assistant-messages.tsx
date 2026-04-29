@@ -10,11 +10,10 @@ import {
 } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { CHAT_NEAR_BOTTOM_THRESHOLD_PX } from '@/features/messages/hooks/use-chat-scroll';
 import { cn } from '@/lib/utils';
 
 import { PreviewMessage, ThinkingMessage } from '../ai/message';
-
-const BOTTOM_AUTO_SCROLL_THRESHOLD_PX = 24;
 
 interface AssistantMessagesProps {
   status: UseChatHelpers<UIMessage>['status'];
@@ -87,7 +86,7 @@ export function AssistantMessages({
 
     const distanceFromBottom =
       container.scrollHeight - container.scrollTop - container.clientHeight;
-    const isAtBottom = distanceFromBottom <= BOTTOM_AUTO_SCROLL_THRESHOLD_PX;
+    const isAtBottom = distanceFromBottom <= CHAT_NEAR_BOTTOM_THRESHOLD_PX;
     autoScrollEnabledRef.current = isAtBottom;
   }, []);
 
@@ -179,7 +178,7 @@ function ScrollDownButton({
     const update = () => {
       const atBottom =
         el.scrollHeight - el.scrollTop - el.clientHeight <=
-        BOTTOM_AUTO_SCROLL_THRESHOLD_PX;
+        CHAT_NEAR_BOTTOM_THRESHOLD_PX;
       setShow(!atBottom);
     };
 

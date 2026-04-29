@@ -3,7 +3,7 @@ import { m } from 'framer-motion';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 
-import { AnimatedIcon } from './animated-icon';
+import { AnimatedIcon } from '../animated-icon';
 
 export const Greeting = () => {
   const { data: user } = useUser();

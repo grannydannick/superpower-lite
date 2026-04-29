@@ -5,6 +5,7 @@ import { FileUIPart, type UIMessage } from 'ai';
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -24,12 +25,17 @@ import {
   getMessages,
   getTimelineQueryOptions,
 } from '@/features/messages/api/get-messages';
+import { WelcomeContent } from '@/features/messages/components/ai/welcome/content';
 import { ChatSuggestion } from '@/features/messages/components/chat-suggestion';
 import { useChatStore } from '@/features/messages/stores/chat-store';
+import {
+  scrollChatToBottom,
+  scrollChatToMessage,
+} from '@/features/messages/utils/chat-scroll';
 import { createChatV2Transport } from '@/features/messages/utils/chatv2-transport';
 import { extractTiming } from '@/features/messages/utils/extract-timing';
-import { scrollToBottom } from '@/features/messages/utils/scroll-to-bottom';
 import { useAnalytics } from '@/hooks/use-analytics';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { useUser } from '@/lib/auth';
 
 import {
@@ -38,12 +44,11 @@ import {
 } from '../../hooks/use-message-queue';
 
 import { classifyChatError } from './chat-error-utils';
-import { Greeting } from './greeting';
 import { Messages } from './messages';
 import { MultimodalInput } from './multimodal-input';
 import { type Preset, PRESET_MESSAGES } from './preset-messages';
 import { QueuedMessages } from './queued-messages';
-import { type SetupAction, SuggestedActions } from './suggested-actions';
+import { type SetupAction } from './welcome/suggested-actions';
 
 const publicErrors = ['Too many requests, please try again later.'] as const;
 
@@ -575,7 +580,7 @@ function useConciergeChatController({
       setDidJump(false);
       // Instant scroll to bottom — the handleScroll listener will
       // detect we're at the bottom and re-enable auto-scroll.
-      scrollToBottom({ behavior: 'instant' });
+      scrollChatToBottom({ behavior: 'instant' });
     } catch (err) {
       console.warn('Failed to reset messages after jump', err);
     }
@@ -807,10 +812,12 @@ function useConciergeChatController({
     async (messageId: string) => {
       // Already in the DOM? Flush state synchronously so the layout
       // settles (greeting removal, etc.) before we scroll.
-      const existing = document.getElementById(`message-${messageId}`);
-      if (existing) {
+      if (document.getElementById(`message-${messageId}`) != null) {
         flushSync(() => setDidJump(true));
-        existing.scrollIntoView({ behavior: 'instant', block: 'center' });
+        scrollChatToMessage(messageId, {
+          behavior: 'instant',
+          block: 'center',
+        });
         return;
       }
 
@@ -858,9 +865,14 @@ function useConciergeChatController({
       });
 
       // 5. Element should now be in the DOM. Scroll to it.
-      const el = document.getElementById(`message-${messageId}`);
-      if (!el) throw new Error('Message not found');
-      el.scrollIntoView({ behavior: 'instant', block: 'center' });
+      if (document.getElementById(`message-${messageId}`) == null) {
+        throw new Error('Message not found');
+      }
+
+      scrollChatToMessage(messageId, {
+        behavior: 'instant',
+        block: 'center',
+      });
     },
     [setMessages, setHasMoreOlder, setHasMoreNewer, setDidJump],
   );
@@ -920,26 +932,6 @@ interface ChatViewProps {
   removeFromQueue: (id: string) => void;
 }
 
-function WelcomeContent({
-  onSend,
-  setupActions,
-}: {
-  onSend: (text: string) => void;
-  setupActions: SetupAction[];
-}) {
-  return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
-      <Greeting />
-      <div className="flex w-full">
-        <SuggestedActions
-          onSendSuggestion={onSend}
-          setupActions={setupActions}
-        />
-      </div>
-    </div>
-  );
-}
-
 function ChatView({
   messages,
   setMessages,
@@ -967,8 +959,10 @@ function ChatView({
   removeFromQueue,
 }: ChatViewProps) {
   const navigate = useNavigate({ from: '/concierge' });
+  const startedFromWelcomeAction = preset != null || attachments.length > 0;
   const hasInteractedRef = useRef(
-    messages.length > 0 && messages.at(-1)?.role === 'user',
+    startedFromWelcomeAction ||
+      (messages.length > 0 && messages.at(-1)?.role === 'user'),
   );
   const isActiveStream = status === 'streaming' || status === 'submitted';
 
@@ -1016,6 +1010,23 @@ function ChatView({
       ];
     });
   }, [preset, setMessages, user?.firstName]);
+
+  // On mobile, a preset message can be taller than the viewport, so the
+  // default scroll-to-bottom hides the top. Override once to show the
+  // start of the preset after it renders. Parent layout effects run after
+  // children's, so this wins over Messages' auto-scroll-to-bottom.
+  const isMobile = useIsMobile();
+  const presetScrolledRef = useRef(false);
+  useLayoutEffect(() => {
+    if (!isMobile || preset == null || presetScrolledRef.current) return;
+    const presetMessageId = `preset-${preset}`;
+    if (document.getElementById(`message-${presetMessageId}`) == null) return;
+    presetScrolledRef.current = true;
+    scrollChatToMessage(presetMessageId, {
+      block: 'start',
+      behavior: 'instant',
+    });
+  }, [isMobile, preset, messages.length]);
 
   const isUploadLabsPreset = preset === 'upload-labs';
   const presetIsLastMessage =
@@ -1099,7 +1110,6 @@ function ChatView({
   }
 
   const followups = didJump ? stableFollowupsRef.current : rawFollowups;
-
   const welcomeContent = (
     <WelcomeContent
       onSend={(text) => void handleSend({ text, files: [] }, undefined)}

@@ -73,7 +73,7 @@ export const ConciergeLayout = () => {
 
   return (
     <div className="flex h-[calc(100dvh-72px)] flex-col overflow-hidden md:h-[calc(100dvh-68px)]">
-      <div className="mx-auto flex w-full max-w-[1600px] shrink-0 items-center justify-end px-4 py-2 lg:px-16 lg:py-3">
+      <div className="mx-auto flex w-full max-w-3xl shrink-0 items-center justify-between px-4 py-2 lg:px-16 lg:py-3">
         <CareTeamDialog
           trigger={
             <button className="flex items-center gap-2 rounded-full px-3 py-1.5 text-sm text-secondary transition-colors hover:bg-zinc-100">

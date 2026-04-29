@@ -23,10 +23,9 @@ import {
 } from '@/const';
 import { useUploadFiles } from '@/features/files/api';
 import { AttachmentsButton } from '@/features/messages/components/ai/attachements-button';
+import { scrollChatToBottom } from '@/features/messages/utils/chat-scroll';
 import { useWindowDimensions } from '@/hooks/use-window-dimensions';
 import { cn } from '@/lib/utils';
-
-import { scrollToBottom } from '../../utils/scroll-to-bottom';
 
 import { LabUploadDropzone } from './lab-upload-dropzone';
 import { PreviewAttachment } from './preview-attachment';
@@ -130,7 +129,7 @@ export function MultimodalInput({
     setAttachments([]);
     resetHeight();
 
-    scrollToBottom();
+    scrollChatToBottom();
 
     if (width > 768) {
       textareaRef.current?.focus();
