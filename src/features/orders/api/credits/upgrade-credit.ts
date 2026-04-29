@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import * as z from 'zod';
 
+import { ADVANCED_UPGRADE_BUNDLE_ID_VALUES } from '@/const';
 import { api } from '@/lib/api-client';
 import { MutationConfig } from '@/lib/react-query';
 import { Credit } from '@/types/api';
@@ -12,6 +13,7 @@ export const upgradeCreditInputSchema = z.object({
   creditIds: z.array(z.string()).optional(),
   paymentMethodId: z.string().optional(),
   quantity: z.number().optional(),
+  bundleId: z.enum(ADVANCED_UPGRADE_BUNDLE_ID_VALUES).optional(),
 });
 
 export type UpgradeCreditInput = z.infer<typeof upgradeCreditInputSchema>;

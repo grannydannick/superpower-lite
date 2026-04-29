@@ -231,9 +231,34 @@ export function getFilteredGroups(
     const matchItem = (item: AddOnItem) => {
       if (onlyUntested && !isUntestedAddOnItem(item)) return false;
       if (query.length === 0) return true;
-      return `${group.label} ${item.name} ${item.description ?? ''}`
-        .toLowerCase()
-        .includes(query);
+
+      let haystack = `${group.label} ${item.name}`;
+      const pd = item.productDetails;
+      if (
+        pd?.shortDescription != null &&
+        pd.shortDescription.trim().length > 0
+      ) {
+        haystack += ` ${pd.shortDescription}`;
+      }
+      const rec = item.recommendation;
+      if (rec?.reason != null && rec.reason.trim().length > 0) {
+        haystack += ` ${rec.reason}`;
+      }
+      if (rec?.rationale != null) {
+        for (const r of rec.rationale) {
+          haystack += ` ${r.label}`;
+        }
+      }
+      if (
+        item.description != null &&
+        item.description.trim().length > 0 &&
+        (pd?.shortDescription == null ||
+          pd.shortDescription.trim().length === 0)
+      ) {
+        haystack += ` ${item.description}`;
+      }
+
+      return haystack.toLowerCase().includes(query);
     };
 
     // Fast path: no active item-level filtering, pass the group as-is.

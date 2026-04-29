@@ -309,7 +309,6 @@ const DetailPanel = ({ itemId = null }: DetailPanelProps) => {
     <Suspense fallback={<DetailPanelSkeleton onClose={closeDetail} />}>
       <LazyAddOnPanelsDetailContent
         item={item}
-        itemId={currentItemId}
         isSelected={isSelected}
         isToggleDisabled={isToggleDisabled}
         onToggle={onToggle}

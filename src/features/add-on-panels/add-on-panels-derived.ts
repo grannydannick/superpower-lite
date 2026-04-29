@@ -261,3 +261,7 @@ export function getAddOnItemPresentation(
     metaLabels,
   };
 }
+
+export function canOpenAddOnItemDetail(item: AddOnItem) {
+  return item.productDetails != null;
+}

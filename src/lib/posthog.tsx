@@ -154,4 +154,5 @@ export const FeatureFlags = {
   ProtocolPdfDownload: 'protocol-pdf-download',
   OnboardingAddOnsEnablePreselect: 'onboarding-add-ons-enable-preselect',
   OnboardingSkipAddOnsAndScheduling: 'onboarding-skip-add-ons-and-scheduling',
+  AdvancedUpgradeBundles: 'advanced-upgrade-bundles',
 };

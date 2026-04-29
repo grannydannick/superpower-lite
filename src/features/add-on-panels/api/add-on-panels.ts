@@ -23,6 +23,9 @@ type AddOnItem =
   | AddOnIndependentSelection['items'][number];
 type AddOnItemId = AddOnItem['id'];
 
+/** Product prose embedded on each add-on marketplace row from `/rpc/onboarding/add-ons`. */
+export type AddOnProductDetails = NonNullable<AddOnItem['productDetails']>;
+
 export type {
   AddOnFilter,
   AddOnGroup,

@@ -62,6 +62,31 @@ export const READY_NUM_HOURS_BEFORE_ADVISORY = 2;
 export const UPGRADE_PRICE = 18900;
 export const UPGRADE_PRICE_NYNJ = 19900;
 
+// Bundle prices for the advanced-upgrade A/B test (cents). Values mirror the
+// Stripe Prices for lookup keys `sp-membership-advanced-microbiome-bundle[-ny-nj]`
+// and `sp-membership-complete-bundle[-ny-nj]`.
+export const ADVANCED_MICROBIOME_BUNDLE_PRICE = 37900;
+export const ADVANCED_MICROBIOME_BUNDLE_PRICE_NYNJ = 37900;
+export const COMPLETE_BUNDLE_PRICE = 94900;
+export const COMPLETE_BUNDLE_PRICE_NYNJ = 94900;
+
+// Bundle ids — must match `AdvancedUpgradeBundleId` in ts-server's
+// product-to-service-map.ts, and the `code` field on each FHIR CID.
+export const ADVANCED_UPGRADE_BUNDLE_IDS = {
+  ADVANCED_UPGRADE: 'v2-membership-advanced-upgrade',
+  ADVANCED_MICROBIOME_BUNDLE: 'v2-membership-advanced-microbiome-bundle',
+  COMPLETE_BUNDLE: 'v2-membership-complete-bundle',
+} as const;
+
+export const ADVANCED_UPGRADE_BUNDLE_ID_VALUES = [
+  ADVANCED_UPGRADE_BUNDLE_IDS.ADVANCED_UPGRADE,
+  ADVANCED_UPGRADE_BUNDLE_IDS.ADVANCED_MICROBIOME_BUNDLE,
+  ADVANCED_UPGRADE_BUNDLE_IDS.COMPLETE_BUNDLE,
+] as const;
+
+export type AdvancedUpgradeBundleId =
+  (typeof ADVANCED_UPGRADE_BUNDLE_ID_VALUES)[number];
+
 export const RECOMMENDED_SERVICES = [
   SUPERPOWER_BLOOD_PANEL,
   ADVANCED_BLOOD_PANEL,

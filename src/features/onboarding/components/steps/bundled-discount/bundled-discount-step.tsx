@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import { TransactionSpinner } from '@/components/ui/spinner/transaction-spinner';
-import { Body1, H2 } from '@/components/ui/typography';
+import { Body1, H1 } from '@/components/ui/typography';
 import {
   getOnboardingStepTitle,
   ONBOARDING_STEP_IDS,
@@ -312,12 +312,14 @@ const BundledDiscountStep = () => {
 
         <div className="flex flex-1 flex-col items-center px-4 pb-8">
           <div className="w-full max-w-xl">
-            <div className="mb-8">
-              <H2>Track your progress</H2>
-              <Body1 className="mt-2 text-secondary">
+            <header className="mb-8 flex flex-col gap-3 md:items-center md:text-center">
+              <H1 className="text-3xl leading-9 tracking-tight md:text-3xl">
+                Track your progress
+              </H1>
+              <Body1 className="max-w-md text-base leading-relaxed text-zinc-500">
                 Choose a testing frequency that&apos;s right for you.
               </Body1>
-            </div>
+            </header>
 
             <div className="mb-6 grid grid-cols-3 items-end gap-3">
               <TestingFrequencyCard

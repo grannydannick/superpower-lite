@@ -2,12 +2,11 @@ import { IconCheckmark1 } from '@central-icons-react/round-filled-radius-2-strok
 import { IconSparkle } from '@central-icons-react/round-filled-radius-2-stroke-1.5/IconSparkle';
 import { IconCrossMedium } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconCrossMedium';
 import { IconPlusSmall } from '@central-icons-react/round-outlined-radius-3-stroke-1.5/IconPlusSmall';
-import { Children, isValidElement, type ReactNode } from 'react';
-import ReactMarkdown from 'react-markdown';
+import type { ReactNode } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Body1, H2 } from '@/components/ui/typography';
-import type { PanelDetailContent } from '@/features/onboarding/data/panel-detail-content';
+import { MarketplaceProductMarkdownBody } from '@/features/marketplace/pages/product-page/components/product-markdown-body';
 import { cn } from '@/lib/utils';
 import { formatMoney } from '@/utils/format-money';
 
@@ -16,53 +15,11 @@ import {
   canAddOnItemToCart,
   getAddOnItemPresentation,
 } from './add-on-panels-derived';
-import type { AddOnItem } from './api/add-on-panels';
-
-const PanelDetailMarkdown = ({ children }: { children: string }) => {
-  return (
-    <ReactMarkdown
-      components={{
-        p: ({ children }) => {
-          const childNodes = Children.toArray(children);
-          const onlyChild = childNodes[0];
-
-          if (
-            childNodes.length === 1 &&
-            isValidElement<{ children?: ReactNode }>(onlyChild) &&
-            onlyChild.type === 'strong'
-          ) {
-            return (
-              <h3 className="m-0 mt-10 text-base font-medium text-zinc-900 first:mt-0">
-                {onlyChild.props.children}
-              </h3>
-            );
-          }
-
-          return (
-            <Body1 className="mt-4 text-zinc-500 first:mt-0">{children}</Body1>
-          );
-        },
-        ul: ({ children }) => (
-          <ul className="ml-1 mt-4 space-y-1 first:mt-0 [&>li]:relative [&>li]:flex [&>li]:items-start [&>li]:pl-4 [&>li]:before:absolute [&>li]:before:left-0 [&>li]:before:top-1/2 [&>li]:before:size-1 [&>li]:before:shrink-0 [&>li]:before:-translate-y-1/2 [&>li]:before:rounded-full [&>li]:before:bg-zinc-300">
-            {children}
-          </ul>
-        ),
-        ol: ({ children }) => (
-          <ol className="ml-1 mt-4 space-y-1 [counter-reset:list-counter] first:mt-0 [&>li]:flex [&>li]:items-start [&>li]:[counter-increment:list-counter] [&>li]:before:mr-2 [&>li]:before:text-sm [&>li]:before:font-medium [&>li]:before:text-zinc-500 [&>li]:before:[content:counter(list-counter)'.']">
-            {children}
-          </ol>
-        ),
-        li: ({ children }) => <li className="text-zinc-500">{children}</li>,
-      }}
-    >
-      {children}
-    </ReactMarkdown>
-  );
-};
+import type { AddOnItem, AddOnProductDetails } from './api/add-on-panels';
 
 export const AddOnPanelsDetail = ({
   item,
-  content,
+  productDetails,
   isSelected,
   isToggleDisabled,
   onToggle,
@@ -70,7 +27,7 @@ export const AddOnPanelsDetail = ({
   className,
 }: {
   item: AddOnItem;
-  content: PanelDetailContent;
+  productDetails: AddOnProductDetails;
   isSelected: boolean;
   isToggleDisabled: boolean;
   onToggle: () => void;
@@ -84,6 +41,35 @@ export const AddOnPanelsDetail = ({
       ? 'Recommended'
       : 'Recommended add-on',
   });
+
+  const contentTrimmed = productDetails.content?.trim() ?? '';
+  const descriptionTrimmed = productDetails.description?.trim() ?? '';
+  const detailMarkdown =
+    contentTrimmed.length > 0 ? contentTrimmed : descriptionTrimmed;
+  const introFromProduct = productDetails.shortDescription?.trim() ?? '';
+  const introFromItem = item.description?.trim() ?? '';
+  const introText =
+    introFromProduct.length > 0 ? introFromProduct : introFromItem;
+
+  const biomarkerChips: ReactNode[] = [];
+  for (const b of productDetails.biomarkers) {
+    if (b.hidden === true) {
+      continue;
+    }
+    const label = b.title.trim().length > 0 ? b.title.trim() : b.name.trim();
+    if (label.length === 0) {
+      continue;
+    }
+    biomarkerChips.push(
+      <span
+        key={b.id}
+        className="inline-flex items-center gap-2 rounded-full bg-[#fc5f2b]/10 px-4 py-2 text-sm font-medium text-[#fc5f2b]"
+      >
+        <span className="size-2 shrink-0 rounded-full bg-[#fc5f2b]" />
+        {label}
+      </span>,
+    );
+  }
 
   return (
     <div
@@ -114,29 +100,19 @@ export const AddOnPanelsDetail = ({
               </span>
             )}
           </div>
-          {item.description != null && item.description.trim().length > 0 && (
-            <Body1 className="text-zinc-500">{item.description}</Body1>
+          {introText.length > 0 && (
+            <Body1 className="text-zinc-500">{introText}</Body1>
           )}
         </div>
 
-        <PanelDetailMarkdown>{content.details}</PanelDetailMarkdown>
+        <MarketplaceProductMarkdownBody markdown={detailMarkdown} />
 
-        {content.biomarkers.length > 0 && (
+        {biomarkerChips.length > 0 && (
           <div className="mt-8 space-y-3">
             <Body1 className="font-medium text-zinc-900">
               Included biomarkers
             </Body1>
-            <div className="flex flex-wrap gap-2">
-              {content.biomarkers.map((biomarker) => (
-                <span
-                  key={biomarker}
-                  className="inline-flex items-center gap-2 rounded-full bg-[#fc5f2b]/10 px-4 py-2 text-sm font-medium text-[#fc5f2b]"
-                >
-                  <span className="size-2 shrink-0 rounded-full bg-[#fc5f2b]" />
-                  {biomarker}
-                </span>
-              ))}
-            </div>
+            <div className="flex flex-wrap gap-2">{biomarkerChips}</div>
           </div>
         )}
       </div>

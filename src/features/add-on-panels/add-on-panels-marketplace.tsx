@@ -32,6 +32,7 @@ import {
 } from './add-on-panels-context';
 import {
   canAddOnItemToCart,
+  canOpenAddOnItemDetail,
   getAddOnItemEntitlementState,
   getAddOnItemPresentation,
   type AddOnItemMetaLabel,
@@ -48,7 +49,6 @@ import {
 } from './add-on-panels-selectors';
 import { AddOnPanelsStepIndicator } from './add-on-panels-step-indicator';
 import type { AddOnGroup, AddOnItem } from './api/add-on-panels';
-import { hasPanelDetailContent } from './data/panel-detail-content-ids';
 
 export const TEST_CARD_SKELETON_KEYS: string[] = [
   'test-card-skeleton-1',
@@ -350,7 +350,7 @@ const TestCard = ({
   const canAddToCart = canAddOnItemToCart(item);
   const entitlementState = getAddOnItemEntitlementState(item);
   const isLocked = !canAddToCart;
-  const showLearnMore = !isLocked && hasPanelDetailContent(item.id);
+  const showLearnMore = !isLocked && canOpenAddOnItemDetail(item);
   const displayName =
     item.kind === 'complete-panel' ? 'Add the complete panel' : item.name;
   const hasRecommendationReason =
@@ -376,6 +376,11 @@ const TestCard = ({
   const hasNonBiomarkerRationale = nonBiomarkerRationale.length > 0;
   const showRecommendationBlock =
     hasRecommendationReason || hasBiomarkerChips || hasNonBiomarkerRationale;
+  const shortFromProduct = item.productDetails?.shortDescription?.trim() ?? '';
+  const shortFromItem = item.description?.trim() ?? '';
+  const cardSubtitle =
+    shortFromProduct.length > 0 ? shortFromProduct : shortFromItem;
+  const hasCardSubtitle = cardSubtitle.length > 0;
   const topMetaLabels: AddOnItemMetaLabel[] = [];
   const trailingMetaLabels: AddOnItemMetaLabel[] = [];
 
@@ -482,13 +487,9 @@ const TestCard = ({
               </div>
             )}
           </div>
-          {!hasRecommendationReason &&
-            item.description != null &&
-            item.description.trim().length > 0 && (
-              <Body2 className="text-left text-zinc-500">
-                {item.description}
-              </Body2>
-            )}
+          {!hasRecommendationReason && hasCardSubtitle && (
+            <Body2 className="text-left text-zinc-500">{cardSubtitle}</Body2>
+          )}
           {topMetaLabels.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
               {topMetaLabels.map((metaLabel) => (

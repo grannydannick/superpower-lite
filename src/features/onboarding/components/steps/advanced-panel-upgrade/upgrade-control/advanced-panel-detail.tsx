@@ -14,8 +14,8 @@ import { H2, H3 } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 import { formatMoney } from '@/utils/format-money';
 
-import { useSequence } from '../../../hooks/use-screen-sequence';
-import { Sequence } from '../../sequence';
+import { useSequence } from '../../../../hooks/use-screen-sequence';
+import { Sequence } from '../../../sequence';
 
 type BackButtonProps = {
   className?: string;

@@ -13,6 +13,10 @@ type TrackOnboardingCreditPurchaseParams = {
   totalValue: number;
   paymentProvider: string;
   flowContext?: string;
+  /** PostHog A/B test variant for the advanced-upgrade-bundles experiment. */
+  variant?: string;
+  /** Selected bundle id when the bundle picker is shown; null on control. */
+  bundleId?: string | null;
 };
 
 type TrackOnboardingCreditAddedToCartParams = {
@@ -30,6 +34,8 @@ export const useOnboardingAnalytics = () => {
       totalValue,
       paymentProvider,
       flowContext,
+      variant,
+      bundleId,
     }: TrackOnboardingCreditPurchaseParams): void => {
       const paymentProviderName = paymentProvider.toLowerCase();
 
@@ -42,6 +48,8 @@ export const useOnboardingAnalytics = () => {
             value: totalValue,
             payment_provider: paymentProviderName,
             flow_context: flowContext,
+            variant,
+            bundle_id: bundleId,
           }),
         ),
         Promise.resolve(
@@ -59,6 +67,8 @@ export const useOnboardingAnalytics = () => {
             })),
             payment_provider: paymentProviderName,
             flow_context: flowContext,
+            variant,
+            bundle_id: bundleId,
           }),
         ),
       ]).catch((error) => {
