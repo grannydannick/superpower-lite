@@ -169,7 +169,7 @@ export const BundlePicker = ({ variant }: { variant: string }) => {
       <BundlePickerHeader isFirstStep={isFirstStep} onBack={prev}>
         <div
           data-testid="bundle-desktop-grid"
-          className="mt-6 hidden min-w-0 items-start gap-4 px-4 md:grid md:grid-cols-3 md:px-8"
+          className="mt-6 hidden min-w-0 items-start gap-4 px-4 md:grid md:grid-cols-3 md:grid-rows-[auto_auto_auto_auto] md:px-8"
         >
           <BundleDesktopCards
             user={user}

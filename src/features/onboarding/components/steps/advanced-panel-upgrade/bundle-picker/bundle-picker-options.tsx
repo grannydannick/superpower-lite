@@ -177,7 +177,7 @@ export function BundleDesktopCards({
           .toLowerCase()
           .replaceAll(' ', '-')}`}
         className={cn(
-          'relative flex min-w-0 flex-col rounded-2xl border border-zinc-200 bg-white p-4 px-6 shadow-sm transition-colors duration-200 ease-out hover:border-vermillion-900/40',
+          'relative row-span-4 grid min-w-0 grid-rows-subgrid gap-y-4 rounded-2xl border border-zinc-200 bg-white p-4 px-6 shadow-sm transition-colors duration-200 ease-out hover:border-vermillion-900/40',
           selected && 'border-vermillion-900 ring-2 ring-vermillion-900/20',
         )}
       >
@@ -197,76 +197,78 @@ export function BundleDesktopCards({
           <DesktopBundlePrice user={user} bundleId={bundleId} />
         </div>
 
-        <div className="my-4 h-px w-full bg-zinc-900/10" />
-
-        <div className="mb-4 space-y-2">
-          <p className="text-sm text-zinc-900/40">What you'll unlock</p>
-          <p className="text-sm leading-5 text-zinc-900/55">
-            <span className="font-semibold text-zinc-900">
-              {unlockCopy.lead}
-            </span>{' '}
-            {unlockCopy.body}
-          </p>
-        </div>
-        <div className="mb-4 h-px w-full bg-zinc-900/10" />
-        <p className="text-sm text-zinc-900/50">What’s included</p>
-        <div
-          data-testid="bundle-desktop-included-region"
-          className="mt-2 min-w-0"
-        >
-          <IncludedAccordion
-            bundleId={bundleId}
-            productBySlug={productBySlug}
-            isLoading={productsPending}
-            isError={productsError}
-            gender={gender}
-          />
+        <div className="flex flex-col">
+          <div className="mb-4 h-px w-full bg-zinc-900/10" />
+          <div className="space-y-2">
+            <p className="text-sm text-zinc-900/40">What you'll unlock</p>
+            <p className="text-sm leading-5 text-zinc-900/55">
+              <span className="font-semibold text-zinc-900">
+                {unlockCopy.lead}
+              </span>{' '}
+              {unlockCopy.body}
+            </p>
+          </div>
         </div>
 
-        <div className="mt-4">
-          <Button
-            type="button"
-            variant={selected ? 'default' : 'outline'}
-            className={cn(
-              'w-full transition-all duration-200 ease-out',
-              selected && 'bg-zinc-900 text-white hover:bg-zinc-900/90',
-            )}
-            disabled={disabled}
-            onClick={() => onSelect(bundleId, price)}
+        <div className="flex flex-col">
+          <div className="mb-4 h-px w-full bg-zinc-900/10" />
+          <p className="text-sm text-zinc-900/50">What’s included</p>
+          <div
+            data-testid="bundle-desktop-included-region"
+            className="mt-2 min-w-0"
           >
-            <span className="flex items-center justify-center gap-2">
-              <svg
-                width="19"
-                height="19"
-                viewBox="0 0 19 19"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden
-                className={cn(
-                  'transition-all duration-200 ease-out',
-                  selected
-                    ? 'size-5 text-white opacity-100'
-                    : 'size-0 text-transparent opacity-0',
-                )}
-              >
-                <path
-                  d="M3.80859 9.38867L7.55859 13.1387L15.8086 4.88867"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  style={{
-                    strokeDasharray: 24,
-                    strokeDashoffset: selected ? 0 : 24,
-                    transition:
-                      'stroke-dashoffset 300ms cubic-bezier(0.65, 0, 0.35, 1)',
-                  }}
-                />
-              </svg>
-              {selected ? 'Selected' : 'Select'}
-            </span>
-          </Button>
+            <IncludedAccordion
+              bundleId={bundleId}
+              productBySlug={productBySlug}
+              isLoading={productsPending}
+              isError={productsError}
+              gender={gender}
+            />
+          </div>
         </div>
+
+        <Button
+          type="button"
+          variant={selected ? 'default' : 'outline'}
+          className={cn(
+            'w-full self-end transition-all duration-200 ease-out',
+            selected && 'bg-zinc-900 text-white hover:bg-zinc-900/90',
+          )}
+          disabled={disabled}
+          onClick={() => onSelect(bundleId, price)}
+        >
+          <span className="flex items-center justify-center gap-2">
+            <svg
+              width="19"
+              height="19"
+              viewBox="0 0 19 19"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden
+              className={cn(
+                'transition-all duration-200 ease-out',
+                selected
+                  ? 'size-5 text-white opacity-100'
+                  : 'size-0 text-transparent opacity-0',
+              )}
+            >
+              <path
+                d="M3.80859 9.38867L7.55859 13.1387L15.8086 4.88867"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{
+                  strokeDasharray: 24,
+                  strokeDashoffset: selected ? 0 : 24,
+                  transition:
+                    'stroke-dashoffset 300ms cubic-bezier(0.65, 0, 0.35, 1)',
+                }}
+              />
+            </svg>
+            {selected ? 'Selected' : 'Select'}
+          </span>
+        </Button>
       </div>,
     );
   }
@@ -333,13 +335,23 @@ export function BundleMobileCarousel({
   }
 
   return (
-    <div className="mt-6 px-4 md:hidden">
-      <div
-        ref={carouselRef}
-        data-testid="bundle-mobile-carousel"
-        className="flex snap-x snap-mandatory gap-2 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-      >
-        {buttons}
+    <div className="mt-6 md:hidden">
+      <div className="relative">
+        <div
+          ref={carouselRef}
+          data-testid="bundle-mobile-carousel"
+          className="flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {buttons}
+        </div>
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-zinc-50 to-transparent"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-zinc-50 to-transparent"
+        />
       </div>
       <div className="mt-5">
         <Pager bundleIds={bundleOrder} activeIndex={activeIndex} />
