@@ -1,10 +1,9 @@
 import { useNavigate } from '@tanstack/react-router';
-import { ChevronsDownUp, Link, Maximize2 } from 'lucide-react';
+import { ChevronsDownUp, Maximize2 } from 'lucide-react';
 import { useCallback, useState, type Ref } from 'react';
 import { Resizable } from 'react-resizable';
 
 import { Button } from '@/components/ui/button';
-import { toast } from '@/components/ui/sonner';
 import {
   Tooltip,
   TooltipContent,
@@ -33,23 +32,6 @@ export const AssistantModal = () => {
   const collapsedHeight = 48; // equals Tailwind h-12
   const boxHeight = isExpanded ? height : collapsedHeight;
   const boxWidth = isExpanded ? width : undefined;
-
-  const handleCopyLinkClick = useCallback(async () => {
-    const trimmedMessage = input == null ? '' : input.trim();
-    let q = '';
-    if (trimmedMessage.length > 0) {
-      q = `?defaultMessage=${encodeURIComponent(trimmedMessage)}`;
-    }
-    const url = `${window.location.origin}/concierge${q}`;
-
-    try {
-      await navigator.clipboard.writeText(url);
-      toast.success('Link copied to clipboard');
-    } catch (err) {
-      console.error('Failed to copy link:', err);
-      toast.error('Failed to copy link');
-    }
-  }, [input]);
 
   const handleExpand = useCallback(() => {
     const trimmedInput = input?.trim() ?? '';
@@ -166,18 +148,6 @@ export const AssistantModal = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Open full chat</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    onClick={handleCopyLinkClick}
-                    variant="white"
-                    className="aspect-square rounded-lg p-2 text-zinc-500 hover:bg-zinc-100 hover:text-primary"
-                  >
-                    <Link className="size-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Copy link to chat</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
