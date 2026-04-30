@@ -3,9 +3,15 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { FileUIPart, type UIMessage } from 'ai';
 import {
+  animate,
+  m,
+  useMotionValue,
+  useTransform,
+  type MotionValue,
+} from 'framer-motion';
+import {
   useCallback,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -25,17 +31,13 @@ import {
   getMessages,
   getTimelineQueryOptions,
 } from '@/features/messages/api/get-messages';
-import { WelcomeContent } from '@/features/messages/components/ai/welcome/content';
 import { ChatSuggestion } from '@/features/messages/components/chat-suggestion';
+import { useSetupActions } from '@/features/messages/hooks/use-setup-actions';
 import { useChatStore } from '@/features/messages/stores/chat-store';
-import {
-  scrollChatToBottom,
-  scrollChatToMessage,
-} from '@/features/messages/utils/chat-scroll';
+import { scrollChatToBottom } from '@/features/messages/utils/chat-scroll';
 import { createChatV2Transport } from '@/features/messages/utils/chatv2-transport';
 import { extractTiming } from '@/features/messages/utils/extract-timing';
 import { useAnalytics } from '@/hooks/use-analytics';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { useUser } from '@/lib/auth';
 
 import {
@@ -44,11 +46,18 @@ import {
 } from '../../hooks/use-message-queue';
 
 import { classifyChatError } from './chat-error-utils';
+import { ChatHistoryHint } from './chat-history-hint';
 import { Messages } from './messages';
 import { MultimodalInput } from './multimodal-input';
 import { type Preset, PRESET_MESSAGES } from './preset-messages';
 import { QueuedMessages } from './queued-messages';
-import { type SetupAction } from './welcome/suggested-actions';
+import { Greeting } from './welcome/greeting';
+import {
+  HORIZONTAL_EDGE_FADE_MASK,
+  HORIZONTAL_EDGE_FADE_MASK_LG_RESET,
+  type SetupAction,
+  SuggestedActions,
+} from './welcome/suggested-actions';
 
 const publicErrors = ['Too many requests, please try again later.'] as const;
 
@@ -580,7 +589,7 @@ function useConciergeChatController({
       setDidJump(false);
       // Instant scroll to bottom — the handleScroll listener will
       // detect we're at the bottom and re-enable auto-scroll.
-      scrollChatToBottom({ behavior: 'instant' });
+      scrollChatToBottom({ behavior: 'instant', immediate: true });
     } catch (err) {
       console.warn('Failed to reset messages after jump', err);
     }
@@ -812,12 +821,10 @@ function useConciergeChatController({
     async (messageId: string) => {
       // Already in the DOM? Flush state synchronously so the layout
       // settles (greeting removal, etc.) before we scroll.
-      if (document.getElementById(`message-${messageId}`) != null) {
+      const existing = document.getElementById(`message-${messageId}`);
+      if (existing) {
         flushSync(() => setDidJump(true));
-        scrollChatToMessage(messageId, {
-          behavior: 'instant',
-          block: 'center',
-        });
+        existing.scrollIntoView({ behavior: 'instant', block: 'center' });
         return;
       }
 
@@ -865,14 +872,9 @@ function useConciergeChatController({
       });
 
       // 5. Element should now be in the DOM. Scroll to it.
-      if (document.getElementById(`message-${messageId}`) == null) {
-        throw new Error('Message not found');
-      }
-
-      scrollChatToMessage(messageId, {
-        behavior: 'instant',
-        block: 'center',
-      });
+      const el = document.getElementById(`message-${messageId}`);
+      if (!el) throw new Error('Message not found');
+      el.scrollIntoView({ behavior: 'instant', block: 'center' });
     },
     [setMessages, setHasMoreOlder, setHasMoreNewer, setDidJump],
   );
@@ -932,6 +934,41 @@ interface ChatViewProps {
   removeFromQueue: (id: string) => void;
 }
 
+function WelcomeContent({
+  onSend,
+  setupActions,
+  hasHistory = false,
+  suggestionsOverride,
+  welcomeProgress,
+  onDismiss,
+}: {
+  onSend: (text: string) => void;
+  setupActions: SetupAction[];
+  hasHistory?: boolean;
+  suggestionsOverride?: string[];
+  welcomeProgress: MotionValue<number>;
+  onDismiss: () => void;
+}) {
+  return (
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+      <Greeting />
+      <div className="flex w-full">
+        <SuggestedActions
+          onSendSuggestion={onSend}
+          setupActions={setupActions}
+          variant="welcome"
+          suggestionsOverride={suggestionsOverride}
+        />
+      </div>
+      {/* Rendered last so it paints on top of Greeting's dune gradient
+          via natural document order (no z-index). */}
+      {hasHistory && (
+        <ChatHistoryHint progress={welcomeProgress} onClick={onDismiss} />
+      )}
+    </div>
+  );
+}
+
 function ChatView({
   messages,
   setMessages,
@@ -958,37 +995,75 @@ function ChatView({
   queue,
   removeFromQueue,
 }: ChatViewProps) {
-  const navigate = useNavigate({ from: '/concierge' });
-  const startedFromWelcomeAction = preset != null || attachments.length > 0;
-  const hasInteractedRef = useRef(
-    startedFromWelcomeAction ||
-      (messages.length > 0 && messages.at(-1)?.role === 'user'),
-  );
+  const setup = useSetupActions();
+
+  const hasInteractedRef = useRef(messages.length > 0);
+  const hasSentMessageThisLoadRef = useRef(false);
   const isActiveStream = status === 'streaming' || status === 'submitted';
 
   // Latch to true once any real interaction is detected. A ref is
   // sufficient because every trigger is always accompanied by a
   // state/prop change that causes a re-render.
-  if (isActiveStream || didJump) {
+  if (messages.length > 0 || isActiveStream || didJump) {
     hasInteractedRef.current = true;
   }
 
   const effectiveHasInteracted = hasInteractedRef.current;
 
+  // Welcome reveal: progress 0 = welcome covers viewport, 1 = chat
+  // fully revealed. Driven by scroll while welcome is open; animated
+  // to 1 when welcome is dismissed (send, scroll-down click, etc.).
+  const [showWelcome, setShowWelcome] = useState(true);
+  const welcomeProgress = useMotionValue(0);
+  const closeWelcome = useCallback(() => {
+    setShowWelcome((prev) => {
+      if (!prev) return prev;
+      animate(welcomeProgress, 1, {
+        duration: 0.8,
+        ease: [0.32, 0.72, 0, 1],
+      });
+      return false;
+    });
+  }, [welcomeProgress]);
+
+  useEffect(() => {
+    if (isActiveStream || didJump) closeWelcome();
+  }, [isActiveStream, didJump, closeWelcome]);
+
+  // Bottom-bar reveal is driven entirely by welcomeProgress (store).
+  const bottomBarNaturalHeight = useMotionValue(0);
+  const bottomBarHeight = useTransform(
+    () => welcomeProgress.get() * bottomBarNaturalHeight.get(),
+  );
+  const bottomBarContentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = bottomBarContentRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      bottomBarNaturalHeight.set(entry.contentRect.height);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [bottomBarNaturalHeight]);
+
   // Wrap sendMessage to track user interaction for scroll behavior
   const handleSend: typeof sendMessage = useCallback(
     (...args) => {
       hasInteractedRef.current = true;
+      hasSentMessageThisLoadRef.current = true;
+      closeWelcome();
       return sendMessage(...args);
     },
-    [sendMessage],
+    [sendMessage, closeWelcome],
   );
 
   // When a preset is selected from the welcome screen, hide greeting and show the preset message
   const { data: user } = useUser();
   useEffect(() => {
-    if (preset == null || hasInteractedRef.current) return;
+    if (preset == null || hasSentMessageThisLoadRef.current) return;
     hasInteractedRef.current = true;
+    closeWelcome();
 
     const presetText = PRESET_MESSAGES[preset as Preset];
     if (!presetText) return;
@@ -1009,24 +1084,7 @@ function ChatView({
         },
       ];
     });
-  }, [preset, setMessages, user?.firstName]);
-
-  // On mobile, a preset message can be taller than the viewport, so the
-  // default scroll-to-bottom hides the top. Override once to show the
-  // start of the preset after it renders. Parent layout effects run after
-  // children's, so this wins over Messages' auto-scroll-to-bottom.
-  const isMobile = useIsMobile();
-  const presetScrolledRef = useRef(false);
-  useLayoutEffect(() => {
-    if (!isMobile || preset == null || presetScrolledRef.current) return;
-    const presetMessageId = `preset-${preset}`;
-    if (document.getElementById(`message-${presetMessageId}`) == null) return;
-    presetScrolledRef.current = true;
-    scrollChatToMessage(presetMessageId, {
-      block: 'start',
-      behavior: 'instant',
-    });
-  }, [isMobile, preset, messages.length]);
+  }, [preset, setMessages, user?.firstName, closeWelcome]);
 
   const isUploadLabsPreset = preset === 'upload-labs';
   const presetIsLastMessage =
@@ -1035,33 +1093,29 @@ function ChatView({
     isUploadLabsPreset && presetIsLastMessage && attachments.length === 0;
 
   const setupActions = useMemo(() => {
-    const actions: SetupAction[] = [
-      {
+    const actions: SetupAction[] = [];
+    if (setup.uploadLabs.visible) {
+      actions.push({
+        id: 'upload-labs',
         title: 'Upload past labs',
         subtitle: 'See trends from your past labs.',
         imageSrc: '/concierge/lab-upload.webp',
-        onClick: () => {
-          void navigate({
-            to: '/concierge',
-            search: { preset: 'upload-labs' },
-          });
-        },
-      },
-      {
+        onClick: setup.uploadLabs.onClick,
+        onDismiss: setup.uploadLabs.dismiss,
+      });
+    }
+    if (setup.importMemory.visible) {
+      actions.push({
+        id: 'import-memory',
         title: 'Continue from another AI',
         subtitle: 'Import your conversations and deepen your health story.',
         imageSrc: '/concierge/other_llms.webp',
-        onClick: () => {
-          void navigate({
-            to: '/concierge',
-            search: { preset: 'import-memory' },
-          });
-        },
-      },
-    ];
-
+        onClick: setup.importMemory.onClick,
+        onDismiss: setup.importMemory.dismiss,
+      });
+    }
     return actions;
-  }, [navigate]);
+  }, [setup.uploadLabs, setup.importMemory]);
 
   const showErrorUi =
     status === 'error' ||
@@ -1086,12 +1140,20 @@ function ChatView({
   }, [lastAssistantMessage]);
 
   const presetAwaitingResponse = presetIsLastMessage;
+  const showSetupActions =
+    effectiveHasInteracted &&
+    !hasSentMessageThisLoadRef.current &&
+    !presetAwaitingResponse &&
+    setupActions.length > 0 &&
+    status === 'ready' &&
+    queue.length === 0;
   const showSuggestions =
     effectiveHasInteracted &&
     messages.length > 0 &&
     status === 'ready' &&
     queue.length === 0 &&
-    !presetAwaitingResponse;
+    !presetAwaitingResponse &&
+    !showSetupActions;
   // Keep a ref of the last successfully fetched followups so they
   // survive a jump (query key changes when messages are replaced,
   // which would clear cached data and cause a layout shift).
@@ -1110,10 +1172,15 @@ function ChatView({
   }
 
   const followups = didJump ? stableFollowupsRef.current : rawFollowups;
+
   const welcomeContent = (
     <WelcomeContent
       onSend={(text) => void handleSend({ text, files: [] }, undefined)}
       setupActions={setupActions}
+      hasHistory={messages.length > 0}
+      suggestionsOverride={lastAssistantMessage ? followups : undefined}
+      welcomeProgress={welcomeProgress}
+      onDismiss={closeWelcome}
     />
   );
 
@@ -1134,7 +1201,9 @@ function ChatView({
           didJump={didJump}
           isSearchOpen={isSearchOpen}
           welcomeContent={welcomeContent}
-          hasInteracted={effectiveHasInteracted}
+          showWelcome={showWelcome}
+          onCloseWelcome={closeWelcome}
+          welcomeProgress={welcomeProgress}
         />
       </div>
 
@@ -1172,18 +1241,40 @@ function ChatView({
 
         <QueuedMessages queue={queue} onRemove={removeFromQueue} />
 
-        {showSuggestions && followups.length > 0 && (
-          <div className="mx-auto flex w-full gap-2 overflow-x-auto px-3 pb-3 pt-1 scrollbar-none [-webkit-mask-image:linear-gradient(to_right,transparent_0px,black_16px,black_calc(100%-16px),transparent_100%)] [mask-image:linear-gradient(to_right,transparent_0px,black_16px,black_calc(100%-16px),transparent_100%)] lg:flex-wrap lg:justify-start lg:overflow-x-visible lg:px-0 lg:[-webkit-mask-image:none] lg:[mask-image:none]">
-            {followups.map((suggestion) => (
-              <ChatSuggestion
-                key={suggestion}
-                className="min-w-[200px] flex-1 shrink-0 lg:max-w-44"
-                onClick={() => void handleSend({ text: suggestion, files: [] })}
-                suggestion={suggestion}
+        <m.div
+          style={{ height: bottomBarHeight, opacity: welcomeProgress }}
+          className="overflow-hidden"
+        >
+          <div ref={bottomBarContentRef}>
+            {showSetupActions && (
+              <SuggestedActions
+                onSendSuggestion={(text) =>
+                  void handleSend({ text, files: [] })
+                }
+                setupActions={setupActions}
+                variant="inline"
               />
-            ))}
+            )}
+
+            {showSuggestions && followups.length > 0 && (
+              <div
+                className={`mx-auto flex w-full gap-2 overflow-x-auto px-3 pb-3 pt-1 scrollbar-none ${HORIZONTAL_EDGE_FADE_MASK} lg:flex-wrap lg:justify-start ${HORIZONTAL_EDGE_FADE_MASK_LG_RESET}`}
+              >
+                {followups.map((suggestion) => (
+                  <ChatSuggestion
+                    key={suggestion}
+                    className="min-w-[200px] flex-1 shrink-0"
+                    disableEnterAnimation
+                    onClick={() =>
+                      void handleSend({ text: suggestion, files: [] })
+                    }
+                    suggestion={suggestion}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </m.div>
 
         <form className="mx-auto w-full pb-2">
           <MultimodalInput
@@ -1196,6 +1287,7 @@ function ChatView({
             disableFileUpload={!isUploadLabsPreset}
             allowSendWithAttachmentsOnly={isUploadLabsPreset}
             showLabUploadDropzone={showDropzone}
+            onFocus={messages.length > 0 ? closeWelcome : undefined}
           />
         </form>
 

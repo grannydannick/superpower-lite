@@ -44,6 +44,7 @@ export function MultimodalInput({
   disableFileUpload = false,
   allowSendWithAttachmentsOnly = false,
   showLabUploadDropzone = false,
+  onFocus,
 }: {
   input: string;
   setInput: Dispatch<SetStateAction<string>>;
@@ -56,6 +57,7 @@ export function MultimodalInput({
   disableFileUpload?: boolean;
   allowSendWithAttachmentsOnly?: boolean;
   showLabUploadDropzone?: boolean;
+  onFocus?: () => void;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const inputWrapperRef = useRef<HTMLDivElement>(null);
@@ -293,6 +295,7 @@ export function MultimodalInput({
       submitForm={submitForm}
       showLabUploadDropzone={showLabUploadDropzone}
       isTouchDevice={isTouchDevice}
+      onFocus={onFocus}
     />
   );
 }
@@ -319,6 +322,7 @@ interface MultimodalInputViewProps {
   submitForm: () => void;
   showLabUploadDropzone: boolean;
   isTouchDevice: boolean;
+  onFocus?: () => void;
 }
 
 function MultimodalInputView({
@@ -341,6 +345,7 @@ function MultimodalInputView({
   submitForm,
   showLabUploadDropzone,
   isTouchDevice,
+  onFocus,
 }: MultimodalInputViewProps) {
   const previews: React.ReactElement[] = [];
   for (const attachment of attachments) {
@@ -452,6 +457,7 @@ function MultimodalInputView({
               placeholder="Ask anything..."
               value={input}
               onChange={handleInput}
+              onFocus={onFocus}
               style={{
                 // Setting padding right doesn't work via tailwind for textarea, needs to be adjusted when adding attachments
                 paddingRight: 96,

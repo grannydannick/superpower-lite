@@ -46,8 +46,8 @@ export const ProtocolBook = ({
             'origin-left transform-gpu [backface-visibility:hidden]',
             'transition-all duration-500 ease-out will-change-transform',
             isOpen
-              ? 'delay-[0ms] shadow-xl [transform:translateZ(3px)_rotateY(-80deg)]'
-              : 'delay-[360ms] group-hover:delay-[0ms] [transform:translateZ(3px)_rotateY(0deg)] group-hover:shadow-xl group-hover:[transform:translateZ(3px)_rotateY(-80deg)]',
+              ? 'shadow-xl [transform:translateZ(3px)_rotateY(-80deg)] [transition-delay:0ms]'
+              : '[transform:translateZ(3px)_rotateY(0deg)] [transition-delay:360ms] group-hover:shadow-xl group-hover:[transform:translateZ(3px)_rotateY(-80deg)] group-hover:[transition-delay:0ms]',
           )}
         >
           <div className="absolute left-0 h-full w-2 bg-black/20" />
@@ -72,8 +72,8 @@ export const ProtocolBook = ({
             'origin-left transform-gpu [backface-visibility:hidden]',
             'transition-all duration-500 ease-out will-change-transform',
             isOpen
-              ? 'delay-[120ms] shadow-md [transform:translateZ(2px)_rotateY(-30deg)]'
-              : 'delay-[240ms] group-hover:delay-[120ms] [transform:translateZ(2px)_rotateY(0deg)] group-hover:shadow-md group-hover:[transform:translateZ(2px)_rotateY(-30deg)]',
+              ? 'shadow-md [transform:translateZ(2px)_rotateY(-30deg)] [transition-delay:120ms]'
+              : '[transform:translateZ(2px)_rotateY(0deg)] [transition-delay:240ms] group-hover:shadow-md group-hover:[transform:translateZ(2px)_rotateY(-30deg)] group-hover:[transition-delay:120ms]',
           )}
         >
           {showInnerContent && (
@@ -102,8 +102,8 @@ export const ProtocolBook = ({
             'origin-left transform-gpu [backface-visibility:hidden]',
             'transition-all duration-500 ease-out will-change-transform',
             isOpen
-              ? 'delay-[360ms] [transform:translateZ(0)_rotateY(-1deg)]'
-              : 'delay-[0ms] group-hover:delay-[360ms] [transform:translateZ(0)_rotateY(0deg)] group-hover:[transform:translateZ(0)_rotateY(-1deg)]',
+              ? '[transform:translateZ(0)_rotateY(-1deg)] [transition-delay:360ms]'
+              : '[transform:translateZ(0)_rotateY(0deg)] [transition-delay:0ms] group-hover:[transform:translateZ(0)_rotateY(-1deg)] group-hover:[transition-delay:360ms]',
           )}
         >
           <img

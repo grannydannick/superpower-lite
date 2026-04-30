@@ -5,6 +5,8 @@ import {
   animate,
   m,
   useMotionValueEvent,
+  useTransform,
+  type MotionValue,
 } from 'framer-motion';
 import { ArrowDown } from 'lucide-react';
 import {
@@ -18,14 +20,19 @@ import {
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-  useChatScroll,
   CHAT_NEAR_BOTTOM_THRESHOLD_PX,
+  useChatScroll,
 } from '@/features/messages/hooks/use-chat-scroll';
 import { CHAT_SCROLL_CONTAINER_ID } from '@/features/messages/utils/chat-scroll';
 import { cn } from '@/lib/utils';
 
 import { PreviewMessage, ThinkingMessage } from './message';
-import { EarlierMessagesHint } from './welcome/content';
+
+// Fraction of viewport height the user must scroll up before welcome
+// closes itself. Below this, welcome snaps back to the bottom on
+// scroll release.
+const WELCOME_DISMISS_THRESHOLD = 0.2;
+const WELCOME_SNAP_BACK_DELAY_MS = 150;
 
 interface MessagesProps {
   status: UseChatHelpers<UIMessage>['status'];
@@ -39,7 +46,9 @@ interface MessagesProps {
   onLoadNewer?: () => void | Promise<void>;
   onJumpToLatest?: () => Promise<void>;
   welcomeContent?: React.ReactNode;
-  hasInteracted?: boolean;
+  showWelcome: boolean;
+  onCloseWelcome: () => void;
+  welcomeProgress: MotionValue<number>;
   didJump?: boolean;
   isSearchOpen?: boolean;
 }
@@ -56,7 +65,9 @@ function PureMessages({
   onLoadNewer,
   onJumpToLatest,
   welcomeContent,
-  hasInteracted = false,
+  showWelcome,
+  onCloseWelcome,
+  welcomeProgress,
   didJump = false,
   isSearchOpen = false,
 }: MessagesProps) {
@@ -76,15 +87,23 @@ function PureMessages({
   const didMountRef = useRef(false);
   const prevScrollTopRef = useRef(0);
   const autoScrollAnimRef = useRef<ReturnType<typeof animate> | null>(null);
+  const snapBackTimerRef = useRef<number | null>(null);
   const suppressAutoScroll = didJump || isSearchOpen;
   const suppressAutoScrollRef = useRef(suppressAutoScroll);
   suppressAutoScrollRef.current = suppressAutoScroll;
-  const shouldShowWelcomeContent =
-    !didJump && !hasInteracted && welcomeContent != null;
+  const welcomeVisible = welcomeContent != null && !didJump && showWelcome;
+  const welcomeVisibleRef = useRef(welcomeVisible);
+  welcomeVisibleRef.current = welcomeVisible;
 
   const { distanceFromBottom } = useChatScroll({
     containerRef: scrollContainerRef,
   });
+
+  // Welcome reveal: 0 = welcome covers viewport, 1 = chat fully revealed.
+  // Owned by chat.tsx and shared via prop so ChatHistoryHint (inside
+  // WelcomeContent) and chat.tsx's bottom-bar can read the same signal.
+  const welcomeOpacity = useTransform(welcomeProgress, [0, 1], [1, 0]);
+  const welcomeScale = useTransform(welcomeProgress, [0, 1], [1, 0.8]);
 
   const syncScrollDownButton = useCallback(() => {
     const container = scrollContainerRef.current;
@@ -92,11 +111,6 @@ function PureMessages({
       return;
     }
 
-    // While we're following the latest messages, keep the button hidden.
-    // The last message's `snap-end` + `scroll-mb-12` can leave the end ref a
-    // few pixels below the container after an auto-scroll, and content growth
-    // briefly pushes it further before the layout effect catches up — both
-    // would otherwise flash the button during streaming.
     if (autoScrollEnabledRef.current) {
       setShowScrollToBottom(false);
       return;
@@ -117,7 +131,57 @@ function PureMessages({
     );
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (snapBackTimerRef.current != null) {
+        clearTimeout(snapBackTimerRef.current);
+      }
+    };
+  }, []);
+
+  const snapBackIfBelowThreshold = useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (el == null || !welcomeVisibleRef.current) return;
+    const dfb = el.scrollHeight - el.scrollTop - el.clientHeight;
+    const fraction = dfb / Math.max(el.clientHeight, 1);
+    if (fraction > 0 && fraction < WELCOME_DISMISS_THRESHOLD) {
+      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+    }
+  }, []);
+
+  // Native `scrollend` fires once scrolling truly stops (after inertia,
+  // after smooth-scroll completes). Cleaner than chasing the tail of a
+  // setTimeout-based debounce.
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (el == null) return;
+    if (!('onscrollend' in el)) return;
+    el.addEventListener('scrollend', snapBackIfBelowThreshold);
+    return () => el.removeEventListener('scrollend', snapBackIfBelowThreshold);
+  }, [snapBackIfBelowThreshold]);
+
   useMotionValueEvent(distanceFromBottom, 'change', (distance) => {
+    // Drive welcome reveal from the scroll signal whenever welcome is
+    // visible, so progress always matches the actual scroll position
+    // (including during the snap-back animation back to the bottom).
+    // Auto-close is gated on `!autoScrollEnabledRef.current` so the
+    // animated scroll-to-bottom on mount doesn't dismiss welcome before
+    // the user has seen it.
+    if (welcomeVisibleRef.current) {
+      const el = scrollContainerRef.current;
+      const viewport = el?.clientHeight ?? 0;
+      if (viewport > 0) {
+        const fraction = Math.min(Math.max(distance / viewport, 0), 1);
+        welcomeProgress.set(fraction);
+        if (
+          fraction >= WELCOME_DISMISS_THRESHOLD &&
+          !autoScrollEnabledRef.current
+        ) {
+          onCloseWelcome();
+        }
+      }
+    }
+
     if (!didMountRef.current) {
       return;
     }
@@ -141,6 +205,19 @@ function PureMessages({
       autoScrollEnabledRef.current = false;
     }
     syncScrollDownButton();
+
+    // Fallback snap-back via timer for browsers without `scrollend`
+    // support (Safari < 17, Firefox < 109). Modern browsers use the
+    // scrollend listener installed above.
+    if (welcomeVisibleRef.current) {
+      if (snapBackTimerRef.current != null) {
+        clearTimeout(snapBackTimerRef.current);
+      }
+      snapBackTimerRef.current = window.setTimeout(
+        snapBackIfBelowThreshold,
+        WELCOME_SNAP_BACK_DELAY_MS,
+      );
+    }
   });
 
   const requestOlderMessages = useCallback(
@@ -187,17 +264,15 @@ function PureMessages({
         loadNewerInFlightRef.current = false;
       });
   }, [hasMoreNewer, isLoadingNewer, onLoadNewer]);
-  // Wheel event: detect desktop scroll-up gesture
+
   const handleWheel = useCallback((event: React.WheelEvent) => {
     if (event.deltaY < 0) {
-      // deltaY < 0 means user scrolled UP
       autoScrollEnabledRef.current = false;
       autoScrollAnimRef.current?.stop();
       autoScrollAnimRef.current = null;
     }
   }, []);
 
-  // Touch events: detect mobile scroll-up gesture
   const handleTouchStart = useCallback((event: React.TouchEvent) => {
     const touch = event.touches[0];
     if (touch) {
@@ -213,7 +288,6 @@ function PureMessages({
 
     const deltaY = touch.clientY - lastTouchYRef.current;
     if (deltaY > 10) {
-      // Finger moved DOWN = content scrolling UP = user wants to see previous content
       autoScrollEnabledRef.current = false;
       autoScrollAnimRef.current?.stop();
       autoScrollAnimRef.current = null;
@@ -223,6 +297,7 @@ function PureMessages({
 
   const handleScrollDownClick = useCallback(() => {
     autoScrollEnabledRef.current = true;
+    onCloseWelcome();
     if (hasMoreNewer && onJumpToLatest) {
       void onJumpToLatest();
       return;
@@ -231,7 +306,7 @@ function PureMessages({
       behavior: 'smooth',
       block: 'end',
     });
-  }, [hasMoreNewer, onJumpToLatest]);
+  }, [hasMoreNewer, onJumpToLatest, onCloseWelcome]);
 
   const prevSuppressAutoScrollRef = useRef(suppressAutoScroll);
   const prevScrollHeightRef = useRef(0);
@@ -276,10 +351,6 @@ function PureMessages({
     }
     prevSuppressAutoScrollRef.current = suppressAutoScroll;
 
-    // Only jump to bottom when content actually grew (new tokens/messages) or
-    // on first mount. Re-renders from unrelated state changes (e.g. the
-    // scroll-down button toggling) must not interrupt an in-flight smooth
-    // scroll triggered by `scrollIntoView`.
     const willAutoScroll =
       !hadPrependAnchor &&
       autoScrollEnabledRef.current &&
@@ -352,169 +423,13 @@ function PureMessages({
     return () => observer.disconnect();
   }, [requestNewerMessages, messages.length]);
 
-  let lastRealMessageId: string | null = null;
-  if (shouldShowWelcomeContent) {
-    for (let i = messages.length - 1; i >= 0; i--) {
-      const id = messages[i].id;
-      if (id.startsWith('preset-')) {
-        continue;
-      }
-      lastRealMessageId = id;
-      break;
-    }
-  }
-
-  // Re-pin to the bottom when the welcome panel grows after first paint
-  // (e.g. dune gradient + setup-action images finishing loading on slow
-  // connections). Without this, the tail of the welcome — including the
-  // suggested actions — ends up below the viewport. Uses a callback ref so
-  // setup/teardown is tied to the welcome element's mount lifecycle.
-  const welcomeResizeRef = useCallback((el: HTMLDivElement | null) => {
-    if (el == null) {
-      return;
-    }
-    const observer = new ResizeObserver(() => {
-      const container = scrollContainerRef.current;
-      if (container == null) {
-        return;
-      }
-      if (suppressAutoScrollRef.current) {
-        return;
-      }
-      if (!autoScrollEnabledRef.current) {
-        return;
-      }
-      autoScrollAnimRef.current?.stop();
-      autoScrollAnimRef.current = null;
-      container.scrollTop = container.scrollHeight;
-    });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  const handleEarlierMessagesClick = useCallback(() => {
-    if (lastRealMessageId == null) {
-      return;
-    }
-    const el = document.getElementById(`message-${lastRealMessageId}`);
-    if (el == null) {
-      return;
-    }
-    autoScrollEnabledRef.current = false;
-    autoScrollAnimRef.current?.stop();
-    autoScrollAnimRef.current = null;
-    el.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }, [lastRealMessageId]);
-
-  // When jumping, unmount entirely so scrollHeight settles immediately —
-  // an AnimatePresence exit would keep the full-height element in the DOM
-  // and shift the scroll target.
-  //
-  // On exit we animate `height` alongside `minHeight` so the element truly
-  // collapses to 0 before it unmounts. `min-height: 0` alone isn't enough:
-  // it only removes the floor, leaving the element at its intrinsic content
-  // height until it unmounts — which would snap the scroll position once
-  // the exit finishes.
-  let welcomeSection: React.ReactNode = null;
-  if (welcomeContent != null && !didJump) {
-    welcomeSection = (
-      <AnimatePresence>
-        {shouldShowWelcomeContent && (
-          <m.div
-            key="welcome"
-            ref={welcomeResizeRef}
-            initial={false}
-            animate={{
-              height: 'auto',
-              minHeight: '100%',
-              opacity: 1,
-              y: 0,
-              scale: 1,
-              filter: 'blur(0px)',
-            }}
-            exit={{
-              height: 0,
-              minHeight: 0,
-              opacity: 0,
-              y: 24,
-              scale: 0.97,
-              filter: 'blur(4px)',
-            }}
-            transition={{
-              duration: 0.5,
-              ease: [0.25, 0.1, 0.25, 1],
-            }}
-            style={{ overflow: 'hidden' }}
-            className={cn(
-              'flex w-full flex-col items-center',
-              lastRealMessageId != null && 'pt-24 md:pt-0',
-            )}
-          >
-            <div className="my-auto w-full">{welcomeContent}</div>
-          </m.div>
-        )}
-      </AnimatePresence>
-    );
-  }
-  // Scroll to a specific deep-linked message, loading older pages until it exists.
-  const lastScrolledTargetRef = useRef<string | null>(null);
-  useEffect(() => {
-    if (lastRealMessageId == null) {
-      lastScrolledTargetRef.current = null;
-      return;
-    }
-
-    if (messages.length === 0) {
-      return;
-    }
-
-    if (lastScrolledTargetRef.current === lastRealMessageId) {
-      return;
-    }
-
-    const el = document.getElementById(`message-${lastRealMessageId}`);
-    if (el == null) {
-      if (!hasMoreOlder || isLoadingOlder || onLoadOlder == null) {
-        return;
-      }
-
-      requestOlderMessages({ disableAutoScroll: true });
-      return;
-    }
-
-    lastScrolledTargetRef.current = lastRealMessageId;
-    autoScrollEnabledRef.current = false;
-
-    // Defer to ensure layout is settled after framer-motion animations
-    requestAnimationFrame(() => {
-      el.scrollIntoView({ behavior: 'instant', block: 'start' });
-    });
-  }, [
-    lastRealMessageId,
-    hasMoreOlder,
-    isLoadingOlder,
-    messages.length,
-    onLoadOlder,
-    requestOlderMessages,
-  ]);
-
   return (
     <div
       className={cn(
         'relative flex min-h-0 flex-1 flex-col',
-        messages.length === 0 && !shouldShowWelcomeContent && 'hidden',
+        messages.length === 0 && !welcomeContent && 'hidden',
       )}
     >
-      {shouldShowWelcomeContent && lastRealMessageId != null && (
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center pb-4 pt-10">
-          <div className="pointer-events-auto">
-            <EarlierMessagesHint
-              distanceFromBottom={distanceFromBottom}
-              onClick={handleEarlierMessagesClick}
-            />
-          </div>
-        </div>
-      )}
       <div
         ref={scrollContainerRef}
         id={CHAT_SCROLL_CONTAINER_ID}
@@ -626,11 +541,42 @@ function PureMessages({
           className="min-h-[24px] min-w-[24px] shrink-0"
         />
 
-        {welcomeSection}
+        {/* Sticky welcome panel: pinned to viewport bottom, fades and
+            scales as user scrolls up. AnimatePresence handles the final
+            collapse-and-unmount when welcome closes (on send / scroll
+            past threshold / focus / scroll-down click). */}
+        {welcomeContent != null && !didJump && (
+          <AnimatePresence>
+            {showWelcome && (
+              <m.div
+                key="welcome"
+                initial={false}
+                style={{
+                  opacity: welcomeOpacity,
+                  scale: welcomeScale,
+                  transformOrigin: 'bottom',
+                }}
+                exit={{
+                  opacity: 0,
+                  height: 0,
+                  minHeight: 0,
+                  marginTop: -24,
+                }}
+                transition={{
+                  duration: 0.8,
+                  ease: [0.32, 0.72, 0, 1],
+                }}
+                className="sticky bottom-0 flex min-h-full flex-col items-center justify-center gap-6 overflow-hidden"
+              >
+                {welcomeContent}
+              </m.div>
+            )}
+          </AnimatePresence>
+        )}
       </div>
 
       <ScrollDownButton
-        show={showScrollToBottom}
+        show={showScrollToBottom && !welcomeVisible}
         onClick={handleScrollDownClick}
       />
     </div>

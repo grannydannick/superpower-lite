@@ -1,7 +1,8 @@
 import { Collapsible } from '@radix-ui/react-collapsible';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, X } from 'lucide-react';
 import { Children, ReactNode, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 import { CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
@@ -13,6 +14,7 @@ export interface ActionableAccordionItemProps {
   description: string;
   imageSrc: string;
   onClick: () => void;
+  onDismiss?: () => void;
 }
 
 interface ActionableAccordionProps {
@@ -30,35 +32,58 @@ export const ActionableAccordionItem = ({
   description,
   imageSrc,
   onClick,
+  onDismiss,
 }: ActionableAccordionItemProps) => {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="group relative flex w-full items-center gap-3 px-4 py-4 text-left outline-none transition-colors hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-ring"
-    >
-      <div className="flex shrink-0 items-center">
-        <div className="relative flex size-4 items-center justify-center rounded-full bg-vermillion-100">
-          <div className="size-1.5 rounded-full bg-vermillion-900" />
+    <div className="group relative">
+      <button
+        type="button"
+        onClick={onClick}
+        className={cn(
+          'relative flex w-full items-center gap-3 px-4 py-4 text-left outline-none transition-colors hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-ring',
+          onDismiss != null && 'pr-11',
+        )}
+      >
+        <div className="flex shrink-0 items-center">
+          <div className="relative flex size-4 items-center justify-center rounded-full bg-vermillion-100">
+            <div className="size-1.5 rounded-full bg-vermillion-900" />
+          </div>
+          <img
+            src={imageSrc}
+            alt=""
+            className="ml-1.5 size-12 shrink-0 object-contain pt-1 rounded-mask"
+          />
         </div>
-        <img
-          src={imageSrc}
-          alt=""
-          className="ml-1.5 size-12 shrink-0 object-contain pt-1 rounded-mask"
-        />
-      </div>
 
-      <div className="flex flex-1 items-center gap-3">
-        <div className="flex-1">
-          <Body1 className="text-zinc-900">{title}</Body1>
-          <Body2 className="text-zinc-600">{description}</Body2>
+        <div className="flex flex-1 items-center gap-3">
+          <div className="flex-1">
+            <Body1 className="text-zinc-900">{title}</Body1>
+            <Body2 className="text-zinc-600">{description}</Body2>
+          </div>
+          <ChevronRight
+            aria-hidden="true"
+            className="size-5 text-zinc-400 transition-transform group-hover:translate-x-0.5"
+          />
         </div>
-        <ChevronRight
-          aria-hidden="true"
-          className="size-5 text-zinc-400 transition-transform group-hover:translate-x-0.5"
-        />
-      </div>
-    </button>
+      </button>
+
+      {onDismiss != null && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onDismiss();
+          }}
+          className="absolute right-3 top-3 size-7 rounded-full text-zinc-400 hover:bg-zinc-200 hover:text-zinc-700"
+          aria-label={`Dismiss ${title}`}
+        >
+          <X size={14} />
+        </Button>
+      )}
+    </div>
   );
 };
 

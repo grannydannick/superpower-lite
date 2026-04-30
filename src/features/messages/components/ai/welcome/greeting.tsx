@@ -16,7 +16,7 @@ export const Greeting = () => {
       <m.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 10 }}
+        exit={{ opacity: 0, y: 10, transition: { duration: 0.3, delay: 0 } }}
         transition={{ delay: 0.4 }}
         className="flex items-center gap-2 text-xl md:text-2xl"
       >
@@ -36,7 +36,12 @@ export const DuneGradient = ({ className }: { className?: string }) => {
         y: [40, 0, 0, 0],
         x: '-50%',
       }}
-      exit={{ opacity: 0, y: 40, x: '-50%' }}
+      exit={{
+        opacity: 0,
+        y: 40,
+        x: '-50%',
+        transition: { duration: 0.3, ease: 'easeOut' },
+      }}
       transition={{
         duration: 3,
         ease: 'easeOut',
