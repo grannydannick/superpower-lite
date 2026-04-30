@@ -46,7 +46,7 @@ const baseLinks: NavItem[] = [
   { icon: DataIcon, name: 'Data', to: '/data' },
   { icon: MessageIcon, name: 'Superpower AI', to: '/concierge' },
   { icon: PlansIcon, name: 'Protocol', to: '/protocol' },
-  { icon: MarketplaceIcon, name: 'Clinic', to: '/marketplace' },
+  { icon: MarketplaceIcon, name: 'Marketplace', to: '/marketplace' },
 ];
 
 const profileDropdownItems = [
@@ -159,7 +159,7 @@ export const DesktopNavbar = () => {
                 to={link.to}
                 activeOptions={{ exact: link.to === '/' }}
                 onClick={() => {
-                  if (link.name === 'Clinic') {
+                  if (link.name === 'Marketplace') {
                     track('click_marketplace_button');
                   }
                 }}
@@ -324,7 +324,7 @@ export const MobileNavbar = () => {
               key={link.to}
               to={link.to}
               onClick={() => {
-                if (link.name === 'Clinic') {
+                if (link.name === 'Marketplace') {
                   track('click_marketplace_button');
                 }
               }}

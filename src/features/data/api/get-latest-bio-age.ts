@@ -1,31 +1,24 @@
-import { queryOptions, useQuery } from '@tanstack/react-query';
+import { queryOptions } from '@tanstack/react-query';
 
-import { api } from '@/lib/api-client';
-import { QueryConfig } from '@/lib/react-query';
-import { BiomarkerResult } from '@/types/api';
+import type { DataBiomarker } from '../types/data-api';
+import { getLatestObservationValue } from '../utils/get-latest-observation-value';
 
-export const getLatestBioAge = async (): Promise<{
-  bioAge: BiomarkerResult | null;
-}> => {
-  return await api.get(`/biomarkers/bioage/latest`);
+import { dataBiomarkersQueryOptions } from './get-data-biomarkers';
+
+const BIOLOGICAL_AGE_SLUG = 'biological-age';
+
+const selectLatestBioAge = (data: {
+  biomarkers: { slug: string; observation?: unknown }[];
+}) => {
+  const biomarkers = data.biomarkers as DataBiomarker[];
+  const observation = biomarkers.find(
+    (b) => b.slug === BIOLOGICAL_AGE_SLUG,
+  )?.observation;
+  return { bioAge: getLatestObservationValue(observation) ?? null };
 };
 
-export const getLatestBioAgeQueryOptions = () => {
-  return queryOptions({
-    queryKey: ['bioage', 'latest'],
-    queryFn: () => getLatestBioAge(),
+export const getLatestBioAgeQueryOptions = () =>
+  queryOptions({
+    ...dataBiomarkersQueryOptions(),
+    select: selectLatestBioAge,
   });
-};
-
-type UseLatestBioAgeOptions = {
-  queryConfig?: QueryConfig<typeof getLatestBioAgeQueryOptions>;
-};
-
-export const useLatestBioAge = ({
-  queryConfig,
-}: UseLatestBioAgeOptions = {}) => {
-  return useQuery({
-    ...getLatestBioAgeQueryOptions(),
-    ...queryConfig,
-  });
-};

@@ -29,9 +29,9 @@ function MarketplaceComponent() {
   const search = resolveProductsFilter(Route.useSearch());
 
   return (
-    <ContentLayout title="Clinic" className="max-w-[1600px] md:space-y-6">
+    <ContentLayout title="Marketplace" className="max-w-[1600px] md:space-y-6">
       <Header
-        title="Clinic"
+        title="Marketplace"
         callToAction={<MarketplaceCta />}
         className="hidden md:flex"
       />
