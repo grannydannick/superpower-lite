@@ -279,9 +279,9 @@ const PROTOCOL_ID_DISPLAY: Record<string, string> = {
   'methylation-panel': 'Methylation Panel',
   'v2-methylation-bundle-quest': 'Methylation Panel',
   'v2-methylation-bundle-bioref': 'Methylation Panel',
-  'nutrients-panel': 'Nutrient & Antioxidant Panel',
-  'v2-nutrients-bundle-quest': 'Nutrient & Antioxidant Panel',
-  'v2-nutrients-bundle-bioref': 'Nutrient & Antioxidant Panel',
+  'nutrients-panel': 'Vitamins and Minerals Panel',
+  'v2-nutrients-bundle-quest': 'Vitamins and Minerals Panel',
+  'v2-nutrients-bundle-bioref': 'Vitamins and Minerals Panel',
   'gut-microbiome-analysis': 'Gut Microbiome Analysis',
 };
 
