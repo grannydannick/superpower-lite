@@ -139,7 +139,10 @@ export function RatingScale({
         style={{
           gridTemplateColumns: `repeat(${options.length}, 1fr)`,
         }}
-        className="mt-4 hidden w-full justify-between gap-2 md:grid"
+        className={cn(
+          'mt-4 grid w-full justify-between gap-2',
+          options.length > 5 && 'hidden md:grid',
+        )}
       >
         <Body3 className="text-center text-zinc-400">{startLabel}</Body3>
         {Array.from({ length: options.length - 2 }).map((_, index) => (
