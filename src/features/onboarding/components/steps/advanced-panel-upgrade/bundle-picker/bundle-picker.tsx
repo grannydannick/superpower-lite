@@ -30,12 +30,10 @@ import { Sequence } from '../../../sequence';
 
 import { BundlePickerDesktopFooter } from './bundle-picker-desktop-footer';
 import { BundlePickerHeader } from './bundle-picker-header';
+import { BundleHeroImages } from './bundle-picker-hero-images';
 import { IncludedAccordion } from './bundle-picker-included';
 import { BundlePickerMobileFooter } from './bundle-picker-mobile-footer';
-import {
-  BundleDesktopCards,
-  BundleMobileCarousel,
-} from './bundle-picker-options';
+import { BundleDesktopCards } from './bundle-picker-options';
 import {
   getAvailableBundleOrder,
   getBundleMarketingCopy,
@@ -45,20 +43,34 @@ import {
 import type { BundlePickerPurchaseInteraction } from './bundle-picker-purchase-interaction';
 
 const DEFAULT_BUNDLE_ID = ADVANCED_UPGRADE_BUNDLE_IDS.ADVANCED_UPGRADE;
+const MOBILE_DEFAULT_BUNDLE_ID =
+  ADVANCED_UPGRADE_BUNDLE_IDS.ADVANCED_MICROBIOME_BUNDLE;
+
+function getInitialBundleId() {
+  if (typeof window === 'undefined') {
+    return DEFAULT_BUNDLE_ID;
+  }
+
+  if (window.matchMedia('(max-width: 767px)').matches) {
+    return MOBILE_DEFAULT_BUNDLE_ID;
+  }
+
+  return DEFAULT_BUNDLE_ID;
+}
 
 export const BundlePicker = ({ variant }: { variant: string }) => {
   const { data: user } = useUser();
-  const { next, prev, isFirstStep } = useOnboardingNavigation();
+  const { next } = useOnboardingNavigation();
   const { trackOnboardingCreditPurchase } = useOnboardingAnalytics();
   const { track } = useAnalytics();
   const { gender } = useGender();
   const { activePaymentMethod, isFlexSelected, isSelectingPaymentMethod } =
     usePaymentMethodSelection();
   const upgradeOrderMutation = useUpgradeCredit();
-  const mobileCarouselRef = useRef<HTMLDivElement>(null);
+  const mobileSelectorRef = useRef<HTMLDivElement>(null);
 
   const [selectedId, setSelectedId] =
-    useState<AdvancedUpgradeBundleId>(DEFAULT_BUNDLE_ID);
+    useState<AdvancedUpgradeBundleId>(getInitialBundleId);
   const [isConfirmingPurchase, setIsConfirmingPurchase] = useState(false);
 
   const productsQuery = useOnboardingProducts({
@@ -77,8 +89,6 @@ export const BundlePicker = ({ variant }: { variant: string }) => {
   const selectedPrice = getUpgradePrice(user, selectedId);
   const bundleOrder = useMemo(() => getAvailableBundleOrder(user), [user]);
 
-  const selectedIndex = bundleOrder.indexOf(selectedId);
-  const safeIndex = selectedIndex === -1 ? 0 : selectedIndex;
   const isPending =
     upgradeOrderMutation.isPending || upgradeOrderMutation.isSuccess;
 
@@ -91,7 +101,7 @@ export const BundlePicker = ({ variant }: { variant: string }) => {
   }, [track, variant]);
 
   useLayoutEffect(() => {
-    const selectedCard = mobileCarouselRef.current?.querySelector(
+    const selectedCard = mobileSelectorRef.current?.querySelector(
       `[data-bundle-id="${selectedId}"]`,
     );
     selectedCard?.scrollIntoView({
@@ -154,6 +164,10 @@ export const BundlePicker = ({ variant }: { variant: string }) => {
     await upgradeOrder();
   };
 
+  const handleCancelConfirm = () => {
+    setIsConfirmingPurchase(false);
+  };
+
   const purchaseInteraction: BundlePickerPurchaseInteraction = {
     isPending,
     isConfirmingPurchase,
@@ -161,12 +175,15 @@ export const BundlePicker = ({ variant }: { variant: string }) => {
     hasPaymentMethod,
     isFlexSelected,
     onSkip: next,
+    onCancelConfirm: handleCancelConfirm,
     onUpgradeCta: handleUpgradeCta,
   };
 
+  const bundleSelectorDisabled = isPending;
+
   return (
     <Sequence.StepLayout className="bg-zinc-50 md:bg-[#fafafa]">
-      <BundlePickerHeader isFirstStep={isFirstStep} onBack={prev}>
+      <BundlePickerHeader>
         <div
           data-testid="bundle-desktop-grid"
           className="mt-6 hidden min-w-0 items-start gap-4 px-4 md:grid md:grid-cols-3 md:grid-rows-[auto_auto_auto_auto] md:px-8"
@@ -184,30 +201,21 @@ export const BundlePicker = ({ variant }: { variant: string }) => {
           />
         </div>
 
-        <BundleMobileCarousel
-          user={user}
-          productBySlug={productBySlug}
-          bundleOrder={bundleOrder}
-          selectedId={selectedId}
-          disabled={isPending}
-          activeIndex={safeIndex}
-          carouselRef={mobileCarouselRef}
-          gender={gender}
-          onSelect={handleSelect}
-        />
-
-        <div className="mt-8 space-y-6 px-4 md:hidden">
+        <div className="mt-6 space-y-6 px-4 md:hidden">
+          <BundleHeroImages
+            bundleId={selectedId}
+            productBySlug={productBySlug}
+          />
+          <p className="text-lg font-semibold leading-7 text-zinc-900">
+            {marketing.cardTitle}
+          </p>
+          <p className="text-base leading-6 text-zinc-900/55">
+            <span className="font-semibold text-zinc-900">
+              {unlockCopy.lead}
+            </span>{' '}
+            {unlockCopy.body}
+          </p>
           <section>
-            <div className="space-y-2">
-              <p className="text-sm text-zinc-900/40">What you'll unlock</p>
-              <p className="text-base leading-6 text-zinc-900/55">
-                <span className="font-semibold text-zinc-900">
-                  {unlockCopy.lead}
-                </span>{' '}
-                {unlockCopy.body}
-              </p>
-            </div>
-            <div className="my-4 h-px w-full bg-zinc-900/10" />
             <p className="text-sm text-zinc-900/50">What’s included</p>
             <div className="mt-2">
               <IncludedAccordion
@@ -231,6 +239,13 @@ export const BundlePicker = ({ variant }: { variant: string }) => {
       <BundlePickerMobileFooter
         selectedPrice={selectedPrice}
         interaction={purchaseInteraction}
+        user={user}
+        bundleOrder={bundleOrder}
+        selectedId={selectedId}
+        gender={gender}
+        onSelect={handleSelect}
+        selectorRef={mobileSelectorRef}
+        bundleSelectorDisabled={bundleSelectorDisabled}
       />
     </Sequence.StepLayout>
   );

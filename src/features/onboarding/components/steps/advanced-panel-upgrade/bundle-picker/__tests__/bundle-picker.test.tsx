@@ -18,6 +18,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 const scrollIntoViewMock = vi.fn();
+const scrollToMock = vi.fn();
 
 const testUser = {
   id: 'u1',
@@ -238,6 +239,11 @@ describe('BundlePicker', () => {
       configurable: true,
       value: scrollIntoViewMock,
     });
+    Object.defineProperty(window, 'scrollTo', {
+      configurable: true,
+      writable: true,
+      value: scrollToMock,
+    });
   });
 
   it('tracks picker exposure when mounted', async () => {
@@ -254,14 +260,22 @@ describe('BundlePicker', () => {
     );
   });
 
+  it('does not render the mobile step header label', () => {
+    render(<BundlePicker variant="test" />);
+
+    expect(screen.queryByText('Additional testing')).not.toBeInTheDocument();
+  });
+
   it('selects the standard advanced bundle by default', () => {
     render(<BundlePicker variant="test" />);
 
-    const carousel = screen.getByTestId('bundle-mobile-carousel');
-    const advancedCard = within(carousel).getByRole('button', {
+    const compactSelector = screen.getByTestId(
+      'bundle-mobile-compact-selector',
+    );
+    const advancedCard = within(compactSelector).getByRole('button', {
       name: /male advanced/i,
     });
-    const microbiomeCard = within(carousel).getByRole('button', {
+    const microbiomeCard = within(compactSelector).getByRole('button', {
       name: /advanced & microbiome/i,
     });
 
@@ -272,12 +286,41 @@ describe('BundlePicker', () => {
     );
   });
 
+  it('selects the recommended middle tier by default on mobile', () => {
+    vi.mocked(window.matchMedia).mockImplementation((query) => ({
+      matches: query === '(max-width: 767px)',
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
+
+    render(<BundlePicker variant="test" />);
+
+    const compactSelector = screen.getByTestId(
+      'bundle-mobile-compact-selector',
+    );
+    const microbiomeCard = within(compactSelector).getByRole('button', {
+      name: /advanced & microbiome/i,
+    });
+
+    expect(microbiomeCard).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByTestId('bundle-mobile-upgrade-cta')).toHaveTextContent(
+      'Upgrade — $379',
+    );
+  });
+
   it('tracks when the user selects a different bundle', async () => {
     render(<BundlePicker variant="test" />);
 
     const user = userEvent.setup();
-    const carousel = screen.getByTestId('bundle-mobile-carousel');
-    const completeCard = within(carousel).getByRole('button', {
+    const compactSelector = screen.getByTestId(
+      'bundle-mobile-compact-selector',
+    );
+    const completeCard = within(compactSelector).getByRole('button', {
       name: /complete bundle/i,
     });
 
@@ -290,6 +333,25 @@ describe('BundlePicker', () => {
         bundle_id: ADVANCED_UPGRADE_BUNDLE_IDS.COMPLETE_BUNDLE,
       }),
     );
+  });
+
+  it('scrolls to the top when the user selects a different mobile bundle', async () => {
+    render(<BundlePicker variant="test" />);
+
+    const user = userEvent.setup();
+    const compactSelector = screen.getByTestId(
+      'bundle-mobile-compact-selector',
+    );
+    const completeCard = within(compactSelector).getByRole('button', {
+      name: /complete bundle/i,
+    });
+
+    await user.click(completeCard);
+
+    expect(scrollToMock).toHaveBeenCalledWith({
+      top: 0,
+      behavior: 'smooth',
+    });
   });
 
   it('hides the complete bundle for NY/NJ members', () => {
@@ -307,8 +369,10 @@ describe('BundlePicker', () => {
     render(<BundlePicker variant="test" />);
 
     const user = userEvent.setup();
-    const carousel = screen.getByTestId('bundle-mobile-carousel');
-    const advancedCard = within(carousel).getByRole('button', {
+    const compactSelector = screen.getByTestId(
+      'bundle-mobile-compact-selector',
+    );
+    const advancedCard = within(compactSelector).getByRole('button', {
       name: /male advanced/i,
     });
 
@@ -331,5 +395,32 @@ describe('BundlePicker', () => {
         },
       }),
     );
+  });
+
+  it('cancels confirmation and returns to the pre-confirmation state', async () => {
+    render(<BundlePicker variant="test" />);
+
+    const user = userEvent.setup();
+    const primaryUpgrade = screen.getByTestId('bundle-mobile-upgrade-cta');
+    await user.click(primaryUpgrade);
+
+    expect(screen.getAllByText('Payment method').length).toBeGreaterThan(0);
+    expect(primaryUpgrade).toHaveTextContent('Confirm');
+    expect(
+      screen.queryByTestId('bundle-mobile-compact-selector'),
+    ).not.toBeInTheDocument();
+
+    const secondaryCta = screen.getByTestId('bundle-mobile-skip-cta');
+    expect(secondaryCta).toHaveTextContent('Cancel');
+
+    await user.click(secondaryCta);
+
+    expect(screen.queryByText('Payment method')).not.toBeInTheDocument();
+    expect(
+      screen.getByTestId('bundle-mobile-compact-selector'),
+    ).toBeInTheDocument();
+    expect(primaryUpgrade).toHaveTextContent('Upgrade — $189');
+    expect(secondaryCta).toHaveTextContent('No thank you');
+    expect(mocks.mutateAsync).not.toHaveBeenCalled();
   });
 });

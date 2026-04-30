@@ -169,6 +169,17 @@ describe('BundledDiscountStep', () => {
     ).toBeDisabled();
   });
 
+  it('does not render the mobile step header label', () => {
+    vi.mocked(useUser).mockReturnValue({
+      data: makeUser('NY'),
+      isFetched: true,
+    } as unknown as ReturnType<typeof useUser>);
+
+    render(<BundledDiscountStep />);
+
+    expect(screen.queryByText('Retesting cadence')).not.toBeInTheDocument();
+  });
+
   it('uses resolved NY pricing for the purchase and analytics payload', async () => {
     mutateAsyncMock.mockResolvedValue({ credits: [] });
 

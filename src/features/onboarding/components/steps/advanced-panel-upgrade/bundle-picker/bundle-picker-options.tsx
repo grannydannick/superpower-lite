@@ -1,4 +1,4 @@
-import type { ReactNode, RefObject } from 'react';
+import type { ReactNode, Ref } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -39,16 +39,14 @@ interface BundleOptionCardsProps {
   onSelect: (id: AdvancedUpgradeBundleId, price: number) => void;
 }
 
-interface BundleMobileCarouselProps {
+interface BundleMobileCompactSelectorProps {
   user: User | undefined;
-  productBySlug: Map<string, OnboardingProduct>;
   bundleOrder: AdvancedUpgradeBundleId[];
   selectedId: AdvancedUpgradeBundleId;
   disabled: boolean;
-  activeIndex: number;
-  carouselRef: RefObject<HTMLDivElement | null>;
   gender: BundleGenderCopyInput['gender'];
   onSelect: (id: AdvancedUpgradeBundleId, price: number) => void;
+  selectorRef?: Ref<HTMLDivElement>;
 }
 
 function DesktopBundlePrice({
@@ -88,7 +86,7 @@ function DesktopBundlePrice({
   );
 }
 
-function MobileBundlePrice({
+function CompactMobileBundlePrice({
   user,
   bundleId,
 }: {
@@ -100,15 +98,14 @@ function MobileBundlePrice({
   const listPrice = price + savings;
 
   return (
-    <div className="space-y-1">
-      <div className="flex flex-wrap items-end gap-1">
-        <p className="text-xl leading-7 tracking-tight text-zinc-900">
+    <div className="mt-auto space-y-0.5 pt-3">
+      <div className="flex flex-wrap items-baseline gap-0.5">
+        <p className="text-base font-semibold leading-tight tracking-tight text-zinc-900">
           +{formatMoney(price)}
         </p>
-        <p className="text-sm leading-5 text-zinc-900/40">/one time</p>
       </div>
       {savings > 0 ? (
-        <p className="text-xs leading-4 tracking-wide text-vermillion-900">
+        <p className="text-[11px] leading-4 tracking-wide text-vermillion-900">
           <span className="text-zinc-900/30 line-through">
             {formatMoney(listPrice)}
           </span>{' '}
@@ -117,38 +114,12 @@ function MobileBundlePrice({
           </span>
         </p>
       ) : (
-        <p className="text-xs leading-4 tracking-wide text-vermillion-900">
+        <p className="text-[11px] leading-4 tracking-wide text-vermillion-900">
           New member price
         </p>
       )}
     </div>
   );
-}
-
-function Pager({
-  bundleIds,
-  activeIndex,
-}: {
-  bundleIds: AdvancedUpgradeBundleId[];
-  activeIndex: number;
-}) {
-  const dots: ReactNode[] = [];
-
-  let slot = 0;
-  for (const bundleId of bundleIds) {
-    dots.push(
-      <span
-        key={bundleId}
-        className={cn(
-          'h-1.5 rounded-full transition-all',
-          slot === activeIndex ? 'w-3 bg-zinc-700' : 'w-1.5 bg-zinc-900/30',
-        )}
-      />,
-    );
-    slot += 1;
-  }
-
-  return <div className="flex items-center justify-center gap-1">{dots}</div>;
 }
 
 export function BundleDesktopCards({
@@ -276,85 +247,76 @@ export function BundleDesktopCards({
   return <>{cards}</>;
 }
 
-export function BundleMobileCarousel({
+export function BundleMobileCompactSelector({
   user,
-  productBySlug,
   bundleOrder,
   selectedId,
   disabled,
-  activeIndex,
-  carouselRef,
   gender,
   onSelect,
-}: BundleMobileCarouselProps) {
+  selectorRef,
+}: BundleMobileCompactSelectorProps) {
   const buttons: ReactNode[] = [];
 
   for (const bundleId of bundleOrder) {
     const copy = getBundleMarketingCopy(bundleId, { gender });
     const selected = bundleId === selectedId;
     const price = getUpgradePrice(user, bundleId);
+    const showRecommendedPill = copy.recommended === true;
 
     buttons.push(
-      <button
+      <div
         key={bundleId}
-        type="button"
-        data-bundle-id={bundleId}
-        onClick={() => onSelect(bundleId, price)}
-        disabled={disabled}
-        aria-pressed={selected}
         className={cn(
-          'relative flex h-[240px] w-[208px] shrink-0 snap-start flex-col rounded-2xl bg-white p-4 text-left transition-all duration-200 ease-out active:scale-[0.99]',
-          selected
-            ? 'border border-vermillion-900 shadow-sm ring-2 ring-vermillion-900/20'
-            : 'border border-zinc-200 shadow-sm',
-          disabled && 'cursor-not-allowed opacity-60 active:scale-100',
+          'relative flex min-w-0 flex-[1_0_0] flex-col',
+          showRecommendedPill ? 'min-w-[108px]' : 'min-w-[100px]',
         )}
       >
-        {copy.recommended === true && !selected ? (
-          <span className="absolute -top-2 right-3 rounded-md bg-vermillion-100 px-1.5 py-0.5 text-xs text-vermillion-900">
-            Recommended
-          </span>
-        ) : null}
-        <span
+        <button
+          type="button"
+          data-bundle-id={bundleId}
+          onClick={() => {
+            if (bundleId !== selectedId) {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            onSelect(bundleId, price);
+          }}
+          disabled={disabled}
+          aria-pressed={selected}
           className={cn(
-            'absolute -right-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-vermillion-900 text-xs font-bold text-white transition-all duration-200 ease-out',
+            'relative flex h-full min-h-[132px] w-full flex-col rounded-2xl border bg-white p-3 text-left transition-all duration-200 ease-out active:scale-[0.99]',
+            showRecommendedPill && 'pt-5',
             selected
-              ? 'scale-100 opacity-100'
-              : 'pointer-events-none scale-75 opacity-0',
+              ? 'border-vermillion-900 shadow-sm ring-2 ring-vermillion-900/20'
+              : 'border-zinc-200 shadow-sm',
+            disabled && 'cursor-not-allowed opacity-60 active:scale-100',
           )}
         >
-          ✓
-        </span>
-        <BundleHeroImages bundleId={bundleId} productBySlug={productBySlug} />
-        <div className="mt-auto space-y-3">
-          <p className="text-base leading-6 text-zinc-900">{copy.cardTitle}</p>
-          <MobileBundlePrice user={user} bundleId={bundleId} />
-        </div>
-      </button>,
+          {showRecommendedPill ? (
+            <span
+              aria-hidden
+              className="pointer-events-none absolute left-1/2 top-0 z-30 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full bg-vermillion-900 px-2.5 py-0.5 text-[10px] font-medium leading-4 text-white shadow-sm"
+            >
+              Recommended
+            </span>
+          ) : null}
+          <p className="text-sm font-medium leading-5 text-zinc-900">
+            {copy.cardTitle}
+          </p>
+          <CompactMobileBundlePrice user={user} bundleId={bundleId} />
+        </button>
+      </div>,
     );
   }
 
   return (
-    <div className="mt-6 md:hidden">
-      <div className="relative">
-        <div
-          ref={carouselRef}
-          data-testid="bundle-mobile-carousel"
-          className="flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {buttons}
-        </div>
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-zinc-50 to-transparent"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-zinc-50 to-transparent"
-        />
-      </div>
-      <div className="mt-5">
-        <Pager bundleIds={bundleOrder} activeIndex={activeIndex} />
+    <div className="w-full min-w-0">
+      <div
+        ref={selectorRef}
+        data-testid="bundle-mobile-compact-selector"
+        className="-mx-1 flex snap-x snap-mandatory gap-2 overflow-x-auto px-1 pb-1 pt-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {buttons}
       </div>
     </div>
   );

@@ -302,15 +302,7 @@ const BundledDiscountStep = () => {
         title={getOnboardingStepTitle(ONBOARDING_STEP_IDS.BUNDLED_DISCOUNT)}
       />
       <Sequence.StepLayout className="bg-zinc-50">
-        <Sequence.StepHeader className="flex items-center justify-between">
-          <div className="size-9" />
-          <span className="text-sm font-medium text-zinc-900">
-            Retesting cadence
-          </span>
-          <div className="size-9" />
-        </Sequence.StepHeader>
-
-        <div className="flex flex-1 flex-col items-center px-4 pb-8">
+        <div className="flex flex-1 flex-col items-center px-4 pb-8 pt-5 md:pt-8">
           <div className="w-full max-w-xl">
             <header className="mb-8 flex flex-col gap-3 md:items-center md:text-center">
               <H1 className="text-3xl leading-9 tracking-tight md:text-3xl">

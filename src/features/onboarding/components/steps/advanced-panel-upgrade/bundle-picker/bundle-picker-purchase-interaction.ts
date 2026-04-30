@@ -5,6 +5,7 @@ export interface BundlePickerPurchaseInteraction {
   hasPaymentMethod: boolean;
   isFlexSelected: boolean;
   onSkip: () => void;
+  onCancelConfirm: () => void;
   onUpgradeCta: () => void | Promise<void>;
 }
 

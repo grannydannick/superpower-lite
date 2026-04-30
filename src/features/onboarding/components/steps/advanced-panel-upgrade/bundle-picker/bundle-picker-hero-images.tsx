@@ -60,6 +60,42 @@ export function BundleHeroImages({
     }
   }
 
+  if (size === 'mobile') {
+    if (productImages.length === 0) {
+      return null;
+    }
+
+    const imgs: ReactNode[] = [];
+    let idx = 0;
+    for (const src of productImages) {
+      const isAdvancedVial = src === ADVANCED_PANEL_IMAGE;
+      imgs.push(
+        <img
+          key={`${src}-${idx}`}
+          alt=""
+          src={src}
+          data-testid="bundle-hero-product-image"
+          className={cn(
+            'w-auto shrink-0 object-contain',
+            isAdvancedVial
+              ? 'h-11 max-h-11 max-w-[min(18vw,4.25rem)]'
+              : 'h-14 max-h-14 max-w-[min(22vw,5.5rem)]',
+          )}
+        />,
+      );
+      idx += 1;
+    }
+
+    return (
+      <div
+        data-testid="bundle-hero-images"
+        className="flex h-14 w-full max-w-full flex-nowrap items-center justify-start gap-2 overflow-x-auto px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {imgs}
+      </div>
+    );
+  }
+
   if (productImages.length === 1) {
     const image = productImages[0];
     if (image == null) {
@@ -69,56 +105,36 @@ export function BundleHeroImages({
     return (
       <div
         data-testid="bundle-hero-images"
-        className={cn(
-          'relative overflow-hidden',
-          size === 'desktop' ? 'h-28 w-full' : 'h-20 w-[176px]',
-        )}
+        className="relative h-28 w-full overflow-hidden"
       >
         <img
           alt=""
           src={image}
           data-testid="bundle-hero-product-image"
-          className={cn(
-            'absolute top-1/2 h-20 w-auto -translate-y-1/2 object-contain',
-            size === 'desktop' ? 'left-1/2 -translate-x-1/2' : 'left-0',
-          )}
+          className="absolute left-1/2 top-1/2 h-20 w-auto -translate-x-1/2 -translate-y-1/2 object-contain"
         />
       </div>
     );
   }
 
-  const slots =
-    size === 'desktop'
-      ? productImages.length === 2
-        ? ['left-[16%] top-6 h-14 w-24', 'left-[56%] top-5 h-16 w-20']
-        : productImages.length === 5
-          ? [
-              'left-[2%] top-4 h-12 w-24',
-              'left-[34%] top-2 h-14 w-20',
-              'left-[66%] top-3 h-14 w-20',
-              'left-[22%] top-14 h-14 w-20',
-              'left-[54%] top-14 h-14 w-20',
-            ]
-          : [
-              'left-[4%] top-4 h-16 w-20',
-              'left-[34%] top-3 h-16 w-20',
-              'left-[66%] top-4 h-16 w-20',
-            ]
-      : productImages.length === 2
-        ? ['left-5 top-4 h-12 w-20', 'left-[91px] top-3 h-14 w-16']
-        : productImages.length === 5
-          ? [
-              'left-1 top-1 h-9 w-18',
-              'left-[54px] top-1 h-11 w-14',
-              'left-[111px] top-1 h-11 w-14',
-              'left-7 top-9 h-11 w-14',
-              'left-[91px] top-9 h-11 w-14',
-            ]
-          : [
-              'left-2 top-3 h-14 w-16',
-              'left-14 top-2 h-14 w-16',
-              'left-[104px] top-3 h-14 w-16',
-            ];
+  let slots: string[];
+  if (productImages.length === 2) {
+    slots = ['left-[16%] top-6 h-14 w-24', 'left-[56%] top-5 h-16 w-20'];
+  } else if (productImages.length === 5) {
+    slots = [
+      'left-[2%] top-4 h-12 w-24',
+      'left-[34%] top-2 h-14 w-20',
+      'left-[66%] top-3 h-14 w-20',
+      'left-[22%] top-14 h-14 w-20',
+      'left-[54%] top-14 h-14 w-20',
+    ];
+  } else {
+    slots = [
+      'left-[4%] top-4 h-16 w-20',
+      'left-[34%] top-3 h-16 w-20',
+      'left-[66%] top-4 h-16 w-20',
+    ];
+  }
 
   const images: ReactNode[] = [];
   let slot = 0;
@@ -143,10 +159,7 @@ export function BundleHeroImages({
   return (
     <div
       data-testid="bundle-hero-images"
-      className={cn(
-        'relative overflow-hidden',
-        size === 'desktop' ? 'h-28 w-full' : 'h-20 w-[176px]',
-      )}
+      className="relative h-28 w-full overflow-hidden"
     >
       {images}
     </div>
