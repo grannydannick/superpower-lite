@@ -139,12 +139,12 @@ export const CheckEmailScreen = ({
           <div className="space-y-4">
             <Body1 className="text-white">
               {origin === 'expired-link'
-                ? `That link expired. Click the button below to send a new link to ${email}.`
-                : `We've sent a link to ${email}.`}
+                ? `That code expired. Click the button below to send a new code to ${email}.`
+                : `We've sent a sign-in code to ${email}.`}
             </Body1>
 
             <Body1 className="text-white">
-              Follow the link in your email or input the code here.
+              Enter the code from your email below.
             </Body1>
 
             {import.meta.env.DEV ? (
