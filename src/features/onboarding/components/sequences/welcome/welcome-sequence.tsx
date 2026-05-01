@@ -13,7 +13,7 @@ import { useOnboardingNavigation } from '@/features/onboarding/hooks/use-onboard
 import { setOnboardingProgress } from '@/features/onboarding/stores/onboarding-progress-store';
 import { useUser } from '@/lib/auth';
 
-import { DomeImage } from './dome-image';
+import { DomeImage } from '../../shared/dome-image';
 
 const NEXT_STEPS = [
   {

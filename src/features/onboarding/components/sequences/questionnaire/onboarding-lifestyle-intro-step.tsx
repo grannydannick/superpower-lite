@@ -18,13 +18,10 @@ export const OnboardingLifestyleIntroStep = () => {
         title={getOnboardingStepTitle(ONBOARDING_STEP_IDS.LIFESTYLE_INTRO)}
       />
       <Sequence.StepLayout centered className="bg-zinc-50">
-        <Sequence.StepMedia className="flex items-center justify-center">
-          <img
-            src="/onboarding/questionnaire/onboarding-lifestyle.webp"
-            alt=""
-            className="h-auto w-full rounded-mask"
-          />
-        </Sequence.StepMedia>
+        <Sequence.StepMedia
+          src="/onboarding/questionnaire/onboarding-lifestyle.webp"
+          imageClassName="px-12 md:px-0 object-[50%_60%] md:object-[50%_60%]"
+        />
         <Sequence.StepContent className="mx-auto max-w-md text-center">
           <H2>Let&apos;s understand your day-to-day</H2>
           <Body1 className="text-zinc-500">

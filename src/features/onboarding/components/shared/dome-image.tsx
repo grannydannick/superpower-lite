@@ -4,14 +4,19 @@ import {
   DEFAULT_IMAGE_LAYER_READY_DELAY_MS,
   useImageLayerReady,
 } from '@/hooks/use-image-layer-ready';
+import { cn } from '@/lib/utils';
 
-interface DomeImageProps {
+export interface DomeImageProps {
   src: string;
   alt?: string;
   loading?: 'eager' | 'lazy';
   /** Percent along the radial gradient where the clear center ends and the blur feather begins (0–85). */
   blurRingInnerRadiusPercent?: number;
   hasTransition?: boolean;
+  /** Extra class names merged onto the inner `<img>` element. */
+  imageClassName?: string;
+  /** Visible dome height in px. Defaults to 340. Bottom fade scales with this. */
+  height?: number;
 }
 
 const DOME_FADE_BG = '250, 250, 250';
@@ -32,6 +37,18 @@ const FEATHER_STOP_COUNT = 8;
 const DOME_BLUR_RING_STAGGER_S = 0.5;
 
 const DOME_MOTION_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
+/** Default visible dome height in px when `height` prop is not provided. */
+const DOME_DEFAULT_HEIGHT_PX = 340;
+
+/** How far the inner frame extends below the outer container (gives the bottom fade room to clip). */
+const DOME_BOTTOM_EXTENSION_PX = 80;
+
+/** Total height of the bottom zinc blur ellipse (constant — defines the fade falloff length). */
+const DOME_BOTTOM_BLUR_HEIGHT_PX = 500;
+
+/** Height of the visible bottom fade (distance the blur ellipse rises above the bottom clip). */
+const DOME_BOTTOM_FADE_HEIGHT_PX = 190;
 
 interface DomeFeatheredRadialGradientParams {
   innerRadiusPercent: number;
@@ -99,7 +116,11 @@ export function DomeImage(props: DomeImageProps) {
     loading = 'eager',
     blurRingInnerRadiusPercent = 10,
     hasTransition = false,
+    imageClassName,
+    height = DOME_DEFAULT_HEIGHT_PX,
   } = props;
+  const bottomBlurTopPx =
+    height + DOME_BOTTOM_EXTENSION_PX - DOME_BOTTOM_FADE_HEIGHT_PX;
   const { ready, imgRef, scheduleReveal } = useImageLayerReady({
     resetDeps: [src],
     delayMs: DEFAULT_IMAGE_LAYER_READY_DELAY_MS,
@@ -112,14 +133,20 @@ export function DomeImage(props: DomeImageProps) {
   );
 
   return (
-    <div className="relative h-[340px] w-full">
-      <div className="absolute -inset-x-14 -bottom-[80px] top-0 overflow-hidden">
+    <div className="relative w-full" style={{ height: `${height}px` }}>
+      <div
+        className="absolute -inset-x-14 top-0 overflow-hidden"
+        style={{ bottom: `-${DOME_BOTTOM_EXTENSION_PX}px` }}
+      >
         <div className="relative isolate h-full w-full transform-gpu [backface-visibility:hidden]">
           <m.img
             ref={imgRef}
             src={src}
             alt={alt}
-            className="h-full w-full origin-center transform-gpu object-cover object-[50%_20%] will-change-[transform,opacity] [backface-visibility:hidden]"
+            className={cn(
+              'h-full w-full origin-center transform-gpu object-cover object-[50%_20%] will-change-[transform,opacity] [backface-visibility:hidden]',
+              imageClassName,
+            )}
             loading={loading}
             onLoad={scheduleReveal}
             initial={{ opacity: 0, scale: 0.9, y: 10 }}
@@ -176,7 +203,13 @@ export function DomeImage(props: DomeImageProps) {
             }}
           />
         </div>
-        <div className="absolute -inset-x-40 top-[230px] h-[500px] transform-gpu rounded-[100%] bg-zinc-50 blur-xl [backface-visibility:hidden]" />
+        <div
+          className="absolute -inset-x-40 transform-gpu rounded-[100%] bg-zinc-50 blur-xl [backface-visibility:hidden]"
+          style={{
+            top: `${bottomBlurTopPx}px`,
+            height: `${DOME_BOTTOM_BLUR_HEIGHT_PX}px`,
+          }}
+        />
       </div>
     </div>
   );

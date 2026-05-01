@@ -5,6 +5,8 @@ import { cn } from '@/lib/utils';
 
 import { useSequence } from '../hooks/use-screen-sequence';
 
+import { DomeImage, type DomeImageProps } from './shared/dome-image';
+
 const Layout = ({
   children,
   className,
@@ -44,27 +46,45 @@ const StepHeader = ({
   <div className={cn('shrink-0 p-4', className)}>{children}</div>
 );
 
+type StepMediaProps = PropsWithChildren<
+  { className?: string } & Partial<DomeImageProps>
+>;
+
 const StepMedia = ({
   children,
   className,
-}: PropsWithChildren<{ className?: string }>) => (
-  <div className="mx-auto rounded-mask">
-    <div
-      className={cn(
-        'media-organic-reveal mx-auto flex h-80 max-h-[calc(100dvh-24rem)] min-h-80 flex-1 items-center overflow-hidden md:max-w-md',
-        className,
-      )}
-    >
-      {children}
+  src,
+  height = 400,
+  ...domeProps
+}: StepMediaProps) => {
+  if (src !== undefined) {
+    return (
+      <div className={cn('mx-auto w-full md:max-w-lg', className)}>
+        <DomeImage src={src} hasTransition {...domeProps} height={height} />
+      </div>
+    );
+  }
+  return (
+    <div className="mx-auto rounded-mask">
+      <div
+        className={cn(
+          'media-organic-reveal mx-auto flex h-80 max-h-[calc(100dvh-24rem)] min-h-80 flex-1 items-center overflow-hidden md:max-w-md',
+          className,
+        )}
+      >
+        {children}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const StepContent = ({
   children,
   className,
 }: PropsWithChildren<{ className?: string }>) => (
-  <div className={cn('mb-6 shrink-0 space-y-2 p-6 md:pb-0', className)}>
+  <div
+    className={cn('relative mb-6 shrink-0 space-y-2 p-6 md:pb-0', className)}
+  >
     {children}
   </div>
 );

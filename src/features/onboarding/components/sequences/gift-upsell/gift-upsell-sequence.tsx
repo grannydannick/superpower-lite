@@ -11,7 +11,7 @@ import { useAnalytics } from '@/hooks/use-analytics';
 import { useUser } from '@/lib/auth';
 import { buildGiftCheckoutUrl } from '@/utils/gifting-routing';
 
-import { DomeImage } from '../welcome/dome-image';
+import { DomeImage } from '../../shared/dome-image';
 
 const BENEFITS = [
   'Detect early signs of 1,000+ conditions',

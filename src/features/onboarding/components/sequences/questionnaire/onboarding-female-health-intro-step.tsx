@@ -18,13 +18,10 @@ export const OnboardingFemaleHealthIntroStep = () => {
         title={getOnboardingStepTitle(ONBOARDING_STEP_IDS.FEMALE_HEALTH_INTRO)}
       />
       <Sequence.StepLayout centered className="bg-zinc-50">
-        <Sequence.StepMedia className="flex items-center justify-center">
-          <img
-            src="/onboarding/questionnaire/onboarding-female-health.webp"
-            alt=""
-            className="h-auto w-full rounded-mask"
-          />
-        </Sequence.StepMedia>
+        <Sequence.StepMedia
+          src="/onboarding/questionnaire/onboarding-female-health.webp"
+          imageClassName="px-12 md:px-3 object-[50%_60%] md:object-[50%_60%]"
+        />
         <Sequence.StepContent className="mx-auto max-w-md text-center">
           <H2>Let&apos;s understand your hormone health</H2>
           <Body1 className="text-zinc-500">
