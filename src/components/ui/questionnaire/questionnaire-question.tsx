@@ -2,10 +2,9 @@ import {
   QuestionnaireItem,
   QuestionnaireResponseItem,
 } from '@medplum/fhirtypes';
-import { ArrowLeftIcon, SmileIcon } from 'lucide-react';
+import { SmileIcon } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
 
-import { SuperpowerLogo } from '@/components/icons/superpower-logo';
 import { SanitizedRichText } from '@/components/shared/sanitized-rich-text';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -61,12 +60,9 @@ export const QuestionnaireQuestion = ({
     (s) => s.checkForQuestionEnabled,
   );
   const nextStep = useQuestionnaireStore((s) => s.nextStep);
-  const prevStep = useQuestionnaireStore((s) => s.prevStep);
-  const activeStep = useQuestionnaireStore((s) => s.activeStep);
   const lastQuestion = useQuestionnaireStore((s) => s.getLastQuestion());
   const currentResponse = useQuestionnaireStore((s) => s.response);
 
-  const showBackButton = activeStep > 0;
   const isLastQuestion = lastQuestion?.linkId === item.linkId;
   const hasValidationErrors = validationErrors.size > 0;
 
@@ -180,12 +176,7 @@ export const QuestionnaireQuestion = ({
 
   if (!checkForQuestionEnabled(item)) {
     return (
-      <QuestionnaireDisabledQuestion
-        item={item}
-        showBackButton={showBackButton}
-        onBack={prevStep}
-        onNext={handleNextStep}
-      />
+      <QuestionnaireDisabledQuestion item={item} onNext={handleNextStep} />
     );
   }
 
@@ -230,19 +221,8 @@ export const QuestionnaireQuestion = ({
   return (
     <div
       key={item.linkId}
-      className="relative flex h-full flex-1 flex-col space-y-4 pt-12 md:pt-0"
+      className="relative flex h-full flex-1 flex-col space-y-4"
     >
-      {showBackButton && (
-        <button
-          tabIndex={-1}
-          type="button"
-          className="text-zinc-400 transition-all hover:text-zinc-500 md:hidden"
-          onClick={prevStep}
-        >
-          <ArrowLeftIcon />
-        </button>
-      )}
-      <SuperpowerLogo className="size-32 h-12 md:hidden" />
       <div
         className={cn(
           'flex h-full flex-1 flex-col justify-between gap-6 md:translate-y-0 md:justify-start',
@@ -252,8 +232,6 @@ export const QuestionnaireQuestion = ({
         <QuestionnaireNavigationButtons
           item={item}
           response={response}
-          showBackButton={showBackButton}
-          onBack={prevStep}
           onNext={handleNextStep}
           onSubmit={onSubmit}
           isLastQuestion={isLastQuestion}
@@ -269,15 +247,11 @@ export const QuestionnaireQuestion = ({
 
 interface QuestionnaireDisabledQuestionProps {
   item: QuestionnaireItem;
-  showBackButton: boolean;
-  onBack: () => void;
   onNext: () => void;
 }
 
 function QuestionnaireDisabledQuestion({
   item,
-  showBackButton,
-  onBack,
   onNext,
 }: QuestionnaireDisabledQuestionProps) {
   return (
@@ -291,16 +265,6 @@ function QuestionnaireDisabledQuestion({
         </AlertDescription>
       </Alert>
       <div className="flex flex-col gap-2">
-        {showBackButton && (
-          <Button
-            type="button"
-            className="w-full bg-white"
-            variant="outline"
-            onClick={onBack}
-          >
-            Back
-          </Button>
-        )}
         <Button type="button" className="w-full" onClick={onNext}>
           {item.linkId === 'intro' ? 'I Understand' : 'Next'}
         </Button>
@@ -471,8 +435,6 @@ function QuestionnaireDisplayQuestion({
 interface QuestionnaireNavigationButtonsProps {
   item: QuestionnaireItem;
   response: QuestionnaireResponseItem;
-  showBackButton: boolean;
-  onBack: () => void;
   onNext: () => void;
   onSubmit: () => void;
   isLastQuestion: boolean;
@@ -485,8 +447,6 @@ interface QuestionnaireNavigationButtonsProps {
 function QuestionnaireNavigationButtons({
   item,
   response,
-  showBackButton,
-  onBack,
   onNext,
   onSubmit,
   isLastQuestion,
@@ -508,16 +468,6 @@ function QuestionnaireNavigationButtons({
 
   return (
     <div className={cn('mt-12 flex flex-col gap-2 md:mt-0')}>
-      {showBackButton && (
-        <button
-          tabIndex={-1}
-          type="button"
-          className="absolute -left-12 top-1 hidden text-zinc-400 transition-all hover:text-zinc-500 md:block"
-          onClick={onBack}
-        >
-          <ArrowLeftIcon />
-        </button>
-      )}
       {isLastQuestion ? (
         item.linkId === RX_CONSENT_PAYMENT_LINKID ||
         item.linkId === RX_CONSENT_QUESTION_LINKID ? null : (

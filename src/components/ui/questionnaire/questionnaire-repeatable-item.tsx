@@ -110,7 +110,6 @@ export const QuestionnaireFormRepeatableItem = ({
         {description != null && description.length > 0 && (
           <SanitizedRichText
             content={description}
-            variant="body2"
             textClassName="text-secondary"
           />
         )}
