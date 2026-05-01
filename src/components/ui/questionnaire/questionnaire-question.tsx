@@ -16,20 +16,26 @@ import { useIdentityVerificationStatus } from '@/hooks/use-identity-verification
 import { cn } from '@/lib/utils';
 
 import {
+  HEIGHT_FEET_LINKID,
+  HEIGHT_INCHES_LINKID,
+  HEIGHT_WEIGHT_GROUP_LINKID,
   RX_CONSENT_PAYMENT_LINKID,
   RX_CONSENT_QUESTION_LINKID,
   RX_IDENTITY_VERIFICATION_LINKID,
   RX_SAFETY_ADDRESS_LINKID,
   RX_SAFETY_INTRO_LINKID,
+  WEIGHT_LBS_LINKID,
 } from './const/special-linkids';
 import { SUPERPOWER_QUESTIONNAIRE_DESCRIPTION_EXTENSION_URL } from './const/system-urls';
 import { IdentityVerificationButton } from './identity-verification-button';
 import { QuestionnaireFormRepeatableItem } from './questionnaire-repeatable-item';
+import { HeightWeightGroup } from './questionnaire-types/height-weight-input';
 import { useQuestionnaireStore } from './stores/questionnaire-store';
 import {
   ensureNestedResponseItems,
   isResponseEmpty,
   QuestionnaireItemType,
+  upsertNestedResponse,
   validateRequiredFields,
 } from './utils';
 
@@ -180,8 +186,26 @@ export const QuestionnaireQuestion = ({
     );
   }
 
+  const isHeightWeightGroup =
+    item.linkId === HEIGHT_WEIGHT_GROUP_LINKID &&
+    (item.item ?? []).some((i) => i.linkId === HEIGHT_FEET_LINKID) &&
+    (item.item ?? []).some((i) => i.linkId === HEIGHT_INCHES_LINKID) &&
+    (item.item ?? []).some((i) => i.linkId === WEIGHT_LBS_LINKID);
+
   let questionContent: React.ReactElement;
-  if (item.type === QuestionnaireItemType.group) {
+  if (isHeightWeightGroup) {
+    questionContent = (
+      <HeightWeightQuestion
+        item={item}
+        description={description}
+        response={response}
+        onChange={onChange}
+        onKeyDown={handleKeyDown}
+        onValidationChange={handleValidationChange}
+        checkForQuestionEnabled={checkForQuestionEnabled}
+      />
+    );
+  } else if (item.type === QuestionnaireItemType.group) {
     questionContent = (
       <QuestionnaireGroupQuestion
         item={item}
@@ -347,20 +371,7 @@ function QuestionnaireGroupQuestion({
                 }
               }
               onChange={(newItems) => {
-                if (!response.item) {
-                  response.item = [];
-                }
-
-                const existingItemIndex = response.item.findIndex(
-                  (i) => i.linkId === nestedItem.linkId,
-                );
-
-                if (existingItemIndex >= 0) {
-                  response.item[existingItemIndex] = newItems[0];
-                } else {
-                  response.item.push(newItems[0]);
-                }
-
+                upsertNestedResponse(response, newItems[0]);
                 onChange([response]);
               }}
               onKeyDown={onKeyDown}
@@ -369,6 +380,122 @@ function QuestionnaireGroupQuestion({
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+interface HeightWeightQuestionProps {
+  item: QuestionnaireItem;
+  description: string | undefined;
+  response: QuestionnaireResponseItem;
+  onChange: (response: QuestionnaireResponseItem[]) => void;
+  onKeyDown: (
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => void;
+  onValidationChange: (linkId: string, hasError: boolean) => void;
+  checkForQuestionEnabled: (item: QuestionnaireItem) => boolean;
+}
+
+function HeightWeightQuestion({
+  item,
+  description,
+  response,
+  onChange,
+  onKeyDown,
+  onValidationChange,
+  checkForQuestionEnabled,
+}: HeightWeightQuestionProps) {
+  const groupItems = item.item ?? [];
+  const itemsByLinkId = new Map(groupItems.map((i) => [i.linkId, i]));
+  const feetItem = itemsByLinkId.get(HEIGHT_FEET_LINKID);
+  const inchesItem = itemsByLinkId.get(HEIGHT_INCHES_LINKID);
+  const weightItem = itemsByLinkId.get(WEIGHT_LBS_LINKID);
+  if (!feetItem || !inchesItem || !weightItem) return null;
+
+  const responsesByLinkId = new Map(
+    (response.item ?? []).map((r) => [r.linkId, r]),
+  );
+  const getNum = (r: QuestionnaireResponseItem | undefined) =>
+    r?.answer?.[0]?.valueDecimal ?? r?.answer?.[0]?.valueInteger;
+  const feet = getNum(responsesByLinkId.get(feetItem.linkId));
+  const inches = getNum(responsesByLinkId.get(inchesItem.linkId));
+  const weightLbs = getNum(responsesByLinkId.get(weightItem.linkId));
+
+  const upsertField = (fieldItem: QuestionnaireItem, value: number) => {
+    const answer =
+      fieldItem.type === QuestionnaireItemType.integer
+        ? [{ valueInteger: value }]
+        : [{ valueDecimal: value }];
+    upsertNestedResponse(response, {
+      linkId: fieldItem.linkId,
+      text: fieldItem.text,
+      answer,
+    });
+  };
+
+  const heightWeightLinkIds = new Set([
+    feetItem.linkId,
+    inchesItem.linkId,
+    weightItem.linkId,
+  ]);
+  const extraItems = groupItems.filter(
+    (i) => !heightWeightLinkIds.has(i.linkId) && checkForQuestionEnabled(i),
+  );
+
+  return (
+    <div className="space-y-6">
+      <div className="mb-10">
+        <SanitizedRichText
+          content={item.text}
+          textClassName={cn('text-2xl', description ? 'mb-3' : 'mb-5')}
+        />
+        {description && (
+          <SanitizedRichText
+            content={description}
+            textClassName="text-secondary"
+          />
+        )}
+      </div>
+      <HeightWeightGroup
+        feet={feet}
+        inches={inches}
+        weightLbs={weightLbs}
+        onFeetChange={(f) => {
+          upsertField(feetItem, f);
+          onChange([response]);
+        }}
+        onInchesChange={(i) => {
+          upsertField(inchesItem, i);
+          onChange([response]);
+        }}
+        onWeightChange={(lbs) => {
+          upsertField(weightItem, lbs);
+          onChange([response]);
+        }}
+        onHeightChange={(f, i) => {
+          upsertField(feetItem, f);
+          upsertField(inchesItem, i);
+          onChange([response]);
+        }}
+      />
+      {extraItems.map((nestedItem) => (
+        <QuestionnaireFormRepeatableItem
+          key={nestedItem.linkId}
+          nested
+          item={nestedItem}
+          response={
+            response.item?.find((i) => i.linkId === nestedItem.linkId) || {
+              linkId: nestedItem.linkId,
+            }
+          }
+          onChange={(newItems) => {
+            upsertNestedResponse(response, newItems[0]);
+            onChange([response]);
+          }}
+          onKeyDown={onKeyDown}
+          onValidationChange={onValidationChange}
+        />
+      ))}
     </div>
   );
 }

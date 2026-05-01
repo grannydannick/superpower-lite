@@ -127,6 +127,7 @@
     "use-context-selector": "^2.0.0",
     "use-debounce": "^10.0.3",
     "validator": "^13.12.0",
+    "web-haptics": "^0.0.6",
     "zod": "^4.3.6",
     "zustand": "^5.0.11"
   },

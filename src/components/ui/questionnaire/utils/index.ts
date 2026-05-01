@@ -9,6 +9,7 @@ export {
   formatReferenceString,
   getNumberOfPages,
   getNumericBounds,
+  upsertNestedResponse,
 } from './questionnaire-utils';
 
 export { isQuestionEnabled } from './questionnaire-enablement';

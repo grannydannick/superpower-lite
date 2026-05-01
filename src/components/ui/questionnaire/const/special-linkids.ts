@@ -26,3 +26,9 @@ export const RX_BILLING_PERIOD_LINKID = 'consent-payment.billing-period';
 // Used for Rx questionnaires to skip the gender question.
 // Also a common linkId to conditionally enable male/female specific questions.
 export const RX_SEX_ASSIGNED_AT_BIRTH_LINKID = 'sex-assigned-at-birth';
+
+// Used for the medical-history questionnaire to render the combined height + weight picker.
+export const HEIGHT_WEIGHT_GROUP_LINKID = 'height-weight-group';
+export const HEIGHT_FEET_LINKID = 'height-feet';
+export const HEIGHT_INCHES_LINKID = 'height-inches';
+export const WEIGHT_LBS_LINKID = 'weight-lbs';

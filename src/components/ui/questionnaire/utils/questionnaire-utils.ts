@@ -10,6 +10,7 @@ import {
   QuestionnaireItem,
   QuestionnaireItemAnswerOption,
   QuestionnaireResponse,
+  QuestionnaireResponseItem,
   QuestionnaireResponseItemAnswer,
 } from '@medplum/fhirtypes';
 
@@ -233,6 +234,19 @@ function getNumericExtensionValue(extension: any): number | undefined {
     return extension.valueQuantity.value;
   }
   return undefined;
+}
+
+export function upsertNestedResponse(
+  response: QuestionnaireResponseItem,
+  item: QuestionnaireResponseItem,
+) {
+  if (response.item == null) response.item = [];
+  const idx = response.item.findIndex((i) => i.linkId === item.linkId);
+  if (idx >= 0) {
+    response.item[idx] = item;
+  } else {
+    response.item.push(item);
+  }
 }
 
 export function getNumericBounds(item: QuestionnaireItem): {
