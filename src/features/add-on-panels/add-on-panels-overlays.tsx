@@ -27,9 +27,10 @@ import {
   findGroupByItemId,
   findItemById,
   getCurrentRecommendation,
+  getGroupItems,
   getSelectedItems,
 } from './add-on-panels-selectors';
-import type { AddOnItem } from './api/add-on-panels';
+import type { AddOnGroup, AddOnItem } from './api/add-on-panels';
 
 const LazyAddOnPanelsDetailContent = lazy(
   () => import('./add-on-panels-detail-content'),
@@ -194,9 +195,11 @@ export const CartFooter = ({
           )}
 
           {currentRecommendation != null ? (
-            <Button onClick={goToNextRecommendation} className="w-full">
-              Next
-            </Button>
+            <RecommendationCTAs
+              currentRecommendation={currentRecommendation}
+              selectedServiceIds={selectedServiceIds}
+              onAdvance={goToNextRecommendation}
+            />
           ) : (
             <>
               {hasSelected && (
@@ -244,6 +247,45 @@ export const CartFooter = ({
         </div>
       </div>
     </div>
+  );
+};
+
+interface RecommendationCTAsProps {
+  currentRecommendation: AddOnGroup;
+  selectedServiceIds: ReadonlySet<AddOnItem['id']>;
+  onAdvance: () => void;
+}
+
+const RecommendationCTAs = ({
+  currentRecommendation,
+  selectedServiceIds,
+  onAdvance,
+}: RecommendationCTAsProps) => {
+  let hasCurrentRecSelection = false;
+  for (const item of getGroupItems(currentRecommendation)) {
+    if (selectedServiceIds.has(item.id)) {
+      hasCurrentRecSelection = true;
+      break;
+    }
+  }
+
+  return (
+    <>
+      <Button
+        onClick={onAdvance}
+        disabled={!hasCurrentRecSelection}
+        className="w-full"
+      >
+        Add tests
+      </Button>
+      <button
+        type="button"
+        onClick={onAdvance}
+        className="block w-full py-2 text-center text-sm text-zinc-500 hover:text-zinc-900"
+      >
+        Skip these tests
+      </button>
+    </>
   );
 };
 
