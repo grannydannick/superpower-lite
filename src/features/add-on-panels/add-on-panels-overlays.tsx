@@ -271,7 +271,7 @@ const RecommendationCTAs = ({
 
   return (
     <Button onClick={onAdvance} className="w-full">
-      {hasCurrentRecSelection ? 'Add tests' : 'Skip these tests'}
+      {hasCurrentRecSelection ? 'Add to my plan' : 'Skip these tests'}
     </Button>
   );
 };

@@ -90,7 +90,7 @@ const AddOnPanelsStepScreen = () => {
               <IconSparkle className="size-3.5 text-vermillion-900" />
               {viewMode === 'recommendations'
                 ? 'Your recommendations'
-                : 'Clinic'}
+                : 'Marketplace'}
             </span>
             <div className="w-14" />
           </Sequence.StepHeader>
