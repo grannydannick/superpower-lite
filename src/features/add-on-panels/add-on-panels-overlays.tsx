@@ -270,22 +270,9 @@ const RecommendationCTAs = ({
   }
 
   return (
-    <>
-      <Button
-        onClick={onAdvance}
-        disabled={!hasCurrentRecSelection}
-        className="w-full"
-      >
-        Add tests
-      </Button>
-      <button
-        type="button"
-        onClick={onAdvance}
-        className="block w-full py-2 text-center text-sm text-zinc-500 hover:text-zinc-900"
-      >
-        Skip these tests
-      </button>
-    </>
+    <Button onClick={onAdvance} className="w-full">
+      {hasCurrentRecSelection ? 'Add tests' : 'Skip these tests'}
+    </Button>
   );
 };
 
