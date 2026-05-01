@@ -6,9 +6,14 @@ import {
 
 import { AnimatedCheckbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { LazyIcon } from '@/components/ui/lazy-icon';
 import { cn } from '@/lib/utils';
 
-import { OPTION_EXCLUSIVE_EXTENSION_URL } from '../const/system-urls';
+import {
+  CHOICE_LAYOUT_INLINE_EXTENSION_URL,
+  OPTION_EXCLUSIVE_EXTENSION_URL,
+  OPTION_ICON_EXTENSION_URL,
+} from '../const/system-urls';
 import { QuestionnaireErrorWrapper } from '../questionnaire-error-wrapper';
 import { useQuestionnaireStore } from '../stores/questionnaire-store';
 import { shouldAutoAdvanceMultipleChoice } from '../utils/questionnaire-utils';
@@ -51,6 +56,9 @@ export function MultipleChoice({
   onChange,
 }: MultipleChoiceProps) {
   const options = item.answerOption || [];
+  const isInlineLayout = item.extension?.some(
+    (e) => e.url === CHOICE_LAYOUT_INLINE_EXTENSION_URL && e.valueBoolean,
+  );
   const gridCols = options.length > 6 ? 'md:grid-cols-2' : 'grid-cols-1';
 
   const nextStep = useQuestionnaireStore((s) => s.nextStep);
@@ -143,8 +151,12 @@ export function MultipleChoice({
       message="You have to select at least one option."
     >
       <div className="space-y-2">
-        <div className={`grid ${gridCols} gap-2`}>
-          {options.map((option, idx) => {
+        <div
+          className={cn(
+            isInlineLayout ? 'flex flex-wrap gap-2' : `grid ${gridCols} gap-2`,
+          )}
+        >
+          {options.map((option) => {
             const optionValue =
               option.valueString || option.valueCoding?.display || '';
             const isSelected = response.answer?.some((answer) => {
@@ -157,6 +169,9 @@ export function MultipleChoice({
               options,
             );
             const isDisabled = !isExclusive && hasExclusiveSelected;
+            const optionIconName = option.extension?.find(
+              (e) => e.url === OPTION_ICON_EXTENSION_URL,
+            )?.valueString;
 
             return (
               <div
@@ -165,13 +180,15 @@ export function MultipleChoice({
                 tabIndex={0}
                 key={option.valueCoding?.code ?? optionValue}
                 className={cn(
-                  'group relative flex w-full cursor-pointer items-center justify-between space-x-2 rounded-xl bg-white outline-none ring-0 transition-all focus-visible:ring-2 focus-visible:ring-secondary',
-                  isSelected
-                    ? 'bg-black text-white hover:bg-zinc-800'
-                    : isDisabled
-                      ? 'cursor-not-allowed opacity-50'
-                      : 'hover:bg-zinc-50',
+                  'group/checkbox relative flex items-center space-x-4 py-4 outline-none ring-0',
+                  isDisabled && 'cursor-not-allowed opacity-50',
+                  isInlineLayout && 'py-0',
                 )}
+                onClick={() => {
+                  if (!isDisabled) {
+                    handleOptionSelect(optionValue, !isSelected);
+                  }
+                }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
@@ -182,27 +199,57 @@ export function MultipleChoice({
                   }
                 }}
               >
-                <Label
-                  htmlFor={`${item.linkId}-${idx}`}
+                <div
                   className={cn(
-                    'flex-1 cursor-pointer p-5 pr-16 text-base',
-                    isDisabled && 'cursor-not-allowed',
+                    'pointer-events-none absolute inset-0 !ml-0 cursor-pointer rounded-xl ring-2 ring-vermillion-300 transition-[opacity,transform] ease-out',
+                    isSelected
+                      ? 'duration-50 scale-100 opacity-100'
+                      : 'scale-95 opacity-0 duration-1000',
+                  )}
+                />
+                <Label
+                  className={cn(
+                    'absolute inset-0 !ml-0 cursor-pointer rounded-xl border bg-white duration-200 hover:bg-zinc-50 hover:duration-0',
+                    isSelected ? 'border-vermillion-900' : 'border-zinc-200',
+                  )}
+                />
+                <div
+                  className={cn(
+                    'pointer-events-none relative flex aspect-square size-5 items-center justify-center rounded-md border bg-white p-0.5 duration-200 ease-in-out group-hover/checkbox:duration-0 hover:duration-0',
+                    isSelected
+                      ? 'border-vermillion-900 group-hover/checkbox:border-vermillion-900'
+                      : 'border-zinc-200 group-hover/checkbox:border-zinc-300',
+                    isInlineLayout && '!ml-3',
+                  )}
+                >
+                  <div
+                    className={cn(
+                      'duration-50 absolute inset-0 cursor-pointer rounded-sm bg-vermillion-900 transition-opacity ease-out',
+                      isSelected ? 'opacity-100' : 'opacity-0',
+                    )}
+                  />
+
+                  <AnimatedCheckbox
+                    tabIndex={-1}
+                    className="pointer-events-none absolute size-full border-none bg-transparent !text-white data-[state=checked]:bg-transparent data-[state=checked]:text-vermillion-900"
+                    checked={isSelected}
+                    disabled={isDisabled}
+                    onCheckedChange={() => {}}
+                  />
+                </div>
+                {optionIconName != null && (
+                  <span className="pointer-events-none relative !ml-3">
+                    <LazyIcon name={optionIconName} />
+                  </span>
+                )}
+                <span
+                  className={cn(
+                    'pointer-events-none relative m-0 flex w-full cursor-pointer select-none items-center justify-start py-4 pr-6 text-left text-base font-normal',
+                    isInlineLayout && '!ml-2 py-3 !pl-3 pr-3',
                   )}
                 >
                   {optionValue}
-                </Label>
-                <AnimatedCheckbox
-                  tabIndex={-1}
-                  className="absolute right-6 top-1/2 -translate-y-1/2 text-white transition-all data-[state=checked]:bg-transparent"
-                  id={`${item.linkId}-${idx}`}
-                  checked={isSelected}
-                  disabled={isDisabled}
-                  onCheckedChange={(checked: boolean) => {
-                    if (!isDisabled) {
-                      handleOptionSelect(optionValue, checked);
-                    }
-                  }}
-                />
+                </span>
               </div>
             );
           })}

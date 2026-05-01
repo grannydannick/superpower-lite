@@ -19,6 +19,14 @@ export const QUESTIONNAIRE_ITEM_CONTROL_EXTENSION_URL =
 export const ENTRY_FORMAT_EXTENSION_URL =
   'http://hl7.org/fhir/StructureDefinition/entryFormat';
 
+// Used to render choice options as inline wrapped tags/chips instead of a vertical list.
+export const CHOICE_LAYOUT_INLINE_EXTENSION_URL =
+  'https://superpower.com/fhir/StructureDefinition/questionnaire-choiceLayoutInline';
+
+// Used to display an icon (prepended) on an answer option.
+export const OPTION_ICON_EXTENSION_URL =
+  'https://superpower.com/fhir/StructureDefinition/questionnaire-icon';
+
 // Used to supply suggestion chips for free text inputs.
 // Each suggestion is a separate repeated extension with a single valueString.
 export const SUPERPOWER_INPUT_SUGGESTION_EXTENSION_URL =
