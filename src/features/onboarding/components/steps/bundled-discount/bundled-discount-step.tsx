@@ -200,12 +200,14 @@ const BundledDiscountStep = () => {
   const { trackOnboardingCreditPurchase } = useOnboardingAnalytics();
   const upgradeOrderMutation = useUpgradeCredit();
 
-  const defaultFrequency =
-    TESTING_UPGRADE_FREQUENCIES.find((frequency) => frequency.quantity === 1) ??
-    TESTING_UPGRADE_FREQUENCIES[0] ??
-    null;
   const [selectedFrequency, setSelectedFrequency] =
-    useState<TestingFrequency | null>(defaultFrequency);
+    useState<TestingFrequency | null>(null);
+
+  const handleSelectFrequency = (frequency: TestingFrequency) => {
+    setSelectedFrequency((current) =>
+      current?.id === frequency.id ? null : frequency,
+    );
+  };
 
   const isPending =
     upgradeOrderMutation.isPending || upgradeOrderMutation.isSuccess;
@@ -325,7 +327,7 @@ const BundledDiscountStep = () => {
                   key={frequency.id}
                   frequency={frequency}
                   selected={selectedFrequency?.id === frequency.id}
-                  onSelect={setSelectedFrequency}
+                  onSelect={handleSelectFrequency}
                   priceLabel={getPriceLabel(frequency)}
                   originalPriceLabel={getOriginalPriceLabel(frequency)}
                 />
